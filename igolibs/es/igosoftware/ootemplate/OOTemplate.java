@@ -458,7 +458,7 @@ public class OOTemplate {
             outputZip.write(outputBytes);
          }
          else if (entry.getName().equals("META-INF/manifest.xml")) {
-            final byte[] outputBytes = evaluateManifiest(_templateFileName, imagesToRemove, imagesToAdd);
+            final byte[] outputBytes = evaluateManifiest(imagesToRemove, imagesToAdd);
             final ZipEntry contentEntry = new ZipEntry("META-INF/manifest.xml");
             contentEntry.setSize(outputBytes.length);
             outputZip.putNextEntry(contentEntry);
@@ -480,8 +480,7 @@ public class OOTemplate {
    }
 
 
-   private byte[] evaluateManifiest(final String templateFileName,
-                                    final Set<String> imagesToRemove,
+   private byte[] evaluateManifiest(final Set<String> imagesToRemove,
                                     final List<String> imagesToAdd) {
       try {
          final ZipFile templateZip = new ZipFile(_templateFileName);

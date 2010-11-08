@@ -49,7 +49,6 @@ import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.utils.GWWUtils;
 import gov.nasa.worldwind.geom.Matrix;
 import gov.nasa.worldwind.geom.Vec4;
-import gov.nasa.worldwind.render.DrawContext;
 
 
 public class GModelMesh
@@ -158,8 +157,7 @@ public class GModelMesh
    }
 
 
-   public Vec4 getCentroid(final DrawContext dc,
-                           final Matrix modelMatrix) {
+   public Vec4 getCentroid(final Matrix modelMatrix) {
 
       if ((modelMatrix != _lastModelMatrix) || (_centroidVec4 == null)) {
          //         System.out.println("Calculating centroid for " + this);

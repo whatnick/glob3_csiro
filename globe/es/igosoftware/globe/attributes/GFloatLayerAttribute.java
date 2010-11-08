@@ -81,7 +81,7 @@ public abstract class GFloatLayerAttribute
       super(label, readOnly);
       _minimum = minimum;
       _maximum = maximum;
-      _stepSize = 0;
+      _stepSize = stepSize;
       _widgetType = widgetType;
    }
 

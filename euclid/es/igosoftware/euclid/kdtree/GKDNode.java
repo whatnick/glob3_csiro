@@ -311,7 +311,8 @@ public abstract class GKDNode<VectorT extends IVector<VectorT, ?>, VertexT exten
    //   private final GKDTree<VectorT, VertexT>     _tree;
 
 
-   protected GKDNode(final GKDTree<VectorT, VertexT> tree,
+   protected GKDNode(@SuppressWarnings("unused")
+                     final GKDTree<VectorT, VertexT> tree,
                      final GKDInnerNode<VectorT, VertexT> parent) {
       _parent = parent;
       //      _tree = tree;

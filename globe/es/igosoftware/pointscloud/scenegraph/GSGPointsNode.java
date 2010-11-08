@@ -371,10 +371,7 @@ public final class GSGPointsNode
    //   }
 
 
-   private IColor getReferenceColor(final GL gl,
-                                    final boolean useLOD) {
-
-      //      gl.glColorMask(useLOD, useLOD, useLOD, useLOD)
+   private IColor getReferenceColor(final boolean useLOD) {
 
       if (_layer.getColorFromState()) {
          if (_pointsLoader._errorLoading) {
@@ -421,7 +418,7 @@ public final class GSGPointsNode
       final FloatBuffer pointsBuffer = buffers._pointsBuffer;
       final FloatBuffer colorsBuffer = buffers._colorsBuffer;
 
-      final IColor referenceColor = getReferenceColor(gl, useLOD);
+      final IColor referenceColor = getReferenceColor(useLOD);
 
       //      synchronized (pointsBuffer) {
       gl.glBegin(GL.GL_POINTS);
@@ -472,11 +469,11 @@ public final class GSGPointsNode
                                   final boolean useLOD,
                                   final GSGPointsLoader.Buffers buffers) {
       final FloatBuffer pointsBuffer = buffers._pointsBuffer;
-      final FloatBuffer colorsBuffer = colorizeBuffer(buffers._colorsBuffer, gl, useLOD);
+      final FloatBuffer colorsBuffer = colorizeBuffer(buffers._colorsBuffer, useLOD);
       //      gl.glColor3f(1, 1, 1);
 
       if (colorsBuffer == null) {
-         final IColor referenceColor = getReferenceColor(gl, useLOD);
+         final IColor referenceColor = getReferenceColor(useLOD);
          gl.glColor3f(referenceColor.getRed(), referenceColor.getGreen(), referenceColor.getBlue());
       }
 
@@ -504,7 +501,6 @@ public final class GSGPointsNode
 
 
    private FloatBuffer colorizeBuffer(final FloatBuffer originalColorsBuffer,
-                                      final GL gl,
                                       final boolean useLOD) {
       if (originalColorsBuffer == null) {
          return null;
@@ -514,7 +510,7 @@ public final class GSGPointsNode
          return originalColorsBuffer;
       }
 
-      final IColor referenceColor = getReferenceColor(gl, useLOD);
+      final IColor referenceColor = getReferenceColor(useLOD);
       final FloatBuffer colorizedBuffer = ByteBuffer.allocateDirect(originalColorsBuffer.capacity() * 4).order(
                ByteOrder.nativeOrder()).asFloatBuffer();
 

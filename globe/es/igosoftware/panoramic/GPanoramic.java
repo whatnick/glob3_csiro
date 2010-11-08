@@ -45,7 +45,6 @@ import es.igosoftware.globe.GGlobeApplication;
 import es.igosoftware.globe.GPanoramicLayer;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.loading.GDisplayListCache;
-import es.igosoftware.scenegraph.GElevationAnchor;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.LRUCache;
 import es.igosoftware.utils.GPanoramicCompiler;
@@ -178,8 +177,7 @@ public class GPanoramic
                      final String name,
                      final String directoryName,
                      final double radius,
-                     final Position position,
-                     final GElevationAnchor anchor) {
+                     final Position position) {
 
       this(containingLayer, name, directoryName, radius, position, 0);
    }
@@ -466,9 +464,9 @@ public class GPanoramic
       //      //      }
 
 
-      if ((_currentLevel < _maxLevel) && !tile.atBestResolution(dc) && tile.needToSplit(dc)) {
+      if ((_currentLevel < _maxLevel) && !tile.atBestResolution() && tile.needToSplit(dc)) {
          _currentLevel++;
-         final PanoramicTile[] subtiles = tile.split(dc);
+         final PanoramicTile[] subtiles = tile.split();
          for (final PanoramicTile child : subtiles) {
             selectVisibleTiles(dc, frustum, terrainChanged, child, modelViewMatrix);
          }
@@ -734,7 +732,7 @@ public class GPanoramic
             _displayList = QUAD_STRIPS_DISPLAY_LIST_CACHE.getDisplayList(this, dc, true);
          }
 
-         final Texture texture = GTexturesCache.getTexture(_url, true, false);
+         final Texture texture = GTexturesCache.getTexture(_url, true);
          if (texture != null) {
             texture.enable();
             texture.bind();
@@ -749,7 +747,7 @@ public class GPanoramic
       }
 
 
-      private boolean atBestResolution(final DrawContext dc) {
+      private boolean atBestResolution() {
          return (_level >= _maxResolutionInPanoramic);
       }
 
@@ -807,7 +805,7 @@ public class GPanoramic
       }
 
 
-      private PanoramicTile[] split(final DrawContext dc) {
+      private PanoramicTile[] split() {
          final Sector[] sectors = _sector.subdivide();
 
          final PanoramicTile[] subTiles = new PanoramicTile[4];

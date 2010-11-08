@@ -517,22 +517,22 @@ public final class GPTX3Loader
    }
 
 
-   public static void save(final GStructuredPtxVertex3Container vertices,
-                           final String fileName) {
-
-      //      final long started = System.currentTimeMillis();
-      //
-      //      final Logger logger = Logger.instance();
-      //
-      //
-      //      logger.info("Saving " + verticesCount + " vertices (intensities=" + hasIntensities + ", colors=" + hasColors + ") to "
-      //                  + fileName + "...");
-      //
-      //
-      //      final long ellapsed = System.currentTimeMillis() - started;
-      //      logger.info("Saved in " + (ellapsed / 1000.0) + "s");
-
-   }
+   //   public static void save(final GStructuredPtxVertex3Container vertices,
+   //                           final String fileName) {
+   //
+   //      //      final long started = System.currentTimeMillis();
+   //      //
+   //      //      final Logger logger = Logger.instance();
+   //      //
+   //      //
+   //      //      logger.info("Saving " + verticesCount + " vertices (intensities=" + hasIntensities + ", colors=" + hasColors + ") to "
+   //      //                  + fileName + "...");
+   //      //
+   //      //
+   //      //      final long ellapsed = System.currentTimeMillis() - started;
+   //      //      logger.info("Saved in " + (ellapsed / 1000.0) + "s");
+   //
+   //   }
 
 
    public static void main(final String[] args) {

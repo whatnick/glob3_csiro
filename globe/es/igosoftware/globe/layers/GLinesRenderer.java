@@ -58,9 +58,9 @@ public class GLinesRenderer
    private int _lineThickness = 1;
 
 
-   public GLinesRenderer(final Feature[] features) {
+   public GLinesRenderer() {
 
-      super(features);
+      super();
       // TODO Auto-generated constructor stub
    }
 

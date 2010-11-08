@@ -408,7 +408,7 @@ public class GHistogram<T>
       //      final String averageStr = NumberFormat.getInstance().format(GMath.roundTo(getAverage(), decimals)) + unitName;
       //      final String standardDeviationString = NumberFormat.getInstance().format(GMath.roundTo(getStandardDeviation(), decimals))
       //                                             + unitName;
-      final String averageStr = NumberFormat.getInstance().format(GMath.roundTo(getAverage(), decimals));
+      final String averageStr = NumberFormat.getInstance().format(GMath.roundTo(getAverage(), decimals)) + unitName;
       final String standardDeviationString = NumberFormat.getInstance().format(GMath.roundTo(getStandardDeviation(), decimals));
       final String title = "GHistogram: " + chartTitle + "  (Average: " + averageStr + " , Standard Deviation: "
                            + standardDeviationString + ")";

@@ -72,9 +72,9 @@ public class GPointsRenderer
    private int             _altitudeOrigin                    = TAKE_ALTITUDE_FROM_FIXED;
 
 
-   public GPointsRenderer(final Feature[] features) {
+   public GPointsRenderer() {
 
-      super(features);
+      super();
 
    }
 

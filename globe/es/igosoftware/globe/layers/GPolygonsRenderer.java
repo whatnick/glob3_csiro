@@ -61,9 +61,9 @@ public class GPolygonsRenderer
    private int         _borderThickness = 1;
 
 
-   public GPolygonsRenderer(final Feature[] features) {
+   public GPolygonsRenderer() {
 
-      super(features);
+      super();
 
    }
 

@@ -176,7 +176,7 @@ public class GReliefProcessor
          _verticesCounter += vertices.size();
       }
 
-      calculateResolution(vertices, sourceFileName);
+      calculateResolution(vertices);
 
       final GOctree gOctree = new GOctree("OctGrid: " + sourceFileName, vertices, new GOctree.Parameters(1000000,
                _maxPointsInLeaf, _verbose));
@@ -208,8 +208,7 @@ public class GReliefProcessor
    }
 
 
-   private void calculateResolution(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices,
-                                    final String sourceFileName) {
+   private void calculateResolution(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices) {
       final List<Double> xs = new ArrayList<Double>();
       final List<Double> ys = new ArrayList<Double>();
 

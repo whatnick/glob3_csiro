@@ -95,14 +95,14 @@ public class GGlobeVectorLayer
 
       final Object geom = features[0]._geometry;
       if (geom instanceof com.vividsolutions.jts.geom.Point) {
-         return new GPointsRenderer(features);
+         return new GPointsRenderer();
       }
       else if ((geom instanceof LineString) || (geom instanceof MultiLineString)) {
-         return new GLinesRenderer(features);
+         return new GLinesRenderer();
       }
       else if ((geom instanceof com.vividsolutions.jts.geom.Polygon)
                || (geom instanceof com.vividsolutions.jts.geom.MultiPolygon)) {
-         return new GPolygonsRenderer(features);
+         return new GPolygonsRenderer();
       }
       else {
          return null;

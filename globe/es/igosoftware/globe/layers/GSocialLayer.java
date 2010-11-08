@@ -79,7 +79,7 @@ public class GSocialLayer
       super(/*"#twitter", true*/);
       _socialObjects = socialObjects;
       _features = getFeatures();
-      _renderer = new GPointsRenderer(_features);
+      _renderer = new GPointsRenderer();
       setName("Twitter layer");
 
    }
@@ -230,7 +230,8 @@ public class GSocialLayer
    }
 
 
-   public static void addLayerListener(final IGlobeApplication application) {
+   public static void addLayerListener(@SuppressWarnings("unused")
+   final IGlobeApplication application) {
 
       /*application.getWorldWindowGLCanvas().addSelectListener(new SelectListener() {
 

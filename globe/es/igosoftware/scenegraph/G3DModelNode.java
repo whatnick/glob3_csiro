@@ -247,7 +247,7 @@ public class G3DModelNode
                }
             }
 
-            _pickableMeshesBounds.add(calculatePickableBounds(mesh, meshVec4s));
+            _pickableMeshesBounds.add(calculatePickableBounds(meshVec4s));
          }
       }
 
@@ -271,8 +271,7 @@ public class G3DModelNode
    }
 
 
-   private Extent calculatePickableBounds(final GModelMesh mesh,
-                                          final List<Vec4> points) {
+   private Extent calculatePickableBounds(final List<Vec4> points) {
       switch (_pickableBoundsType) {
          case BOX:
             return Box.computeBoundingBox(points);

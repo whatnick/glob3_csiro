@@ -91,6 +91,8 @@ public class GSwingUtils {
       button.putClientProperty(SubstanceLookAndFeel.FLAT_PROPERTY, Boolean.TRUE);
       button.addActionListener(actionListener);
 
+      button.setSelected(initState);
+
       return button;
 
       //

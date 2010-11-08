@@ -63,7 +63,7 @@ public abstract class GVectorRenderer {
    private boolean               _hasToRecalculateExtremeValues = true;
 
 
-   public GVectorRenderer(final Feature[] features) {
+   public GVectorRenderer() {
 
       _gradient = new LinearGradientPaint(0f, 0f, 1f, 1f, new float[] { 0f, 1f }, new Color[] { Color.yellow, Color.red });
       //calculateExtremeValues(features);

@@ -70,8 +70,7 @@ public class GTexturesCache {
 
 
    public static Texture getTexture(final URL url,
-                                    final boolean mipmap,
-                                    final boolean flipIfNecessary) {
+                                    final boolean mipmap) {
       if (url == null) {
          return null;
       }
@@ -91,7 +90,7 @@ public class GTexturesCache {
             return texture;
          }
 
-         final Texture newTexture = loadTexture(url, mipmap, flipIfNecessary);
+         final Texture newTexture = loadTexture(url, mipmap);
          _texturesCache.put(textureKey, newTexture);
          return newTexture;
       }
@@ -99,8 +98,7 @@ public class GTexturesCache {
 
 
    private static Texture loadTexture(final URL url,
-                                      final boolean mipmap,
-                                      final boolean flipIfNecessary) {
+                                      final boolean mipmap) {
       if (url == null) {
          return null;
       }

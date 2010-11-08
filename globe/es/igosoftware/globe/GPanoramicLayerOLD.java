@@ -386,7 +386,7 @@ public final class GPanoramicLayerOLD
             _displayList = QUAD_STRIPS_DISPLAY_LIST_CACHE.getDisplayList(this, dc, true);
          }
 
-         final Texture texture = GTexturesCache.getTexture(_url, true, false);
+         final Texture texture = GTexturesCache.getTexture(_url, true);
          if (texture != null) {
             texture.enable();
             texture.bind();
@@ -401,7 +401,7 @@ public final class GPanoramicLayerOLD
       }
 
 
-      private boolean atBestResolution(final DrawContext dc) {
+      private boolean atBestResolution() {
          return (_level >= _maxResolutionInPanoramic);
       }
 
@@ -459,7 +459,7 @@ public final class GPanoramicLayerOLD
       }
 
 
-      private PanoramicTile[] split(final DrawContext dc) {
+      private PanoramicTile[] split() {
          final Sector[] sectors = _sector.subdivide();
 
          final PanoramicTile[] subTiles = new PanoramicTile[4];
@@ -663,7 +663,8 @@ public final class GPanoramicLayerOLD
    }
 
 
-   private void validateZoomLevels(final GPanoramicCompiler.ZoomLevels zoomLevels) {
+   private void validateZoomLevels(@SuppressWarnings("unused")
+   final GPanoramicCompiler.ZoomLevels zoomLevels) {
       //      System.out.println("Found " + zoomLevels.getLevels().size() + " levels");
       //
       //      for (final GPanoramicCompiler.ZoomLevel level : zoomLevels.getLevels()) {
@@ -1055,9 +1056,9 @@ public final class GPanoramicLayerOLD
       //      //      }
 
 
-      if ((_currentLevel < _maxLevel) && !tile.atBestResolution(dc) && tile.needToSplit(dc)) {
+      if ((_currentLevel < _maxLevel) && !tile.atBestResolution() && tile.needToSplit(dc)) {
          _currentLevel++;
-         final PanoramicTile[] subtiles = tile.split(dc);
+         final PanoramicTile[] subtiles = tile.split();
          for (final PanoramicTile child : subtiles) {
             selectVisibleTiles(dc, frustum, terrainChanged, child, modelViewMatrix);
          }

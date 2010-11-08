@@ -227,7 +227,7 @@ public class G3DModel {
 
       @Override
       protected void prepareGL(final DrawContext dc) {
-         _texture = GTexturesCache.getTexture(_textureData._first, _textureData._second, true);
+         _texture = GTexturesCache.getTexture(_textureData._first, _textureData._second);
          applyTexture(dc, _texture);
       }
 
@@ -479,7 +479,7 @@ public class G3DModel {
       }
 
       final URL url = getTextureURL(mesh);
-      return GTexturesCache.getTexture(url, material._mipmap, true);
+      return GTexturesCache.getTexture(url, material._mipmap);
    }
 
 
@@ -630,8 +630,7 @@ public class G3DModel {
    }
 
 
-   private static List<RenderUnit> calculateRenderingUnits(final String prefixMessage,
-                                                           final List<GModelMesh> meshes) {
+   private static List<RenderUnit> calculateRenderingUnits(final List<GModelMesh> meshes) {
 
       final HashMap<GPair<URL, Boolean>, List<GModelMesh>> textureRenderUnitsMap = new HashMap<GPair<URL, Boolean>, List<GModelMesh>>();
       final HashMap<GMaterial, List<GModelMesh>> materialRenderUnitsMap = new HashMap<GMaterial, List<GModelMesh>>();
@@ -761,8 +760,7 @@ public class G3DModel {
                                                                    };
 
 
-   private static List<RenderUnit> getRenderingUnits(final String prefixMessage,
-                                                     final List<GModelMesh> meshes) {
+   private static List<RenderUnit> getRenderingUnits(final List<GModelMesh> meshes) {
       synchronized (_renderUnitsCache) {
          List<RenderUnit> renderUnits = _renderUnitsCache.get(meshes);
 
@@ -772,7 +770,7 @@ public class G3DModel {
                mesh.addChangeListener(meshChangeListener);
             }
 
-            renderUnits = calculateRenderingUnits(prefixMessage, meshes);
+            renderUnits = calculateRenderingUnits(meshes);
             _renderUnitsCache.put(meshes, renderUnits);
          }
 
@@ -901,7 +899,7 @@ public class G3DModel {
       prepareOpenGL(dc, modelViewMatrixArray, hasScaleTransformation);
 
       try {
-         renderMeshes(dc, modelNode, "OPAQUE MODEL (" + _modelData.getName() + ")", _modelData.getMeshes());
+         renderMeshes(dc, modelNode, _modelData.getMeshes());
       }
       finally {
          restoreOpenGL(dc);
@@ -937,7 +935,7 @@ public class G3DModel {
       final Vec4 eyePoint = dc.getView().getEyePoint();
 
       for (final GModelMesh mesh : _transparentMeshes) {
-         final Vec4 meshCentroid = mesh.getCentroid(dc, modelMatrix);
+         final Vec4 meshCentroid = mesh.getCentroid(modelMatrix);
          final double distanceFromEye = eyePoint.distanceTo3(meshCentroid);
          dc.addOrderedRenderable(new MeshOrderedRenderable(mesh, modelViewMatrixArray, hasScaleTransformation, modelNode,
                   distanceFromEye));
@@ -948,7 +946,7 @@ public class G3DModel {
          prepareOpenGL(dc, modelViewMatrixArray, hasScaleTransformation);
 
          try {
-            renderMeshes(dc, modelNode, "HIBRID MODEL (Opaque part) (" + _modelData.getName() + ")", _opaqueMeshes);
+            renderMeshes(dc, modelNode, _opaqueMeshes);
          }
          finally {
             restoreOpenGL(dc);
@@ -960,9 +958,8 @@ public class G3DModel {
 
    private void renderMeshes(final DrawContext dc,
                              final G3DModelNode modelNode,
-                             final String prefixMessage,
                              final List<GModelMesh> meshes) {
-      final List<RenderUnit> renderUnits = getRenderingUnits(prefixMessage, meshes);
+      final List<RenderUnit> renderUnits = getRenderingUnits(meshes);
       final boolean forceRedraw = renderRenderingUnits(dc, renderUnits);
 
       if (forceRedraw) {
