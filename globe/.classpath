@@ -3,13 +3,6 @@
 	<classpathentry kind="src" path=""/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/euclid"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/ww"/>
-	<classpathentry exported="true" kind="lib" path="/ww/gluegen-rt.jar"/>
-	<classpathentry exported="true" kind="lib" path="/ww/jogl.jar" sourcepath="/home/dgd/Escritorio/jogl-1.1.1-src.zip">
-		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="ww/libs/jogl-1.1.1-linux-amd64/lib"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="libs/jts-1.9.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/TableLayout-bin-jdk1.5-2007-04-21.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/geonames-1.0.2.jar"/>
@@ -35,5 +28,8 @@
 	<classpathentry exported="true" kind="lib" path="libs/substance6.0/trident.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jai_codec.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jai_core.jar"/>
+	<classpathentry kind="lib" path="libs/jogl/gluegen-rt.jar"/>
+	<classpathentry kind="lib" path="libs/jogl/jogl.jar"/>
+	<classpathentry kind="lib" path="libs/worldwind.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
