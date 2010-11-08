@@ -128,7 +128,7 @@ GeometryT extends GAxisAlignedOrthotope<VectorT, GeometryT>
 
       final VectorT exemplar = iterator.next();
       if (exemplar instanceof IVector3) {
-         return (GAxisAlignedOrthotope<VectorT, ?>) GAxisAlignedBox.minimumBoundingBox((Iterable<? extends IVector3>) points);
+         return (GAxisAlignedOrthotope<VectorT, ?>) GAxisAlignedBox.minimumBoundingBox((Iterable<? extends IVector3<?>>) points);
       }
       else if (exemplar instanceof IVector2) {
          return (GAxisAlignedOrthotope<VectorT, ?>) GAxisAlignedRectangle.minimumBoundingRectangle((Iterable<? extends IVector2<?>>) points);
@@ -199,7 +199,7 @@ GeometryT extends GAxisAlignedOrthotope<VectorT, GeometryT>
       if (getClass() != obj.getClass()) {
          return false;
       }
-      final GAxisAlignedOrthotope other = (GAxisAlignedOrthotope) obj;
+      final GAxisAlignedOrthotope<?, ?> other = (GAxisAlignedOrthotope<?, ?>) obj;
       if (_lower == null) {
          if (other._lower != null) {
             return false;

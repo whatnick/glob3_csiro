@@ -78,7 +78,7 @@ public final class GSegment2D
 
 
    private IntersectionResult getIntersection(final GSegment2D that,
-                                              final GMutableVector2<IVector2> intersection) {
+                                              final GMutableVector2<IVector2<?>> intersection) {
       final double thisFromX = _from.x();
       final double thisFromY = _from.y();
 

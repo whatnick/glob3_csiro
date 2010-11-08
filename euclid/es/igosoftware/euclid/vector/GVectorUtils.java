@@ -457,10 +457,10 @@ public final class GVectorUtils {
    public static IVector<?, ?> newMutableVector(final double[] coordinates) {
       final int dimensions = coordinates.length;
       if (dimensions == 2) {
-         return new GMutableVector2<IVector2>(GVector2D.ZERO);
+         return new GMutableVector2<IVector2<?>>(GVector2D.ZERO);
       }
       else if (dimensions == 3) {
-         return new GMutableVector3<IVector3>(GVector3D.ZERO);
+         return new GMutableVector3<IVector3<?>>(GVector3D.ZERO);
       }
       else {
          throw new IllegalArgumentException("Can't create a Vector of " + dimensions + " dimensions");

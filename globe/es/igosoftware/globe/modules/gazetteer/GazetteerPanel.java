@@ -188,7 +188,7 @@ public class GazetteerPanel
          throw new IllegalArgumentException("Gazetteer class _name is null");
       }
 
-      final Class c = Class.forName(className.trim());
+      final Class<?> c = Class.forName(className.trim());
       final Object o = c.newInstance();
 
       if (!(o instanceof Gazetteer)) {

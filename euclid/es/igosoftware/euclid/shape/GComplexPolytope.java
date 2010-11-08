@@ -190,7 +190,7 @@ PolytopeT extends IPolytope<VectorT, SegmentT, ?, BoundsT>
       if (getClass() != obj.getClass()) {
          return false;
       }
-      final GComplexPolytope other = (GComplexPolytope) obj;
+      final GComplexPolytope<?, ?, ?, ?, ?> other = (GComplexPolytope<?, ?, ?, ?, ?>) obj;
       if (_holes == null) {
          if (other._holes != null) {
             return false;

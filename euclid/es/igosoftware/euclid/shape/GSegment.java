@@ -165,7 +165,7 @@ BoundsT extends IBounds<VectorT, BoundsT>
       if (getClass() != obj.getClass()) {
          return false;
       }
-      final GSegment other = (GSegment) obj;
+      final GSegment<?, ?, ?> other = (GSegment<?, ?, ?>) obj;
       if (_from == null) {
          if (other._from != null) {
             return false;

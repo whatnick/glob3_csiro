@@ -67,21 +67,21 @@ import es.igosoftware.util.LoggerObject;
 public class GReliefProcessor
          extends
             LoggerObject {
-   private final GVectorPrecision    _vectorPrecision;
-   private final GColorPrecision     _colorPrecision;
-   private final GProjection         _projection;
+   private final GVectorPrecision       _vectorPrecision;
+   private final GColorPrecision        _colorPrecision;
+   private final GProjection            _projection;
 
-   private final String              _sourceDirectoryName;
-   private final String              _extension;
-   private final String              _targetDirectoryName;
-   private final File                _sourceDirectory;
-   private final File                _targetDirectory;
+   private final String                 _sourceDirectoryName;
+   private final String                 _extension;
+   private final String                 _targetDirectoryName;
+   private final File                   _sourceDirectory;
+   private final File                   _targetDirectory;
 
-   private int                       _verticesCounter;
-   private GMutableVector2<IVector2> _resolutionAverage;
+   private int                          _verticesCounter;
+   private GMutableVector2<IVector2<?>> _resolutionAverage;
 
-   private final int                 _maxPointsInLeaf;
-   private final boolean             _verbose;
+   private final int                    _maxPointsInLeaf;
+   private final boolean                _verbose;
 
 
    public GReliefProcessor(final GVectorPrecision vectorPrecision,
@@ -144,7 +144,7 @@ public class GReliefProcessor
 
       //      final ExecutorService executor = GConcurrent.createExecutor(Runtime.getRuntime().availableProcessors());
 
-      _resolutionAverage = new GMutableVector2<IVector2>(GVector2D.ZERO);
+      _resolutionAverage = new GMutableVector2<IVector2<?>>(GVector2D.ZERO);
       _verticesCounter = 0;
       for (int i = 0; i < xyzFilesNames.length; i++) {
          final String sourceFileName = xyzFilesNames[i];

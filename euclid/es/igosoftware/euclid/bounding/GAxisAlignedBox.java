@@ -73,8 +73,8 @@ public final class GAxisAlignedBox
       try {
          final Method loadMethod = pointClass.getMethod("load", DataInputStream.class);
 
-         final IVector3<?> lower = (IVector3) loadMethod.invoke(null, input);
-         final IVector3<?> upper = (IVector3) loadMethod.invoke(null, input);
+         final IVector3<?> lower = (IVector3<?>) loadMethod.invoke(null, input);
+         final IVector3<?> upper = (IVector3<?>) loadMethod.invoke(null, input);
          return new GAxisAlignedBox(lower, upper);
       }
       catch (final Exception e) {
@@ -171,12 +171,12 @@ public final class GAxisAlignedBox
    }
 
 
-   public static GAxisAlignedBox minimumBoundingBox(final Iterable<? extends IVector3> points) {
+   public static GAxisAlignedBox minimumBoundingBox(final Iterable<? extends IVector3<?>> points) {
       return minimumBoundingBox(points.iterator());
    }
 
 
-   public static GAxisAlignedBox minimumBoundingBox(final Iterator<? extends IVector3> iterator) {
+   public static GAxisAlignedBox minimumBoundingBox(final Iterator<? extends IVector3<?>> iterator) {
       double minX = Double.POSITIVE_INFINITY;
       double minY = Double.POSITIVE_INFINITY;
       double minZ = Double.POSITIVE_INFINITY;
@@ -217,8 +217,8 @@ public final class GAxisAlignedBox
 
          final Method parseMethod = pointClass.getMethod("parseString", String.class);
 
-         final IVector3<?> lower = (IVector3) parseMethod.invoke(null, tokens[0]);
-         final IVector3<?> upper = (IVector3) parseMethod.invoke(null, tokens[1]);
+         final IVector3<?> lower = (IVector3<?>) parseMethod.invoke(null, tokens[0]);
+         final IVector3<?> upper = (IVector3<?>) parseMethod.invoke(null, tokens[1]);
          return new GAxisAlignedBox(lower, upper);
       }
       catch (final Exception e) {

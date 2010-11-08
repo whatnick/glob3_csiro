@@ -172,7 +172,7 @@ BoundsT extends IBounds<VectorT, BoundsT>
       if (getClass() != obj.getClass()) {
          return false;
       }
-      final GSimplePolytope other = (GSimplePolytope) obj;
+      final GSimplePolytope<?, ?, ?, ?> other = (GSimplePolytope<?, ?, ?, ?>) obj;
       if (_points == null) {
          if (other._points != null) {
             return false;

@@ -215,14 +215,14 @@ public final class GAxisAlignedRectangle
    }
 
 
-   public static <PointT extends IVector2> GAxisAlignedRectangle load(final Class<PointT> pointClass,
-                                                                      final DataInputStream input) throws IOException {
+   public static <PointT extends IVector2<?>> GAxisAlignedRectangle load(final Class<PointT> pointClass,
+                                                                         final DataInputStream input) throws IOException {
 
       try {
          final Method loadMethod = pointClass.getMethod("load", DataInputStream.class);
 
-         final IVector2<?> lower = (IVector2) loadMethod.invoke(null, input);
-         final IVector2<?> upper = (IVector2) loadMethod.invoke(null, input);
+         final IVector2<?> lower = (IVector2<?>) loadMethod.invoke(null, input);
+         final IVector2<?> upper = (IVector2<?>) loadMethod.invoke(null, input);
          //      final IVector2<?> lower = IVector2.load(input);
          //      final IVector2<?> upper = IVector2.load(input);
          return new GAxisAlignedRectangle(lower, upper);

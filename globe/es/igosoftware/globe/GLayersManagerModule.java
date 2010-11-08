@@ -91,12 +91,12 @@ public class GLayersManagerModule
          extends
             GAbstractGlobeModule {
 
-   private JList                                                                               _layersJList;
+   private JList                                                                                  _layersJList;
 
-   private final JPanel                                                                        _layerPropertiesPanel;
-   private final List<GTriplet<IGlobeLayer, ILayerAttribute, GPair<Component, EventListener>>> _widgetsInLayerPropertiesPanel;
+   private final JPanel                                                                           _layerPropertiesPanel;
+   private final List<GTriplet<IGlobeLayer, ILayerAttribute<?>, GPair<Component, EventListener>>> _widgetsInLayerPropertiesPanel;
 
-   private final boolean                                                                       _autoAddSingleLayer;
+   private final boolean                                                                          _autoAddSingleLayer;
 
 
    public GLayersManagerModule() {
@@ -107,7 +107,7 @@ public class GLayersManagerModule
    public GLayersManagerModule(final boolean autoAddSingleLayer) {
       _layerPropertiesPanel = new JPanel(new MigLayout("fillx, insets 0 0 0 0"));
       _layerPropertiesPanel.setBackground(Color.WHITE);
-      _widgetsInLayerPropertiesPanel = new ArrayList<GTriplet<IGlobeLayer, ILayerAttribute, GPair<Component, EventListener>>>();
+      _widgetsInLayerPropertiesPanel = new ArrayList<GTriplet<IGlobeLayer, ILayerAttribute<?>, GPair<Component, EventListener>>>();
 
       _autoAddSingleLayer = autoAddSingleLayer;
    }
@@ -613,7 +613,7 @@ public class GLayersManagerModule
    private void cleanLayerPropertiesPanel() {
       _layerPropertiesPanel.removeAll();
 
-      for (final GTriplet<IGlobeLayer, ILayerAttribute, GPair<Component, EventListener>> layerAttributeAndWidget : _widgetsInLayerPropertiesPanel) {
+      for (final GTriplet<IGlobeLayer, ILayerAttribute<?>, GPair<Component, EventListener>> layerAttributeAndWidget : _widgetsInLayerPropertiesPanel) {
          final IGlobeLayer layer = layerAttributeAndWidget._first;
          final ILayerAttribute<?> attribute = layerAttributeAndWidget._second;
          final GPair<Component, EventListener> widget = layerAttributeAndWidget._third;
@@ -706,7 +706,7 @@ public class GLayersManagerModule
             }
          }
 
-         _widgetsInLayerPropertiesPanel.add(new GTriplet<IGlobeLayer, ILayerAttribute, GPair<Component, EventListener>>(layer,
+         _widgetsInLayerPropertiesPanel.add(new GTriplet<IGlobeLayer, ILayerAttribute<?>, GPair<Component, EventListener>>(layer,
                   attribute, widget));
          final String label = attribute.getLabel();
          if (label == null) {

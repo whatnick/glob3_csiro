@@ -168,7 +168,7 @@ BoundsT extends IBounds<VectorT, BoundsT>
       if (getClass() != obj.getClass()) {
          return false;
       }
-      final GTriangle other = (GTriangle) obj;
+      final GTriangle<?, ?, ?, ?> other = (GTriangle<?, ?, ?, ?>) obj;
       if (_v0 == null) {
          if (other._v0 != null) {
             return false;

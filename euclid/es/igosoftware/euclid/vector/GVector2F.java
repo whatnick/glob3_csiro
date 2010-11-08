@@ -233,7 +233,7 @@ public class GVector2F
       if (getClass() != obj.getClass()) {
          return false;
       }
-      final IVector2<?> other = (IVector2) obj;
+      final IVector2<?> other = (IVector2<?>) obj;
       if (Double.doubleToLongBits(_x) != Double.doubleToLongBits(other.x())) {
          return false;
       }

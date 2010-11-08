@@ -757,7 +757,7 @@ MutableT extends GCommonVertexContainerAbstract<VectorT, VertexT, MutableT>
          return false;
       }
 
-      final GVertexContainerWithDefaultsAbstract other = (GVertexContainerWithDefaultsAbstract) obj;
+      final GVertexContainerWithDefaultsAbstract<?, ?> other = (GVertexContainerWithDefaultsAbstract<?, ?>) obj;
 
       if (_size != other._size) {
          return false;
