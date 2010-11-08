@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.test;
 
 import java.io.File;
@@ -54,6 +55,7 @@ import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.euclid.verticescontainer.GVertex3Container;
 import es.igosoftware.euclid.verticescontainer.IUnstructuredVertexContainer;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
+
 
 public class GBinaryPointsFormatTest {
 

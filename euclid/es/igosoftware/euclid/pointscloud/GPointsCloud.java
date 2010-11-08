@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.pointscloud;
 
 import java.io.File;
@@ -67,6 +68,7 @@ import es.igosoftware.util.GMath;
 import es.igosoftware.util.GProgress;
 import es.igosoftware.util.IPredicate;
 import es.igosoftware.util.LoggerObject;
+
 
 public abstract class GPointsCloud
          extends

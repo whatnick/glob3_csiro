@@ -42,6 +42,7 @@ import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
 import es.igosoftware.util.LoggerObject;
 
+
 public abstract class GOTComponent
          extends
             LoggerObject {

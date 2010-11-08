@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.vector;
 
 import es.igosoftware.euclid.GGeometryAbstract;

@@ -33,11 +33,13 @@
 
 */
 
+
 package es.igosoftware.euclid.shape;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.euclid.vector.IVectorTransformer;
+
 
 public final class GSegment3D
          extends

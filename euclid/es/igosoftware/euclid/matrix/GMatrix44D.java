@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.matrix;
 
 import java.io.PrintStream;
@@ -40,6 +41,7 @@ import java.io.PrintStream;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.util.GMath;
+
 
 public abstract class GMatrix44D
          implements

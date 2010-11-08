@@ -33,10 +33,12 @@
 
 */
 
+
 package es.igosoftware.euclid.bounding;
 
 import es.igosoftware.euclid.shape.GPlane;
 import es.igosoftware.euclid.vector.IVector3;
+
 
 public interface IBoundingVolume<
 

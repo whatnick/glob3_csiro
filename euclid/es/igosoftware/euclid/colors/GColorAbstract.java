@@ -33,9 +33,11 @@
 
 */
 
+
 package es.igosoftware.euclid.colors;
 
 import es.igosoftware.util.GMath;
+
 
 public abstract class GColorAbstract
          implements

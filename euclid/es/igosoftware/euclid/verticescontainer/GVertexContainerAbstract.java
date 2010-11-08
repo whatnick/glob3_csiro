@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.verticescontainer;
 
 import java.util.Iterator;
@@ -48,6 +49,7 @@ import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.IRangeEvaluator;
+
 
 public abstract class GVertexContainerAbstract<
 

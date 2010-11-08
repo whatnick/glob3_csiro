@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.globe.actions;
 
 import java.awt.Component;
@@ -44,6 +45,7 @@ import javax.swing.JMenuItem;
 
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.utils.GSwingUtils;
+
 
 public abstract class GButtonGenericAction
          extends

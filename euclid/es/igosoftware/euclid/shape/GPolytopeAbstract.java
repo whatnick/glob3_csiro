@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.shape;
 
 import java.util.Collections;
@@ -42,6 +43,7 @@ import es.igosoftware.euclid.GGeometryAbstract;
 import es.igosoftware.euclid.bounding.IBounds;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GAssert;
+
 
 public abstract class GPolytopeAbstract<
 

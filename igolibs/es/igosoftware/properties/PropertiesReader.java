@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.properties;
 
 import java.io.FileInputStream;
@@ -66,7 +67,8 @@ public class PropertiesReader {
    }
 
 
-   private PropertiesReader() {}
+   private PropertiesReader() {
+   }
 
 
    public static String getStringProperty(final String nombre) {

@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.kdtree;
 
 import java.util.LinkedList;
@@ -46,6 +47,7 @@ import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
 import es.igosoftware.util.GHolder;
 import es.igosoftware.util.GProgress;
+
 
 public class GKDInnerNode<VectorT extends IVector<VectorT, ?>, VertexT extends IVertexContainer.Vertex<VectorT>>
          extends

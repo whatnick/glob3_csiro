@@ -41,6 +41,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.StringTokenizer;
 
+
 public final class Logger {
    private static final DateFormat format   = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS: ");
    private static final Logger     instance = new Logger();
@@ -54,7 +55,8 @@ public final class Logger {
    private int _identationLevel = 0;
 
 
-   private Logger() {}
+   private Logger() {
+   }
 
 
    private String level() {

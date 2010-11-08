@@ -33,9 +33,11 @@
 
 */
 
+
 package es.igosoftware.util;
 
 import java.util.Collection;
+
 
 public final class GAssert {
    private static final Logger LOGGER = Logger.instance();
@@ -121,7 +123,8 @@ public final class GAssert {
    }
 
 
-   private GAssert() {}
+   private GAssert() {
+   }
 
 
    public static void isPositiveOrZero(final int value,

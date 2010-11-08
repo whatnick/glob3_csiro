@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.util;
 
 public class GTriplet<T1, T2, T3>

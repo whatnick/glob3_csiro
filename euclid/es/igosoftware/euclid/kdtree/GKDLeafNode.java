@@ -33,12 +33,14 @@
 
 */
 
+
 package es.igosoftware.euclid.kdtree;
 
 import java.util.LinkedList;
 
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
+
 
 public abstract class GKDLeafNode<VectorT extends IVector<VectorT, ?>, VertexT extends IVertexContainer.Vertex<VectorT>>
          extends

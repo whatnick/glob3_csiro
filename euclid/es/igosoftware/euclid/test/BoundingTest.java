@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.test;
 
 import junit.framework.Assert;
@@ -41,6 +42,7 @@ import org.junit.Test;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 import es.igosoftware.euclid.vector.GVector3D;
+
 
 public class BoundingTest {
 

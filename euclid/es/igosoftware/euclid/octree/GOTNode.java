@@ -50,6 +50,7 @@ import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GHolder;
 import es.igosoftware.util.GIntHolder;
 
+
 public abstract class GOTNode
          extends
             GOTComponent {

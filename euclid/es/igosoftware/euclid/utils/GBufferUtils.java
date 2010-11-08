@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.utils;
 
 import java.nio.ByteBuffer;
@@ -424,7 +425,8 @@ public final class GBufferUtils {
    }
 
 
-   private GBufferUtils() {}
+   private GBufferUtils() {
+   }
 
 
    public static void show(final FloatBuffer buffer) {

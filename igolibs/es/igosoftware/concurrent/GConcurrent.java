@@ -55,7 +55,8 @@ public final class GConcurrent {
    public static final int DEFAULT_THREAD_PRIORITY = Thread.NORM_PRIORITY - 1;
 
 
-   private GConcurrent() {}
+   private GConcurrent() {
+   }
 
    public static int              AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors();
 

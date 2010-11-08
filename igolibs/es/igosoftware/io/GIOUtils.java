@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.io;
 
 import java.io.Closeable;
@@ -48,7 +49,8 @@ import java.net.Socket;
 
 public class GIOUtils {
 
-   private GIOUtils() {}
+   private GIOUtils() {
+   }
 
 
    public static void copyFile(final File fromFile,
@@ -109,13 +111,15 @@ public class GIOUtils {
             try {
                from.close();
             }
-            catch (final IOException e) {}
+            catch (final IOException e) {
+            }
          }
          if (to != null) {
             try {
                to.close();
             }
-            catch (final IOException e) {}
+            catch (final IOException e) {
+            }
          }
       }
    }
@@ -179,13 +183,15 @@ public class GIOUtils {
             try {
                from.close();
             }
-            catch (final IOException e) {}
+            catch (final IOException e) {
+            }
          }
          if (to != null) {
             try {
                to.close();
             }
-            catch (final IOException e) {}
+            catch (final IOException e) {
+            }
          }
       }
    }
@@ -210,7 +216,8 @@ public class GIOUtils {
       try {
          socket.close();
       }
-      catch (final IOException e) {}
+      catch (final IOException e) {
+      }
    }
 
 
@@ -222,7 +229,8 @@ public class GIOUtils {
       try {
          socket.close();
       }
-      catch (final IOException e) {}
+      catch (final IOException e) {
+      }
    }
 
 
@@ -234,7 +242,8 @@ public class GIOUtils {
       try {
          closeable.close();
       }
-      catch (final IOException e) {}
+      catch (final IOException e) {
+      }
 
    }
 

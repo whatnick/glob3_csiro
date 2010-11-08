@@ -33,13 +33,16 @@
 
 */
 
+
 package es.igosoftware.ootemplate;
 
 import java.util.HashMap;
 import java.util.Map;
 
+
 public class OOUtils {
-   private OOUtils() {}
+   private OOUtils() {
+   }
 
    private static final Map<String, String> ENTITIES = new HashMap<String, String>();
 

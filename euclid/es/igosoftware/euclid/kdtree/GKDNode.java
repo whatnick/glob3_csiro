@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.kdtree;
 
 import java.util.Arrays;
@@ -47,6 +48,7 @@ import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GHolder;
 import es.igosoftware.util.GProgress;
 import es.igosoftware.util.IComparatorInt;
+
 
 public abstract class GKDNode<VectorT extends IVector<VectorT, ?>, VertexT extends IVertexContainer.Vertex<VectorT>> {
 

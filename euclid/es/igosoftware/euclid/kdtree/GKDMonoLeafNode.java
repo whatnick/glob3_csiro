@@ -33,11 +33,13 @@
 
 */
 
+
 package es.igosoftware.euclid.kdtree;
 
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
 import es.igosoftware.util.GProgress;
+
 
 public class GKDMonoLeafNode<VectorT extends IVector<VectorT, ?>, VertexT extends IVertexContainer.Vertex<VectorT>>
          extends

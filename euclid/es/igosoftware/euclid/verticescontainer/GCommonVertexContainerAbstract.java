@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.verticescontainer;
 
 import java.nio.DoubleBuffer;
@@ -49,6 +50,7 @@ import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.util.GAssert;
+
 
 public abstract class GCommonVertexContainerAbstract<
 

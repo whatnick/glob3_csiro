@@ -33,12 +33,14 @@
 
 */
 
+
 package es.igosoftware.euclid.colors;
 
 import java.util.Arrays;
 
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GMath;
+
 
 public final class GColorF
          extends

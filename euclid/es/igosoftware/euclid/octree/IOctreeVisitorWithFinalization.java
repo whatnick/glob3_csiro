@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.octree;
 
 public interface IOctreeVisitorWithFinalization

@@ -38,6 +38,7 @@ package es.igosoftware.io;
 
 import java.io.OutputStream;
 
+
 public class StringBufferOutputStream
          extends
             OutputStream {

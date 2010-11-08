@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.loading;
 
 import java.io.File;
@@ -66,6 +67,7 @@ import es.igosoftware.util.GMath;
 import es.igosoftware.util.GProgress;
 import es.igosoftware.util.GUtils;
 import es.igosoftware.util.XStringTokenizer;
+
 
 public final class GPTX3Loader
          extends

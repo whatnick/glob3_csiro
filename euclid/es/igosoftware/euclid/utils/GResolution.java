@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.utils;
 
 import es.igosoftware.euclid.vector.GVector3D;
@@ -42,6 +43,7 @@ import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.IComparatorDouble;
 import es.igosoftware.util.LoggerObject;
+
 
 public final class GResolution
          extends

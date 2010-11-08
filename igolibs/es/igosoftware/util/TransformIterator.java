@@ -38,6 +38,7 @@ package es.igosoftware.util;
 
 import java.util.Iterator;
 
+
 public final class TransformIterator<ElementT, ResultT>
          implements
             Iterator<ResultT> {

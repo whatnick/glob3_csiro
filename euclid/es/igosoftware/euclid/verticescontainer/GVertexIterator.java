@@ -41,6 +41,7 @@ import java.util.NoSuchElementException;
 
 import es.igosoftware.euclid.vector.IVector;
 
+
 final class GVertexIterator<VectorT extends IVector<VectorT, ?>, VertexT extends IVertexContainer.Vertex<VectorT>>
          implements
             Iterator<VertexT> {

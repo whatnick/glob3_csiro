@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.ootemplate;
 
 import java.io.IOException;
@@ -47,6 +48,7 @@ import java.util.Set;
 import org.xml.sax.Attributes;
 
 import es.igosoftware.util.StringUtils;
+
 
 public abstract class OOToken {
    public static final String FOR_IN_REGEXP = " *for (.*) in (.*)";

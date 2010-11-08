@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.verticescontainer;
 
 import java.nio.IntBuffer;
@@ -49,6 +50,7 @@ import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.GVectorPrecision;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.euclid.vector.IVectorI2;
+
 
 public final class GStructuredPtxVertex3Container
          extends

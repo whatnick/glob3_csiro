@@ -38,6 +38,7 @@ package es.igosoftware.ootemplate;
 
 import java.awt.image.RenderedImage;
 
+
 public class OONamedImage {
    private final String        _name;
    private final RenderedImage _image;

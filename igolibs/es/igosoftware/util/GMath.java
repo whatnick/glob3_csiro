@@ -131,7 +131,8 @@ public final class GMath {
    }
 
 
-   private GMath() {}
+   private GMath() {
+   }
 
 
    public static boolean greaterOrEquals(final double value,

@@ -33,11 +33,13 @@
 
 */
 
+
 package es.igosoftware.euclid.utils;
 
 public final class GFileUtils {
 
-   private GFileUtils() {}
+   private GFileUtils() {
+   }
 
 
    public static boolean hasExtension(final String fileName,

@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.verticescontainer;
 
 import java.util.Arrays;
@@ -46,6 +47,7 @@ import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.IListInt;
+
 
 public abstract class GCommonSubVertexContainer<
 

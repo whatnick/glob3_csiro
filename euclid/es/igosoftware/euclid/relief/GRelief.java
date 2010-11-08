@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.relief;
 
 import java.awt.Graphics2D;
@@ -64,6 +65,7 @@ import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.ITransformer;
 import es.igosoftware.util.LoggerObject;
+
 
 public class GRelief
          extends

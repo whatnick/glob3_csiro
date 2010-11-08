@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.bounding;
 
 import es.igosoftware.euclid.vector.IVector3;
@@ -40,7 +41,8 @@ import es.igosoftware.euclid.vector.IVector3;
 
 public final class GBoundingUtils {
 
-   private GBoundingUtils() {}
+   private GBoundingUtils() {
+   }
 
 
    //Boxes

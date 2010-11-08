@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.pointscloud.octree;
 
 import java.util.Arrays;
@@ -43,6 +44,7 @@ import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.octree.GOTLeafNode;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.util.GCollections;
+
 
 public class GPCLeafNode
          extends

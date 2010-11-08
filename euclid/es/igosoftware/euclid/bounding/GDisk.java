@@ -33,11 +33,13 @@
 
 */
 
+
 package es.igosoftware.euclid.bounding;
 
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVectorTransformer;
 import es.igosoftware.util.GMath;
+
 
 public final class GDisk
          extends

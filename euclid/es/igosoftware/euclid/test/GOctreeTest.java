@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.test;
 
 import java.util.ArrayList;
@@ -56,6 +57,7 @@ import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.euclid.verticescontainer.GVertex3Container;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
 import es.igosoftware.util.GCollections;
+
 
 public class GOctreeTest {
 

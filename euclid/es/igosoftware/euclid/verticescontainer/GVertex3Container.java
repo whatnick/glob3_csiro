@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.verticescontainer;
 
 import es.igosoftware.euclid.colors.GColorI;

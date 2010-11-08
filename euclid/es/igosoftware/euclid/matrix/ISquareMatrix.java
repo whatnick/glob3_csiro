@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.matrix;
 
 import es.igosoftware.euclid.vector.IVector;

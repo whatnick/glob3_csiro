@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.shape;
 
 import java.util.List;
@@ -40,6 +41,7 @@ import java.util.List;
 import es.igosoftware.euclid.bounding.IBounds;
 import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector;
+
 
 public interface IPolytope<
 

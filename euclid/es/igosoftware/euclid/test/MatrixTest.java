@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.test;
 
 import junit.framework.Assert;
@@ -43,6 +44,7 @@ import es.igosoftware.euclid.matrix.GMatrix44D;
 import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.util.GMath;
+
 
 public class MatrixTest {
 

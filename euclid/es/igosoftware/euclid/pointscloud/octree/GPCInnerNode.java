@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.pointscloud.octree;
 
 import java.util.Arrays;
@@ -41,6 +42,7 @@ import java.util.Map;
 import es.igosoftware.euclid.octree.GOTInnerNode;
 import es.igosoftware.euclid.octree.GOTLeafNode;
 import es.igosoftware.euclid.octree.GOTNode;
+
 
 public class GPCInnerNode
          extends

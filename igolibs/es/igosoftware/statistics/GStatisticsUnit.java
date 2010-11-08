@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.statistics;
 
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 import es.igosoftware.util.Logger;
+
 
 public class GStatisticsUnit {
 

@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.rendering;
 
 import java.nio.FloatBuffer;
@@ -40,6 +41,7 @@ import java.nio.FloatBuffer;
 import es.igosoftware.euclid.colors.IColor;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
+
 
 public abstract class GRendererAbstract
          implements

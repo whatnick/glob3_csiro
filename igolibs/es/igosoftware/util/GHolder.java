@@ -33,9 +33,11 @@
 
 */
 
+
 package es.igosoftware.util;
 
 import java.util.Arrays;
+
 
 public final class GHolder<T> {
    private T _value;

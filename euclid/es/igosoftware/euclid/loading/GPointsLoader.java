@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.loading;
 
 import java.io.IOException;
@@ -41,6 +42,7 @@ import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
 import es.igosoftware.util.GUtils;
 import es.igosoftware.util.LoggerObject;
+
 
 public abstract class GPointsLoader<VectorT extends IVector<VectorT, ?>, VertexT extends IVertexContainer.Vertex<VectorT>>
          extends

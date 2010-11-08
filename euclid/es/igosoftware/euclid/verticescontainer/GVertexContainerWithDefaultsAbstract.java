@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.verticescontainer;
 
 import java.util.ArrayList;
@@ -47,6 +48,7 @@ import es.igosoftware.util.GCollections;
 import es.igosoftware.util.IComparatorInt;
 import es.igosoftware.util.IPredicate;
 import es.igosoftware.util.ITransformer;
+
 
 public abstract class GVertexContainerWithDefaultsAbstract<
 

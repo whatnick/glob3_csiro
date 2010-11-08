@@ -33,9 +33,11 @@
 
 */
 
+
 package es.igosoftware.util;
 
 import java.io.IOException;
+
 
 public class GInternetBrowser {
 
@@ -46,7 +48,8 @@ public class GInternetBrowser {
             "lynx"                             };
 
 
-   private GInternetBrowser() {}
+   private GInternetBrowser() {
+   }
 
 
    public static boolean browse(final String url) {

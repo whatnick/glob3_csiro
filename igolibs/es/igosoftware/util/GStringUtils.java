@@ -33,11 +33,13 @@
 
 */
 
+
 package es.igosoftware.util;
 
 public class GStringUtils {
 
-   private GStringUtils() {}
+   private GStringUtils() {
+   }
 
 
    public static int getLevenshteinDistance(final String s,

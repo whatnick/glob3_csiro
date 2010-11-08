@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.pointscloud.octree;
 
 import java.io.Serializable;
@@ -40,6 +41,7 @@ import java.util.Map;
 
 import es.igosoftware.euclid.octree.GOTInnerNode;
 import es.igosoftware.euclid.projection.GProjection;
+
 
 public class GPCPointsCloud
          implements

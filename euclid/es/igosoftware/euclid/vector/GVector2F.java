@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.vector;
 
 import java.io.DataInputStream;
@@ -43,6 +44,7 @@ import es.igosoftware.euclid.matrix.GMatrix44D;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GMath;
+
 
 public class GVector2F
          extends

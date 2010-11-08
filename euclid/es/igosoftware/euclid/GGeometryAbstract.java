@@ -43,6 +43,7 @@ import java.io.IOException;
 
 import es.igosoftware.euclid.vector.IVector;
 
+
 public abstract class GGeometryAbstract<
 
 VectorT extends IVector<VectorT, ?>,

@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.shape;
 
 import java.util.List;
@@ -45,7 +46,8 @@ import es.igosoftware.util.GMath;
 public final class GShape {
 
 
-   private GShape() {}
+   private GShape() {
+   }
 
    private static int trianglesCounter = 0;
    private static int quadsCounter     = 0;

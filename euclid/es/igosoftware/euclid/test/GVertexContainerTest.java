@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.test;
 
 import java.util.Comparator;
@@ -53,6 +54,7 @@ import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.euclid.verticescontainer.GSubVertexContainer;
 import es.igosoftware.euclid.verticescontainer.GVertex3Container;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
+
 
 public class GVertexContainerTest {
    final private static float         DEFAULT_INTENSITY = 1f;

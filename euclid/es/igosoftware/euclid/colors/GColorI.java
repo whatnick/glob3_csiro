@@ -33,10 +33,12 @@
 
 */
 
+
 package es.igosoftware.euclid.colors;
 
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GMath;
+
 
 /**
  * IColor implementation using 20 bits of precision for each color component

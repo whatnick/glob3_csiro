@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.bounding;
 
 import es.igosoftware.euclid.IBoundedGeometry;

@@ -54,6 +54,7 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+
 public final class SoundManager {
    private final static Logger logger = Logger.instance();
 

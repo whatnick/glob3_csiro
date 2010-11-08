@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.ootemplate;
 
 import java.io.BufferedOutputStream;
@@ -196,34 +197,41 @@ public class OOTemplate {
 
 
             @Override
-            public void endDocument() {}
+            public void endDocument() {
+            }
 
 
             @Override
-            public void endPrefixMapping(final String prefix) {}
+            public void endPrefixMapping(final String prefix) {
+            }
 
 
             @Override
             public void ignorableWhitespace(final char[] ch,
                                             final int start,
-                                            final int length) {}
+                                            final int length) {
+            }
 
 
             @Override
             public void processingInstruction(final String target,
-                                              final String data) {}
+                                              final String data) {
+            }
 
 
             @Override
-            public void setDocumentLocator(final Locator locator) {}
+            public void setDocumentLocator(final Locator locator) {
+            }
 
 
             @Override
-            public void skippedEntity(final String name) {}
+            public void skippedEntity(final String name) {
+            }
 
 
             @Override
-            public void startDocument() {}
+            public void startDocument() {
+            }
 
 
             @Override

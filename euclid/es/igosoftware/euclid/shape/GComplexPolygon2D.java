@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.shape;
 
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVectorTransformer;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.ITransformer;
+
 
 public final class GComplexPolygon2D
          extends

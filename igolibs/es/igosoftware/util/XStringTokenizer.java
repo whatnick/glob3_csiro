@@ -39,6 +39,7 @@ package es.igosoftware.util;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
+
 public final class XStringTokenizer
          extends
             StringTokenizer {

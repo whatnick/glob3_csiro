@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.statistics;
 
 import java.util.ArrayList;
@@ -45,6 +46,7 @@ import junit.framework.Assert;
 import org.junit.Test;
 
 import es.igosoftware.statistics.GHistogram.DataQuantityCalculator;
+
 
 public class GHistogramTest {
 

@@ -33,12 +33,14 @@
 
 */
 
+
 package es.igosoftware.euclid.vector;
 
 import java.util.Iterator;
 import java.util.List;
 
 import es.igosoftware.euclid.IGeometry;
+
 
 public interface IPointsContainer<
 

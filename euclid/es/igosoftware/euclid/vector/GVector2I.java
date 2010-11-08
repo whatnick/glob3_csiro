@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.vector;
 
 import java.io.DataInputStream;
@@ -41,6 +42,7 @@ import java.io.IOException;
 
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GMath;
+
 
 public class GVector2I
          implements

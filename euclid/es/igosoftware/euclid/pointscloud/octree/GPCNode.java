@@ -33,12 +33,14 @@
 
 */
 
+
 package es.igosoftware.euclid.pointscloud.octree;
 
 import java.io.Serializable;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 import es.igosoftware.euclid.octree.GOTNode;
+
 
 public abstract class GPCNode
          implements

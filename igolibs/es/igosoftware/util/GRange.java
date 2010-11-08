@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.util;
 
 public class GRange<T extends Comparable<T>> {

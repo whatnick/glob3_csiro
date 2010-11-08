@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.verticescontainer;
 
 import java.util.Collection;
@@ -52,6 +53,7 @@ import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.util.IPredicate;
 import es.igosoftware.util.IRangeEvaluator;
 import es.igosoftware.util.ITransformer;
+
 
 public interface IVertexContainer<
 

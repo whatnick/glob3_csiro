@@ -33,12 +33,14 @@
 
 */
 
+
 package es.igosoftware.euclid.bounding;
 
 import es.igosoftware.euclid.shape.GPlane;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.euclid.vector.IVectorTransformer;
 import es.igosoftware.util.GMath;
+
 
 public final class GBall
          extends

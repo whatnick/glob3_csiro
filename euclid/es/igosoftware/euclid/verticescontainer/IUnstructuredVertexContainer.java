@@ -33,11 +33,13 @@
 
 */
 
+
 package es.igosoftware.euclid.verticescontainer;
 
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.IPredicate;
+
 
 public interface IUnstructuredVertexContainer<
 

@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.statistics;
 
 import java.awt.Color;
@@ -43,6 +44,7 @@ import java.util.List;
 
 import es.igosoftware.statistics.GHistogram.DataQuantityCalculator;
 import es.igosoftware.util.Logger;
+
 
 public class GStatisticsVariableD
          extends

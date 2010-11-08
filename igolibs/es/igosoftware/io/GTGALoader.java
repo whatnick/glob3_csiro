@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.io;
 
 import java.awt.image.BufferedImage;
@@ -42,6 +43,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Arrays;
+
 
 public class GTGALoader {
    private static final byte[] uTGAcompare = new byte[] { 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -255,5 +257,6 @@ public class GTGALoader {
    }
 
 
-   public GTGALoader() {}
+   public GTGALoader() {
+   }
 }

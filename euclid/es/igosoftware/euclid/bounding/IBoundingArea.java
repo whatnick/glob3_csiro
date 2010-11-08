@@ -33,9 +33,11 @@
 
 */
 
+
 package es.igosoftware.euclid.bounding;
 
 import es.igosoftware.euclid.vector.IVector2;
+
 
 public interface IBoundingArea<
 

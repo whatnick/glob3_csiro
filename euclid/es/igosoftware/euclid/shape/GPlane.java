@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.shape;
 
 import java.io.DataOutputStream;
@@ -52,6 +53,7 @@ import es.igosoftware.euclid.vector.IVectorTransformer;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GMath;
+
 
 public final class GPlane
          extends

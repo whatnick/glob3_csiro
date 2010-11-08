@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.util;
 
 import java.io.File;
@@ -48,6 +49,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
+
 
 /**
  * A simple static API for listing classes loaded in a JVM. Based on {@link #getClassLocation(Class)} from
@@ -246,7 +248,8 @@ public class ClassScope {
                      result = new URL(result, clsAsResource);
                   }
                }
-               catch (final MalformedURLException ignore) {}
+               catch (final MalformedURLException ignore) {
+               }
             }
          }
       }
@@ -278,7 +281,8 @@ public class ClassScope {
    } // end of nested class
 
 
-   private ClassScope() {} // this class is not extendible
+   private ClassScope() {
+   } // this class is not extendible
 
 
    private static void getClassLoaderTree(final Class<?> cls,

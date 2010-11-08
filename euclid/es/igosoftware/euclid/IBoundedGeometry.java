@@ -39,6 +39,7 @@ package es.igosoftware.euclid;
 import es.igosoftware.euclid.bounding.IBounds;
 import es.igosoftware.euclid.vector.IVector;
 
+
 public interface IBoundedGeometry<
 
 VectorT extends IVector<VectorT, ?>,

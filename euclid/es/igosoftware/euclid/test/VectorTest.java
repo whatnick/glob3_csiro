@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.test;
 
 import java.util.ArrayList;
@@ -52,6 +53,7 @@ import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.ITransformer;
+
 
 public class VectorTest {
    private static final IVector2<?>   generic2F       = new GVector2F(1000000.2f, 2000000.3f);

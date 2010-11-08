@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.statistics;
 
 import java.awt.Color;
@@ -63,6 +64,7 @@ import org.jCharts.types.ChartType;
 
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.LoggerObject;
+
 
 public class GHistogram<T>
          extends

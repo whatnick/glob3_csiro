@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.image;
 
 import java.awt.Color;
@@ -45,6 +46,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+
 
 //import es.igosoftware.util.Logger;
 

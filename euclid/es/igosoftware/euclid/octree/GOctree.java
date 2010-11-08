@@ -55,6 +55,7 @@ import es.igosoftware.util.GHolder;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.GProgress;
 
+
 public final class GOctree
          extends
             GOTComponent {
@@ -646,19 +647,23 @@ public final class GOctree
 
 
          @Override
-         public void finishedInnerNode(final GOTInnerNode inner) {}
+         public void finishedInnerNode(final GOTInnerNode inner) {
+         }
 
 
          @Override
-         public void finishedOctree(final GOctree octree) {}
+         public void finishedOctree(final GOctree octree) {
+         }
 
 
          @Override
-         public void visitInnerNode(final GOTInnerNode inner) {}
+         public void visitInnerNode(final GOTInnerNode inner) {
+         }
 
 
          @Override
-         public void visitOctree(final GOctree octree) {}
+         public void visitOctree(final GOctree octree) {
+         }
       });
 
       return totalPointsInLeafs.floatValue() / leafsCount.get();
@@ -680,19 +685,23 @@ public final class GOctree
 
 
          @Override
-         public void finishedInnerNode(final GOTInnerNode inner) {}
+         public void finishedInnerNode(final GOTInnerNode inner) {
+         }
 
 
          @Override
-         public void finishedOctree(final GOctree octree) {}
+         public void finishedOctree(final GOctree octree) {
+         }
 
 
          @Override
-         public void visitInnerNode(final GOTInnerNode inner) {}
+         public void visitInnerNode(final GOTInnerNode inner) {
+         }
 
 
          @Override
-         public void visitOctree(final GOctree octree) {}
+         public void visitOctree(final GOctree octree) {
+         }
       });
 
       return maxPointsCount.get();
@@ -760,11 +769,13 @@ public final class GOctree
 
 
             @Override
-            public void finishedInnerNode(final GOTInnerNode inner) {}
+            public void finishedInnerNode(final GOTInnerNode inner) {
+            }
 
 
             @Override
-            public void finishedOctree(final GOctree octree) {}
+            public void finishedOctree(final GOctree octree) {
+            }
 
 
             @Override
@@ -775,7 +786,8 @@ public final class GOctree
 
 
             @Override
-            public void visitOctree(final GOctree octree) {}
+            public void visitOctree(final GOctree octree) {
+            }
          });
 
          final int leafsCount = getLeafNodesCount();
@@ -848,37 +860,45 @@ public final class GOctree
 
 
                @Override
-               public void finishedInnerNode(final GOTInnerNode inner) {}
+               public void finishedInnerNode(final GOTInnerNode inner) {
+               }
 
 
                @Override
-               public void finishedOctree(final GOctree octree) {}
+               public void finishedOctree(final GOctree octree) {
+               }
 
 
                @Override
-               public void visitInnerNode(final GOTInnerNode inner) {}
+               public void visitInnerNode(final GOTInnerNode inner) {
+               }
 
 
                @Override
-               public void visitOctree(final GOctree octree) {}
+               public void visitOctree(final GOctree octree) {
+               }
             });
          }
 
 
          @Override
-         public void finishedInnerNode(final GOTInnerNode inner) {}
+         public void finishedInnerNode(final GOTInnerNode inner) {
+         }
 
 
          @Override
-         public void finishedOctree(final GOctree octree) {}
+         public void finishedOctree(final GOctree octree) {
+         }
 
 
          @Override
-         public void visitInnerNode(final GOTInnerNode inner) {}
+         public void visitInnerNode(final GOTInnerNode inner) {
+         }
 
 
          @Override
-         public void visitOctree(final GOctree octree) {}
+         public void visitOctree(final GOctree octree) {
+         }
       });
 
       logInfo("Validation done!");
@@ -926,19 +946,23 @@ public final class GOctree
 
 
          @Override
-         public void finishedInnerNode(final GOTInnerNode inner) {}
+         public void finishedInnerNode(final GOTInnerNode inner) {
+         }
 
 
          @Override
-         public void finishedOctree(final GOctree octree) {}
+         public void finishedOctree(final GOctree octree) {
+         }
 
 
          @Override
-         public void visitInnerNode(final GOTInnerNode inner) {}
+         public void visitInnerNode(final GOTInnerNode inner) {
+         }
 
 
          @Override
-         public void visitOctree(final GOctree octree) {}
+         public void visitOctree(final GOctree octree) {
+         }
       });
 
       return maxDepth.get();
@@ -959,19 +983,23 @@ public final class GOctree
 
 
          @Override
-         public void finishedInnerNode(final GOTInnerNode inner) {}
+         public void finishedInnerNode(final GOTInnerNode inner) {
+         }
 
 
          @Override
-         public void finishedOctree(final GOctree octree) {}
+         public void finishedOctree(final GOctree octree) {
+         }
 
 
          @Override
-         public void visitInnerNode(final GOTInnerNode inner) {}
+         public void visitInnerNode(final GOTInnerNode inner) {
+         }
 
 
          @Override
-         public void visitOctree(final GOctree octree) {}
+         public void visitOctree(final GOctree octree) {
+         }
       });
 
       return minDepth.get();
@@ -989,19 +1017,23 @@ public final class GOctree
 
 
          @Override
-         public void finishedInnerNode(final GOTInnerNode inner) {}
+         public void finishedInnerNode(final GOTInnerNode inner) {
+         }
 
 
          @Override
-         public void finishedOctree(final GOctree octree) {}
+         public void finishedOctree(final GOctree octree) {
+         }
 
 
          @Override
-         public void visitInnerNode(final GOTInnerNode inner) {}
+         public void visitInnerNode(final GOTInnerNode inner) {
+         }
 
 
          @Override
-         public void visitOctree(final GOctree octree) {}
+         public void visitOctree(final GOctree octree) {
+         }
       });
 
       return allLeafs;

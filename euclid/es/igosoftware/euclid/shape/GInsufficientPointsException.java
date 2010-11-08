@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.shape;
 
 import java.util.Arrays;
@@ -41,6 +42,7 @@ import java.util.Collection;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
+
 
 public class GInsufficientPointsException
          extends

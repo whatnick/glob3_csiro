@@ -33,12 +33,14 @@
 
 */
 
+
 package es.igosoftware.euclid.shape;
 
 import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.vector.IVector2;
+
 
 public interface IPolygon2D<
 

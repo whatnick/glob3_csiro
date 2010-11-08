@@ -1,3 +1,5 @@
+
+
 package es.igosoftware.euclid.octree;
 
 import java.util.ArrayList;
@@ -21,6 +23,7 @@ import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GHolder;
 import es.igosoftware.util.GIntHolder;
 import es.igosoftware.util.GProgress;
+
 
 public class GOTInnerNode
          extends

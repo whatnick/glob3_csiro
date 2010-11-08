@@ -49,6 +49,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
+
 public final class GUtils {
 
 
@@ -57,7 +58,8 @@ public final class GUtils {
    private final static boolean isDevelopment;
 
 
-   private GUtils() {}
+   private GUtils() {
+   }
 
    private static final boolean isLinux;
    private static final boolean isWindows;
@@ -126,7 +128,8 @@ public final class GUtils {
       try {
          Thread.sleep(millis, nanos);
       }
-      catch (final InterruptedException e) {}
+      catch (final InterruptedException e) {
+      }
    }
 
 

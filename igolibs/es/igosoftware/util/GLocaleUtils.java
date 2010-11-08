@@ -39,6 +39,7 @@ package es.igosoftware.util;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+
 public final class GLocaleUtils {
    private static Locale currentLocale;
 
@@ -48,7 +49,8 @@ public final class GLocaleUtils {
    }
 
 
-   private GLocaleUtils() {}
+   private GLocaleUtils() {
+   }
 
 
    public static void setCurrentLocale(final Locale newLocale) {

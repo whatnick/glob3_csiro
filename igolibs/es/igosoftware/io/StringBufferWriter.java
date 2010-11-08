@@ -38,6 +38,7 @@ package es.igosoftware.io;
 
 import java.io.Writer;
 
+
 public class StringBufferWriter
          extends
             Writer {
@@ -58,11 +59,13 @@ public class StringBufferWriter
 
 
    @Override
-   public void flush() {}
+   public void flush() {
+   }
 
 
    @Override
-   public void close() {}
+   public void close() {
+   }
 
 
    @Override

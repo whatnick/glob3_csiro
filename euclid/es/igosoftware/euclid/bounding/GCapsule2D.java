@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.bounding;
 
 import es.igosoftware.euclid.shape.GSegment;
@@ -40,6 +41,7 @@ import es.igosoftware.euclid.shape.GSegment2D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVectorTransformer;
 import es.igosoftware.util.GMath;
+
 
 public final class GCapsule2D
          extends

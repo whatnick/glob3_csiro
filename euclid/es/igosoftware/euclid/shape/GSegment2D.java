@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.shape;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
@@ -41,6 +42,7 @@ import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVectorTransformer;
 import es.igosoftware.util.GMath;
+
 
 public final class GSegment2D
          extends

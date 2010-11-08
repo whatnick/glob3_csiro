@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.mesh;
 
 import java.util.ArrayList;
@@ -49,6 +50,7 @@ import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.ITransformer;
+
 
 public class GMesh<
 

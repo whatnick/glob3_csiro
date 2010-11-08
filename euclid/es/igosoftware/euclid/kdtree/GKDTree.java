@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.kdtree;
 
 import java.util.Arrays;
@@ -56,6 +57,7 @@ import es.igosoftware.util.GIntHolder;
 import es.igosoftware.util.GProgress;
 import es.igosoftware.util.LoggerObject;
 import es.igosoftware.util.StringUtils;
+
 
 public final class GKDTree<VectorT extends IVector<VectorT, ?>, VertexT extends IVertexContainer.Vertex<VectorT>>
          extends
@@ -189,11 +191,13 @@ public final class GKDTree<VectorT extends IVector<VectorT, ?>, VertexT extends 
 
 
          @Override
-         public void endVisiting(final GKDTree<VectorT, VertexT> kdtree) {}
+         public void endVisiting(final GKDTree<VectorT, VertexT> kdtree) {
+         }
 
 
          @Override
-         public void startVisiting(final GKDTree<VectorT, VertexT> kdtree) {}
+         public void startVisiting(final GKDTree<VectorT, VertexT> kdtree) {
+         }
 
       });
 
@@ -232,7 +236,8 @@ public final class GKDTree<VectorT extends IVector<VectorT, ?>, VertexT extends 
       try {
          _root.depthFirstAcceptVisitor(visitor);
       }
-      catch (final IKDTreeVisitor.AbortVisiting e) {}
+      catch (final IKDTreeVisitor.AbortVisiting e) {
+      }
 
       visitor.endVisiting(this);
    }
@@ -244,7 +249,8 @@ public final class GKDTree<VectorT extends IVector<VectorT, ?>, VertexT extends 
       try {
          _root.breadthFirstAcceptVisitor(visitor);
       }
-      catch (final IKDTreeVisitor.AbortVisiting e) {}
+      catch (final IKDTreeVisitor.AbortVisiting e) {
+      }
 
       visitor.endVisiting(this);
    }
@@ -288,11 +294,13 @@ public final class GKDTree<VectorT extends IVector<VectorT, ?>, VertexT extends 
       tree.depthFirstAcceptVisitor(new IKDTreeVisitor<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>>() {
 
          @Override
-         public void endVisiting(final GKDTree<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>> kdtree) {}
+         public void endVisiting(final GKDTree<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>> kdtree) {
+         }
 
 
          @Override
-         public void startVisiting(final GKDTree<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>> kdtree) {}
+         public void startVisiting(final GKDTree<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>> kdtree) {
+         }
 
 
          @Override

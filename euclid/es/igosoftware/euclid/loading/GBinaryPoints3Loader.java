@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.loading;
 
 import java.io.BufferedInputStream;
@@ -63,6 +64,7 @@ import es.igosoftware.euclid.verticescontainer.IVertexContainer;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.util.GProgress;
 import es.igosoftware.util.Logger;
+
 
 public final class GBinaryPoints3Loader
          extends
@@ -562,7 +564,8 @@ public final class GBinaryPoints3Loader
 
 
    @Override
-   protected void startLoad(final int filesCount) {}
+   protected void startLoad(final int filesCount) {
+   }
 
 
    @Override
@@ -630,7 +633,8 @@ public final class GBinaryPoints3Loader
 
 
    @Override
-   protected void endLoad() {}
+   protected void endLoad() {
+   }
 
 
    public GProjection getProjection() {

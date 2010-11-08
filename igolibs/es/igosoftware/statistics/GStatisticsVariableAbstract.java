@@ -33,12 +33,14 @@
 
 */
 
+
 package es.igosoftware.statistics;
 
 import java.util.List;
 
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.Logger;
+
 
 public abstract class GStatisticsVariableAbstract<TypeT extends Number> {
 

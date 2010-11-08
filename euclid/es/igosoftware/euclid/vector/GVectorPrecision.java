@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.vector;
 
 public enum GVectorPrecision {

@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.bounding;
 
 import java.io.DataOutputStream;
@@ -42,6 +43,7 @@ import es.igosoftware.euclid.GGeometryAbstract;
 import es.igosoftware.euclid.shape.GSegment;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GMath;
+
 
 public abstract class GNCapsule<
 

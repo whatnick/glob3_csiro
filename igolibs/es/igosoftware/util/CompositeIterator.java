@@ -39,6 +39,7 @@ package es.igosoftware.util;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+
 public final class CompositeIterator<T>
          implements
             Iterator<T> {

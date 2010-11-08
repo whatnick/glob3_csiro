@@ -64,7 +64,8 @@ public final class StringUtils {
    }
 
 
-   private StringUtils() {}
+   private StringUtils() {
+   }
 
 
    public static String toString(final Object obj) {

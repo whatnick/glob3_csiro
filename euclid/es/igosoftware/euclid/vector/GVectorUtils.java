@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.vector;
 
 
@@ -49,6 +50,7 @@ import es.igosoftware.euclid.verticescontainer.IVertexContainer;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.IComparatorInt;
+
 
 public final class GVectorUtils {
 
@@ -574,7 +576,8 @@ public final class GVectorUtils {
    }
 
 
-   private GVectorUtils() {}
+   private GVectorUtils() {
+   }
 
 
    public static IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> sortClockwise(final IVector3<?> center,

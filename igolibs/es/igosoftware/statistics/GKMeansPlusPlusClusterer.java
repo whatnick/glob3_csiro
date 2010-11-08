@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.statistics;
 
 import java.util.ArrayList;
@@ -55,6 +56,7 @@ import es.igosoftware.util.IEvaluatorInt;
 import es.igosoftware.util.IListInt;
 import es.igosoftware.util.IRangeEvaluator;
 import es.igosoftware.util.Logger;
+
 
 public class GKMeansPlusPlusClusterer {
 
@@ -302,7 +304,8 @@ public class GKMeansPlusPlusClusterer {
    }
 
 
-   private GKMeansPlusPlusClusterer() {}
+   private GKMeansPlusPlusClusterer() {
+   }
 
 
    /**

@@ -43,6 +43,7 @@ import java.io.Serializable;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.vector.IVectorTransformer;
 
+
 public interface IGeometry<
 
 VectorT extends IVector<VectorT, ?>,

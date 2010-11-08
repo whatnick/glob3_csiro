@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.loading;
 
 import java.io.BufferedReader;
@@ -61,6 +62,7 @@ import es.igosoftware.io.GIOUtils;
 import es.igosoftware.util.GProgress;
 import es.igosoftware.util.Logger;
 import es.igosoftware.util.XStringTokenizer;
+
 
 public final class GXYZLoader
          extends
@@ -355,6 +357,7 @@ public final class GXYZLoader
 
 
    @Override
-   protected void endLoad() {}
+   protected void endLoad() {
+   }
 
 }

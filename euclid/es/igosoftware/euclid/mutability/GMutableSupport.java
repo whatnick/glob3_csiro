@@ -33,11 +33,13 @@
 
 */
 
+
 package es.igosoftware.euclid.mutability;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class GMutableSupport<MutableT extends IMutable<MutableT>>
          implements
@@ -48,7 +50,8 @@ public class GMutableSupport<MutableT extends IMutable<MutableT>>
    private List<WeakReference<IMutable.ChangeListener>> _listeners = null;
 
 
-   public GMutableSupport() {}
+   public GMutableSupport() {
+   }
 
 
    @Override

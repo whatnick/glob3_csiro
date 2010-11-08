@@ -33,12 +33,15 @@
 
 */
 
+
 package es.igosoftware.euclid.projection;
 
 import es.igosoftware.euclid.vector.IVector2;
 
+
 public class GGeodesicUtils {
-   private GGeodesicUtils() {}
+   private GGeodesicUtils() {
+   }
 
 
    // Earth's quadratic mean radius for WGS-84

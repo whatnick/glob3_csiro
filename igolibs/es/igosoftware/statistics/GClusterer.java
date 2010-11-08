@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.statistics;
 
 import java.util.ArrayList;
@@ -41,9 +42,11 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
+
 public class GClusterer {
 
-   private GClusterer() {}
+   private GClusterer() {
+   }
 
    public interface NeighborhoodCalculator<T> {
       public Collection<T> getNeighborhood(final T value);

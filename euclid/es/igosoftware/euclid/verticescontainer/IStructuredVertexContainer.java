@@ -33,6 +33,7 @@
 
 */
 
+
 package es.igosoftware.euclid.verticescontainer;
 
 import java.util.List;
@@ -44,6 +45,7 @@ import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.vector.IVectorI2;
 import es.igosoftware.util.IListInt;
 import es.igosoftware.util.IPredicate;
+
 
 public interface IStructuredVertexContainer<
 

@@ -50,9 +50,11 @@ import java.util.concurrent.ExecutorService;
 
 import es.igosoftware.concurrent.GConcurrent;
 
+
 public final class GCollections {
 
-   private GCollections() {}
+   private GCollections() {
+   }
 
 
    public static int size(final Iterable<?> iterable) {
