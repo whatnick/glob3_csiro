@@ -952,7 +952,7 @@ public final class GCollections {
                evaluator.evaluate(list.get(i));
             }
          }
-      });
+      }, numberThreads);
    }
 
 
@@ -968,7 +968,7 @@ public final class GCollections {
                evaluator.evaluate(array[i]);
             }
          }
-      });
+      }, numberThreads);
    }
 
 
@@ -989,6 +989,13 @@ public final class GCollections {
    public static <ElementT> void concurrentEvaluate(final ElementT[] array,
                                                     final IRangeEvaluator rangeEvaluator) {
       concurrentEvaluate(array, rangeEvaluator, GConcurrent.AVAILABLE_PROCESSORS * 3, GConcurrent.DEFAULT_THREAD_PRIORITY, true);
+   }
+
+
+   public static <ElementT> void concurrentEvaluate(final ElementT[] array,
+                                                    final IRangeEvaluator rangeEvaluator,
+                                                    final int numberOfThreads) {
+      concurrentEvaluate(array, rangeEvaluator, numberOfThreads, GConcurrent.DEFAULT_THREAD_PRIORITY, true);
    }
 
 
