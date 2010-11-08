@@ -1,0 +1,8 @@
+package es.igosoftware.scenegraph;
+
+public enum GTransformationOrder {
+   ROTATION_TRANSLATION_SCALE,
+   ROTATION_SCALE_TRANSLATION,
+   TRANSLATION_ROTATION_SCALE,
+   SCALE_TRANSLATION_ROTATION;
+}

@@ -1,0 +1,25 @@
+package es.igosoftware.euclid.bounding;
+
+import es.igosoftware.euclid.vector.IVector2;
+
+public interface IBoundingArea<
+
+GeometryT extends IBounds<IVector2<?>, GeometryT>
+
+>
+         extends
+            IBounds<IVector2<?>, GeometryT> {
+
+
+   public boolean touches(final IBoundingArea<?> that);
+
+
+   public boolean touchesWithRectangle(final GAxisAlignedRectangle rectangle);
+
+
+   public boolean touchesWithDisk(final GDisk disk);
+
+
+   public boolean touchesWithCapsule2D(final GCapsule2D capsule);
+
+}

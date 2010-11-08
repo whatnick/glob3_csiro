@@ -1,0 +1,170 @@
+package es.igosoftware.euclid.shape;
+
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
+import es.igosoftware.euclid.bounding.IBounds;
+import es.igosoftware.euclid.vector.IVector;
+import es.igosoftware.util.GAssert;
+
+
+public abstract class GSimplePolytope<
+
+VectorT extends IVector<VectorT, ?>,
+
+SegmentT extends GSegment<VectorT, SegmentT, BoundsT>,
+
+GeometryT extends GSimplePolytope<VectorT, SegmentT, GeometryT, BoundsT>,
+
+BoundsT extends IBounds<VectorT, BoundsT>
+
+>
+         extends
+            GPolytopeAbstract<VectorT, SegmentT, GeometryT, BoundsT> {
+
+
+   private static final long  serialVersionUID = 1L;
+
+
+   public final List<VectorT> _points;
+
+
+   public GSimplePolytope(final VectorT... points) {
+      GAssert.notEmpty(points, "points");
+      GAssert.notNullElements(points, "points");
+
+      _points = new ArrayList<VectorT>(points.length);
+      _points.addAll(Arrays.asList(points));
+      validate();
+   }
+
+
+   public GSimplePolytope(final List<VectorT> points) {
+      GAssert.notEmpty(points, "points");
+      GAssert.notNullElements(points, "points");
+
+      _points = new ArrayList<VectorT>(points);
+      validate();
+   }
+
+
+   @Override
+   public final byte dimensions() {
+      return _points.get(0).dimensions();
+   }
+
+
+   @Override
+   public final double precision() {
+      return _points.get(0).precision();
+   }
+
+
+   protected void validate() {
+      if (_points.size() < 3) {
+         throw new IllegalArgumentException("A Polygon must have at least 3 points");
+      }
+
+
+      for (int i = 0; i < _points.size(); i++) {
+         final VectorT current = _points.get(i);
+
+         final int nextI = (i + 1) % _points.size();
+         final VectorT next = _points.get(nextI);
+
+         if (current.closeTo(next)) {
+            //         if (current.equals(next)) {
+            throw new IllegalArgumentException("Two consecutive points (#" + i + "/#" + nextI + ") can't be the same");
+         }
+      }
+
+
+      if (isSelfIntersected()) {
+         //throw new IllegalArgumentException("Can't create a self-intersected polygon " + this);
+         throw new IllegalArgumentException("Can't create a self-intersected polygon");
+      }
+
+   }
+
+
+   @Override
+   public final List<VectorT> getPoints() {
+      return Collections.unmodifiableList(_points);
+   }
+
+
+   @Override
+   public final VectorT getPoint(final int i) {
+      return _points.get(i);
+   }
+
+
+   @Override
+   public final int getPointsCount() {
+      return _points.size();
+   }
+
+
+   @Override
+   public final Iterator<VectorT> iterator() {
+      return getPoints().iterator();
+   }
+
+
+   @Override
+   public final int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + ((_points == null) ? 0 : _points.hashCode());
+      return result;
+   }
+
+
+   @Override
+   public final boolean equals(final Object obj) {
+      if (this == obj) {
+         return true;
+      }
+      if (obj == null) {
+         return false;
+      }
+      if (getClass() != obj.getClass()) {
+         return false;
+      }
+      final GSimplePolytope other = (GSimplePolytope) obj;
+      if (_points == null) {
+         if (other._points != null) {
+            return false;
+         }
+      }
+      else if (!_points.equals(other._points)) {
+         return false;
+      }
+      return true;
+   }
+
+
+   @Override
+   public final String toString() {
+      return getStringName() + " (" + _points.size() + " points) " + _points;
+   }
+
+
+   protected abstract String getStringName();
+
+
+   @Override
+   public final void save(final DataOutputStream output) throws IOException {
+      output.writeInt(_points.size());
+      for (final VectorT point : _points) {
+         point.save(output);
+      }
+   }
+
+
+}

@@ -1,0 +1,360 @@
+package es.igosoftware.utils;
+
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.media.opengl.GL;
+
+import es.igosoftware.euclid.bounding.GAxisAlignedBox;
+import es.igosoftware.euclid.projection.GProjection;
+import es.igosoftware.euclid.vector.GVector2D;
+import es.igosoftware.euclid.vector.GVector3D;
+import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.euclid.vector.IVector3;
+import es.igosoftware.util.GCollections;
+import es.igosoftware.util.ITransformer;
+import es.igosoftware.util.Logger;
+import gov.nasa.worldwind.geom.Angle;
+import gov.nasa.worldwind.geom.Box;
+import gov.nasa.worldwind.geom.Cylinder;
+import gov.nasa.worldwind.geom.Extent;
+import gov.nasa.worldwind.geom.Matrix;
+import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.geom.Sector;
+import gov.nasa.worldwind.geom.Sphere;
+import gov.nasa.worldwind.geom.Vec4;
+import gov.nasa.worldwind.geom.coords.UTMCoord;
+import gov.nasa.worldwind.globes.Earth;
+import gov.nasa.worldwind.globes.Globe;
+import gov.nasa.worldwind.render.DrawContext;
+
+public final class GWWUtils {
+
+   private static final Logger logger = Logger.instance();
+
+
+   private GWWUtils() {}
+
+
+   public static final int    LATITUDE_SUBDIVISIONS  = 5;
+   public static final int    LONGITUDE_SUBDIVISIONS = 10;
+
+   private static final Globe EARTH                  = new Earth();
+
+
+   public static Vec4 toVec4(final Position position,
+                             final Globe globe,
+                             final double verticalExaggeration) {
+      return toVec4(position, globe, verticalExaggeration, 0);
+   }
+
+
+   public static Vec4 toVec4(final Position position,
+                             final Globe globe,
+                             final double verticalExaggeration,
+                             final double metersOffset) {
+
+      final Angle latitude = position.latitude;
+      final Angle longitude = position.longitude;
+
+      return globe.computePointFromPosition(latitude, longitude, (position.elevation + metersOffset) * verticalExaggeration);
+   }
+
+
+   public static void pushOffset(final GL gl) {
+      // Modify the projection transform to shift the depth values slightly toward the camera in order to
+      // ensure the points are selected during depth buffering.
+
+      final float[] matrix = new float[16];
+      gl.glGetFloatv(GL.GL_PROJECTION_MATRIX, matrix, 0);
+      //matrix[10] *= 0.99; // TODO: See Lengyel 2 ed. Section 9.1.2 to compute optimal/minimal offset
+      matrix[10] *= 0.8; // TODO: See Lengyel 2 ed. Section 9.1.2 to compute optimal/minimal offset
+
+      gl.glPushAttrib(GL.GL_TRANSFORM_BIT);
+      gl.glMatrixMode(GL.GL_PROJECTION);
+      gl.glPushMatrix();
+      gl.glLoadMatrixf(matrix, 0);
+   }
+
+
+   public static void popOffset(final GL gl) {
+      gl.glMatrixMode(GL.GL_PROJECTION);
+      gl.glPopMatrix();
+      gl.glPopAttrib();
+   }
+
+
+   public static Position min(final Position pos1,
+                              final Position pos2) {
+      final double latitude = Math.min(pos1.latitude.radians, pos2.latitude.radians);
+      final double longitude = Math.min(pos1.longitude.radians, pos2.longitude.radians);
+      final double elevation = Math.min(pos1.elevation, pos2.elevation);
+      return Position.fromRadians(latitude, longitude, elevation);
+   }
+
+
+   public static Position max(final Position pos1,
+                              final Position pos2) {
+      final double latitude = Math.max(pos1.latitude.radians, pos2.latitude.radians);
+      final double longitude = Math.max(pos1.longitude.radians, pos2.longitude.radians);
+      final double elevation = Math.max(pos1.elevation, pos2.elevation);
+      return Position.fromRadians(latitude, longitude, elevation);
+   }
+
+
+   public static void renderQuad(final DrawContext dc,
+                                 final Position[] vertices,
+                                 final float red,
+                                 final float green,
+                                 final float blue) {
+      final GL gl = dc.getGL();
+
+      final Globe globe = dc.getGlobe();
+      final double verticalExaggeration = dc.getVerticalExaggeration();
+
+      gl.glPushAttrib(GL.GL_DEPTH_BUFFER_BIT | GL.GL_POLYGON_BIT | GL.GL_TEXTURE_BIT | GL.GL_ENABLE_BIT | GL.GL_CURRENT_BIT);
+
+      gl.glPolygonMode(GL.GL_FRONT, GL.GL_LINE);
+
+      gl.glColor3f(red, green, blue);
+
+      gl.glBegin(GL.GL_QUADS);
+      for (final Position vertex : vertices) {
+         final Vec4 vec4 = GWWUtils.toVec4(vertex, globe, verticalExaggeration);
+         gl.glVertex3d(vec4.x, vec4.y, vec4.z);
+      }
+      gl.glEnd();
+
+      gl.glColor3f(1, 1, 1);
+
+      gl.glPopAttrib();
+   }
+
+
+   public static List<Sector> createTopLevelSectors() {
+      final List<Sector> result = new ArrayList<Sector>(LATITUDE_SUBDIVISIONS * LONGITUDE_SUBDIVISIONS);
+
+      final double deltaLatitute = 180d / LATITUDE_SUBDIVISIONS;
+      final double deltaLongitude = 360d / LONGITUDE_SUBDIVISIONS;
+
+
+      Angle lastLatitude = Angle.NEG90;
+
+      for (int row = 0; row < LATITUDE_SUBDIVISIONS; row++) {
+         Angle latitude = lastLatitude.addDegrees(deltaLatitute);
+         if (latitude.getDegrees() + 1d > 90d) {
+            latitude = Angle.POS90;
+         }
+
+         Angle lastLongitude = Angle.NEG180;
+
+         for (int column = 0; column < LONGITUDE_SUBDIVISIONS; column++) {
+            Angle longitude = lastLongitude.addDegrees(deltaLongitude);
+            if (longitude.getDegrees() + 1d > 180d) {
+               longitude = Angle.POS180;
+            }
+
+            result.add(new Sector(lastLatitude, latitude, lastLongitude, longitude));
+
+            lastLongitude = longitude;
+         }
+
+         lastLatitude = latitude;
+      }
+
+      return result;
+   }
+
+
+   public static GAxisAlignedBox createAxisAlignedBox(final Sector sector,
+                                                      final double lowerZ,
+                                                      final double upperZ) {
+      final GVector3D lower = new GVector3D(sector.getMinLongitude().radians, sector.getMinLatitude().radians, lowerZ);
+      final GVector3D upper = new GVector3D(sector.getMaxLongitude().radians, sector.getMaxLatitude().radians, upperZ);
+
+      return new GAxisAlignedBox(lower, upper);
+   }
+
+
+   public static String geodesicString(final GAxisAlignedBox box) {
+      return geodesicString(box._lower) + " -> " + geodesicString(box._upper);
+   }
+
+
+   public static String geodesicString(final IVector3<?> point) {
+      return "(" + Angle.fromRadians(point.y()) + ", " + Angle.fromRadians(point.x()) + ", " + point.z() + ")";
+   }
+
+
+   public static Sector toSector(final Rectangle2D boundingRectangle,
+                                 final GProjection projection) {
+      final IVector2<?> min = new GVector2D(boundingRectangle.getMinX(), boundingRectangle.getMinY()).reproject(projection,
+               GProjection.EPSG_4326);
+      final IVector2<?> max = new GVector2D(boundingRectangle.getMaxX(), boundingRectangle.getMaxY()).reproject(projection,
+               GProjection.EPSG_4326);
+
+      final Angle minLatitude = Angle.fromRadians(min.y());
+      final Angle maxLatitude = Angle.fromRadians(max.y());
+
+      final Angle minLongitude = Angle.fromRadians(min.x());
+      final Angle maxLongitude = Angle.fromRadians(max.x());
+
+      return new Sector(minLatitude, maxLatitude, minLongitude, maxLongitude);
+   }
+
+
+   public static Vec4 toVec3(final Vec4 vec4) {
+      final double w = vec4.w;
+      if (w == 1) {
+         return vec4;
+      }
+      return new Vec4(vec4.x / w, vec4.y / w, vec4.z / w);
+   }
+
+
+   public static Vec4 toVec4(final IVector3<?> point) {
+      return new Vec4(point.x(), point.y(), point.z());
+   }
+
+
+   public static Box toBox(final GAxisAlignedBox aaBox) {
+
+      final List<Vec4> points = GCollections.collect(aaBox.getVertices(), new ITransformer<IVector3<?>, Vec4>() {
+         @Override
+         public Vec4 transform(final IVector3<?> element) {
+            return GWWUtils.toVec4(element);
+         }
+      });
+
+      //      final ArrayList<Vec4> points = new ArrayList<Vec4>(2);
+      //      points.add(GWWUtils.toVec4(aaBox._lower));
+      //      points.add(GWWUtils.toVec4(aaBox._upper));
+      return Box.computeBoundingBox(points);
+   }
+
+
+   public static Position increment(final Position position,
+                                    final double deltaEasting,
+                                    final double deltaNorthing,
+                                    final double deltaElevation,
+                                    final Globe globe) {
+      final UTMCoord utm = UTMCoord.fromLatLon(position.latitude, position.longitude, globe);
+
+      final double newEasting = utm.getEasting() + deltaEasting;
+      final double newNorthing = utm.getNorthing() + deltaNorthing;
+      final double newElevation = position.getElevation() + deltaElevation;
+
+      final UTMCoord newUTM = UTMCoord.fromUTM(utm.getZone(), utm.getHemisphere(), newEasting, newNorthing, globe);
+
+      return new Position(newUTM.getLatitude(), newUTM.getLongitude(), newElevation);
+   }
+
+
+   public static Position increment(final Position position,
+                                    final double deltaEasting,
+                                    final double deltaNorthing,
+                                    final double deltaElevation) {
+      return increment(position, deltaEasting, deltaNorthing, deltaElevation, EARTH);
+   }
+
+
+   public static Matrix computeModelCoordinateOriginTransform(final Position position,
+                                                              final Globe globe,
+                                                              final double verticalExaggeration) {
+      final Vec4 positionVec4 = GWWUtils.toVec4(position, globe, verticalExaggeration);
+
+      Matrix matrix = Matrix.fromTranslation(positionVec4);
+      matrix = matrix.multiply(Matrix.fromRotationY(position.getLongitude()));
+      matrix = matrix.multiply(Matrix.fromRotationX(position.getLatitude().multiply(-1)));
+
+      return matrix;
+   }
+
+
+   public static void checkGLErrors(final DrawContext dc) {
+      final GL gl = dc.getGL();
+
+      for (int err = gl.glGetError(); err != GL.GL_NO_ERROR; err = gl.glGetError()) {
+         final String msg = dc.getGLU().gluErrorString(err) + " (error number: " + err + ")";
+         logger.severe("GLError: " + msg);
+      }
+   }
+
+
+   public static float[] toGLArray(final Matrix matrix) {
+      return toGLArray(matrix, new float[16]);
+   }
+
+
+   public static float[] toGLArray(final Matrix matrix,
+                                   final float[] array) {
+      // Row 1
+      array[0] = (float) matrix.m11;
+      array[4] = (float) matrix.m12;
+      array[8] = (float) matrix.m13;
+      array[12] = (float) matrix.m14;
+
+      // Row 2
+      array[1] = (float) matrix.m21;
+      array[5] = (float) matrix.m22;
+      array[9] = (float) matrix.m23;
+      array[13] = (float) matrix.m24;
+
+      // Row 3
+      array[2] = (float) matrix.m31;
+      array[6] = (float) matrix.m32;
+      array[10] = (float) matrix.m33;
+      array[14] = (float) matrix.m34;
+
+      // Row 4
+      array[3] = (float) matrix.m41;
+      array[7] = (float) matrix.m42;
+      array[11] = (float) matrix.m43;
+      array[15] = (float) matrix.m44;
+
+      return array;
+   }
+
+
+   public static Vec4 transform(final Matrix matrix,
+                                final Vec4 point) {
+      return GWWUtils.toVec3(point.transformBy4(matrix));
+   }
+
+
+   public static Vec4[] transform(final Matrix matrix,
+                                  final Vec4... points) {
+      if (points == null) {
+         return null;
+      }
+
+      final Vec4[] result = new Vec4[points.length];
+      for (int i = 0; i < result.length; i++) {
+         result[i] = transform(matrix, points[i]);
+      }
+
+      return result;
+   }
+
+
+   public static void renderExtent(final DrawContext dc,
+                                   final Extent extent) {
+      if (extent instanceof Box) {
+         ((Box) extent).render(dc);
+      }
+      else if (extent instanceof Sphere) {
+         ((Sphere) extent).render(dc);
+      }
+      else if (extent instanceof Cylinder) {
+         ((Cylinder) extent).render(dc);
+      }
+      else {
+         System.out.println("Unsupported bounds type " + extent.getClass());
+      }
+
+
+   }
+
+
+}

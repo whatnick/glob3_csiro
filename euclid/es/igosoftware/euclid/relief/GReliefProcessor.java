@@ -1,0 +1,231 @@
+package es.igosoftware.euclid.relief;
+
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
+import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
+import es.igosoftware.euclid.colors.GColorPrecision;
+import es.igosoftware.euclid.loading.GBinaryPoints3Loader;
+import es.igosoftware.euclid.loading.GPointsLoader;
+import es.igosoftware.euclid.loading.GXYZLoader;
+import es.igosoftware.euclid.octree.GOTLeafNode;
+import es.igosoftware.euclid.octree.GOctree;
+import es.igosoftware.euclid.projection.GProjection;
+import es.igosoftware.euclid.vector.GMutableVector2;
+import es.igosoftware.euclid.vector.GVector2D;
+import es.igosoftware.euclid.vector.GVectorPrecision;
+import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.euclid.vector.IVector3;
+import es.igosoftware.euclid.verticescontainer.IUnstructuredVertexContainer;
+import es.igosoftware.euclid.verticescontainer.IVertexContainer;
+import es.igosoftware.util.GMath;
+import es.igosoftware.util.LoggerObject;
+
+public class GReliefProcessor
+         extends
+            LoggerObject {
+   private final GVectorPrecision    _vectorPrecision;
+   private final GColorPrecision     _colorPrecision;
+   private final GProjection         _projection;
+
+   private final String              _sourceDirectoryName;
+   private final String              _extension;
+   private final String              _targetDirectoryName;
+   private final File                _sourceDirectory;
+   private final File                _targetDirectory;
+
+   private int                       _verticesCounter;
+   private GMutableVector2<IVector2> _resolutionAverage;
+
+   private final int                 _maxPointsInLeaf;
+   private final boolean             _verbose;
+
+
+   public GReliefProcessor(final GVectorPrecision vectorPrecision,
+                           final GColorPrecision colorPrecision,
+                           final GProjection projection,
+                           final String sourceDirectoryName,
+                           final String extension,
+                           final String targetDirectoryName,
+                           final int maxPointsInLeaf,
+                           final boolean verbose) {
+      _vectorPrecision = vectorPrecision;
+      _colorPrecision = colorPrecision;
+      _projection = projection;
+      _sourceDirectoryName = sourceDirectoryName;
+      _extension = extension;
+      _targetDirectoryName = targetDirectoryName;
+
+      _sourceDirectory = new File(_sourceDirectoryName);
+      _targetDirectory = new File(_targetDirectoryName);
+
+      _maxPointsInLeaf = maxPointsInLeaf;
+      _verbose = verbose;
+   }
+
+
+   @Override
+   public boolean logVerbose() {
+      return _verbose;
+   }
+
+
+   public void process() throws IOException {
+      final long start = System.currentTimeMillis();
+
+
+      if (!_sourceDirectory.exists()) {
+         throw new IOException("source directory (" + _sourceDirectoryName + ") doesn't exists");
+      }
+
+
+      if (!_targetDirectory.exists()) {
+         logInfo("Creating target directory (" + _targetDirectoryName + ")...");
+         _targetDirectory.mkdirs();
+      }
+
+
+      final String[] xyzFilesNames = _sourceDirectory.list(new FilenameFilter() {
+         @Override
+         public boolean accept(final File dir,
+                               final String name) {
+            return name.trim().toLowerCase().endsWith("." + _extension);
+         }
+      });
+
+      Arrays.sort(xyzFilesNames);
+
+      logInfo("Processing " + _sourceDirectory.getAbsolutePath() + "...");
+      logIncreaseIdentationLevel();
+      logInfo("Found " + xyzFilesNames.length + " files to process");
+
+      //      final ExecutorService executor = GConcurrent.createExecutor(Runtime.getRuntime().availableProcessors());
+
+      _resolutionAverage = new GMutableVector2<IVector2>(GVector2D.ZERO);
+      _verticesCounter = 0;
+      for (int i = 0; i < xyzFilesNames.length; i++) {
+         final String sourceFileName = xyzFilesNames[i];
+
+         processFile(sourceFileName, i + 1, xyzFilesNames.length);
+      }
+
+
+      _resolutionAverage.div(_verticesCounter);
+
+      logDecreaseIdentationLevel();
+
+      final long elapsed = System.currentTimeMillis() - start;
+      logInfo("Processed in " + GMath.roundTo(elapsed / 1000f, 1) + " secs");
+      logInfo("Points: " + _verticesCounter);
+      logInfo("Average Resolution: " + _resolutionAverage);
+   }
+
+
+   private void processFile(final String sourceFileName,
+                            final int i,
+                            final int filesCount) throws IOException {
+      logInfo("Processing " + sourceFileName + " (" + i + "/" + filesCount + ")...");
+      logIncreaseIdentationLevel();
+
+      final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices = getVertices(sourceFileName);
+
+      synchronized (this) {
+         _verticesCounter += vertices.size();
+      }
+
+      calculateResolution(vertices, sourceFileName);
+
+      final GOctree gOctree = new GOctree("OctGrid: " + sourceFileName, vertices, new GOctree.Parameters(1000000,
+               _maxPointsInLeaf, _verbose));
+
+      for (final GOTLeafNode leaf : gOctree.getAllLeafs()) {
+         final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> leafPoints = leaf.getVertices();
+
+         saveVertices(leafPoints);
+      }
+
+      logDecreaseIdentationLevel();
+   }
+
+
+   private IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> getVertices(final String sourceFileName)
+                                                                                                                          throws IOException {
+      final String fullSourceFileName = new File(_sourceDirectory, sourceFileName).getAbsolutePath();
+
+      final int flags = GPointsLoader.DEFAULT_FLAGS | GPointsLoader.VERBOSE;
+      final GXYZLoader loader = new GXYZLoader(fullSourceFileName, _vectorPrecision, _colorPrecision, _projection, flags);
+      loader.load();
+
+      return loader.getVertices();
+   }
+
+
+   private String targetFullName(final String targetFileName) {
+      return new File(_targetDirectory, targetFileName).getAbsolutePath();
+   }
+
+
+   private void calculateResolution(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices,
+                                    final String sourceFileName) {
+      final List<Double> xs = new ArrayList<Double>();
+      final List<Double> ys = new ArrayList<Double>();
+
+      final Iterator<IVector3<?>> iterator = vertices.pointsIterator();
+      while (iterator.hasNext()) {
+         final IVector3<?> point = iterator.next();
+         xs.add(point.x());
+         ys.add(point.y());
+      }
+
+      final GVector2D xyResolution = new GVector2D(averageDelta(xs), averageDelta(ys));
+      logInfo("Resolution=" + xyResolution);
+
+      final IVector2<?> weightResolution = xyResolution.scale(vertices.size());
+      synchronized (_resolutionAverage) {
+         _resolutionAverage.add(weightResolution);
+      }
+   }
+
+
+   private double averageDelta(final List<Double> numbers) {
+      Collections.sort(numbers);
+
+      double deltaSum = 0.0;
+      int deltaCounter = 0;
+
+      double previous = numbers.get(0);
+      for (int i = 1; i < numbers.size(); i++) {
+         final double current = numbers.get(i);
+         final double delta = current - previous;
+         if (delta > Double.MIN_VALUE) {
+            deltaSum += delta;
+            deltaCounter++;
+         }
+         previous = current;
+      }
+
+      return deltaSum / deltaCounter;
+   }
+
+
+   private void saveVertices(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices)
+                                                                                                                   throws IOException {
+      //final GAxisAlignedBox bounds = GAxisAlignedBox.minimumBoundingBox(vertices.pointsIterator());
+      final GAxisAlignedOrthotope<IVector3<?>, ?> bounds = vertices.getBounds();
+      logInfo("Bounds: " + bounds);
+
+      final String targetFileName = bounds.asParseableString() + ".bp";
+      final String targetFullFileName = targetFullName(targetFileName);
+
+      GBinaryPoints3Loader.save((IUnstructuredVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?>) vertices,
+               targetFullFileName);
+   }
+
+
+}

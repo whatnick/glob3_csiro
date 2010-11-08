@@ -1,0 +1,325 @@
+package es.igosoftware.euclid.loading;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
+import java.util.BitSet;
+
+import es.igosoftware.euclid.colors.GColorF;
+import es.igosoftware.euclid.colors.GColorPrecision;
+import es.igosoftware.euclid.colors.IColor;
+import es.igosoftware.euclid.projection.GProjection;
+import es.igosoftware.euclid.utils.GFileUtils;
+import es.igosoftware.euclid.vector.GVector3D;
+import es.igosoftware.euclid.vector.GVector3F;
+import es.igosoftware.euclid.vector.GVectorPrecision;
+import es.igosoftware.euclid.vector.IVector3;
+import es.igosoftware.euclid.verticescontainer.GVertex3Container;
+import es.igosoftware.euclid.verticescontainer.IVertexContainer;
+import es.igosoftware.io.GIOUtils;
+import es.igosoftware.util.GProgress;
+import es.igosoftware.util.Logger;
+import es.igosoftware.util.XStringTokenizer;
+
+public final class GXYZLoader
+         extends
+            GUnstructuredFilePointsLoader<IVector3<?>> {
+
+
+   public static void save(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices,
+                           final String fileName) throws IOException {
+
+      final long started = System.currentTimeMillis();
+
+      final Logger logger = Logger.instance();
+
+      final boolean hasColors = vertices.hasColors();
+      final boolean hasIntensities = vertices.hasIntensities();
+
+      final int verticesCount = vertices.size();
+
+      logger.info("Saving " + verticesCount + " vertices (intensities=" + hasIntensities + ", colors=" + hasColors + ") to "
+                  + fileName + "...");
+
+      final BufferedWriter output = new BufferedWriter(new FileWriter(fileName));
+
+      for (int i = 0; i < verticesCount; i++) {
+         final IVector3<?> point = vertices.getPoint(i);
+         output.write(Double.toString(point.x()));
+         output.write(" ");
+         output.write(Double.toString(point.y()));
+         output.write(" ");
+         output.write(Double.toString(point.z()));
+
+         if (hasIntensities) {
+            output.write(" ");
+            output.write(Float.toString(vertices.getIntensity(i)));
+         }
+
+         if (hasColors) {
+            final IColor color = vertices.getColor(i);
+            output.write(String.valueOf(Math.round(color.getRed() * 255)));
+            output.write(String.valueOf(Math.round(color.getGreen() * 255)));
+            output.write(String.valueOf(Math.round(color.getBlue() * 255)));
+         }
+
+         output.newLine();
+      }
+
+      output.close();
+
+      final long ellapsed = System.currentTimeMillis() - started;
+      logger.info("Saved in " + (ellapsed / 1000.0) + "s");
+   }
+
+
+   private final GVectorPrecision _vectorPrecision;
+   private final GColorPrecision  _colorPrecision;
+   private final GProjection      _projection;
+   private final boolean          _intensitiesFromColor;
+   private boolean                _hasIntensities;
+   private boolean                _hasColors;
+
+
+   public GXYZLoader(final String fileNames,
+                     final GVectorPrecision vectorPrecision,
+                     final GColorPrecision colorPrecision,
+                     final GProjection projection,
+                     final int flags) {
+      this(fileNames, vectorPrecision, colorPrecision, projection, false, flags);
+   }
+
+
+   public GXYZLoader(final String fileNames,
+                     final GVectorPrecision vectorPrecision,
+                     final GColorPrecision colorPrecision,
+                     final GProjection projection,
+                     final boolean intensitiesFromColor,
+                     final int flags) {
+      super(fileNames, flags);
+
+      _intensitiesFromColor = intensitiesFromColor;
+
+      _vectorPrecision = vectorPrecision;
+      _colorPrecision = colorPrecision;
+      _projection = projection;
+
+      if (_intensitiesFromColor) {
+         logInfo("Calculating intensity from color");
+      }
+   }
+
+
+   private BitSet detectShape() throws IOException {
+      final String[] fileNames = getFileNames();
+
+      if (fileNames.length == 0) {
+         return new BitSet();
+      }
+
+      final BitSet shape = detectShape(fileNames[0]);
+
+      for (int i = 1; i < fileNames.length; i++) {
+         final String fileName = fileNames[i];
+         if (!detectShape(fileName).equals(shape)) {
+            throw new IOException("File \"" + fileName + "\" has a different shape that the others");
+         }
+      }
+
+      logInfo("Shape detected: intensities=" + shape.get(0) + ", colors=" + shape.get(1));
+
+      return shape;
+   }
+
+
+   private BitSet detectShape(final String fileName) throws IOException {
+      BufferedReader input = null;
+
+      final BitSet result = new BitSet();
+
+      try {
+         input = new BufferedReader(new FileReader(fileName));
+
+         if (GFileUtils.hasExtension(fileName, "pts")) {
+            @SuppressWarnings("unused")
+            final int numberOfVertices = Integer.parseInt(input.readLine()); // ignore the very first line of PTS
+         }
+
+         final String line = input.readLine();
+         if (line != null) {
+            final int tokensCount = new XStringTokenizer(line).countTokens();
+
+            if ((tokensCount == 4) || // x y z intensity 
+                (tokensCount == 7) // x y z intensity r g b
+            ) {
+               result.set(0);
+            }
+
+            if ((tokensCount == 6) || // x y z r g b
+                (tokensCount == 7) // x y z intensity r g b
+            ) {
+               result.set(1);
+            }
+         }
+      }
+      finally {
+         GIOUtils.gentlyClose(input);
+      }
+
+      return result;
+   }
+
+
+   private void loadPoints(final LineNumberReader input,
+                           final GVertex3Container vertices,
+                           final boolean isPTS,
+                           final GProgress progress) throws IOException {
+
+
+      String line = null;
+      try {
+         line = input.readLine();
+         while (line != null) {
+            final XStringTokenizer tokenizer = new XStringTokenizer(line);
+            if (tokenizer.countTokens() == 1) {
+               if (isPTS) {
+                  final int numberOfVertices = Integer.parseInt(line);
+                  vertices.ensureCapacity(vertices.size() + numberOfVertices);
+               }
+               else {
+                  throw new IOException("Invalid Format");
+               }
+            }
+            else {
+               final IVector3<?> point = parsePoint(tokenizer);
+               float intensity = parseIntensity(tokenizer);
+               IColor color = parseColor(tokenizer);
+
+               if (_intensitiesFromColor) {
+                  intensity = intensityFromColor(color);
+                  color = null;
+               }
+
+               vertices.addPoint(point, intensity, color);
+            }
+
+            progress.stepsDone(line.length() + 1);
+
+            line = input.readLine();
+         }
+      }
+      catch (final NumberFormatException e) {
+         throw new IOException(e + " in line #" + input.getLineNumber() + ": \"" + line + "\"");
+      }
+   }
+
+
+   private float intensityFromColor(final IColor color) {
+      //      return color.getLuminance();
+      return color.getBrightness();
+   }
+
+
+   private IVector3<?> parsePoint(final XStringTokenizer tokenizer) {
+      if (_vectorPrecision == GVectorPrecision.DOUBLE) {
+         final double x = tokenizer.nextDoubleToken();
+         final double y = tokenizer.nextDoubleToken();
+         final double z = tokenizer.nextDoubleToken();
+         return new GVector3D(x, y, z);
+      }
+
+      final float x = tokenizer.nextFloatToken();
+      final float y = tokenizer.nextFloatToken();
+      final float z = tokenizer.nextFloatToken();
+      return new GVector3F(x, y, z);
+   }
+
+
+   private float parseIntensity(final XStringTokenizer tokenizer) {
+      return _hasIntensities ? tokenizer.nextFloatToken() : 0;
+   }
+
+
+   private IColor parseColor(final XStringTokenizer tokenizer) {
+      if (_hasColors) {
+         final float red = (float) tokenizer.nextIntToken() / 255;
+         final float green = (float) tokenizer.nextIntToken() / 255;
+         final float blue = (float) tokenizer.nextIntToken() / 255;
+
+         return GColorF.newRGB(red, green, blue);
+      }
+
+      return null;
+   }
+
+
+   @Override
+   protected void startLoad(final int filesCount) throws IOException {
+      final BitSet intensitiesColors = detectShape();
+      _hasIntensities = intensitiesColors.get(0);
+      _hasColors = intensitiesColors.get(1);
+   }
+
+
+   @Override
+   protected GVertex3Container loadVerticesFromFile(final String fileName) throws IOException {
+
+      final GVertex3Container vertices = new GVertex3Container(_vectorPrecision, _colorPrecision, _projection,
+               _hasIntensities || (_hasColors && _intensitiesFromColor), 0, _hasColors && !_intensitiesFromColor, null, false,
+               null);
+
+
+      LineNumberReader input = null;
+      try {
+         input = new LineNumberReader(new InputStreamReader(new FileInputStream(fileName)));
+         //         input = new BufferedReader(new InputStreamReader(
+         //                  new GBufferedFileInputStream(fileName, 32 * 1024 /* 1Mb buffer size */)));
+
+
+         final GProgress progress = new GProgress(new File(fileName).length()) {
+            @Override
+            public void informProgress(final double percent,
+                                       final long elapsed,
+                                       final long estimatedMsToFinish) {
+               if (isFlagged(VERBOSE)) {
+                  logInfo("  \"" + fileName + "\" " + progressString(percent, elapsed, estimatedMsToFinish));
+               }
+            }
+         };
+
+
+         final boolean isPTS = GFileUtils.hasExtension(fileName, "pts");
+         if (isPTS) {
+            final String line = input.readLine();
+            final int numberOfVertices = Integer.parseInt(line);
+            vertices.ensureCapacity(vertices.size() + numberOfVertices);
+
+            progress.stepsDone(line.length() + 1);
+         }
+
+         loadPoints(input, vertices, isPTS, progress);
+
+         progress.finish();
+      }
+      finally {
+         GIOUtils.gentlyClose(input);
+      }
+
+
+      vertices.trimToSize();
+      vertices.makeImmutable();
+
+      return vertices;
+   }
+
+
+   @Override
+   protected void endLoad() {}
+
+}

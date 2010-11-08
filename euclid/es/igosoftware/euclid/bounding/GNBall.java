@@ -1,0 +1,145 @@
+package es.igosoftware.euclid.bounding;
+
+import java.io.DataOutputStream;
+import java.io.IOException;
+
+import es.igosoftware.euclid.GGeometryAbstract;
+import es.igosoftware.euclid.vector.IVector;
+import es.igosoftware.util.GAssert;
+import es.igosoftware.util.GMath;
+
+
+public abstract class GNBall<
+
+VectorT extends IVector<VectorT, ?>,
+
+GeometryT extends GNBall<VectorT, GeometryT>
+
+>
+
+         extends
+            GGeometryAbstract<VectorT, GeometryT>
+         implements
+            IBounds<VectorT, GeometryT> {
+
+   private static final long serialVersionUID = 1L;
+
+
+   public final VectorT      _center;
+   public final double       _radius;
+
+
+   public GNBall(final VectorT center,
+                 final double radius) {
+      GAssert.notNull(center, "center");
+
+      _center = center;
+      _radius = radius;
+   }
+
+
+   @Override
+   public final byte dimensions() {
+      return _center.dimensions();
+   }
+
+
+   @Override
+   public final double precision() {
+      return _center.precision();
+   }
+
+
+   @Override
+   public final String toString() {
+      return getStringName() + " [" + _center + " -> " + _radius + "]";
+   }
+
+
+   protected abstract String getStringName();
+
+
+   @Override
+   public final void save(final DataOutputStream output) throws IOException {
+      _center.save(output);
+      output.writeDouble(_radius);
+   }
+
+
+   @Override
+   public final boolean contains(final VectorT point) {
+      return GMath.lessOrEquals(_center.squaredDistance(point), (_radius * _radius));
+      //return center.squaredDistance(point) <= (radius * radius);
+   }
+
+
+   @Override
+   public final boolean containsOnBoundary(final VectorT point) {
+      return GMath.closeToZero(distanceToBoundary(point));
+   }
+
+
+   public abstract GNBall<VectorT, GeometryT> expandedByDistance(final double delta);
+
+
+   @Override
+   public final double squaredDistance(final VectorT point) {
+      final double distance = distance(point);
+      return distance * distance;
+   }
+
+
+   @Override
+   public final double squaredDistanceToBoundary(final VectorT point) {
+      final double distance = distanceToBoundary(point);
+      return distance * distance;
+   }
+
+
+   @Override
+   public final double distance(final VectorT point) {
+      if (contains(point)) {
+         return 0;
+      }
+
+      return distanceToBoundary(point);
+   }
+
+
+   @Override
+   public final double distanceToBoundary(final VectorT point) {
+      return _center.distance(point) - _radius;
+   }
+
+
+   @Override
+   public final VectorT closestPoint(final VectorT point) {
+      if (contains(point)) {
+         return point;
+      }
+
+      return closestPointOnBoundary(point);
+   }
+
+
+   @Override
+   public final VectorT closestPointOnBoundary(final VectorT point) {
+      final VectorT centerRadiusDirection = _center.sub(point).normalized();
+
+      return _center.add(centerRadiusDirection.scale(_radius));
+   }
+
+
+   @Override
+   public boolean closeTo(final GeometryT that) {
+      return _center.closeTo(that._center) && GMath.closeTo(_radius, that._radius);
+   }
+
+
+   public boolean isFullInside(final GAxisAlignedOrthotope<VectorT, ?> orthotope) {
+      final VectorT lower = _center.sub(_radius);
+      final VectorT upper = _center.add(_radius);
+
+      return lower.greaterOrEquals(orthotope._lower) && upper.lessOrEquals(orthotope._upper);
+   }
+}

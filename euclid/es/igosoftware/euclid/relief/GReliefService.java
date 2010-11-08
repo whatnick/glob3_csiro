@@ -1,0 +1,267 @@
+package es.igosoftware.euclid.relief;
+
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import es.igosoftware.euclid.bounding.GAxisAlignedBox;
+import es.igosoftware.euclid.bounding.IBoundingVolume;
+import es.igosoftware.euclid.loading.GBinaryPoints3Loader;
+import es.igosoftware.euclid.loading.GPointsLoader;
+import es.igosoftware.euclid.octree.GOctree;
+import es.igosoftware.euclid.vector.GVector3D;
+import es.igosoftware.euclid.vector.GVectorUtils;
+import es.igosoftware.euclid.vector.IVector3;
+import es.igosoftware.euclid.verticescontainer.GCompositeVertexContainer;
+import es.igosoftware.euclid.verticescontainer.IUnstructuredVertexContainer;
+import es.igosoftware.euclid.verticescontainer.IVertexContainer;
+import es.igosoftware.util.GMath;
+import es.igosoftware.util.LRUCache;
+import es.igosoftware.util.LoggerObject;
+
+public class GReliefService
+         extends
+            LoggerObject {
+
+   private static final boolean                                       VERBOSE    = true;
+   private static final int                                           CACHE_SIZE = 90;
+
+   private final String                                               _name;
+   private final Map<GAxisAlignedBox, String>                         _tiles     = new HashMap<GAxisAlignedBox, String>();
+   public final GAxisAlignedBox                                       bounds;
+   private final LRUCache<GAxisAlignedBox, GOctree, RuntimeException> _cache;
+
+
+   public GReliefService(final String name,
+                         final String directoryName) throws IOException {
+      _name = name;
+
+      initializeTiles(directoryName);
+
+      bounds = GAxisAlignedBox.merge(_tiles.keySet());
+
+      logInfo("Initialized: tiles=" + _tiles.size() + ", bounds=" + bounds);
+
+      _cache = initializeCache();
+   }
+
+
+   //   public double getCacheHitsRatio() {
+   //      return _cache.getHitsRatio();
+   //   }
+
+   public void showStatistics() {
+      logInfo("Statistics:");
+      logInfoUnnamed("  Cache calls: " + _cache.getCallsCount());
+      logInfoUnnamed("  Cache hits: " + _cache.getHitsCount() + " (" + GMath.roundTo(100 * _cache.getHitsRatio(), 2) + "%)");
+   }
+
+
+   @Override
+   public boolean logVerbose() {
+      return GReliefService.VERBOSE;
+   }
+
+
+   @Override
+   public String logName() {
+      return _name;
+   }
+
+
+   private LRUCache<GAxisAlignedBox, GOctree, RuntimeException> initializeCache() {
+      final LRUCache.ValueFactory<GAxisAlignedBox, GOctree, RuntimeException> factory = new LRUCache.ValueFactory<GAxisAlignedBox, GOctree, RuntimeException>() {
+         private static final long serialVersionUID = 1L;
+
+
+         @Override
+         public GOctree create(final GAxisAlignedBox box) {
+            try {
+               final String fileName = _tiles.get(box);
+
+               //final String shortFileName = new File(fileName).getName();
+               //logInfo("Loading \"" + shortFileName + "\", box=" + box);
+               logInfo("Cache miss, loading " + box);
+
+               final GBinaryPoints3Loader loader = new GBinaryPoints3Loader(fileName, GPointsLoader.DEFAULT_FLAGS
+               /*| GPointsLoader.VERBOSE*/);
+               loader.load();
+
+               final IUnstructuredVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices = loader.getVertices();
+
+               return new GOctree(fileName, vertices, new GOctree.Parameters(2000, 2000, GReliefService.VERBOSE && false));
+            }
+            catch (final IOException e) {
+               e.printStackTrace();
+               return null;
+            }
+
+         }
+      };
+
+      return new LRUCache<GAxisAlignedBox, GOctree, RuntimeException>(GReliefService.CACHE_SIZE, factory);
+   }
+
+
+   private void initializeTiles(final String directoryName) throws IOException {
+      final File directory = new File(directoryName);
+
+      if (!directory.exists()) {
+         throw new IOException("Directory " + directoryName + " doesn't exists");
+      }
+
+      logInfo("Reading " + directory.getAbsolutePath() + "...");
+
+
+      final String[] filesNames = directory.list(new FilenameFilter() {
+         @Override
+         public boolean accept(final File dir,
+                               final String name) {
+            return name.trim().toLowerCase().endsWith(".bp");
+         }
+      });
+
+      Arrays.sort(filesNames);
+
+      logInfo("Found " + filesNames.length + " files");
+
+      for (final String boxFileName : filesNames) {
+         processFile(directory, boxFileName);
+      }
+
+   }
+
+
+   private void processFile(final File directory,
+                            final String fileName) throws IOException {
+      final GAxisAlignedBox box = GAxisAlignedBox.parseString(GVector3D.class, fileName.substring(0, fileName.length() - 3));
+
+      //      System.out.println(fileName);
+      //      System.out.println(box);
+      _tiles.put(box, new File(directory, fileName).getAbsolutePath());
+   }
+
+
+   public IUnstructuredVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> getVertices(final IBoundingVolume<?> area) {
+      final List<GAxisAlignedBox> touchedTiles = getTouchedTiles(area);
+
+      if (touchedTiles.isEmpty()) {
+         return new GCompositeVertexContainer<IVector3<?>>();
+      }
+
+      IUnstructuredVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> allPoints = (IUnstructuredVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?>) _cache.get(
+               touchedTiles.get(0)).getVerticesInRegion(area);
+
+
+      for (int i = 1; i < touchedTiles.size(); i++) {
+         final GAxisAlignedBox touchedTile = touchedTiles.get(i);
+         allPoints = allPoints.composedWith((IUnstructuredVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?>) _cache.get(
+                  touchedTile).getVerticesInRegion(area));
+      }
+
+      return allPoints;
+   }
+
+
+   public double getAverageZ(final IBoundingVolume<?> area) {
+      return GVectorUtils.getAverageZ(getVertices(area));
+   }
+
+
+   public double getMaxZ(final IBoundingVolume<?> area) {
+      return GVectorUtils.getMaxZ(getVertices(area));
+   }
+
+
+   //   public double getAverageZ(final IBoundedGeometry<IVector2<?>, ?, ?> geometry) {
+   //      return GVectorUtils.getAverageZ(getVertices(geometry));
+   //   }
+   //
+   //
+   //   public double getMaxZ(final IBoundedGeometry<IVector2<?>, ?, ?> geometry) {
+   //      return GVectorUtils.getMaxZ(getVertices(geometry));
+   //   }
+
+
+   //   public IVertexContainer<IVector3<?>,?> getVertices(final IBoundedGeometry<IVector2<?>, ?, ?> geometry) {
+   //      final IBounds<IVector2<?>, ?> geometryBounds = geometry.getBounds();
+   //
+   //      final IVertexContainer<IVector3<?>,?> verticesInBounds = getVertices(geometryBounds.asBox());
+   //
+   //      final IVertexContainer<IVector3<?>,?> verticesInGeometry = verticesInBounds.selectByPoints(new IPredicate<IVector3<?>>() {
+   //         @Override
+   //         public boolean evaluate(final IVector3<?> element) {
+   //            return geometry.contains(element.asVector2());
+   //         }
+   //      });
+   //
+   //      return verticesInGeometry;
+   //   }
+
+
+   private List<GAxisAlignedBox> getTouchedTiles(final IBoundingVolume<?> area) {
+      final ArrayList<GAxisAlignedBox> touchedTiles = new ArrayList<GAxisAlignedBox>(_tiles.size());
+
+      for (final GAxisAlignedBox tileBox : _tiles.keySet()) {
+         if (tileBox.touches(area)) {
+            touchedTiles.add(tileBox);
+         }
+      }
+
+      touchedTiles.trimToSize();
+
+      return touchedTiles;
+   }
+
+
+   public static void main(final String[] args) throws IOException {
+      System.out.println("LIDAR 0.1");
+      System.out.println("----------\n");
+
+
+      final GReliefService lidar = new GReliefService("LIDAR", "../globe-caceres/data/lidar");
+      final GReliefService mdt = new GReliefService("MDT", "../globe-caceres/data/mdt");
+
+      final GAxisAlignedBox completeBounds = GAxisAlignedBox.merge(lidar.bounds, mdt.bounds);
+      System.out.println("Complete Bounds=" + completeBounds);
+
+
+      final double xFrom = 730000.5;
+      final double xTo = xFrom + 2000;//730122.5;
+
+      final double yFrom = 4373000.5;
+      final double yTo = yFrom + 2000;//4373375.5;
+
+      final double zFrom = completeBounds._lower.z();
+      final double zTo = completeBounds._upper.z();
+
+
+      final GVector3D lower = new GVector3D(xFrom, yFrom, zFrom);
+      final GVector3D upper = new GVector3D(xTo, yTo, zTo);
+      process(mdt, lidar, new GAxisAlignedBox(lower, upper));
+
+
+      final GVector3D offset = new GVector3D(-100, -100, 0);
+      process(mdt, lidar, new GAxisAlignedBox(lower.add(offset), upper.add(offset)));
+
+      mdt.showStatistics();
+      lidar.showStatistics();
+   }
+
+
+   private static void process(final GReliefService mdt,
+                               final GReliefService lidar,
+                               final IBoundingVolume<?> area) {
+      final double mdtZ = mdt.getAverageZ(area);
+      final double lidarZ = lidar.getAverageZ(area);
+      final double delta = mdtZ - lidarZ;
+      System.out.println("Area=" + area + ", Average Z mdt=" + mdtZ + ", lidar=" + lidarZ + ", delta=" + delta);
+   }
+
+
+}
