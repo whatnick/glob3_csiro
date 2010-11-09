@@ -28,7 +28,11 @@
 	<classpathentry exported="true" kind="lib" path="libs/substance6.0/trident.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jai_codec.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jai_core.jar"/>
-	<classpathentry kind="lib" path="libs/jogl/gluegen-rt.jar"/>
+	<classpathentry kind="lib" path="libs/jogl/gluegen-rt.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="globe/libs/jogl"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="libs/jogl/jogl.jar"/>
 	<classpathentry kind="lib" path="libs/worldwind.jar"/>
 	<classpathentry kind="output" path=""/>

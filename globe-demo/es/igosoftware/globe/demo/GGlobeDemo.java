@@ -141,8 +141,8 @@ public class GGlobeDemo
       final GAreasEventsLayer areasEventsLayer = new GAreasEventsLayer();
       layers.add(areasEventsLayer);
 
-      final GPanoramicLayerOLD panoramicLayer = new GPanoramicLayerOLD(areasEventsLayer, "Panorámica de Playa",
-               "panoramics/Playa", 1000, new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710), 0),
+      final GPanoramicLayerOLD panoramicLayer = new GPanoramicLayerOLD(areasEventsLayer, "Sample Panoramic",
+               "data/panoramics/example", 1000, new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710), 0),
                GElevationAnchor.SURFACE);
       //      panoramicLayer.setRenderWireframe(true);
       //      panoramicLayer.setRenderNormals(true);
@@ -202,7 +202,7 @@ public class GGlobeDemo
       try {
 
 
-         final GModelData modelData = new GObjLoader().load("models/caceres3d.obj", true);
+         final GModelData modelData = new GObjLoader().load("data/models/caceres3d.obj", true);
          //         final GModelData modelData = new GObjLoader().load("/home/dgd/Escritorio/trastero/MELLIZO4-NEW.obj", true);
          hackCaceres3DModel(modelData);
 

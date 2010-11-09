@@ -87,12 +87,10 @@ fi
 # Test for local libs
 LIBS=../globe/libs
 IGOLIBS=../igolibs/libs
-WWLIBS=../ww
 
 # Don't use MToolkit
 export AWT_TOOLKIT=XToolkit
 
-#export CLASSPATH=${IGOLIBS}:../igolibs/:../euclid/:../globe/:../ww/src/:.
 export CLASSPATH=.
 export CLASSPATH=${CLASSPATH}:${IGOLIBS}
 export CLASSPATH=${CLASSPATH}:../igolibs/
@@ -104,8 +102,9 @@ export CLASSPATH=${CLASSPATH}:${LIBS}/substance6.0/substance.jar
 export CLASSPATH=${CLASSPATH}:${LIBS}/substance6.0/trident.jar
 export CLASSPATH=${CLASSPATH}:${LIBS}/miglayout/miglayout-3.7.3.1-swing.jar
 export CLASSPATH=${CLASSPATH}:../dmvc/libs/netty-3.1.5.GA/netty-3.1.5.GA.jar
-export CLASSPATH=${CLASSPATH}:${WWLIBS}/gluegen-rt.jar
-export CLASSPATH=${CLASSPATH}:${WWLIBS}/jogl.jar
+export CLASSPATH=${CLASSPATH}:${LIBS}/jogl/gluegen-rt.jar
+export CLASSPATH=${CLASSPATH}:${LIBS}/jogl/jogl.jar
+export CLASSPATH=${CLASSPATH}:${LIBS}/worldwind.jar
 
 if [ "$EXTRA_CLASSPATH" != "" ] ; then
     export CLASSPATH=${CLASSPATH}:${EXTRA_CLASSPATH}
@@ -118,23 +117,24 @@ fi
 #echo CLASSPATH=${CLASSPATH}
 
 if [ "$JAVAVM" = "" ] ; then 
-    if test -x jre ; then
-        if [ "$ARCHITECTURE" = "32" ] ; then
-            JAVAVM=./jre/linux/32/bin/java
-        else
-            JAVAVM=./jre/linux/64/bin/java
-        fi
-    else
-        if test -x ../tools/jre ; then
-            if [ "$ARCHITECTURE" = "32" ] ; then
-                JAVAVM=../tools/jre/linux/32/bin/java
-            else
-                JAVAVM=../tools/jre/linux/64/bin/java
-            fi
-        else
-            JAVAVM=java
-        fi
-    fi
+    # if test -x jre ; then
+    #     if [ "$ARCHITECTURE" = "32" ] ; then
+    #         JAVAVM=./jre/linux/32/bin/java
+    #     else
+    #         JAVAVM=./jre/linux/64/bin/java
+    #     fi
+    # else
+    #     if test -x ../tools/jre ; then
+    #         if [ "$ARCHITECTURE" = "32" ] ; then
+    #             JAVAVM=../tools/jre/linux/32/bin/java
+    #         else
+    #             JAVAVM=../tools/jre/linux/64/bin/java
+    #         fi
+    #     else
+    #         JAVAVM=java
+    #     fi
+    # fi
+    JAVAVM=java
 fi
 
 #if [ "$DEVELOPMENT" = "on" ] ; then
@@ -192,9 +192,11 @@ fi
 # show_message DEVELOPMENT_JAVAVM_ARG=${DEVELOPMENT_JAVAVM_ARG}
 
 if [ "$ARCHITECTURE" = "32" ] || [ "$OS" = "Darwin" ]; then
-    JAVA_LIBRARY_PATH="../ww"
+    JAVA_LIBRARY_PATH="../globe/libs/jogl/"
+    JNA_LIBRARY_PATH="../globe/libs/proj4/"
 else
-    JAVA_LIBRARY_PATH="../ww/libs/jogl-1.1.1-linux-amd64/lib"
+    JAVA_LIBRARY_PATH="../globe/libs/jogl/linux-amd64/"
+    JNA_LIBRARY_PATH="../globe/libs/proj4/linux-amd64/"
 fi
 
 JAVA_LIBRARY_PATH=${EXTRA_JAVA_LIBRARY_PATH}:${JAVA_LIBRARY_PATH}
@@ -212,6 +214,7 @@ if [ "$ARCHITECTURE" = "32" ] ; then
         ${DEVELOPMENT_JAVAVM_ARG} \
         ${LOWEND_JAVAVM_ARG} \
         -Djava.library.path=${JAVA_LIBRARY_PATH} \
+        -Djna.library.path=${JNA_LIBRARY_PATH} \
         $*
 else
     show_message = Running in 64 bits =
@@ -224,5 +227,6 @@ else
         ${DEVELOPMENT_JAVAVM_ARG} \
         ${LOWEND_JAVAVM_ARG} \
         -Djava.library.path=${JAVA_LIBRARY_PATH} \
+        -Djna.library.path=${JNA_LIBRARY_PATH} \
         $*
 fi
