@@ -53,6 +53,9 @@ import es.igosoftware.globe.GStatisticsModule;
 import es.igosoftware.globe.IGlobeModule;
 import es.igosoftware.globe.modules.GFullScreenModule;
 import es.igosoftware.globe.modules.view.GAnaglyphViewerModule;
+import es.igosoftware.globe.modules.view.GFlatWorldModule;
+import es.igosoftware.globe.modules.view.GShowLatLonGraticuleModule;
+import es.igosoftware.globe.modules.view.GShowUTMGraticuleModule;
 import es.igosoftware.globe.utils.GAreasEventsLayer;
 import es.igosoftware.globe.view.GBasicOrbitView;
 import es.igosoftware.globe.view.GBasicOrbitViewLimits;
@@ -228,7 +231,8 @@ public class GGlobeDemo
       final GPointsCloudModule pointsCloudModule = new GPointsCloudModule(loader);
 
       return new IGlobeModule[] { homePositionModule, new GLayersManagerModule(), new GFullScreenModule(), pointsCloudModule,
-               new GAnaglyphViewerModule(false), new GStatisticsModule() };
+               new GAnaglyphViewerModule(false), new GStatisticsModule(), new GFlatWorldModule(),
+               new GShowLatLonGraticuleModule(), new GShowUTMGraticuleModule() };
    }
 
 
