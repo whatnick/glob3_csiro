@@ -37,8 +37,8 @@
 package es.igosoftware.globe.view.customView;
 
 import es.igosoftware.globe.GGlobeApplication;
-import es.igosoftware.globe.GPanoramicLayer;
 import es.igosoftware.globe.view.GInputState;
+import es.igosoftware.panoramic.GPanoramicLayer;
 import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.animation.AngleAnimator;
 import gov.nasa.worldwind.animation.AnimationController;

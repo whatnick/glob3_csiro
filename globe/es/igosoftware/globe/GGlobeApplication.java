@@ -86,6 +86,7 @@ import org.pushingpixels.substance.api.skin.SubstanceMistAquaLookAndFeel;
 import es.igosoftware.globe.actions.IGenericAction;
 import es.igosoftware.globe.view.customView.GCustomView;
 import es.igosoftware.globe.view.customView.GCustomViewInputHandler;
+import es.igosoftware.panoramic.GPanoramicLayer;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GPair;
 import es.igosoftware.util.GUtils;

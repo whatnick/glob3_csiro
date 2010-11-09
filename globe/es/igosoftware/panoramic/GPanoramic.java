@@ -42,7 +42,6 @@ import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.globe.GGlobeApplication;
-import es.igosoftware.globe.GPanoramicLayer;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.loading.GDisplayListCache;
 import es.igosoftware.util.GAssert;

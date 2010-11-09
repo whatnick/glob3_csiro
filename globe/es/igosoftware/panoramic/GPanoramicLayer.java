@@ -34,9 +34,14 @@
 */
 
 
-package es.igosoftware.globe;
+package es.igosoftware.panoramic;
 
 import es.igosoftware.euclid.projection.GProjection;
+import es.igosoftware.globe.GField;
+import es.igosoftware.globe.GGlobeApplication;
+import es.igosoftware.globe.GVectorLayerType;
+import es.igosoftware.globe.IGlobeApplication;
+import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.globe.layers.Feature;
@@ -45,7 +50,6 @@ import es.igosoftware.globe.view.GBasicOrbitViewLimits;
 import es.igosoftware.globe.view.GInputState;
 import es.igosoftware.globe.view.GPanoramicViewLimits;
 import es.igosoftware.globe.view.customView.GCustomView;
-import es.igosoftware.panoramic.GPanoramic;
 import es.igosoftware.scenegraph.GElevationAnchor;
 import es.igosoftware.util.GAssert;
 import gov.nasa.worldwind.View;
@@ -85,6 +89,7 @@ public class GPanoramicLayer
 
    private final Set<Layer>       _hiddenLayers   = new HashSet<Layer>();
    private boolean                _hasHiddenLayers;
+   private boolean                _isInitialized  = false;
 
    private static final double    DEFAULT_OPACITY = 0.75;
 
@@ -244,6 +249,16 @@ public class GPanoramicLayer
    protected void doRender(final DrawContext dc) {
       if (dc.isPickingMode()) {
          return;
+      }
+      if (!_isInitialized) {
+         final View view = GGlobeApplication.instance().getView();
+         if (view instanceof GCustomView) {
+            _isInitialized = true;
+         }
+         else {
+            throw new RuntimeException("Panoramics only work with a GCustomView. The current View is of type " + view.getClass());
+         }
+
       }
       initializeEvents();
       for (final GPanoramic panoramic : _panoramics) {

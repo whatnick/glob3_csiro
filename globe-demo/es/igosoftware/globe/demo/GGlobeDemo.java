@@ -52,7 +52,6 @@ import es.igosoftware.experimental.ndimensional.IMultidimensionalData;
 import es.igosoftware.globe.GGlobeApplication;
 import es.igosoftware.globe.GHomePositionModule;
 import es.igosoftware.globe.GLayersManagerModule;
-import es.igosoftware.globe.GPanoramicLayerOLD;
 import es.igosoftware.globe.GStatisticsModule;
 import es.igosoftware.globe.IGlobeModule;
 import es.igosoftware.globe.modules.GFullScreenModule;
@@ -61,8 +60,8 @@ import es.igosoftware.globe.modules.view.GFlatWorldModule;
 import es.igosoftware.globe.modules.view.GShowLatLonGraticuleModule;
 import es.igosoftware.globe.modules.view.GShowUTMGraticuleModule;
 import es.igosoftware.globe.utils.GAreasEventsLayer;
-import es.igosoftware.globe.view.GBasicOrbitView;
-import es.igosoftware.globe.view.GBasicOrbitViewLimits;
+import es.igosoftware.globe.view.customView.GCustomView;
+import es.igosoftware.globe.view.customView.GCustomViewLimits;
 import es.igosoftware.io.GPointsCloudFileLoader;
 import es.igosoftware.loading.G3DModel;
 import es.igosoftware.loading.GModelLoadException;
@@ -70,6 +69,8 @@ import es.igosoftware.loading.GObjLoader;
 import es.igosoftware.loading.modelparts.GMaterial;
 import es.igosoftware.loading.modelparts.GModelData;
 import es.igosoftware.loading.modelparts.GModelMesh;
+import es.igosoftware.panoramic.GPanoramic;
+import es.igosoftware.panoramic.GPanoramicLayer;
 import es.igosoftware.pointscloud.GPointsCloudModule;
 import es.igosoftware.scenegraph.G3DModelNode;
 import es.igosoftware.scenegraph.GElevationAnchor;
@@ -95,7 +96,8 @@ public class GGlobeDemo
    static {
       Configuration.setValue(AVKey.SCENE_CONTROLLER_CLASS_NAME, AnaglyphSceneController.class.getName());
 
-      Configuration.setValue(AVKey.VIEW_CLASS_NAME, GBasicOrbitView.class.getName());
+      //Configuration.setValue(AVKey.VIEW_CLASS_NAME, GBasicOrbitView.class.getName());
+      Configuration.setValue(AVKey.VIEW_CLASS_NAME, GCustomView.class.getName());
 
       Configuration.setValue(AVKey.TESSELLATOR_CLASS_NAME, RectangularNormalTessellator.class.getName());
    }
@@ -109,10 +111,11 @@ public class GGlobeDemo
    public GGlobeDemo() {
       super("en");
 
-      final GBasicOrbitView view = (GBasicOrbitView) getWorldWindowGLCanvas().getView();
+      //      final GBasicOrbitView view = (GBasicOrbitView) getWorldWindowGLCanvas().getView();
+      final GCustomView view = (GCustomView) getWorldWindowGLCanvas().getView();
       //      view.setFieldOfView(Angle.fromDegrees(70));
       view.setDetectCollisions(false);
-      view.setOrbitViewLimits(new GBasicOrbitViewLimits());
+      view.setOrbitViewLimits(new GCustomViewLimits());
       view.getViewInputHandler().setStopOnFocusLost(false);
    }
 
@@ -186,14 +189,26 @@ public class GGlobeDemo
       final GAreasEventsLayer areasEventsLayer = new GAreasEventsLayer();
       layers.add(areasEventsLayer);
 
-      final GPanoramicLayerOLD panoramicLayer = new GPanoramicLayerOLD(areasEventsLayer, "Sample Panoramic",
-               "data/panoramics/example", 1000, new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710), 0),
-               GElevationAnchor.SURFACE);
+      final GPanoramicLayer panoramicLayer = new GPanoramicLayer(GElevationAnchor.SURFACE);
+      panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", "data/panoramics/example", 1000,
+               new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710), 0)));
       //      panoramicLayer.setRenderWireframe(true);
       //      panoramicLayer.setRenderNormals(true);
       layers.add(panoramicLayer);
       panoramicLayer.setEnabled(false);
 
+      panoramicLayer.addPickListener(new GPanoramicLayer.PickListener() {
+
+         @Override
+         public void picked(final GPanoramic pickedPanoramic) {
+            if (pickedPanoramic != null) {
+
+               panoramicLayer.enterPanoramic(pickedPanoramic, (GCustomView) getView());
+
+            }
+
+         }
+      });
 
       //      final GVideoLayer videoLayer = new GVideoLayer("Video", "videos/example.avi", new Position(Angle.fromDegrees(39.4737),
       //               Angle.fromDegrees(-6.3710), 0), GElevationAnchor.SURFACE);
