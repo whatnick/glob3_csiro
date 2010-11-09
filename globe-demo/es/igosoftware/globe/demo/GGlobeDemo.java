@@ -403,7 +403,6 @@ public class GGlobeDemo
          _multidimentionaldata = new IMultidimensionalData[] { data };
          //         _multidimentionaldata = new IMultidimensionalData[] { cfData, data };
 
-         //               new CSIRODemoGlobe(cfData, data).openInFrame();
       }
       catch (final IOException e) {
          e.printStackTrace();
