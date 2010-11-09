@@ -381,31 +381,4 @@ public class GGlobeDemo
    }
 
 
-   //   @Override
-   //   protected List<GPair<String, Component>> getApplicationPanels() {
-   //
-   //      final JPanel testingPanel = new JPanel();
-   //
-   //      final JButton button = new JButton("Move Caceres 3D Model");
-   //      button.addActionListener(new ActionListener() {
-   //         @Override
-   //         public void actionPerformed(final ActionEvent e) {
-   //
-   //            if (_caceres3DRootNode == null) {
-   //               logWarning("Caceres 3D Model not yet loaded");
-   //               return;
-   //            }
-   //
-   //            final IVector3<?> oldTranslation = _caceres3DRootNode.getTranslation();
-   //            final IVector3<?> newTranslation = oldTranslation.add(new GVector3D(100, 100, 0));
-   //            _caceres3DRootNode.setTranslation(newTranslation);
-   //         }
-   //      });
-   //      testingPanel.add(button);
-   //
-   //      addTranslation("es", "Testing", "Pruebas");
-   //      return Collections.singletonList(new GPair<String, Component>("Testing", testingPanel));
-   //   }
-
-
 }
