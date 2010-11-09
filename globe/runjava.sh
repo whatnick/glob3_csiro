@@ -52,33 +52,35 @@ fi
 
 OS=`uname`
 if [ "$OS" = "Darwin" ]; then
-    echo == Mac OS X ==
+    # echo == Mac OS X ==
 
-    LIBS=../3D/libs
-    export CLASSPATH=../3d:.
-    export CLASSPATH=${CLASSPATH}:${LIBS}/args4j-2.0.9/args4j-2.0.9.jar
-    export CLASSPATH=${CLASSPATH}:${LIBS}/lookandfeel/substance.jar
-    export CLASSPATH=${CLASSPATH}:${LIBS}/lookandfeel/substance-extras.jar
-    export CLASSPATH=${CLASSPATH}:${LIBS}/jmf/customizer.jar
-    export CLASSPATH=${CLASSPATH}:${LIBS}/jmf/jmf.jar
-    export CLASSPATH=${CLASSPATH}:${LIBS}/jmf/mediaplayer.jar
-    export CLASSPATH=${CLASSPATH}:${LIBS}/jmf/multiplayer.jar
-    export CLASSPATH=${CLASSPATH}:${LIBS}/joystick/Joystick.jar
-    export CLASSPATH=${CLASSPATH}:${LIBS}/jython2.2.1/jython.jar
-    export CLASSPATH=${CLASSPATH}:${LIBS}/jung2-2_0/jung-api-2.0.jar
-    export CLASSPATH=${CLASSPATH}:${LIBS}/jung2-2_0/jung-graph-impl-2.0.jar
-    export CLASSPATH=${CLASSPATH}:${LIBS}/jung2-2_0/jung-algorithms-2.0.jar
-    export CLASSPATH=${CLASSPATH}:${LIBS}/JNA/jna.jar
-    export CLASSPATH=${CLASSPATH}:${LIBS}/jCharts-0.7.5/jCharts-0.7.5.jar
-    export CLASSPATH=${CLASSPATH}:${LIBS}/bsh/bsh-2.0b4.jar
+    # LIBS=../3D/libs
+    # export CLASSPATH=../3d:.
+    # export CLASSPATH=${CLASSPATH}:${LIBS}/args4j-2.0.9/args4j-2.0.9.jar
+    # export CLASSPATH=${CLASSPATH}:${LIBS}/lookandfeel/substance.jar
+    # export CLASSPATH=${CLASSPATH}:${LIBS}/lookandfeel/substance-extras.jar
+    # export CLASSPATH=${CLASSPATH}:${LIBS}/jmf/customizer.jar
+    # export CLASSPATH=${CLASSPATH}:${LIBS}/jmf/jmf.jar
+    # export CLASSPATH=${CLASSPATH}:${LIBS}/jmf/mediaplayer.jar
+    # export CLASSPATH=${CLASSPATH}:${LIBS}/jmf/multiplayer.jar
+    # export CLASSPATH=${CLASSPATH}:${LIBS}/joystick/Joystick.jar
+    # export CLASSPATH=${CLASSPATH}:${LIBS}/jython2.2.1/jython.jar
+    # export CLASSPATH=${CLASSPATH}:${LIBS}/jung2-2_0/jung-api-2.0.jar
+    # export CLASSPATH=${CLASSPATH}:${LIBS}/jung2-2_0/jung-graph-impl-2.0.jar
+    # export CLASSPATH=${CLASSPATH}:${LIBS}/jung2-2_0/jung-algorithms-2.0.jar
+    # export CLASSPATH=${CLASSPATH}:${LIBS}/JNA/jna.jar
+    # export CLASSPATH=${CLASSPATH}:${LIBS}/jCharts-0.7.5/jCharts-0.7.5.jar
+    # export CLASSPATH=${CLASSPATH}:${LIBS}/bsh/bsh-2.0b4.jar
 
 
-    /System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Home/bin/java \
-        ${EXTRA_JAVAVM_ARG} \
-        -client \
-        -Xms2000M \
-        -Xmx2000M \
-        $*
+    # /System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Home/bin/java \
+    #     ${EXTRA_JAVAVM_ARG} \
+    #     -client \
+    #     -Xms2000M \
+    #     -Xmx2000M \
+    #     $*
+
+    echo Apple still not supported!
 
     exit
 fi
@@ -117,23 +119,6 @@ fi
 #echo CLASSPATH=${CLASSPATH}
 
 if [ "$JAVAVM" = "" ] ; then 
-    # if test -x jre ; then
-    #     if [ "$ARCHITECTURE" = "32" ] ; then
-    #         JAVAVM=./jre/linux/32/bin/java
-    #     else
-    #         JAVAVM=./jre/linux/64/bin/java
-    #     fi
-    # else
-    #     if test -x ../tools/jre ; then
-    #         if [ "$ARCHITECTURE" = "32" ] ; then
-    #             JAVAVM=../tools/jre/linux/32/bin/java
-    #         else
-    #             JAVAVM=../tools/jre/linux/64/bin/java
-    #         fi
-    #     else
-    #         JAVAVM=java
-    #     fi
-    # fi
     JAVAVM=java
 fi
 
