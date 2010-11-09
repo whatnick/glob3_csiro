@@ -40,11 +40,15 @@ package es.igosoftware.globe.demo;
 import java.awt.Color;
 import java.awt.Image;
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import es.igosoftware.concurrent.GConcurrent;
+import es.igosoftware.experimental.ndimensional.G3DImageMultidimensionalData;
+import es.igosoftware.experimental.ndimensional.GMultidimensionalDataModule;
+import es.igosoftware.experimental.ndimensional.IMultidimensionalData;
 import es.igosoftware.globe.GGlobeApplication;
 import es.igosoftware.globe.GHomePositionModule;
 import es.igosoftware.globe.GLayersManagerModule;
@@ -85,7 +89,7 @@ import gov.nasa.worldwind.layers.LayerList;
 public class GGlobeDemo
          extends
             GGlobeApplication {
-   private static final long serialVersionUID = 1L;
+   private static final long              serialVersionUID = 1L;
 
 
    static {
@@ -97,7 +101,9 @@ public class GGlobeDemo
    }
 
 
-   private GGroupNode        _caceres3DRootNode;
+   private static IMultidimensionalData[] _multidimentionaldata;
+
+   private GGroupNode                     _caceres3DRootNode;
 
 
    public GGlobeDemo() {
@@ -232,7 +238,8 @@ public class GGlobeDemo
 
       return new IGlobeModule[] { homePositionModule, new GLayersManagerModule(), new GFullScreenModule(), pointsCloudModule,
                new GAnaglyphViewerModule(false), new GStatisticsModule(), new GFlatWorldModule(),
-               new GShowLatLonGraticuleModule(), new GShowUTMGraticuleModule() };
+               new GShowLatLonGraticuleModule(), new GShowUTMGraticuleModule(),
+               new GMultidimensionalDataModule(_multidimentionaldata) };
    }
 
 
@@ -379,6 +386,29 @@ public class GGlobeDemo
 
    public static void main(final String[] args) {
 
+      try {
+         //         final String[] valueVariablesNames = new String[] { "salt", "temp", "dens" };
+         //         final GNetCDFMultidimentionalData.VectorVariable[] vectorVariables = new GNetCDFMultidimentionalData.VectorVariable[] {
+         //         //                        new GNetCDFMultidimentionalData.VectorVariable("Wind Velocity", "wind_u", "wind_v"),
+         //         new GNetCDFMultidimentionalData.VectorVariable("Water Velocity", "u", "v") };
+         //
+         //         final IMultidimensionalData cfData = new GNetCDFMultidimentionalData("data/mackenzie_depth_out_cf.nc", "longitude",
+         //                  "latitude", "zc", "eta", valueVariablesNames, vectorVariables, "n", true, true);
+
+         final Position position = new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710), 0);
+
+         final IMultidimensionalData data = new G3DImageMultidimensionalData("Mr Head", "data/cthead-8bit", ".png", position, 10,
+                  10, 20);
+
+         _multidimentionaldata = new IMultidimensionalData[] { data };
+         //         _multidimentionaldata = new IMultidimensionalData[] { cfData, data };
+
+         //               new CSIRODemoGlobe(cfData, data).openInFrame();
+      }
+      catch (final IOException e) {
+         e.printStackTrace();
+         System.exit(1);
+      }
 
       SwingUtilities.invokeLater(new Runnable() {
          @Override
