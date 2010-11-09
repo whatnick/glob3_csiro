@@ -39,7 +39,9 @@ package es.igosoftware.globe.demo;
 
 import java.awt.Color;
 import java.awt.Image;
+import java.io.File;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import es.igosoftware.concurrent.GConcurrent;
@@ -372,9 +374,22 @@ public class GGlobeDemo
 
 
    public static void main(final String[] args) {
+
+
       SwingUtilities.invokeLater(new Runnable() {
          @Override
          public void run() {
+
+            final File dataDirectory = new File("data");
+            if (!dataDirectory.exists()) {
+               JOptionPane.showMessageDialog(null, "Can't find the directory data\n\n"
+                                                   + "- Go to https://sourceforge.net/projects/glob3/files_beta/globe-demo/\n"
+                                                   + "- Download the file data.zip\n" + "- Uncompress the file in the directory "
+                                                   + new File("data").getAbsolutePath(), "ERROR", JOptionPane.ERROR_MESSAGE);
+               System.exit(1);
+            }
+
+
             new GGlobeDemo().openInFrame();
          }
       });
