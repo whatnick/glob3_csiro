@@ -400,7 +400,7 @@ public class GGlobeDemo
 
 
    private static void checkDataDirectory() {
-      final File dataDirectory = new File("datadd");
+      final File dataDirectory = new File("data");
       if (!dataDirectory.exists()) {
          final String message = "Can't find the directory data\n\n"
                                 + "- Go to http://sourceforge.net/projects/glob3/files_beta/globe-demo/\n"
