@@ -147,4 +147,5 @@ public interface IGlobeApplication {
 
 
    public void zoomToSector(final Sector sector);
+
 }

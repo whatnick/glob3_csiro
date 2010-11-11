@@ -1226,7 +1226,7 @@ public abstract class GGlobeApplication
          return;
       }
 
-      final double w = 0.5 * sector.getDeltaLonRadians() * 6378137.0;
+      final double w = 0.5 * sector.getDeltaLonRadians() * globe.getEquatorialRadius();
       final double altitude = w / view.getFieldOfView().tanHalfAngle();
       goTo(new Position(sector.getCentroid(), 0), Angle.ZERO, Angle.ZERO, altitude);
    }

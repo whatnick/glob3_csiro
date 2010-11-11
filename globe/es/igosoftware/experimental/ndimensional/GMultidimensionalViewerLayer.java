@@ -1,4 +1,3 @@
-
 /*
 
  IGO Software SL  -  info@igosoftware.es
@@ -878,7 +877,6 @@ public class GMultidimensionalViewerLayer
          _sector = dataExtent.asSector();
          _referencePosition = new Position(_sector.getCentroid(), dataExtent._center.elevation);
       }
-
 
       final Globe globe = dc.getGlobe();
       final double verticalExaggeration = dc.getVerticalExaggeration();
