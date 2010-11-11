@@ -46,6 +46,7 @@ import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.globe.layers.Feature;
 import es.igosoftware.globe.layers.GVectorRenderer;
+import es.igosoftware.globe.view.customView.GCustomView;
 import es.igosoftware.scenegraph.utils.GPrintSceneGraphStructureVisitor;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.utils.GWWUtils;
@@ -58,6 +59,7 @@ import gov.nasa.worldwind.geom.Line;
 import gov.nasa.worldwind.geom.Matrix;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Sector;
+import gov.nasa.worldwind.geom.Sphere;
 import gov.nasa.worldwind.geom.Vec4;
 import gov.nasa.worldwind.globes.Globe;
 import gov.nasa.worldwind.layers.AbstractLayer;
@@ -144,6 +146,11 @@ public class GPositionRenderableLayer
       }
 
 
+      public Sphere getBoundingSphere() {
+         return _rootNode.getBoundsInModelCoordinates(_modelCoordinateOriginTransform, false);
+      }
+
+
       private void dispose() {
          _rootNode.dispose();
       }
@@ -170,6 +177,7 @@ public class GPositionRenderableLayer
          asureModelCoordinateOriginTransform(dc, terrainChanged);
 
          _rootNode.render(dc, _modelCoordinateOriginTransform, terrainChanged);
+
       }
 
 
@@ -602,7 +610,15 @@ public class GPositionRenderableLayer
 
    @Override
    public void doDefaultAction(final IGlobeApplication application) {
-
+      if (isEnabled()) {
+         final List<Sphere> objectsBounds = new ArrayList<Sphere>();
+         for (final NodeAndPosition nodeAndPosition : _rootNodes) {
+            objectsBounds.add(nodeAndPosition.getBoundingSphere());
+         }
+         final Sphere totalbounds = Sphere.createBoundingSphere(objectsBounds);
+         final GCustomView customView = (GCustomView) GGlobeApplication.instance().getView();
+         customView.goTo(totalbounds);
+      }
    }
 
 

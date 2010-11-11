@@ -48,7 +48,7 @@ import gov.nasa.worldwind.util.Logging;
 import gov.nasa.worldwind.view.ViewUtil;
 
 
-public class CustomViewInputSupport {
+public class GCustomViewInputSupport {
 
    protected static class CustomViewState {
       private final Position _center;
@@ -105,7 +105,7 @@ public class CustomViewInputSupport {
    }
 
 
-   public CustomViewInputSupport() {
+   public GCustomViewInputSupport() {
    }
 
 
@@ -139,9 +139,9 @@ public class CustomViewInputSupport {
       // Because this is a model-view transform, matrices are applied in reverse order.
       Matrix transform;
       // Zoom, heading, pitch.
-      transform = CustomViewInputSupport.computeHeadingPitchZoomTransform(heading, pitch, zoom);
+      transform = GCustomViewInputSupport.computeHeadingPitchZoomTransform(heading, pitch, zoom);
       // Center position.
-      transform = transform.multiply(CustomViewInputSupport.computeCenterTransform(globe, center));
+      transform = transform.multiply(GCustomViewInputSupport.computeCenterTransform(globe, center));
 
       return transform;
    }
@@ -173,7 +173,7 @@ public class CustomViewInputSupport {
       }
 
       final Matrix modelview = Matrix.fromViewLookAt(eyePoint, centerPoint, up);
-      return CustomViewInputSupport.computeCustomViewState(globe, modelview, centerPoint);
+      return GCustomViewInputSupport.computeCustomViewState(globe, modelview, centerPoint);
    }
 
 
@@ -199,7 +199,7 @@ public class CustomViewInputSupport {
       // Compute the center position.
       final Position centerPos = globe.computePositionFromPoint(centerPoint);
       // Compute the center position transform.
-      final Matrix centerTransform = CustomViewInputSupport.computeCenterTransform(globe, centerPos);
+      final Matrix centerTransform = GCustomViewInputSupport.computeCenterTransform(globe, centerPos);
       final Matrix centerTransformInv = centerTransform.getInverse();
       if (centerTransformInv == null) {
          final String message = Logging.getMessage("generic.NoninvertibleMatrix");
@@ -212,7 +212,7 @@ public class CustomViewInputSupport {
       // Extract the heading, pitch, and zoom values from the transform.
       final Angle heading = ViewUtil.computeHeading(hpzTransform);
       final Angle pitch = ViewUtil.computePitch(hpzTransform);
-      final double zoom = CustomViewInputSupport.computeZoom(hpzTransform);
+      final double zoom = GCustomViewInputSupport.computeZoom(hpzTransform);
       if ((heading == null) || (pitch == null)) {
          return null;
       }
@@ -298,7 +298,7 @@ public class CustomViewInputSupport {
                                                         final Angle pitch,
                                                         final double zoom) {
       if (globe != null) {
-         final Matrix modelview = CustomViewInputSupport.computeTransformMatrix(globe, centerPosition, heading, pitch, zoom);
+         final Matrix modelview = GCustomViewInputSupport.computeTransformMatrix(globe, centerPosition, heading, pitch, zoom);
          if (modelview != null) {
             final Matrix modelviewInv = modelview.getInverse();
             if (modelviewInv != null) {
