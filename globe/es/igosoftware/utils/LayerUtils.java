@@ -45,6 +45,10 @@ import gov.nasa.worldwind.view.orbit.OrbitView;
 
 public class LayerUtils {
 
+   @Deprecated
+   /**
+    * @Deprecated use application.zoomToSector();
+    */
    public static void zoomTo(final WorldWindowGLCanvas wwd,
                              final Sector sector) {
 
