@@ -388,8 +388,21 @@ public class GGlobeDemo
    //   }
 
 
-   public static void main(final String[] args) {
+   private static void checkDataDirectory() {
+      final File dataDirectory = new File("data");
+      if (!dataDirectory.exists()) {
+         final String message = "Can't find the directory data\n\n"
+                                + "- Go to http://sourceforge.net/projects/glob3/files_beta/globe-demo/\n"
+                                + "- Download the file data.zip\n" + "- Uncompress the file in the directory "
+                                + new File("data").getAbsolutePath();
+         System.out.println(message);
+         JOptionPane.showMessageDialog(null, message, "ERROR", JOptionPane.ERROR_MESSAGE);
+         System.exit(1);
+      }
+   }
 
+
+   private static void loadMultidimensionalData() {
       try {
          //         final String[] valueVariablesNames = new String[] { "salt", "temp", "dens" };
          //         final GNetCDFMultidimentionalData.VectorVariable[] vectorVariables = new GNetCDFMultidimentionalData.VectorVariable[] {
@@ -412,25 +425,22 @@ public class GGlobeDemo
          e.printStackTrace();
          System.exit(1);
       }
+   }
+
+
+   public static void main(final String[] args) {
 
       SwingUtilities.invokeLater(new Runnable() {
          @Override
          public void run() {
 
-            final File dataDirectory = new File("data");
-            if (!dataDirectory.exists()) {
-               JOptionPane.showMessageDialog(null, "Can't find the directory data\n\n"
-                                                   + "- Go to https://sourceforge.net/projects/glob3/files_beta/globe-demo/\n"
-                                                   + "- Download the file data.zip\n" + "- Uncompress the file in the directory "
-                                                   + new File("data").getAbsolutePath(), "ERROR", JOptionPane.ERROR_MESSAGE);
-               System.exit(1);
-            }
+            checkDataDirectory();
 
+            loadMultidimensionalData();
 
             new GGlobeDemo().openInFrame();
          }
       });
    }
-
 
 }
