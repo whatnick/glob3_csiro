@@ -144,14 +144,10 @@ public class GPanoramic
    private final double                                                      _radius;
    private final Position                                                    _position;
    private final double                                                      _headingInDegrees;
-   //   private final GElevationAnchor                                            _anchor;
 
    private final List<PanoramicTile>                                         _tiles;
 
    private Matrix                                                            _modelCoordinateOriginTransform;
-   //   private Globe                                                             _lastGlobe;
-   //   private double                                                            _lastVerticalExaggeration;
-   //   private Frustum                                                           _lastFrustum;
    private final float[]                                                     _modelViewMatrixArray   = new float[16];
    private Sphere                                                            _boundsInGlobalCoordinates;
    private boolean                                                           _renderWireframe        = false;

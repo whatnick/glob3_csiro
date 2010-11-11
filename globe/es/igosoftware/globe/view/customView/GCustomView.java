@@ -55,7 +55,6 @@ import gov.nasa.worldwind.view.BasicView;
 import gov.nasa.worldwind.view.BasicViewPropertyLimits;
 import gov.nasa.worldwind.view.ViewUtil;
 import gov.nasa.worldwind.view.orbit.OrbitView;
-import gov.nasa.worldwind.view.orbit.OrbitViewCollisionSupport;
 import gov.nasa.worldwind.view.orbit.OrbitViewLimits;
 
 import javax.media.opengl.GL;
@@ -67,14 +66,14 @@ public class GCustomView
          implements
             OrbitView {
 
-   protected Position                        _center           = Position.ZERO;
-   protected double                          _zoom;
-   private boolean                           _viewOutOfFocus;
+   protected Position                          _center           = Position.ZERO;
+   protected double                            _zoom;
+   private boolean                             _viewOutOfFocus;
    // Stateless helper classes.
-   protected final OrbitViewCollisionSupport _collisionSupport = new OrbitViewCollisionSupport();
+   protected final GCustomViewCollisionSupport _collisionSupport = new GCustomViewCollisionSupport();
 
-   private GInputState                       _inputState;
-   protected GCameraState                    _savedCameraState = null;
+   private GInputState                         _inputState;
+   protected GCameraState                      _savedCameraState = null;
 
 
    /**
@@ -82,16 +81,14 @@ public class GCustomView
     */
    public GCustomView() {
 
-      //TODO: implement our own GCustomInputHandler
       this.viewInputHandler = new GCustomViewInputHandler();
       this.viewLimits = new GCustomViewLimits();
 
       this._inputState = GInputState.ORBIT;
 
-
-      //TODO: Do we need collisions? I think not...
-      //      this.collisionSupport.setCollisionThreshold(COLLISION_THRESHOLD);
-      //      this.collisionSupport.setNumIterations(COLLISION_NUM_ITERATIONS);
+      _collisionSupport.setCollisionThreshold(COLLISION_THRESHOLD);
+      _collisionSupport.setNumIterations(COLLISION_NUM_ITERATIONS);
+      getViewInputHandler().setStopOnFocusLost(false);
       loadConfigurationValues();
    }
 
@@ -149,7 +146,11 @@ public class GCustomView
 
 
    protected void flagHadCollisions() {
-      this.hadCollisions = false;
+      if (_inputState.isDetectCollisions()) {
+         this.hadCollisions = false;
+      }
+
+      this.hadCollisions = true;
    }
 
 
@@ -185,7 +186,7 @@ public class GCustomView
     */
    @Override
    public Position getCenterPosition() {
-      return this._center;
+      return _center;
    }
 
 
@@ -194,7 +195,7 @@ public class GCustomView
     */
    @Override
    public Vec4 getCenterPoint() {
-      return (globe.computePointFromPosition(this._center));
+      return (globe.computePointFromPosition(_center));
    }
 
 
@@ -210,8 +211,8 @@ public class GCustomView
    @Override
    public Position getCurrentEyePosition() {
       if (this.globe != null) {
-         final Matrix _modelview = CustomViewInputSupport.computeTransformMatrix(this.globe, this._center, this.heading,
-                  this.pitch, this._zoom);
+         final Matrix _modelview = GCustomViewInputSupport.computeTransformMatrix(this.globe, _center, this.heading, this.pitch,
+                  _zoom);
          if (_modelview != null) {
             final Matrix _modelviewInv = _modelview.getInverse();
             if (_modelviewInv != null) {
@@ -228,8 +229,8 @@ public class GCustomView
    @Override
    public Vec4 getCurrentEyePoint() {
       if (this.globe != null) {
-         final Matrix _modelview = CustomViewInputSupport.computeTransformMatrix(this.globe, this._center, this.heading,
-                  this.pitch, this._zoom);
+         final Matrix _modelview = GCustomViewInputSupport.computeTransformMatrix(this.globe, _center, this.heading, this.pitch,
+                  _zoom);
          if (_modelview != null) {
             final Matrix _modelviewInv = _modelview.getInverse();
             if (_modelviewInv != null) {
@@ -293,7 +294,7 @@ public class GCustomView
       // Otherwise, estimate the up direction by using the *current* heading with the new center position.
       final Vec4 forward = newCenterPoint.subtract3(newEyePoint).normalize3();
       if (forward.cross3(up).getLength3() < 0.001) {
-         final Matrix modelviewMat = CustomViewInputSupport.computeTransformMatrix(this.globe, centerPosition, this.heading,
+         final Matrix modelviewMat = GCustomViewInputSupport.computeTransformMatrix(this.globe, centerPosition, this.heading,
                   Angle.ZERO, 1);
          if (modelviewMat != null) {
             final Matrix modelviewInvMat = modelviewMat.getInverse();
@@ -309,7 +310,7 @@ public class GCustomView
          throw new IllegalArgumentException(message);
       }
 
-      final CustomViewInputSupport.CustomViewState modelCoords = CustomViewInputSupport.computeCustomViewState(this.globe,
+      final GCustomViewInputSupport.CustomViewState modelCoords = GCustomViewInputSupport.computeCustomViewState(this.globe,
                newEyePoint, newCenterPoint, up);
       if (!validateModelCoordinates(modelCoords)) {
          final String message = Logging.getMessage("View.ErrorSettingOrientation", eyePos, centerPosition);
@@ -368,7 +369,7 @@ public class GCustomView
                         * dc.getVerticalExaggeration());
 
       if (viewportCenterPoint != null) {
-         final Matrix modelviewMat = CustomViewInputSupport.computeTransformMatrix(this.globe, this._center, this.heading,
+         final Matrix modelviewMat = GCustomViewInputSupport.computeTransformMatrix(this.globe, this._center, this.heading,
                   this.pitch, this._zoom);
          if (modelviewMat != null) {
             final Matrix modelviewInvMat = modelviewMat.getInverse();
@@ -382,7 +383,7 @@ public class GCustomView
                final double distance = eyePoint.distanceTo3(viewportCenterPoint);
                final Vec4 newCenterPoint = Vec4.fromLine3(eyePoint, distance, forward);
 
-               final CustomViewInputSupport.CustomViewState modelCoords = CustomViewInputSupport.computeCustomViewState(
+               final GCustomViewInputSupport.CustomViewState modelCoords = GCustomViewInputSupport.computeCustomViewState(
                         this.globe, modelviewMat, newCenterPoint);
                if (validateModelCoordinates(modelCoords)) {
                   setModelCoordinates(modelCoords);
@@ -418,7 +419,7 @@ public class GCustomView
          return;
       }
 
-      final Matrix modelviewMat = CustomViewInputSupport.computeTransformMatrix(this.globe, this._center, this.heading,
+      final Matrix modelviewMat = GCustomViewInputSupport.computeTransformMatrix(this.globe, this._center, this.heading,
                this.pitch, this._zoom);
       if (modelviewMat != null) {
          final Matrix modelviewInvMat = modelviewMat.getInverse();
@@ -431,7 +432,7 @@ public class GCustomView
             final Intersection[] intersections = this.dc.getSurfaceGeometry().intersect(new Line(eyePoint, forward));
             if ((intersections != null) && (intersections.length > 0)) {
                final Vec4 viewportCenterPoint = intersections[0].getIntersectionPoint();
-               final CustomViewInputSupport.CustomViewState modelCoords = CustomViewInputSupport.computeCustomViewState(
+               final GCustomViewInputSupport.CustomViewState modelCoords = GCustomViewInputSupport.computeCustomViewState(
                         this.globe, modelviewMat, viewportCenterPoint);
                if (validateModelCoordinates(modelCoords)) {
                   setModelCoordinates(modelCoords);
@@ -444,7 +445,7 @@ public class GCustomView
 
    @Override
    public double getZoom() {
-      return this._zoom;
+      return _zoom;
    }
 
 
@@ -463,7 +464,10 @@ public class GCustomView
 
       this._center = normalizedCenterPosition(center);
       this._center = GCustomViewLimits.limitCenterPosition(this._center, this.getOrbitViewLimits());
-      //resolveCollisionsWithCenterPosition();
+
+      if (_inputState.isDetectCollisions()) {
+         resolveCollisionsWithCenterPosition();
+      }
 
    }
 
@@ -478,7 +482,9 @@ public class GCustomView
 
       this.heading = normalizedHeading(newHeading);
       this.heading = BasicViewPropertyLimits.limitHeading(this.heading, this.getOrbitViewLimits());
-      //resolveCollisionsWithPitch();
+      if (_inputState.isDetectCollisions()) {
+         resolveCollisionsWithPitch();
+      }
    }
 
 
@@ -492,7 +498,9 @@ public class GCustomView
 
       this.pitch = normalizedPitch(newPitch);
       this.pitch = BasicViewPropertyLimits.limitPitch(this.pitch, this.getOrbitViewLimits());
-      //resolveCollisionsWithPitch();
+      if (_inputState.isDetectCollisions()) {
+         resolveCollisionsWithPitch();
+      }
    }
 
 
@@ -506,7 +514,9 @@ public class GCustomView
 
       this._zoom = newZoom;
       this._zoom = GCustomViewLimits.limitZoom(this._zoom, this.getOrbitViewLimits());
-      //resolveCollisionsWithCenterPosition();
+      if (_inputState.isDetectCollisions()) {
+         resolveCollisionsWithCenterPosition();
+      }
 
    }
 
@@ -678,7 +688,7 @@ public class GCustomView
       this.globe = this.dc.getGlobe();
       //========== modelview matrix state ==========//
       // Compute the current modelview matrix.
-      this.modelview = CustomViewInputSupport.computeTransformMatrix(this.globe, this._center, this.heading, this.pitch,
+      this.modelview = GCustomViewInputSupport.computeTransformMatrix(this.globe, this._center, this.heading, this.pitch,
                this._zoom);
       if (this.modelview == null) {
          this.modelview = Matrix.IDENTITY;
@@ -812,7 +822,21 @@ public class GCustomView
    }
 
 
-   protected void setModelCoordinates(final CustomViewInputSupport.CustomViewState modelCoords) {
+   @Override
+   protected double computeNearDistance(final Position eyePosition1) {
+      double near = 0;
+
+      if ((eyePosition1 != null) && (dc != null)) {
+         final double elevation = ViewUtil.computeElevationAboveSurface(dc, eyePosition1);
+         final double tanHalfFov = fieldOfView.tanHalfAngle();
+         near = elevation / (2 * Math.sqrt(2 * tanHalfFov * tanHalfFov + 1));
+      }
+
+      return (near < 0.001) ? 0.001 : near / 4;
+   }
+
+
+   protected void setModelCoordinates(final GCustomViewInputSupport.CustomViewState modelCoords) {
       if (modelCoords != null) {
          if (modelCoords.getCenterPosition() != null) {
             this._center = normalizedCenterPosition(modelCoords.getCenterPosition());
@@ -833,7 +857,7 @@ public class GCustomView
    }
 
 
-   protected boolean validateModelCoordinates(final CustomViewInputSupport.CustomViewState modelCoords) {
+   protected boolean validateModelCoordinates(final GCustomViewInputSupport.CustomViewState modelCoords) {
       return ((modelCoords != null) && (modelCoords.getCenterPosition() != null)
               && (modelCoords.getCenterPosition().getLatitude().degrees >= -90)
               && (modelCoords.getCenterPosition().getLatitude().degrees <= 90) && (modelCoords.getHeading() != null)
@@ -1077,5 +1101,46 @@ public class GCustomView
       ((GCustomViewInputHandler) this.viewInputHandler).addCenterAnimator(begin, end, lengthMillis, smoothed);
    }
 
+
+   private void resolveCollisionsWithCenterPosition() {
+      if (this.dc == null) {
+         return;
+      }
+
+      if (!isDetectCollisions()) {
+         return;
+      }
+
+
+      // If there is no collision, 'newCenterPosition' will be null. Otherwise it will contain a value
+      // that will resolve the collision.
+      final double nearDistance = computeNearDistance(this.getCurrentEyePosition());
+      final Position newCenter = _collisionSupport.computeCenterPositionToResolveCollision(this, nearDistance, this.dc);
+      if ((newCenter != null) && (newCenter.getLatitude().degrees >= -90) && (newCenter.getLongitude().degrees <= 90)) {
+         _center = newCenter;
+         flagHadCollisions();
+      }
+   }
+
+
+   protected void resolveCollisionsWithPitch() {
+      if (this.dc == null) {
+         return;
+      }
+
+      if (!isDetectCollisions()) {
+         return;
+      }
+
+      // Compute the near distance corresponding to the current set of values.
+      // If there is no collision, 'newPitch' will be null. Otherwise it will contain a value
+      // that will resolve the collision.
+      final double nearDistance = computeNearDistance(getCurrentEyePosition());
+      final Angle newPitch = _collisionSupport.computePitchToResolveCollision(this, nearDistance, this.dc);
+      if ((newPitch != null) && (newPitch.degrees <= 90) && (newPitch.degrees >= 0)) {
+         this.pitch = newPitch;
+         flagHadCollisions();
+      }
+   }
 
 }

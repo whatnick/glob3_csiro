@@ -38,20 +38,23 @@ package es.igosoftware.globe.view;
 
 public enum GInputState {
 
-   ORBIT("Standard Orbit View", true, false),
-   PANORAMICS("Panoramic", false, true);
+   ORBIT("Standard Orbit View", true, false, true),
+   PANORAMICS("Panoramic", false, true, false);
 
    private final String  _stateName;
    private final boolean _isMoving;
    private final boolean _isPanoramicZoom;
+   private final boolean _isDetectCollisions;
 
 
    private GInputState(final String stateName,
                        final boolean isMoving,
-                       final boolean isPanoramicZoom) {
+                       final boolean isPanoramicZoom,
+                       final boolean isDetectCollisions) {
       _stateName = stateName;
       _isMoving = isMoving;
       _isPanoramicZoom = isPanoramicZoom;
+      _isDetectCollisions = isDetectCollisions;
    }
 
 
@@ -67,6 +70,11 @@ public enum GInputState {
 
    public boolean isPanoramicZoom() {
       return _isPanoramicZoom;
+   }
+
+
+   public boolean isDetectCollisions() {
+      return _isDetectCollisions;
    }
 
 
