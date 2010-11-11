@@ -192,10 +192,8 @@ public class GPanoramicLayer
             panoramicsBounds.add(panoramic.getGlobalBounds());
          }
          final Sphere totalbounds = Sphere.createBoundingSphere(panoramicsBounds);
-         final View view = GGlobeApplication.instance().getView();
-         view.goTo(
-                  (view.getGlobe().computePositionFromPoint(totalbounds.getCenter())),
-                  ((totalbounds.getDiameter() / Math.cos(view.getFieldOfView().radians)) * (view.getViewport().width / view.getViewport().height)));
+         final GCustomView customView = (GCustomView) GGlobeApplication.instance().getView();
+         customView.goTo(totalbounds);
       }
    }
 
