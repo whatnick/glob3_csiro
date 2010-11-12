@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="lib" path="lib/jai_codec.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jai_core.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/52n-wps-config-1.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/52n-wps-xml-1.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/bsh-2.0b4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/epsgraphics.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/flowmap.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/gmlpacket-2.0-0.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/j3dcore.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/jcommon-1.0.14.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/jcs-1.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/jep-2.4.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/jfreechart-1.0.11.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/jgraph.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/jsr108-0.01.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/jsr173_api-1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/jts-1.9.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/kxml2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/libDocEngines-0.6-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/libMath-0.6-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/prefuse.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/prefusex.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/sextante_fireSimulation-0.6-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/sextante_flowTools-0.6-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/sextante_geosocial-0.6-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/sextante_gridAnalysis-0.6-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/sextante_gridCalculus-0.6-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/sextante_gridCategorical-0.6-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/sextante_gridStatistics-0.6-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/sextante_gridTools-0.6-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/sextante_gui-0.6-SNAPSHOT.jar" sourcepath="E:/projects/sextante/workspaces/gvsig_1_9/sextante_gui"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/sextante_hydrology-0.6-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/sextante_imageAnalysis-0.6-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/sextante_lighting-0.6-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/sextante_locate-0.6-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/sextante_morphometry-0.6-SNAPSHOT.jar" sourcepath="C:/projects/sextante/workspaces/gvsig_1_9/morphometry"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/sextante_pointAnalysis-0.6-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/sextante_profiles-0.6-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/sextante_rasterize-0.6-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/sextante_simulationTools-0.6-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/sextante_statisticalMethods-0.6-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/sextante_tables-0.6-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/sextante_tin-0.6-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/sextante_topology-0.6-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/sextante_vectorize-0.6-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/sextante_vectorTools-0.6-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/sextante_vegetationIndices-0.6-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/sextante_wps-0.6-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/sextante-0.6-SNAPSHOT.jar" sourcepath="E:/projects/sextante/workspaces/gvsig_1_9/sextante"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/TableLayout-bin-jdk1.5-2007-04-21.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/vecmath-1.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/xbean-2.2.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/xercesImpl-2.7.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/xsd-2.2.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/geonames-1.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/jcalendar.jar"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/euclid"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/igolibs"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/globe"/>
+	<classpathentry exported="true" kind="lib" path="lib/jdom-1.0.jar"/>
+	<classpathentry kind="lib" path="/globe/libs/jogl/gluegen-rt.jar"/>
+	<classpathentry kind="lib" path="/globe/libs/jogl/jogl.jar"/>
+	<classpathentry kind="lib" path="/globe/libs/worldwind.jar" sourcepath="/home/dgd/Escritorio/IGO-Repository/ww"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
