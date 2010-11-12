@@ -55,6 +55,7 @@ import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Box;
 import gov.nasa.worldwind.geom.Cylinder;
 import gov.nasa.worldwind.geom.Extent;
+import gov.nasa.worldwind.geom.LatLon;
 import gov.nasa.worldwind.geom.Matrix;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Sector;
@@ -294,6 +295,28 @@ public final class GWWUtils {
                                     final double deltaNorthing,
                                     final double deltaElevation) {
       return increment(position, deltaEasting, deltaNorthing, deltaElevation, EARTH);
+   }
+
+
+   public static LatLon increment(final LatLon position,
+                                  final double deltaEasting,
+                                  final double deltaNorthing,
+                                  final Globe globe) {
+      final UTMCoord utm = UTMCoord.fromLatLon(position.latitude, position.longitude, globe);
+
+      final double newEasting = utm.getEasting() + deltaEasting;
+      final double newNorthing = utm.getNorthing() + deltaNorthing;
+
+      final UTMCoord newUTM = UTMCoord.fromUTM(utm.getZone(), utm.getHemisphere(), newEasting, newNorthing, globe);
+
+      return new LatLon(newUTM.getLatitude(), newUTM.getLongitude());
+   }
+
+
+   public static LatLon increment(final LatLon position,
+                                  final double deltaEasting,
+                                  final double deltaNorthing) {
+      return increment(position, deltaEasting, deltaNorthing, EARTH);
    }
 
 

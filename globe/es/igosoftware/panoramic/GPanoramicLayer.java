@@ -58,6 +58,7 @@ import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 import gov.nasa.worldwind.geom.Frustum;
 import gov.nasa.worldwind.geom.Line;
 import gov.nasa.worldwind.geom.Sector;
+import gov.nasa.worldwind.geom.Sphere;
 import gov.nasa.worldwind.globes.Globe;
 import gov.nasa.worldwind.layers.AbstractLayer;
 import gov.nasa.worldwind.layers.Layer;
@@ -80,7 +81,11 @@ public class GPanoramicLayer
             IGlobeVectorLayer {
 
 
+   private final String           _name;
    private final List<GPanoramic> _panoramics     = new ArrayList<GPanoramic>();
+
+   //private final List<Sphere>     _panoramicsBounds = new ArrayList<Sphere>();
+
    private final GElevationAnchor _anchor;
    private Globe                  _lastGlobe;
    private double                 _lastVerticalExaggeration;
@@ -94,10 +99,19 @@ public class GPanoramicLayer
    private static final double    DEFAULT_OPACITY = 0.75;
 
 
-   public GPanoramicLayer(final GElevationAnchor anchor) {
+   public GPanoramicLayer(final String name,
+                          final GElevationAnchor anchor) {
       GAssert.notNull(anchor, "anchor");
+
+      _name = name;
       _anchor = anchor;
       setOpacity(DEFAULT_OPACITY);
+   }
+
+
+   @Override
+   public String getName() {
+      return _name;
    }
 
 
@@ -116,6 +130,7 @@ public class GPanoramicLayer
          throw new RuntimeException("A Panoramic with the name " + panoramic.getName() + " already exists!!");
       }
       _panoramics.add(panoramic);
+
    }
 
 
@@ -170,8 +185,16 @@ public class GPanoramicLayer
 
    @Override
    public void doDefaultAction(final IGlobeApplication application) {
-      // TODO Auto-generated method stub
 
+      if (isEnabled()) {
+         final List<Sphere> panoramicsBounds = new ArrayList<Sphere>();
+         for (final GPanoramic panoramic : _panoramics) {
+            panoramicsBounds.add(panoramic.getGlobalBounds());
+         }
+         final Sphere totalbounds = Sphere.createBoundingSphere(panoramicsBounds);
+         final GCustomView customView = (GCustomView) GGlobeApplication.instance().getView();
+         customView.goTo(totalbounds);
+      }
    }
 
 
@@ -311,7 +334,6 @@ public class GPanoramicLayer
       double closestDistance = Double.MAX_VALUE;
       GPanoramic pickedPanoramic = null;
       for (final GPanoramic panoramic : _panoramics) {
-         //         if (panoramic.isVisible(null, isAtMaxResolution()))
          if (panoramic.getGlobalBounds().intersects(ray)) {
             final double currentDistance = panoramic.getCurrentDistanceFromEye();
             if (currentDistance < closestDistance) {
@@ -336,10 +358,10 @@ public class GPanoramicLayer
       if (!view.hasCameraState()) {
          view.saveCameraState();
       }
+
       application.jumpTo(panoramic.getPosition(), 0);
       view.setInputState(GInputState.PANORAMICS);
       view.setOrbitViewLimits(new GPanoramicViewLimits());
-      //      final GPanoramicLayer panoramicLayer = getPanoramicLayer();
       hideOtherLayers(this);
       this.hideOtherPanoramics(panoramic);
    }
@@ -404,5 +426,6 @@ public class GPanoramicLayer
          layer.setEnabled(true);
       }
    }
+
 
 }

@@ -41,10 +41,6 @@ public interface IVectorI<VectorT> {
    public String asParseableString();
 
 
-   @Override
-   public boolean equals(final Object obj);
-
-
    public boolean greaterOrEquals(final VectorT that);
 
 

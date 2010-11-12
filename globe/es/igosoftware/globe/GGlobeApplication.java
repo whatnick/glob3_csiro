@@ -95,11 +95,13 @@ import es.igosoftware.util.Logger;
 import es.igosoftware.utils.GSwingUtils;
 import es.igosoftware.utils.GWrapperFontSet;
 import gov.nasa.worldwind.BasicModel;
+import gov.nasa.worldwind.Configuration;
 import gov.nasa.worldwind.Model;
 import gov.nasa.worldwind.SceneController;
 import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
+import gov.nasa.worldwind.examples.sunlight.RectangularNormalTessellator;
 import gov.nasa.worldwind.examples.util.StatusLayer;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
@@ -125,6 +127,12 @@ public abstract class GGlobeApplication
 
 
    private static final Logger LOGGER           = Logger.instance();
+
+   static {
+      Configuration.setValue(AVKey.VIEW_CLASS_NAME, GCustomView.class.getName());
+
+      Configuration.setValue(AVKey.TESSELLATOR_CLASS_NAME, RectangularNormalTessellator.class.getName());
+   }
 
 
    private static class IconKey {
@@ -1218,7 +1226,7 @@ public abstract class GGlobeApplication
          return;
       }
 
-      final double w = 0.5 * sector.getDeltaLonRadians() * 6378137.0;
+      final double w = 0.5 * sector.getDeltaLonRadians() * globe.getEquatorialRadius();
       final double altitude = w / view.getFieldOfView().tanHalfAngle();
       goTo(new Position(sector.getCentroid(), 0), Angle.ZERO, Angle.ZERO, altitude);
    }

@@ -59,9 +59,7 @@ import es.igosoftware.globe.modules.view.GAnaglyphViewerModule;
 import es.igosoftware.globe.modules.view.GFlatWorldModule;
 import es.igosoftware.globe.modules.view.GShowLatLonGraticuleModule;
 import es.igosoftware.globe.modules.view.GShowUTMGraticuleModule;
-import es.igosoftware.globe.utils.GAreasEventsLayer;
 import es.igosoftware.globe.view.customView.GCustomView;
-import es.igosoftware.globe.view.customView.GCustomViewLimits;
 import es.igosoftware.io.GPointsCloudFileLoader;
 import es.igosoftware.loading.G3DModel;
 import es.igosoftware.loading.GModelLoadException;
@@ -81,7 +79,6 @@ import es.igosoftware.util.GUtils;
 import gov.nasa.worldwind.AnaglyphSceneController;
 import gov.nasa.worldwind.Configuration;
 import gov.nasa.worldwind.avlist.AVKey;
-import gov.nasa.worldwind.examples.sunlight.RectangularNormalTessellator;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.LayerList;
@@ -95,11 +92,6 @@ public class GGlobeDemo
 
    static {
       Configuration.setValue(AVKey.SCENE_CONTROLLER_CLASS_NAME, AnaglyphSceneController.class.getName());
-
-      //Configuration.setValue(AVKey.VIEW_CLASS_NAME, GBasicOrbitView.class.getName());
-      Configuration.setValue(AVKey.VIEW_CLASS_NAME, GCustomView.class.getName());
-
-      Configuration.setValue(AVKey.TESSELLATOR_CLASS_NAME, RectangularNormalTessellator.class.getName());
    }
 
 
@@ -111,12 +103,6 @@ public class GGlobeDemo
    public GGlobeDemo() {
       super("en");
 
-      //      final GBasicOrbitView view = (GBasicOrbitView) getWorldWindowGLCanvas().getView();
-      final GCustomView view = (GCustomView) getWorldWindowGLCanvas().getView();
-      //      view.setFieldOfView(Angle.fromDegrees(70));
-      view.setDetectCollisions(false);
-      view.setOrbitViewLimits(new GCustomViewLimits());
-      view.getViewInputHandler().setStopOnFocusLost(false);
    }
 
 
@@ -185,13 +171,16 @@ public class GGlobeDemo
       //      loadVideo3DModel(video3DLayer);
       //      layers.add(video3DLayer);
 
+      //
+      //      final GAreasEventsLayer areasEventsLayer = new GAreasEventsLayer();
+      //      layers.add(areasEventsLayer);
 
-      final GAreasEventsLayer areasEventsLayer = new GAreasEventsLayer();
-      layers.add(areasEventsLayer);
-
-      final GPanoramicLayer panoramicLayer = new GPanoramicLayer(GElevationAnchor.SURFACE);
+      final GPanoramicLayer panoramicLayer = new GPanoramicLayer("Panoramics", GElevationAnchor.SURFACE);
       panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", "data/panoramics/example", 1000,
                new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710), 0)));
+      //
+      //      panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic 2", "data/panoramics/example", 1000,
+      //               new Position(Angle.fromDegrees(39.0), Angle.fromDegrees(-6.3710), 0)));
       //      panoramicLayer.setRenderWireframe(true);
       //      panoramicLayer.setRenderNormals(true);
       layers.add(panoramicLayer);
@@ -400,7 +389,7 @@ public class GGlobeDemo
 
 
    private static void checkDataDirectory() {
-      final File dataDirectory = new File("datadd");
+      final File dataDirectory = new File("data");
       if (!dataDirectory.exists()) {
          final String message = "Can't find the directory data\n\n"
                                 + "- Go to http://sourceforge.net/projects/glob3/files_beta/globe-demo/\n"
