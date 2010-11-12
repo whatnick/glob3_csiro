@@ -102,7 +102,6 @@ public class GGlobeDemo
 
    public GGlobeDemo() {
       super("en");
-
    }
 
 
@@ -128,53 +127,44 @@ public class GGlobeDemo
    protected LayerList getDefaultLayers() {
       final LayerList layers = super.getDefaultLayers();
 
-      //      layers.getLayerByName("MS Virtual Earth Aerial").setEnabled(true);
+      // layers.getLayerByName("MS Virtual Earth Aerial").setEnabled(true);
 
-      //      layers.add(new OSMMapnikLayer());
+      // layers.add(new OSMMapnikLayer());
 
-      //      layers.add(new TerrainProfileLayer());
+      // layers.add(new TerrainProfileLayer());
 
-      //layers.add(new GPNOAWMSLayer(GPNOAWMSLayer.ImageFormat.JPEG));
+      // layers.add(new GPNOAWMSLayer(GPNOAWMSLayer.ImageFormat.JPEG));
 
-      final GPositionRenderableLayer caceres3DLayer = new GPositionRenderableLayer("Caceres 3D Model", true);
+
+      final GPositionRenderableLayer caceres3DLayer = createCaceres3DModelLayer();
       layers.add(caceres3DLayer);
-      caceres3DLayer.setEnabled(false);
+
+
+      final GPanoramicLayer panoramicLayer = createPanoramicLayer();
+      layers.add(panoramicLayer);
+
+
+      return layers;
+   }
+
+
+   private GPositionRenderableLayer createCaceres3DModelLayer() {
+      final GPositionRenderableLayer caceres3DLayer = new GPositionRenderableLayer("Caceres 3D Model", true);
+      //      caceres3DLayer.setEnabled(false);
 
       GConcurrent.getDefaultExecutor().submit(new Runnable() {
          @Override
          public void run() {
             loadCaceres3DModel(caceres3DLayer);
+            //            caceres3DLayer.setEnabled(true);
          }
       });
 
-      //      final GPositionRenderableLayer video3DLayer = new GPositionRenderableLayer("Videos", "video.png", true);
-      //      video3DLayer.setEnabled(false);
-      //
-      //      video3DLayer.addPickListener(new GPositionRenderableLayer.PickListener() {
-      //         @Override
-      //         public void picked(final List<GPositionRenderableLayer.PickResult> result) {
-      //            if (result.isEmpty()) {
-      //               return;
-      //            }
-      //
-      //            final GPositionRenderableLayer.PickResult nearestPickResult = result.get(0);
-      //
-      //            final Object userData = nearestPickResult.getUserData();
-      //
-      //            if (userData instanceof VideoData) {
-      //               showVideo((VideoData) userData);
-      //            }
-      //         }
-      //      });
-      //
-      //
-      //      loadVideo3DModel(video3DLayer);
-      //      layers.add(video3DLayer);
+      return caceres3DLayer;
+   }
 
-      //
-      //      final GAreasEventsLayer areasEventsLayer = new GAreasEventsLayer();
-      //      layers.add(areasEventsLayer);
 
+   private GPanoramicLayer createPanoramicLayer() {
       final GPanoramicLayer panoramicLayer = new GPanoramicLayer("Panoramics", GElevationAnchor.SURFACE);
       panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", "data/panoramics/example", 1000,
                new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0)));
@@ -182,28 +172,18 @@ public class GGlobeDemo
       panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic 2", "data/panoramics/example", 1000,
                new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3660), 0)));
 
-      layers.add(panoramicLayer);
-      panoramicLayer.setEnabled(false);
+      // panoramicLayer.setEnabled(false);
+
 
       panoramicLayer.addPickListener(new GPanoramicLayer.PickListener() {
-
          @Override
          public void picked(final GPanoramic pickedPanoramic) {
             if (pickedPanoramic != null) {
-
                panoramicLayer.enterPanoramic(pickedPanoramic, (GCustomView) getView());
-
             }
-
          }
       });
-
-      //      final GVideoLayer videoLayer = new GVideoLayer("Video", "videos/example.avi", new Position(Angle.fromDegrees(39.4737),
-      //               Angle.fromDegrees(-6.3710), 0), GElevationAnchor.SURFACE);
-      //      layers.add(videoLayer);
-
-
-      return layers;
+      return panoramicLayer;
    }
 
 
@@ -272,121 +252,6 @@ public class GGlobeDemo
    }
 
 
-   //   private static class VideoData {
-   //
-   //      private final String _videoName;
-   //
-   //
-   //      private VideoData(final String videoName) {
-   //         _videoName = videoName;
-   //      }
-   //
-   //   }
-
-
-   //   private void hackVideo3DDModel(final GModelData model,
-   //                                  final G3DModelNode modelNode,
-   //                                  final String videoName) {
-   //
-   //      modelNode.setPickableBoundsType(G3DModelNode.PickableBoundsType.SPHERE);
-   //
-   //      for (final GModelMesh mesh : model.getMeshes()) {
-   //         GMaterial material = mesh.getMaterial();
-   //
-   //         modelNode.addPickableMesh(mesh, new VideoData(videoName));
-   //
-   //         if (material == null) {
-   //            material = new GMaterial("Video Material");
-   //            mesh.setMaterial(material);
-   //         }
-   //
-   //         material._specularColor = Color.WHITE;
-   //         material._ambientColor = Color.RED;
-   //         material._diffuseColor = new Color(0.5f, 0.5f, 0.5f, 0.8f);
-   //         material._emissiveColor = new Color(0.3f, 0.3f, 0.3f);
-   //      }
-   //   }
-
-
-   //   private void showVideo(final VideoData videoData) {
-   //      System.out.println("SHOW VIDEO: " + videoData._videoName);
-   //
-   //      try {
-   //         Manager.setHint(Manager.LIGHTWEIGHT_RENDERER, true);
-   //
-   //         final URL url = new File(videoData._videoName).toURI().toURL();
-   //
-   //         final Player player = Manager.createRealizedPlayer(url);
-   //
-   //
-   //         final JFrame frame = new JFrame("Video Testing 0.1");
-   //         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-   //         frame.setIconImage(GUtils.getImage("../globe/bitmaps/icons/video.png", getClass().getClassLoader()));
-   //
-   //
-   //         final Component videoPlayer = player.getVisualComponent();
-   //         if (videoPlayer != null) {
-   //            frame.getContentPane().add(videoPlayer, BorderLayout.CENTER);
-   //         }
-   //
-   //
-   //         frame.addWindowListener(new WindowAdapter() {
-   //            @Override
-   //            public void windowClosed(final WindowEvent e) {
-   //               System.out.println("Closing video...");
-   //
-   //               if (videoPlayer != null) {
-   //                  frame.getContentPane().remove(videoPlayer);
-   //               }
-   //
-   //               player.stop();
-   //               player.deallocate();
-   //               player.close();
-   //            }
-   //         });
-   //
-   //         frame.setSize(640, 480);
-   //         frame.setVisible(true);
-   //
-   //         player.start();
-   //      }
-   //      catch (final IOException e) {
-   //         e.printStackTrace();
-   //      }
-   //      catch (final CannotRealizeException e) {
-   //         e.printStackTrace();
-   //      }
-   //      catch (final NoPlayerException e) {
-   //         e.printStackTrace();
-   //      }
-   //
-   //   }
-
-
-   //   private void loadVideo3DModel(final GPositionRenderableLayer layer) {
-   //      try {
-   //
-   //
-   //         final GModelData modelData = new GObjLoader().load("../globe/models/video.obj", true);
-   //
-   //         final G3DModel model = new G3DModel(modelData, true);
-   //         final G3DModelNode video3DModelNode = new G3DModelNode("Video3D", GTransformationOrder.ROTATION_SCALE_TRANSLATION, model);
-   //
-   //         hackVideo3DDModel(modelData, video3DModelNode, "videos/example.avi");
-   //
-   //         final GGroupNode caceres3DRootNode = new GGroupNode("Video3D Root", GTransformationOrder.ROTATION_SCALE_TRANSLATION);
-   //         //         caceres3DRootNode.setHeading(-90);
-   //         caceres3DRootNode.addChild(video3DModelNode);
-   //
-   //         layer.addNode(caceres3DRootNode, new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710), 0),
-   //                  GElevationAnchor.SURFACE);
-   //      }
-   //      catch (final GModelLoadException e) {
-   //         e.printStackTrace();
-   //      }
-   //   }
-
-
    private static void checkDataDirectory() {
       final File dataDirectory = new File("data");
       if (!dataDirectory.exists()) {
@@ -404,21 +269,20 @@ public class GGlobeDemo
    private static void loadMultidimensionalData() {
       try {
          //         final String[] valueVariablesNames = new String[] { "salt", "temp", "dens" };
-         //         final GNetCDFMultidimentionalData.VectorVariable[] vectorVariables = new GNetCDFMultidimentionalData.VectorVariable[] {
-         //         //                        new GNetCDFMultidimentionalData.VectorVariable("Wind Velocity", "wind_u", "wind_v"),
-         //         new GNetCDFMultidimentionalData.VectorVariable("Water Velocity", "u", "v") };
+         //         final GNetCDFMultidimentionalData.VectorVariable[] vectorVariables = new GNetCDFMultidimentionalData.VectorVariable[] { new GNetCDFMultidimentionalData.VectorVariable(
+         //                  "Water Velocity", "u", "v") };
          //
          //         final IMultidimensionalData cfData = new GNetCDFMultidimentionalData("data/mackenzie_depth_out_cf.nc", "longitude",
          //                  "latitude", "zc", "eta", valueVariablesNames, vectorVariables, "n", true, true);
 
-         final Position position = new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710), 0);
 
-         final IMultidimensionalData data = new G3DImageMultidimensionalData("Mr Head", "data/cthead-8bit", ".png", position, 10,
-                  10, 20);
+         final Position headPosition = new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710), 0);
+         final IMultidimensionalData headData = new G3DImageMultidimensionalData("Mr Head", "data/cthead-8bit", ".png",
+                  headPosition, 10, 10, 20);
 
-         _multidimentionaldata = new IMultidimensionalData[] { data };
-         //         _multidimentionaldata = new IMultidimensionalData[] { cfData, data };
 
+         //         _multidimentionaldata = new IMultidimensionalData[] { cfData, headData };
+         _multidimentionaldata = new IMultidimensionalData[] { headData };
       }
       catch (final IOException e) {
          e.printStackTrace();

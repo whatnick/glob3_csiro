@@ -304,6 +304,7 @@ public abstract class GNodeAbstract
          return parentMatrix;
       }
 
+      //      if ((parentMatrix == Matrix.IDENTITY) || (parentMatrix == null)) {
       if (parentMatrix == Matrix.IDENTITY) {
          return _localMatrix;
       }
