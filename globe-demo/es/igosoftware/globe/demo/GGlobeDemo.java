@@ -59,6 +59,7 @@ import es.igosoftware.globe.modules.view.GAnaglyphViewerModule;
 import es.igosoftware.globe.modules.view.GFlatWorldModule;
 import es.igosoftware.globe.modules.view.GShowLatLonGraticuleModule;
 import es.igosoftware.globe.modules.view.GShowUTMGraticuleModule;
+import es.igosoftware.globe.modules.view.ShowMeasureTool;
 import es.igosoftware.globe.view.customView.GCustomView;
 import es.igosoftware.io.GPointsCloudFileLoader;
 import es.igosoftware.loading.G3DModel;
@@ -96,8 +97,6 @@ public class GGlobeDemo
 
 
    private static IMultidimensionalData[] _multidimentionaldata;
-
-   private GGroupNode                     _caceres3DRootNode;
 
 
    public GGlobeDemo() {
@@ -211,9 +210,9 @@ public class GGlobeDemo
    public IGlobeModule[] getModules() {
       final Position homePosition = new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710), 0);
       final Angle heading = Angle.ZERO;
-      final Angle pitch = Angle.fromDegrees(90);
-      final double homeElevation = 1000;
-      final GHomePositionModule homePositionModule = new GHomePositionModule(homePosition, heading, pitch, homeElevation, false);
+      final Angle pitch = Angle.fromDegrees(45);
+      final double homeElevation = 2000;
+      final GHomePositionModule homePositionModule = new GHomePositionModule(homePosition, heading, pitch, homeElevation, true);
 
       final GPointsCloudFileLoader loader = new GPointsCloudFileLoader("data/pointsclouds");
 
@@ -222,13 +221,12 @@ public class GGlobeDemo
       return new IGlobeModule[] { homePositionModule, new GLayersManagerModule(), new GFullScreenModule(), pointsCloudModule,
                new GAnaglyphViewerModule(false), new GStatisticsModule(), new GFlatWorldModule(),
                new GShowLatLonGraticuleModule(), new GShowUTMGraticuleModule(),
-               new GMultidimensionalDataModule(_multidimentionaldata) };
+               new GMultidimensionalDataModule(_multidimentionaldata), new ShowMeasureTool() };
    }
 
 
    private void loadCaceres3DModel(final GPositionRenderableLayer layer) {
       try {
-
 
          final GModelData modelData = new GObjLoader().load("data/models/caceres3d.obj", true);
          hackCaceres3DModel(modelData);
@@ -237,14 +235,12 @@ public class GGlobeDemo
          final G3DModelNode caceres3DModelNode = new G3DModelNode("Caceres3D", GTransformationOrder.ROTATION_SCALE_TRANSLATION,
                   model);
 
-         _caceres3DRootNode = new GGroupNode("Caceres3D root", GTransformationOrder.ROTATION_SCALE_TRANSLATION);
-         _caceres3DRootNode.setHeading(-90);
-         _caceres3DRootNode.addChild(caceres3DModelNode);
+         final GGroupNode caceres3DRootNode = new GGroupNode("Caceres3D root", GTransformationOrder.ROTATION_SCALE_TRANSLATION);
+         caceres3DRootNode.setHeading(-90);
+         caceres3DRootNode.addChild(caceres3DModelNode);
 
-         layer.addNode(_caceres3DRootNode, new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710), 17.7 + 7),
+         layer.addNode(caceres3DRootNode, new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710), 24.7),
                   GElevationAnchor.SEA_LEVEL);
-         //         layer.addNode(caceres3DRootNode, new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710), 0),
-         //                  GElevationAnchor.SURFACE);
       }
       catch (final GModelLoadException e) {
          e.printStackTrace();
