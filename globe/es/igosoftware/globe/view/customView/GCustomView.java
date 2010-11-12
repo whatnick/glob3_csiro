@@ -37,13 +37,11 @@
 package es.igosoftware.globe.view.customView;
 
 import es.igosoftware.globe.GCameraState;
-import es.igosoftware.globe.GGlobeApplication;
 import es.igosoftware.globe.view.GInputState;
 import gov.nasa.worldwind.Configuration;
 import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.geom.Angle;
-import gov.nasa.worldwind.geom.Extent;
 import gov.nasa.worldwind.geom.Frustum;
 import gov.nasa.worldwind.geom.Intersection;
 import gov.nasa.worldwind.geom.Line;
@@ -981,22 +979,6 @@ public class GCustomView
    public void goTo(final Position position,
                     final double distance) {
       viewInputHandler.goTo(position, distance);
-   }
-
-
-   /**
-    * 
-    * @param extent
-    * 
-    *           Designed to position the camera in such a way that the entire <code>extent</code> is visible. Still needs some
-    *           work...
-    */
-   public void goTo(final Extent extent) {
-      final View view = GGlobeApplication.instance().getView();
-      view.goTo(
-               (view.getGlobe().computePositionFromPoint(extent.getCenter())),
-               ((extent.getDiameter() / Math.cos(view.getFieldOfView().radians)) * (view.getViewport().width / view.getViewport().height)));
-
    }
 
 

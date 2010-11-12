@@ -152,6 +152,17 @@ public class GPanoramicLayer
 
    @Override
    public Sector getExtent() {
+      if (isEnabled()) {
+         final List<Sphere> panoramicsBounds = new ArrayList<Sphere>();
+         for (final GPanoramic panoramic : _panoramics) {
+            panoramicsBounds.add(panoramic.getGlobalBounds());
+         }
+         final Globe globe = GGlobeApplication.instance().getGlobe();
+         final Sphere totalbounds = Sphere.createBoundingSphere(panoramicsBounds);
+         final Sector totalSector = Sector.boundingSector(globe, globe.computePositionFromPoint(totalbounds.getCenter()),
+                  totalbounds.getRadius());
+         return totalSector;
+      }
       return null;
    }
 
@@ -187,13 +198,7 @@ public class GPanoramicLayer
    public void doDefaultAction(final IGlobeApplication application) {
 
       if (isEnabled()) {
-         final List<Sphere> panoramicsBounds = new ArrayList<Sphere>();
-         for (final GPanoramic panoramic : _panoramics) {
-            panoramicsBounds.add(panoramic.getGlobalBounds());
-         }
-         final Sphere totalbounds = Sphere.createBoundingSphere(panoramicsBounds);
-         final GCustomView customView = (GCustomView) GGlobeApplication.instance().getView();
-         customView.goTo(totalbounds);
+         application.zoomToSector(getExtent());
       }
    }
 

@@ -34,7 +34,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="libs/jogl/jogl.jar"/>
-	<classpathentry kind="lib" path="libs/worldwind.jar" sourcepath="/home/dgd/Desktop/IGO-Repository/ww"/>
+	<classpathentry kind="lib" path="libs/worldwind.jar" sourcepath="/home/oliver/Desktop/IGO-Repository/ww"/>
 	<classpathentry kind="lib" path="libs/netcdf/netcdf-4.2.jar"/>
 	<classpathentry kind="lib" path="libs/netcdf/slf4j-api-1.5.6.jar"/>
 	<classpathentry kind="lib" path="libs/netcdf/slf4j-jdk14-1.5.6.jar"/>

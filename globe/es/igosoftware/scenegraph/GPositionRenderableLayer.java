@@ -46,7 +46,6 @@ import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.globe.layers.Feature;
 import es.igosoftware.globe.layers.GVectorRenderer;
-import es.igosoftware.globe.view.customView.GCustomView;
 import es.igosoftware.scenegraph.utils.GPrintSceneGraphStructureVisitor;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.utils.GWWUtils;
@@ -479,6 +478,17 @@ public class GPositionRenderableLayer
 
    @Override
    public Sector getExtent() {
+      if (isEnabled()) {
+         final List<Sphere> objectsBounds = new ArrayList<Sphere>();
+         for (final NodeAndPosition nodeAndPosition : _rootNodes) {
+            objectsBounds.add(nodeAndPosition.getBoundingSphere());
+         }
+         final Globe globe = GGlobeApplication.instance().getGlobe();
+         final Sphere totalbounds = Sphere.createBoundingSphere(objectsBounds);
+         final Sector totalSector = Sector.boundingSector(globe, globe.computePositionFromPoint(totalbounds.getCenter()),
+                  totalbounds.getRadius());
+         return totalSector;
+      }
       return null;
    }
 
@@ -611,13 +621,7 @@ public class GPositionRenderableLayer
    @Override
    public void doDefaultAction(final IGlobeApplication application) {
       if (isEnabled()) {
-         final List<Sphere> objectsBounds = new ArrayList<Sphere>();
-         for (final NodeAndPosition nodeAndPosition : _rootNodes) {
-            objectsBounds.add(nodeAndPosition.getBoundingSphere());
-         }
-         final Sphere totalbounds = Sphere.createBoundingSphere(objectsBounds);
-         final GCustomView customView = (GCustomView) GGlobeApplication.instance().getView();
-         customView.goTo(totalbounds);
+         application.zoomToSector(getExtent());
       }
    }
 
