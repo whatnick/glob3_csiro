@@ -73,7 +73,6 @@ import org.geonames.ToponymSearchResult;
 import org.geonames.WebService;
 
 import es.igosoftware.globe.IGlobeApplication;
-import es.igosoftware.utils.LayerUtils;
 
 
 public class GeonamesPanel
@@ -154,7 +153,7 @@ public class GeonamesPanel
                      final Sector sector = new Sector(Angle.fromDegrees(toponym.getLatitude() - .05),
                               Angle.fromDegrees(toponym.getLatitude() + .05), Angle.fromDegrees(toponym.getLongitude() - .05),
                               Angle.fromDegrees(toponym.getLongitude() + .05));
-                     LayerUtils.zoomTo(m_Application.getWorldWindowGLCanvas(), sector);
+                     m_Application.zoomToSector(sector);
                   }
                }
 
@@ -213,7 +212,7 @@ public class GeonamesPanel
             layer.setName(SEARCH_LAYER_NAME);
             m_Application.getLayerList().add(layer);
          }
-         LayerUtils.zoomTo(m_Application.getWorldWindowGLCanvas(), totalSector);
+         m_Application.zoomToSector(totalSector);
       }
       catch (final Exception e) {
       }
