@@ -1,3 +1,5 @@
+
+
 package es.unex.s3xtante.modules.sextante.bindings;
 
 import java.io.File;
@@ -8,6 +10,7 @@ import javax.swing.table.DefaultTableModel;
 import es.unex.s3xtante.tables.CSVFileTools;
 import es.unex.sextante.dataObjects.AbstractTable;
 import es.unex.sextante.dataObjects.IRecordsetIterator;
+
 
 public class WWTable
          extends
@@ -38,7 +41,6 @@ public class WWTable
 
    public void create(final String sName,
                       final String sFilename,
-                      final Class<?>[] fields,
                       final String[] sFields) {
 
       try {

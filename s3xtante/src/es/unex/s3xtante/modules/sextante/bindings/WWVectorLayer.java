@@ -1,3 +1,5 @@
+
+
 package es.unex.s3xtante.modules.sextante.bindings;
 
 import java.awt.geom.Rectangle2D;
@@ -49,6 +51,7 @@ import es.unex.sextante.dataObjects.AbstractVectorLayer;
 import es.unex.sextante.dataObjects.IFeatureIterator;
 import es.unex.sextante.dataObjects.IVectorLayer;
 
+
 public class WWVectorLayer
          extends
             AbstractVectorLayer {
@@ -70,7 +73,6 @@ public class WWVectorLayer
 
 
    public void create(final String sName,
-                      final int iShapeType,
                       final GField[] fields,
                       final String filename,
                       final Object crs) {
@@ -93,11 +95,13 @@ public class WWVectorLayer
 
 
    @Override
-   public void open() {}
+   public void open() {
+   }
 
 
    @Override
-   public void close() {}
+   public void close() {
+   }
 
 
    @Override

@@ -1,3 +1,5 @@
+
+
 package es.unex.s3xtante.modules.sextante.bindings;
 
 import javax.swing.JDialog;
@@ -13,6 +15,7 @@ import es.unex.sextante.gui.core.DefaultTaskMonitor;
 import es.unex.sextante.outputs.FileOutputChannel;
 import es.unex.sextante.outputs.IOutputChannel;
 import es.unex.sextante.rasterWrappers.GridExtent;
+
 
 public class WWOutputFactory
          extends
@@ -34,7 +37,7 @@ public class WWOutputFactory
       if (channel instanceof FileOutputChannel) {
          final String sFilename = ((FileOutputChannel) channel).getFilename();
          final WWVectorLayer vectorLayer = new WWVectorLayer();
-         vectorLayer.create(sName, iShapeType, fields, sFilename, crs);
+         vectorLayer.create(sName, fields, sFilename, crs);
          return vectorLayer;
       }
       throw new UnsupportedOutputChannelException();
@@ -78,7 +81,7 @@ public class WWOutputFactory
       if (channel instanceof FileOutputChannel) {
          final String sFilename = ((FileOutputChannel) channel).getFilename();
          final WWTable table = new WWTable();
-         table.create(sName, sFilename, types, sFields);
+         table.create(sName, sFilename, sFields);
          return table;
       }
       throw new UnsupportedOutputChannelException();
