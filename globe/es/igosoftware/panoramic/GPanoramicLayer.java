@@ -178,7 +178,6 @@ public class GPanoramicLayer
 
    @Override
    public List<ILayerAttribute<?>> getLayerAttributes(final IGlobeApplication application) {
-      // TODO Auto-generated method stub
       return null;
    }
 
@@ -200,21 +199,18 @@ public class GPanoramicLayer
 
    @Override
    public List<ILayerAction> getLayerActions(final IGlobeApplication application) {
-      // TODO Auto-generated method stub
       return null;
    }
 
 
    @Override
    public GField[] getFields() {
-      // TODO Auto-generated method stub
       return null;
    }
 
 
    @Override
    public GVectorRenderer getRenderer() {
-      // TODO Auto-generated method stub
       return null;
    }
 
@@ -227,7 +223,6 @@ public class GPanoramicLayer
 
    @Override
    public Feature[] getFeatures() {
-      // TODO Auto-generated method stub
       return null;
    }
 
