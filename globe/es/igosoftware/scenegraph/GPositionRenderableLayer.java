@@ -146,6 +146,10 @@ public class GPositionRenderableLayer
 
 
       public Sphere getBoundingSphere() {
+         if (_modelCoordinateOriginTransform == null) {
+            return null;
+         }
+
          return _rootNode.getBoundsInModelCoordinates(_modelCoordinateOriginTransform, false);
       }
 
@@ -478,17 +482,33 @@ public class GPositionRenderableLayer
 
    @Override
    public Sector getExtent() {
+
+      if (_rootNodes.isEmpty()) {
+         return null;
+      }
+
       if (isEnabled()) {
          final List<Sphere> objectsBounds = new ArrayList<Sphere>();
+
          for (final NodeAndPosition nodeAndPosition : _rootNodes) {
-            objectsBounds.add(nodeAndPosition.getBoundingSphere());
+            final Sphere boundingSphere = nodeAndPosition.getBoundingSphere();
+            if (boundingSphere != null) {
+               objectsBounds.add(boundingSphere);
+            }
          }
+
+         if (objectsBounds.isEmpty()) {
+            return null;
+         }
+
          final Globe globe = GGlobeApplication.instance().getGlobe();
          final Sphere totalbounds = Sphere.createBoundingSphere(objectsBounds);
          final Sector totalSector = Sector.boundingSector(globe, globe.computePositionFromPoint(totalbounds.getCenter()),
                   totalbounds.getRadius());
+
          return totalSector;
       }
+
       return null;
    }
 
