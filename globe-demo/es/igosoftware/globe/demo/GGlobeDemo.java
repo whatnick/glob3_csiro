@@ -165,12 +165,12 @@ public class GGlobeDemo
 
 
    private GPanoramicLayer createPanoramicLayer() {
-      final GPanoramicLayer panoramicLayer = new GPanoramicLayer("Panoramics", GElevationAnchor.SURFACE);
+      final GPanoramicLayer panoramicLayer = new GPanoramicLayer("Panoramics");
       panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", "data/panoramics/example", 1000,
                new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0)));
 
-      panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic 2", "data/panoramics/example", 1000,
-               new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3660), 0)));
+      //      panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic 2", "data/panoramics/example", 1000,
+      //               new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3660), 0)));
 
       // panoramicLayer.setEnabled(false);
 

@@ -176,7 +176,6 @@ public class GPositionRenderableLayer
 
       private void render(final DrawContext dc,
                           final boolean terrainChanged) {
-
          asureModelCoordinateOriginTransform(dc, terrainChanged);
 
          _rootNode.render(dc, _modelCoordinateOriginTransform, terrainChanged);
@@ -209,6 +208,9 @@ public class GPositionRenderableLayer
             final double verticalExaggeration = dc.getVerticalExaggeration();
             _modelCoordinateOriginTransform = GWWUtils.computeModelCoordinateOriginTransform(position, globe,
                      verticalExaggeration);
+            //            if (_modelCoordinateOriginTransform != null) {
+            //               System.out.println("_modelCoordinateOriginTransform has been initialized");
+            //            }
          }
       }
 

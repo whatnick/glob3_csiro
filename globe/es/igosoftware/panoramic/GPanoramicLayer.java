@@ -50,12 +50,9 @@ import es.igosoftware.globe.view.GBasicOrbitViewLimits;
 import es.igosoftware.globe.view.GInputState;
 import es.igosoftware.globe.view.GPanoramicViewLimits;
 import es.igosoftware.globe.view.customView.GCustomView;
-import es.igosoftware.scenegraph.GElevationAnchor;
-import es.igosoftware.util.GAssert;
 import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
-import gov.nasa.worldwind.geom.Frustum;
 import gov.nasa.worldwind.geom.Line;
 import gov.nasa.worldwind.geom.Sector;
 import gov.nasa.worldwind.geom.Sphere;
@@ -86,10 +83,10 @@ public class GPanoramicLayer
 
    //private final List<Sphere>     _panoramicsBounds = new ArrayList<Sphere>();
 
-   private final GElevationAnchor _anchor;
-   private Globe                  _lastGlobe;
-   private double                 _lastVerticalExaggeration;
-   private Frustum                _lastFrustum;
+   //private final GElevationAnchor _anchor;
+   //   private Globe                  _lastGlobe;
+   //   private double                 _lastVerticalExaggeration;
+   //   private Frustum                _lastFrustum;
    private List<PickListener>     _pickListeners;
 
    private final Set<Layer>       _hiddenLayers   = new HashSet<Layer>();
@@ -99,12 +96,11 @@ public class GPanoramicLayer
    private static final double    DEFAULT_OPACITY = 0.75;
 
 
-   public GPanoramicLayer(final String name,
-                          final GElevationAnchor anchor) {
-      GAssert.notNull(anchor, "anchor");
+   public GPanoramicLayer(final String name) {
+      //      GAssert.notNull(anchor, "anchor");
 
       _name = name;
-      _anchor = anchor;
+      //      _anchor = anchor;
       setOpacity(DEFAULT_OPACITY);
    }
 
@@ -115,14 +111,14 @@ public class GPanoramicLayer
    }
 
 
-   public GElevationAnchor getElevationAnchor() {
-      return _anchor;
-   }
-
-
-   public Globe getGlobe() {
-      return _lastGlobe;
-   }
+   //   public GElevationAnchor getElevationAnchor() {
+   //      return _anchor;
+   //   }
+   //
+   //
+   //   public Globe getGlobe() {
+   //      return _lastGlobe;
+   //   }
 
 
    public void addPanoramic(final GPanoramic panoramic) {
@@ -232,40 +228,40 @@ public class GPanoramicLayer
    }
 
 
-   public boolean isTerrainChanged(final DrawContext dc) {
-
-      final Globe globe = dc.getGlobe();
-      final double verticalExaggeration = dc.getVerticalExaggeration();
-
-      final boolean terrainChanged;
-
-      final boolean checkViewport = (_anchor == GElevationAnchor.SURFACE);
-      if (checkViewport) {
-         //         final Rectangle currentViewport = dc.getView().getViewport();
-
-         final Frustum currentFustum = dc.getView().getFrustumInModelCoordinates();
-
-         //         terrainChanged = ((globe != _lastGlobe) || (verticalExaggeration != _lastVerticalExaggeration) || (!currentViewport.equals(_lastViewport)));
-         //         terrainChanged = ((globe != _lastGlobe) || (verticalExaggeration != _lastVerticalExaggeration) || (currentFustum != _lastFrustum));
-         terrainChanged = ((globe != _lastGlobe) || (verticalExaggeration != _lastVerticalExaggeration) || (!currentFustum.equals(_lastFrustum)));
-
-         if (terrainChanged) {
-            _lastGlobe = globe;
-            _lastVerticalExaggeration = verticalExaggeration;
-            _lastFrustum = currentFustum;
-         }
-      }
-      else {
-         terrainChanged = ((globe != _lastGlobe) || (verticalExaggeration != _lastVerticalExaggeration));
-
-         if (terrainChanged) {
-            _lastGlobe = globe;
-            _lastVerticalExaggeration = verticalExaggeration;
-         }
-      }
-
-      return terrainChanged;
-   }
+   //   public boolean isTerrainChanged(final DrawContext dc) {
+   //
+   //      final Globe globe = dc.getGlobe();
+   //      final double verticalExaggeration = dc.getVerticalExaggeration();
+   //
+   //      final boolean terrainChanged;
+   //
+   //      final boolean checkViewport = (_anchor == GElevationAnchor.SURFACE);
+   //      if (checkViewport) {
+   //         //         final Rectangle currentViewport = dc.getView().getViewport();
+   //
+   //         final Frustum currentFustum = dc.getView().getFrustumInModelCoordinates();
+   //
+   //         //         terrainChanged = ((globe != _lastGlobe) || (verticalExaggeration != _lastVerticalExaggeration) || (!currentViewport.equals(_lastViewport)));
+   //         //         terrainChanged = ((globe != _lastGlobe) || (verticalExaggeration != _lastVerticalExaggeration) || (currentFustum != _lastFrustum));
+   //         terrainChanged = ((globe != _lastGlobe) || (verticalExaggeration != _lastVerticalExaggeration) || (!currentFustum.equals(_lastFrustum)));
+   //
+   //         if (terrainChanged) {
+   //            _lastGlobe = globe;
+   //            _lastVerticalExaggeration = verticalExaggeration;
+   //            _lastFrustum = currentFustum;
+   //         }
+   //      }
+   //      else {
+   //         terrainChanged = ((globe != _lastGlobe) || (verticalExaggeration != _lastVerticalExaggeration));
+   //
+   //         if (terrainChanged) {
+   //            _lastGlobe = globe;
+   //            _lastVerticalExaggeration = verticalExaggeration;
+   //         }
+   //      }
+   //
+   //      return terrainChanged;
+   //   }
 
 
    @Override

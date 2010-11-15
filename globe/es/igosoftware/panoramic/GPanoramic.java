@@ -44,6 +44,7 @@ import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.globe.GGlobeApplication;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.loading.GDisplayListCache;
+import es.igosoftware.scenegraph.GElevationAnchor;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.LRUCache;
 import es.igosoftware.utils.GPanoramicCompiler;
@@ -145,6 +146,12 @@ public class GPanoramic
    private final Position                                                    _position;
    private final double                                                      _headingInDegrees;
 
+   private Globe                                                             _lastGlobe;
+   private double                                                            _lastVerticalExaggeration;
+   private Frustum                                                           _lastFrustum;
+
+   private final GElevationAnchor                                            _anchor;
+
    private final List<PanoramicTile>                                         _tiles;
 
    private Matrix                                                            _modelCoordinateOriginTransform;
@@ -174,7 +181,7 @@ public class GPanoramic
                      final double radius,
                      final Position position) {
 
-      this(containingLayer, name, directoryName, radius, position, 0);
+      this(containingLayer, name, directoryName, radius, position, 0, GElevationAnchor.SURFACE);
    }
 
 
@@ -184,11 +191,13 @@ public class GPanoramic
                      final String directoryName,
                      final double radius,
                      final Position position,
-                     final double headingInDegrees) {
+                     final double headingInDegrees,
+                     final GElevationAnchor anchor) {
       GAssert.notNull(name, "name");
       GAssert.notNull(directoryName, "directoryName");
       GAssert.isPositive(radius, "radius");
       GAssert.notNull(position, "position");
+      GAssert.notNull(anchor, "anchor");
 
       _layer = containingLayer;
 
@@ -197,6 +206,7 @@ public class GPanoramic
       _radius = radius;
       _position = position;
       _headingInDegrees = headingInDegrees;
+      _anchor = anchor;
 
       _tiles = createTopTiles();
 
@@ -236,6 +246,16 @@ public class GPanoramic
 
    public double getCurrentDistanceFromEye() {
       return _currentDistanceFromEye;
+   }
+
+
+   public GElevationAnchor getElevationAnchor() {
+      return _anchor;
+   }
+
+
+   public Globe getGlobe() {
+      return _lastGlobe;
    }
 
 
@@ -327,7 +347,7 @@ public class GPanoramic
          Position position = null;
          //GElevationAnchor anchor = _layer.getElevationAnchor()
 
-         switch (_layer.getElevationAnchor()) {
+         switch (getElevationAnchor()) {
             case SEA_LEVEL:
                position = _position;
                break;
@@ -400,12 +420,48 @@ public class GPanoramic
    }
 
 
+   public boolean isTerrainChanged(final DrawContext dc) {
+
+      final Globe globe = dc.getGlobe();
+      final double verticalExaggeration = dc.getVerticalExaggeration();
+
+      final boolean terrainChanged;
+
+      final boolean checkViewport = (_anchor == GElevationAnchor.SURFACE);
+      if (checkViewport) {
+         //         final Rectangle currentViewport = dc.getView().getViewport();
+
+         final Frustum currentFustum = dc.getView().getFrustumInModelCoordinates();
+
+         //         terrainChanged = ((globe != _lastGlobe) || (verticalExaggeration != _lastVerticalExaggeration) || (!currentViewport.equals(_lastViewport)));
+         //         terrainChanged = ((globe != _lastGlobe) || (verticalExaggeration != _lastVerticalExaggeration) || (currentFustum != _lastFrustum));
+         terrainChanged = ((globe != _lastGlobe) || (verticalExaggeration != _lastVerticalExaggeration) || (!currentFustum.equals(_lastFrustum)));
+
+         if (terrainChanged) {
+            _lastGlobe = globe;
+            _lastVerticalExaggeration = verticalExaggeration;
+            _lastFrustum = currentFustum;
+         }
+      }
+      else {
+         terrainChanged = ((globe != _lastGlobe) || (verticalExaggeration != _lastVerticalExaggeration));
+
+         if (terrainChanged) {
+            _lastGlobe = globe;
+            _lastVerticalExaggeration = verticalExaggeration;
+         }
+      }
+
+      return terrainChanged;
+   }
+
+
    public void doRender(final DrawContext dc) {
       if (dc.isPickingMode()) {
          return;
       }
 
-      final boolean terrainChanged = _layer.isTerrainChanged(dc);
+      final boolean terrainChanged = isTerrainChanged(dc);
       asureModelCoordinateOriginTransform(dc, terrainChanged);
 
       if (!isVisible(dc, terrainChanged)) {
