@@ -36,20 +36,6 @@
 
 package es.igosoftware.globe.layers;
 
-import es.igosoftware.euclid.projection.GProjection;
-import es.igosoftware.euclid.vector.GVector2D;
-import es.igosoftware.euclid.vector.IVector2;
-import es.igosoftware.globe.GField;
-import es.igosoftware.globe.GVectorLayerType;
-import es.igosoftware.globe.IGlobeApplication;
-import es.igosoftware.globe.IGlobeVectorLayer;
-import es.igosoftware.globe.actions.ILayerAction;
-import es.igosoftware.globe.attributes.ILayerAttribute;
-import gov.nasa.worldwind.geom.Angle;
-import gov.nasa.worldwind.geom.Sector;
-import gov.nasa.worldwind.layers.SurfaceShapeLayer;
-import gov.nasa.worldwind.render.Renderable;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,10 +50,24 @@ import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 
+import es.igosoftware.euclid.projection.GProjection;
+import es.igosoftware.euclid.vector.GVector2D;
+import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.globe.GField;
+import es.igosoftware.globe.GVectorLayerType;
+import es.igosoftware.globe.IGlobeApplication;
+import es.igosoftware.globe.IGlobeVectorLayer;
+import es.igosoftware.globe.actions.ILayerAction;
+import es.igosoftware.globe.attributes.ILayerAttribute;
+import gov.nasa.worldwind.geom.Angle;
+import gov.nasa.worldwind.geom.Sector;
+import gov.nasa.worldwind.layers.RenderableLayer;
+import gov.nasa.worldwind.render.Renderable;
+
 
 public class GGlobeVectorLayer
          extends
-            SurfaceShapeLayer
+            RenderableLayer
          implements
             IGlobeVectorLayer {
 
