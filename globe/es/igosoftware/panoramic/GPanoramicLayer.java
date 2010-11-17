@@ -228,42 +228,6 @@ public class GPanoramicLayer
    }
 
 
-   //   public boolean isTerrainChanged(final DrawContext dc) {
-   //
-   //      final Globe globe = dc.getGlobe();
-   //      final double verticalExaggeration = dc.getVerticalExaggeration();
-   //
-   //      final boolean terrainChanged;
-   //
-   //      final boolean checkViewport = (_anchor == GElevationAnchor.SURFACE);
-   //      if (checkViewport) {
-   //         //         final Rectangle currentViewport = dc.getView().getViewport();
-   //
-   //         final Frustum currentFustum = dc.getView().getFrustumInModelCoordinates();
-   //
-   //         //         terrainChanged = ((globe != _lastGlobe) || (verticalExaggeration != _lastVerticalExaggeration) || (!currentViewport.equals(_lastViewport)));
-   //         //         terrainChanged = ((globe != _lastGlobe) || (verticalExaggeration != _lastVerticalExaggeration) || (currentFustum != _lastFrustum));
-   //         terrainChanged = ((globe != _lastGlobe) || (verticalExaggeration != _lastVerticalExaggeration) || (!currentFustum.equals(_lastFrustum)));
-   //
-   //         if (terrainChanged) {
-   //            _lastGlobe = globe;
-   //            _lastVerticalExaggeration = verticalExaggeration;
-   //            _lastFrustum = currentFustum;
-   //         }
-   //      }
-   //      else {
-   //         terrainChanged = ((globe != _lastGlobe) || (verticalExaggeration != _lastVerticalExaggeration));
-   //
-   //         if (terrainChanged) {
-   //            _lastGlobe = globe;
-   //            _lastVerticalExaggeration = verticalExaggeration;
-   //         }
-   //      }
-   //
-   //      return terrainChanged;
-   //   }
-
-
    @Override
    protected void doRender(final DrawContext dc) {
       if (dc.isPickingMode()) {

@@ -65,4 +65,10 @@ public class GPanoramicViewLimits
       minZoom = 0;
       maxZoom = 1;
    }
+
+
+   @Override
+   public Angle[] getPitchLimits() {
+      return new Angle[] { this.minPitch, this.maxPitch };
+   }
 }

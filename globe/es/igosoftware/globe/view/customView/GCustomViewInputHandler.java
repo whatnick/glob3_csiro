@@ -328,6 +328,7 @@ public class GCustomViewInputHandler
          return;
       }
 
+
       if (view instanceof GCustomView) {
          if (!headingChange.equals(Angle.ZERO)) {
             this.changeHeading((GCustomView) view, uiAnimControl, headingChange, actionAttribs);
