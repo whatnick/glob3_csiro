@@ -47,7 +47,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Queue;
 
 import javax.media.opengl.GL;
 
@@ -349,9 +348,8 @@ public class G3DModel {
             }
 
             // Draw as many as we can in a batch to save ogl state switching.
-            final Queue<OrderedRenderable> queue = dc.getOrderedRenderables();
             while (true) {
-               final OrderedRenderable peeked = queue.peek();
+               final OrderedRenderable peeked = dc.peekOrderedRenderables();
                final boolean isSameType = (peeked != null) && (peeked instanceof MeshOrderedRenderable)
                                           && (((MeshOrderedRenderable) peeked)._modelViewMatrixArray == _modelViewMatrixArray);
                if (isSameType) {
@@ -362,7 +360,7 @@ public class G3DModel {
                   else {
                      redraw = true;
                   }
-                  queue.poll();
+                  dc.pollOrderedRenderables();
                }
                else {
                   break;

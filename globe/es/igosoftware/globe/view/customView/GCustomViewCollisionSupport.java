@@ -234,7 +234,7 @@ public class GCustomViewCollisionSupport {
          final Position position = globe.computePositionFromPoint(point);
          Position surfacePosition = null;
          // Look for the surface geometry point at 'position'.
-         final Vec4 pointOnGlobe = dc.getPointOnGlobe(position.getLatitude(), position.getLongitude());
+         final Vec4 pointOnGlobe = dc.getPointOnTerrain(position.getLatitude(), position.getLongitude());
          if (pointOnGlobe != null) {
             surfacePosition = globe.computePositionFromPoint(pointOnGlobe);
          }

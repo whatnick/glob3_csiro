@@ -44,6 +44,7 @@ import es.igosoftware.pointscloud.GPointsCloudLayer;
 import es.igosoftware.util.GMath;
 import es.igosoftware.utils.GGlobeCache;
 import es.igosoftware.utils.GPositionBox;
+import es.igosoftware.utils.GWWUtils;
 import gov.nasa.worldwind.geom.Cylinder;
 import gov.nasa.worldwind.geom.Frustum;
 import gov.nasa.worldwind.geom.Position;
@@ -127,7 +128,8 @@ public abstract class GSGNode {
       //         return;
       //      }
 
-      final Vec4 firstProjectedVertex = dc.getScreenPoint(vertices[0]);
+
+      final Vec4 firstProjectedVertex = GWWUtils.getScreenPoint(dc, vertices[0]);
       double minX = firstProjectedVertex.x;
       double maxX = firstProjectedVertex.x;
       double minY = firstProjectedVertex.y;
@@ -135,7 +137,7 @@ public abstract class GSGNode {
 
       for (int i = 1; i < vertices.length; i++) {
          final Position vertex = vertices[i];
-         final Vec4 projected = dc.getScreenPoint(vertex);
+         final Vec4 projected = GWWUtils.getScreenPoint(dc, vertex);
          final double x = projected.x;
          final double y = projected.y;
 

@@ -83,13 +83,7 @@ public class GPNOAWMSLayer
 
 
    public GPNOAWMSLayer(final GPNOAWMSLayer.ImageFormat imageFormat) {
-      super(makeParams(imageFormat));
-
-      //      setMaxActiveAltitude(5000);
-      setMaxActiveAltitude(5000);
-      setCompressTextures(true);
-      //      setOpacity(0.5);
-      //            setUseMipMaps(false);
+      this(imageFormat, 5000);
    }
 
 
@@ -97,11 +91,7 @@ public class GPNOAWMSLayer
                         final double maxActiveAltitude) {
       super(makeParams(imageFormat));
 
-      //      setMaxActiveAltitude(5000);
       setMaxActiveAltitude(maxActiveAltitude);
-      setCompressTextures(true);
-      //      setOpacity(0.5);
-      //            setUseMipMaps(false);
    }
 
 

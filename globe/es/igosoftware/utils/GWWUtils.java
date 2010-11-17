@@ -51,6 +51,7 @@ import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.ITransformer;
 import es.igosoftware.util.Logger;
+import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Box;
 import gov.nasa.worldwind.geom.Cylinder;
@@ -415,6 +416,24 @@ public final class GWWUtils {
       }
 
 
+   }
+
+
+   public static Vec4 getScreenPoint(final DrawContext dc,
+                                     final Position position) {
+      final Globe globe = dc.getGlobe();
+      final View view = dc.getView();
+
+      if ((globe == null) || (view == null)) {
+         return null;
+      }
+
+      final Vec4 modelPoint = globe.computePointFromPosition(position);
+      if (modelPoint == null) {
+         return null;
+      }
+
+      return view.project(modelPoint);
    }
 
 
