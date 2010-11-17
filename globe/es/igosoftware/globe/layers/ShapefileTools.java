@@ -42,8 +42,8 @@ import java.util.HashMap;
 
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
-import org.geotools.data.DefaultQuery;
 import org.geotools.data.FeatureSource;
+import org.geotools.data.Query;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.opengis.feature.simple.SimpleFeature;
@@ -65,7 +65,7 @@ public class ShapefileTools {
          connect.put("url", file.toURI().toURL());
 
          final DataStore dataStore = DataStoreFinder.getDataStore(connect);
-         final DefaultQuery query = new DefaultQuery(dataStore.getTypeNames()[0], Filter.INCLUDE);
+         final Query query = new Query(dataStore.getTypeNames()[0], Filter.INCLUDE);
          final FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = dataStore.getFeatureSource(query.getTypeName());
          final FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = featureSource.getFeatures(query);
          final FeatureIterator<SimpleFeature> iterator = featureCollection.features();
