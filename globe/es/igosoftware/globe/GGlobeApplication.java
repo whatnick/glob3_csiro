@@ -129,6 +129,17 @@ public abstract class GGlobeApplication
    private static final Logger LOGGER           = Logger.instance();
 
    static {
+      if (GUtils.isWindows()) {
+         System.setProperty("sun.awt.noerasebackground", "true"); // prevents flashing during window resizing
+      }
+
+      if (GUtils.isMac()) {
+         // System.setProperty("com.apple.mrj.application.growbox.intrudes", "false");
+         // System.setProperty("apple.laf.useScreenMenuBar", "true");
+         // System.setProperty("com.apple.mrj.application.apple.menu.about.name", "glob3");
+      }
+
+
       Configuration.setValue(AVKey.VIEW_CLASS_NAME, GCustomView.class.getName());
 
       Configuration.setValue(AVKey.TESSELLATOR_CLASS_NAME, RectangularNormalTessellator.class.getName());

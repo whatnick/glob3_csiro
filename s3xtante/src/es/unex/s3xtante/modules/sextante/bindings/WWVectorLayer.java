@@ -13,10 +13,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.geotools.data.DataStore;
-import org.geotools.data.DefaultQuery;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FeatureWriter;
 import org.geotools.data.FileDataStoreFactorySpi;
+import org.geotools.data.Query;
 import org.geotools.data.Transaction;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.shapefile.ShapefileDataStoreFactory;
@@ -223,7 +223,7 @@ public class WWVectorLayer
             final SimpleFeatureType featureType = buildFeatureType(m_sName, getShapeType(), _fields, DefaultGeographicCRS.WGS84);
             final DataStore mds = createDatastore(m_sFilename, featureType);
             mds.createSchema(featureType);
-            final DefaultQuery query = new DefaultQuery(m_sName, Filter.INCLUDE);
+            final Query query = new Query(m_sName, Filter.INCLUDE);
             final FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = mds.getFeatureSource(query.getTypeName());
             final SimpleFeatureType ft = featureSource.getSchema();
             final FeatureWriter<SimpleFeatureType, SimpleFeature> featWriter = mds.getFeatureWriterAppend(ft.getTypeName(),

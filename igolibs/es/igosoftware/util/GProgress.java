@@ -51,13 +51,7 @@ public abstract class GProgress {
 
 
    public GProgress(final long steps) {
-      _steps = steps;
-      _done = 0;
-
-      final long now = System.currentTimeMillis();
-      _started = now;
-      _lastInformTime = now;
-      _timeToInform = 10000;
+      this(steps, 10000);
    }
 
 
