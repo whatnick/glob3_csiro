@@ -38,6 +38,7 @@ package es.igosoftware.euclid.shape;
 
 import java.util.List;
 
+import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.IBounds;
 import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector;
@@ -55,7 +56,8 @@ BoundsT extends IBounds<VectorT, BoundsT>
 
 >
          extends
-            IPointsContainer<VectorT, GeometryT> {
+            IPointsContainer<VectorT, GeometryT>,
+            IBoundedGeometry<VectorT, GeometryT, BoundsT> {
 
 
    public boolean isSelfIntersected();
@@ -70,6 +72,7 @@ BoundsT extends IBounds<VectorT, BoundsT>
    public List<SegmentT> getEdges();
 
 
+   @Override
    public BoundsT getBounds();
 
 

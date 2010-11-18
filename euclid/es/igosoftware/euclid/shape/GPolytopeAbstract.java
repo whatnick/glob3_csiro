@@ -93,7 +93,7 @@ BoundsT extends IBounds<VectorT, BoundsT>
    }
 
 
-   private VectorT closestPointOnBoundary(final VectorT point) {
+   public VectorT closestPointOnBoundary(final VectorT point) {
       GAssert.notNull(point, "point");
 
       double minDistance = Double.POSITIVE_INFINITY;

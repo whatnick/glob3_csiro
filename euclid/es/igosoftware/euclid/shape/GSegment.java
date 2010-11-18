@@ -212,7 +212,6 @@ BoundsT extends IBounds<VectorT, BoundsT>
    }
 
 
-   @Override
    public boolean containsOnBoundary(final VectorT point) {
       return contains(point);
    }
@@ -245,13 +244,11 @@ BoundsT extends IBounds<VectorT, BoundsT>
    }
 
 
-   @Override
    public double squaredDistanceToBoundary(final VectorT point) {
       return squaredDistance(point);
    }
 
 
-   @Override
    public double distanceToBoundary(final VectorT point) {
       return distance(point);
    }
@@ -263,8 +260,6 @@ BoundsT extends IBounds<VectorT, BoundsT>
    }
 
 
-   //@Override
-   @Override
    public VectorT closestPointOnBoundary(final VectorT point) {
       // from Real-Time Collision Detection - Christer Ericson 
       //   page 129

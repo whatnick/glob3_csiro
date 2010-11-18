@@ -53,5 +53,15 @@ GeometryT extends IBounds<VectorT, GeometryT>
 
    //   public boolean closeTo(final GeometryT that);
 
+   public boolean containsOnBoundary(final VectorT point);
+
+
+   public double squaredDistanceToBoundary(final VectorT point);
+
+
+   public double distanceToBoundary(final VectorT point);
+
+
+   public VectorT closestPointOnBoundary(final VectorT point);
 
 }

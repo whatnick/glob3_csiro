@@ -348,4 +348,5 @@ GeometryT extends GAxisAlignedOrthotope<VectorT, GeometryT>
 
 
    public abstract GAxisAlignedOrthotope<VectorT, ?>[] splitByAxis(final byte axis);
+
 }

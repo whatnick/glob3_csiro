@@ -36,11 +36,18 @@
 
 package es.igosoftware.euclid.shape;
 
+import java.util.Collection;
 import java.util.List;
 
+import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
+import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
+import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GMath;
+import es.igosoftware.util.ITransformer;
 
 
 public final class GShape {
@@ -190,7 +197,7 @@ public final class GShape {
    }
 
 
-   //   public static <VectorT extends IVector<VectorT, ?>, BoundsT extends IBounds<VectorT, BoundsT>, GeometryT extends IBoundedGeometry<VectorT, GeometryT, BoundsT>> BoundsT getBounds(final Collection<GeometryT> geometries) {
+   //   public static <VectorT extends IVector<VectorT, ?>, BoundsT extends IFiniteBounds<VectorT, BoundsT>, GeometryT extends IBoundedGeometry<VectorT, GeometryT, BoundsT>> BoundsT getBounds(final Collection<GeometryT> geometries) {
    //
    //      if ((geometries == null) || geometries.isEmpty()) {
    //         return null;
@@ -208,5 +215,29 @@ public final class GShape {
    //
    //      return bounds;
    //   }
+
+   public static <
+
+   VectorT extends IVector<VectorT, ?>,
+
+   GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>> GAxisAlignedOrthotope<VectorT, ?
+
+   > getBounds(final Collection<GeometryT> geometries) {
+
+      if ((geometries == null) || geometries.isEmpty()) {
+         return null;
+      }
+
+      final Collection<GAxisAlignedOrthotope<VectorT, ?>> bounds = GCollections.collect(geometries,
+               new ITransformer<GeometryT, GAxisAlignedOrthotope<VectorT, ?>>() {
+                  @Override
+                  public GAxisAlignedOrthotope<VectorT, ?> transform(final GeometryT element) {
+                     return element.getBounds().asAxisAlignedOrthotope();
+                  }
+               });
+
+      return GAxisAlignedOrthotope.merge(bounds);
+   }
+
 
 }
