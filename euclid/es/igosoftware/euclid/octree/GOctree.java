@@ -43,7 +43,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
-import es.igosoftware.euclid.bounding.IBoundingVolume;
+import es.igosoftware.euclid.bounding.IFiniteBounds3D;
 import es.igosoftware.euclid.vector.GMutableVector3;
 import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.IVector3;
@@ -572,13 +572,13 @@ public final class GOctree
    }
 
 
-   public IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> getVerticesInRegion(final IBoundingVolume<?> region) {
+   public IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> getVerticesInRegion(final IFiniteBounds3D<?> region) {
       return _vertices.asSubContainer(getVerticesIndexesInRegion(region));
    }
 
 
    @Override
-   public int[] getVerticesIndexesInRegion(final IBoundingVolume<?> region) {
+   public int[] getVerticesIndexesInRegion(final IFiniteBounds3D<?> region) {
       //return _verticesIndexesInRegionCache.get(region);
       return _root.getVerticesIndexesInRegion(region);
    }
@@ -1088,7 +1088,7 @@ public final class GOctree
 
 
    @Override
-   protected int[] getVerticesIndexesInRegion(final IBoundingVolume<?> region,
+   protected int[] getVerticesIndexesInRegion(final IFiniteBounds3D<?> region,
                                               final GOTLeafNode excludedLeaf) {
       return _root.getVerticesIndexesInRegion(region, excludedLeaf);
    }

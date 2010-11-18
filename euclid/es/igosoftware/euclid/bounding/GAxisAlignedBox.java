@@ -60,7 +60,7 @@ public final class GAxisAlignedBox
          extends
             GAxisAlignedOrthotope<IVector3<?>, GAxisAlignedBox>
          implements
-            IBoundingVolume<GAxisAlignedBox> {
+            IFiniteBounds3D<GAxisAlignedBox> {
 
    private static final long           serialVersionUID = 1L;
 
@@ -603,7 +603,7 @@ public final class GAxisAlignedBox
 
 
    @Override
-   public boolean touches(final IBoundingVolume<?> that) {
+   public boolean touches(final IFiniteBounds3D<?> that) {
       return that.touchesWithBox(this);
    }
 

@@ -44,7 +44,8 @@ import es.igosoftware.euclid.GGeometryAbstract;
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 import es.igosoftware.euclid.bounding.GBall;
 import es.igosoftware.euclid.bounding.GCapsule3D;
-import es.igosoftware.euclid.bounding.IBoundingVolume;
+import es.igosoftware.euclid.bounding.IFiniteBounds3D;
+import es.igosoftware.euclid.bounding.IInfiniteBounds3D;
 import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector2;
@@ -59,7 +60,7 @@ public final class GPlane
          extends
             GGeometryAbstract<IVector3<?>, GPlane>
          implements
-            IBoundingVolume<GPlane> {
+            IInfiniteBounds3D<GPlane> {
 
    private static final long serialVersionUID = 1L;
 
@@ -467,7 +468,7 @@ public final class GPlane
 
 
    @Override
-   public boolean touches(final IBoundingVolume<?> that) {
+   public boolean touches(final IFiniteBounds3D<?> that) {
       return that.touchesWithPlane(this);
    }
 

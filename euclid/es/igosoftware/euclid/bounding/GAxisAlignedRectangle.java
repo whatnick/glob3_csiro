@@ -56,7 +56,7 @@ public final class GAxisAlignedRectangle
          extends
             GAxisAlignedOrthotope<IVector2<?>, GAxisAlignedRectangle>
          implements
-            IBoundingArea<GAxisAlignedRectangle> {
+            IFiniteBounds2D<GAxisAlignedRectangle> {
 
    private static final long                 serialVersionUID = 1L;
 
@@ -263,7 +263,7 @@ public final class GAxisAlignedRectangle
 
 
    @Override
-   public boolean touches(final IBoundingArea<?> that) {
+   public boolean touches(final IFiniteBounds2D<?> that) {
       return that.touchesWithRectangle(this);
    }
 

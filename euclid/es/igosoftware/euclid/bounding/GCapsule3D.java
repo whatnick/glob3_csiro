@@ -48,7 +48,7 @@ public class GCapsule3D
          extends
             GNCapsule<IVector3<?>, GCapsule3D>
          implements
-            IBoundingVolume<GCapsule3D> {
+            IFiniteBounds3D<GCapsule3D> {
 
    /**
     * 
@@ -75,7 +75,7 @@ public class GCapsule3D
 
 
    @Override
-   public boolean touches(final IBoundingVolume<?> that) {
+   public boolean touches(final IFiniteBounds3D<?> that) {
       return that.touchesWithCapsule3D(this);
    }
 

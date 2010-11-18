@@ -46,7 +46,7 @@ import java.util.List;
 import java.util.Map;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
-import es.igosoftware.euclid.bounding.IBoundingVolume;
+import es.igosoftware.euclid.bounding.IFiniteBounds3D;
 import es.igosoftware.euclid.loading.GBinaryPoints3Loader;
 import es.igosoftware.euclid.loading.GPointsLoader;
 import es.igosoftware.euclid.octree.GOctree;
@@ -184,7 +184,7 @@ public class GReliefService
    }
 
 
-   public IUnstructuredVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> getVertices(final IBoundingVolume<?> area) {
+   public IUnstructuredVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> getVertices(final IFiniteBounds3D<?> area) {
       final List<GAxisAlignedBox> touchedTiles = getTouchedTiles(area);
 
       if (touchedTiles.isEmpty()) {
@@ -205,12 +205,12 @@ public class GReliefService
    }
 
 
-   public double getAverageZ(final IBoundingVolume<?> area) {
+   public double getAverageZ(final IFiniteBounds3D<?> area) {
       return GVectorUtils.getAverageZ(getVertices(area));
    }
 
 
-   public double getMaxZ(final IBoundingVolume<?> area) {
+   public double getMaxZ(final IFiniteBounds3D<?> area) {
       return GVectorUtils.getMaxZ(getVertices(area));
    }
 
@@ -241,7 +241,7 @@ public class GReliefService
    //   }
 
 
-   private List<GAxisAlignedBox> getTouchedTiles(final IBoundingVolume<?> area) {
+   private List<GAxisAlignedBox> getTouchedTiles(final IFiniteBounds3D<?> area) {
       final ArrayList<GAxisAlignedBox> touchedTiles = new ArrayList<GAxisAlignedBox>(_tiles.size());
 
       for (final GAxisAlignedBox tileBox : _tiles.keySet()) {
@@ -293,7 +293,7 @@ public class GReliefService
 
    private static void process(final GReliefService mdt,
                                final GReliefService lidar,
-                               final IBoundingVolume<?> area) {
+                               final IFiniteBounds3D<?> area) {
       final double mdtZ = mdt.getAverageZ(area);
       final double lidarZ = lidar.getAverageZ(area);
       final double delta = mdtZ - lidarZ;

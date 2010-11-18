@@ -45,7 +45,7 @@ public final class GDisk
          extends
             GNBall<IVector2<?>, GDisk>
          implements
-            IBoundingArea<GDisk> {
+            IFiniteBounds2D<GDisk> {
 
    private static final long serialVersionUID = 1L;
 
@@ -69,7 +69,7 @@ public final class GDisk
 
 
    @Override
-   public boolean touches(final IBoundingArea<?> that) {
+   public boolean touches(final IFiniteBounds2D<?> that) {
       return that.touchesWithDisk(this);
    }
 

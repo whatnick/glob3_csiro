@@ -188,4 +188,25 @@ public final class GShape {
       //return acd.dot(acb) < 0.0f; 
       return GMath.negativeOrZero(acd.dot(acb));
    }
+
+
+   //   public static <VectorT extends IVector<VectorT, ?>, BoundsT extends IBounds<VectorT, BoundsT>, GeometryT extends IBoundedGeometry<VectorT, GeometryT, BoundsT>> BoundsT getBounds(final Collection<GeometryT> geometries) {
+   //
+   //      if ((geometries == null) || geometries.isEmpty()) {
+   //         return null;
+   //      }
+   //
+   //      final Iterator<GeometryT> iterator = geometries.iterator();
+   //      final GeometryT first = iterator.next();
+   //
+   //      BoundsT bounds = first.getBounds();
+   //
+   //      while (iterator.hasNext()) {
+   //         final GeometryT current = iterator.next();
+   //         bounds = bounds.mergedWith(current.getBounds());
+   //      }
+   //
+   //      return bounds;
+   //   }
+
 }

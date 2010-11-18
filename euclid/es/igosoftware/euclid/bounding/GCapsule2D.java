@@ -47,7 +47,7 @@ public final class GCapsule2D
          extends
             GNCapsule<IVector2<?>, GCapsule2D>
          implements
-            IBoundingArea<GCapsule2D> {
+            IFiniteBounds2D<GCapsule2D> {
 
    /**
     * 
@@ -74,7 +74,7 @@ public final class GCapsule2D
 
 
    @Override
-   public boolean touches(final IBoundingArea<?> that) {
+   public boolean touches(final IFiniteBounds2D<?> that) {
       return that.touchesWithCapsule2D(this);
    }
 

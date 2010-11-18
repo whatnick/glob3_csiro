@@ -54,7 +54,10 @@ GeometryT extends IBounds<VectorT, GeometryT>
    //   public GAxisAlignedBox asBox();
 
 
-   //   public IBounds<VectorT, ?> combinedWith(final IBounds<VectorT, ?> that);
+   //   public IBounds<VectorT, GeometryT> mergedWith(final IBounds<VectorT, GeometryT> that);
+
 
    public boolean closeTo(final GeometryT that);
+
+
 }

@@ -41,7 +41,7 @@ import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 import es.igosoftware.euclid.bounding.GBall;
-import es.igosoftware.euclid.bounding.IBoundingVolume;
+import es.igosoftware.euclid.bounding.IFiniteBounds3D;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer.Vertex;
@@ -106,7 +106,7 @@ public final class GOTLeafNode
 
 
    @Override
-   protected void putRegionVerticesIndexesIn(final IBoundingVolume<?> region,
+   protected void putRegionVerticesIndexesIn(final IFiniteBounds3D<?> region,
                                              final List<Integer> verticesIndexesContainer) {
       if (!region.touches(_bounds)) {
          return;
@@ -122,7 +122,7 @@ public final class GOTLeafNode
 
 
    @Override
-   protected void putRegionVerticesIndexesIn(final IBoundingVolume<?> region,
+   protected void putRegionVerticesIndexesIn(final IFiniteBounds3D<?> region,
                                              final List<Integer> verticesIndexesContainer,
                                              final GOTLeafNode excludedLeaf) {
       if (this != excludedLeaf) {

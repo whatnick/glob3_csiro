@@ -41,7 +41,7 @@ import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 import es.igosoftware.euclid.bounding.GBall;
-import es.igosoftware.euclid.bounding.IBoundingVolume;
+import es.igosoftware.euclid.bounding.IFiniteBounds3D;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer.Vertex;
@@ -123,7 +123,7 @@ public abstract class GOTNode
 
 
    @Override
-   public final int[] getVerticesIndexesInRegion(final IBoundingVolume<?> region) {
+   public final int[] getVerticesIndexesInRegion(final IFiniteBounds3D<?> region) {
       final List<Integer> list = new ArrayList<Integer>();
       putRegionVerticesIndexesIn(region, list);
       return GCollections.toArray(list);
@@ -131,7 +131,7 @@ public abstract class GOTNode
 
 
    @Override
-   protected final int[] getVerticesIndexesInRegion(final IBoundingVolume<?> region,
+   protected final int[] getVerticesIndexesInRegion(final IFiniteBounds3D<?> region,
                                                     final GOTLeafNode excludedLeaf) {
       final List<Integer> list = new ArrayList<Integer>();
       putRegionVerticesIndexesIn(region, list, excludedLeaf);
@@ -148,11 +148,11 @@ public abstract class GOTNode
    protected abstract void putVerticesIndexesIn(final List<Integer> verticesIndexesContainer);
 
 
-   protected abstract void putRegionVerticesIndexesIn(final IBoundingVolume<?> region,
+   protected abstract void putRegionVerticesIndexesIn(final IFiniteBounds3D<?> region,
                                                       final List<Integer> verticesIndexesContainer);
 
 
-   protected abstract void putRegionVerticesIndexesIn(final IBoundingVolume<?> region,
+   protected abstract void putRegionVerticesIndexesIn(final IFiniteBounds3D<?> region,
                                                       final List<Integer> verticesIndexesContainer,
                                                       final GOTLeafNode excludedLeaf);
 

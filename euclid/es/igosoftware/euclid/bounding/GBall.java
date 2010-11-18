@@ -46,7 +46,7 @@ public final class GBall
          extends
             GNBall<IVector3<?>, GBall>
          implements
-            IBoundingVolume<GBall> {
+            IFiniteBounds3D<GBall> {
 
    private static final long serialVersionUID = 1L;
 
@@ -70,7 +70,7 @@ public final class GBall
 
 
    @Override
-   public boolean touches(final IBoundingVolume<?> that) {
+   public boolean touches(final IFiniteBounds3D<?> that) {
       return that.touchesWithBall(this);
    }
 

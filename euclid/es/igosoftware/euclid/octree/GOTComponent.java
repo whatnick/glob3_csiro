@@ -37,7 +37,7 @@
 package es.igosoftware.euclid.octree;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
-import es.igosoftware.euclid.bounding.IBoundingVolume;
+import es.igosoftware.euclid.bounding.IFiniteBounds3D;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
 import es.igosoftware.util.GLoggerObject;
@@ -69,7 +69,7 @@ public abstract class GOTComponent
    public abstract GOTInnerNode getRoot();
 
 
-   public abstract int[] getVerticesIndexesInRegion(final IBoundingVolume<?> region);
+   public abstract int[] getVerticesIndexesInRegion(final IFiniteBounds3D<?> region);
 
 
    public abstract IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> getVertices();
@@ -78,7 +78,7 @@ public abstract class GOTComponent
    public abstract void depthFirstAcceptVisitor(final IOctreeVisitorWithFinalization visitor) throws IOctreeVisitor.AbortVisiting;
 
 
-   protected abstract int[] getVerticesIndexesInRegion(final IBoundingVolume<?> region,
+   protected abstract int[] getVerticesIndexesInRegion(final IFiniteBounds3D<?> region,
                                                        final GOTLeafNode excludedLeaf);
 
 }
