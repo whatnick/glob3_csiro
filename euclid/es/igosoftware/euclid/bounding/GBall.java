@@ -144,4 +144,10 @@ public final class GBall
    }
 
 
+   @Override
+   public boolean touches(final GBall that) {
+      return touchesWithBall(that);
+   }
+
+
 }

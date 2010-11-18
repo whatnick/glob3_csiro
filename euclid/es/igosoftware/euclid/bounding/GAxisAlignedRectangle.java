@@ -486,19 +486,6 @@ public final class GAxisAlignedRectangle
 
 
    @Override
-   public GAxisAlignedRectangle[] splitByAxis(final byte axis) {
-      switch (axis) {
-         case 0:
-            return subdividedByX();
-         case 1:
-            return subdividedByY();
-         default:
-            throw new IllegalArgumentException("Invalid axis=" + axis);
-      }
-   }
-
-
-   @Override
    public boolean touchesWithCapsule2D(final GCapsule2D capsule) {
 
       final IVector2<?> segmentClosestPoint = capsule._segment.closestPoint(_center);
@@ -514,5 +501,51 @@ public final class GAxisAlignedRectangle
    public GAxisAlignedRectangle asAxisAlignedOrthotope() {
       return this;
    }
+
+
+   @Override
+   public GAxisAlignedRectangle[] subdivideByAxis(final byte axis) {
+      switch (axis) {
+         case 0:
+            return subdividedByX();
+         case 1:
+            return subdividedByY();
+         default:
+            throw new IllegalArgumentException("Invalid axis=" + axis);
+      }
+   }
+
+
+   @Override
+   public GAxisAlignedRectangle[] subdivideAtCenter() {
+      final GAxisAlignedRectangle[] divisionsAtX = subdividedByX();
+
+      final GAxisAlignedRectangle[] children0 = divisionsAtX[0].subdividedByY();
+      final GAxisAlignedRectangle[] children1 = divisionsAtX[1].subdividedByY();
+
+      return new GAxisAlignedRectangle[] { children0[0], children0[1], children1[0], children1[1] };
+   }
+
+
+   @Override
+   public boolean touches(final GAxisAlignedRectangle that) {
+      return touchesWithRectangle(that);
+   }
+
+
+   @Override
+   public boolean touches(final GAxisAlignedOrthotope<IVector2<?>, ?> that) {
+      return touchesWithRectangle((GAxisAlignedRectangle) that);
+   }
+
+
+   //   public static void main(final String[] args) {
+   //      final GAxisAlignedRectangle rectangle = new GAxisAlignedRectangle(GVector2D.ZERO, new GVector2D(10, 10));
+   //      final GAxisAlignedRectangle[] subdivisions = rectangle.subdivideAtCenter();
+   //
+   //      for (final GAxisAlignedRectangle subdivision : subdivisions) {
+   //         System.out.println(subdivision);
+   //      }
+   //   }
 
 }

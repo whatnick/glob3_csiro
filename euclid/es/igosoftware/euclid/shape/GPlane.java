@@ -800,4 +800,10 @@ public final class GPlane
 
    }
 
+
+   @Override
+   public boolean touches(final GPlane that) {
+      return touchesWithPlane(that);
+   }
+
 }

@@ -587,7 +587,8 @@ public final class GAxisAlignedBox
    }
 
 
-   public GAxisAlignedBox[] subdividedByXYZ() {
+   @Override
+   public GAxisAlignedBox[] subdivideAtCenter() {
       return subdividedByXYZ(_center);
    }
 
@@ -644,21 +645,6 @@ public final class GAxisAlignedBox
 
 
    @Override
-   public GAxisAlignedBox[] splitByAxis(final byte axis) {
-      switch (axis) {
-         case 0:
-            return subdividedByX();
-         case 1:
-            return subdividedByY();
-         case 2:
-            return subdividedByZ();
-         default:
-            throw new IllegalArgumentException("Invalid axis=" + axis);
-      }
-   }
-
-
-   @Override
    public boolean touchesWithCapsule3D(final GCapsule3D capsule) {
 
       final IVector3<?> segmentClosestPoint = capsule._segment.closestPoint(_center);
@@ -685,6 +671,43 @@ public final class GAxisAlignedBox
    //         System.out.println("  " + subdivision);
    //      }
    //   }
+
+   @Override
+   public GAxisAlignedBox[] subdivideByAxis(final byte axis) {
+      switch (axis) {
+         case 0:
+            return subdividedByX();
+         case 1:
+            return subdividedByY();
+         case 2:
+            return subdividedByZ();
+         default:
+            throw new IllegalArgumentException("Invalid axis=" + axis);
+      }
+   }
+
+
+   public static void main(final String[] args) {
+      final GAxisAlignedBox box = new GAxisAlignedBox(GVector3D.ZERO, GVector3D.UNIT);
+
+      final GAxisAlignedBox[] subdivisions = box.subdivideAtCenter();
+
+      for (final GAxisAlignedBox subdivision : subdivisions) {
+         System.out.println(subdivision);
+      }
+   }
+
+
+   @Override
+   public boolean touches(final GAxisAlignedBox that) {
+      return touchesWithBox(that);
+   }
+
+
+   @Override
+   public boolean touches(final GAxisAlignedOrthotope<IVector3<?>, ?> that) {
+      return touchesWithBox((GAxisAlignedBox) that);
+   }
 
 
 }

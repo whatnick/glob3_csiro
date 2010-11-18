@@ -82,7 +82,7 @@ public abstract class GKDNode<VectorT extends IVector<VectorT, ?>, VertexT exten
       // sort by largestAxis to find the median
       final byte currentLastLargestAxis = sort(vertices, verticesIndexes.get(), axisValues, bounds);
 
-      final GAxisAlignedOrthotope<VectorT, ?>[] childrenBounds = bounds.splitByAxis(currentLastLargestAxis);
+      final GAxisAlignedOrthotope<VectorT, ?>[] childrenBounds = bounds.subdivideByAxis(currentLastLargestAxis);
 
       final int medianI = (verticesIndexesSize / 2);
 

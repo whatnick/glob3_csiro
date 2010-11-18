@@ -51,6 +51,9 @@ GeometryT extends IBounds<VectorT, GeometryT>
             IBoundedGeometry<VectorT, GeometryT, GeometryT> {
 
 
+   public boolean touches(final GeometryT that);
+
+
    //   public boolean closeTo(final GeometryT that);
 
    public boolean containsOnBoundary(final VectorT point);

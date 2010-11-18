@@ -145,4 +145,10 @@ public class GCapsule3D
       return _segment.getBounds().expandedByDistance(_radius);
    }
 
+
+   @Override
+   public boolean touches(final GCapsule3D that) {
+      return touchesWithCapsule3D(that);
+   }
+
 }

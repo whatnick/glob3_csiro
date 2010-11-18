@@ -136,4 +136,9 @@ public final class GCapsule2D
    }
 
 
+   @Override
+   public boolean touches(final GCapsule2D that) {
+      return touchesWithCapsule2D(that);
+   }
+
 }

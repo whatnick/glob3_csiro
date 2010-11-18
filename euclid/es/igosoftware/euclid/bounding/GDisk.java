@@ -137,4 +137,10 @@ public final class GDisk
       return new GAxisAlignedRectangle(_center.sub(_radius), _center.add(_radius));
    }
 
+
+   @Override
+   public boolean touches(final GDisk that) {
+      return touchesWithDisk(that);
+   }
+
 }
