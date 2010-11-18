@@ -120,6 +120,51 @@ GeometryT extends GAxisAlignedOrthotope<VectorT, GeometryT>
 
 
    @SuppressWarnings("unchecked")
+   public static <VectorT extends IVector<VectorT, ?>> GAxisAlignedOrthotope<VectorT, ?> minimumOrthotope(final VectorT... points) {
+      if (points.length == 0) {
+         throw new IllegalArgumentException("Empty points");
+      }
+
+      final VectorT exemplar = points[0];
+      VectorT lower = exemplar;
+      VectorT upper = exemplar;
+      for (int i = 1; i < points.length; i++) {
+         final VectorT point = points[i];
+         lower = lower.min(point);
+         upper = upper.max(point);
+      }
+
+      if (exemplar instanceof IVector3) {
+         return (GAxisAlignedOrthotope<VectorT, ?>) new GAxisAlignedBox((IVector3) lower, (IVector3) upper);
+      }
+      else if (exemplar instanceof IVector2) {
+         return (GAxisAlignedOrthotope<VectorT, ?>) new GAxisAlignedRectangle((IVector2) lower, (IVector2) upper);
+      }
+      else {
+         throw new IllegalArgumentException("Unsupported points type (" + exemplar.getClass() + ")");
+      }
+   }
+
+
+   @SuppressWarnings("unchecked")
+   public static <VectorT extends IVector<VectorT, ?>> GAxisAlignedOrthotope<VectorT, ?> create(final VectorT lower,
+                                                                                                final VectorT upper) {
+      GAssert.notNull(lower, "lower");
+      GAssert.notNull(upper, "upper");
+
+      if (lower instanceof IVector3) {
+         return (GAxisAlignedOrthotope<VectorT, ?>) new GAxisAlignedBox((IVector3) lower, (IVector3) upper);
+      }
+      else if (lower instanceof IVector2) {
+         return (GAxisAlignedOrthotope<VectorT, ?>) new GAxisAlignedRectangle((IVector2) lower, (IVector2) upper);
+      }
+      else {
+         throw new IllegalArgumentException("Unsupported points type (" + lower.getClass() + ")");
+      }
+   }
+
+
+   @SuppressWarnings("unchecked")
    public static <VectorT extends IVector<VectorT, ?>> GAxisAlignedOrthotope<VectorT, ?> minimumOrthotope(final Iterable<VectorT> points) {
       final Iterator<? extends VectorT> iterator = points.iterator();
       if (!iterator.hasNext()) {
