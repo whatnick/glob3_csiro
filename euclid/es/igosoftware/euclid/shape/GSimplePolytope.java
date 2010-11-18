@@ -39,7 +39,6 @@ package es.igosoftware.euclid.shape;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -70,22 +69,30 @@ BoundsT extends IBounds<VectorT, BoundsT>
    public final List<VectorT> _points;
 
 
-   public GSimplePolytope(final VectorT... points) {
+   public GSimplePolytope(final boolean validate,
+                          final VectorT... points) {
       GAssert.notEmpty(points, "points");
       GAssert.notNullElements(points, "points");
 
       _points = new ArrayList<VectorT>(points.length);
-      _points.addAll(Arrays.asList(points));
-      validate();
+      for (final VectorT point : points) {
+         _points.add(point);
+      }
+      if (validate) {
+         validate();
+      }
    }
 
 
-   public GSimplePolytope(final List<VectorT> points) {
+   public GSimplePolytope(final boolean validate,
+                          final List<VectorT> points) {
       GAssert.notEmpty(points, "points");
       GAssert.notNullElements(points, "points");
 
       _points = new ArrayList<VectorT>(points);
-      validate();
+      if (validate) {
+         validate();
+      }
    }
 
 

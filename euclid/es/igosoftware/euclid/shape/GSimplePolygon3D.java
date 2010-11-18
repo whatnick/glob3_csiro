@@ -68,15 +68,17 @@ public final class GSimplePolygon3D
    private GSimplePolygon2D  _polygon2d;
 
 
-   public GSimplePolygon3D(final IVector3<?>... points) {
-      super(points);
+   public GSimplePolygon3D(final boolean validate,
+                           final IVector3<?>... points) {
+      super(validate, points);
 
       _plane = initializePlane();
    }
 
 
-   public GSimplePolygon3D(final List<IVector3<?>> points) {
-      super(points);
+   public GSimplePolygon3D(final boolean validate,
+                           final List<IVector3<?>> points) {
+      super(validate, points);
 
       _plane = initializePlane();
    }
@@ -194,7 +196,7 @@ public final class GSimplePolygon3D
          });
       }
 
-      return new GSimplePolygon2D(points2d);
+      return new GSimplePolygon2D(true, points2d);
    }
 
 
@@ -211,7 +213,7 @@ public final class GSimplePolygon3D
          final int pointsCount = points.size();
 
          if (pointsCount < 3) {
-            return GShape.createPolygon3(previousPoints);
+            return GShape.createPolygon3(true, previousPoints);
          }
 
          for (int i = 0; i < pointsCount; i++) {
@@ -235,10 +237,10 @@ public final class GSimplePolygon3D
       while (changed);
 
       if (points.size() < 3) {
-         return GShape.createPolygon3(previousPoints);
+         return GShape.createPolygon3(true, previousPoints);
       }
 
-      return GShape.createPolygon3(points);
+      return GShape.createPolygon3(true, points);
    }
 
 
@@ -290,7 +292,7 @@ public final class GSimplePolygon3D
 
    @Override
    public GSimplePolygon3D transformedBy(final IVectorTransformer<IVector3<?>> transformer) {
-      return new GSimplePolygon3D(GCollections.collect(_points, transformer));
+      return new GSimplePolygon3D(true, GCollections.collect(_points, transformer));
    }
 
 

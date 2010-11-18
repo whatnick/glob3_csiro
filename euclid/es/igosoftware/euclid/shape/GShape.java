@@ -54,7 +54,8 @@ public final class GShape {
    private static int polygonsCounter  = 0;
 
 
-   public static IPolygon3D<?> createPolygon(final IVector3<?>... points) {
+   public static IPolygon3D<?> createPolygon(final boolean validate,
+                                             final IVector3<?>... points) {
       final int pointsCount = points.length;
 
       if (pointsCount < 3) {
@@ -74,11 +75,12 @@ public final class GShape {
       }
 
       polygonsCounter++;
-      return new GSimplePolygon3D(points);
+      return new GSimplePolygon3D(validate, points);
    }
 
 
-   public static IPolygon2D<?> createPolygon(final IVector2<?>... points) {
+   public static IPolygon2D<?> createPolygon(final boolean validate,
+                                             final IVector2<?>... points) {
       final int pointsCount = points.length;
 
       if (pointsCount < 3) {
@@ -98,11 +100,12 @@ public final class GShape {
       }
 
       polygonsCounter++;
-      return new GSimplePolygon2D(points);
+      return new GSimplePolygon2D(validate, points);
    }
 
 
-   public static IPolygon2D<?> createPolygon2(final List<IVector2<?>> points) {
+   public static IPolygon2D<?> createPolygon2(final boolean validate,
+                                              final List<IVector2<?>> points) {
       final int pointsCount = points.size();
 
       if (pointsCount < 3) {
@@ -122,11 +125,12 @@ public final class GShape {
       }
 
       polygonsCounter++;
-      return new GSimplePolygon2D(points);
+      return new GSimplePolygon2D(validate, points);
    }
 
 
-   public static IPolygon3D<?> createPolygon3(final List<IVector3<?>> points) {
+   public static IPolygon3D<?> createPolygon3(final boolean validate,
+                                              final List<IVector3<?>> points) {
       final int pointsCount = points.size();
 
       if (pointsCount < 3) {
@@ -146,7 +150,7 @@ public final class GShape {
       }
 
       polygonsCounter++;
-      return new GSimplePolygon3D(points);
+      return new GSimplePolygon3D(validate, points);
    }
 
 

@@ -62,13 +62,15 @@ public final class GSimplePolygon2D
    private GAxisAlignedRectangle _bounds;
 
 
-   public GSimplePolygon2D(final IVector2<?>... points) {
-      super(points);
+   public GSimplePolygon2D(final boolean validate,
+                           final IVector2<?>... points) {
+      super(validate, points);
    }
 
 
-   public GSimplePolygon2D(final List<IVector2<?>> points) {
-      super(points);
+   public GSimplePolygon2D(final boolean validate,
+                           final List<IVector2<?>> points) {
+      super(validate, points);
    }
 
 
@@ -258,7 +260,7 @@ public final class GSimplePolygon2D
          final int pointsCount = points.size();
 
          if (pointsCount < 3) {
-            return GShape.createPolygon2(previousPoints);
+            return GShape.createPolygon2(true, previousPoints);
          }
 
          for (int i = 0; i < pointsCount; i++) {
@@ -282,10 +284,10 @@ public final class GSimplePolygon2D
       while (changed);
 
       if (points.size() < 3) {
-         return GShape.createPolygon2(previousPoints);
+         return GShape.createPolygon2(true, previousPoints);
       }
 
-      return GShape.createPolygon2(points);
+      return GShape.createPolygon2(true, points);
    }
 
 
@@ -337,7 +339,7 @@ public final class GSimplePolygon2D
 
    @Override
    public GSimplePolygon2D transformedBy(final IVectorTransformer<IVector2<?>> transformer) {
-      return new GSimplePolygon2D(GCollections.collect(_points, transformer));
+      return new GSimplePolygon2D(true, GCollections.collect(_points, transformer));
    }
 
 
