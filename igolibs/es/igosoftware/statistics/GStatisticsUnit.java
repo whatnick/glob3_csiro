@@ -41,12 +41,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import es.igosoftware.util.Logger;
+import es.igosoftware.util.GLogger;
 
 
 public class GStatisticsUnit {
 
-   private static final Logger                                              LOGGER        = Logger.instance();
+   private static final GLogger                                              LOGGER        = GLogger.instance();
    private static final String                                              LINE          = "-------------------------------------------------------------------------------";
 
 
@@ -85,7 +85,7 @@ public class GStatisticsUnit {
    }
 
 
-   public void show(final Logger logger) {
+   public void show(final GLogger logger) {
       logger.info(LINE);
       if (_name != null) {
          logger.info(_name + ":");

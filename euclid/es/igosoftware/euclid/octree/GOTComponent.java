@@ -40,12 +40,12 @@ import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 import es.igosoftware.euclid.bounding.IBoundingVolume;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
-import es.igosoftware.util.LoggerObject;
+import es.igosoftware.util.GLoggerObject;
 
 
 public abstract class GOTComponent
          extends
-            LoggerObject {
+            GLoggerObject {
 
 
    public abstract GAxisAlignedBox getBounds();

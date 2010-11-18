@@ -40,7 +40,7 @@ import java.util.Collection;
 
 
 public final class GAssert {
-   private static final Logger LOGGER = Logger.instance();
+   private static final GLogger LOGGER = GLogger.instance();
 
 
    public static void notEmpty(final Collection<?> collection,

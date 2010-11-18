@@ -90,11 +90,11 @@ import bsh.Interpreter;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.io.StringBufferWriter;
 import es.igosoftware.ootemplate.OOToken.XMLAttribute;
-import es.igosoftware.util.Logger;
+import es.igosoftware.util.GLogger;
 
 
 public class OOTemplate {
-   private static final Logger  _logger = Logger.instance();
+   private static final GLogger  _logger = GLogger.instance();
 
    //   private static final String  OPEN_TAG  = "{{";
    //   private static final String  CLOSE_TAG = "}}";

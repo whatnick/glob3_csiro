@@ -50,7 +50,7 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.ITransformer;
-import es.igosoftware.util.Logger;
+import es.igosoftware.util.GLogger;
 import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Box;
@@ -70,7 +70,7 @@ import gov.nasa.worldwind.render.DrawContext;
 
 public final class GWWUtils {
 
-   private static final Logger logger = Logger.instance();
+   private static final GLogger logger = GLogger.instance();
 
 
    private GWWUtils() {

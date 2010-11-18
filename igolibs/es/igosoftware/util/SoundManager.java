@@ -56,7 +56,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 
 public final class SoundManager {
-   private final static Logger logger = Logger.instance();
+   private final static GLogger logger = GLogger.instance();
 
 
    public interface SoundPlayingHandler {

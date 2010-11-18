@@ -51,7 +51,7 @@ import com.sun.opengl.util.texture.TextureData;
 import com.sun.opengl.util.texture.TextureIO;
 
 import es.igosoftware.util.GPair;
-import es.igosoftware.util.Logger;
+import es.igosoftware.util.GLogger;
 import gov.nasa.worldwind.formats.dds.DDSCompressor;
 import gov.nasa.worldwind.formats.dds.DXTCompressionAttributes;
 import gov.nasa.worldwind.util.WWIO;
@@ -59,7 +59,7 @@ import gov.nasa.worldwind.util.WWMath;
 
 
 public class GTexturesCache {
-   private static final Logger                               logger         = Logger.instance();
+   private static final GLogger                               logger         = GLogger.instance();
 
    private static final Map<GPair<String, Boolean>, Texture> _texturesCache = new HashMap<GPair<String, Boolean>, Texture>();
 

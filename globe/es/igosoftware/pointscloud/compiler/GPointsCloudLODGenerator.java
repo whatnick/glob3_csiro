@@ -73,14 +73,14 @@ import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GHolder;
 import es.igosoftware.util.GProgress;
 import es.igosoftware.util.IEvaluator;
-import es.igosoftware.util.LoggerObject;
+import es.igosoftware.util.GLoggerObject;
 import es.igosoftware.utils.GConverter;
 import gov.nasa.worldwind.geom.Position;
 
 
 public class GPointsCloudLODGenerator
          extends
-            LoggerObject {
+            GLoggerObject {
 
 
    private static class Tile {

@@ -54,12 +54,12 @@ import javax.imageio.ImageIO;
 
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.util.GProgress;
-import es.igosoftware.util.Logger;
+import es.igosoftware.util.GLogger;
 
 
 public class GPanoramicCompiler {
 
-   private static final Logger LOGGER          = Logger.instance();
+   private static final GLogger LOGGER          = GLogger.instance();
    private static boolean      _forceLastLevel = false;
 
 

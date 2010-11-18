@@ -67,12 +67,12 @@ import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.GProgress;
 import es.igosoftware.util.IPredicate;
-import es.igosoftware.util.LoggerObject;
+import es.igosoftware.util.GLoggerObject;
 
 
 public abstract class GPointsCloud
          extends
-            LoggerObject {
+            GLoggerObject {
 
 
    private static final class Point2I {

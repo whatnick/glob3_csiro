@@ -91,7 +91,7 @@ import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GPair;
 import es.igosoftware.util.GUtils;
 import es.igosoftware.util.LRUCache;
-import es.igosoftware.util.Logger;
+import es.igosoftware.util.GLogger;
 import es.igosoftware.utils.GSwingUtils;
 import es.igosoftware.utils.GWrapperFontSet;
 import gov.nasa.worldwind.BasicModel;
@@ -126,7 +126,7 @@ public abstract class GGlobeApplication
    private static final long   serialVersionUID = 1L;
 
 
-   private static final Logger LOGGER           = Logger.instance();
+   private static final GLogger LOGGER           = GLogger.instance();
 
    static {
       if (GUtils.isWindows()) {

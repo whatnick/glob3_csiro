@@ -55,12 +55,12 @@ import es.igosoftware.util.IEvaluator;
 import es.igosoftware.util.IEvaluatorInt;
 import es.igosoftware.util.IListInt;
 import es.igosoftware.util.IRangeEvaluator;
-import es.igosoftware.util.Logger;
+import es.igosoftware.util.GLogger;
 
 
 public class GKMeansPlusPlusClusterer {
 
-   private static final Logger logger = Logger.instance();
+   private static final GLogger logger = GLogger.instance();
 
 
    public static interface Policy<PointT, CentroidT> {

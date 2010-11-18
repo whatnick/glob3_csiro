@@ -58,12 +58,12 @@ import es.igosoftware.euclid.verticescontainer.IUnstructuredVertexContainer;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.LRUCache;
-import es.igosoftware.util.LoggerObject;
+import es.igosoftware.util.GLoggerObject;
 
 
 public class GReliefService
          extends
-            LoggerObject {
+            GLoggerObject {
 
    private static final boolean                                       VERBOSE    = true;
    private static final int                                           CACHE_SIZE = 90;

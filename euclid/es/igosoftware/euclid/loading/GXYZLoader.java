@@ -60,7 +60,7 @@ import es.igosoftware.euclid.verticescontainer.GVertex3Container;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.util.GProgress;
-import es.igosoftware.util.Logger;
+import es.igosoftware.util.GLogger;
 import es.igosoftware.util.XStringTokenizer;
 
 
@@ -74,7 +74,7 @@ public final class GXYZLoader
 
       final long started = System.currentTimeMillis();
 
-      final Logger logger = Logger.instance();
+      final GLogger logger = GLogger.instance();
 
       final boolean hasColors = vertices.hasColors();
       final boolean hasIntensities = vertices.hasIntensities();

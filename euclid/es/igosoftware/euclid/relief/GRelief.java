@@ -64,12 +64,12 @@ import es.igosoftware.euclid.verticescontainer.IVertexContainer;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.ITransformer;
-import es.igosoftware.util.LoggerObject;
+import es.igosoftware.util.GLoggerObject;
 
 
 public class GRelief
          extends
-            LoggerObject {
+            GLoggerObject {
    private static final class GPoint2I {
       private final int x;
       private final int y;

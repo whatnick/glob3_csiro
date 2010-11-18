@@ -63,7 +63,7 @@ import es.igosoftware.euclid.verticescontainer.IUnstructuredVertexContainer;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.util.GProgress;
-import es.igosoftware.util.Logger;
+import es.igosoftware.util.GLogger;
 
 
 public final class GBinaryPoints3Loader
@@ -91,7 +91,7 @@ public final class GBinaryPoints3Loader
 
       final long started = System.currentTimeMillis();
 
-      final Logger logger = Logger.instance();
+      final GLogger logger = GLogger.instance();
 
       final boolean hasIntensities = vertices.hasIntensities();
       final boolean hasColors = vertices.hasColors();

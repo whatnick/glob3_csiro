@@ -44,7 +44,7 @@ import java.util.List;
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
-import es.igosoftware.util.Logger;
+import es.igosoftware.util.GLogger;
 
 
 public class GModelData
@@ -52,7 +52,7 @@ public class GModelData
             Serializable {
 
 
-   private static final Logger logger = Logger.instance();
+   private static final GLogger logger = GLogger.instance();
 
 
    public static enum FaceCullingMode {

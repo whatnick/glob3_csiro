@@ -42,12 +42,12 @@ import es.igosoftware.euclid.verticescontainer.IVertexContainer;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.IComparatorDouble;
-import es.igosoftware.util.LoggerObject;
+import es.igosoftware.util.GLoggerObject;
 
 
 public final class GResolution
          extends
-            LoggerObject {
+            GLoggerObject {
 
 
    private final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> _vertices;

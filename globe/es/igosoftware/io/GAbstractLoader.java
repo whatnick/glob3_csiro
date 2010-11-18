@@ -44,12 +44,12 @@ import java.util.Map;
 import java.util.concurrent.PriorityBlockingQueue;
 
 import es.igosoftware.util.GUtils;
-import es.igosoftware.util.LoggerObject;
+import es.igosoftware.util.GLoggerObject;
 
 
 abstract class GAbstractLoader
          extends
-            LoggerObject
+            GLoggerObject
          implements
             ILoader,
             Thread.UncaughtExceptionHandler {

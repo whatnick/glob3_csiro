@@ -43,7 +43,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import es.igosoftware.statistics.GHistogram.DataQuantityCalculator;
-import es.igosoftware.util.Logger;
+import es.igosoftware.util.GLogger;
 
 
 public class GStatisticsVariableL
@@ -92,7 +92,7 @@ public class GStatisticsVariableL
 
 
    @Override
-   public synchronized void show(final Logger logger) {
+   public synchronized void show(final GLogger logger) {
 
       String output = "  " + _name + " [counter: " + _counter;
 

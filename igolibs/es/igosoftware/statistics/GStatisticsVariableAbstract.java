@@ -39,7 +39,7 @@ package es.igosoftware.statistics;
 import java.util.List;
 
 import es.igosoftware.util.GAssert;
-import es.igosoftware.util.Logger;
+import es.igosoftware.util.GLogger;
 
 
 public abstract class GStatisticsVariableAbstract<TypeT extends Number> {
@@ -72,7 +72,7 @@ public abstract class GStatisticsVariableAbstract<TypeT extends Number> {
    }
 
 
-   public abstract void show(final Logger logger);
+   public abstract void show(final GLogger logger);
 
 
    public String getName() {

@@ -63,12 +63,12 @@ import org.jCharts.properties.util.ChartFont;
 import org.jCharts.types.ChartType;
 
 import es.igosoftware.util.GMath;
-import es.igosoftware.util.LoggerObject;
+import es.igosoftware.util.GLoggerObject;
 
 
 public class GHistogram<T>
          extends
-            LoggerObject {
+            GLoggerObject {
 
    public static interface DataQuantityCalculator<T> {
       public double quantity(final T sample);

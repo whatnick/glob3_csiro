@@ -47,7 +47,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import es.igosoftware.util.Logger;
+import es.igosoftware.util.GLogger;
 
 
 public final class GConcurrent {
@@ -61,7 +61,7 @@ public final class GConcurrent {
    public static int              AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors();
 
    private static ExecutorService DEFAULT_EXECUTOR;
-   private final static Logger    LOGGER               = Logger.instance();
+   private final static GLogger    LOGGER               = GLogger.instance();
 
 
    static {

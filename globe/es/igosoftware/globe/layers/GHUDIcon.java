@@ -49,7 +49,7 @@ import com.sun.opengl.util.texture.Texture;
 import com.sun.opengl.util.texture.TextureCoords;
 import com.sun.opengl.util.texture.TextureIO;
 
-import es.igosoftware.util.Logger;
+import es.igosoftware.util.GLogger;
 import gov.nasa.worldwind.exception.WWRuntimeException;
 import gov.nasa.worldwind.geom.Vec4;
 import gov.nasa.worldwind.render.DrawContext;
@@ -60,7 +60,7 @@ public class GHUDIcon
          implements
             IHUDElement {
 
-   private static final Logger logger = Logger.instance();
+   private static final GLogger logger = GLogger.instance();
 
 
    public static enum Position {

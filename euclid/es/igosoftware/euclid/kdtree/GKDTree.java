@@ -55,13 +55,13 @@ import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GHolder;
 import es.igosoftware.util.GIntHolder;
 import es.igosoftware.util.GProgress;
-import es.igosoftware.util.LoggerObject;
+import es.igosoftware.util.GLoggerObject;
 import es.igosoftware.util.StringUtils;
 
 
 public final class GKDTree<VectorT extends IVector<VectorT, ?>, VertexT extends IVertexContainer.Vertex<VectorT>>
          extends
-            LoggerObject {
+            GLoggerObject {
 
 
    private final String                                _name;

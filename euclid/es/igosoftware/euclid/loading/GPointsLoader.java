@@ -41,12 +41,12 @@ import java.io.IOException;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
 import es.igosoftware.util.GUtils;
-import es.igosoftware.util.LoggerObject;
+import es.igosoftware.util.GLoggerObject;
 
 
 public abstract class GPointsLoader<VectorT extends IVector<VectorT, ?>, VertexT extends IVertexContainer.Vertex<VectorT>>
          extends
-            LoggerObject {
+            GLoggerObject {
 
    public static final int DEFAULT_FLAGS = 0;
    public static final int VERBOSE       = 1;

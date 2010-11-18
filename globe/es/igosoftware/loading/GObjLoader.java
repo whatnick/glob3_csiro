@@ -54,13 +54,13 @@ import es.igosoftware.loading.modelparts.GModelData;
 import es.igosoftware.loading.modelparts.GModelMesh;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.GUtils;
-import es.igosoftware.util.Logger;
+import es.igosoftware.util.GLogger;
 import es.igosoftware.util.XStringTokenizer;
 
 
 public class GObjLoader {
 
-   private static final Logger logger          = Logger.instance();
+   private static final GLogger logger          = GLogger.instance();
 
 
    public static final String  VERTEX_DATA     = "v ";

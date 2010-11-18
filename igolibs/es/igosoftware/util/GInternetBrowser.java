@@ -71,12 +71,12 @@ public class GInternetBrowser {
             RUNTIME.exec(new String[] { "sh", "-c", cmd.toString() });
          }
          else {
-            Logger.instance().severe("Unsupported platform (" + System.getProperty("os.name", "") + ")");
+            GLogger.instance().severe("Unsupported platform (" + System.getProperty("os.name", "") + ")");
             return false;
          }
       }
       catch (final IOException e) {
-         Logger.instance().severe(e);
+         GLogger.instance().severe(e);
          return false;
       }
 
