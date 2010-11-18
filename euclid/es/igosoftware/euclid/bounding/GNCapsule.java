@@ -49,7 +49,11 @@ public abstract class GNCapsule<
 
 VectorT extends IVector<VectorT, ?>,
 
-GeometryT extends GNCapsule<VectorT, GeometryT>>
+SegmentT extends GSegment<VectorT, SegmentT, ?>,
+
+GeometryT extends GNCapsule<VectorT, SegmentT, GeometryT>
+
+>
          extends
             GGeometryAbstract<VectorT, GeometryT>
          implements
@@ -58,15 +62,15 @@ GeometryT extends GNCapsule<VectorT, GeometryT>>
    /**
     * 
     */
-   private static final long            serialVersionUID = 1L;
+   private static final long serialVersionUID = 1L;
 
    //   public final VectorT      _startPoint;
    //   public final VectorT      _endPoint;
-   public final GSegment<VectorT, ?, ?> _segment;
-   public final double                  _radius;
+   public final SegmentT     _segment;
+   public final double       _radius;
 
 
-   public GNCapsule(final GSegment<VectorT, ?, ?> segment,
+   public GNCapsule(final SegmentT segment,
                     final double radius) {
       super();
       _segment = segment;
@@ -115,7 +119,7 @@ GeometryT extends GNCapsule<VectorT, GeometryT>>
    }
 
 
-   public abstract GNCapsule<VectorT, GeometryT> expandedByDistance(final double delta);
+   public abstract GNCapsule<VectorT, SegmentT, GeometryT> expandedByDistance(final double delta);
 
 
    @Override
@@ -181,5 +185,16 @@ GeometryT extends GNCapsule<VectorT, GeometryT>>
 
       return lower.greaterOrEquals(orthotope._lower) && upper.lessOrEquals(orthotope._upper);
    }
+
+
+   public SegmentT getSegment() {
+      return _segment;
+   }
+
+
+   public double getRadius() {
+      return _radius;
+   }
+
 
 }

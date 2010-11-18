@@ -56,7 +56,8 @@ public final class GAxisAlignedRectangle
          extends
             GAxisAlignedOrthotope<IVector2<?>, GAxisAlignedRectangle>
          implements
-            IFiniteBounds2D<GAxisAlignedRectangle> {
+            IBounds2D<GAxisAlignedRectangle>,
+            IFiniteBounds<IVector2<?>, GAxisAlignedRectangle> {
 
    private static final long                 serialVersionUID = 1L;
 
@@ -263,7 +264,7 @@ public final class GAxisAlignedRectangle
 
 
    @Override
-   public boolean touches(final IFiniteBounds2D<?> that) {
+   public boolean touches(final IBounds2D<?> that) {
       return that.touchesWithRectangle(this);
    }
 
@@ -507,4 +508,11 @@ public final class GAxisAlignedRectangle
              && (Math.abs(_center.y() - segmentClosestPoint.y()) < (capsuleRadius + _extent.y()));
 
    }
+
+
+   @Override
+   public GAxisAlignedRectangle asAxisAlignedOrthotope() {
+      return this;
+   }
+
 }

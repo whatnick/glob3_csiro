@@ -113,6 +113,21 @@ BoundsT extends IBounds<VectorT, BoundsT>
    }
 
 
+   public VectorT getMiddle() {
+      return _from.add(_to).div(2);
+   }
+
+
+   public VectorT getFrom() {
+      return _from;
+   }
+
+
+   public VectorT getTo() {
+      return _to;
+   }
+
+
    @Override
    public final Iterator<VectorT> iterator() {
       return getPoints().iterator();
@@ -280,11 +295,17 @@ BoundsT extends IBounds<VectorT, BoundsT>
    }
 
 
-   public boolean closeTo(final GSegment<VectorT, ?, ?> that) {
-      final VectorT from = that._from;
-      final VectorT to = that._to;
+   //   public boolean closeTo(final GSegment<VectorT, ?, ?> that) {
+   //      final VectorT from = that._from;
+   //      final VectorT to = that._to;
+   //
+   //      return _from.closeTo(from) && _to.closeTo(to);
+   //   }
 
-      return _from.closeTo(from) && _to.closeTo(to);
+
+   @Override
+   public boolean closeTo(final GeometryT that) {
+      return _from.closeTo(that._from) && _to.closeTo(that._to);
    }
 
 }

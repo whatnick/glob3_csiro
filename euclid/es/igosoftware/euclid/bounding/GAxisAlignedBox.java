@@ -60,7 +60,8 @@ public final class GAxisAlignedBox
          extends
             GAxisAlignedOrthotope<IVector3<?>, GAxisAlignedBox>
          implements
-            IFiniteBounds3D<GAxisAlignedBox> {
+            IBounds3D<GAxisAlignedBox>,
+            IFiniteBounds<IVector3<?>, GAxisAlignedBox> {
 
    private static final long           serialVersionUID = 1L;
 
@@ -603,7 +604,7 @@ public final class GAxisAlignedBox
 
 
    @Override
-   public boolean touches(final IFiniteBounds3D<?> that) {
+   public boolean touches(final IBounds3D<?> that) {
       return that.touchesWithBox(this);
    }
 
@@ -667,6 +668,12 @@ public final class GAxisAlignedBox
              && (Math.abs(_center.y() - segmentClosestPoint.y()) < (capsuleRadius + _extent.y()))
              && (Math.abs(_center.z() - segmentClosestPoint.z()) < (capsuleRadius + _extent.z()));
 
+   }
+
+
+   @Override
+   public GAxisAlignedBox asAxisAlignedOrthotope() {
+      return this;
    }
 
 

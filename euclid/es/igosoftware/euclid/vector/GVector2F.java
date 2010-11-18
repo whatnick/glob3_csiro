@@ -515,4 +515,10 @@ public class GVector2F
       return sourceProjection.transformPoint(targetProjection, this);
    }
 
+
+   @Override
+   public boolean closeTo(final GVector2F that) {
+      return closeTo((IVector2<?>) that);
+   }
+
 }

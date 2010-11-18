@@ -570,4 +570,10 @@ public class GVector3D
       return sourceProjection.transformPoint(targetProjection, this);
    }
 
+
+   @Override
+   public boolean closeTo(final GVector3D that) {
+      return closeTo((IVector3<?>) that);
+   }
+
 }

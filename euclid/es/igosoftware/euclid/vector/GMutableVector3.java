@@ -428,6 +428,11 @@ public final class GMutableVector3<T extends IVector3<?>>
    }
 
 
+   @Override
+   public boolean closeTo(final GMutableVector3<T> that) {
+      return closeTo((IVector3<?>) that);
+   }
+
    //   @Override
    //   public boolean isZero() {
    //      return _value.isZero();

@@ -6,15 +6,15 @@ import es.igosoftware.euclid.shape.GPlane;
 import es.igosoftware.euclid.vector.IVector3;
 
 
-public interface IFiniteBounds3D<
+public interface IBounds3D<
 
 GeometryT extends IBounds<IVector3<?>, GeometryT>
 
 >
          extends
-            IFiniteBounds<IVector3<?>, GeometryT> {
+            IBounds<IVector3<?>, GeometryT> {
 
-   public boolean touches(final IFiniteBounds3D<?> that);
+   public boolean touches(final IBounds3D<?> that);
 
 
    public boolean touchesWithBox(final GAxisAlignedBox box);

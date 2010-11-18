@@ -113,4 +113,13 @@ BoundsT extends IBounds<VectorT, BoundsT>
    }
 
 
+   @SuppressWarnings("unchecked")
+   @Override
+   public final boolean closeTo(final IPolytope<VectorT, SegmentT, ?, BoundsT> that) {
+      if (getClass() == that.getClass()) {
+         return closeTo((GeometryT) that);
+      }
+      return false;
+   }
+
 }

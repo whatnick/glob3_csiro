@@ -45,7 +45,8 @@ public final class GDisk
          extends
             GNBall<IVector2<?>, GDisk>
          implements
-            IFiniteBounds2D<GDisk> {
+            IBounds2D<GDisk>,
+            IFiniteBounds<IVector2<?>, GDisk> {
 
    private static final long serialVersionUID = 1L;
 
@@ -69,7 +70,7 @@ public final class GDisk
 
 
    @Override
-   public boolean touches(final IFiniteBounds2D<?> that) {
+   public boolean touches(final IBounds2D<?> that) {
       return that.touchesWithDisk(this);
    }
 
@@ -128,6 +129,12 @@ public final class GDisk
    @Override
    public boolean touchesWithCapsule2D(final GCapsule2D capsule) {
       return capsule.touchesWithDisk(this);
+   }
+
+
+   @Override
+   public GAxisAlignedRectangle asAxisAlignedOrthotope() {
+      return new GAxisAlignedRectangle(_center.sub(_radius), _center.add(_radius));
    }
 
 }

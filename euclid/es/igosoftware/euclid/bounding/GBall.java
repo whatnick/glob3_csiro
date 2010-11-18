@@ -46,7 +46,8 @@ public final class GBall
          extends
             GNBall<IVector3<?>, GBall>
          implements
-            IFiniteBounds3D<GBall> {
+            IBounds3D<GBall>,
+            IFiniteBounds<IVector3<?>, GBall> {
 
    private static final long serialVersionUID = 1L;
 
@@ -70,7 +71,7 @@ public final class GBall
 
 
    @Override
-   public boolean touches(final IFiniteBounds3D<?> that) {
+   public boolean touches(final IBounds3D<?> that) {
       return that.touchesWithBall(this);
    }
 
@@ -134,6 +135,12 @@ public final class GBall
    @Override
    public boolean touchesWithCapsule3D(final GCapsule3D capsule) {
       return capsule.touchesWithBall(this);
+   }
+
+
+   @Override
+   public GAxisAlignedBox asAxisAlignedOrthotope() {
+      return new GAxisAlignedBox(_center.sub(_radius), _center.add(_radius));
    }
 
 

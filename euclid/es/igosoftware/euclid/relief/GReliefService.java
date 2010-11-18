@@ -46,7 +46,7 @@ import java.util.List;
 import java.util.Map;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
-import es.igosoftware.euclid.bounding.IFiniteBounds3D;
+import es.igosoftware.euclid.bounding.IBounds3D;
 import es.igosoftware.euclid.loading.GBinaryPoints3Loader;
 import es.igosoftware.euclid.loading.GPointsLoader;
 import es.igosoftware.euclid.octree.GOctree;
@@ -56,9 +56,9 @@ import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.euclid.verticescontainer.GCompositeVertexContainer;
 import es.igosoftware.euclid.verticescontainer.IUnstructuredVertexContainer;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
+import es.igosoftware.util.GLoggerObject;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.LRUCache;
-import es.igosoftware.util.GLoggerObject;
 
 
 public class GReliefService
@@ -184,7 +184,7 @@ public class GReliefService
    }
 
 
-   public IUnstructuredVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> getVertices(final IFiniteBounds3D<?> area) {
+   public IUnstructuredVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> getVertices(final IBounds3D<?> area) {
       final List<GAxisAlignedBox> touchedTiles = getTouchedTiles(area);
 
       if (touchedTiles.isEmpty()) {
@@ -205,12 +205,12 @@ public class GReliefService
    }
 
 
-   public double getAverageZ(final IFiniteBounds3D<?> area) {
+   public double getAverageZ(final IBounds3D<?> area) {
       return GVectorUtils.getAverageZ(getVertices(area));
    }
 
 
-   public double getMaxZ(final IFiniteBounds3D<?> area) {
+   public double getMaxZ(final IBounds3D<?> area) {
       return GVectorUtils.getMaxZ(getVertices(area));
    }
 
@@ -241,7 +241,7 @@ public class GReliefService
    //   }
 
 
-   private List<GAxisAlignedBox> getTouchedTiles(final IFiniteBounds3D<?> area) {
+   private List<GAxisAlignedBox> getTouchedTiles(final IBounds3D<?> area) {
       final ArrayList<GAxisAlignedBox> touchedTiles = new ArrayList<GAxisAlignedBox>(_tiles.size());
 
       for (final GAxisAlignedBox tileBox : _tiles.keySet()) {
@@ -293,7 +293,7 @@ public class GReliefService
 
    private static void process(final GReliefService mdt,
                                final GReliefService lidar,
-                               final IFiniteBounds3D<?> area) {
+                               final IBounds3D<?> area) {
       final double mdtZ = mdt.getAverageZ(area);
       final double lidarZ = lidar.getAverageZ(area);
       final double delta = mdtZ - lidarZ;

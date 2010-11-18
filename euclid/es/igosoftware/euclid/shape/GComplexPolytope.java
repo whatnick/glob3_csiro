@@ -221,4 +221,28 @@ PolytopeT extends IPolytope<VectorT, SegmentT, ?, BoundsT>
       return Collections.unmodifiableList(_holes);
    }
 
+
+   @Override
+   public boolean closeTo(final GeometryT that) {
+
+      if (!_hull.closeTo(that._hull)) {
+         return false;
+      }
+
+      final int holesSize = _holes.size();
+      if (holesSize != that._holes.size()) {
+         return false;
+      }
+
+      for (int i = 0; i < holesSize; i++) {
+         final PolytopeT thisHole = _holes.get(i);
+         final PolytopeT thatHole = that._holes.get(i);
+         if (!thisHole.closeTo(thatHole)) {
+            return false;
+         }
+      }
+
+      return true;
+   }
+
 }

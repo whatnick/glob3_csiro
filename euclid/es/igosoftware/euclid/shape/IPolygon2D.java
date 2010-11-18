@@ -51,5 +51,11 @@ GeometryT extends IPolygon<IVector2<?>, GSegment2D, GeometryT, GAxisAlignedRecta
             IPolygon<IVector2<?>, GSegment2D, GeometryT, GAxisAlignedRectangle> {
 
 
-   public abstract List<GTriangle2D> triangulate();
+   public List<GTriangle2D> triangulate();
+
+
+   @Override
+   public IPolygon2D<?> createSimplified(final double capsRadiansTolerance);
+
+
 }

@@ -232,4 +232,5 @@ public final class GTriangle2D
       return result;
    }
 
+
 }

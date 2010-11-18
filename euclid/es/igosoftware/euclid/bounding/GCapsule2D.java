@@ -36,7 +36,6 @@
 
 package es.igosoftware.euclid.bounding;
 
-import es.igosoftware.euclid.shape.GSegment;
 import es.igosoftware.euclid.shape.GSegment2D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVectorTransformer;
@@ -45,9 +44,10 @@ import es.igosoftware.util.GMath;
 
 public final class GCapsule2D
          extends
-            GNCapsule<IVector2<?>, GCapsule2D>
+            GNCapsule<IVector2<?>, GSegment2D, GCapsule2D>
          implements
-            IFiniteBounds2D<GCapsule2D> {
+            IBounds2D<GCapsule2D>,
+            IFiniteBounds<IVector2<?>, GCapsule2D> {
 
    /**
     * 
@@ -55,14 +55,14 @@ public final class GCapsule2D
    private static final long serialVersionUID = 1L;
 
 
-   public GCapsule2D(final GSegment<IVector2<?>, ?, ?> segment,
+   public GCapsule2D(final GSegment2D segment,
                      final double radius) {
       super(segment, radius);
    }
 
 
    @Override
-   public GNCapsule<IVector2<?>, GCapsule2D> expandedByDistance(final double delta) {
+   public GCapsule2D expandedByDistance(final double delta) {
       return new GCapsule2D(_segment, _radius + delta);
    }
 
@@ -74,7 +74,7 @@ public final class GCapsule2D
 
 
    @Override
-   public boolean touches(final IFiniteBounds2D<?> that) {
+   public boolean touches(final IBounds2D<?> that) {
       return that.touchesWithCapsule2D(this);
    }
 
@@ -109,7 +109,7 @@ public final class GCapsule2D
    @Override
    public GCapsule2D transformedBy(final IVectorTransformer<IVector2<?>> transformer) {
       // TODO: scale/shear radius;
-      final GSegment<IVector2<?>, ?, ?> transformedSegment = new GSegment2D(_segment._from.transformedBy(transformer),
+      final GSegment2D transformedSegment = new GSegment2D(_segment._from.transformedBy(transformer),
                _segment._to.transformedBy(transformer));
       return new GCapsule2D(transformedSegment, _radius);
    }
@@ -127,6 +127,12 @@ public final class GCapsule2D
       final double radius = _radius + capsule._radius;
 
       return GMath.lessOrEquals(squareDistance, radius * radius);
+   }
+
+
+   @Override
+   public GAxisAlignedRectangle asAxisAlignedOrthotope() {
+      return _segment.getBounds().expandedByDistance(_radius);
    }
 
 

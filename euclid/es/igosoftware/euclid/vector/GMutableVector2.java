@@ -415,6 +415,12 @@ public final class GMutableVector2<T extends IVector2<?>>
    }
 
 
+   @Override
+   public boolean closeTo(final GMutableVector2<T> that) {
+      return closeTo((IVector2<?>) that);
+   }
+
+
    //   @Override
    //   public boolean isZero() {
    //      return _value.isZero();

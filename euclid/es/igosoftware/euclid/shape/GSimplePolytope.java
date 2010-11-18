@@ -210,4 +210,23 @@ BoundsT extends IBounds<VectorT, BoundsT>
    }
 
 
+   @Override
+   public boolean closeTo(final GeometryT that) {
+      final int pointsSize = _points.size();
+
+      if (pointsSize != that._points.size()) {
+         return false;
+      }
+
+      for (int i = 0; i < pointsSize; i++) {
+         final VectorT thisP = _points.get(i);
+         final VectorT thatP = that._points.get(i);
+         if (!thisP.closeTo(thatP)) {
+            return false;
+         }
+      }
+
+      return true;
+   }
+
 }

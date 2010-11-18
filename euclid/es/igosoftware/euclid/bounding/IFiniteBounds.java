@@ -16,7 +16,7 @@ GeometryT extends IBounds<VectorT, GeometryT>
             IBounds<VectorT, GeometryT> {
 
 
-   // public GAxisAlignedOrthotope<VectorT, ?> asAxisAlignedOrthotope();
+   public GAxisAlignedOrthotope<VectorT, ?> asAxisAlignedOrthotope();
 
 
 }

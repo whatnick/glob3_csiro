@@ -37,7 +37,6 @@
 package es.igosoftware.euclid.bounding;
 
 import es.igosoftware.euclid.shape.GPlane;
-import es.igosoftware.euclid.shape.GSegment;
 import es.igosoftware.euclid.shape.GSegment3D;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.euclid.vector.IVectorTransformer;
@@ -46,9 +45,10 @@ import es.igosoftware.util.GMath;
 
 public class GCapsule3D
          extends
-            GNCapsule<IVector3<?>, GCapsule3D>
+            GNCapsule<IVector3<?>, GSegment3D, GCapsule3D>
          implements
-            IFiniteBounds3D<GCapsule3D> {
+            IBounds3D<GCapsule3D>,
+            IFiniteBounds<IVector3<?>, GCapsule3D> {
 
    /**
     * 
@@ -56,14 +56,14 @@ public class GCapsule3D
    private static final long serialVersionUID = 1L;
 
 
-   public GCapsule3D(final GSegment<IVector3<?>, ?, ?> segment,
+   public GCapsule3D(final GSegment3D segment,
                      final double radius) {
       super(segment, radius);
    }
 
 
    @Override
-   public GNCapsule<IVector3<?>, GCapsule3D> expandedByDistance(final double delta) {
+   public GCapsule3D expandedByDistance(final double delta) {
       return new GCapsule3D(_segment, _radius + delta);
    }
 
@@ -75,7 +75,7 @@ public class GCapsule3D
 
 
    @Override
-   public boolean touches(final IFiniteBounds3D<?> that) {
+   public boolean touches(final IBounds3D<?> that) {
       return that.touchesWithCapsule3D(this);
    }
 
@@ -119,7 +119,7 @@ public class GCapsule3D
    @Override
    public GCapsule3D transformedBy(final IVectorTransformer<IVector3<?>> transformer) {
       // TODO: scale/shear radius;
-      final GSegment<IVector3<?>, ?, ?> transformedSegment = new GSegment3D(_segment._from.transformedBy(transformer),
+      final GSegment3D transformedSegment = new GSegment3D(_segment._from.transformedBy(transformer),
                _segment._to.transformedBy(transformer));
       return new GCapsule3D(transformedSegment, _radius);
    }
@@ -139,5 +139,10 @@ public class GCapsule3D
       return GMath.lessOrEquals(squareDistance, radius * radius);
    }
 
+
+   @Override
+   public GAxisAlignedBox asAxisAlignedOrthotope() {
+      return _segment.getBounds().expandedByDistance(_radius);
+   }
 
 }

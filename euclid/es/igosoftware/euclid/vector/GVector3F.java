@@ -590,4 +590,12 @@ public class GVector3F
       //      }
       return sourceProjection.transformPoint(targetProjection, this);
    }
+
+
+   @Override
+   public boolean closeTo(final GVector3F that) {
+      return closeTo((IVector3<?>) that);
+   }
+
+
 }

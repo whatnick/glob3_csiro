@@ -85,6 +85,6 @@ GeometryT extends IGeometry<VectorT, GeometryT>
    public double precision();
 
 
-   //   public boolean closeTo(final GeometryT that);
+   public boolean closeTo(final GeometryT that);
 
 }

@@ -46,7 +46,7 @@ VectorT extends IVector<VectorT, ?>,
 
 SegmentT extends GSegment<VectorT, SegmentT, BoundsT>,
 
-GeometryT extends IPolygon<VectorT, SegmentT, GeometryT, BoundsT>,
+GeometryT extends IPolytope<VectorT, SegmentT, GeometryT, BoundsT>,
 
 BoundsT extends IBounds<VectorT, BoundsT>
 
@@ -55,14 +55,12 @@ BoundsT extends IBounds<VectorT, BoundsT>
             IPolytope<VectorT, SegmentT, GeometryT, BoundsT> {
 
 
-   @Override
-   public IPolygon<VectorT, SegmentT, ?, BoundsT> createSimplified(final double capsRadiansTolerance);
+   //   @Override
+   //   public IPolygon<VectorT, SegmentT, ?, BoundsT> createSimplified(final double capsRadiansTolerance);
 
 
-   public BoundsT getBounds();
+   //   @Override
+   //   public IPolygon<VectorT, SegmentT, ?, BoundsT> getHull();
 
-
-   @Override
-   public IPolygon<VectorT, SegmentT, ?, BoundsT> getHull();
 
 }

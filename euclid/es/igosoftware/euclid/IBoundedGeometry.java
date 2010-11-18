@@ -40,6 +40,9 @@ import es.igosoftware.euclid.bounding.IBounds;
 import es.igosoftware.euclid.vector.IVector;
 
 
+/**
+ * IBoundedGeometry represents the concept of a geometry that fits inside a bounds.
+ */
 public interface IBoundedGeometry<
 
 VectorT extends IVector<VectorT, ?>,
@@ -53,7 +56,6 @@ BoundsT extends IBounds<VectorT, BoundsT>
             IGeometry<VectorT, GeometryT> {
 
 
-   //public IBounds<VectorT> getBounds();
    public BoundsT getBounds();
 
 
