@@ -2,6 +2,7 @@
 
 package es.igosoftware.euclid.octree.geometry;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import es.igosoftware.euclid.IBoundedGeometry;
@@ -9,9 +10,11 @@ import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.shape.GShape;
 import es.igosoftware.euclid.vector.IVector;
+import es.igosoftware.util.GHolder;
 import es.igosoftware.util.GIntHolder;
 import es.igosoftware.util.GLoggerObject;
 import es.igosoftware.util.GProgress;
+import es.igosoftware.util.GStringUtils;
 
 
 public abstract class GGeometryNTree<
@@ -56,6 +59,7 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
 
 
    private final String                              _name;
+   private final Collection<GeometryT>               _geometries;
    private final GGeometryNTreeParameters            _parameters;
 
    private final byte                                _dimensions;
@@ -71,6 +75,7 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
                             final Collection<GeometryT> geometries,
                             final GGeometryNTreeParameters parameters) {
       _name = name;
+      _geometries = new ArrayList<GeometryT>(geometries);
       _parameters = parameters;
 
       final String nameMsg = (_name == null) ? "" : "\"" + _name + "\" ";
@@ -169,6 +174,8 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
       final GIntHolder maxDepth = new GIntHolder(0);
       final GIntHolder minDepth = new GIntHolder(Integer.MAX_VALUE);
 
+      final GHolder<VectorT> totalLeafExtentHolder = new GHolder<VectorT>(null);
+
       breadthFirstAcceptVisitor(new Visitor<VectorT, BoundsT, GeometryT>() {
 
          @Override
@@ -195,8 +202,19 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
             if (depth < minDepth.get()) {
                minDepth.set(depth);
             }
+
+
+            final VectorT leafExtent = leaf.getBounds().getExtent();
+            final VectorT totalLeafExtent = totalLeafExtentHolder.get();
+            if (totalLeafExtent == null) {
+               totalLeafExtentHolder.set(leafExtent);
+            }
+            else {
+               totalLeafExtentHolder.set(totalLeafExtentHolder.get().add(leafExtent));
+            }
          }
       });
+
 
       logInfo(" ");
       logInfo("  Nodes: " + (innerNodesCounter.get() + leafNodesCounter.get()));
@@ -204,7 +222,12 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
       logInfo("    Leaf : " + leafNodesCounter.get());
 
       logInfo(" ");
-      logInfo("  Average Geometries per Leaf : " + ((float) geometrisInleafNodesCounter.get() / leafNodesCounter.get()));
+      final int duplicates = geometrisInleafNodesCounter.get() - _geometries.size();
+
+      logInfo("  Geometries in Leafs        : " + geometrisInleafNodesCounter.get() + " (duplicates: " + duplicates + " - "
+              + GStringUtils.formatPercent(duplicates, geometrisInleafNodesCounter.get()) + ")");
+      logInfo("  Average Geometries per Leaf: " + ((float) geometrisInleafNodesCounter.get() / leafNodesCounter.get()));
+      logInfo("  Average leaf extent        : " + totalLeafExtentHolder.get().div(leafNodesCounter.get()));
 
       logInfo(" ");
       logInfo("  Depth: Max=" + maxDepth.get() + ", Min=" + minDepth.get() + ", Average="
