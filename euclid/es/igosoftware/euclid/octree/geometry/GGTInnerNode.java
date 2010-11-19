@@ -34,22 +34,22 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
    GGTInnerNode(final GGTInnerNode<VectorT, BoundsT, GeometryT> parent,
                 final BoundsT bounds,
                 final Collection<GeometryT> geometries,
+                final int depth,
                 final GGeometryNTreeParameters parameters,
                 final GProgress progress) {
       super(parent, bounds);
 
-      _children = distributeVertices(geometries, parameters, progress);
+      _children = initializeChildren(geometries, depth, parameters, progress);
    }
 
 
-   private GGTNode<VectorT, BoundsT, GeometryT>[] distributeVertices(final Collection<GeometryT> geometries,
+   private GGTNode<VectorT, BoundsT, GeometryT>[] initializeChildren(final Collection<GeometryT> geometries,
+                                                                     final int depth,
                                                                      final GGeometryNTreeParameters parameters,
                                                                      final GProgress progress) {
       final GAxisAlignedOrthotope<VectorT, ?>[] childrenBounds = _bounds.subdivideAtCenter();
 
       final int maxChildrenCount = childrenBounds.length;
-      @SuppressWarnings({ "cast", "unchecked" })
-      final GGTNode<VectorT, BoundsT, GeometryT>[] result = (GGTNode<VectorT, BoundsT, GeometryT>[]) new GGTNode[maxChildrenCount];
 
       final List<ArrayList<GeometryT>> geometriesByChild = new ArrayList<ArrayList<GeometryT>>(maxChildrenCount);
       for (int i = 0; i < maxChildrenCount; i++) {
@@ -57,21 +57,42 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
       }
 
       for (final GeometryT geometry : geometries) {
+         final GAxisAlignedOrthotope<VectorT, ?> geometryBounds = geometry.getBounds().asAxisAlignedOrthotope();
+         int geometryAddedCounter = 0;
+
          for (int i = 0; i < maxChildrenCount; i++) {
             final GAxisAlignedOrthotope<VectorT, ?> childBounds = childrenBounds[i];
-            if (childBounds.touches(geometry.getBounds().asAxisAlignedOrthotope())) {
+            if (childBounds.touches(geometryBounds)) {
                final ArrayList<GeometryT> childGeometries = geometriesByChild.get(i);
                childGeometries.add(geometry);
+               geometryAddedCounter++;
             }
          }
+
+         //         if (geometryAddedCounter != 1) {
+         //            System.out.println(">> geometry " + geometry + " added " + geometryAddedCounter + " times");
+         //         }
+         if (geometryAddedCounter == 0) {
+            System.out.println("WARNING >> geometry " + geometry + " don't added!!!!!");
+         }
+         if (geometryAddedCounter > 1) {
+            progress.incrementSteps(geometryAddedCounter - 1);
+         }
       }
+
+      // clear some memory
+      // the geometries at this point are splitted into geometriesByChild and it safe to clear the given geometries collection
+      geometries.clear();
+
+      @SuppressWarnings({ "cast", "unchecked" })
+      final GGTNode<VectorT, BoundsT, GeometryT>[] result = (GGTNode<VectorT, BoundsT, GeometryT>[]) new GGTNode[maxChildrenCount];
 
       for (int i = 0; i < maxChildrenCount; i++) {
          final GAxisAlignedOrthotope<VectorT, ?> childBounds = childrenBounds[i];
          final ArrayList<GeometryT> childGeometries = geometriesByChild.get(i);
          childGeometries.trimToSize();
 
-         result[i] = createNode(childBounds, childGeometries, parameters, progress);
+         result[i] = createChildNode(childBounds, childGeometries, depth + 1, parameters, progress);
       }
 
       return GCollections.rtrim(result);
@@ -79,22 +100,44 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
 
 
    @SuppressWarnings("unchecked")
-   private GGTNode<VectorT, BoundsT, GeometryT> createNode(final GAxisAlignedOrthotope<VectorT, ?> bounds,
-                                                           final Collection<GeometryT> geometries,
-                                                           final GGeometryNTreeParameters parameters,
-                                                           final GProgress progress) {
+   private GGTNode<VectorT, BoundsT, GeometryT> createChildNode(final GAxisAlignedOrthotope<VectorT, ?> bounds,
+                                                                final Collection<GeometryT> geometries,
+                                                                final int depth,
+                                                                final GGeometryNTreeParameters parameters,
+                                                                final GProgress progress) {
       final int Diego_at_work;
 
       if (geometries.isEmpty()) {
          return null;
       }
 
-      if ((geometries.size() < parameters._maxGeometries) || (getDepth() > parameters._maxDepth)) {
+      if (acceptLeafNodeCreation(bounds, geometries, depth, parameters)) {
          progress.stepsDone(geometries.size());
          return new GGTLeafNode<VectorT, BoundsT, GeometryT>(this, (BoundsT) bounds, geometries);
       }
 
-      return new GGTInnerNode<VectorT, BoundsT, GeometryT>(this, (BoundsT) bounds, geometries, parameters, progress);
+      return new GGTInnerNode<VectorT, BoundsT, GeometryT>(this, (BoundsT) bounds, geometries, depth, parameters, progress);
+   }
+
+
+   private boolean acceptLeafNodeCreation(final GAxisAlignedOrthotope<VectorT, ?> bounds,
+                                          final Collection<GeometryT> geometries,
+                                          final int depth,
+                                          final GGeometryNTreeParameters parameters) {
+      final VectorT nodeExtent = bounds._extent;
+
+      // if the extent if too small, force a leaf creation
+      for (byte i = 0; i < nodeExtent.dimensions(); i++) {
+         if (nodeExtent.get(i) <= 0.000001) {
+            return true;
+         }
+      }
+
+      if ((geometries.size() <= parameters._maxGeometriesInLeafs) || (depth >= parameters._maxDepth + 1)) {
+         return true;
+      }
+
+      return false;
    }
 
 

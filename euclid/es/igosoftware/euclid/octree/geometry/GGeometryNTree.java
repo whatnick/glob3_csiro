@@ -94,7 +94,7 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
       _bounds = (BoundsT) initializeBounds(bounds);
 
 
-      _root = new GGTInnerNode<VectorT, BoundsT, GeometryT>(null, _bounds, geometries, parameters, progress) {
+      _root = new GGTInnerNode<VectorT, BoundsT, GeometryT>(null, _bounds, geometries, 1, parameters, progress) {
          @Override
          public GGeometryNTree<VectorT, BoundsT, GeometryT> getNTree() {
             return GGeometryNTree.this;
@@ -253,7 +253,7 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
    //      //final GAxisAlignedRectangle bounds = new GAxisAlignedRectangle(GVector2D.ZERO, GVector2D.X_UP);
    //      final GAxisAlignedRectangle bounds = null;
    //      final GGeometryQuadtree<IPolygon2D<?>> quadtree = new GGeometryQuadtree<IPolygon2D<?>>("test tree", bounds, geometries,
-   //               new GGeometryNTreeParameters(true, 10, 10, GGeometryNTreeParameters.BoundsPolicy.REGULAR_AND_CENTERED));
+   //               new GGeometryNTreeParameters(true, 10, 10, GGeometryNTreeParameters.BoundsPolicy.MINIMUM));
    //   }
 
 
