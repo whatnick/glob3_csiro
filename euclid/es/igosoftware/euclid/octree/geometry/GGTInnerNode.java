@@ -10,8 +10,6 @@ import java.util.List;
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
-import es.igosoftware.euclid.octree.geometry.visiting.IGTBreadFirstVisitor;
-import es.igosoftware.euclid.octree.geometry.visiting.IGTDepthFirstVisitor;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GProgress;

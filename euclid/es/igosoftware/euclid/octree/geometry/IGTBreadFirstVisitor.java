@@ -1,13 +1,10 @@
 
 
-package es.igosoftware.euclid.octree.geometry.visiting;
+package es.igosoftware.euclid.octree.geometry;
 
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
-import es.igosoftware.euclid.octree.geometry.GGTInnerNode;
-import es.igosoftware.euclid.octree.geometry.GGTLeafNode;
-import es.igosoftware.euclid.octree.geometry.GGeometryNTree;
 import es.igosoftware.euclid.vector.IVector;
 
 
