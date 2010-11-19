@@ -36,7 +36,13 @@
 
 package es.igosoftware.util;
 
+import java.text.DecimalFormat;
+
+
 public class GStringUtils {
+
+   private static final DecimalFormat PERCENT_FORMAT = new DecimalFormat("##0.00%");
+
 
    private GStringUtils() {
    }
@@ -110,6 +116,23 @@ public class GStringUtils {
       // our last action in the above loop was to switch d and p, so p now 
       // actually has the most recent cost counts
       return p[n];
+   }
+
+
+   public static String formatPercent(final long value,
+                                      final long total) {
+      return formatPercent((double) value / total);
+   }
+
+
+   public static String formatPercent(final double percent) {
+      return PERCENT_FORMAT.format(percent);
+      //return GMath.roundTo(percent * 100, 2) + "%";
+   }
+
+
+   public static void main(final String[] args) {
+      System.out.println(formatPercent(0.1));
    }
 
 
