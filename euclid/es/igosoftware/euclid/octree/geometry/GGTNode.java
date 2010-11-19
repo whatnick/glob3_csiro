@@ -70,6 +70,26 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
    }
 
 
+   public final String getId() {
+      if (_parent == null) {
+         return "";
+      }
+
+      final byte myId = _parent.getChildIndex(this);
+
+      final String parentId = _parent.getId();
+      if ((parentId == null) || parentId.isEmpty()) {
+         return Byte.toString(myId);
+      }
+
+      return parentId + "-" + myId;
+   }
+
+
    public abstract int getGeometriesCount();
+
+
+   public abstract void depthFirstAcceptVisitor(final GGeometryNTree.IDepthFirstVisitor<VectorT, BoundsT, GeometryT> visitor)
+                                                                                                                             throws GGeometryNTree.IVisitor.AbortVisiting;
 
 }

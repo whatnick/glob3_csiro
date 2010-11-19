@@ -30,7 +30,7 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
             GLoggerObject {
 
 
-   public static interface Visitor<
+   public static interface IVisitor<
 
    VectorT extends IVector<VectorT, ?>,
 
@@ -47,13 +47,33 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
       }
 
 
-      public void visitOctree(final GGeometryNTree<VectorT, BoundsT, GeometryT> octree) throws Visitor.AbortVisiting;
+      public void visitOctree(final GGeometryNTree<VectorT, BoundsT, GeometryT> octree) throws IVisitor.AbortVisiting;
 
 
-      public void visitInnerNode(final GGTInnerNode<VectorT, BoundsT, GeometryT> inner) throws Visitor.AbortVisiting;
+      public void visitInnerNode(final GGTInnerNode<VectorT, BoundsT, GeometryT> inner) throws IVisitor.AbortVisiting;
 
 
-      public void visitLeafNode(final GGTLeafNode<VectorT, BoundsT, GeometryT> leaf) throws Visitor.AbortVisiting;
+      public void visitLeafNode(final GGTLeafNode<VectorT, BoundsT, GeometryT> leaf) throws IVisitor.AbortVisiting;
+
+   }
+
+
+   public interface IDepthFirstVisitor<
+
+   VectorT extends IVector<VectorT, ?>,
+
+   BoundsT extends GAxisAlignedOrthotope<VectorT, ?>,
+
+   GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>
+
+   >
+            extends
+               IVisitor<VectorT, BoundsT, GeometryT> {
+
+      public void finishedInnerNode(final GGTInnerNode<VectorT, BoundsT, GeometryT> inner) throws IVisitor.AbortVisiting;
+
+
+      public void finishedOctree(final GGeometryNTree<VectorT, BoundsT, GeometryT> octree) throws IVisitor.AbortVisiting;
 
    }
 
@@ -178,7 +198,7 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
 
       final GHolder<VectorT> totalLeafExtentHolder = new GHolder<VectorT>(null);
 
-      breadthFirstAcceptVisitor(new Visitor<VectorT, BoundsT, GeometryT>() {
+      breadthFirstAcceptVisitor(new IVisitor<VectorT, BoundsT, GeometryT>() {
 
          @Override
          public void visitOctree(final GGeometryNTree<VectorT, BoundsT, GeometryT> octree) {
@@ -261,13 +281,27 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
    }
 
 
-   public void breadthFirstAcceptVisitor(final Visitor<VectorT, BoundsT, GeometryT> visitor) {
+   public void breadthFirstAcceptVisitor(final IVisitor<VectorT, BoundsT, GeometryT> visitor) {
       try {
          visitor.visitOctree(this);
 
          _root.breadthFirstAcceptVisitor(visitor);
       }
-      catch (final Visitor.AbortVisiting e) {
+      catch (final IVisitor.AbortVisiting e) {
+         // do nothing
+      }
+   }
+
+
+   public void depthFirstAcceptVisitor(final IDepthFirstVisitor<VectorT, BoundsT, GeometryT> visitor) {
+      try {
+         visitor.visitOctree(this);
+
+         _root.depthFirstAcceptVisitor(visitor);
+
+         visitor.finishedOctree(this);
+      }
+      catch (final IVisitor.AbortVisiting e) {
          // do nothing
       }
    }

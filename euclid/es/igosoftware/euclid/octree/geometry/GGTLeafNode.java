@@ -8,6 +8,7 @@ import java.util.Collections;
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.octree.geometry.GGeometryNTree.IDepthFirstVisitor;
 import es.igosoftware.euclid.vector.IVector;
 
 
@@ -44,6 +45,13 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
    @Override
    public int getGeometriesCount() {
       return _geometries.size();
+   }
+
+
+   @Override
+   public void depthFirstAcceptVisitor(final IDepthFirstVisitor<VectorT, BoundsT, GeometryT> visitor)
+                                                                                                     throws GGeometryNTree.IVisitor.AbortVisiting {
+      visitor.visitLeafNode(this);
    }
 
 }

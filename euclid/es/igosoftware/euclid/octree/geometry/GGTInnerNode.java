@@ -10,6 +10,7 @@ import java.util.List;
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.octree.geometry.GGeometryNTree.IDepthFirstVisitor;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GProgress;
@@ -162,8 +163,8 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
    }
 
 
-   public void breadthFirstAcceptVisitor(final GGeometryNTree.Visitor<VectorT, BoundsT, GeometryT> visitor)
-                                                                                                           throws GGeometryNTree.Visitor.AbortVisiting {
+   public void breadthFirstAcceptVisitor(final GGeometryNTree.IVisitor<VectorT, BoundsT, GeometryT> visitor)
+                                                                                                            throws GGeometryNTree.IVisitor.AbortVisiting {
 
       final LinkedList<GGTNode<VectorT, BoundsT, GeometryT>> queue = new LinkedList<GGTNode<VectorT, BoundsT, GeometryT>>();
       queue.addLast(this);
@@ -202,6 +203,32 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
          }
       }
       return result;
+   }
+
+
+   final byte getChildIndex(final GGTNode<VectorT, BoundsT, GeometryT> node) {
+      for (byte i = 0; i < _children.length; i++) {
+         if (node == _children[i]) {
+            return i;
+         }
+      }
+      return -1;
+   }
+
+
+   @Override
+   public void depthFirstAcceptVisitor(final IDepthFirstVisitor<VectorT, BoundsT, GeometryT> visitor)
+                                                                                                     throws GGeometryNTree.IVisitor.AbortVisiting {
+      visitor.visitInnerNode(this);
+
+      for (final GGTNode<VectorT, BoundsT, GeometryT> child : _children) {
+         if (child != null) {
+            child.depthFirstAcceptVisitor(visitor);
+         }
+      }
+
+      visitor.finishedInnerNode(this);
+
    }
 
 }

@@ -15,9 +15,9 @@ public class GGeometryQuadtree<GeometryT extends IBoundedGeometry<IVector2<?>, ?
             GGeometryNTree<IVector2<?>, GAxisAlignedRectangle, GeometryT> {
 
 
-   public static interface Visitor<GeometryT extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>
+   public static interface IVisitor<GeometryT extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>
             extends
-               GGeometryNTree.Visitor<IVector2<?>, GAxisAlignedRectangle, GeometryT> {
+               GGeometryNTree.IVisitor<IVector2<?>, GAxisAlignedRectangle, GeometryT> {
 
    }
 
