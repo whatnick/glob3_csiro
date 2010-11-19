@@ -119,7 +119,6 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
       final GGTInnerNode<VectorT, BoundsT, GeometryT> innerNode = new GGTInnerNode<VectorT, BoundsT, GeometryT>(this,
                (BoundsT) bounds, geometries, depth, parameters, progress);
 
-      final int Diego_at_work;
       //      boolean anyChildHasSameGeometries = false;
       //      for (final GGTNode<VectorT, BoundsT, GeometryT> child : innerNode._children) {
       //         if (child != null) {
