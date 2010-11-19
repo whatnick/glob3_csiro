@@ -15,13 +15,6 @@ public class GGeometryOctree<GeometryT extends IBoundedGeometry<IVector3<?>, ?, 
             GGeometryNTree<IVector3<?>, GAxisAlignedBox, GeometryT> {
 
 
-   public static interface IVisitor<GeometryT extends IBoundedGeometry<IVector3<?>, ?, ? extends IFiniteBounds<IVector3<?>, ?>>>
-            extends
-               GGeometryNTree.IVisitor<IVector3<?>, GAxisAlignedBox, GeometryT> {
-
-   }
-
-
    public GGeometryOctree(final String name,
                           final GAxisAlignedBox bounds,
                           final Collection<GeometryT> geometries,

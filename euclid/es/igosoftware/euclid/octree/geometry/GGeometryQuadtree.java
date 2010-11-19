@@ -15,13 +15,6 @@ public class GGeometryQuadtree<GeometryT extends IBoundedGeometry<IVector2<?>, ?
             GGeometryNTree<IVector2<?>, GAxisAlignedRectangle, GeometryT> {
 
 
-   public static interface IVisitor<GeometryT extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>
-            extends
-               GGeometryNTree.IVisitor<IVector2<?>, GAxisAlignedRectangle, GeometryT> {
-
-   }
-
-
    public GGeometryQuadtree(final String name,
                             final GAxisAlignedRectangle bounds,
                             final Collection<GeometryT> geometries,

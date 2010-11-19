@@ -10,7 +10,8 @@ import java.util.List;
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
-import es.igosoftware.euclid.octree.geometry.GGeometryNTree.IDepthFirstVisitor;
+import es.igosoftware.euclid.octree.geometry.visiting.IGTBreadFirstVisitor;
+import es.igosoftware.euclid.octree.geometry.visiting.IGTDepthFirstVisitor;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GProgress;
@@ -163,8 +164,8 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
    }
 
 
-   public void breadthFirstAcceptVisitor(final GGeometryNTree.IVisitor<VectorT, BoundsT, GeometryT> visitor)
-                                                                                                            throws GGeometryNTree.IVisitor.AbortVisiting {
+   public void breadthFirstAcceptVisitor(final IGTBreadFirstVisitor<VectorT, BoundsT, GeometryT> visitor)
+                                                                                                         throws IGTBreadFirstVisitor.AbortVisiting {
 
       final LinkedList<GGTNode<VectorT, BoundsT, GeometryT>> queue = new LinkedList<GGTNode<VectorT, BoundsT, GeometryT>>();
       queue.addLast(this);
@@ -217,8 +218,8 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
 
 
    @Override
-   public void depthFirstAcceptVisitor(final IDepthFirstVisitor<VectorT, BoundsT, GeometryT> visitor)
-                                                                                                     throws GGeometryNTree.IVisitor.AbortVisiting {
+   public void depthFirstAcceptVisitor(final IGTDepthFirstVisitor<VectorT, BoundsT, GeometryT> visitor)
+                                                                                                       throws IGTBreadFirstVisitor.AbortVisiting {
       visitor.visitInnerNode(this);
 
       for (final GGTNode<VectorT, BoundsT, GeometryT> child : _children) {
