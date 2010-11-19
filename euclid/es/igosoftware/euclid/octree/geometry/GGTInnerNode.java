@@ -105,18 +105,43 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
                                                                 final int depth,
                                                                 final GGeometryNTreeParameters parameters,
                                                                 final GProgress progress) {
-      final int Diego_at_work;
 
       if (geometries.isEmpty()) {
          return null;
       }
 
+
       if (acceptLeafNodeCreation(bounds, geometries, depth, parameters)) {
-         progress.stepsDone(geometries.size());
-         return new GGTLeafNode<VectorT, BoundsT, GeometryT>(this, (BoundsT) bounds, geometries);
+         return createLeafNode(bounds, geometries, progress);
       }
 
-      return new GGTInnerNode<VectorT, BoundsT, GeometryT>(this, (BoundsT) bounds, geometries, depth, parameters, progress);
+
+      final GGTInnerNode<VectorT, BoundsT, GeometryT> innerNode = new GGTInnerNode<VectorT, BoundsT, GeometryT>(this,
+               (BoundsT) bounds, geometries, depth, parameters, progress);
+
+      final int Diego_at_work;
+      //      boolean anyChildHasSameGeometries = false;
+      //      for (final GGTNode<VectorT, BoundsT, GeometryT> child : innerNode._children) {
+      //         if (child != null) {
+      //            if (child.getGeometriesCount() == geometries.size()) {
+      //               anyChildHasSameGeometries = true;
+      //            }
+      //         }
+      //      }
+      //      if (anyChildHasSameGeometries) {
+      //         return createLeafNode(bounds, geometries, progress);
+      //      }
+
+      return innerNode;
+   }
+
+
+   @SuppressWarnings("unchecked")
+   private GGTNode<VectorT, BoundsT, GeometryT> createLeafNode(final GAxisAlignedOrthotope<VectorT, ?> bounds,
+                                                               final Collection<GeometryT> geometries,
+                                                               final GProgress progress) {
+      progress.stepsDone(geometries.size());
+      return new GGTLeafNode<VectorT, BoundsT, GeometryT>(this, (BoundsT) bounds, geometries);
    }
 
 
@@ -171,6 +196,18 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
             throw new IllegalArgumentException();
          }
       }
+   }
+
+
+   @Override
+   public int getGeometriesCount() {
+      int result = 0;
+      for (final GGTNode<VectorT, BoundsT, GeometryT> child : _children) {
+         if (child != null) {
+            result += child.getGeometriesCount();
+         }
+      }
+      return result;
    }
 
 }

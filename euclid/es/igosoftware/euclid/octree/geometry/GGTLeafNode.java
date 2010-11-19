@@ -36,13 +36,14 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
    }
 
 
-   public int getGeometriesCount() {
-      return _geometries.size();
+   public Collection<GeometryT> getGeometries() {
+      return Collections.unmodifiableCollection(_geometries);
    }
 
 
-   public Collection<GeometryT> getGeometries() {
-      return Collections.unmodifiableCollection(_geometries);
+   @Override
+   public int getGeometriesCount() {
+      return _geometries.size();
    }
 
 }

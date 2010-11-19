@@ -60,7 +60,9 @@ BoundsT extends IBounds<VectorT, BoundsT>
 
 >
          extends
-            GPolytopeAbstract<VectorT, SegmentT, GeometryT, BoundsT> {
+            GPolytopeAbstract<VectorT, SegmentT, GeometryT, BoundsT>
+         implements
+            IPolygon<VectorT, SegmentT, GeometryT, BoundsT> {
 
    private static final long serialVersionUID = 1L;
 
@@ -231,6 +233,12 @@ BoundsT extends IBounds<VectorT, BoundsT>
    @Override
    public boolean closeTo(final GeometryT that) {
       return _v0.closeTo(that._v0) && _v1.closeTo(that._v1) && _v2.closeTo(that._v2);
+   }
+
+
+   @Override
+   public boolean isConvex() {
+      return true;
    }
 
 

@@ -183,15 +183,18 @@ public final class GShape {
       // from Real-Time Collision Detection   (Christer Ericson)
       //    page 60
 
-      final IVector3<?> bda = d.sub(b).cross(a.sub(b));
-      final IVector3<?> bdc = d.sub(b).cross(c.sub(b));
+      final IVector3<?> dSubB = d.sub(b);
+      final IVector3<?> bda = dSubB.cross(a.sub(b));
+      final IVector3<?> bdc = dSubB.cross(c.sub(b));
 
       if (GMath.positiveOrZero(bda.dot(bdc))) {
          return false;
       }
 
-      final IVector3<?> acd = c.sub(a).cross(d.sub(a));
-      final IVector3<?> acb = c.sub(a).cross(b.sub(a));
+      final IVector3<?> cSubA = c.sub(a);
+      final IVector3<?> acd = cSubA.cross(d.sub(a));
+      final IVector3<?> acb = cSubA.cross(b.sub(a));
+
       //return acd.dot(acb) < 0.0f; 
       return GMath.negativeOrZero(acd.dot(acb));
    }

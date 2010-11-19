@@ -62,5 +62,6 @@ BoundsT extends IBounds<VectorT, BoundsT>
    //   @Override
    //   public IPolygon<VectorT, SegmentT, ?, BoundsT> getHull();
 
+   public boolean isConvex();
 
 }

@@ -70,4 +70,6 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
    }
 
 
+   public abstract int getGeometriesCount();
+
 }

@@ -169,6 +169,8 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
       final GIntHolder innerNodesCounter = new GIntHolder(0);
       final GIntHolder leafNodesCounter = new GIntHolder(0);
       final GIntHolder geometrisInleafNodesCounter = new GIntHolder(0);
+      final GIntHolder maxGeometriesCountInLeafNodes = new GIntHolder(0);
+      final GIntHolder minGeometriesCountInLeafNodes = new GIntHolder(Integer.MAX_VALUE);
 
       final GIntHolder totalDepth = new GIntHolder(0);
       final GIntHolder maxDepth = new GIntHolder(0);
@@ -192,7 +194,15 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
          @Override
          public void visitLeafNode(final GGTLeafNode<VectorT, BoundsT, GeometryT> leaf) {
             leafNodesCounter.increment();
-            geometrisInleafNodesCounter.increment(leaf.getGeometriesCount());
+            final int geometriesCount = leaf.getGeometriesCount();
+            geometrisInleafNodesCounter.increment(geometriesCount);
+
+            if (geometriesCount > maxGeometriesCountInLeafNodes.get()) {
+               maxGeometriesCountInLeafNodes.set(geometriesCount);
+            }
+            if (geometriesCount < minGeometriesCountInLeafNodes.get()) {
+               minGeometriesCountInLeafNodes.set(geometriesCount);
+            }
 
             final int depth = leaf.getDepth();
             totalDepth.increment(depth);
@@ -221,13 +231,18 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
       logInfo("    Inner: " + innerNodesCounter.get());
       logInfo("    Leaf : " + leafNodesCounter.get());
 
+
       logInfo(" ");
       final int duplicates = geometrisInleafNodesCounter.get() - _geometries.size();
+      logInfo("  Geometries in Leafs: " + geometrisInleafNodesCounter.get() + "  (duplicates: " + duplicates + " ("
+              + GStringUtils.formatPercent(duplicates, geometrisInleafNodesCounter.get()) + "))");
 
-      logInfo("  Geometries in Leafs        : " + geometrisInleafNodesCounter.get() + " (duplicates: " + duplicates + " - "
-              + GStringUtils.formatPercent(duplicates, geometrisInleafNodesCounter.get()) + ")");
-      logInfo("  Average Geometries per Leaf: " + ((float) geometrisInleafNodesCounter.get() / leafNodesCounter.get()));
-      logInfo("  Average leaf extent        : " + totalLeafExtentHolder.get().div(leafNodesCounter.get()));
+      logInfo("  Geometries per Leaf: min=" + minGeometriesCountInLeafNodes.get() + ", max="
+              + maxGeometriesCountInLeafNodes.get() + ", average="
+              + ((float) geometrisInleafNodesCounter.get() / leafNodesCounter.get()));
+
+      logInfo("  Average leaf extent: " + totalLeafExtentHolder.get().div(leafNodesCounter.get()));
+
 
       logInfo(" ");
       logInfo("  Depth: Max=" + maxDepth.get() + ", Min=" + minDepth.get() + ", Average="

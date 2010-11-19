@@ -185,4 +185,9 @@ public final class GComplexPolygon2D
    }
 
 
+   @Override
+   public boolean isConvex() {
+      return false;
+   }
+
 }

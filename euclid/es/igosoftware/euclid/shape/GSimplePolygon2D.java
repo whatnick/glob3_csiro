@@ -354,4 +354,10 @@ public final class GSimplePolygon2D
       return result;
    }
 
+
+   @Override
+   public boolean isConvex() {
+      throw new RuntimeException("not yet implemented");
+   }
+
 }

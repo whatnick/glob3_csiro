@@ -296,4 +296,9 @@ public final class GSimplePolygon3D
    }
 
 
+   @Override
+   public boolean isConvex() {
+      throw new RuntimeException("not yet implemented");
+   }
+
 }
