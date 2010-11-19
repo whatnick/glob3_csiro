@@ -43,7 +43,7 @@ public abstract class GProgress {
 
    private static final MessageFormat FORMATTER = new MessageFormat("{0,number,#0.00}%");
 
-   private final long                 _steps;
+   private long                       _steps;
    private long                       _done;
    private final long                 _started;
    private long                       _lastInformTime;
@@ -52,6 +52,11 @@ public abstract class GProgress {
 
    public GProgress(final long steps) {
       this(steps, 10000);
+   }
+
+
+   public void incrementSteps(final long delta) {
+      _steps += delta;
    }
 
 
