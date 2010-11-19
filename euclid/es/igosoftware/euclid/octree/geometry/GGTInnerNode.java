@@ -145,6 +145,7 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
    }
 
 
+   @SuppressWarnings("unchecked")
    private boolean acceptLeafNodeCreation(final GAxisAlignedOrthotope<VectorT, ?> bounds,
                                           final Collection<GeometryT> geometries,
                                           final int depth,
@@ -158,11 +159,7 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
          }
       }
 
-      if ((geometries.size() <= parameters._maxGeometriesInLeafs) || (depth >= parameters._maxDepth + 1)) {
-         return true;
-      }
-
-      return false;
+      return parameters._acceptLeafNodeCreationPolicy.accept(depth, bounds, geometries);
    }
 
 
@@ -173,10 +170,9 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
       queue.addLast(this);
 
       while (!queue.isEmpty()) {
-         final GGTNode current = queue.removeFirst();
+         final GGTNode<VectorT, BoundsT, GeometryT> current = queue.removeFirst();
 
          if (current instanceof GGTInnerNode) {
-            @SuppressWarnings("unchecked")
             final GGTInnerNode<VectorT, BoundsT, GeometryT> currentInner = (GGTInnerNode<VectorT, BoundsT, GeometryT>) current;
 
             visitor.visitInnerNode(currentInner);
@@ -188,7 +184,6 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
             }
          }
          else if (current instanceof GGTLeafNode) {
-            @SuppressWarnings("unchecked")
             final GGTLeafNode<VectorT, BoundsT, GeometryT> currentLeaf = (GGTLeafNode<VectorT, BoundsT, GeometryT>) current;
             visitor.visitLeafNode(currentLeaf);
          }
