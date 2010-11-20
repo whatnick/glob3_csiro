@@ -106,7 +106,7 @@ public final class StringUtils {
 
 
    public static String sharps(final int count) {
-      return StringUtils.SHARPS.substring(0, count);
+      return StringUtils.SHARPS.substring(0, Math.min(count, StringUtils.SHARPS.length() - 1));
    }
 
 }
