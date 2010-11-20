@@ -51,11 +51,11 @@ public abstract class GProgress {
 
 
    public GProgress(final long steps) {
-      this(steps, 10000);
+      this(steps, 10);
    }
 
 
-   public void incrementSteps(final long delta) {
+   public synchronized void incrementSteps(final long delta) {
       _steps += delta;
    }
 
