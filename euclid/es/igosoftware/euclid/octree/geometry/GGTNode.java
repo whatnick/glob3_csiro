@@ -92,4 +92,10 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
    public abstract void depthFirstAcceptVisitor(final IGTDepthFirstVisitor<VectorT, BoundsT, GeometryT> visitor)
                                                                                                                 throws IGTBreadFirstVisitor.AbortVisiting;
 
+
+   public abstract int getLeafNodesCount();
+
+
+   public abstract int getInnerNodesCount();
+
 }

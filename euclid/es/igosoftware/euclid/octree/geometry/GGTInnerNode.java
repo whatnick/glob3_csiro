@@ -230,4 +230,28 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
 
    }
 
+
+   @Override
+   public final int getLeafNodesCount() {
+      int counter = 0;
+      for (final GGTNode<VectorT, BoundsT, GeometryT> child : _children) {
+         if (child != null) {
+            counter += child.getLeafNodesCount();
+         }
+      }
+      return counter;
+   }
+
+
+   @Override
+   public final int getInnerNodesCount() {
+      int counter = 0;
+      for (final GGTNode<VectorT, BoundsT, GeometryT> child : _children) {
+         if (child != null) {
+            counter += child.getInnerNodesCount();
+         }
+      }
+      return counter + 1;
+   }
+
 }

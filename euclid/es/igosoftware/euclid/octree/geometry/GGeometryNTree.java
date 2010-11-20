@@ -264,6 +264,16 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
    }
 
 
+   public int getLeafNodesCount() {
+      return _root.getLeafNodesCount();
+   }
+
+
+   public int getInnerNodesCount() {
+      return _root.getInnerNodesCount();
+   }
+
+
    //   public static void main(final String[] args) {
    //      System.out.println("GeometryNTree 0.1");
    //      System.out.println("-----------------\n");

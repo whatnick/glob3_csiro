@@ -53,4 +53,15 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
       visitor.visitLeafNode(this);
    }
 
+
+   @Override
+   public int getLeafNodesCount() {
+      return 1;
+   }
+
+
+   @Override
+   public int getInnerNodesCount() {
+      return 0;
+   }
 }
