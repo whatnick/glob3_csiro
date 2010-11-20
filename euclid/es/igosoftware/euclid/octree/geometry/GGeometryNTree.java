@@ -4,15 +4,15 @@ package es.igosoftware.euclid.octree.geometry;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.octree.geometry.GGTInnerNode.GeometriesDistribution;
 import es.igosoftware.euclid.shape.GShape;
-import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector;
-import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.util.GHolder;
 import es.igosoftware.util.GIntHolder;
 import es.igosoftware.util.GLoggerObject;
@@ -75,7 +75,10 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
       _bounds = (BoundsT) initializeBounds(bounds);
 
 
-      _root = new GGTInnerNode<VectorT, BoundsT, GeometryT>(null, _bounds, geometries, 1, parameters, progress) {
+      final GeometriesDistribution<VectorT, GeometryT> distribution = GGTInnerNode.distributeGeometries(_bounds, geometries);
+
+      _root = new GGTInnerNode<VectorT, BoundsT, GeometryT>(null, _bounds, distribution.getOwnGeometries(),
+               distribution.getGeometriesToDistribute(), 0, parameters, progress) {
          @Override
          public GGeometryNTree<VectorT, BoundsT, GeometryT> getNTree() {
             return GGeometryNTree.this;
@@ -231,9 +234,13 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
 
       final GIntHolder innerNodesCounter = new GIntHolder(0);
       final GIntHolder leafNodesCounter = new GIntHolder(0);
-      final GIntHolder geometrisInleafNodesCounter = new GIntHolder(0);
+      final GIntHolder geometriesInLeafNodesCounter = new GIntHolder(0);
       final GIntHolder maxGeometriesCountInLeafNodes = new GIntHolder(0);
       final GIntHolder minGeometriesCountInLeafNodes = new GIntHolder(Integer.MAX_VALUE);
+
+      final GIntHolder geometriesInInnerNodesCounter = new GIntHolder(0);
+      final GIntHolder maxGeometriesCountInInnerNodes = new GIntHolder(0);
+      final GIntHolder minGeometriesCountInInnerNodes = new GIntHolder(Integer.MAX_VALUE);
 
       final GIntHolder totalDepth = new GIntHolder(0);
       final GIntHolder maxDepth = new GIntHolder(0);
@@ -251,14 +258,25 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
          @Override
          public void visitInnerNode(final GGTInnerNode<VectorT, BoundsT, GeometryT> inner) {
             innerNodesCounter.increment();
+
+            final int geometriesCount = inner.getGeometriesCount();
+            geometriesInInnerNodesCounter.increment(geometriesCount);
+
+            if (geometriesCount > maxGeometriesCountInInnerNodes.get()) {
+               maxGeometriesCountInInnerNodes.set(geometriesCount);
+            }
+            if (geometriesCount < minGeometriesCountInInnerNodes.get()) {
+               minGeometriesCountInInnerNodes.set(geometriesCount);
+            }
          }
 
 
          @Override
          public void visitLeafNode(final GGTLeafNode<VectorT, BoundsT, GeometryT> leaf) {
             leafNodesCounter.increment();
+
             final int geometriesCount = leaf.getGeometriesCount();
-            geometrisInleafNodesCounter.increment(geometriesCount);
+            geometriesInLeafNodesCounter.increment(geometriesCount);
 
             if (geometriesCount > maxGeometriesCountInLeafNodes.get()) {
                maxGeometriesCountInLeafNodes.set(geometriesCount);
@@ -296,13 +314,23 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
 
 
       logInfo(" ");
-      final int duplicates = geometrisInleafNodesCounter.get() - _geometries.size();
-      logInfo("  Geometries in Leafs: " + geometrisInleafNodesCounter.get() + "  (duplicates: " + duplicates + " ("
-              + GStringUtils.formatPercent(duplicates, geometrisInleafNodesCounter.get()) + "))");
+      final int totalGeometries = geometriesInInnerNodesCounter.get() + geometriesInLeafNodesCounter.get();
+      final int duplicates = totalGeometries - _geometries.size();
+      logInfo(" Distributed Geometries: " + totalGeometries + "  (duplicates: " + duplicates + " ("
+              + GStringUtils.formatPercent(duplicates, totalGeometries) + "))");
 
+
+      logInfo(" ");
+      logInfo("  Geometries in Inners: " + geometriesInInnerNodesCounter.get());
+      logInfo("  Geometries per Inner: min=" + minGeometriesCountInInnerNodes.get() + ", max="
+              + maxGeometriesCountInInnerNodes.get() + ", average="
+              + ((float) geometriesInInnerNodesCounter.get() / innerNodesCounter.get()));
+
+      logInfo(" ");
+      logInfo("  Geometries in Leafs: " + geometriesInLeafNodesCounter.get());
       logInfo("  Geometries per Leaf: min=" + minGeometriesCountInLeafNodes.get() + ", max="
               + maxGeometriesCountInLeafNodes.get() + ", average="
-              + ((float) geometrisInleafNodesCounter.get() / leafNodesCounter.get()));
+              + ((float) geometriesInLeafNodesCounter.get() / leafNodesCounter.get()));
 
       logInfo("  Average leaf extent: " + totalLeafExtentHolder.get().div(leafNodesCounter.get()));
 
@@ -365,6 +393,11 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
    }
 
 
+   public Collection<GeometryT> getGeometries() {
+      return Collections.unmodifiableCollection(_geometries);
+   }
+
+
    //   public static void main(final String[] args) {
    //      System.out.println("GeometryNTree 0.1");
    //      System.out.println("-----------------\n");
@@ -380,11 +413,6 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
    //      final GGeometryQuadtree<IPolygon2D<?>> quadtree = new GGeometryQuadtree<IPolygon2D<?>>("test tree", bounds, geometries,
    //               new GGeometryNTreeParameters(true, 10, 10, GGeometryNTreeParameters.BoundsPolicy.MINIMUM));
    //   }
-
-
-   public static void main(final String[] args) {
-      System.out.println(GGeometryNTree.<IVector2<?>> smallestBiggerMultipleOf(new GVector2D(-10, 10), 5));
-   }
 
 
 }

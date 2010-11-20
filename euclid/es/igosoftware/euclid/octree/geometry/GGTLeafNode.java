@@ -3,7 +3,6 @@
 package es.igosoftware.euclid.octree.geometry;
 
 import java.util.Collection;
-import java.util.Collections;
 
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
@@ -24,26 +23,10 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
             GGTNode<VectorT, BoundsT, GeometryT> {
 
 
-   private final Collection<GeometryT> _geometries;
-
-
    protected GGTLeafNode(final GGTInnerNode<VectorT, BoundsT, GeometryT> parent,
                          final BoundsT bounds,
                          final Collection<GeometryT> geometries) {
-      super(parent, bounds);
-
-      _geometries = geometries;
-   }
-
-
-   public Collection<GeometryT> getGeometries() {
-      return Collections.unmodifiableCollection(_geometries);
-   }
-
-
-   @Override
-   public int getGeometriesCount() {
-      return _geometries.size();
+      super(parent, bounds, geometries);
    }
 
 
@@ -63,5 +46,17 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
    @Override
    public int getInnerNodesCount() {
       return 0;
+   }
+
+
+   @Override
+   public final Collection<? extends GeometryT> getAllGeometries() {
+      return getGeometries();
+   }
+
+
+   @Override
+   public final int getAllGeometriesCount() {
+      return getGeometriesCount();
    }
 }

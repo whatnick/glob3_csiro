@@ -2,6 +2,9 @@
 
 package es.igosoftware.euclid.octree.geometry;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
@@ -24,12 +27,15 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
 
    protected final GGTInnerNode<VectorT, BoundsT, GeometryT> _parent;
    protected final BoundsT                                   _bounds;
+   protected final Collection<GeometryT>                     _geometries;
 
 
    protected GGTNode(final GGTInnerNode<VectorT, BoundsT, GeometryT> parent,
-                     final BoundsT bounds) {
+                     final BoundsT bounds,
+                     final Collection<GeometryT> geometries) {
       _parent = parent;
       _bounds = bounds;
+      _geometries = geometries;
    }
 
 
@@ -86,9 +92,6 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
    }
 
 
-   public abstract int getGeometriesCount();
-
-
    public abstract void depthFirstAcceptVisitor(final IGTDepthFirstVisitor<VectorT, BoundsT, GeometryT> visitor)
                                                                                                                 throws IGTBreadFirstVisitor.AbortVisiting;
 
@@ -97,5 +100,21 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
 
 
    public abstract int getInnerNodesCount();
+
+
+   public final Collection<GeometryT> getGeometries() {
+      return Collections.unmodifiableCollection(_geometries);
+   }
+
+
+   public final int getGeometriesCount() {
+      return _geometries.size();
+   }
+
+
+   public abstract Collection<? extends GeometryT> getAllGeometries();
+
+
+   public abstract int getAllGeometriesCount();
 
 }
