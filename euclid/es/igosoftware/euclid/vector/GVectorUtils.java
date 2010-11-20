@@ -604,4 +604,49 @@ public final class GVectorUtils {
       return vertices.asSubContainer(sortedVerticesIndices);
    }
 
+
+   public static IVector<?, ?> createD(final double[] dimensionsValues) {
+      final int dimensions = dimensionsValues.length;
+
+      if (dimensions == 2) {
+         return new GVector2D(dimensionsValues[0], dimensionsValues[1]);
+      }
+      else if (dimensions == 3) {
+         return new GVector3D(dimensionsValues[0], dimensionsValues[1], dimensionsValues[2]);
+      }
+      else {
+         throw new IllegalArgumentException("dimentions " + dimensions + " not yet supported");
+      }
+   }
+
+
+   public static IVector<?, ?> createF(final double[] dimensionsValues) {
+      final int dimensions = dimensionsValues.length;
+
+      if (dimensions == 2) {
+         return new GVector2F((float) dimensionsValues[0], (float) dimensionsValues[1]);
+      }
+      else if (dimensions == 3) {
+         return new GVector3F((float) dimensionsValues[0], (float) dimensionsValues[1], (float) dimensionsValues[2]);
+      }
+      else {
+         throw new IllegalArgumentException("dimentions " + dimensions + " not yet supported");
+      }
+   }
+
+
+   public static IVector<?, ?> createF(final float[] dimensionsValues) {
+      final int dimensions = dimensionsValues.length;
+
+      if (dimensions == 2) {
+         return new GVector2F(dimensionsValues[0], dimensionsValues[1]);
+      }
+      else if (dimensions == 3) {
+         return new GVector3F(dimensionsValues[0], dimensionsValues[1], dimensionsValues[2]);
+      }
+      else {
+         throw new IllegalArgumentException("dimentions " + dimensions + " not yet supported");
+      }
+   }
+
 }

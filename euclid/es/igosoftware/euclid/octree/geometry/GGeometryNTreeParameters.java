@@ -15,10 +15,17 @@ import es.igosoftware.util.GAssert;
 
 public class GGeometryNTreeParameters {
    public static enum BoundsPolicy {
+      GIVEN,
+
       MINIMUM,
+
       REGULAR,
-      REGULAR_AND_CENTERED;
+      REGULAR_AND_CENTERED,
+
+      DIMENSIONS_MULTIPLE_OF_SMALLEST,
+      DIMENSIONS_MULTIPLE_OF_SMALLEST_AND_CENTERED;
    }
+
 
    public static interface AcceptLeafNodeCreationPolicy<
 

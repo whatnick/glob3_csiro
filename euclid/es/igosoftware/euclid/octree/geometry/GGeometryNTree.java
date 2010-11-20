@@ -9,10 +9,14 @@ import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.shape.GShape;
+import es.igosoftware.euclid.vector.GVector2D;
+import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector;
+import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.util.GHolder;
 import es.igosoftware.util.GIntHolder;
 import es.igosoftware.util.GLoggerObject;
+import es.igosoftware.util.GMath;
 import es.igosoftware.util.GProgress;
 import es.igosoftware.util.GStringUtils;
 
@@ -85,41 +89,128 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
    }
 
 
-   private GAxisAlignedOrthotope<VectorT, ?> initializeBounds(final GAxisAlignedOrthotope<VectorT, ?> bounds) {
-      if (bounds != null) {
-         if (_geometriesBounds.isFullInside(bounds)) {
-            return bounds;
-         }
-         throw new IllegalArgumentException("The given bounds is not big enough to hold all the vertices");
-      }
+   private GAxisAlignedOrthotope<VectorT, ?> initializeBounds(final GAxisAlignedOrthotope<VectorT, ?> givenBounds) {
 
-      if ((_parameters._boundsPolicy == GGeometryNTreeParameters.BoundsPolicy.REGULAR)
-          || (_parameters._boundsPolicy == GGeometryNTreeParameters.BoundsPolicy.REGULAR_AND_CENTERED)) {
-
-         final VectorT extent = _geometriesBounds._extent;
-
-         double biggestExtension = Double.NEGATIVE_INFINITY;
-         for (byte i = 0; i < _dimensions; i++) {
-            final double ext = extent.get(i);
-            if (ext > biggestExtension) {
-               biggestExtension = ext;
-            }
-         }
-
-         final VectorT newUpper = _geometriesBounds._lower.add(biggestExtension);
-         final GAxisAlignedOrthotope<VectorT, ?> regularBox = GAxisAlignedOrthotope.create(_geometriesBounds._lower, newUpper);
-
-         if (_parameters._boundsPolicy == GGeometryNTreeParameters.BoundsPolicy.REGULAR_AND_CENTERED) {
-            final VectorT delta = regularBox.getCenter().sub(_geometriesBounds.getCenter());
-            final GAxisAlignedOrthotope<VectorT, ?> regularAndCenteredBox = regularBox.translatedBy(delta.negated());
-            return regularAndCenteredBox;
-         }
-
-         return regularBox;
+      if ((givenBounds != null) && (_parameters._boundsPolicy != GGeometryNTreeParameters.BoundsPolicy.GIVEN)) {
+         throw new IllegalArgumentException("Can't provide a bounds with a policy other that GIVEN");
       }
 
 
-      return _geometriesBounds;
+      switch (_parameters._boundsPolicy) {
+         case GIVEN:
+            return returnGivenBounds(givenBounds);
+
+
+         case MINIMUM:
+            return _geometriesBounds;
+
+
+         case DIMENSIONS_MULTIPLE_OF_SMALLEST:
+            return multipleOfSmallestDimention(_geometriesBounds);
+
+         case DIMENSIONS_MULTIPLE_OF_SMALLEST_AND_CENTERED:
+            return centerBounds(multipleOfSmallestDimention(_geometriesBounds));
+
+
+         case REGULAR:
+            return calculateRegularBounds(_geometriesBounds);
+
+         case REGULAR_AND_CENTERED:
+            return centerBounds(calculateRegularBounds(_geometriesBounds));
+      }
+
+      throw new IllegalArgumentException("Must not reach here");
+   }
+
+
+   private GAxisAlignedOrthotope<VectorT, ?> centerBounds(final GAxisAlignedOrthotope<VectorT, ?> bounds) {
+      final VectorT delta = bounds.getCenter().sub(_geometriesBounds.getCenter());
+      return bounds.translatedBy(delta.negated());
+   }
+
+
+   private GAxisAlignedOrthotope<VectorT, ?> calculateRegularBounds(final GAxisAlignedOrthotope<VectorT, ?> bounds) {
+      final VectorT extent = bounds._extent;
+
+      double biggestExtension = Double.NEGATIVE_INFINITY;
+      for (byte i = 0; i < _dimensions; i++) {
+         final double ext = extent.get(i);
+         if (ext > biggestExtension) {
+            biggestExtension = ext;
+         }
+      }
+
+      final VectorT newUpper = bounds._lower.add(biggestExtension);
+      return GAxisAlignedOrthotope.create(bounds._lower, newUpper);
+   }
+
+
+   private GAxisAlignedOrthotope<VectorT, ?> multipleOfSmallestDimention(final GAxisAlignedOrthotope<VectorT, ?> bounds) {
+      final VectorT extent = bounds._extent;
+
+      double smallestExtension = Double.POSITIVE_INFINITY;
+      for (byte i = 0; i < _dimensions; i++) {
+         final double ext = extent.get(i);
+         if (ext < smallestExtension) {
+            smallestExtension = ext;
+         }
+      }
+
+      final VectorT newExtent = smallestBiggerMultipleOf(extent, smallestExtension);
+      final VectorT newUpper = bounds._lower.add(newExtent);
+      return GAxisAlignedOrthotope.create(bounds._lower, newUpper);
+   }
+
+
+   @SuppressWarnings("unchecked")
+   private static <VectorT extends IVector<VectorT, ?>> VectorT smallestBiggerMultipleOf(final VectorT lower,
+                                                                                         final double smallestExtension) {
+
+      final byte dimensionsCount = lower.dimensions();
+
+      final double[] dimensionsValues = new double[dimensionsCount];
+      for (byte i = 0; i < dimensionsCount; i++) {
+         dimensionsValues[i] = smallestBiggerMultipleOf(lower.get(i), smallestExtension);
+      }
+
+      return (VectorT) GVectorUtils.createD(dimensionsValues);
+   }
+
+
+   private static double smallestBiggerMultipleOf(final double value,
+                                                  final double multiple) {
+      if (GMath.closeTo(value, multiple)) {
+         return multiple;
+      }
+
+      final int times = (int) (value / multiple);
+
+      double result = times * multiple;
+      if (value < 0) {
+         if (result > value) {
+            result -= multiple;
+         }
+      }
+      else {
+         if (result < value) {
+            result += multiple;
+         }
+      }
+
+      return result;
+   }
+
+
+   private GAxisAlignedOrthotope<VectorT, ?> returnGivenBounds(final GAxisAlignedOrthotope<VectorT, ?> givenBounds) {
+      if (givenBounds == null) {
+         throw new IllegalArgumentException("Can't use policy GIVEN without providing a bounds");
+      }
+
+      if (!_geometriesBounds.isFullInside(givenBounds)) {
+         throw new IllegalArgumentException("The given bounds is not big enough to hold all the geometries");
+      }
+
+      return givenBounds;
    }
 
 
@@ -289,6 +380,11 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
    //      final GGeometryQuadtree<IPolygon2D<?>> quadtree = new GGeometryQuadtree<IPolygon2D<?>>("test tree", bounds, geometries,
    //               new GGeometryNTreeParameters(true, 10, 10, GGeometryNTreeParameters.BoundsPolicy.MINIMUM));
    //   }
+
+
+   public static void main(final String[] args) {
+      System.out.println(GGeometryNTree.<IVector2<?>> smallestBiggerMultipleOf(new GVector2D(-10, 10), 5));
+   }
 
 
 }
