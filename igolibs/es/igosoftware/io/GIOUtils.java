@@ -253,7 +253,9 @@ public class GIOUtils {
       final File directory = new File(directoryName);
 
       if (!directory.exists()) {
-         System.out.println("- Creating directory \"" + directoryName + "\"");
+         if (verbose) {
+            System.out.println("- Creating directory \"" + directoryName + "\"");
+         }
          if (!directory.mkdirs()) {
             throw new IOException("Can't create directory \"" + directoryName + "\"");
          }
@@ -282,7 +284,9 @@ public class GIOUtils {
          }
 
          if (child.delete()) {
-            System.out.println("- Deleted \"" + child.getPath() + "\"");
+            if (verbose) {
+               System.out.println("- Deleted \"" + child.getPath() + "\"");
+            }
          }
          else {
             throw new IOException("Can't delete \"" + child.getAbsolutePath() + "\"");
