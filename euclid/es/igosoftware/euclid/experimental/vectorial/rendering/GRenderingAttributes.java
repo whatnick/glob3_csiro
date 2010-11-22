@@ -24,7 +24,7 @@ public class GRenderingAttributes {
    final Color       _borderColor;
 
    final double      _lodMinSize;
-   final boolean     _debugRendering;
+   final boolean     _debugLODRendering;
    final int         _textureDimension;
    final boolean     _renderBounds;
 
@@ -47,7 +47,7 @@ public class GRenderingAttributes {
                                final Color fillColor,
                                final Color borderColor,
                                final double lodMinSize,
-                               final boolean debugRendering,
+                               final boolean debugLODRendering,
                                final int textureDimension,
                                final boolean renderBounds) {
       _renderLeafs = renderLeafs;
@@ -57,7 +57,7 @@ public class GRenderingAttributes {
       _fillColor = fillColor;
       _borderColor = borderColor;
       _lodMinSize = lodMinSize;
-      _debugRendering = debugRendering;
+      _debugLODRendering = debugLODRendering;
       _textureDimension = textureDimension;
       _renderBounds = renderBounds;
 

@@ -230,6 +230,7 @@ class GPolygon2DRenderUnit {
       g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
       g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
+
       final AffineTransform transformFlipY = AffineTransform.getScaleInstance(1, -1);
       transformFlipY.concatenate(AffineTransform.getTranslateInstance(0, -height));
 
@@ -242,8 +243,6 @@ class GPolygon2DRenderUnit {
       transform.concatenate(translation);
 
       g2d.setTransform(transform);
-
-      //      g2d.setTransform(transformFlipY);
 
 
       renderNodeWithGeometries(node, bounds, scale, g2d, renderedImage, true);
@@ -271,9 +270,9 @@ class GPolygon2DRenderUnit {
       final IVector2<?> scaledNodeExtent = nodeBounds.getExtent().scale(scale);
       final double projectedSize = scaledNodeExtent.x() * scaledNodeExtent.y();
       if (projectedSize < _attributes._lodMinSize) {
-         if (_attributes._renderLODIgnores || _attributes._debugRendering) {
+         if (_attributes._renderLODIgnores || _attributes._debugLODRendering) {
             //            final Color color = scaleColor(_attributes._debugRendering ? Color.RED : _attributes._borderColor, projectedSize / _attributes._lodMinSize);
-            final Color color = _attributes._debugRendering ? Color.RED : _attributes._borderColor;
+            final Color color = _attributes._debugLODRendering ? Color.RED : _attributes._borderColor;
 
             //            final int width = Math.round((float) Math.sqrt(_attributes._lodMinSize));
             //            final int height = Math.max(Math.round((float) _attributes._lodMinSize / width), 1);
@@ -293,11 +292,11 @@ class GPolygon2DRenderUnit {
       }
 
 
-      if (_attributes._debugRendering && _attributes._renderBounds) {
+      if (_attributes._renderBounds) {
          final IVector2<?> nodeLower = nodeBounds._lower;
          final IVector2<?> nodeUpper = nodeBounds._upper;
 
-         g2d.setStroke(new BasicStroke(1));
+         g2d.setStroke(new BasicStroke(2));
          g2d.setColor(Color.GREEN);
          final int x = Math.round((float) nodeLower.x());
          final int y = Math.round((float) nodeLower.y());
@@ -345,9 +344,9 @@ class GPolygon2DRenderUnit {
       final IVector2<?> scaledGeometryExtent = geometry.getBounds().getExtent().scale(scale);
       final double projectedSize = scaledGeometryExtent.x() * scaledGeometryExtent.y();
       if (projectedSize < _attributes._lodMinSize) {
-         if (_attributes._renderLODIgnores || _attributes._debugRendering) {
+         if (_attributes._renderLODIgnores || _attributes._debugLODRendering) {
             //            final Color color = scaleColor(_attributes._debugRendering ? Color.MAGENTA : _attributes._borderColor, projectedSize / _attributes._lodMinSize);
-            final Color color = _attributes._debugRendering ? Color.MAGENTA : _attributes._borderColor;
+            final Color color = _attributes._debugLODRendering ? Color.MAGENTA : _attributes._borderColor;
 
             //            final int width = Math.round((float) Math.sqrt(_attributes._lodMinSize));
             //            final int height = Math.max(Math.round((float) _attributes._lodMinSize / width), 1);
