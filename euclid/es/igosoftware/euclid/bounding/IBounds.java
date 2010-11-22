@@ -54,6 +54,9 @@ GeometryT extends IBounds<VectorT, GeometryT>
    public boolean touches(final GeometryT that);
 
 
+   public boolean touchesBounds(final IBounds<VectorT, ?> that);
+
+
    //   public boolean closeTo(final GeometryT that);
 
    public boolean containsOnBoundary(final VectorT point);

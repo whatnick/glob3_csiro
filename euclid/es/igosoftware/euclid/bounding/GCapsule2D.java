@@ -141,4 +141,10 @@ public final class GCapsule2D
       return touchesWithCapsule2D(that);
    }
 
+
+   @Override
+   public boolean touchesBounds(final IBounds<IVector2<?>, ?> that) {
+      return touches((IBounds2D<?>) that);
+   }
+
 }

@@ -611,6 +611,12 @@ public final class GAxisAlignedBox
 
 
    @Override
+   public boolean touchesBounds(final IBounds<IVector3<?>, ?> that) {
+      return touches((IBounds3D<?>) that);
+   }
+
+
+   @Override
    public boolean touchesWithBall(final GBall ball) {
       final IVector3<?> ballCenter = ball._center;
       final double ballRadius = ball._radius;

@@ -548,4 +548,9 @@ public final class GAxisAlignedRectangle
    //      }
    //   }
 
+   @Override
+   public boolean touchesBounds(final IBounds<IVector2<?>, ?> that) {
+      return touches((IBounds2D<?>) that);
+   }
+
 }

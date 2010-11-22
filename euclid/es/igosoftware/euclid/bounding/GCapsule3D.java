@@ -151,4 +151,10 @@ public class GCapsule3D
       return touchesWithCapsule3D(that);
    }
 
+
+   @Override
+   public boolean touchesBounds(final IBounds<IVector3<?>, ?> that) {
+      return touches((IBounds3D<?>) that);
+   }
+
 }

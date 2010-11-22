@@ -143,4 +143,10 @@ public final class GDisk
       return touchesWithDisk(that);
    }
 
+
+   @Override
+   public boolean touchesBounds(final IBounds<IVector2<?>, ?> that) {
+      return touches((IBounds2D<?>) that);
+   }
+
 }

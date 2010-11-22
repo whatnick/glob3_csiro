@@ -150,4 +150,10 @@ public final class GBall
    }
 
 
+   @Override
+   public boolean touchesBounds(final IBounds<IVector3<?>, ?> that) {
+      return touches((IBounds3D<?>) that);
+   }
+
+
 }
