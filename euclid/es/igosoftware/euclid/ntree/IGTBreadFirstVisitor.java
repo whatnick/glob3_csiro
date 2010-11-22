@@ -1,6 +1,6 @@
 
 
-package es.igosoftware.euclid.octree.geometry;
+package es.igosoftware.euclid.ntree;
 
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;

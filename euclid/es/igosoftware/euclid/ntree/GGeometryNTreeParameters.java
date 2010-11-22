@@ -1,6 +1,6 @@
 
 
-package es.igosoftware.euclid.octree.geometry;
+package es.igosoftware.euclid.ntree;
 
 import java.util.Collection;
 

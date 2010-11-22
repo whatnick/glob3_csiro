@@ -1,6 +1,6 @@
 
 
-package es.igosoftware.euclid.octree.geometry;
+package es.igosoftware.euclid.ntree;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,7 +10,7 @@ import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.IBounds;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
-import es.igosoftware.euclid.octree.geometry.GGTInnerNode.GeometriesDistribution;
+import es.igosoftware.euclid.ntree.GGTInnerNode.GeometriesDistribution;
 import es.igosoftware.euclid.shape.GShape;
 import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector;

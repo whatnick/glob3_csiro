@@ -1,14 +1,14 @@
 
 
-package es.igosoftware.euclid.octree.geometry.octree;
+package es.igosoftware.euclid.ntree.octree;
 
 import java.util.Collection;
 
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
-import es.igosoftware.euclid.octree.geometry.GGeometryNTree;
-import es.igosoftware.euclid.octree.geometry.GGeometryNTreeParameters;
+import es.igosoftware.euclid.ntree.GGeometryNTree;
+import es.igosoftware.euclid.ntree.GGeometryNTreeParameters;
 import es.igosoftware.euclid.vector.IVector3;
 
 
