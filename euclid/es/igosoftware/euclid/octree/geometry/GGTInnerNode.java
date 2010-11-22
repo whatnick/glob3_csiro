@@ -10,6 +10,7 @@ import java.util.List;
 
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
+import es.igosoftware.euclid.bounding.IBounds;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GCollections;
@@ -96,6 +97,11 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
 
       ownGeometries.trimToSize();
       geometriesToDistribute.trimToSize();
+
+      if (ownGeometries.size() + geometriesToDistribute.size() != geometries.size()) {
+         throw new RuntimeException("INVALID DISTRiBUTION");
+      }
+
       return new GeometriesDistribution<VectorT, GeometryT>(ownGeometries, geometriesToDistribute);
    }
 
@@ -107,7 +113,7 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
                 final int depth,
                 final GGeometryNTreeParameters parameters,
                 final GProgress progress) {
-      super(parent, bounds, geometries);
+      super(parent, bounds, geometries.isEmpty() ? null : geometries);
 
       _children = initializeChildren(geometriesToDistribute, depth, parameters, progress);
    }
@@ -146,6 +152,7 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
             System.out.println("WARNING >> geometry " + geometry + " don't added!!!!!");
          }
          else if (geometryAddedCounter > 1) {
+            System.out.println("WARNING >> geometry " + geometry + " added " + geometryAddedCounter + " times !!!!!");
             progress.incrementSteps(geometryAddedCounter - 1);
          }
       }
@@ -182,27 +189,16 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
 
 
       if (acceptLeafNodeCreation(bounds, geometries, depth, parameters)) {
-         return createLeafNode(bounds, geometries, progress);
+         progress.stepsDone(geometries.size());
+         return new GGTLeafNode<VectorT, BoundsT, GeometryT>(this, (BoundsT) bounds, geometries);
       }
 
 
       final GeometriesDistribution<VectorT, GeometryT> distribution = distributeGeometries(bounds, geometries);
 
-      final GGTInnerNode<VectorT, BoundsT, GeometryT> innerNode = new GGTInnerNode<VectorT, BoundsT, GeometryT>(this,
-               (BoundsT) bounds, distribution.getOwnGeometries(), distribution.getGeometriesToDistribute(), depth, parameters,
-               progress);
+      return new GGTInnerNode<VectorT, BoundsT, GeometryT>(this, (BoundsT) bounds, distribution.getOwnGeometries(),
+               distribution.getGeometriesToDistribute(), depth + 1, parameters, progress);
 
-
-      return innerNode;
-   }
-
-
-   @SuppressWarnings("unchecked")
-   private GGTNode<VectorT, BoundsT, GeometryT> createLeafNode(final GAxisAlignedOrthotope<VectorT, ?> bounds,
-                                                               final Collection<GeometryT> geometries,
-                                                               final GProgress progress) {
-      progress.stepsDone(geometries.size());
-      return new GGTLeafNode<VectorT, BoundsT, GeometryT>(this, (BoundsT) bounds, geometries);
    }
 
 
@@ -224,7 +220,8 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
    }
 
 
-   public void breadthFirstAcceptVisitor(final IGTBreadFirstVisitor<VectorT, BoundsT, GeometryT> visitor)
+   public void breadthFirstAcceptVisitor(final IBounds<VectorT, ?> region,
+                                         final IGTBreadFirstVisitor<VectorT, BoundsT, GeometryT> visitor)
                                                                                                          throws IGTBreadFirstVisitor.AbortVisiting {
 
       final LinkedList<GGTNode<VectorT, BoundsT, GeometryT>> queue = new LinkedList<GGTNode<VectorT, BoundsT, GeometryT>>();
@@ -232,6 +229,10 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
 
       while (!queue.isEmpty()) {
          final GGTNode<VectorT, BoundsT, GeometryT> current = queue.removeFirst();
+
+         if ((region != null) && !current.getBounds().touchesBounds(region)) {
+            continue;
+         }
 
          if (current instanceof GGTInnerNode) {
             final GGTInnerNode<VectorT, BoundsT, GeometryT> currentInner = (GGTInnerNode<VectorT, BoundsT, GeometryT>) current;
@@ -252,6 +253,39 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
             throw new IllegalArgumentException();
          }
       }
+   }
+
+
+   public void breadthFirstAcceptVisitor(final IGTBreadFirstVisitor<VectorT, BoundsT, GeometryT> visitor)
+                                                                                                         throws IGTBreadFirstVisitor.AbortVisiting {
+
+      breadthFirstAcceptVisitor(null, visitor);
+
+      //      final LinkedList<GGTNode<VectorT, BoundsT, GeometryT>> queue = new LinkedList<GGTNode<VectorT, BoundsT, GeometryT>>();
+      //      queue.addLast(this);
+      //
+      //      while (!queue.isEmpty()) {
+      //         final GGTNode<VectorT, BoundsT, GeometryT> current = queue.removeFirst();
+      //
+      //         if (current instanceof GGTInnerNode) {
+      //            final GGTInnerNode<VectorT, BoundsT, GeometryT> currentInner = (GGTInnerNode<VectorT, BoundsT, GeometryT>) current;
+      //
+      //            visitor.visitInnerNode(currentInner);
+      //
+      //            for (final GGTNode<VectorT, BoundsT, GeometryT> child : currentInner._children) {
+      //               if (child != null) {
+      //                  queue.addLast(child);
+      //               }
+      //            }
+      //         }
+      //         else if (current instanceof GGTLeafNode) {
+      //            final GGTLeafNode<VectorT, BoundsT, GeometryT> currentLeaf = (GGTLeafNode<VectorT, BoundsT, GeometryT>) current;
+      //            visitor.visitLeafNode(currentLeaf);
+      //         }
+      //         else {
+      //            throw new IllegalArgumentException();
+      //         }
+      //      }
    }
 
 
@@ -305,16 +339,6 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
    }
 
 
-   public int getOwnGeometriesCount() {
-      return super.getGeometriesCount();
-   }
-
-
-   public Collection<GeometryT> getOwnGeometries() {
-      return super.getGeometries();
-   }
-
-
    @Override
    public final int getAllGeometriesCount() {
       int result = 0;
@@ -352,4 +376,18 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
       }
       return Collections.unmodifiableList(result);
    }
+
+
+   @Override
+   protected void validate() {
+      for (final GGTNode<VectorT, BoundsT, GeometryT> child : _children) {
+         if (child != null) {
+            if (child.getParent() != this) {
+               System.err.println("INVALID PARENT");
+            }
+            child.validate();
+         }
+      }
+   }
+
 }

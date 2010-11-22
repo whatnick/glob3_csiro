@@ -39,12 +39,12 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
    }
 
 
-   public GGTInnerNode<VectorT, BoundsT, GeometryT> getParent() {
+   public final GGTInnerNode<VectorT, BoundsT, GeometryT> getParent() {
       return _parent;
    }
 
 
-   public BoundsT getBounds() {
+   public final BoundsT getBounds() {
       return _bounds;
    }
 
@@ -103,12 +103,16 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
 
 
    public final Collection<GeometryT> getGeometries() {
+      if (_geometries == null) {
+         return Collections.emptyList();
+      }
+
       return Collections.unmodifiableCollection(_geometries);
    }
 
 
    public final int getGeometriesCount() {
-      return _geometries.size();
+      return (_geometries == null) ? 0 : _geometries.size();
    }
 
 
@@ -116,5 +120,9 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
 
 
    public abstract int getAllGeometriesCount();
+
+
+   protected abstract void validate();
+
 
 }

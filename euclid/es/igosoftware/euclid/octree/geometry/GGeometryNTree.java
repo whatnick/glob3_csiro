@@ -8,6 +8,7 @@ import java.util.Collections;
 
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
+import es.igosoftware.euclid.bounding.IBounds;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.octree.geometry.GGTInnerNode.GeometriesDistribution;
 import es.igosoftware.euclid.shape.GShape;
@@ -85,10 +86,16 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
          }
       };
 
+      validate();
 
       if (_parameters._verbose) {
          showStatistics();
       }
+   }
+
+
+   private void validate() {
+      _root.validate();
    }
 
 
@@ -364,6 +371,23 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
    }
 
 
+   public void breadthFirstAcceptVisitor(final IBounds<VectorT, ?> region,
+                                         final IGTBreadFirstVisitor<VectorT, BoundsT, GeometryT> visitor) {
+      if (!_bounds.touchesBounds(region)) {
+         return;
+      }
+
+      try {
+         visitor.visitOctree(this);
+
+         _root.breadthFirstAcceptVisitor(region, visitor);
+      }
+      catch (final IGTBreadFirstVisitor.AbortVisiting e) {
+         // do nothing
+      }
+   }
+
+
    public void depthFirstAcceptVisitor(final IGTDepthFirstVisitor<VectorT, BoundsT, GeometryT> visitor) {
       try {
          visitor.visitOctree(this);
@@ -397,6 +421,10 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
       return Collections.unmodifiableCollection(_geometries);
    }
 
+
+   public GGTInnerNode<VectorT, BoundsT, GeometryT> getRoot() {
+      return _root;
+   }
 
    //   public static void main(final String[] args) {
    //      System.out.println("GeometryNTree 0.1");

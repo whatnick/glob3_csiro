@@ -23,9 +23,9 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
             GGTNode<VectorT, BoundsT, GeometryT> {
 
 
-   protected GGTLeafNode(final GGTInnerNode<VectorT, BoundsT, GeometryT> parent,
-                         final BoundsT bounds,
-                         final Collection<GeometryT> geometries) {
+   GGTLeafNode(final GGTInnerNode<VectorT, BoundsT, GeometryT> parent,
+               final BoundsT bounds,
+               final Collection<GeometryT> geometries) {
       super(parent, bounds, geometries);
    }
 
@@ -59,4 +59,13 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
    public final int getAllGeometriesCount() {
       return getGeometriesCount();
    }
+
+
+   @Override
+   protected void validate() {
+      if (getParent().getChildIndex(this) == -1) {
+         System.out.println("invalid parent");
+      }
+   }
+
 }
