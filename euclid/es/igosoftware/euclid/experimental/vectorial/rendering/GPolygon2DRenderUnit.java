@@ -270,14 +270,19 @@ class GPolygon2DRenderUnit {
 
       final IVector2<?> scaledNodeExtent = nodeBounds.getExtent().scale(scale);
       final double projectedSize = scaledNodeExtent.x() * scaledNodeExtent.y();
-      if ((projectedSize < _attributes._lodMinSize)) {
+      if (projectedSize < _attributes._lodMinSize) {
          if (_attributes._renderLODIgnores || _attributes._debugRendering) {
             //            final Color color = scaleColor(_attributes._debugRendering ? Color.RED : _attributes._borderColor, projectedSize / _attributes._lodMinSize);
             final Color color = _attributes._debugRendering ? Color.RED : _attributes._borderColor;
 
-            //            final IVector2<?> projectedCenter = nodeBounds._center;
+            //            final int width = Math.round((float) Math.sqrt(_attributes._lodMinSize));
+            //            final int height = Math.max(Math.round((float) _attributes._lodMinSize / width), 1);
+            //
+            //            //            g2d.setColor(_attributes._fillColor);
+            //            //            g2d.fillOval(Math.round((float) nodeBounds._center.x()), Math.round((float) nodeBounds._center.y()), width, height);
+            //
             //            g2d.setColor(color);
-            //            g2d.fillOval(Math.round((float) projectedCenter.x()), Math.round((float) projectedCenter.y()), 1, 1);
+            //            g2d.drawOval(Math.round((float) nodeBounds._center.x()), Math.round((float) nodeBounds._center.y()), width, height);
 
 
             final IVector2<?> projectedCenter = nodeBounds._center.sub(bounds._lower).scale(scale);
@@ -344,10 +349,16 @@ class GPolygon2DRenderUnit {
             //            final Color color = scaleColor(_attributes._debugRendering ? Color.MAGENTA : _attributes._borderColor, projectedSize / _attributes._lodMinSize);
             final Color color = _attributes._debugRendering ? Color.MAGENTA : _attributes._borderColor;
 
-            //            final IVector2<?> projectedCenter = geometry.getBounds()._center;
+            //            final int width = Math.round((float) Math.sqrt(_attributes._lodMinSize));
+            //            final int height = Math.max(Math.round((float) _attributes._lodMinSize / width), 1);
+            //
+            //            //            g2d.setColor(_attributes._fillColor);
+            //            //            g2d.fillOval(Math.round((float) geometry.getBounds()._center.x()),
+            //            //                     Math.round((float) geometry.getBounds()._center.y()), width, height);
+            //
             //            g2d.setColor(color);
-            //            g2d.fillOval(Math.round((float) projectedCenter.x()), Math.round((float) projectedCenter.y()), 1, 1);
-
+            //            g2d.drawOval(Math.round((float) geometry.getBounds()._center.x()),
+            //                     Math.round((float) geometry.getBounds()._center.y()), width, height);
 
             final IVector2<?> projectedCenter = geometry.getBounds()._center.sub(bounds._lower).scale(scale);
             setPixel(renderedImage, projectedCenter, color);

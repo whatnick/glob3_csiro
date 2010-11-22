@@ -8,36 +8,36 @@ import java.awt.Color;
 
 public class GRenderingAttributes {
 
-
-   private static final double  DEFAULT_LOD_MIN_SIZE      = 4;
-   private static final boolean DEFAULT_DEBUG_RENDERING   = false;
-   private static final int     DEFAULT_TEXTURE_DIMENSION = 512;
-   private static final boolean DEFAULT_RENDER_BOUNDS     = true;
-
-
-   final boolean                _renderLeafs;
-   final int                    _maxDepth;
-   final boolean                _renderLODIgnores;
-   final float                  _borderWidth;
-   final BasicStroke            _stroke;
-   final Color                  _fillColor;
-   final Color                  _borderColor;
-
-   final double                 _lodMinSize;
-   final boolean                _debugRendering;
-   final int                    _textureDimension;
-   final boolean                _renderBounds;
+   //
+   //   private static final double  DEFAULT_LOD_MIN_SIZE      = 4;
+   //   private static final boolean DEFAULT_DEBUG_RENDERING   = true;
+   //   private static final int     DEFAULT_TEXTURE_DIMENSION = 512;
+   //   private static final boolean DEFAULT_RENDER_BOUNDS     = true;
 
 
-   public GRenderingAttributes(final boolean renderLeafs,
-                               final int maxDepth,
-                               final boolean renderLODIgnores,
-                               final float borderWidth,
-                               final Color fillColor,
-                               final Color borderColor) {
-      this(renderLeafs, maxDepth, renderLODIgnores, borderWidth, fillColor, borderColor, DEFAULT_LOD_MIN_SIZE,
-           DEFAULT_DEBUG_RENDERING, DEFAULT_TEXTURE_DIMENSION, DEFAULT_RENDER_BOUNDS);
-   }
+   final boolean     _renderLeafs;
+   final int         _maxDepth;
+   final boolean     _renderLODIgnores;
+   final float       _borderWidth;
+   final BasicStroke _stroke;
+   final Color       _fillColor;
+   final Color       _borderColor;
+
+   final double      _lodMinSize;
+   final boolean     _debugRendering;
+   final int         _textureDimension;
+   final boolean     _renderBounds;
+
+
+   //   public GRenderingAttributes(final boolean renderLeafs,
+   //                               final int maxDepth,
+   //                               final boolean renderLODIgnores,
+   //                               final float borderWidth,
+   //                               final Color fillColor,
+   //                               final Color borderColor) {
+   //      this(renderLeafs, maxDepth, renderLODIgnores, borderWidth, fillColor, borderColor, DEFAULT_LOD_MIN_SIZE,
+   //           DEFAULT_DEBUG_RENDERING, DEFAULT_TEXTURE_DIMENSION, DEFAULT_RENDER_BOUNDS);
+   //   }
 
 
    public GRenderingAttributes(final boolean renderLeafs,

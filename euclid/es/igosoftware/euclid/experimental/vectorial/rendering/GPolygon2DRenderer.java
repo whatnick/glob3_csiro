@@ -38,7 +38,7 @@ public class GPolygon2DRenderer {
                return true;
             }
 
-            if (geometries.size() <= 2) {
+            if (geometries.size() <= 1) {
                return true;
             }
 
@@ -47,7 +47,7 @@ public class GPolygon2DRenderer {
                totalPoints += geometry.getPointsCount();
             }
 
-            return (totalPoints <= /*8192*/2048 * 2);
+            return (totalPoints <= 2048 * 2);
          }
       };
 
