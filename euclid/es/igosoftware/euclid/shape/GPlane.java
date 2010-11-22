@@ -44,6 +44,7 @@ import es.igosoftware.euclid.GGeometryAbstract;
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 import es.igosoftware.euclid.bounding.GBall;
 import es.igosoftware.euclid.bounding.GCapsule3D;
+import es.igosoftware.euclid.bounding.IBounds;
 import es.igosoftware.euclid.bounding.IBounds3D;
 import es.igosoftware.euclid.bounding.IInfiniteBounds;
 import es.igosoftware.euclid.vector.GVector3D;
@@ -804,6 +805,12 @@ public final class GPlane
    @Override
    public boolean touches(final GPlane that) {
       return touchesWithPlane(that);
+   }
+
+
+   @Override
+   public boolean touchesBounds(final IBounds<IVector3<?>, ?> that) {
+      return touches((IBounds3D<?>) that);
    }
 
 }
