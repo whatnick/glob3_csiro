@@ -8,221 +8,53 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 
-import javax.imageio.ImageIO;
-
-import es.igosoftware.concurrent.GConcurrent;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.ntree.GGTInnerNode;
-import es.igosoftware.euclid.ntree.GGTLeafNode;
 import es.igosoftware.euclid.ntree.GGTNode;
-import es.igosoftware.euclid.ntree.GGeometryNTree;
-import es.igosoftware.euclid.ntree.IGTBreadFirstVisitor;
 import es.igosoftware.euclid.ntree.quadtree.GGeometryQuadtree;
-import es.igosoftware.euclid.ntree.quadtree.IQuadtreeBreadFirstVisitor;
 import es.igosoftware.euclid.shape.GComplexPolytope;
 import es.igosoftware.euclid.shape.IPolygon2D;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
-import es.igosoftware.io.GIOUtils;
-import es.igosoftware.util.GIntHolder;
-import es.igosoftware.util.GProgress;
 
 
 class GPolygon2DRenderUnit {
 
 
    private final GGeometryQuadtree<IPolygon2D<?>> _quadtree;
-   private final String                           _directoryName;
+   private final GAxisAlignedRectangle            _region;
    private final GRenderingAttributes             _attributes;
 
 
-   public GPolygon2DRenderUnit(final GGeometryQuadtree<IPolygon2D<?>> quadtree,
-                               final String directoryName,
-                               final GRenderingAttributes attributes) {
+   GPolygon2DRenderUnit(final GGeometryQuadtree<IPolygon2D<?>> quadtree,
+                        final GAxisAlignedRectangle region,
+                        final GRenderingAttributes attributes) {
       _quadtree = quadtree;
-      _directoryName = directoryName;
+      _region = region;
       _attributes = attributes;
    }
 
 
-   void render() throws IOException {
+   BufferedImage render() {
 
-      GIOUtils.assureEmptyDirectory(_directoryName, false);
-
-      final File directory = new File(_directoryName);
-
-
-      final int renderingCount = calculateRenderingCount();
-      final GProgress renderingProgress = new GProgress(renderingCount) {
-
-         @Override
-         public void informProgress(final double percent,
-                                    final long elapsed,
-                                    final long estimatedMsToFinish) {
-            System.out.println("Rendering : " + progressString(percent, elapsed, estimatedMsToFinish));
-         }
-      };
-
-
-      renderQuadtree(directory, renderingProgress);
-   }
-
-
-   private int calculateRenderingCount() {
-      final GIntHolder innerCounter = new GIntHolder(0);
-      final GIntHolder leafCounter = new GIntHolder(0);
-
-      _quadtree.breadthFirstAcceptVisitor(new IQuadtreeBreadFirstVisitor<IPolygon2D<?>>() {
-
-         @Override
-         public void visitOctree(final GGeometryNTree<IVector2<?>, GAxisAlignedRectangle, IPolygon2D<?>> octree) {
-         }
-
-
-         @Override
-         public void visitInnerNode(final GGTInnerNode<IVector2<?>, GAxisAlignedRectangle, IPolygon2D<?>> inner)
-                                                                                                                throws IGTBreadFirstVisitor.AbortVisiting {
-            if (inner.getDepth() > _attributes._maxDepth) {
-               throw new IGTBreadFirstVisitor.AbortVisiting();
-            }
-
-            innerCounter.increment();
-         }
-
-
-         @Override
-         public void visitLeafNode(final GGTLeafNode<IVector2<?>, GAxisAlignedRectangle, IPolygon2D<?>> leaf)
-                                                                                                             throws IGTBreadFirstVisitor.AbortVisiting {
-            if (_attributes._renderLeafs) {
-               if (leaf.getDepth() > _attributes._maxDepth) {
-                  throw new IGTBreadFirstVisitor.AbortVisiting();
-               }
-
-               leafCounter.increment();
-            }
-         }
-      });
-
-      return innerCounter.get() + leafCounter.get();
-   }
-
-
-   private void renderQuadtree(final File directory,
-                               final GProgress renderingProgress) {
-
-
-      final ExecutorService executor = GConcurrent.getDefaultExecutor();
-      final LinkedList<Future<?>> futures = new LinkedList<Future<?>>();
-
-      _quadtree.breadthFirstAcceptVisitor(new IQuadtreeBreadFirstVisitor<IPolygon2D<?>>() {
-
-         @Override
-         public void visitOctree(final GGeometryNTree<IVector2<?>, GAxisAlignedRectangle, IPolygon2D<?>> octree) {
-         }
-
-
-         @Override
-         public void visitInnerNode(final GGTInnerNode<IVector2<?>, GAxisAlignedRectangle, IPolygon2D<?>> inner)
-                                                                                                                throws IGTBreadFirstVisitor.AbortVisiting {
-            if (inner.getDepth() > _attributes._maxDepth) {
-               throw new IGTBreadFirstVisitor.AbortVisiting();
-            }
-
-            final Future<?> future = executor.submit(new Runnable() {
-               @Override
-               public void run() {
-                  try {
-                     renderNode(directory, inner, renderingProgress);
-                  }
-                  catch (final IOException e) {
-                     e.printStackTrace();
-                  }
-               }
-            });
-
-            futures.add(future);
-         }
-
-
-         @Override
-         public void visitLeafNode(final GGTLeafNode<IVector2<?>, GAxisAlignedRectangle, IPolygon2D<?>> leaf)
-                                                                                                             throws IGTBreadFirstVisitor.AbortVisiting {
-            if (_attributes._renderLeafs) {
-               if (leaf.getDepth() > _attributes._maxDepth) {
-                  throw new IGTBreadFirstVisitor.AbortVisiting();
-               }
-
-               final Future<?> future = executor.submit(new Runnable() {
-                  @Override
-                  public void run() {
-                     try {
-                        renderNode(directory, leaf, renderingProgress);
-                     }
-                     catch (final IOException e) {
-                        e.printStackTrace();
-                     }
-                  }
-               });
-
-               futures.add(future);
-            }
-         }
-      });
-
-      // wait for threads finalization
-      while (!futures.isEmpty()) {
-         try {
-            futures.pop().get();
-         }
-         catch (final InterruptedException e) {
-            e.printStackTrace();
-         }
-         catch (final ExecutionException e) {
-            e.printStackTrace();
-         }
-      }
-   }
-
-
-   private void renderNode(final File directory,
-                           final GGTNode<IVector2<?>, GAxisAlignedRectangle, IPolygon2D<?>> node,
-                           final GProgress renderingProgress) throws IOException {
-      //      final long start = System.currentTimeMillis();
-
-      final String name = "node_" + node.getDepth() + "_" + node.getId();
-
-      final GAxisAlignedRectangle bounds = node.getBounds();
-      final IVector2<?> extent = bounds.getExtent();
-
+      final IVector2<?> extent = _region.getExtent();
 
       final int width;
       final int height;
 
       if (extent.x() > extent.y()) {
          height = _attributes._textureDimension;
-         width = (int) Math.round(extent.x() / extent.y()) * _attributes._textureDimension;
+         width = (int) Math.round(extent.x() / extent.y() * _attributes._textureDimension);
       }
       else {
          width = _attributes._textureDimension;
-         height = (int) Math.round(extent.y() / extent.x()) * _attributes._textureDimension;
+         height = (int) Math.round(extent.y() / extent.x() * _attributes._textureDimension);
       }
 
       final IVector2<?> scale = new GVector2D(width, height).div(extent);
 
 
-      //      final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-      //      final GraphicsDevice gs = ge.getDefaultScreenDevice();
-      //      final GraphicsConfiguration gc = gs.getDefaultConfiguration();
-      //
-      //      final BufferedImage renderedImage = gc.createCompatibleImage(width, height, Transparency.TRANSLUCENT);
       final BufferedImage renderedImage = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
       renderedImage.setAccelerationPriority(1);
 
@@ -234,7 +66,7 @@ class GPolygon2DRenderUnit {
       final AffineTransform transformFlipY = AffineTransform.getScaleInstance(1, -1);
       transformFlipY.concatenate(AffineTransform.getTranslateInstance(0, -height));
 
-      final AffineTransform translation = AffineTransform.getTranslateInstance(-bounds._lower.x(), -bounds._lower.y());
+      final AffineTransform translation = AffineTransform.getTranslateInstance(-_region._lower.x(), -_region._lower.y());
       final AffineTransform scaling = AffineTransform.getScaleInstance(scale.x(), scale.y());
 
       final AffineTransform transform = new AffineTransform();
@@ -244,47 +76,31 @@ class GPolygon2DRenderUnit {
 
       g2d.setTransform(transform);
 
+      processNode(_quadtree.getRoot(), scale, g2d, renderedImage);
 
-      renderNodeWithGeometries(node, bounds, scale, g2d, renderedImage, true);
-
-      g2d.dispose();
-
-      final File file = new File(directory, name + ".png");
-      //ImageIO.write(resize(renderedImage, width, height), "png", file);
-      ImageIO.write(renderedImage, "png", file);
-
-
-      //      System.out.println("Rendered " + name + " in " + GUtils.getTimeMessage(System.currentTimeMillis() - start));
-      renderingProgress.stepDone();
+      return renderedImage;
    }
 
 
-   private void renderNodeWithGeometries(final GGTNode<IVector2<?>, GAxisAlignedRectangle, IPolygon2D<?>> node,
-                                         final GAxisAlignedRectangle bounds,
-                                         final IVector2<?> scale,
-                                         final Graphics2D g2d,
-                                         final BufferedImage renderedImage,
-                                         final boolean renderParent) {
+   private void processNode(final GGTNode<IVector2<?>, GAxisAlignedRectangle, IPolygon2D<?>> node,
+                            final IVector2<?> scale,
+                            final Graphics2D g2d,
+                            final BufferedImage renderedImage) {
+
       final GAxisAlignedRectangle nodeBounds = node.getBounds();
+
+      if (!nodeBounds.touches(_region)) {
+         return;
+      }
+
 
       final IVector2<?> scaledNodeExtent = nodeBounds.getExtent().scale(scale);
       final double projectedSize = scaledNodeExtent.x() * scaledNodeExtent.y();
-      if (projectedSize < _attributes._lodMinSize) {
+      if (projectedSize <= _attributes._lodMinSize) {
          if (_attributes._renderLODIgnores || _attributes._debugLODRendering) {
-            //            final Color color = scaleColor(_attributes._debugRendering ? Color.RED : _attributes._borderColor, projectedSize / _attributes._lodMinSize);
             final Color color = _attributes._debugLODRendering ? Color.RED : _attributes._borderColor;
 
-            //            final int width = Math.round((float) Math.sqrt(_attributes._lodMinSize));
-            //            final int height = Math.max(Math.round((float) _attributes._lodMinSize / width), 1);
-            //
-            //            //            g2d.setColor(_attributes._fillColor);
-            //            //            g2d.fillOval(Math.round((float) nodeBounds._center.x()), Math.round((float) nodeBounds._center.y()), width, height);
-            //
-            //            g2d.setColor(color);
-            //            g2d.drawOval(Math.round((float) nodeBounds._center.x()), Math.round((float) nodeBounds._center.y()), width, height);
-
-
-            final IVector2<?> projectedCenter = nodeBounds._center.sub(bounds._lower).scale(scale);
+            final IVector2<?> projectedCenter = nodeBounds._center.sub(_region._lower).scale(scale);
             setPixel(renderedImage, projectedCenter, color);
          }
 
@@ -292,7 +108,27 @@ class GPolygon2DRenderUnit {
       }
 
 
+      if (node instanceof GGTInnerNode) {
+         final GGTInnerNode<IVector2<?>, GAxisAlignedRectangle, IPolygon2D<?>> inner = (GGTInnerNode<IVector2<?>, GAxisAlignedRectangle, IPolygon2D<?>>) node;
+
+         for (final GGTNode<IVector2<?>, GAxisAlignedRectangle, IPolygon2D<?>> child : inner.getChildren()) {
+            processNode(child, scale, g2d, renderedImage);
+         }
+      }
+
+      renderNodeGeometries(node, scale, g2d, renderedImage);
+   }
+
+
+   private void renderNodeGeometries(final GGTNode<IVector2<?>, GAxisAlignedRectangle, IPolygon2D<?>> node,
+                                     final IVector2<?> scale,
+                                     final Graphics2D g2d,
+                                     final BufferedImage renderedImage) {
+
+
       if (_attributes._renderBounds) {
+         final GAxisAlignedRectangle nodeBounds = node.getBounds();
+
          final IVector2<?> nodeLower = nodeBounds._lower;
          final IVector2<?> nodeUpper = nodeBounds._upper;
 
@@ -306,60 +142,26 @@ class GPolygon2DRenderUnit {
       }
 
 
-      if (renderParent) {
-         GGTInnerNode<IVector2<?>, GAxisAlignedRectangle, IPolygon2D<?>> parent = node.getParent();
-         while (parent != null) {
-            final Collection<IPolygon2D<?>> parentGeometries = parent.getGeometries();
-            //            if (!parentGeometries.isEmpty()) {
-            for (final IPolygon2D<?> parentGeometry : parentGeometries) {
-               if (parentGeometry.getBounds().touches(bounds)) {
-                  renderGeometry(parentGeometry, bounds, scale, renderedImage, g2d);
-               }
-            }
-            //            }
-
-            parent = parent.getParent();
-         }
-      }
-
-
       for (final IPolygon2D<?> geometry : node.getGeometries()) {
-         renderGeometry(geometry, bounds, scale, renderedImage, g2d);
-      }
-
-      if (node instanceof GGTInnerNode) {
-         final GGTInnerNode<IVector2<?>, GAxisAlignedRectangle, IPolygon2D<?>> innerNode = (GGTInnerNode<IVector2<?>, GAxisAlignedRectangle, IPolygon2D<?>>) node;
-         for (final GGTNode<IVector2<?>, GAxisAlignedRectangle, IPolygon2D<?>> child : innerNode.getChildren()) {
-            renderNodeWithGeometries(child, bounds, scale, g2d, renderedImage, false);
+         if (geometry.getBounds().touches(_region)) {
+            renderGeometry(geometry, scale, renderedImage, g2d);
          }
       }
+
    }
 
 
    private void renderGeometry(final IPolygon2D<?> geometry,
-                               final GAxisAlignedRectangle bounds,
                                final IVector2<?> scale,
                                final Graphics2D g2d,
                                final BufferedImage renderedImage) {
       final IVector2<?> scaledGeometryExtent = geometry.getBounds().getExtent().scale(scale);
       final double projectedSize = scaledGeometryExtent.x() * scaledGeometryExtent.y();
-      if (projectedSize < _attributes._lodMinSize) {
+      if (projectedSize <= _attributes._lodMinSize) {
          if (_attributes._renderLODIgnores || _attributes._debugLODRendering) {
-            //            final Color color = scaleColor(_attributes._debugRendering ? Color.MAGENTA : _attributes._borderColor, projectedSize / _attributes._lodMinSize);
             final Color color = _attributes._debugLODRendering ? Color.MAGENTA : _attributes._borderColor;
 
-            //            final int width = Math.round((float) Math.sqrt(_attributes._lodMinSize));
-            //            final int height = Math.max(Math.round((float) _attributes._lodMinSize / width), 1);
-            //
-            //            //            g2d.setColor(_attributes._fillColor);
-            //            //            g2d.fillOval(Math.round((float) geometry.getBounds()._center.x()),
-            //            //                     Math.round((float) geometry.getBounds()._center.y()), width, height);
-            //
-            //            g2d.setColor(color);
-            //            g2d.drawOval(Math.round((float) geometry.getBounds()._center.x()),
-            //                     Math.round((float) geometry.getBounds()._center.y()), width, height);
-
-            final IVector2<?> projectedCenter = geometry.getBounds()._center.sub(bounds._lower).scale(scale);
+            final IVector2<?> projectedCenter = geometry.getBounds()._center.sub(_region._lower).scale(scale);
             setPixel(renderedImage, projectedCenter, color);
          }
 
@@ -456,15 +258,14 @@ class GPolygon2DRenderUnit {
 
 
    private void renderGeometry(final IPolygon2D<?> geometry,
-                               final GAxisAlignedRectangle bounds,
                                final IVector2<?> scale,
                                final BufferedImage renderedImage,
                                final Graphics2D g2d) {
       if (geometry instanceof GComplexPolytope) {
-         renderGeometry((IPolygon2D<?>) geometry.getHull(), bounds, scale, g2d, renderedImage);
+         renderGeometry((IPolygon2D<?>) geometry.getHull(), scale, g2d, renderedImage);
       }
       else {
-         renderGeometry(geometry, bounds, scale, g2d, renderedImage);
+         renderGeometry(geometry, scale, g2d, renderedImage);
       }
    }
 

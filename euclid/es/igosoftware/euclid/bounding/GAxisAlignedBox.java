@@ -42,6 +42,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -49,6 +50,7 @@ import java.util.List;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.shape.GPlane;
 import es.igosoftware.euclid.vector.GVector3D;
+import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.euclid.vector.IVectorTransformer;
@@ -98,6 +100,37 @@ public final class GAxisAlignedBox
             input.close();
          }
       }
+   }
+
+
+   public static GAxisAlignedBox minimumBoundingBox(final Collection<? extends IPointsContainer<IVector3<?>, ?>> pointsContainers) {
+      double minX = Double.POSITIVE_INFINITY;
+      double minY = Double.POSITIVE_INFINITY;
+      double minZ = Double.POSITIVE_INFINITY;
+
+      double maxX = Double.NEGATIVE_INFINITY;
+      double maxY = Double.NEGATIVE_INFINITY;
+      double maxZ = Double.NEGATIVE_INFINITY;
+
+      for (final IPointsContainer<IVector3<?>, ?> pointsContainer : pointsContainers) {
+         for (final IVector3<?> point : pointsContainer) {
+            final double x = point.x();
+            final double y = point.y();
+            final double z = point.z();
+
+            minX = Math.min(minX, x);
+            minY = Math.min(minY, y);
+            minZ = Math.min(minZ, z);
+
+            maxX = Math.max(maxX, x);
+            maxY = Math.max(maxY, y);
+            maxZ = Math.max(maxZ, z);
+         }
+      }
+
+      final IVector3<?> lower = new GVector3D(minX, minY, minZ);
+      final IVector3<?> upper = new GVector3D(maxX, maxY, maxZ);
+      return new GAxisAlignedBox(lower, upper);
    }
 
 

@@ -2,11 +2,12 @@
 
 package es.igosoftware.euclid.experimental.vectorial.rendering;
 
-import java.io.IOException;
+import java.awt.image.BufferedImage;
 import java.util.Collection;
 import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
+import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.ntree.GGeometryNTreeParameters;
 import es.igosoftware.euclid.ntree.quadtree.GGeometryQuadtree;
 import es.igosoftware.euclid.shape.IPolygon2D;
@@ -58,9 +59,9 @@ public class GPolygon2DRenderer {
    }
 
 
-   public void render(final String directoryName,
-                      final GRenderingAttributes attributes) throws IOException {
-      new GPolygon2DRenderUnit(_quadtree, directoryName, attributes).render();
+   public BufferedImage render(final GAxisAlignedRectangle region,
+                               final GRenderingAttributes attributes) {
+      return new GPolygon2DRenderUnit(_quadtree, region, attributes).render();
    }
 
 
