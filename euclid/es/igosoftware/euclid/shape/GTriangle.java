@@ -115,13 +115,10 @@ BoundsT extends IBounds<VectorT, BoundsT>
       switch (i) {
          case 0:
             return _v0;
-
          case 1:
             return _v1;
-
          case 2:
             return _v2;
-
          default:
             throw new IndexOutOfBoundsException();
       }
