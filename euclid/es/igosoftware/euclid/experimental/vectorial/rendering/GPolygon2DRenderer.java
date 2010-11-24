@@ -39,21 +39,22 @@ public class GPolygon2DRenderer {
                return true;
             }
 
-            if (geometries.size() <= 1) {
-               return true;
-            }
+            return geometries.size() <= 2;
+            //            if (geometries.size() <= 1) {
+            //               return true;
+            //            }
 
-            int totalPoints = 0;
-            for (final IPolygon2D<?> geometry : geometries) {
-               totalPoints += geometry.getPointsCount();
-            }
-
-            return (totalPoints <= 2048 * 2);
+            //            int totalPoints = 0;
+            //            for (final IPolygon2D<?> geometry : geometries) {
+            //               totalPoints += geometry.getPointsCount();
+            //            }
+            //
+            //            return (totalPoints <= 2048 * 2);
          }
       };
 
       final GGeometryNTreeParameters parameters = new GGeometryNTreeParameters(true, acceptLeafNodeCreationPolicy,
-               GGeometryNTreeParameters.BoundsPolicy.DIMENSIONS_MULTIPLE_OF_SMALLEST_AND_CENTERED);
+               GGeometryNTreeParameters.BoundsPolicy.MINIMUM);
 
       return new GGeometryQuadtree<IPolygon2D<?>>("Rendering", null, _polygons, parameters);
    }
@@ -61,7 +62,9 @@ public class GPolygon2DRenderer {
 
    public BufferedImage render(final GAxisAlignedRectangle region,
                                final GRenderingAttributes attributes) {
-      return new GPolygon2DRenderUnit(_quadtree, region, attributes).render();
+      final IPolygon2DRenderUnit renderUnit = new GPolygon2DRenderUnit();
+      //      final IPolygon2DRenderUnit renderUnit = new GPolygon2DRenderUnitSmooth();
+      return renderUnit.render(_quadtree, region, attributes);
    }
 
 

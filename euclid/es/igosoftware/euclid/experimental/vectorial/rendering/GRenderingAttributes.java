@@ -12,7 +12,7 @@ public class GRenderingAttributes {
    final boolean     _renderLeafs;
    final boolean     _renderLODIgnores;
    final float       _borderWidth;
-   final BasicStroke _stroke;
+   final BasicStroke _borderStroke;
    final Color       _fillColor;
    final Color       _borderColor;
 
@@ -41,7 +41,7 @@ public class GRenderingAttributes {
       _textureDimension = textureDimension;
       _renderBounds = renderBounds;
 
-      _stroke = (_borderWidth > 0) ? new BasicStroke(borderWidth) : null;
+      _borderStroke = (_borderWidth > 0) ? new BasicStroke(borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND) : null;
    }
 
 }
