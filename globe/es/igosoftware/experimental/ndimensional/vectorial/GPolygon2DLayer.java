@@ -32,7 +32,6 @@ import gov.nasa.worldwind.render.SurfaceImage;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Icon;
@@ -61,7 +60,7 @@ public class GPolygon2DLayer
    }
 
 
-   private final List<IPolygon2D<?>>                           _polygons;
+   //   private final List<IPolygon2D<?>>                           _polygons;
    private final GProjection                                   _projection;
    private final GPositionBox                                  _polygonBox;
 
@@ -76,7 +75,7 @@ public class GPolygon2DLayer
                           final GProjection projection) {
       _projection = projection;
 
-      _polygons = new ArrayList<IPolygon2D<?>>(polygons);
+      //      _polygons = new ArrayList<IPolygon2D<?>>(polygons);
 
       final GAxisAlignedRectangle polygonsBounds = GAxisAlignedRectangle.minimumBoundingRectangle(polygons);
       final GAxisAlignedRectangle bounds = (GAxisAlignedRectangle) centerBounds(multipleOfSmallestDimention(polygonsBounds),
