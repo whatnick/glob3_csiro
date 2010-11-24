@@ -126,6 +126,13 @@ public final class GPositionBox {
    }
 
 
+   public GPositionBox(final IVector3<?> lower,
+                       final IVector3<?> upper,
+                       final GProjection projection) {
+      this(GConverter.toPosition(projection, lower), GConverter.toPosition(projection, upper));
+   }
+
+
    public GPositionBox(final Sector sector,
                        final double minElevation,
                        final double maxElevation) {
