@@ -127,12 +127,11 @@ public class GPolygon2DLayer
                });
    }
 
+
    private final class Tile {
 
-      //      private final Tile                  _parent;
-
       private final Sector                _tileSector;
-      private final GAxisAlignedRectangle _tileSectorBounds;
+      private final GAxisAlignedRectangle _tileBounds;
 
       private final double                _log10CellSize;
       private final int                   _density = 20;
@@ -140,7 +139,7 @@ public class GPolygon2DLayer
       private SurfaceImage                _surfaceImage;
 
 
-      private Tile(final DrawContext dc,
+      private Tile(final Globe globe,
                    final Sector tileSector) {
 
          //         _parent = parent;
@@ -148,9 +147,9 @@ public class GPolygon2DLayer
 
          _tileSector = tileSector;
 
-         _tileSectorBounds = GWWUtils.toBoundingRectangle(tileSector, _projection);
+         _tileBounds = GWWUtils.toBoundingRectangle(tileSector, _projection);
 
-         final double cellSize = tileSector.getDeltaLatRadians() * dc.getGlobe().getRadius() / _density;
+         final double cellSize = tileSector.getDeltaLatRadians() * globe.getRadius() / _density;
 
          _log10CellSize = Math.log10(cellSize);
       }
@@ -220,11 +219,13 @@ public class GPolygon2DLayer
       private Tile[] slit(final DrawContext dc) {
          final Sector[] sectors = _tileSector.subdivide();
 
+         final Globe globe = dc.getGlobe();
+
          final Tile[] subTiles = new Tile[4];
-         subTiles[0] = new Tile(dc, sectors[0]);
-         subTiles[1] = new Tile(dc, sectors[1]);
-         subTiles[2] = new Tile(dc, sectors[2]);
-         subTiles[3] = new Tile(dc, sectors[3]);
+         subTiles[0] = new Tile(globe, sectors[0]);
+         subTiles[1] = new Tile(globe, sectors[1]);
+         subTiles[2] = new Tile(globe, sectors[2]);
+         subTiles[3] = new Tile(globe, sectors[3]);
 
          return subTiles;
       }
@@ -234,7 +235,7 @@ public class GPolygon2DLayer
          if (_surfaceImage == null) {
             //            final BufferedImage renderedImage = _renderer.render(_tileSectorBounds, _attributes);
 
-            final RenderingKey key = new RenderingKey(_tileSectorBounds, _attributes);
+            final RenderingKey key = new RenderingKey(_tileBounds, _attributes);
             final Future<BufferedImage> renderedImageFuture = imagesCache.get(key);
 
             if (renderedImageFuture.isDone()) {
@@ -292,13 +293,14 @@ public class GPolygon2DLayer
    private final Sector                                  _sector;
    private final LatLon[]                                _sectorCorners;
 
-   //   private final List<SurfaceImage>                       _surfaceImages;
-   private List<Tile>                                    _topTiles;
-   private final List<Tile>                              _currentTiles = new ArrayList<GPolygon2DLayer.Tile>();
-   private boolean                                       _showExtents  = false;
-
    private final GPolygon2DRenderer                      _renderer;
    private final GRenderingAttributes                    _attributes;
+
+   private Globe                                         _lastGlobe;
+   private List<Tile>                                    _topTiles;
+   private final List<Tile>                              _currentTiles = new ArrayList<Tile>();
+
+   private boolean                                       _showExtents  = false;
 
 
    public GPolygon2DLayer(final List<IPolygon2D<?>> polygons,
@@ -315,22 +317,21 @@ public class GPolygon2DLayer
       _renderer = new GPolygon2DRenderer(polygons);
 
       _attributes = createRenderingAttributes(polygonsBounds);
-
-
    }
 
 
    private static GRenderingAttributes createRenderingAttributes(@SuppressWarnings("unused") final GAxisAlignedRectangle polygonsBounds) {
       final boolean renderLODIgnores = true;
       final float borderWidth = 1;
-      final Color fillColor = new Color(0.5f, 0, 1, 0.5f);
+      final Color fillColor = new Color(1, 0, 0, 0.5f);
       final Color borderColor = Color.BLACK;
+      //      final Color borderColor = fillColor.darker().darker().darker();
       final double lodMinSize = 5;
-      final boolean debugLODRendering = true;
+      final boolean debugLODRendering = false;
       //      final int textureDimension = 256;
       final int textureWidth = 256;
       final int textureHeight = 256;
-      final boolean renderBounds = true;
+      final boolean renderBounds = false;
 
 
       //      final int textureWidth;
@@ -353,8 +354,8 @@ public class GPolygon2DLayer
 
 
    private static List<Sector> createTopLevelSectors(final Sector polygonsSector) {
-      final int latitudeSubdivisions = 5 * 2;
-      final int longitudeSubdivisions = 10 * 2;
+      final int latitudeSubdivisions = 5 * 1;
+      final int longitudeSubdivisions = 10 * 1;
       final List<Sector> allTopLevelSectors = GWWUtils.createTopLevelSectors(latitudeSubdivisions, longitudeSubdivisions);
 
       return GCollections.select(allTopLevelSectors, new IPredicate<Sector>() {
@@ -497,7 +498,7 @@ public class GPolygon2DLayer
 
 
    @Override
-   public final void doPreRender(final DrawContext dc) {
+   protected final void doPreRender(final DrawContext dc) {
 
       calculateCurrentTiles(dc);
 
@@ -509,12 +510,16 @@ public class GPolygon2DLayer
 
 
    private void calculateCurrentTiles(final DrawContext dc) {
-      if (_topTiles == null) {
+      final Globe globe = dc.getGlobe();
+
+      if ((_topTiles == null) || (_lastGlobe != globe)) {
+         _lastGlobe = globe;
+
          final List<Sector> topLevelSectors = createTopLevelSectors(_sector);
 
          _topTiles = new ArrayList<Tile>(topLevelSectors.size());
          for (final Sector sector : topLevelSectors) {
-            _topTiles.add(new Tile(dc, sector));
+            _topTiles.add(new Tile(globe, sector));
          }
       }
 
@@ -536,7 +541,7 @@ public class GPolygon2DLayer
 
 
    @Override
-   protected void doRender(final DrawContext dc) {
+   protected final void doRender(final DrawContext dc) {
       final boolean bigEnough = (computeProjectedPixels(dc) >= 25);
       if (!bigEnough) {
          return;
@@ -548,9 +553,6 @@ public class GPolygon2DLayer
       }
 
 
-      //      for (final SurfaceImage surfaceImage : _surfaceImages) {
-      //         surfaceImage.render(dc);
-      //      }
       for (final Tile tile : _currentTiles) {
          tile.render(dc);
       }

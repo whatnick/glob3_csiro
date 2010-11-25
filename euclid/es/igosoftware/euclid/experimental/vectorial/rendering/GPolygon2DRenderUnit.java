@@ -96,7 +96,7 @@ class GPolygon2DRenderUnit
       final double projectedSize = scaledNodeExtent.x() * scaledNodeExtent.y();
       if (projectedSize <= attributes._lodMinSize) {
          if (attributes._renderLODIgnores || attributes._debugLODRendering) {
-            final Color color = attributes._debugLODRendering ? Color.RED : attributes._borderColor;
+            final Color color = attributes._debugLODRendering ? Color.RED : attributes._lodColor;
 
             final IVector2<?> projectedCenter = nodeBounds._center.sub(region._lower).scale(scale);
             setPixel(renderedImage, projectedCenter, color);
@@ -133,7 +133,7 @@ class GPolygon2DRenderUnit
          final IVector2<?> nodeLower = nodeBounds._lower.sub(region._lower).scale(scale);
          final IVector2<?> nodeUpper = nodeBounds._upper.sub(region._lower).scale(scale);
 
-         g2d.setStroke(new BasicStroke(0.5f));
+         g2d.setStroke(new BasicStroke(0.25f));
          g2d.setColor(Color.GREEN);
          final int x = Math.round((float) nodeLower.x());
          final int y = Math.round((float) nodeLower.y());
@@ -239,7 +239,7 @@ class GPolygon2DRenderUnit
       final double projectedSize = scaledGeometryExtent.x() * scaledGeometryExtent.y();
       if (projectedSize <= attributes._lodMinSize) {
          if (attributes._renderLODIgnores || attributes._debugLODRendering) {
-            final Color color = attributes._debugLODRendering ? Color.MAGENTA : attributes._borderColor;
+            final Color color = attributes._debugLODRendering ? Color.MAGENTA : attributes._lodColor;
 
             final IVector2<?> projectedCenter = geometryBounds._center.sub(region._lower).scale(scale);
             setPixel(renderedImage, projectedCenter, color);

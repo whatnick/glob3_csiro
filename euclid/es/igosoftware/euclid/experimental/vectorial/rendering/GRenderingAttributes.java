@@ -4,6 +4,8 @@ package es.igosoftware.euclid.experimental.vectorial.rendering;
 
 import java.awt.Color;
 
+import es.igosoftware.euclid.utils.GColorUtil;
+
 
 public class GRenderingAttributes {
 
@@ -19,6 +21,7 @@ public class GRenderingAttributes {
    final boolean _renderBounds;
    final int     _textureWidth;
    final int     _textureHeight;
+   final Color   _lodColor;
 
 
    public GRenderingAttributes(final boolean renderLODIgnores,
@@ -39,6 +42,8 @@ public class GRenderingAttributes {
       _textureWidth = textureWidth;
       _textureHeight = textureHeight;
       _renderBounds = renderBounds;
+
+      _lodColor = GColorUtil.mix(_borderColor, _fillColor, 0.75f);
 
       //      _borderStroke = (_borderWidth > 0) ? new BasicStroke(borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND) : null;
    }
