@@ -1,6 +1,6 @@
 
 
-package es.igosoftware.experimental.ndimensional.vectorial;
+package es.igosoftware.experimental.vectorial;
 
 import es.igosoftware.concurrent.GConcurrent;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
