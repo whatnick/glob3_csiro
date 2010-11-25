@@ -17,7 +17,6 @@ import es.igosoftware.util.IPredicate;
 import es.igosoftware.util.LRUCache;
 import es.igosoftware.utils.GGlobeCache;
 import es.igosoftware.utils.GWWUtils;
-import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.geom.Box;
 import gov.nasa.worldwind.geom.Frustum;
@@ -111,7 +110,7 @@ public class GPolygon2DLayer
    private final LRUCache<RenderingKey, Future<BufferedImage>, RuntimeException> imagesCache;
 
    {
-      imagesCache = new LRUCache<GPolygon2DLayer.RenderingKey, Future<BufferedImage>, RuntimeException>(128,
+      imagesCache = new LRUCache<RenderingKey, Future<BufferedImage>, RuntimeException>(128,
                new LRUCache.ValueFactory<RenderingKey, Future<BufferedImage>, RuntimeException>() {
                   @Override
                   public Future<BufferedImage> create(final RenderingKey key) {
@@ -130,20 +129,22 @@ public class GPolygon2DLayer
 
    private final class Tile {
 
-      private final int                   _level;
+      //      private final Tile                  _parent;
+
       private final Sector                _tileSector;
       private final GAxisAlignedRectangle _tileSectorBounds;
 
       private final double                _log10CellSize;
       private final int                   _density = 20;
+
       private SurfaceImage                _surfaceImage;
 
 
       private Tile(final DrawContext dc,
-                   final Sector tileSector,
-                   final int level) {
+                   final Sector tileSector) {
 
-         _level = level;
+         //         _parent = parent;
+         //         _level = (parent == null) ? 0 : parent._level + 1;
 
          _tileSector = tileSector;
 
@@ -166,23 +167,28 @@ public class GPolygon2DLayer
 
 
       private boolean atBestResolution(final DrawContext dc) {
-         final double best = dc.getGlobe().getElevationModel().getBestResolution(_tileSector)
-                             * dc.getGlobe().getRadiusAt(_tileSector.getCentroid());
+         final Globe globe = dc.getGlobe();
+
+         final double best = globe.getElevationModel().getBestResolution(_tileSector)
+                             * globe.getRadiusAt(_tileSector.getCentroid());
 
          return _log10CellSize <= Math.log10(best);
       }
 
 
       private boolean needToSplit(final DrawContext dc) {
-         final Vec4[] corners = _tileSector.computeCornerPoints(dc.getGlobe(), dc.getVerticalExaggeration());
-         final Vec4 centerPoint = _tileSector.computeCenterPoint(dc.getGlobe(), dc.getVerticalExaggeration());
+         final Globe globe = dc.getGlobe();
+         final double verticalExaggeration = dc.getVerticalExaggeration();
 
-         final View view = dc.getView();
-         final double d1 = view.getEyePoint().distanceTo3(corners[0]);
-         final double d2 = view.getEyePoint().distanceTo3(corners[1]);
-         final double d3 = view.getEyePoint().distanceTo3(corners[2]);
-         final double d4 = view.getEyePoint().distanceTo3(corners[3]);
-         final double d5 = view.getEyePoint().distanceTo3(centerPoint);
+         final Vec4[] corners = _tileSector.computeCornerPoints(globe, verticalExaggeration);
+         final Vec4 centerPoint = _tileSector.computeCenterPoint(globe, verticalExaggeration);
+
+         final Vec4 eyePoint = dc.getView().getEyePoint();
+         final double d1 = eyePoint.distanceTo3(corners[0]);
+         final double d2 = eyePoint.distanceTo3(corners[1]);
+         final double d3 = eyePoint.distanceTo3(corners[2]);
+         final double d4 = eyePoint.distanceTo3(corners[3]);
+         final double d5 = eyePoint.distanceTo3(centerPoint);
 
          double minDistance = d1;
          if (d2 < minDistance) {
@@ -218,10 +224,10 @@ public class GPolygon2DLayer
          final Sector[] sectors = _tileSector.subdivide();
 
          final Tile[] subTiles = new Tile[4];
-         subTiles[0] = new Tile(dc, sectors[0], _level + 1);
-         subTiles[1] = new Tile(dc, sectors[1], _level + 1);
-         subTiles[2] = new Tile(dc, sectors[2], _level + 1);
-         subTiles[3] = new Tile(dc, sectors[3], _level + 1);
+         subTiles[0] = new Tile(dc, sectors[0]);
+         subTiles[1] = new Tile(dc, sectors[1]);
+         subTiles[2] = new Tile(dc, sectors[2]);
+         subTiles[3] = new Tile(dc, sectors[3]);
 
          return subTiles;
       }
@@ -312,35 +318,7 @@ public class GPolygon2DLayer
       _attributes = createRenderingAttributes();
 
 
-      //      final GAxisAlignedRectangle[] rectangles = rectangle.subdivideAtCenter();
-      //
-      //      _surfaceImages = new ArrayList<SurfaceImage>(rectangles.length);
-      //      for (final GAxisAlignedRectangle sector : rectangles) {
-      //         final BufferedImage renderedImage = renderer.render(sector, attributes);
-      //         _surfaceImages.add(new SurfaceImage(renderedImage, GWWUtils.toSector(sector, projection)));
-      //      }
    }
-
-
-   //   private static List<IPolygon2D<?>> project(final List<IPolygon2D<?>> polygons,
-   //                                              final GProjection projection) {
-   //
-   //      final IVectorTransformer<IVector2<?>> transformer = new IVectorTransformer<IVector2<?>>() {
-   //
-   //         @Override
-   //         public IVector2<?> transform(final IVector2<?> point) {
-   //            return point.reproject(projection, GProjection.EPSG_4326);
-   //         }
-   //      };
-   //
-   //      return GCollections.collect(polygons, new ITransformer<IPolygon2D<?>, IPolygon2D<?>>() {
-   //         @Override
-   //         public IPolygon2D<?> transform(final IPolygon2D<?> polygon) {
-   //            return (IPolygon2D<?>) polygon.transformedBy(transformer);
-   //         }
-   //      });
-   //
-   //   }
 
 
    private static GRenderingAttributes createRenderingAttributes() {
@@ -376,7 +354,9 @@ public class GPolygon2DLayer
 
 
    private static List<Sector> createTopLevelSectors(final Sector polygonsSector) {
-      final List<Sector> allTopLevelSectors = GWWUtils.createTopLevelSectors();
+      final int latitudeSubdivisions = 5 * 2;
+      final int longitudeSubdivisions = 10 * 2;
+      final List<Sector> allTopLevelSectors = GWWUtils.createTopLevelSectors(latitudeSubdivisions, longitudeSubdivisions);
 
       return GCollections.select(allTopLevelSectors, new IPredicate<Sector>() {
          @Override
@@ -538,7 +518,7 @@ public class GPolygon2DLayer
 
          _topTiles = new ArrayList<Tile>(topLevelSectors.size());
          for (final Sector sector : topLevelSectors) {
-            _topTiles.add(new Tile(dc, sector, 0));
+            _topTiles.add(new Tile(dc, sector));
          }
       }
 
