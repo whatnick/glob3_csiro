@@ -327,11 +327,11 @@ public class GPolygon2DLayer
       final Color borderColor = Color.BLACK;
       //      final Color borderColor = fillColor.darker().darker().darker();
       final double lodMinSize = 5;
-      final boolean debugLODRendering = false;
+      final boolean debugLODRendering = true;
       //      final int textureDimension = 256;
       final int textureWidth = 256;
       final int textureHeight = 256;
-      final boolean renderBounds = false;
+      final boolean renderBounds = true;
 
 
       //      final int textureWidth;
