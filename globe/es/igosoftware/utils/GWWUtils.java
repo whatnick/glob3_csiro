@@ -43,6 +43,7 @@ import java.util.List;
 import javax.media.opengl.GL;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
+import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.GVector3D;
@@ -77,13 +78,20 @@ public final class GWWUtils {
    }
 
 
-   public static final int    LATITUDE_SUBDIVISIONS  = 5;
-   public static final int    LONGITUDE_SUBDIVISIONS = 10;
+   public static final int    DEFAULT_LATITUDE_SUBDIVISIONS  = 5;
+   public static final int    DEFAULT_LONGITUDE_SUBDIVISIONS = 10;
 
-   private static final Globe EARTH                  = new Earth();
+   private static final Globe EARTH                          = new Earth();
 
 
    public static Vec4 toVec4(final Position position,
+                             final Globe globe,
+                             final double verticalExaggeration) {
+      return toVec4(position, globe, verticalExaggeration, 0);
+   }
+
+
+   public static Vec4 toVec4(final LatLon position,
                              final Globe globe,
                              final double verticalExaggeration) {
       return toVec4(position, globe, verticalExaggeration, 0);
@@ -99,6 +107,18 @@ public final class GWWUtils {
       final Angle longitude = position.longitude;
 
       return globe.computePointFromPosition(latitude, longitude, (position.elevation + metersOffset) * verticalExaggeration);
+   }
+
+
+   public static Vec4 toVec4(final LatLon position,
+                             final Globe globe,
+                             final double verticalExaggeration,
+                             final double metersOffset) {
+
+      final Angle latitude = position.latitude;
+      final Angle longitude = position.longitude;
+
+      return globe.computePointFromPosition(latitude, longitude, metersOffset * verticalExaggeration);
    }
 
 
@@ -172,16 +192,72 @@ public final class GWWUtils {
    }
 
 
-   public static List<Sector> createTopLevelSectors() {
-      final List<Sector> result = new ArrayList<Sector>(LATITUDE_SUBDIVISIONS * LONGITUDE_SUBDIVISIONS);
+   public static void renderQuad(final DrawContext dc,
+                                 final LatLon[] vertices,
+                                 final float red,
+                                 final float green,
+                                 final float blue) {
+      final GL gl = dc.getGL();
 
-      final double deltaLatitute = 180d / LATITUDE_SUBDIVISIONS;
-      final double deltaLongitude = 360d / LONGITUDE_SUBDIVISIONS;
+      final Globe globe = dc.getGlobe();
+      final double verticalExaggeration = dc.getVerticalExaggeration();
+
+      gl.glPushAttrib(GL.GL_DEPTH_BUFFER_BIT | GL.GL_POLYGON_BIT | GL.GL_TEXTURE_BIT | GL.GL_ENABLE_BIT | GL.GL_CURRENT_BIT);
+
+      gl.glPolygonMode(GL.GL_FRONT, GL.GL_LINE);
+
+      gl.glColor3f(red, green, blue);
+
+      gl.glBegin(GL.GL_QUADS);
+      for (final LatLon vertex : vertices) {
+         final Vec4 vec4 = GWWUtils.toVec4(vertex, globe, verticalExaggeration);
+         gl.glVertex3d(vec4.x, vec4.y, vec4.z);
+      }
+      gl.glEnd();
+
+      gl.glColor3f(1, 1, 1);
+
+      gl.glPopAttrib();
+   }
+
+
+   public static void renderSector(final DrawContext dc,
+                                   final Sector sector,
+                                   final float red,
+                                   final float green,
+                                   final float blue) {
+      final Angle lowerLatitude = sector.getMinLatitude();
+      final Angle upperLatitude = sector.getMaxLatitude();
+      final Angle lowerLongitude = sector.getMinLongitude();
+      final Angle upperLongitude = sector.getMaxLongitude();
+
+      final LatLon[] vertices = new LatLon[] { //
+      new LatLon(lowerLatitude, lowerLongitude), //
+               new LatLon(lowerLatitude, upperLongitude), //
+               new LatLon(upperLatitude, upperLongitude), // 
+               new LatLon(upperLatitude, lowerLongitude) };
+
+      renderQuad(dc, vertices, red, green, blue);
+   }
+
+
+   public static List<Sector> createTopLevelSectors() {
+      return createTopLevelSectors(DEFAULT_LATITUDE_SUBDIVISIONS, DEFAULT_LONGITUDE_SUBDIVISIONS);
+   }
+
+
+   public static List<Sector> createTopLevelSectors(final int latitudeSubdivisions,
+                                                    final int longitudeSubdivisions) {
+
+      final List<Sector> result = new ArrayList<Sector>(latitudeSubdivisions * longitudeSubdivisions);
+
+      final double deltaLatitute = 180d / latitudeSubdivisions;
+      final double deltaLongitude = 360d / longitudeSubdivisions;
 
 
       Angle lastLatitude = Angle.NEG90;
 
-      for (int row = 0; row < LATITUDE_SUBDIVISIONS; row++) {
+      for (int row = 0; row < latitudeSubdivisions; row++) {
          Angle latitude = lastLatitude.addDegrees(deltaLatitute);
          if (latitude.getDegrees() + 1d > 90d) {
             latitude = Angle.POS90;
@@ -189,7 +265,7 @@ public final class GWWUtils {
 
          Angle lastLongitude = Angle.NEG180;
 
-         for (int column = 0; column < LONGITUDE_SUBDIVISIONS; column++) {
+         for (int column = 0; column < longitudeSubdivisions; column++) {
             Angle longitude = lastLongitude.addDegrees(deltaLongitude);
             if (longitude.getDegrees() + 1d > 180d) {
                longitude = Angle.POS180;
@@ -241,6 +317,33 @@ public final class GWWUtils {
       final Angle maxLongitude = Angle.fromRadians(max.x());
 
       return new Sector(minLatitude, maxLatitude, minLongitude, maxLongitude);
+   }
+
+
+   public static Sector toSector(final GAxisAlignedRectangle boundingRectangle,
+                                 final GProjection projection) {
+      final IVector2<?> min = boundingRectangle._lower.reproject(projection, GProjection.EPSG_4326);
+      final IVector2<?> max = boundingRectangle._upper.reproject(projection, GProjection.EPSG_4326);
+
+      final Angle minLatitude = Angle.fromRadians(min.y());
+      final Angle maxLatitude = Angle.fromRadians(max.y());
+
+      final Angle minLongitude = Angle.fromRadians(min.x());
+      final Angle maxLongitude = Angle.fromRadians(max.x());
+
+      return new Sector(minLatitude, maxLatitude, minLongitude, maxLongitude);
+   }
+
+
+   public static GAxisAlignedRectangle toBoundingRectangle(final Sector sector,
+                                                           final GProjection projection) {
+      final IVector2<?> lower = new GVector2D(sector.getMinLongitude().radians, sector.getMinLatitude().radians).reproject(
+               GProjection.EPSG_4326, projection);
+
+      final IVector2<?> upper = new GVector2D(sector.getMaxLongitude().radians, sector.getMaxLatitude().radians).reproject(
+               GProjection.EPSG_4326, projection);
+
+      return new GAxisAlignedRectangle(lower, upper);
    }
 
 
@@ -433,7 +536,13 @@ public final class GWWUtils {
          return null;
       }
 
-      return view.project(modelPoint);
+      return toVec3(view.project(modelPoint));
+   }
+
+
+   public static Vec4 getScreenPoint(final DrawContext dc,
+                                     final LatLon latLon) {
+      return getScreenPoint(dc, new Position(latLon, 0));
    }
 
 
