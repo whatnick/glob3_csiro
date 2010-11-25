@@ -175,6 +175,9 @@ public final class GWWUtils {
 
       gl.glPushAttrib(GL.GL_DEPTH_BUFFER_BIT | GL.GL_POLYGON_BIT | GL.GL_TEXTURE_BIT | GL.GL_ENABLE_BIT | GL.GL_CURRENT_BIT);
 
+      gl.glEnable(GL.GL_CULL_FACE);
+      gl.glCullFace(GL.GL_BACK);
+
       gl.glPolygonMode(GL.GL_FRONT, GL.GL_LINE);
 
       gl.glColor3f(red, green, blue);
@@ -203,6 +206,9 @@ public final class GWWUtils {
       final double verticalExaggeration = dc.getVerticalExaggeration();
 
       gl.glPushAttrib(GL.GL_DEPTH_BUFFER_BIT | GL.GL_POLYGON_BIT | GL.GL_TEXTURE_BIT | GL.GL_ENABLE_BIT | GL.GL_CURRENT_BIT);
+
+      gl.glEnable(GL.GL_CULL_FACE);
+      gl.glCullFace(GL.GL_BACK);
 
       gl.glPolygonMode(GL.GL_FRONT, GL.GL_LINE);
 
