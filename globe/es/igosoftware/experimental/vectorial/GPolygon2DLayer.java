@@ -217,9 +217,17 @@ public class GPolygon2DLayer
 
 
       private Tile[] slit(final DrawContext dc) {
-         final Sector[] sectors = _tileSector.subdivide();
-
          final Globe globe = dc.getGlobe();
+
+         //         final GAxisAlignedRectangle[] sectors = _tileBounds.subdivideAtCenter();
+         //
+         //         final Tile[] subTiles = new Tile[4];
+         //         subTiles[0] = new Tile(globe, GWWUtils.toSector(sectors[0], _projection));
+         //         subTiles[1] = new Tile(globe, GWWUtils.toSector(sectors[1], _projection));
+         //         subTiles[2] = new Tile(globe, GWWUtils.toSector(sectors[2], _projection));
+         //         subTiles[3] = new Tile(globe, GWWUtils.toSector(sectors[3], _projection));
+
+         final Sector[] sectors = _tileSector.subdivide();
 
          final Tile[] subTiles = new Tile[4];
          subTiles[0] = new Tile(globe, sectors[0]);

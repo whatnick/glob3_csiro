@@ -222,7 +222,7 @@ public class GGlobeDemo
 
    private void createVectorialLayer(final LayerList layers) {
 
-      // final String fileName = "data/shp/world-modified/world.shp";
+      // final String fileName = "data/shp/world.shp";
       // final GProjection projection = GProjection.EPSG_4326;
       // final boolean convertToRadians = true;
 

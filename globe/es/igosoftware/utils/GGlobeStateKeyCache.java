@@ -87,7 +87,7 @@ public class GGlobeStateKeyCache<KeyT, ValueT> {
                                   final KeyT key) {
 
       if (++_callCounter % 125 == 0) {
-         cleanBarbage();
+         cleanGarbage();
          _callCounter = 0;
       }
 
@@ -111,7 +111,7 @@ public class GGlobeStateKeyCache<KeyT, ValueT> {
    }
 
 
-   private void cleanBarbage() {
+   private void cleanGarbage() {
       final ArrayList<KeyT> keysToRemove = new ArrayList<KeyT>();
 
       for (final Map.Entry<KeyT, Entry<ValueT>> entry : _values.entrySet()) {
