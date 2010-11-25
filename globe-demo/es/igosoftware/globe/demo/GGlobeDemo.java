@@ -221,6 +221,7 @@ public class GGlobeDemo
 
 
    private void createVectorialLayer(final LayerList layers) {
+
       // final String fileName = "data/shp/world-modified/world.shp";
       // final GProjection projection = GProjection.EPSG_4326;
       // final boolean convertToRadians = true;
@@ -243,17 +244,24 @@ public class GGlobeDemo
          return;
       }
 
-      try {
-         final List<IPolygon2D<?>> polygons = GShapeLoader.readPolygons(fileName, convertToRadians);
+      final Thread worker = new Thread() {
+         @Override
+         public void run() {
+            try {
+               final List<IPolygon2D<?>> polygons = GShapeLoader.readPolygons(fileName, convertToRadians);
 
-         final GPolygon2DLayer layer = new GPolygon2DLayer(polygons, projection);
-         layer.setShowExtents(true);
-         layers.add(layer);
-      }
-      catch (final IOException e) {
-         e.printStackTrace();
-      }
-
+               final GPolygon2DLayer layer = new GPolygon2DLayer(polygons, projection);
+               layer.setShowExtents(true);
+               layers.add(layer);
+            }
+            catch (final IOException e) {
+               e.printStackTrace();
+            }
+         }
+      };
+      worker.setPriority(Thread.MIN_PRIORITY);
+      worker.setDaemon(true);
+      worker.start();
    }
 
 
