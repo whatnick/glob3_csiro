@@ -88,10 +88,10 @@ import es.igosoftware.globe.view.customView.GCustomView;
 import es.igosoftware.globe.view.customView.GCustomViewInputHandler;
 import es.igosoftware.panoramic.GPanoramicLayer;
 import es.igosoftware.util.GCollections;
+import es.igosoftware.util.GLogger;
 import es.igosoftware.util.GPair;
 import es.igosoftware.util.GUtils;
 import es.igosoftware.util.LRUCache;
-import es.igosoftware.util.GLogger;
 import es.igosoftware.utils.GSwingUtils;
 import es.igosoftware.utils.GWrapperFontSet;
 import gov.nasa.worldwind.BasicModel;
@@ -123,7 +123,7 @@ public abstract class GGlobeApplication
          implements
             IGlobeApplication {
 
-   private static final long   serialVersionUID = 1L;
+   private static final long    serialVersionUID = 1L;
 
 
    private static final GLogger LOGGER           = GLogger.instance();
@@ -474,7 +474,7 @@ public abstract class GGlobeApplication
    }
 
 
-   protected final Model createModel(final Globe globe) {
+   protected Model createModel(final Globe globe) {
       final GModel model = new GModel(globe);
       //      model.setShowWireframeExterior(true);
 
