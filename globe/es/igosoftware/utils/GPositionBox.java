@@ -44,30 +44,40 @@ import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GMath;
 import gov.nasa.worldwind.geom.Angle;
-import gov.nasa.worldwind.geom.Cylinder;
+import gov.nasa.worldwind.geom.Box;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Sector;
+import gov.nasa.worldwind.geom.Vec4;
 import gov.nasa.worldwind.globes.Globe;
 import gov.nasa.worldwind.render.DrawContext;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.media.opengl.GL;
 
 
 public final class GPositionBox {
-   public static final GPositionBox                         EMPTY = new GPositionBox(Position.ZERO, Position.ZERO);
+   public static final GPositionBox                    EMPTY = new GPositionBox(Position.ZERO, Position.ZERO);
 
-   private static final GGlobeCache<GPositionBox, Cylinder> extentsCache;
+   private static final GGlobeCache<GPositionBox, Box> EXTENTS_CACHE;
 
    static {
-      extentsCache = new GGlobeCache<GPositionBox, Cylinder>(new GGlobeCache.Factory<GPositionBox, Cylinder>() {
+      EXTENTS_CACHE = new GGlobeCache<GPositionBox, Box>(new GGlobeCache.Factory<GPositionBox, Box>() {
          @Override
-         public Cylinder create(final GPositionBox box,
-                                final Globe globe,
-                                final double verticalExaggeration) {
-            //            return globe.computeBoundingCylinder(verticalExaggeration, box._sector, box._lower.elevation,
+         public Box create(final GPositionBox box,
+                           final Globe globe,
+                           final double verticalExaggeration) {
+
+            //            return Cylinder.computeVerticalBoundingCylinder(globe, verticalExaggeration, box._sector, box._lower.elevation,
             //                     GMath.nextUp(box._upper.elevation));
-            return Cylinder.computeVerticalBoundingCylinder(globe, verticalExaggeration, box._sector, box._lower.elevation,
-                     GMath.nextUp(box._upper.elevation));
+
+            final Position[] vertices = box.getVertices();
+            final List<Vec4> points = new ArrayList<Vec4>(vertices.length);
+            for (final Position vertex : vertices) {
+               points.add(GWWUtils.toVec4(vertex, globe, verticalExaggeration));
+            }
+            return Box.computeBoundingBox(points);
          }
       });
    }
@@ -358,20 +368,20 @@ public final class GPositionBox {
    }
 
 
-   public Cylinder getExtent(final Globe globe,
-                             final double verticalExaggeration) {
+   public Box getExtent(final Globe globe,
+                        final double verticalExaggeration) {
       //return globe.computeBoundingCylinder(verticalExaggeration, _sector, _lower.elevation, _upper.elevation);
-      return extentsCache.get(this, globe, verticalExaggeration);
+      return EXTENTS_CACHE.get(this, globe, verticalExaggeration);
    }
 
 
    public void render(final DrawContext dc) {
 
-      final Globe globe = dc.getGlobe();
-      final double verticalExaggeration = dc.getVerticalExaggeration();
-
-      final Cylinder extent = getExtent(globe, verticalExaggeration);
-      extent.render(dc);
+      //      final Globe globe = dc.getGlobe();
+      //      final double verticalExaggeration = dc.getVerticalExaggeration();
+      //
+      //      final Cylinder extent = getExtent(globe, verticalExaggeration);
+      //      extent.render(dc);
 
       final GL gl = dc.getGL();
       GWWUtils.pushOffset(gl);
