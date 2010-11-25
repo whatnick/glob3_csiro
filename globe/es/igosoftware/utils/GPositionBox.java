@@ -58,19 +58,21 @@ import javax.media.opengl.GL;
 
 
 public final class GPositionBox {
-   public static final GPositionBox                    EMPTY = new GPositionBox(Position.ZERO, Position.ZERO);
+   public static final GPositionBox                            EMPTY = new GPositionBox(Position.ZERO, Position.ZERO);
 
-   private static final GGlobeCache<GPositionBox, Box> EXTENTS_CACHE;
+   private static final GGlobeStateKeyCache<GPositionBox, Box> EXTENTS_CACHE;
 
    static {
-      EXTENTS_CACHE = new GGlobeCache<GPositionBox, Box>(new GGlobeCache.Factory<GPositionBox, Box>() {
+      EXTENTS_CACHE = new GGlobeStateKeyCache<GPositionBox, Box>(new GGlobeStateKeyCache.Factory<GPositionBox, Box>() {
          @Override
-         public Box create(final GPositionBox box,
-                           final Globe globe,
-                           final double verticalExaggeration) {
+         public Box create(final DrawContext dc,
+                           final GPositionBox box) {
 
             //            return Cylinder.computeVerticalBoundingCylinder(globe, verticalExaggeration, box._sector, box._lower.elevation,
             //                     GMath.nextUp(box._upper.elevation));
+
+            final Globe globe = dc.getGlobe();
+            final double verticalExaggeration = dc.getVerticalExaggeration();
 
             final Position[] vertices = box.getVertices();
             final List<Vec4> points = new ArrayList<Vec4>(vertices.length);
@@ -368,10 +370,8 @@ public final class GPositionBox {
    }
 
 
-   public Box getExtent(final Globe globe,
-                        final double verticalExaggeration) {
-      //return globe.computeBoundingCylinder(verticalExaggeration, _sector, _lower.elevation, _upper.elevation);
-      return EXTENTS_CACHE.get(this, globe, verticalExaggeration);
+   public Box getExtent(final DrawContext dc) {
+      return EXTENTS_CACHE.get(dc, this);
    }
 
 

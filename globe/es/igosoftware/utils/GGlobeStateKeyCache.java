@@ -36,67 +36,93 @@
 
 package es.igosoftware.utils;
 
-import es.igosoftware.util.GMath;
-import gov.nasa.worldwind.globes.Globe;
+import gov.nasa.worldwind.render.DrawContext;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 
 /**
- * An utility class to implements cache per globe/verticalExaggeration changes.
+ * An utility class to implements cache per globe.getStateKey() changes.
  * 
  * @param <KeyT>
  * @param <ValueT>
  */
-public class GGlobeCache<KeyT, ValueT> {
+public class GGlobeStateKeyCache<KeyT, ValueT> {
 
    private static class Entry<ValueT> {
-      private final Globe  _globe;
-      private final double _verticalExaggeration;
-      private final ValueT _value;
+      private final Object                _stateKey;
+      private final WeakReference<ValueT> _value;
 
 
-      private Entry(final Globe globe,
-                    final double verticalExaggeration,
+      private Entry(final DrawContext dc,
                     final ValueT value) {
-         _globe = globe;
-         _verticalExaggeration = verticalExaggeration;
-         _value = value;
+         _stateKey = dc.getGlobe().getStateKey(dc);
+         _value = new WeakReference<ValueT>(value);
       }
    }
 
 
    public static interface Factory<KeyT, ValueT> {
-      public ValueT create(final KeyT key,
-                           final Globe globe,
-                           final double verticalExaggeration);
+      public ValueT create(final DrawContext dc,
+                           final KeyT key);
    }
 
 
-   private final GGlobeCache.Factory<KeyT, ValueT>    _factory;
-   private final Map<KeyT, GGlobeCache.Entry<ValueT>> _values;
+   private final GGlobeStateKeyCache.Factory<KeyT, ValueT>    _factory;
+   private final Map<KeyT, GGlobeStateKeyCache.Entry<ValueT>> _values;
 
 
-   public GGlobeCache(final GGlobeCache.Factory<KeyT, ValueT> factory) {
+   public GGlobeStateKeyCache(final GGlobeStateKeyCache.Factory<KeyT, ValueT> factory) {
       _factory = factory;
-      _values = new HashMap<KeyT, GGlobeCache.Entry<ValueT>>();
+      _values = new HashMap<KeyT, GGlobeStateKeyCache.Entry<ValueT>>();
    }
 
+   private int _callCounter = 0;
 
-   public ValueT get(final KeyT key,
-                     final Globe globe,
-                     final double verticalExaggeration) {
-      final GGlobeCache.Entry<ValueT> entry = _values.get(key);
-      if ((entry != null) && (entry._globe == globe) && (GMath.closeTo(entry._verticalExaggeration, verticalExaggeration))) {
-         // cache hit
-         return entry._value;
+
+   public synchronized ValueT get(final DrawContext dc,
+                                  final KeyT key) {
+
+      if (++_callCounter % 125 == 0) {
+         cleanBarbage();
+         _callCounter = 0;
       }
 
-      final ValueT newValue = _factory.create(key, globe, verticalExaggeration);
-      final GGlobeCache.Entry<ValueT> newEntry = new GGlobeCache.Entry<ValueT>(globe, verticalExaggeration, newValue);
+
+      final GGlobeStateKeyCache.Entry<ValueT> entry = _values.get(key);
+
+      final Object stateKey = dc.getGlobe().getStateKey(dc);
+
+      if ((entry != null) && entry._stateKey.equals(stateKey)) {
+         // cache hit
+         final ValueT value = entry._value.get();
+         if (value != null) {
+            return value;
+         }
+      }
+
+      final ValueT newValue = _factory.create(dc, key);
+      final GGlobeStateKeyCache.Entry<ValueT> newEntry = new GGlobeStateKeyCache.Entry<ValueT>(dc, newValue);
       _values.put(key, newEntry);
       return newValue;
+   }
+
+
+   private void cleanBarbage() {
+      final ArrayList<KeyT> keysToRemove = new ArrayList<KeyT>();
+
+      for (final Map.Entry<KeyT, Entry<ValueT>> entry : _values.entrySet()) {
+         if (entry.getValue()._value.get() == null) {
+            keysToRemove.add(entry.getKey());
+         }
+      }
+
+      for (final KeyT keyToRemove : keysToRemove) {
+         _values.remove(keyToRemove);
+      }
    }
 
 }

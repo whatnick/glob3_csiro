@@ -42,7 +42,7 @@ import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.pointscloud.GPointsCloudLayer;
 import es.igosoftware.util.GMath;
-import es.igosoftware.utils.GGlobeCache;
+import es.igosoftware.utils.GGlobeStateKeyCache;
 import es.igosoftware.utils.GPositionBox;
 import es.igosoftware.utils.GWWUtils;
 import gov.nasa.worldwind.geom.Cylinder;
@@ -55,14 +55,16 @@ import gov.nasa.worldwind.render.DrawContext;
 
 public abstract class GSGNode {
 
-   private static final GGlobeCache<GSGNode, Cylinder> EXTENTS_CACHE;
+   private static final GGlobeStateKeyCache<GSGNode, Cylinder> EXTENTS_CACHE;
 
    static {
-      EXTENTS_CACHE = new GGlobeCache<GSGNode, Cylinder>(new GGlobeCache.Factory<GSGNode, Cylinder>() {
+      EXTENTS_CACHE = new GGlobeStateKeyCache<GSGNode, Cylinder>(new GGlobeStateKeyCache.Factory<GSGNode, Cylinder>() {
          @Override
-         public Cylinder create(final GSGNode node,
-                                final Globe globe,
-                                final double verticalExaggeration) {
+         public Cylinder create(final DrawContext dc,
+                                final GSGNode node) {
+            final Globe globe = dc.getGlobe();
+            final double verticalExaggeration = dc.getVerticalExaggeration();
+
             final GPositionBox box = node._box;
 
             return Cylinder.computeVerticalBoundingCylinder(globe, verticalExaggeration, box._sector, box._lower.elevation,
@@ -72,12 +74,12 @@ public abstract class GSGNode {
    }
 
 
-   private final GPositionBox                          _box;
-   protected final GPointsCloudLayer                   _layer;
+   private final GPositionBox                                  _box;
+   protected final GPointsCloudLayer                           _layer;
 
-   private boolean                                     _forceComputationOfProjectedPixels = true;
-   private float                                       _computedProjectedPixels           = -1;
-   private float                                       _priority                          = Float.NEGATIVE_INFINITY;
+   private boolean                                             _forceComputationOfProjectedPixels = true;
+   private float                                               _computedProjectedPixels           = -1;
+   private float                                               _priority                          = Float.NEGATIVE_INFINITY;
 
 
    public GSGNode(final GAxisAlignedBox bounds,
@@ -90,10 +92,7 @@ public abstract class GSGNode {
 
 
    protected final Cylinder getExtent(final DrawContext dc) {
-      final Globe globe = dc.getView().getGlobe();
-      final double verticalExaggeration = dc.getVerticalExaggeration();
-
-      return EXTENTS_CACHE.get(this, globe, verticalExaggeration);
+      return EXTENTS_CACHE.get(dc, this);
    }
 
 

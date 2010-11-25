@@ -15,7 +15,7 @@ import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.IPredicate;
 import es.igosoftware.util.LRUCache;
-import es.igosoftware.utils.GGlobeCache;
+import es.igosoftware.utils.GGlobeStateKeyCache;
 import es.igosoftware.utils.GWWUtils;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.geom.Box;
@@ -159,10 +159,7 @@ public class GPolygon2DLayer
       private Box getBox(final DrawContext dc) {
          // return Sector.computeBoundingBox(globe, verticalExaggeration, _sector);
 
-         final Globe globe = dc.getView().getGlobe();
-         final double verticalExaggeration = dc.getVerticalExaggeration();
-
-         return BOX_CACHE.get(_tileSector, globe, verticalExaggeration);
+         return BOX_CACHE.get(dc, _tileSector);
       }
 
 
@@ -274,32 +271,34 @@ public class GPolygon2DLayer
    }
 
 
-   private static final GGlobeCache<Sector, Box> BOX_CACHE;
+   private static final GGlobeStateKeyCache<Sector, Box> BOX_CACHE;
 
    static {
-      BOX_CACHE = new GGlobeCache<Sector, Box>(new GGlobeCache.Factory<Sector, Box>() {
+      BOX_CACHE = new GGlobeStateKeyCache<Sector, Box>(new GGlobeStateKeyCache.Factory<Sector, Box>() {
          @Override
-         public Box create(final Sector sector,
-                           final Globe globe,
-                           final double verticalExaggeration) {
+         public Box create(final DrawContext dc,
+                           final Sector sector) {
+            final Globe globe = dc.getView().getGlobe();
+            final double verticalExaggeration = dc.getVerticalExaggeration();
+
             return Sector.computeBoundingBox(globe, verticalExaggeration, sector);
          }
       });
    }
 
 
-   private final GProjection                     _projection;
+   private final GProjection                             _projection;
 
-   private final Sector                          _sector;
-   private final LatLon[]                        _sectorCorners;
+   private final Sector                                  _sector;
+   private final LatLon[]                                _sectorCorners;
 
    //   private final List<SurfaceImage>                       _surfaceImages;
-   private List<Tile>                            _topTiles;
-   private final List<Tile>                      _currentTiles = new ArrayList<GPolygon2DLayer.Tile>();
-   private boolean                               _showExtents  = false;
+   private List<Tile>                                    _topTiles;
+   private final List<Tile>                              _currentTiles = new ArrayList<GPolygon2DLayer.Tile>();
+   private boolean                                       _showExtents  = false;
 
-   private final GPolygon2DRenderer              _renderer;
-   private final GRenderingAttributes            _attributes;
+   private final GPolygon2DRenderer                      _renderer;
+   private final GRenderingAttributes                    _attributes;
 
 
    public GPolygon2DLayer(final List<IPolygon2D<?>> polygons,
@@ -315,13 +314,13 @@ public class GPolygon2DLayer
 
       _renderer = new GPolygon2DRenderer(polygons);
 
-      _attributes = createRenderingAttributes();
+      _attributes = createRenderingAttributes(polygonsBounds);
 
 
    }
 
 
-   private static GRenderingAttributes createRenderingAttributes() {
+   private static GRenderingAttributes createRenderingAttributes(@SuppressWarnings("unused") final GAxisAlignedRectangle polygonsBounds) {
       final boolean renderLODIgnores = true;
       final float borderWidth = 1;
       final Color fillColor = new Color(0.5f, 0, 1, 0.5f);
@@ -425,10 +424,7 @@ public class GPolygon2DLayer
    private Box getBox(final DrawContext dc) {
       // return Sector.computeBoundingBox(globe, verticalExaggeration, _sector);
 
-      final Globe globe = dc.getView().getGlobe();
-      final double verticalExaggeration = dc.getVerticalExaggeration();
-
-      return BOX_CACHE.get(_sector, globe, verticalExaggeration);
+      return BOX_CACHE.get(dc, _sector);
    }
 
 
