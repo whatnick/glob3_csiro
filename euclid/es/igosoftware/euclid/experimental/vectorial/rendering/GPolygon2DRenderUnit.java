@@ -261,13 +261,21 @@ class GPolygon2DRenderUnit
       }
 
 
+      // fill polygon
       g2d.setColor(attributes._fillColor);
       g2d.fillPolygon(xPoints, yPoints, nPoints);
 
-      if (attributes._borderStroke != null) {
-         g2d.setStroke(attributes._borderStroke);
-         g2d.setColor(attributes._borderColor);
-         g2d.drawPolygon(xPoints, yPoints, nPoints);
+
+      // render border
+      if (attributes._borderWidth > 0) {
+         final float borderWidth = (float) (attributes._borderWidth / ((scale.x() + scale.y()) / 2));
+         if (borderWidth > 0) {
+            final BasicStroke borderStroke = new BasicStroke(borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+            g2d.setStroke(borderStroke);
+            g2d.setColor(attributes._borderColor);
+            g2d.drawPolygon(xPoints, yPoints, nPoints);
+         }
       }
 
    }

@@ -345,7 +345,7 @@ public class GPolygon2DLayer
 
    private static GRenderingAttributes createRenderingAttributes() {
       final boolean renderLODIgnores = true;
-      final float borderWidth = 0.5f;
+      final float borderWidth = 1;
       final Color fillColor = new Color(0.5f, 0, 1, 0.5f);
       final Color borderColor = Color.BLACK;
       final double lodMinSize = 5;
