@@ -9,7 +9,6 @@ import java.awt.Color;
 public class GRenderingAttributes {
 
 
-   final boolean     _renderLeafs;
    final boolean     _renderLODIgnores;
    final float       _borderWidth;
    final BasicStroke _borderStroke;
@@ -18,27 +17,28 @@ public class GRenderingAttributes {
 
    final double      _lodMinSize;
    final boolean     _debugLODRendering;
-   final int         _textureDimension;
    final boolean     _renderBounds;
+   final int         _textureWidth;
+   final int         _textureHeight;
 
 
-   public GRenderingAttributes(final boolean renderLeafs,
-                               final boolean renderLODIgnores,
+   public GRenderingAttributes(final boolean renderLODIgnores,
                                final float borderWidth,
                                final Color fillColor,
                                final Color borderColor,
                                final double lodMinSize,
                                final boolean debugLODRendering,
-                               final int textureDimension,
+                               final int textureWidth,
+                               final int textureHeight,
                                final boolean renderBounds) {
-      _renderLeafs = renderLeafs;
       _renderLODIgnores = renderLODIgnores;
       _borderWidth = borderWidth;
       _fillColor = fillColor;
       _borderColor = borderColor;
       _lodMinSize = lodMinSize;
       _debugLODRendering = debugLODRendering;
-      _textureDimension = textureDimension;
+      _textureWidth = textureWidth;
+      _textureHeight = textureHeight;
       _renderBounds = renderBounds;
 
       _borderStroke = (_borderWidth > 0) ? new BasicStroke(borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND) : null;

@@ -31,17 +31,21 @@ class GPolygon2DRenderUnit
 
       final IVector2<?> extent = region.getExtent();
 
-      final int width;
-      final int height;
+      //      final int width;
+      //      final int height;
+      //
+      //      if (extent.x() > extent.y()) {
+      //         height = attributes._textureDimension;
+      //         width = (int) Math.round(extent.x() / extent.y() * attributes._textureDimension);
+      //      }
+      //      else {
+      //         width = attributes._textureDimension;
+      //         height = (int) Math.round(extent.y() / extent.x() * attributes._textureDimension);
+      //      }
+      final int width = attributes._textureWidth;
+      final int height = attributes._textureHeight;
 
-      if (extent.x() > extent.y()) {
-         height = attributes._textureDimension;
-         width = (int) Math.round(extent.x() / extent.y() * attributes._textureDimension);
-      }
-      else {
-         width = attributes._textureDimension;
-         height = (int) Math.round(extent.y() / extent.x() * attributes._textureDimension);
-      }
+      //      System.out.println("Rendering image of " + width + "x" + height);
 
       final IVector2<?> scale = new GVector2D(width, height).div(extent);
 
@@ -57,13 +61,13 @@ class GPolygon2DRenderUnit
       final AffineTransform transformFlipY = AffineTransform.getScaleInstance(1, -1);
       transformFlipY.concatenate(AffineTransform.getTranslateInstance(0, -height));
 
-      final AffineTransform translation = AffineTransform.getTranslateInstance(-region._lower.x(), -region._lower.y());
-      final AffineTransform scaling = AffineTransform.getScaleInstance(scale.x(), scale.y());
+      //      final AffineTransform translation = AffineTransform.getTranslateInstance(-region._lower.x(), -region._lower.y());
+      //      final AffineTransform scaling = AffineTransform.getScaleInstance(scale.x(), scale.y());
 
       final AffineTransform transform = new AffineTransform();
       transform.concatenate(transformFlipY);
-      transform.concatenate(scaling);
-      transform.concatenate(translation);
+      //      transform.concatenate(scaling);
+      //      transform.concatenate(translation);
 
       g2d.setTransform(transform);
 
@@ -126,10 +130,10 @@ class GPolygon2DRenderUnit
       if (attributes._renderBounds) {
          final GAxisAlignedRectangle nodeBounds = node.getBounds();
 
-         final IVector2<?> nodeLower = nodeBounds._lower;
-         final IVector2<?> nodeUpper = nodeBounds._upper;
+         final IVector2<?> nodeLower = nodeBounds._lower.sub(region._lower).scale(scale);
+         final IVector2<?> nodeUpper = nodeBounds._upper.sub(region._lower).scale(scale);
 
-         g2d.setStroke(new BasicStroke(2));
+         g2d.setStroke(new BasicStroke(0.5f));
          g2d.setColor(Color.GREEN);
          final int x = Math.round((float) nodeLower.x());
          final int y = Math.round((float) nodeLower.y());
@@ -250,7 +254,8 @@ class GPolygon2DRenderUnit
       final int[] yPoints = new int[nPoints];
 
       for (int i = 0; i < nPoints; i++) {
-         final IVector2<?> point = geometryToDraw.getPoint(i);
+         final IVector2<?> point = geometryToDraw.getPoint(i).sub(region._lower).scale(scale);
+
          xPoints[i] = Math.round((float) point.x());
          yPoints[i] = Math.round((float) point.y());
       }

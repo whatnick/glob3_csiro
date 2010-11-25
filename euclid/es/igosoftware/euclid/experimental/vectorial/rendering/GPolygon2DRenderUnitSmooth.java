@@ -18,7 +18,6 @@ import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.ntree.quadtree.GGeometryQuadtree;
 import es.igosoftware.euclid.shape.IPolygon2D;
 import es.igosoftware.euclid.vector.GVector2I;
-import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.util.GPair;
 
 
@@ -32,19 +31,21 @@ class GPolygon2DRenderUnitSmooth
                                final GAxisAlignedRectangle region,
                                final GRenderingAttributes attributes) {
 
-      final IVector2<?> extent = region.getExtent();
+      //      final IVector2<?> extent = region.getExtent();
 
-      final int width;
-      final int height;
-
-      if (extent.x() > extent.y()) {
-         height = attributes._textureDimension;
-         width = (int) Math.round(extent.x() / extent.y() * attributes._textureDimension);
-      }
-      else {
-         width = attributes._textureDimension;
-         height = (int) Math.round(extent.y() / extent.x() * attributes._textureDimension);
-      }
+      //      final int width;
+      //      final int height;
+      //
+      //      if (extent.x() > extent.y()) {
+      //         height = attributes._textureDimension;
+      //         width = (int) Math.round(extent.x() / extent.y() * attributes._textureDimension);
+      //      }
+      //      else {
+      //         width = attributes._textureDimension;
+      //         height = (int) Math.round(extent.y() / extent.x() * attributes._textureDimension);
+      //      }
+      final int width = attributes._textureWidth;
+      final int height = attributes._textureHeight;
 
 
       final BufferedImage renderedImage = new BufferedImage(width * 2, height * 2, BufferedImage.TYPE_4BYTE_ABGR);

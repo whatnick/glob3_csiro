@@ -10,7 +10,9 @@ import es.igosoftware.euclid.shape.IPolygon2D;
 
 
 public interface IPolygon2DRenderUnit {
+
    public BufferedImage render(final GGeometryQuadtree<IPolygon2D<?>> quadtree,
                                final GAxisAlignedRectangle region,
                                final GRenderingAttributes attributes);
+
 }

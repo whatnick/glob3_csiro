@@ -2,27 +2,23 @@
 
 package es.igosoftware.experimental.ndimensional.vectorial;
 
-import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GPolygon2DRenderer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GRenderingAttributes;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.shape.IPolygon2D;
-import es.igosoftware.euclid.vector.GVector3D;
-import es.igosoftware.euclid.vector.GVectorUtils;
-import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
-import es.igosoftware.util.GMath;
+import es.igosoftware.util.GCollections;
+import es.igosoftware.util.IPredicate;
 import es.igosoftware.utils.GGlobeCache;
-import es.igosoftware.utils.GPositionBox;
 import es.igosoftware.utils.GWWUtils;
 import gov.nasa.worldwind.avlist.AVKey;
-import gov.nasa.worldwind.geom.Cylinder;
+import gov.nasa.worldwind.geom.Box;
 import gov.nasa.worldwind.geom.Frustum;
-import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.geom.LatLon;
 import gov.nasa.worldwind.geom.Sector;
 import gov.nasa.worldwind.geom.Vec4;
 import gov.nasa.worldwind.globes.Globe;
@@ -32,8 +28,10 @@ import gov.nasa.worldwind.render.SurfaceImage;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.media.opengl.GL;
 import javax.swing.Icon;
 
 
@@ -43,132 +41,130 @@ public class GPolygon2DLayer
          implements
             IGlobeLayer {
 
-   private static final GGlobeCache<GPolygon2DLayer, Cylinder> EXTENTS_CACHE;
+   private static final GGlobeCache<GPolygon2DLayer, Box> BOX_CACHE;
 
    static {
-      EXTENTS_CACHE = new GGlobeCache<GPolygon2DLayer, Cylinder>(new GGlobeCache.Factory<GPolygon2DLayer, Cylinder>() {
+      BOX_CACHE = new GGlobeCache<GPolygon2DLayer, Box>(new GGlobeCache.Factory<GPolygon2DLayer, Box>() {
          @Override
-         public Cylinder create(final GPolygon2DLayer node,
-                                final Globe globe,
-                                final double verticalExaggeration) {
-            final GPositionBox box = node._polygonBox;
-
-            return Cylinder.computeVerticalBoundingCylinder(globe, verticalExaggeration, box._sector, box._lower.elevation,
-                     GMath.nextUp(box._upper.elevation));
+         public Box create(final GPolygon2DLayer layer,
+                           final Globe globe,
+                           final double verticalExaggeration) {
+            return Sector.computeBoundingBox(globe, verticalExaggeration, layer._sector);
          }
       });
    }
 
 
-   //   private final List<IPolygon2D<?>>                           _polygons;
-   private final GProjection                                   _projection;
-   private final GPositionBox                                  _polygonBox;
+   private final GProjection                              _projection;
 
-   private boolean                                             _showExtents                       = false;
+   private final Sector                                   _sector;
+   private final LatLon[]                                 _sectorCorners;
 
-   private float                                               _computedProjectedPixels;
-   private boolean                                             _forceComputationOfProjectedPixels = true;
-   private final SurfaceImage                                  _surfaceImage;
+   private final List<SurfaceImage>                       _surfaceImages;
+
+   private boolean                                        _showExtents = false;
 
 
    public GPolygon2DLayer(final List<IPolygon2D<?>> polygons,
                           final GProjection projection) {
       _projection = projection;
 
-      //      _polygons = new ArrayList<IPolygon2D<?>>(polygons);
 
+      //      final GAxisAlignedRectangle polygonsBounds = GAxisAlignedRectangle.minimumBoundingRectangle(project(polygons, projection2));
       final GAxisAlignedRectangle polygonsBounds = GAxisAlignedRectangle.minimumBoundingRectangle(polygons);
-      final GAxisAlignedRectangle bounds = (GAxisAlignedRectangle) centerBounds(multipleOfSmallestDimention(polygonsBounds),
-               polygonsBounds._center);
 
-      final GVector3D lower3D = new GVector3D(bounds._lower, 0);
-      final GVector3D upper3D = new GVector3D(bounds._upper, 0);
-      _polygonBox = new GPositionBox(lower3D, upper3D, projection);
-
+      _sector = GWWUtils.toSector(polygonsBounds, projection);
+      _sectorCorners = _sector.getCorners();
 
       final GPolygon2DRenderer renderer = new GPolygon2DRenderer(polygons);
 
+      final GRenderingAttributes attributes = createRenderingAttributes();
 
-      final boolean renderLeafs = true;
+
+      final List<Sector> topLevelSectors = createTopLevelSectors(_sector);
+
+      _surfaceImages = new ArrayList<SurfaceImage>(topLevelSectors.size());
+      for (final Sector sector : topLevelSectors) {
+         final GAxisAlignedRectangle sectorBounds = GWWUtils.toBoundingRectangle(sector, projection);
+         final BufferedImage renderedImage = renderer.render(sectorBounds, attributes);
+         _surfaceImages.add(new SurfaceImage(renderedImage, sector));
+      }
+
+      //      final GAxisAlignedRectangle[] rectangles = rectangle.subdivideAtCenter();
+      //
+      //      _surfaceImages = new ArrayList<SurfaceImage>(rectangles.length);
+      //      for (final GAxisAlignedRectangle sector : rectangles) {
+      //         final BufferedImage renderedImage = renderer.render(sector, attributes);
+      //         _surfaceImages.add(new SurfaceImage(renderedImage, GWWUtils.toSector(sector, projection)));
+      //      }
+   }
+
+
+   //   private static List<IPolygon2D<?>> project(final List<IPolygon2D<?>> polygons,
+   //                                              final GProjection projection) {
+   //
+   //      final IVectorTransformer<IVector2<?>> transformer = new IVectorTransformer<IVector2<?>>() {
+   //
+   //         @Override
+   //         public IVector2<?> transform(final IVector2<?> point) {
+   //            return point.reproject(projection, GProjection.EPSG_4326);
+   //         }
+   //      };
+   //
+   //      return GCollections.collect(polygons, new ITransformer<IPolygon2D<?>, IPolygon2D<?>>() {
+   //         @Override
+   //         public IPolygon2D<?> transform(final IPolygon2D<?> polygon) {
+   //            return (IPolygon2D<?>) polygon.transformedBy(transformer);
+   //         }
+   //      });
+   //
+   //   }
+
+
+   private static GRenderingAttributes createRenderingAttributes() {
       final boolean renderLODIgnores = true;
       final float borderWidth = 0.5f;
-      final Color fillColor = new Color(0.5f, 0.5f, 1, 0.75f);
+      final Color fillColor = new Color(0.5f, 0, 1, 0.5f);
       final Color borderColor = Color.BLACK;
       final double lodMinSize = 5;
       final boolean debugLODRendering = true;
-      final int textureDimension = 2048;
+      //      final int textureDimension = 256;
+      final int textureWidth = 256;
+      final int textureHeight = 256;
       final boolean renderBounds = true;
 
-      final GRenderingAttributes attributes = new GRenderingAttributes(renderLeafs, renderLODIgnores, borderWidth, fillColor,
-               borderColor, lodMinSize, debugLODRendering, textureDimension, renderBounds);
 
+      //      final int textureWidth;
+      //      final int textureHeight;
+      //
+      //      final IVector2<?> extent = polygonsBounds.getExtent();
+      //
+      //      if (extent.x() > extent.y()) {
+      //         textureHeight = textureDimension;
+      //         textureWidth = (int) Math.round(extent.x() / extent.y() * textureDimension);
+      //      }
+      //      else {
+      //         textureWidth = textureDimension;
+      //         textureHeight = (int) Math.round(extent.y() / extent.x() * textureDimension);
+      //      }
 
-      final BufferedImage renderedImage = renderer.render(bounds, attributes);
-
-      _surfaceImage = new SurfaceImage(renderedImage, getExtent());
+      return new GRenderingAttributes(renderLODIgnores, borderWidth, fillColor, borderColor, lodMinSize, debugLODRendering,
+               textureWidth, textureHeight, renderBounds);
    }
 
 
-   private static <VectorT extends IVector<VectorT, ?>> GAxisAlignedOrthotope<VectorT, ?> centerBounds(final GAxisAlignedOrthotope<VectorT, ?> bounds,
-                                                                                                       final VectorT center) {
-      final VectorT delta = bounds.getCenter().sub(center);
-      return bounds.translatedBy(delta.negated());
-   }
+   private static List<Sector> createTopLevelSectors(final Sector polygonsSector) {
+      final int latitudeSubdivisions = 5 * 8;
+      final int longitudeSubdivisions = 10 * 8;
 
+      final List<Sector> allTopLevelSectors = GWWUtils.createTopLevelSectors(latitudeSubdivisions, longitudeSubdivisions);
 
-   private static <VectorT extends IVector<VectorT, ?>> GAxisAlignedOrthotope<VectorT, ?> multipleOfSmallestDimention(final GAxisAlignedOrthotope<VectorT, ?> bounds) {
-      final VectorT extent = bounds._extent;
-
-      double smallestExtension = Double.POSITIVE_INFINITY;
-      for (byte i = 0; i < bounds.dimensions(); i++) {
-         final double ext = extent.get(i);
-         if (ext < smallestExtension) {
-            smallestExtension = ext;
+      return GCollections.select(allTopLevelSectors, new IPredicate<Sector>() {
+         @Override
+         public boolean evaluate(final Sector element) {
+            return element.intersects(polygonsSector);
          }
-      }
-
-      final VectorT newExtent = smallestBiggerMultipleOf(extent, smallestExtension);
-      final VectorT newUpper = bounds._lower.add(newExtent);
-      return GAxisAlignedOrthotope.create(bounds._lower, newUpper);
-   }
-
-
-   @SuppressWarnings("unchecked")
-   private static <VectorT extends IVector<VectorT, ?>> VectorT smallestBiggerMultipleOf(final VectorT lower,
-                                                                                         final double smallestExtension) {
-
-      final byte dimensionsCount = lower.dimensions();
-
-      final double[] dimensionsValues = new double[dimensionsCount];
-      for (byte i = 0; i < dimensionsCount; i++) {
-         dimensionsValues[i] = smallestBiggerMultipleOf(lower.get(i), smallestExtension);
-      }
-
-      return (VectorT) GVectorUtils.createD(dimensionsValues);
-   }
-
-
-   private static double smallestBiggerMultipleOf(final double value,
-                                                  final double multiple) {
-      if (GMath.closeTo(value, multiple)) {
-         return multiple;
-      }
-
-      final int times = (int) (value / multiple);
-
-      double result = times * multiple;
-      if (value < 0) {
-         if (result > value) {
-            result -= multiple;
-         }
-      }
-      else {
-         if (result < value) {
-            result += multiple;
-         }
-      }
-
-      return result;
+      });
    }
 
 
@@ -180,13 +176,13 @@ public class GPolygon2DLayer
 
    @Override
    public Icon getIcon(final IGlobeApplication application) {
-      return application.getIcon("pointscloud.png");
+      return application.getIcon("vectorial.png");
    }
 
 
    @Override
    public Sector getExtent() {
-      return _polygonBox._sector;
+      return _sector;
    }
 
 
@@ -198,7 +194,7 @@ public class GPolygon2DLayer
 
    @Override
    public void setProjection(final GProjection proj) {
-
+      throw new RuntimeException("Operation not supported!");
    }
 
 
@@ -227,18 +223,13 @@ public class GPolygon2DLayer
    }
 
 
-   private Cylinder getExtent(final DrawContext dc) {
+   private Box getBox(final DrawContext dc) {
+      // return Sector.computeBoundingBox(globe, verticalExaggeration, _sector);
+
       final Globe globe = dc.getView().getGlobe();
       final double verticalExaggeration = dc.getVerticalExaggeration();
 
-      return EXTENTS_CACHE.get(this, globe, verticalExaggeration);
-   }
-
-
-   private boolean isVisible(final DrawContext dc) {
-      final Cylinder extent = getExtent(dc);
-      final Frustum frustum = dc.getView().getFrustumInModelCoordinates();
-      return extent.intersects(frustum);
+      return BOX_CACHE.get(this, globe, verticalExaggeration);
    }
 
 
@@ -253,92 +244,86 @@ public class GPolygon2DLayer
    }
 
 
-   @Override
-   public final void doPreRender(final DrawContext dc) {
-      _forceComputationOfProjectedPixels = true;
-   }
+   private float computeProjectedPixels(final DrawContext dc) {
+      final Vec4 firstProjected = GWWUtils.getScreenPoint(dc, _sectorCorners[0]);
+      double minX = firstProjected.x;
+      double maxX = firstProjected.x;
+      double minY = firstProjected.y;
+      double maxY = firstProjected.y;
 
+      for (int i = 1; i < _sectorCorners.length; i++) {
+         final Vec4 projected = GWWUtils.getScreenPoint(dc, _sectorCorners[i]);
 
-   private void computeProjectedPixels(final DrawContext dc) {
-      //      double minX = Double.POSITIVE_INFINITY;
-      //      double minY = Double.POSITIVE_INFINITY;
-      //      double maxX = Double.NEGATIVE_INFINITY;
-      //      double maxY = Double.NEGATIVE_INFINITY;
-
-      // calculate the minimum enclosing rectangle
-      //      for (final Position boundsVertice : _box.getVertices()) {
-      final GPositionBox box = _polygonBox;
-      final Position[] vertices = box.getVertices();
-      //      if (vertices.length == 0) {
-      //         _computedProjectedPixels = 0;
-      //         return;
-      //      }
-
-
-      final Vec4 firstProjectedVertex = GWWUtils.getScreenPoint(dc, vertices[0]);
-      double minX = firstProjectedVertex.x;
-      double maxX = firstProjectedVertex.x;
-      double minY = firstProjectedVertex.y;
-      double maxY = firstProjectedVertex.y;
-
-      for (int i = 1; i < vertices.length; i++) {
-         final Position vertex = vertices[i];
-         final Vec4 projected = GWWUtils.getScreenPoint(dc, vertex);
-         final double x = projected.x;
-         final double y = projected.y;
-
-         if (x < minX) {
-            minX = x;
+         if (projected.x < minX) {
+            minX = projected.x;
          }
-         if (y < minY) {
-            minY = y;
+         if (projected.y < minY) {
+            minY = projected.y;
          }
-         if (x > maxX) {
-            maxX = x;
+         if (projected.x > maxX) {
+            maxX = projected.x;
          }
-         if (y > maxY) {
-            maxY = y;
+         if (projected.y > maxY) {
+            maxY = projected.y;
          }
       }
+
 
       // calculate the area of the rectangle
       final double width = maxX - minX;
       final double height = maxY - minY;
       final double area = width * height;
-      //_computedProjectedPixels = Math.round((float) area);
-      _computedProjectedPixels = (float) area;
+      return (float) area;
    }
 
 
-   private float getProjectedPixels(final DrawContext dc) {
-      if (_forceComputationOfProjectedPixels) {
-         computeProjectedPixels(dc);
+   @Override
+   public final void doPreRender(final DrawContext dc) {
+      for (final SurfaceImage surfaceImage : _surfaceImages) {
+         surfaceImage.preRender(dc);
       }
-
-      return _computedProjectedPixels;
    }
 
 
-   private boolean isBigEnough(final DrawContext dc) {
-      return (getProjectedPixels(dc) > 0);
+   @Override
+   public boolean isLayerInView(final DrawContext dc) {
+      final Box extent = getBox(dc);
+      final Frustum frustum = dc.getView().getFrustumInModelCoordinates();
+      return extent.intersects(frustum);
    }
 
 
    @Override
    protected void doRender(final DrawContext dc) {
-      if (!isVisible(dc)) {
+      final boolean bigEnough = (computeProjectedPixels(dc) >= 25);
+      if (!bigEnough) {
          return;
       }
 
-      if (!isBigEnough(dc)) {
-         return;
+
+      if (_showExtents) {
+         renderExtents(dc);
       }
 
-      if (isShowExtents()) {
-         getExtent(dc).render(dc);
+
+      for (final SurfaceImage surfaceImage : _surfaceImages) {
+         surfaceImage.render(dc);
       }
 
-      _surfaceImage.render(dc);
    }
 
+
+   private void renderExtents(final DrawContext dc) {
+      //      getBox(dc).render(dc);
+
+      final GL gl = dc.getGL();
+      GWWUtils.pushOffset(gl);
+
+      for (final SurfaceImage surfaceImage : _surfaceImages) {
+         final Sector sector = surfaceImage.getSector();
+         GWWUtils.renderSector(dc, sector, 1, 1, 0);
+      }
+
+      GWWUtils.popOffset(gl);
+   }
 }
