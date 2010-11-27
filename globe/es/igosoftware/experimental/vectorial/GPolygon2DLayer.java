@@ -35,7 +35,6 @@ import gov.nasa.worldwind.render.SurfaceImage;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -348,7 +347,7 @@ public class GPolygon2DLayer
       }
 
 
-      private Tile preRender(final DrawContext dc) {
+      private void preRender(final DrawContext dc) {
          if ((_surfaceImage == null) || (_ancestorContribution != null)) {
             //            final BufferedImage renderedImage = _renderer.render(_tileSectorBounds, _attributes);
 
@@ -375,13 +374,7 @@ public class GPolygon2DLayer
 
 
          if ((_surfaceImage == null) && (_ancestorContribution == null)) {
-            final Tile ancestor = findAncestorWithSurfaceImage();
-
-            final int Diego_at_work;
-            // create an BufferedImage copy/resizing from ancestor's BufferedImage
-
-            //         .getScaledInstance(_attributes._textureWidth, _attributes._textureHeight, Image.SCALE_SMOOTH);
-            _ancestorContribution = calculateAncestorContribution(ancestor);
+            _ancestorContribution = calculateAncestorContribution();
             if (_ancestorContribution != null) {
                _surfaceImage = new SurfaceImage(_ancestorContribution, _tileSector);
             }
@@ -389,57 +382,62 @@ public class GPolygon2DLayer
 
          if (_surfaceImage != null) {
             _surfaceImage.preRender(dc);
-            return null;
          }
-
-
-         //return ancestor;
-         return null;
       }
 
 
-      private BufferedImage calculateAncestorContribution(final Tile ancestor) {
+      private BufferedImage calculateAncestorContribution() {
+         final Tile ancestor = findNearestAncestorWithImage();
+
          if (ancestor == null) {
             return null;
          }
 
+         final Future<BufferedImage> ancestorImageFuture = IMAGES_CACHE.getValueOrNull(ancestor.createRenderingKey());
 
-         final Future<BufferedImage> ancestorImageFuture = IMAGES_CACHE.get(ancestor.createRenderingKey());
-         if (ancestorImageFuture.isDone()) {
-            try {
-               final BufferedImage ancestorBufferedImage = ancestorImageFuture.get();
-
-               final int DiegoAtWork;
-
-               final IVector2<?> scale = _tileBoundsExtent.div(ancestor._tileBoundsExtent);
-
-               final GVector2D textureExtent = new GVector2D(_attributes._textureWidth, _attributes._textureHeight);
-
-               final IVector2<?> topLeft = _tileBounds._lower.sub(ancestor._tileBounds._lower).scale(scale).div(_tileBoundsExtent).scale(
-                        textureExtent);
-
-               final IVector2<?> widthAndHeight = textureExtent.scale(scale);
-
-               final int width = (int) widthAndHeight.x();
-               final int height = (int) widthAndHeight.y();
-               final int x = (int) topLeft.x();
-               final int y = (int) (topLeft.y() + height - _attributes._textureHeight) * -1;
-
-               final BufferedImage subimage = ancestorBufferedImage.getSubimage(x, y, width, height);
-
-               // final Graphics2D g2d = subimage.createGraphics();
-               // g2d.drawOval(_attributes._textureWidth / 2, _attributes._textureHeight / 2, _attributes._textureWidth,
-               //     _attributes._textureHeight);
-               // g2d.dispose();
-
-               return subimage;
-
-            }
-            catch (final InterruptedException e) {
-            }
-            catch (final ExecutionException e) {
-            }
+         if (ancestorImageFuture == null) {
+            return null;
          }
+
+         if (!ancestorImageFuture.isDone()) {
+            return null;
+         }
+
+
+         try {
+            final BufferedImage ancestorBufferedImage = ancestorImageFuture.get();
+
+            final int DiegoAtWork;
+
+            final IVector2<?> scale = _tileBoundsExtent.div(ancestor._tileBoundsExtent);
+
+            final GVector2D textureExtent = new GVector2D(_attributes._textureWidth, _attributes._textureHeight);
+
+            final IVector2<?> topLeft = _tileBounds._lower.sub(ancestor._tileBounds._lower).scale(scale).div(_tileBoundsExtent).scale(
+                     textureExtent);
+
+            final IVector2<?> widthAndHeight = textureExtent.scale(scale);
+
+            final int width = (int) widthAndHeight.x();
+            final int height = (int) widthAndHeight.y();
+            final int x = (int) topLeft.x();
+            final int y = (int) (topLeft.y() + height - _attributes._textureHeight) * -1;
+
+            final BufferedImage subimage = ancestorBufferedImage.getSubimage(x, y, width, height);
+
+            // final Graphics2D g2d = subimage.createGraphics();
+            // g2d.drawOval(_attributes._textureWidth / 2, _attributes._textureHeight / 2, _attributes._textureWidth,
+            //     _attributes._textureHeight);
+            // g2d.dispose();
+
+            return subimage;
+
+         }
+         catch (final InterruptedException e) {
+         }
+         catch (final ExecutionException e) {
+         }
+
 
          return null;
       }
@@ -450,12 +448,12 @@ public class GPolygon2DLayer
       }
 
 
-      private Tile findAncestorWithSurfaceImage() {
+      private Tile findNearestAncestorWithImage() {
          Tile ancestor = _parent;
          while (ancestor != null) {
             final RenderingKey ancestorKey = ancestor.createRenderingKey();
-            final Future<BufferedImage> value = IMAGES_CACHE.getValueOrNull(ancestorKey);
-            if ((value != null) && value.isDone()) {
+            final Future<BufferedImage> futureImage = IMAGES_CACHE.getValueOrNull(ancestorKey);
+            if ((futureImage != null) && futureImage.isDone()) {
                // if (ancestor._surfaceImage != null) {
                return ancestor;
             }
@@ -506,11 +504,12 @@ public class GPolygon2DLayer
 
    private Globe                                         _lastGlobe;
    private List<Tile>                                    _topTiles;
-   private final List<Tile>                              _currentTiles      = new ArrayList<Tile>();
+   private final List<Tile>                              _currentTiles = new ArrayList<Tile>();
 
-   private boolean                                       _showExtents       = false;
+   private boolean                                       _showExtents  = false;
 
-   private final HashSet<Tile>                           _ancestorsToRender = new HashSet<Tile>();
+
+   //   private final HashSet<Tile>                           _ancestorsToRender = new HashSet<Tile>();
 
 
    public GPolygon2DLayer(final List<IPolygon2D<?>> polygons,
@@ -747,21 +746,21 @@ public class GPolygon2DLayer
    protected final void doPreRender(final DrawContext dc) {
       calculateCurrentTiles(dc);
 
+      for (final Tile tile : _currentTiles) {
+         tile.preRender(dc);
+      }
+
+      //      _ancestorsToRender.clear();
       //      for (final Tile tile : _currentTiles) {
-      //         tile.preRender(dc);
+      //         final Tile ancestor = tile.preRender(dc);
+      //         if (ancestor != null) {
+      //            _ancestorsToRender.add(ancestor);
+      //         }
       //      }
 
-      _ancestorsToRender.clear();
-      for (final Tile tile : _currentTiles) {
-         final Tile ancestor = tile.preRender(dc);
-         if (ancestor != null) {
-            _ancestorsToRender.add(ancestor);
-         }
-      }
-
-      for (final Tile ancestor : _ancestorsToRender) {
-         ancestor.preRender(dc);
-      }
+      //      for (final Tile ancestor : _ancestorsToRender) {
+      //         ancestor.preRender(dc);
+      //      }
    }
 
 
@@ -777,9 +776,9 @@ public class GPolygon2DLayer
          renderExtents(dc);
       }
 
-      for (final Tile ancestor : _ancestorsToRender) {
-         ancestor.render(dc);
-      }
+      //      for (final Tile ancestor : _ancestorsToRender) {
+      //         ancestor.render(dc);
+      //      }
 
       for (final Tile tile : _currentTiles) {
          tile.render(dc);
