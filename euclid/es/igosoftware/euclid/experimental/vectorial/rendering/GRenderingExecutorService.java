@@ -1,6 +1,6 @@
 
 
-package es.igosoftware.experimental.vectorial;
+package es.igosoftware.euclid.experimental.vectorial.rendering;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
@@ -15,14 +15,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class GRenderingExecutorService
          extends
             ThreadPoolExecutor {
-
-
-   //   public interface Task<T>
-   //            extends
-   //               Callable<T>,
-   //               Comparable<Task<T>> {
-   //
-   //   }
 
 
    private static class MyThreadFactory
