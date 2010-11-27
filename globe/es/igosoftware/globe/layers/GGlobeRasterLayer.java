@@ -58,12 +58,12 @@ public class GGlobeRasterLayer
          implements
             IGlobeRasterLayer {
 
-   private SurfaceImage        m_SurfaceImage;
-   private RasterRenderer      m_Renderer;
-   private WritableRaster      m_Raster;
-   private final RasterGeodata m_Extent;
+   final private SurfaceImage   _surfaceImage;
+   final private RasterRenderer _renderer;
+   final private WritableRaster _raster;
+   final private RasterGeodata  _extent;
 
-   private double              m_dNoData = -99999d;
+   private double               _noDataValue = -99999d;
 
 
    public GGlobeRasterLayer(final Object imageSource,
@@ -71,106 +71,86 @@ public class GGlobeRasterLayer
 
       super();
 
-      m_Extent = extent;
+      _extent = extent;
 
       if (imageSource instanceof WritableRaster) {
-         m_Raster = (WritableRaster) imageSource;
-         m_Renderer = new RasterRenderer(this);
-         m_Renderer.setColoringMethod(RasterRenderer.COLORING_METHOD_COLOR_RAMP);
-         final BufferedImage img = m_Renderer.getImage();
-         m_SurfaceImage = new SurfaceImage(img, extent.getAsSector());
+         _raster = (WritableRaster) imageSource;
+         _renderer = new RasterRenderer(this);
+         _renderer.setColoringMethod(RasterRenderer.COLORING_METHOD_COLOR_RAMP);
+         final BufferedImage img = _renderer.getImage();
+         _surfaceImage = new SurfaceImage(img, extent.getAsSector());
+         addRenderable(_surfaceImage);
       }
       else if (imageSource instanceof BufferedImage) {
          final BufferedImage img = (BufferedImage) imageSource;
-         m_Raster = (WritableRaster) img.getData();
-         m_Renderer = new RasterRenderer(this);
-         m_Renderer.setColoringMethod(RasterRenderer.COLORING_METHOD_RGB);
-         m_SurfaceImage = new SurfaceImage(imageSource, extent.getAsSector());
+         _raster = (WritableRaster) img.getData();
+         _renderer = new RasterRenderer(this);
+         _renderer.setColoringMethod(RasterRenderer.COLORING_METHOD_RGB);
+         _surfaceImage = new SurfaceImage(imageSource, extent.getAsSector());
+         addRenderable(_surfaceImage);
       }
-
-      this.addRenderable(m_SurfaceImage);
-
+      throw new RuntimeException("Image source not supported: " + imageSource);
    }
 
 
    @Override
    public Sector getExtent() {
-
-      return m_SurfaceImage.getSector();
-
+      return _surfaceImage.getSector();
    }
 
 
    public RasterRenderer getRenderer() {
-
-      return m_Renderer;
-
+      return _renderer;
    }
 
 
    @Override
    public void redraw() {
-
-      final BufferedImage img = m_Renderer.getImage();
+      final BufferedImage img = _renderer.getImage();
       if (img != null) {
-         m_SurfaceImage.setImageSource(img, m_SurfaceImage.getSector());
+         _surfaceImage.setImageSource(img, _surfaceImage.getSector());
       }
-
    }
 
 
    @Override
    public double getNoDataValue() {
-
-      return m_dNoData;
-
+      return _noDataValue;
    }
 
 
-   public void setNoDataValue(final double noData) {
-
-      m_dNoData = noData;
-
+   public void setNoDataValue(final double noDataValue) {
+      _noDataValue = noDataValue;
    }
 
 
    @Override
    public WritableRaster getRaster() {
-
-      return m_Raster;
-
+      return _raster;
    }
 
 
    @Override
    public RasterGeodata getRasterGeodata() {
-
-      return m_Extent;
-
+      return _extent;
    }
 
 
    @Override
    public Icon getIcon(final IGlobeApplication application) {
-
       return null;
-
    }
 
 
    @Override
    public GProjection getProjection() {
-
-      return m_Extent._crs;
-
+      return _extent._crs;
    }
 
 
    @Override
    public void setProjection(final GProjection proj) {
-
-      m_Extent._crs = proj;
-
+      _extent._crs = proj;
    }
 
 

@@ -582,4 +582,21 @@ public final class GAxisAlignedRectangle
       return touches((IBounds2D<?>) that);
    }
 
+
+   public double area() {
+      final double width = getWidth();
+      final double height = getHeight();
+      return width * height;
+   }
+
+
+   private double getWidth() {
+      return _upper.x() - _lower.x();
+   }
+
+
+   private double getHeight() {
+      return _upper.y() - _lower.y();
+   }
+
 }

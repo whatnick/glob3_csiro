@@ -50,6 +50,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -1091,7 +1092,7 @@ public abstract class GGlobeApplication
 
 
    @Override
-   public List<IGlobeLayer> getLayers() {
+   public List<IGlobeLayer> getGlobeLayers() {
       final List<IGlobeLayer> result = new ArrayList<IGlobeLayer>();
 
       final LayerList layerList = getLayerList();
@@ -1103,7 +1104,7 @@ public abstract class GGlobeApplication
          }
       }
 
-      return result;
+      return Collections.unmodifiableList(result);
    }
 
 

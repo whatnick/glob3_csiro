@@ -8,13 +8,17 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.GPolygon2DRenderer
 import es.igosoftware.euclid.experimental.vectorial.rendering.GRenderingAttributes;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.shape.IPolygon2D;
+import es.igosoftware.euclid.vector.GVector2D;
+import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.util.GCollections;
+import es.igosoftware.util.GUtils;
 import es.igosoftware.util.IPredicate;
 import es.igosoftware.util.LRUCache;
+import es.igosoftware.util.LRUCache.Entry;
 import es.igosoftware.utils.GGlobeStateKeyCache;
 import es.igosoftware.utils.GWWUtils;
 import gov.nasa.worldwind.avlist.AVKey;
@@ -31,6 +35,7 @@ import gov.nasa.worldwind.render.SurfaceImage;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -47,18 +52,24 @@ public class GPolygon2DLayer
             IGlobeLayer {
 
 
-   private static final double DEFAULT_LOG10_RESOLUTION_TARGET = 1.3;
+   //   private static final double DEFAULT_LOG10_RESOLUTION_TARGET = 1.3;
+
+   private static final int BYTES_PER_PIXEL = 4 /* rgba */
+                                            * 4 /* 4 bytes x integer*/;
 
 
    private static final class RenderingKey {
-      private final GAxisAlignedRectangle _tileSectorBounds;
-      private final GRenderingAttributes  _attributes;
+      private final GPolygon2DLayer       _layer;
+      private final GAxisAlignedRectangle _tileBounds;
+      private final GRenderingAttributes  _renderingAttributes;
 
 
-      private RenderingKey(final GAxisAlignedRectangle tileSectorBounds,
-                           final GRenderingAttributes attributes) {
-         _tileSectorBounds = tileSectorBounds;
-         _attributes = attributes;
+      private RenderingKey(final GPolygon2DLayer layer,
+                           final GAxisAlignedRectangle tileSectorBounds,
+                           final GRenderingAttributes renderingAttributes) {
+         _layer = layer;
+         _tileBounds = tileSectorBounds;
+         _renderingAttributes = renderingAttributes;
       }
 
 
@@ -66,8 +77,9 @@ public class GPolygon2DLayer
       public int hashCode() {
          final int prime = 31;
          int result = 1;
-         result = prime * result + ((_attributes == null) ? 0 : _attributes.hashCode());
-         result = prime * result + ((_tileSectorBounds == null) ? 0 : _tileSectorBounds.hashCode());
+         result = prime * result + ((_renderingAttributes == null) ? 0 : _renderingAttributes.hashCode());
+         result = prime * result + ((_layer == null) ? 0 : _layer.hashCode());
+         result = prime * result + ((_tileBounds == null) ? 0 : _tileBounds.hashCode());
          return result;
       }
 
@@ -83,34 +95,84 @@ public class GPolygon2DLayer
          if (getClass() != obj.getClass()) {
             return false;
          }
-
          final RenderingKey other = (RenderingKey) obj;
-         if (_attributes == null) {
-            if (other._attributes != null) {
+         if (_renderingAttributes == null) {
+            if (other._renderingAttributes != null) {
                return false;
             }
          }
-         else if (!_attributes.equals(other._attributes)) {
+         else if (!_renderingAttributes.equals(other._renderingAttributes)) {
             return false;
          }
-
-         if (_tileSectorBounds == null) {
-            if (other._tileSectorBounds != null) {
+         if (_layer == null) {
+            if (other._layer != null) {
                return false;
             }
          }
-         else if (!_tileSectorBounds.equals(other._tileSectorBounds)) {
+         else if (!_layer.equals(other._layer)) {
             return false;
          }
-
+         if (_tileBounds == null) {
+            if (other._tileBounds != null) {
+               return false;
+            }
+         }
+         else if (!_tileBounds.equals(other._tileBounds)) {
+            return false;
+         }
          return true;
+      }
+
+
+      @Override
+      public String toString() {
+         return "RenderingKey [layer=" + _layer + ", tileBounds=" + _tileBounds + ", renderingAttributes=" + _renderingAttributes
+                + "]";
       }
    }
 
-   private final LRUCache<RenderingKey, Future<BufferedImage>, RuntimeException> imagesCache;
+   private static final LRUCache<RenderingKey, Future<BufferedImage>, RuntimeException> IMAGES_CACHE;
 
-   {
-      imagesCache = new LRUCache<RenderingKey, Future<BufferedImage>, RuntimeException>(128,
+   static {
+      final LRUCache.SizePolicy<RenderingKey, Future<BufferedImage>, RuntimeException> sizePolicy;
+      sizePolicy = new LRUCache.SizePolicy<GPolygon2DLayer.RenderingKey, Future<BufferedImage>, RuntimeException>() {
+         final private long _maxImageCacheSizeInBytes = Runtime.getRuntime().maxMemory() / 5;
+
+
+         @Override
+         public boolean isOversized(final List<Entry<RenderingKey, Future<BufferedImage>, RuntimeException>> entries) {
+
+            long totalBytes = 0;
+
+            for (final Entry<RenderingKey, Future<BufferedImage>, RuntimeException> entry : entries) {
+               final Future<BufferedImage> futureImage = entry.getValue();
+               if (futureImage.isDone()) {
+                  try {
+                     final BufferedImage image = futureImage.get();
+                     totalBytes += image.getWidth() * image.getHeight() * BYTES_PER_PIXEL;
+                  }
+                  catch (final InterruptedException e) {
+                  }
+                  catch (final ExecutionException e) {
+                  }
+               }
+            }
+
+            return (totalBytes > _maxImageCacheSizeInBytes);
+         }
+      };
+
+      final LRUCache.ValuesVisitor<RenderingKey, Future<BufferedImage>, RuntimeException> removedListener;
+      removedListener = new LRUCache.ValuesVisitor<RenderingKey, Future<BufferedImage>, RuntimeException>() {
+         @Override
+         public void visit(final RenderingKey key,
+                           final Future<BufferedImage> value,
+                           final RuntimeException exception) {
+            //            System.out.println("Removed " + key);
+         }
+      };
+
+      IMAGES_CACHE = new LRUCache<RenderingKey, Future<BufferedImage>, RuntimeException>(sizePolicy,
                new LRUCache.ValueFactory<RenderingKey, Future<BufferedImage>, RuntimeException>() {
                   @Override
                   public Future<BufferedImage> create(final RenderingKey key) {
@@ -118,36 +180,49 @@ public class GPolygon2DLayer
                      return GConcurrent.getDefaultExecutor().submit(new Callable<BufferedImage>() {
                         @Override
                         public BufferedImage call() throws Exception {
-                           return _renderer.render(key._tileSectorBounds, key._attributes);
+                           final GPolygon2DLayer layer = key._layer;
+                           final GPolygon2DRenderer renderer = layer._renderer;
+                           final BufferedImage renderedImage = renderer.render(key._tileBounds, key._renderingAttributes);
+                           layer.redraw();
+                           return renderedImage;
                         }
                      });
 
                      // return _renderer.render(key._tileSectorBounds, key._attributes);
                   }
-               });
+               }, removedListener, 0);
    }
 
 
    private final class Tile {
 
+      private final Tile                  _parent;
+
       private final Sector                _tileSector;
+      private final LatLon[]              _tileSectorCorners;
       private final GAxisAlignedRectangle _tileBounds;
+      private final IVector2<?>           _tileBoundsExtent;
 
       private final double                _log10CellSize;
       private final int                   _density = 20;
 
       private SurfaceImage                _surfaceImage;
 
+      private BufferedImage               _ancestorContribution;
 
-      private Tile(final Globe globe,
+
+      private Tile(final Tile parent,
+                   final Globe globe,
                    final Sector tileSector) {
 
-         //         _parent = parent;
+         _parent = parent;
          //         _level = (parent == null) ? 0 : parent._level + 1;
 
          _tileSector = tileSector;
+         _tileSectorCorners = _tileSector.getCorners();
 
          _tileBounds = GWWUtils.toBoundingRectangle(tileSector, _projection);
+         _tileBoundsExtent = _tileBounds.getExtent();
 
          final double cellSize = tileSector.getDeltaLatRadians() * globe.getRadius() / _density;
 
@@ -172,48 +247,82 @@ public class GPolygon2DLayer
       }
 
 
+      private float computeProjectedPixels(final DrawContext dc) {
+         final Vec4 firstProjected = GWWUtils.getScreenPoint(dc, _tileSectorCorners[0]);
+         double minX = firstProjected.x;
+         double maxX = firstProjected.x;
+         double minY = firstProjected.y;
+         double maxY = firstProjected.y;
+
+         for (int i = 1; i < _tileSectorCorners.length; i++) {
+            final Vec4 projected = GWWUtils.getScreenPoint(dc, _tileSectorCorners[i]);
+
+            if (projected.x < minX) {
+               minX = projected.x;
+            }
+            if (projected.y < minY) {
+               minY = projected.y;
+            }
+            if (projected.x > maxX) {
+               maxX = projected.x;
+            }
+            if (projected.y > maxY) {
+               maxY = projected.y;
+            }
+         }
+
+
+         // calculate the area of the rectangle
+         final double width = maxX - minX;
+         final double height = maxY - minY;
+         final double area = width * height;
+         return (float) area;
+      }
+
+
       private boolean needToSplit(final DrawContext dc) {
-         final Globe globe = dc.getGlobe();
-         final double verticalExaggeration = dc.getVerticalExaggeration();
-
-         final Vec4[] corners = _tileSector.computeCornerPoints(globe, verticalExaggeration);
-         final Vec4 centerPoint = _tileSector.computeCenterPoint(globe, verticalExaggeration);
-
-         final Vec4 eyePoint = dc.getView().getEyePoint();
-         final double d1 = eyePoint.distanceTo3(corners[0]);
-         final double d2 = eyePoint.distanceTo3(corners[1]);
-         final double d3 = eyePoint.distanceTo3(corners[2]);
-         final double d4 = eyePoint.distanceTo3(corners[3]);
-         final double d5 = eyePoint.distanceTo3(centerPoint);
-
-         double minDistance = d1;
-         if (d2 < minDistance) {
-            minDistance = d2;
-         }
-         if (d3 < minDistance) {
-            minDistance = d3;
-         }
-         if (d4 < minDistance) {
-            minDistance = d4;
-         }
-         if (d5 < minDistance) {
-            minDistance = d5;
-         }
-
-         final double logDist = Math.log10(minDistance);
-         final double target = computeTileResolutionTarget(dc);
-
-         final boolean useTile = _log10CellSize <= (logDist - target);
-         return !useTile;
+         return computeProjectedPixels(dc) > (_attributes._textureWidth * _attributes._textureHeight * 2);
+         //         final Globe globe = dc.getGlobe();
+         //         final double verticalExaggeration = dc.getVerticalExaggeration();
+         //
+         //         final Vec4[] corners = _tileSector.computeCornerPoints(globe, verticalExaggeration);
+         //         final Vec4 centerPoint = _tileSector.computeCenterPoint(globe, verticalExaggeration);
+         //
+         //         final Vec4 eyePoint = dc.getView().getEyePoint();
+         //         final double d1 = eyePoint.distanceTo3(corners[0]);
+         //         final double d2 = eyePoint.distanceTo3(corners[1]);
+         //         final double d3 = eyePoint.distanceTo3(corners[2]);
+         //         final double d4 = eyePoint.distanceTo3(corners[3]);
+         //         final double d5 = eyePoint.distanceTo3(centerPoint);
+         //
+         //         double minDistance = d1;
+         //         if (d2 < minDistance) {
+         //            minDistance = d2;
+         //         }
+         //         if (d3 < minDistance) {
+         //            minDistance = d3;
+         //         }
+         //         if (d4 < minDistance) {
+         //            minDistance = d4;
+         //         }
+         //         if (d5 < minDistance) {
+         //            minDistance = d5;
+         //         }
+         //
+         //         final double logDist = Math.log10(minDistance);
+         //         final double target = computeTileResolutionTarget(dc);
+         //
+         //         final boolean useTile = _log10CellSize <= (logDist - target);
+         //         return !useTile;
       }
 
 
-      private double computeTileResolutionTarget(final DrawContext dc) {
-         // Compute the log10 detail target for the specified tile. Apply the elevation model's detail hint to the
-         // default detail target.
-
-         return DEFAULT_LOG10_RESOLUTION_TARGET + dc.getGlobe().getElevationModel().getDetailHint(_tileSector);
-      }
+      //      private double computeTileResolutionTarget(final DrawContext dc) {
+      //         // Compute the log10 detail target for the specified tile. Apply the elevation model's detail hint to the
+      //         // default detail target.
+      //
+      //         return DEFAULT_LOG10_RESOLUTION_TARGET + dc.getGlobe().getElevationModel().getDetailHint(_tileSector);
+      //      }
 
 
       private Tile[] slit(final DrawContext dc) {
@@ -222,47 +331,138 @@ public class GPolygon2DLayer
          //         final GAxisAlignedRectangle[] sectors = _tileBounds.subdivideAtCenter();
          //
          //         final Tile[] subTiles = new Tile[4];
-         //         subTiles[0] = new Tile(globe, GWWUtils.toSector(sectors[0], _projection));
-         //         subTiles[1] = new Tile(globe, GWWUtils.toSector(sectors[1], _projection));
-         //         subTiles[2] = new Tile(globe, GWWUtils.toSector(sectors[2], _projection));
-         //         subTiles[3] = new Tile(globe, GWWUtils.toSector(sectors[3], _projection));
+         //         subTiles[0] = new Tile(this, globe, GWWUtils.toSector(sectors[0], _projection));
+         //         subTiles[1] = new Tile(this, globe, GWWUtils.toSector(sectors[1], _projection));
+         //         subTiles[2] = new Tile(this, globe, GWWUtils.toSector(sectors[2], _projection));
+         //         subTiles[3] = new Tile(this, globe, GWWUtils.toSector(sectors[3], _projection));
 
          final Sector[] sectors = _tileSector.subdivide();
 
          final Tile[] subTiles = new Tile[4];
-         subTiles[0] = new Tile(globe, sectors[0]);
-         subTiles[1] = new Tile(globe, sectors[1]);
-         subTiles[2] = new Tile(globe, sectors[2]);
-         subTiles[3] = new Tile(globe, sectors[3]);
+         subTiles[0] = new Tile(this, globe, sectors[0]);
+         subTiles[1] = new Tile(this, globe, sectors[1]);
+         subTiles[2] = new Tile(this, globe, sectors[2]);
+         subTiles[3] = new Tile(this, globe, sectors[3]);
 
          return subTiles;
       }
 
 
-      private void preRender(final DrawContext dc) {
-         if (_surfaceImage == null) {
+      private Tile preRender(final DrawContext dc) {
+         if ((_surfaceImage == null) || (_ancestorContribution != null)) {
             //            final BufferedImage renderedImage = _renderer.render(_tileSectorBounds, _attributes);
 
-            final RenderingKey key = new RenderingKey(_tileBounds, _attributes);
-            final Future<BufferedImage> renderedImageFuture = imagesCache.get(key);
+            final RenderingKey key = createRenderingKey();
+            final Future<BufferedImage> renderedImageFuture = IMAGES_CACHE.get(key);
 
             if (renderedImageFuture.isDone()) {
                try {
                   final BufferedImage renderedImage = renderedImageFuture.get();
-                  _surfaceImage = new SurfaceImage(renderedImage, _tileSector);
+                  if (_surfaceImage == null) {
+                     _surfaceImage = new SurfaceImage(renderedImage, _tileSector);
+                  }
+                  else {
+                     _surfaceImage.setImageSource(renderedImage, _tileSector);
+                  }
+                  _ancestorContribution = null;
                }
                catch (final InterruptedException e) {
-                  e.printStackTrace();
                }
                catch (final ExecutionException e) {
-                  e.printStackTrace();
                }
+            }
+         }
+
+
+         if ((_surfaceImage == null) && (_ancestorContribution == null)) {
+            final Tile ancestor = findAncestorWithSurfaceImage();
+
+            final int Diego_at_work;
+            // create an BufferedImage copy/resizing from ancestor's BufferedImage
+
+            //         .getScaledInstance(_attributes._textureWidth, _attributes._textureHeight, Image.SCALE_SMOOTH);
+            _ancestorContribution = calculateAncestorContribution(ancestor);
+            if (_ancestorContribution != null) {
+               _surfaceImage = new SurfaceImage(_ancestorContribution, _tileSector);
             }
          }
 
          if (_surfaceImage != null) {
             _surfaceImage.preRender(dc);
+            return null;
          }
+
+
+         //return ancestor;
+         return null;
+      }
+
+
+      private BufferedImage calculateAncestorContribution(final Tile ancestor) {
+         if (ancestor == null) {
+            return null;
+         }
+
+
+         final Future<BufferedImage> ancestorImageFuture = IMAGES_CACHE.get(ancestor.createRenderingKey());
+         if (ancestorImageFuture.isDone()) {
+            try {
+               final BufferedImage ancestorBufferedImage = ancestorImageFuture.get();
+
+               final int DiegoAtWork;
+
+               final IVector2<?> scale = _tileBoundsExtent.div(ancestor._tileBoundsExtent);
+
+               final GVector2D textureExtent = new GVector2D(_attributes._textureWidth, _attributes._textureHeight);
+
+               final IVector2<?> topLeft = _tileBounds._lower.sub(ancestor._tileBounds._lower).scale(scale).div(_tileBoundsExtent).scale(
+                        textureExtent);
+
+               final IVector2<?> widthAndHeight = textureExtent.scale(scale);
+
+               final int width = (int) widthAndHeight.x();
+               final int height = (int) widthAndHeight.y();
+               final int x = (int) topLeft.x();
+               final int y = (int) (topLeft.y() + height - _attributes._textureHeight) * -1;
+
+               final BufferedImage subimage = ancestorBufferedImage.getSubimage(x, y, width, height);
+
+               // final Graphics2D g2d = subimage.createGraphics();
+               // g2d.drawOval(_attributes._textureWidth / 2, _attributes._textureHeight / 2, _attributes._textureWidth,
+               //     _attributes._textureHeight);
+               // g2d.dispose();
+
+               return subimage;
+
+            }
+            catch (final InterruptedException e) {
+            }
+            catch (final ExecutionException e) {
+            }
+         }
+
+         return null;
+      }
+
+
+      private RenderingKey createRenderingKey() {
+         return new RenderingKey(GPolygon2DLayer.this, _tileBounds, _attributes);
+      }
+
+
+      private Tile findAncestorWithSurfaceImage() {
+         Tile ancestor = _parent;
+         while (ancestor != null) {
+            final RenderingKey ancestorKey = ancestor.createRenderingKey();
+            final Future<BufferedImage> value = IMAGES_CACHE.getValueOrNull(ancestorKey);
+            if ((value != null) && value.isDone()) {
+               // if (ancestor._surfaceImage != null) {
+               return ancestor;
+            }
+
+            ancestor = ancestor._parent;
+         }
+         return null;
       }
 
 
@@ -306,9 +506,11 @@ public class GPolygon2DLayer
 
    private Globe                                         _lastGlobe;
    private List<Tile>                                    _topTiles;
-   private final List<Tile>                              _currentTiles = new ArrayList<Tile>();
+   private final List<Tile>                              _currentTiles      = new ArrayList<Tile>();
 
-   private boolean                                       _showExtents  = false;
+   private boolean                                       _showExtents       = false;
+
+   private final HashSet<Tile>                           _ancestorsToRender = new HashSet<Tile>();
 
 
    public GPolygon2DLayer(final List<IPolygon2D<?>> polygons,
@@ -362,8 +564,8 @@ public class GPolygon2DLayer
 
 
    private static List<Sector> createTopLevelSectors(final Sector polygonsSector) {
-      final int latitudeSubdivisions = 5 * 1;
-      final int longitudeSubdivisions = 10 * 1;
+      final int latitudeSubdivisions = 5;
+      final int longitudeSubdivisions = 10;
       final List<Sector> allTopLevelSectors = GWWUtils.createTopLevelSectors(latitudeSubdivisions, longitudeSubdivisions);
 
       return GCollections.select(allTopLevelSectors, new IPredicate<Sector>() {
@@ -505,18 +707,6 @@ public class GPolygon2DLayer
    }
 
 
-   @Override
-   protected final void doPreRender(final DrawContext dc) {
-
-      calculateCurrentTiles(dc);
-
-
-      for (final Tile surfaceImage : _currentTiles) {
-         surfaceImage.preRender(dc);
-      }
-   }
-
-
    private void calculateCurrentTiles(final DrawContext dc) {
       final Globe globe = dc.getGlobe();
 
@@ -527,7 +717,7 @@ public class GPolygon2DLayer
 
          _topTiles = new ArrayList<Tile>(topLevelSectors.size());
          for (final Sector sector : topLevelSectors) {
-            _topTiles.add(new Tile(globe, sector));
+            _topTiles.add(new Tile(null, globe, sector));
          }
       }
 
@@ -544,7 +734,34 @@ public class GPolygon2DLayer
    public boolean isLayerInView(final DrawContext dc) {
       final Box extent = getBox(dc);
       final Frustum frustum = dc.getView().getFrustumInModelCoordinates();
-      return extent.intersects(frustum);
+      if (!extent.intersects(frustum)) {
+         return false;
+      }
+
+      final boolean bigEnough = (computeProjectedPixels(dc) >= 25);
+      return bigEnough;
+   }
+
+
+   @Override
+   protected final void doPreRender(final DrawContext dc) {
+      calculateCurrentTiles(dc);
+
+      //      for (final Tile tile : _currentTiles) {
+      //         tile.preRender(dc);
+      //      }
+
+      _ancestorsToRender.clear();
+      for (final Tile tile : _currentTiles) {
+         final Tile ancestor = tile.preRender(dc);
+         if (ancestor != null) {
+            _ancestorsToRender.add(ancestor);
+         }
+      }
+
+      for (final Tile ancestor : _ancestorsToRender) {
+         ancestor.preRender(dc);
+      }
    }
 
 
@@ -560,6 +777,9 @@ public class GPolygon2DLayer
          renderExtents(dc);
       }
 
+      for (final Tile ancestor : _ancestorsToRender) {
+         ancestor.render(dc);
+      }
 
       for (final Tile tile : _currentTiles) {
          tile.render(dc);
@@ -579,5 +799,10 @@ public class GPolygon2DLayer
       }
 
       GWWUtils.popOffset(gl);
+   }
+
+
+   public static void main(final String[] args) {
+      GUtils.showMemoryInfo();
    }
 }

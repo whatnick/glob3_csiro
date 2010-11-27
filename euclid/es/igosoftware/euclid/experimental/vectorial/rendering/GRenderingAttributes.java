@@ -10,18 +10,17 @@ import es.igosoftware.euclid.utils.GColorUtil;
 public class GRenderingAttributes {
 
 
-   final boolean _renderLODIgnores;
-   final float   _borderWidth;
-   //   final BasicStroke _borderStroke;
-   final Color   _fillColor;
-   final Color   _borderColor;
+   public final boolean _renderLODIgnores;
+   public final float   _borderWidth;
+   public final Color   _fillColor;
+   public final Color   _borderColor;
 
-   final double  _lodMinSize;
-   final boolean _debugLODRendering;
-   final boolean _renderBounds;
-   final int     _textureWidth;
-   final int     _textureHeight;
-   final Color   _lodColor;
+   public final double  _lodMinSize;
+   public final boolean _debugLODRendering;
+   public final boolean _renderBounds;
+   public final int     _textureWidth;
+   public final int     _textureHeight;
+   public final Color   _lodColor;
 
 
    public GRenderingAttributes(final boolean renderLODIgnores,
@@ -118,6 +117,15 @@ public class GRenderingAttributes {
          return false;
       }
       return true;
+   }
+
+
+   @Override
+   public String toString() {
+      return "GRenderingAttributes [renderLODIgnores=" + _renderLODIgnores + ", borderWidth=" + _borderWidth + ", fillColor="
+             + _fillColor + ", borderColor=" + _borderColor + ", lodMinSize=" + _lodMinSize + ", debugLODRendering="
+             + _debugLODRendering + ", renderBounds=" + _renderBounds + ", textureWidth=" + _textureWidth + ", textureHeight="
+             + _textureHeight + ", lodColor=" + _lodColor + "]";
    }
 
 }

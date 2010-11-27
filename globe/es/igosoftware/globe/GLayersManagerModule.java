@@ -295,7 +295,7 @@ public class GLayersManagerModule
 
          @Override
          public boolean isEnabled() {
-            final List<IGlobeLayer> layers = application.getLayers();
+            final List<IGlobeLayer> layers = application.getGlobeLayers();
             final int layerPosition = layers.indexOf(layer);
             return (layerPosition > 0);
          }
@@ -305,7 +305,7 @@ public class GLayersManagerModule
          public void execute() {
             final LayerList wwLayersList = application.getLayerList();
 
-            final List<IGlobeLayer> layers = application.getLayers();
+            final List<IGlobeLayer> layers = application.getGlobeLayers();
             final int layerPosition = layers.indexOf(layer);
 
             final IGlobeLayer previousLayer = layers.get(layerPosition - 1);
@@ -330,7 +330,7 @@ public class GLayersManagerModule
 
          @Override
          public boolean isEnabled() {
-            final List<IGlobeLayer> layers = application.getLayers();
+            final List<IGlobeLayer> layers = application.getGlobeLayers();
             final int layerPosition = layers.indexOf(layer);
 
             return (layerPosition < (layers.size() - 1));
@@ -341,7 +341,7 @@ public class GLayersManagerModule
          public void execute() {
             final LayerList wwLayersList = application.getLayerList();
 
-            final List<IGlobeLayer> layers = application.getLayers();
+            final List<IGlobeLayer> layers = application.getGlobeLayers();
             final int layerPosition = layers.indexOf(layer);
 
             final IGlobeLayer nextLayer = layers.get(layerPosition + 1);
@@ -391,28 +391,28 @@ public class GLayersManagerModule
    }
 
 
-   private static class LayersListModel
+   private static class GlobeLayersListModel
             extends
                AbstractListModel {
       private static final long       serialVersionUID = 1L;
 
-      private final List<IGlobeLayer> _layers;
+      private final List<IGlobeLayer> _globeLayers;
 
 
-      private LayersListModel(final List<IGlobeLayer> layers) {
-         _layers = layers;
+      private GlobeLayersListModel(final List<IGlobeLayer> globeLayers) {
+         _globeLayers = globeLayers;
       }
 
 
       @Override
       public IGlobeLayer getElementAt(final int index) {
-         return _layers.get(index);
+         return _globeLayers.get(index);
       }
 
 
       @Override
       public int getSize() {
-         return _layers.size();
+         return _globeLayers.size();
       }
    }
 
@@ -454,13 +454,13 @@ public class GLayersManagerModule
       //      final List<IGlobeLayer> layers = getGlobeLayers(layerList);
 
 
-      _layersJList = new JList(new LayersListModel(application.getLayers()));
+      _layersJList = new JList(new GlobeLayersListModel(application.getGlobeLayers()));
       _layersJList.setBackground(Color.WHITE);
 
       layerList.addPropertyChangeListener(AVKey.LAYERS, new PropertyChangeListener() {
          @Override
          public void propertyChange(final PropertyChangeEvent evt) {
-            _layersJList.setModel(new LayersListModel(application.getLayers()));
+            _layersJList.setModel(new GlobeLayersListModel(application.getGlobeLayers()));
          }
       });
 
@@ -473,7 +473,7 @@ public class GLayersManagerModule
          @Override
          public void valueChanged(final ListSelectionEvent e) {
             if (e.getValueIsAdjusting() == false) {
-               final List<IGlobeLayer> layers = ((LayersListModel) _layersJList.getModel())._layers;
+               final List<IGlobeLayer> layers = ((GlobeLayersListModel) _layersJList.getModel())._globeLayers;
 
                final IGlobeLayer selectedLayer;
                final int layerPosition = _layersJList.getSelectedIndex();
@@ -499,7 +499,7 @@ public class GLayersManagerModule
             if ((button == MouseEvent.BUTTON3) && (clickCount == 1)) {
                final int layerPosition = selectBasedOnMousePosition(mouseEvent);
 
-               final List<IGlobeLayer> layers = ((LayersListModel) _layersJList.getModel())._layers;
+               final List<IGlobeLayer> layers = ((GlobeLayersListModel) _layersJList.getModel())._globeLayers;
                final IGlobeLayer layer = (layerPosition < 0) ? null : layers.get(layerPosition);
 
                popupContextMenu(application, layer, _layersJList, mouseEvent);
@@ -509,7 +509,7 @@ public class GLayersManagerModule
             if ((button == MouseEvent.BUTTON1) && (clickCount == 2)) {
                final int layerPosition = selectBasedOnMousePosition(mouseEvent);
 
-               final List<IGlobeLayer> layers = ((LayersListModel) _layersJList.getModel())._layers;
+               final List<IGlobeLayer> layers = ((GlobeLayersListModel) _layersJList.getModel())._globeLayers;
 
                if (layerPosition < 0) {
                   return;

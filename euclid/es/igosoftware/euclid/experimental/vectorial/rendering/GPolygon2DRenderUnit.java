@@ -268,7 +268,8 @@ class GPolygon2DRenderUnit
 
       // render border
       if (attributes._borderWidth > 0) {
-         final float borderWidth = (float) (attributes._borderWidth / ((scale.x() + scale.y()) / 2));
+         //final float borderWidth = (float) (attributes._borderWidth / ((scale.x() + scale.y()) / 2));
+         final float borderWidth = attributes._borderWidth;
          if (borderWidth > 0) {
             final BasicStroke borderStroke = new BasicStroke(borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
