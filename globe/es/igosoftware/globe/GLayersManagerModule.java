@@ -229,13 +229,18 @@ public class GLayersManagerModule
 
          if (newLayer != null) {
             newLayer.doDefaultAction(application);
-            if (_layersJList != null) {
-               _layersJList.setSelectedValue(newLayer, true);
-            }
+            selectLayer(newLayer);
          }
       }
       finally {
          application.getFrame().setCursor(currentCursor);
+      }
+   }
+
+
+   public void selectLayer(final IGlobeLayer layer) {
+      if ((_layersJList != null) && (layer != null)) {
+         _layersJList.setSelectedValue(layer, true);
       }
    }
 
