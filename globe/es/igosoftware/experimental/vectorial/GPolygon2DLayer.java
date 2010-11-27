@@ -17,6 +17,7 @@ import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GUtils;
 import es.igosoftware.util.IPredicate;
+import es.igosoftware.util.ITransformer;
 import es.igosoftware.util.LRUCache;
 import es.igosoftware.util.LRUCache.Entry;
 import es.igosoftware.utils.GGlobeStateKeyCache;
@@ -566,10 +567,40 @@ public class GPolygon2DLayer
       final int longitudeSubdivisions = 10;
       final List<Sector> allTopLevelSectors = GWWUtils.createTopLevelSectors(latitudeSubdivisions, longitudeSubdivisions);
 
-      return GCollections.select(allTopLevelSectors, new IPredicate<Sector>() {
+      final List<Sector> intersectingSectors = GCollections.select(allTopLevelSectors, new IPredicate<Sector>() {
          @Override
-         public boolean evaluate(final Sector element) {
-            return element.intersects(polygonsSector);
+         public boolean evaluate(final Sector sector) {
+            return sector.intersects(polygonsSector);
+         }
+      });
+
+      return GCollections.collect(intersectingSectors, new ITransformer<Sector, Sector>() {
+         @Override
+         public Sector transform(final Sector sector) {
+            return tryToReduce(sector);
+         }
+
+
+         private Sector tryToReduce(final Sector sector) {
+            if (sector.contains(polygonsSector)) {
+               final Sector[] subdivisions = sector.subdivide();
+               int touches = 0;
+               Sector lastTouchedSubdivision = null;
+               for (final Sector subdivision : subdivisions) {
+                  if (subdivision.intersects(polygonsSector)) {
+                     touches++;
+                     lastTouchedSubdivision = subdivision;
+                  }
+               }
+
+               if (touches > 1) {
+                  return sector;
+               }
+
+               return tryToReduce(lastTouchedSubdivision);
+            }
+
+            return sector;
          }
       });
    }
