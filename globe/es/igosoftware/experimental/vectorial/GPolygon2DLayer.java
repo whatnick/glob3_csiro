@@ -2,7 +2,6 @@
 
 package es.igosoftware.experimental.vectorial;
 
-import es.igosoftware.concurrent.GConcurrent;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GPolygon2DRenderer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GRenderingAttributes;
@@ -39,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import javax.media.opengl.GL;
@@ -133,6 +133,39 @@ public class GPolygon2DLayer
 
    private static final LRUCache<RenderingKey, Future<BufferedImage>, RuntimeException> IMAGES_CACHE;
 
+
+   private static class RenderingTask
+            implements
+               Callable<BufferedImage>,
+               Comparable<RenderingTask> {
+
+      private final RenderingKey _key;
+      private final double       _priority;
+
+
+      private RenderingTask(final RenderingKey key) {
+         _key = key;
+         _priority = _key._tileBounds.area();
+      }
+
+
+      @Override
+      public BufferedImage call() throws Exception {
+         final GPolygon2DLayer layer = _key._layer;
+         final GPolygon2DRenderer renderer = layer._renderer;
+         final BufferedImage renderedImage = renderer.render(_key._tileBounds, _key._renderingAttributes);
+         layer.redraw();
+         return renderedImage;
+      }
+
+
+      @Override
+      public int compareTo(final RenderingTask that) {
+         return Double.compare(that._priority, _priority);
+      }
+   }
+
+
    static {
       final LRUCache.SizePolicy<RenderingKey, Future<BufferedImage>, RuntimeException> sizePolicy;
       sizePolicy = new LRUCache.SizePolicy<GPolygon2DLayer.RenderingKey, Future<BufferedImage>, RuntimeException>() {
@@ -172,21 +205,15 @@ public class GPolygon2DLayer
          }
       };
 
+
+      final int numberOfThreads = Math.max(Runtime.getRuntime().availableProcessors() / 4, 1);
+      final ExecutorService executor = new GRenderingExecutorService(numberOfThreads);
+
       IMAGES_CACHE = new LRUCache<RenderingKey, Future<BufferedImage>, RuntimeException>(sizePolicy,
                new LRUCache.ValueFactory<RenderingKey, Future<BufferedImage>, RuntimeException>() {
                   @Override
                   public Future<BufferedImage> create(final RenderingKey key) {
-
-                     return GConcurrent.getDefaultExecutor().submit(new Callable<BufferedImage>() {
-                        @Override
-                        public BufferedImage call() throws Exception {
-                           final GPolygon2DLayer layer = key._layer;
-                           final GPolygon2DRenderer renderer = layer._renderer;
-                           final BufferedImage renderedImage = renderer.render(key._tileBounds, key._renderingAttributes);
-                           layer.redraw();
-                           return renderedImage;
-                        }
-                     });
+                     return executor.submit(new RenderingTask(key));
 
                      // return _renderer.render(key._tileSectorBounds, key._attributes);
                   }
@@ -197,6 +224,7 @@ public class GPolygon2DLayer
    private final class Tile {
 
       private final Tile                  _parent;
+      private final int                   _level;
 
       private final Sector                _tileSector;
       private final LatLon[]              _tileSectorCorners;
@@ -216,7 +244,7 @@ public class GPolygon2DLayer
                    final Sector tileSector) {
 
          _parent = parent;
-         //         _level = (parent == null) ? 0 : parent._level + 1;
+         _level = (parent == null) ? 0 : parent._level + 1;
 
          _tileSector = tileSector;
          _tileSectorCorners = _tileSector.getCorners();
@@ -584,17 +612,15 @@ public class GPolygon2DLayer
          private Sector tryToReduce(final Sector sector) {
             if (sector.contains(polygonsSector)) {
                final Sector[] subdivisions = sector.subdivide();
-               int touches = 0;
+
                Sector lastTouchedSubdivision = null;
                for (final Sector subdivision : subdivisions) {
                   if (subdivision.intersects(polygonsSector)) {
-                     touches++;
+                     if (lastTouchedSubdivision != null) {
+                        return sector;
+                     }
                      lastTouchedSubdivision = subdivision;
                   }
-               }
-
-               if (touches > 1) {
-                  return sector;
                }
 
                return tryToReduce(lastTouchedSubdivision);
