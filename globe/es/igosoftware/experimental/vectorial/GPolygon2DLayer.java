@@ -407,8 +407,6 @@ public class GPolygon2DLayer
          try {
             final BufferedImage ancestorBufferedImage = ancestorImageFuture.get();
 
-            final int DiegoAtWork;
-
             final IVector2<?> scale = _tileBoundsExtent.div(ancestor._tileBoundsExtent);
 
             final GVector2D textureExtent = new GVector2D(_attributes._textureWidth, _attributes._textureHeight);
@@ -421,17 +419,9 @@ public class GPolygon2DLayer
             final int width = (int) widthAndHeight.x();
             final int height = (int) widthAndHeight.y();
             final int x = (int) topLeft.x();
-            final int y = (int) (topLeft.y() + height - _attributes._textureHeight) * -1;
+            final int y = (int) -(topLeft.y() + height - _attributes._textureHeight);
 
-            final BufferedImage subimage = ancestorBufferedImage.getSubimage(x, y, width, height);
-
-            // final Graphics2D g2d = subimage.createGraphics();
-            // g2d.drawOval(_attributes._textureWidth / 2, _attributes._textureHeight / 2, _attributes._textureWidth,
-            //     _attributes._textureHeight);
-            // g2d.dispose();
-
-            return subimage;
-
+            return markImageAsWorkInProgress(ancestorBufferedImage.getSubimage(x, y, width, height));
          }
          catch (final InterruptedException e) {
          }
@@ -440,6 +430,15 @@ public class GPolygon2DLayer
 
 
          return null;
+      }
+
+
+      private BufferedImage markImageAsWorkInProgress(final BufferedImage image) {
+         //         final Image workingIcon = GGlobeApplication.instance().getImage("working.png");
+
+         final int TODO_flag_the_image_as_work_in_progress;
+
+         return image;
       }
 
 
