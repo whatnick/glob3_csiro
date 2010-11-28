@@ -230,7 +230,15 @@ public class GGlobeDemo
       // final GProjection projection = GProjection.EPSG_23030;
       // final boolean convertToRadians = false;
 
-      final String fileName = "data/shp/S_Naturales_forestales_WG84.shp";
+      //      final String fileName = "data/shp/S_Naturales_forestales_WG84.shp";
+      //      final GProjection projection = GProjection.EPSG_4326;
+      //      final boolean convertToRadians = true;
+
+      //      final String fileName = "data/shp/argentina.shp/buildings.shp";
+      //      final GProjection projection = GProjection.EPSG_4326;
+      //      final boolean convertToRadians = true;
+
+      final String fileName = "data/shp/british_isles.shp/roads.shp";
       final GProjection projection = GProjection.EPSG_4326;
       final boolean convertToRadians = true;
 
