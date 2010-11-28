@@ -175,7 +175,7 @@ public class GLinesStrip2D
 
    @Override
    public GRenderType getRenderType() {
-      return GRenderType.LINE;
+      return GRenderType.POLYLINE;
    }
 
 

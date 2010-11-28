@@ -192,7 +192,7 @@ public final class GSegment2D
 
    @Override
    public GRenderType getRenderType() {
-      return GRenderType.LINE;
+      return GRenderType.POLYLINE;
    }
 
 }

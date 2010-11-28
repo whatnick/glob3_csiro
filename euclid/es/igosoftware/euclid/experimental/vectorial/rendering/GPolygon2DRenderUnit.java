@@ -263,45 +263,61 @@ class GPolygon2DRenderUnit
       switch (geometryToDraw.getRenderType()) {
          case POLYGON:
 
-            // fill polygon
-            g2d.setColor(attributes._fillColor);
-            g2d.fillPolygon(xPoints, yPoints, nPoints);
-
-
-            // render border
-            if (attributes._borderWidth > 0) {
-               //final float borderWidth = (float) (attributes._borderWidth / ((scale.x() + scale.y()) / 2));
-               final float borderWidth = attributes._borderWidth;
-               if (borderWidth > 0) {
-                  final BasicStroke borderStroke = new BasicStroke(borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-
-                  g2d.setStroke(borderStroke);
-                  g2d.setColor(attributes._borderColor);
-                  g2d.drawPolygon(xPoints, yPoints, nPoints);
-               }
-            }
+            drawPolygon(g2d, attributes, nPoints, xPoints, yPoints);
 
             break;
 
-         case LINE:
-            // render border
-            if (attributes._borderWidth > 0) {
-               //final float borderWidth = (float) (attributes._borderWidth / ((scale.x() + scale.y()) / 2));
-               final float borderWidth = attributes._borderWidth;
-               if (borderWidth > 0) {
-                  final BasicStroke borderStroke = new BasicStroke(borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-
-                  g2d.setStroke(borderStroke);
-                  g2d.setColor(attributes._borderColor);
-                  g2d.drawPolyline(xPoints, yPoints, nPoints);
-               }
-            }
-
+         case POLYLINE:
+            renderPolyline(g2d, attributes, nPoints, xPoints, yPoints);
 
             break;
-
       }
 
 
+   }
+
+
+   private void renderPolyline(final Graphics2D g2d,
+                               final GRenderingAttributes attributes,
+                               final int nPoints,
+                               final int[] xPoints,
+                               final int[] yPoints) {
+      // render border
+      if (attributes._borderWidth > 0) {
+         //final float borderWidth = (float) (attributes._borderWidth / ((scale.x() + scale.y()) / 2));
+         final float borderWidth = attributes._borderWidth;
+         if (borderWidth > 0) {
+            final BasicStroke borderStroke = new BasicStroke(borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+            g2d.setStroke(borderStroke);
+            g2d.setColor(attributes._borderColor);
+            g2d.drawPolyline(xPoints, yPoints, nPoints);
+         }
+      }
+   }
+
+
+   private void drawPolygon(final Graphics2D g2d,
+                            final GRenderingAttributes attributes,
+                            final int nPoints,
+                            final int[] xPoints,
+                            final int[] yPoints) {
+      // fill polygon
+      g2d.setColor(attributes._fillColor);
+      g2d.fillPolygon(xPoints, yPoints, nPoints);
+
+
+      // render border
+      if (attributes._borderWidth > 0) {
+         //final float borderWidth = (float) (attributes._borderWidth / ((scale.x() + scale.y()) / 2));
+         final float borderWidth = attributes._borderWidth;
+         if (borderWidth > 0) {
+            final BasicStroke borderStroke = new BasicStroke(borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+            g2d.setStroke(borderStroke);
+            g2d.setColor(attributes._borderColor);
+            g2d.drawPolygon(xPoints, yPoints, nPoints);
+         }
+      }
    }
 }
