@@ -63,6 +63,8 @@ public class GPolygon2DLayer
 
    //   private static final double DEFAULT_LOG10_RESOLUTION_TARGET = 1.3;
 
+   private static final int    TIMEOUT_FOR_CACHED_RESULTS     = 200;
+
    private static final String RENDERING_CACHE_DIRECTORY_NAME = "rendering-cache";
    private static final File   RENDERING_CACHE_DIRECTORY      = new File(RENDERING_CACHE_DIRECTORY_NAME);
 
@@ -1249,12 +1251,9 @@ public class GPolygon2DLayer
 
    private float computeProjectedPixels(final DrawContext dc) {
       final long now = System.currentTimeMillis();
-      //      if ((_lastComputedProjectedPixelsTime > 0) && ((now - _lastComputedProjectedPixelsTime) > 100)) {
-      //         _lastComputedProjectedPixelsTime = now;
-      //      }
 
-      final int DiegoAtWork;
-      if ((_lastComputedProjectedPixelsTime > 0) || ((now - _lastComputedProjectedPixelsTime) <= 100)) {
+      // cache the result for 100ms
+      if ((_lastComputedProjectedPixelsTime > 0) || ((now - _lastComputedProjectedPixelsTime) <= TIMEOUT_FOR_CACHED_RESULTS)) {
          return _lastComputedProjectedPixels;
       }
 
@@ -1335,7 +1334,8 @@ public class GPolygon2DLayer
 
       final long now = System.currentTimeMillis();
 
-      if ((_lastCurrentTilesCalculated > 0) && ((now - _lastCurrentTilesCalculated) <= 100)) {
+      // cache the result for 100ms
+      if ((_lastCurrentTilesCalculated > 0) && ((now - _lastCurrentTilesCalculated) <= TIMEOUT_FOR_CACHED_RESULTS)) {
          return;
       }
 
