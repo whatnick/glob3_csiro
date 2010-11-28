@@ -293,9 +293,7 @@ class GPolygon2DRenderUnit
 
                   g2d.setStroke(borderStroke);
                   g2d.setColor(attributes._borderColor);
-                  for (int i = 1; i < nPoints; i++) {
-                     g2d.drawLine(xPoints[i - 1], yPoints[i - 1], xPoints[i], yPoints[i]);
-                  }
+                  g2d.drawPolyline(xPoints, yPoints, nPoints);
                }
             }
 
