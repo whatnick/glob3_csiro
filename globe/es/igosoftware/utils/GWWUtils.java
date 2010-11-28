@@ -547,8 +547,21 @@ public final class GWWUtils {
 
 
    public static Vec4 getScreenPoint(final DrawContext dc,
-                                     final LatLon latLon) {
-      return getScreenPoint(dc, new Position(latLon, 0));
+                                     final LatLon location) {
+      //      return getScreenPoint(dc, new Position(latLon, 0));
+      final Globe globe = dc.getGlobe();
+      final View view = dc.getView();
+
+      if ((globe == null) || (view == null)) {
+         return null;
+      }
+
+      final Vec4 modelPoint = globe.computePointFromLocation(location);
+      if (modelPoint == null) {
+         return null;
+      }
+
+      return toVec3(view.project(modelPoint));
    }
 
 
