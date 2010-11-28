@@ -5,7 +5,6 @@ package es.igosoftware.experimental.vectorial;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GPolygon2DRenderer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GRenderingAttributes;
-import es.igosoftware.euclid.experimental.vectorial.rendering.GRenderingExecutorService;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.shape.IPolygon2D;
 import es.igosoftware.euclid.vector.GVector2D;
@@ -25,6 +24,7 @@ import es.igosoftware.util.LRUCache;
 import es.igosoftware.util.LRUCache.Entry;
 import es.igosoftware.utils.GGlobeStateKeyCache;
 import es.igosoftware.utils.GWWUtils;
+import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.geom.Box;
 import gov.nasa.worldwind.geom.Frustum;
@@ -39,11 +39,12 @@ import gov.nasa.worldwind.render.SurfaceImage;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 
 import javax.media.opengl.GL;
 import javax.swing.Icon;
@@ -65,14 +66,17 @@ public class GPolygon2DLayer
    private static final class RenderingKey {
       private final GPolygon2DLayer       _layer;
       private final GAxisAlignedRectangle _tileBounds;
+      private final Sector                _tileSector;
       private final GRenderingAttributes  _renderingAttributes;
 
 
       private RenderingKey(final GPolygon2DLayer layer,
                            final GAxisAlignedRectangle tileSectorBounds,
+                           final Sector tileSector,
                            final GRenderingAttributes renderingAttributes) {
          _layer = layer;
          _tileBounds = tileSectorBounds;
+         _tileSector = tileSector;
          _renderingAttributes = renderingAttributes;
       }
 
@@ -138,39 +142,168 @@ public class GPolygon2DLayer
    private static final LRUCache<RenderingKey, Future<BufferedImage>, RuntimeException> IMAGES_CACHE;
 
 
-   private static class RenderingTask
+   //   private static class RenderingTask
+   //            implements
+   //               Callable<BufferedImage>,
+   //               Comparable<RenderingTask> {
+   //
+   //      private final RenderingKey _key;
+   //      private final double       _priority;
+   //
+   //
+   //      private RenderingTask(final RenderingKey key) {
+   //         _key = key;
+   //         _priority = _key._tileBounds.area();
+   //      }
+   //
+   //
+   //      @Override
+   //      public BufferedImage call() throws Exception {
+   //         final GPolygon2DLayer layer = _key._layer;
+   //         final GPolygon2DRenderer renderer = layer._renderer;
+   //         final BufferedImage renderedImage = renderer.render(_key._tileBounds, _key._renderingAttributes);
+   //         layer.redraw();
+   //         return renderedImage;
+   //      }
+   //
+   //
+   //      @Override
+   //      public int compareTo(final RenderingTask that) {
+   //         return Double.compare(that._priority, _priority);
+   //      }
+   //   }
+
+
+   private static final LinkedList<ComparableFutureTask>                                _tasks = new LinkedList<ComparableFutureTask>();
+
+   private static class ComparableFutureTask
+            extends
+               FutureTask<BufferedImage>
             implements
-               Callable<BufferedImage>,
-               Comparable<RenderingTask> {
+               Comparable<ComparableFutureTask> {
 
-      private final RenderingKey _key;
-      private final double       _priority;
+      private final double _priority;
+      private final Sector _tileSector;
 
 
-      private RenderingTask(final RenderingKey key) {
-         _key = key;
-         _priority = _key._tileBounds.area();
+      private ComparableFutureTask(final RenderingKey key,
+                                   final double priority) {
+         super(new Callable<BufferedImage>() {
+            @Override
+            public BufferedImage call() throws Exception {
+               final GPolygon2DLayer layer = key._layer;
+               final GPolygon2DRenderer renderer = layer._renderer;
+               final BufferedImage renderedImage = renderer.render(key._tileBounds, key._renderingAttributes);
+               layer.redraw();
+               return renderedImage;
+            }
+         });
+
+         _priority = priority;
+         _tileSector = key._tileSector;
       }
 
 
       @Override
-      public BufferedImage call() throws Exception {
-         final GPolygon2DLayer layer = _key._layer;
-         final GPolygon2DRenderer renderer = layer._renderer;
-         final BufferedImage renderedImage = renderer.render(_key._tileBounds, _key._renderingAttributes);
-         layer.redraw();
-         return renderedImage;
-      }
-
-
-      @Override
-      public int compareTo(final RenderingTask that) {
+      public int compareTo(final ComparableFutureTask that) {
          return Double.compare(that._priority, _priority);
       }
+
+
+      //      @SuppressWarnings("unchecked")
+      //      private ComparableFutureTask(final Runnable runnable,
+      //                                   final T result) {
+      //         super(runnable, result);
+      //
+      //         _comparable = (Comparable<T>) runnable;
+      //      }
+
+
+      //      @SuppressWarnings("unchecked")
+      //      @Override
+      //      public int compareTo(final ComparableFutureTask<T> that) {
+      //         return _comparable.compareTo((T) that._comparable);
+      //      }
+
+   }
+
+   private static class RenderingWorker
+            extends
+               Thread {
+
+      private static int _workerID = 0;
+
+
+      private RenderingWorker() {
+         super("Rendering Worker #" + _workerID++);
+         setDaemon(true);
+         setPriority(Thread.MIN_PRIORITY);
+      }
+
+
+      @Override
+      public void run() {
+         while (true) {
+
+            ComparableFutureTask task = null;
+
+            synchronized (_tasks) {
+               task = findTask();
+            }
+
+            if (task == null) {
+               GUtils.delay(500);
+            }
+            else {
+               task.run();
+            }
+         }
+      }
+
+   }
+
+
+   private static ComparableFutureTask findTask() {
+      // it is called inside a synchronized(_tasks) block, no need to synchronized here
+
+      if (_tasks.isEmpty()) {
+         return null;
+      }
+
+      if (_lastVisibleSector == null) {
+         return null;
+      }
+
+      double biggestPriorityInVisibleSector = Double.NEGATIVE_INFINITY;
+      ComparableFutureTask selectedTaskInVisibleSector = null;
+
+      for (final ComparableFutureTask task : _tasks) {
+         final double currentPriority = task._priority;
+
+         if (task._tileSector.intersects(_lastVisibleSector)) {
+            if (currentPriority > biggestPriorityInVisibleSector) {
+               biggestPriorityInVisibleSector = currentPriority;
+               selectedTaskInVisibleSector = task;
+            }
+         }
+      }
+
+      if (selectedTaskInVisibleSector != null) {
+         _tasks.remove(selectedTaskInVisibleSector);
+         return selectedTaskInVisibleSector;
+      }
+
+      return null;
    }
 
 
    static {
+      final int numberOfThreads = Math.max(Runtime.getRuntime().availableProcessors() / 4, 1);
+      //      final int numberOfThreads = 1;
+      for (int i = 0; i < numberOfThreads; i++) {
+         new RenderingWorker().start();
+      }
+
       final LRUCache.SizePolicy<RenderingKey, Future<BufferedImage>, RuntimeException> sizePolicy;
       sizePolicy = new LRUCache.SizePolicy<GPolygon2DLayer.RenderingKey, Future<BufferedImage>, RuntimeException>() {
          final private long _maxImageCacheSizeInBytes = Runtime.getRuntime().maxMemory() / 4;
@@ -211,15 +344,21 @@ public class GPolygon2DLayer
          }
       };
 
-
-      final int numberOfThreads = Math.max(Runtime.getRuntime().availableProcessors() / 4, 1);
-      final ExecutorService executor = new GRenderingExecutorService(numberOfThreads);
+      //      final int numberOfThreads = Math.max(Runtime.getRuntime().availableProcessors() / 4, 1);
+      //      final ExecutorService executor = new GRenderingExecutorService(numberOfThreads);
 
       IMAGES_CACHE = new LRUCache<RenderingKey, Future<BufferedImage>, RuntimeException>(sizePolicy,
                new LRUCache.ValueFactory<RenderingKey, Future<BufferedImage>, RuntimeException>() {
                   @Override
                   public Future<BufferedImage> create(final RenderingKey key) {
-                     return executor.submit(new RenderingTask(key));
+                     //                     return executor.submit(new RenderingTask(key));
+
+                     final double priority = key._tileBounds.area();
+                     final ComparableFutureTask future = new ComparableFutureTask(key, priority);
+                     synchronized (_tasks) {
+                        _tasks.add(future);
+                     }
+                     return future;
 
                      // return _renderer.render(key._tileSectorBounds, key._attributes);
                   }
@@ -478,7 +617,7 @@ public class GPolygon2DLayer
 
 
       private RenderingKey createRenderingKey() {
-         return new RenderingKey(GPolygon2DLayer.this, _tileBounds, _attributes);
+         return new RenderingKey(GPolygon2DLayer.this, _tileBounds, _tileSector, _attributes);
       }
 
 
@@ -546,6 +685,10 @@ public class GPolygon2DLayer
 
    private int                                           _borderColorAlpha = 255;
 
+   private View                                          _lastView;
+
+   private static Sector                                 _lastVisibleSector;
+
 
    //   private final HashSet<Tile>                           _ancestorsToRender = new HashSet<Tile>();
 
@@ -555,8 +698,6 @@ public class GPolygon2DLayer
                           final boolean debug) {
       _projection = projection;
 
-
-      //      final GAxisAlignedRectangle polygonsBounds = GAxisAlignedRectangle.minimumBoundingRectangle(project(polygons, projection2));
       final GAxisAlignedRectangle polygonsBounds = GAxisAlignedRectangle.minimumBoundingRectangle(polygons);
 
       _sector = GWWUtils.toSector(polygonsBounds, projection);
@@ -677,7 +818,10 @@ public class GPolygon2DLayer
    @Override
    public void redraw() {
       // fire event to force a redraw
-      firePropertyChange(AVKey.LAYER, null, this);
+      //      firePropertyChange(AVKey.LAYER, null, this);
+      if (_lastView != null) {
+         _lastView.firePropertyChange(AVKey.VIEW, null, _lastView);
+      }
    }
 
 
@@ -1069,6 +1213,10 @@ public class GPolygon2DLayer
 
    @Override
    protected final void doPreRender(final DrawContext dc) {
+      _lastView = dc.getView();
+
+      _lastVisibleSector = dc.getVisibleSector();
+
       calculateCurrentTiles(dc);
 
       for (final Tile tile : _currentTiles) {
