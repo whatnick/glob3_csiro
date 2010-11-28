@@ -13,6 +13,9 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
 import es.igosoftware.globe.actions.ILayerAction;
+import es.igosoftware.globe.attributes.GColorLayerAttribute;
+import es.igosoftware.globe.attributes.GFloatLayerAttribute;
+import es.igosoftware.globe.attributes.GGroupAttribute;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GUtils;
@@ -531,13 +534,17 @@ public class GPolygon2DLayer
    private final LatLon[]                                _sectorCorners;
 
    private final GPolygon2DRenderer                      _renderer;
-   private final GRenderingAttributes                    _attributes;
+   private GRenderingAttributes                          _attributes;
 
    private Globe                                         _lastGlobe;
    private List<Tile>                                    _topTiles;
-   private final List<Tile>                              _currentTiles = new ArrayList<Tile>();
+   private final List<Tile>                              _currentTiles     = new ArrayList<Tile>();
 
-   private boolean                                       _showExtents  = false;
+   private boolean                                       _showExtents      = false;
+
+   private int                                           _fillColorAlpha   = 127;
+
+   private int                                           _borderColorAlpha = 255;
 
 
    //   private final HashSet<Tile>                           _ancestorsToRender = new HashSet<Tile>();
@@ -561,12 +568,12 @@ public class GPolygon2DLayer
    }
 
 
-   private static GRenderingAttributes createRenderingAttributes(@SuppressWarnings("unused") final GAxisAlignedRectangle polygonsBounds,
-                                                                 final boolean debug) {
+   private GRenderingAttributes createRenderingAttributes(@SuppressWarnings("unused") final GAxisAlignedRectangle polygonsBounds,
+                                                          final boolean debug) {
       final boolean renderLODIgnores = true;
       final float borderWidth = 1f;
-      final Color fillColor = new Color(1, 1, 0, 0.5f);
-      final Color borderColor = Color.WHITE;
+      final Color fillColor = createColor(new Color(1, 1, 0), _fillColorAlpha);
+      final Color borderColor = createColor(Color.WHITE, _borderColorAlpha);
       //      final Color borderColor = fillColor.darker().darker().darker();
       final double lodMinSize = 5;
       final boolean debugLODRendering = debug;
@@ -676,7 +683,264 @@ public class GPolygon2DLayer
 
    @Override
    public List<ILayerAttribute<?>> getLayerAttributes(final IGlobeApplication application) {
-      return null;
+      final List<ILayerAttribute<?>> result = new ArrayList<ILayerAttribute<?>>();
+
+      final ILayerAttribute<?> borderWidth = new GFloatLayerAttribute("Width", "BorderWidth", 0, 5,
+               GFloatLayerAttribute.WidgetType.SPINNER, 0.25f) {
+
+         @Override
+         public boolean isVisible() {
+            return true;
+         }
+
+
+         @Override
+         public Float get() {
+            return getBorderWidth();
+         }
+
+
+         @Override
+         public void set(final Float value) {
+            setBorderWidth(value);
+         }
+      };
+      //      result.add(borderWidth);
+
+
+      final ILayerAttribute<?> borderColor = new GColorLayerAttribute("Color", "BorderColor") {
+
+         @Override
+         public boolean isVisible() {
+            return true;
+         }
+
+
+         @Override
+         public Color get() {
+            return getBorderColor();
+         }
+
+
+         @Override
+         public void set(final Color value) {
+            setBorderColor(value);
+         }
+      };
+      //      result.add(borderColor);
+
+      final ILayerAttribute<?> borderAlpha = new GFloatLayerAttribute("Alpha", "BorderColorAlpha", 0, 255,
+               GFloatLayerAttribute.WidgetType.SPINNER, 1) {
+
+         @Override
+         public boolean isVisible() {
+            return true;
+         }
+
+
+         @Override
+         public Float get() {
+            return Float.valueOf(getBorderColorAlpha());
+         }
+
+
+         @Override
+         public void set(final Float value) {
+            setBorderColorAlpha(Math.round(value));
+         }
+      };
+      //      result.add(borderAlpha);
+
+
+      result.add(new GGroupAttribute("Border", borderWidth, borderColor, borderAlpha));
+
+
+      final ILayerAttribute<?> fillColor = new GColorLayerAttribute("Color", "FillColor") {
+
+         @Override
+         public boolean isVisible() {
+            return true;
+         }
+
+
+         @Override
+         public Color get() {
+            return getFillColor();
+         }
+
+
+         @Override
+         public void set(final Color value) {
+            setFillColor(value);
+         }
+      };
+      //      result.add(fillColor);
+
+
+      final ILayerAttribute<?> fillAlpha = new GFloatLayerAttribute("Alpha", "FillColorAlpha", 0, 255,
+               GFloatLayerAttribute.WidgetType.SPINNER, 1) {
+
+         @Override
+         public boolean isVisible() {
+            return true;
+         }
+
+
+         @Override
+         public Float get() {
+            return Float.valueOf(getFillColorAlpha());
+         }
+
+
+         @Override
+         public void set(final Float value) {
+            setFillColorAlpha(Math.round(value));
+         }
+      };
+      //      result.add(fillAlpha);
+
+
+      result.add(new GGroupAttribute("Fill", fillColor, fillAlpha));
+
+
+      return result;
+   }
+
+
+   public int getFillColorAlpha() {
+      return _fillColorAlpha;
+   }
+
+
+   public int getBorderColorAlpha() {
+      return _borderColorAlpha;
+   }
+
+
+   public void setBorderColorAlpha(final int newValue) {
+      final Color newColor = createColor(getBorderColor(), newValue);
+
+      if (_attributes._borderColor.equals(newValue)) {
+         return;
+      }
+
+      _borderColorAlpha = newValue;
+
+      final Color oldValue = _attributes._borderColor;
+
+      _attributes = new GRenderingAttributes(_attributes._renderLODIgnores, _attributes._borderWidth, _attributes._fillColor,
+               newColor, _attributes._lodMinSize, _attributes._debugLODRendering, _attributes._textureWidth,
+               _attributes._textureHeight, _attributes._renderBounds);
+
+      clearCache();
+
+      firePropertyChange("BorderColor", oldValue, newValue);
+      firePropertyChange("BorderColorAlpha", oldValue, newValue);
+   }
+
+
+   public void setFillColorAlpha(final int newValue) {
+      final Color newColor = createColor(getFillColor(), newValue);
+
+      if (_attributes._fillColor.equals(newValue)) {
+         return;
+      }
+
+      _fillColorAlpha = newValue;
+
+      final Color oldValue = _attributes._fillColor;
+
+      _attributes = new GRenderingAttributes(_attributes._renderLODIgnores, _attributes._borderWidth, newColor,
+               _attributes._borderColor, _attributes._lodMinSize, _attributes._debugLODRendering, _attributes._textureWidth,
+               _attributes._textureHeight, _attributes._renderBounds);
+
+      clearCache();
+
+      firePropertyChange("FillColor", oldValue, newValue);
+      firePropertyChange("FillColorAlpha", oldValue, newValue);
+   }
+
+
+   private Color getBorderColor() {
+      return _attributes._borderColor;
+   }
+
+
+   private Color getFillColor() {
+      return _attributes._fillColor;
+   }
+
+
+   private static Color createColor(final Color color,
+                                    final int alpha) {
+      return new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
+   }
+
+
+   public void setFillColor(final Color newOpaqueColor) {
+      final Color newValue = createColor(newOpaqueColor, _fillColorAlpha);
+
+      if (_attributes._fillColor.equals(newValue)) {
+         return;
+      }
+
+      final Color oldValue = _attributes._fillColor;
+
+      _attributes = new GRenderingAttributes(_attributes._renderLODIgnores, _attributes._borderWidth, newValue,
+               _attributes._borderColor, _attributes._lodMinSize, _attributes._debugLODRendering, _attributes._textureWidth,
+               _attributes._textureHeight, _attributes._renderBounds);
+
+      clearCache();
+
+      firePropertyChange("FillColor", oldValue, newValue);
+   }
+
+
+   public void setBorderColor(final Color newOpaqueColor) {
+      final Color newValue = createColor(newOpaqueColor, _borderColorAlpha);
+
+      if (_attributes._borderColor.equals(newValue)) {
+         return;
+      }
+
+      final Color oldValue = _attributes._borderColor;
+
+      _attributes = new GRenderingAttributes(_attributes._renderLODIgnores, _attributes._borderWidth, _attributes._fillColor,
+               newValue, _attributes._lodMinSize, _attributes._debugLODRendering, _attributes._textureWidth,
+               _attributes._textureHeight, _attributes._renderBounds);
+
+      clearCache();
+
+      firePropertyChange("BorderColor", oldValue, newValue);
+   }
+
+
+   public float getBorderWidth() {
+      return _attributes._borderWidth;
+   }
+
+
+   public void setBorderWidth(final float newValue) {
+      if (_attributes._borderWidth == newValue) {
+         return;
+      }
+
+      final float oldValue = _attributes._borderWidth;
+
+      _attributes = new GRenderingAttributes(_attributes._renderLODIgnores, newValue, _attributes._fillColor,
+               _attributes._borderColor, _attributes._lodMinSize, _attributes._debugLODRendering, _attributes._textureWidth,
+               _attributes._textureHeight, _attributes._renderBounds);
+
+      clearCache();
+
+      firePropertyChange("BorderWidth", oldValue, newValue);
+   }
+
+
+   private void clearCache() {
+      _topTiles = null;
+      IMAGES_CACHE.clear();
+      redraw();
    }
 
 
