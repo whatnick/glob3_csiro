@@ -260,25 +260,50 @@ class GPolygon2DRenderUnit
          yPoints[i] = Math.round((float) point.y());
       }
 
+      switch (geometryToDraw.getRenderType()) {
+         case POLYGON:
 
-      // fill polygon
-      g2d.setColor(attributes._fillColor);
-      g2d.fillPolygon(xPoints, yPoints, nPoints);
+            // fill polygon
+            g2d.setColor(attributes._fillColor);
+            g2d.fillPolygon(xPoints, yPoints, nPoints);
 
 
-      // render border
-      if (attributes._borderWidth > 0) {
-         //final float borderWidth = (float) (attributes._borderWidth / ((scale.x() + scale.y()) / 2));
-         final float borderWidth = attributes._borderWidth;
-         if (borderWidth > 0) {
-            final BasicStroke borderStroke = new BasicStroke(borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+            // render border
+            if (attributes._borderWidth > 0) {
+               //final float borderWidth = (float) (attributes._borderWidth / ((scale.x() + scale.y()) / 2));
+               final float borderWidth = attributes._borderWidth;
+               if (borderWidth > 0) {
+                  final BasicStroke borderStroke = new BasicStroke(borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
-            g2d.setStroke(borderStroke);
-            g2d.setColor(attributes._borderColor);
-            g2d.drawPolygon(xPoints, yPoints, nPoints);
-         }
+                  g2d.setStroke(borderStroke);
+                  g2d.setColor(attributes._borderColor);
+                  g2d.drawPolygon(xPoints, yPoints, nPoints);
+               }
+            }
+
+            break;
+
+         case LINE:
+            // render border
+            if (attributes._borderWidth > 0) {
+               //final float borderWidth = (float) (attributes._borderWidth / ((scale.x() + scale.y()) / 2));
+               final float borderWidth = attributes._borderWidth;
+               if (borderWidth > 0) {
+                  final BasicStroke borderStroke = new BasicStroke(borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+                  g2d.setStroke(borderStroke);
+                  g2d.setColor(attributes._borderColor);
+                  for (int i = 1; i < nPoints; i++) {
+                     g2d.drawLine(xPoints[i - 1], yPoints[i - 1], xPoints[i], yPoints[i]);
+                  }
+               }
+            }
+
+
+            break;
+
       }
 
-   }
 
+   }
 }

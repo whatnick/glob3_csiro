@@ -281,14 +281,30 @@ public class GShapeLoader {
                }
 
                validCounter.increment();
+            }
+            else if (type.getBinding() == com.vividsolutions.jts.geom.MultiLineString.class) {
 
-               //               if (geometriesCount != 1) {
-               //                  System.out.println(geometriesCount);
-               //               }
+               final com.vividsolutions.jts.geom.MultiLineString multiline = (com.vividsolutions.jts.geom.MultiLineString) geometryAttribute.getValue();
+               final int geometriesCount = multiline.getNumGeometries();
+
+               for (int i = 0; i < geometriesCount; i++) {
+                  final com.vividsolutions.jts.geom.LineString jtsPolygon = (com.vividsolutions.jts.geom.LineString) multiline.getGeometryN(i);
+
+                  try {
+                     final IPolygon2D<?> euclidLines = createLine(jtsPolygon.getCoordinates(), convertToRadians);
+
+                     euclidPolygons.add(euclidLines);
+                  }
+                  catch (final IllegalArgumentException e) {
+                     //                     System.err.println(e.getMessage());
+                  }
+               }
+
+               validCounter.increment();
             }
             else {
                invalidCounter.increment();
-               System.out.println("invalid type" + type);
+               System.out.println("invalid type: " + type);
             }
          }
 
@@ -323,6 +339,16 @@ public class GShapeLoader {
                jtsCoordinates, convertToRadians))))));
 
       return GShape.createPolygon2(false, points);
+   }
+
+
+   private static IPolygon2D<?> createLine(final Coordinate[] jtsCoordinates,
+                                           final boolean convertToRadians) {
+      final List<IVector2<?>> points = removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeLastIfRepeated(convert(
+               jtsCoordinates, convertToRadians))))));
+
+      return GShape.createLine2(false, points);
+
    }
 
 
