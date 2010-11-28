@@ -542,7 +542,8 @@ public class GPolygon2DLayer
 
 
    public GPolygon2DLayer(final List<IPolygon2D<?>> polygons,
-                          final GProjection projection) {
+                          final GProjection projection,
+                          final boolean debug) {
       _projection = projection;
 
 
@@ -554,22 +555,23 @@ public class GPolygon2DLayer
 
       _renderer = new GPolygon2DRenderer(polygons);
 
-      _attributes = createRenderingAttributes(polygonsBounds);
+      _attributes = createRenderingAttributes(polygonsBounds, debug);
    }
 
 
-   private static GRenderingAttributes createRenderingAttributes(@SuppressWarnings("unused") final GAxisAlignedRectangle polygonsBounds) {
+   private static GRenderingAttributes createRenderingAttributes(@SuppressWarnings("unused") final GAxisAlignedRectangle polygonsBounds,
+                                                                 final boolean debug) {
       final boolean renderLODIgnores = true;
-      final float borderWidth = 1;
-      final Color fillColor = new Color(1, 0, 0, 0.5f);
-      final Color borderColor = Color.BLACK;
+      final float borderWidth = 1f;
+      final Color fillColor = new Color(1, 1, 0, 0.5f);
+      final Color borderColor = Color.WHITE;
       //      final Color borderColor = fillColor.darker().darker().darker();
       final double lodMinSize = 5;
-      final boolean debugLODRendering = true;
+      final boolean debugLODRendering = debug;
       //      final int textureDimension = 256;
       final int textureWidth = 256;
       final int textureHeight = 256;
-      final boolean renderBounds = true;
+      final boolean renderBounds = debug;
 
 
       //      final int textureWidth;
