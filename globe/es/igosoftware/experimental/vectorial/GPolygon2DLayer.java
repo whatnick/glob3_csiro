@@ -170,7 +170,7 @@ public class GPolygon2DLayer
    static {
       final LRUCache.SizePolicy<RenderingKey, Future<BufferedImage>, RuntimeException> sizePolicy;
       sizePolicy = new LRUCache.SizePolicy<GPolygon2DLayer.RenderingKey, Future<BufferedImage>, RuntimeException>() {
-         final private long _maxImageCacheSizeInBytes = Runtime.getRuntime().maxMemory() / 5;
+         final private long _maxImageCacheSizeInBytes = Runtime.getRuntime().maxMemory() / 4;
 
 
          @Override
@@ -179,17 +179,19 @@ public class GPolygon2DLayer
             long totalBytes = 0;
 
             for (final Entry<RenderingKey, Future<BufferedImage>, RuntimeException> entry : entries) {
-               final Future<BufferedImage> futureImage = entry.getValue();
-               if (futureImage.isDone()) {
-                  try {
-                     final BufferedImage image = futureImage.get();
-                     totalBytes += image.getWidth() * image.getHeight() * BYTES_PER_PIXEL;
-                  }
-                  catch (final InterruptedException e) {
-                  }
-                  catch (final ExecutionException e) {
-                  }
-               }
+               final GRenderingAttributes renderingAttributes = entry.getKey()._renderingAttributes;
+               totalBytes += renderingAttributes._textureWidth * renderingAttributes._textureHeight * BYTES_PER_PIXEL;
+               //               final Future<BufferedImage> futureImage = entry.getValue();
+               //               if (futureImage.isDone()) {
+               //                  try {
+               //                     final BufferedImage image = futureImage.get();
+               //                     totalBytes += image.getWidth() * image.getHeight() * BYTES_PER_PIXEL;
+               //                  }
+               //                  catch (final InterruptedException e) {
+               //                  }
+               //                  catch (final ExecutionException e) {
+               //                  }
+               //               }
             }
 
             return (totalBytes > _maxImageCacheSizeInBytes);
