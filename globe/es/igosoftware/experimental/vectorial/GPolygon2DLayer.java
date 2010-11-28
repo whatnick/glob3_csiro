@@ -17,6 +17,7 @@ import es.igosoftware.globe.attributes.GFloatLayerAttribute;
 import es.igosoftware.globe.attributes.GGroupAttribute;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.util.GCollections;
+import es.igosoftware.util.GPair;
 import es.igosoftware.util.GUtils;
 import es.igosoftware.util.IPredicate;
 import es.igosoftware.util.ITransformer;
@@ -60,8 +61,6 @@ public class GPolygon2DLayer
          implements
             IGlobeLayer {
 
-
-   //   private static final double DEFAULT_LOG10_RESOLUTION_TARGET = 1.3;
 
    private static final int    TIMEOUT_FOR_CACHED_RESULTS     = 200;
 
@@ -153,7 +152,6 @@ public class GPolygon2DLayer
 
 
       private String uniqueName() {
-         //return _layer.uniqueName() + "_" + _tileBounds.asParseableString() + "_" + _renderingAttributes.uniqueName();
          return _layer.uniqueName() + getID() + _renderingAttributes.uniqueName();
       }
 
@@ -167,39 +165,7 @@ public class GPolygon2DLayer
    private static final LRUCache<RenderingKey, Future<BufferedImage>, RuntimeException> IMAGES_CACHE;
 
 
-   //   private static class RenderingTask
-   //            implements
-   //               Callable<BufferedImage>,
-   //               Comparable<RenderingTask> {
-   //
-   //      private final RenderingKey _key;
-   //      private final double       _priority;
-   //
-   //
-   //      private RenderingTask(final RenderingKey key) {
-   //         _key = key;
-   //         _priority = _key._tileBounds.area();
-   //      }
-   //
-   //
-   //      @Override
-   //      public BufferedImage call() throws Exception {
-   //         final GPolygon2DLayer layer = _key._layer;
-   //         final GPolygon2DRenderer renderer = layer._renderer;
-   //         final BufferedImage renderedImage = renderer.render(_key._tileBounds, _key._renderingAttributes);
-   //         layer.redraw();
-   //         return renderedImage;
-   //      }
-   //
-   //
-   //      @Override
-   //      public int compareTo(final RenderingTask that) {
-   //         return Double.compare(that._priority, _priority);
-   //      }
-   //   }
-
-
-   private static final LinkedList<RendererFutureTask>                                  _tasks = new LinkedList<RendererFutureTask>();
+   private static final LinkedList<RendererFutureTask>                                  RENDERING_TASKS = new LinkedList<RendererFutureTask>();
 
    private static class RendererFutureTask
             extends
@@ -279,23 +245,8 @@ public class GPolygon2DLayer
          return Double.compare(that._priority, _priority);
       }
 
-
-      //      @SuppressWarnings("unchecked")
-      //      private ComparableFutureTask(final Runnable runnable,
-      //                                   final T result) {
-      //         super(runnable, result);
-      //
-      //         _comparable = (Comparable<T>) runnable;
-      //      }
-
-
-      //      @SuppressWarnings("unchecked")
-      //      @Override
-      //      public int compareTo(final ComparableFutureTask<T> that) {
-      //         return _comparable.compareTo((T) that._comparable);
-      //      }
-
    }
+
 
    private static class RenderingWorker
             extends
@@ -314,12 +265,7 @@ public class GPolygon2DLayer
       @Override
       public void run() {
          while (true) {
-
-            RendererFutureTask task = null;
-
-            synchronized (_tasks) {
-               task = findTask();
-            }
+            final RendererFutureTask task = findTask();
 
             if (task == null) {
                GUtils.delay(500);
@@ -334,36 +280,38 @@ public class GPolygon2DLayer
 
 
    private static RendererFutureTask findTask() {
-      // it is called inside a synchronized(_tasks) block, no need to synchronized here
+      synchronized (RENDERING_TASKS) {
 
-      if (_tasks.isEmpty()) {
-         return null;
-      }
+         if (RENDERING_TASKS.isEmpty()) {
+            return null;
+         }
 
-      if (_lastVisibleSector == null) {
-         return null;
-      }
+         if (_lastVisibleSector == null) {
+            return null;
+         }
 
-      double biggestPriorityInVisibleSector = Double.NEGATIVE_INFINITY;
-      RendererFutureTask selectedTaskInVisibleSector = null;
+         double biggestPriorityInVisibleSector = Double.NEGATIVE_INFINITY;
+         RendererFutureTask selectedTaskInVisibleSector = null;
 
-      for (final RendererFutureTask task : _tasks) {
-         final double currentPriority = task._priority;
+         for (final RendererFutureTask task : RENDERING_TASKS) {
+            final double currentPriority = task._priority;
 
-         if (task._tileSector.intersects(_lastVisibleSector)) {
-            if (currentPriority > biggestPriorityInVisibleSector) {
-               biggestPriorityInVisibleSector = currentPriority;
-               selectedTaskInVisibleSector = task;
+            if (task._tileSector.intersects(_lastVisibleSector)) {
+               if (currentPriority > biggestPriorityInVisibleSector) {
+                  biggestPriorityInVisibleSector = currentPriority;
+                  selectedTaskInVisibleSector = task;
+               }
             }
          }
-      }
 
-      if (selectedTaskInVisibleSector != null) {
-         _tasks.remove(selectedTaskInVisibleSector);
-         return selectedTaskInVisibleSector;
-      }
+         if (selectedTaskInVisibleSector != null) {
+            RENDERING_TASKS.remove(selectedTaskInVisibleSector);
+            return selectedTaskInVisibleSector;
+         }
 
-      return null;
+         return null;
+
+      }
    }
 
 
@@ -422,23 +370,11 @@ public class GPolygon2DLayer
 
          @Override
          public boolean isOversized(final List<Entry<RenderingKey, Future<BufferedImage>, RuntimeException>> entries) {
-
             long totalBytes = 0;
 
             for (final Entry<RenderingKey, Future<BufferedImage>, RuntimeException> entry : entries) {
                final GRenderingAttributes renderingAttributes = entry.getKey()._renderingAttributes;
                totalBytes += renderingAttributes._textureWidth * renderingAttributes._textureHeight * BYTES_PER_PIXEL;
-               //               final Future<BufferedImage> futureImage = entry.getValue();
-               //               if (futureImage.isDone()) {
-               //                  try {
-               //                     final BufferedImage image = futureImage.get();
-               //                     totalBytes += image.getWidth() * image.getHeight() * BYTES_PER_PIXEL;
-               //                  }
-               //                  catch (final InterruptedException e) {
-               //                  }
-               //                  catch (final ExecutionException e) {
-               //                  }
-               //               }
             }
 
             return (totalBytes > _maxImageCacheSizeInBytes);
@@ -462,19 +398,15 @@ public class GPolygon2DLayer
 
       };
 
-      //      final int numberOfThreads = Math.max(Runtime.getRuntime().availableProcessors() / 4, 1);
-      //      final ExecutorService executor = new GRenderingExecutorService(numberOfThreads);
 
       IMAGES_CACHE = new LRUCache<RenderingKey, Future<BufferedImage>, RuntimeException>(sizePolicy,
                new LRUCache.ValueFactory<RenderingKey, Future<BufferedImage>, RuntimeException>() {
                   @Override
                   public Future<BufferedImage> create(final RenderingKey key) {
-                     //                     return executor.submit(new RenderingTask(key));
-
                      final double priority = key._tileBounds.area();
                      final RendererFutureTask future = new RendererFutureTask(key, priority);
-                     synchronized (_tasks) {
-                        _tasks.add(future);
+                     synchronized (RENDERING_TASKS) {
+                        RENDERING_TASKS.add(future);
                      }
                      return future;
 
@@ -487,18 +419,12 @@ public class GPolygon2DLayer
    private final class Tile {
 
       private final Tile                  _parent;
-      //      private final int                   _level;
 
       private final Sector                _tileSector;
-      //      private final LatLon[]              _tileSectorCorners;
       private final GAxisAlignedRectangle _tileBounds;
       private final IVector2<?>           _tileBoundsExtent;
 
       private final String                _id;
-
-
-      //      private final double                _log10CellSize;
-      //      private final int                   _density = 20;
 
       private SurfaceImage                _surfaceImage;
 
@@ -514,14 +440,9 @@ public class GPolygon2DLayer
          _id = (parent == null) ? "_" : parent._id + positionInParent;
 
          _tileSector = tileSector;
-         //         _tileSectorCorners = _tileSector.getCorners();
 
          _tileBounds = GWWUtils.toBoundingRectangle(tileSector, _projection);
          _tileBoundsExtent = _tileBounds.getExtent();
-
-         //         final double cellSize = tileSector.getDeltaLatRadians() * globe.getRadius() / _density;
-
-         //         _log10CellSize = Math.log10(cellSize);
       }
 
 
@@ -569,48 +490,7 @@ public class GPolygon2DLayer
 
       private boolean needToSplit(final DrawContext dc) {
          return computeProjectedPixels(dc) > (_attributes._textureWidth * _attributes._textureHeight * 2);
-
-         //         final Globe globe = dc.getGlobe();
-         //         final double verticalExaggeration = dc.getVerticalExaggeration();
-         //
-         //         final Vec4[] corners = _tileSector.computeCornerPoints(globe, verticalExaggeration);
-         //         final Vec4 centerPoint = _tileSector.computeCenterPoint(globe, verticalExaggeration);
-         //
-         //         final Vec4 eyePoint = dc.getView().getEyePoint();
-         //         final double d1 = eyePoint.distanceTo3(corners[0]);
-         //         final double d2 = eyePoint.distanceTo3(corners[1]);
-         //         final double d3 = eyePoint.distanceTo3(corners[2]);
-         //         final double d4 = eyePoint.distanceTo3(corners[3]);
-         //         final double d5 = eyePoint.distanceTo3(centerPoint);
-         //
-         //         double minDistance = d1;
-         //         if (d2 < minDistance) {
-         //            minDistance = d2;
-         //         }
-         //         if (d3 < minDistance) {
-         //            minDistance = d3;
-         //         }
-         //         if (d4 < minDistance) {
-         //            minDistance = d4;
-         //         }
-         //         if (d5 < minDistance) {
-         //            minDistance = d5;
-         //         }
-         //
-         //         final double logDist = Math.log10(minDistance);
-         //         final double target = computeTileResolutionTarget(dc);
-         //
-         //         final boolean useTile = _log10CellSize <= (logDist - target);
-         //         return !useTile;
       }
-
-
-      //      private double computeTileResolutionTarget(final DrawContext dc) {
-      //         // Compute the log10 detail target for the specified tile. Apply the elevation model's detail hint to the
-      //         // default detail target.
-      //
-      //         return DEFAULT_LOG10_RESOLUTION_TARGET + dc.getGlobe().getElevationModel().getDetailHint(_tileSector);
-      //      }
 
 
       private Tile[] slit() {
@@ -665,7 +545,12 @@ public class GPolygon2DLayer
          if ((_surfaceImage == null) && (_ancestorContribution == null)) {
             _ancestorContribution = calculateAncestorContribution();
             if (_ancestorContribution != null) {
-               _surfaceImage = new SurfaceImage(_ancestorContribution, _tileSector);
+               if (_surfaceImage == null) {
+                  _surfaceImage = new SurfaceImage(_ancestorContribution, _tileSector);
+               }
+               else {
+                  _surfaceImage.setImageSource(_ancestorContribution, _tileSector);
+               }
             }
          }
 
@@ -676,51 +561,39 @@ public class GPolygon2DLayer
 
 
       private BufferedImage calculateAncestorContribution() {
-         final Tile ancestor = findNearestAncestorWithImage();
+         final GPair<Tile, BufferedImage> ancestorAndImage = findNearestAncestorWithImage();
 
-         if (ancestor == null) {
+         if (ancestorAndImage == null) {
             return null;
          }
 
-         final Future<BufferedImage> ancestorImageFuture = IMAGES_CACHE.getValueOrNull(ancestor.createRenderingKey());
-
-         if (ancestorImageFuture == null) {
+         final BufferedImage ancestorImage = ancestorAndImage._second;
+         if (ancestorImage == null) {
             return null;
          }
 
-         if (!ancestorImageFuture.isDone()) {
-            return null;
-         }
+         final Tile ancestor = ancestorAndImage._first;
+         ancestor.moveUpInCache();
 
+         final IVector2<?> scale = _tileBoundsExtent.div(ancestor._tileBoundsExtent);
+
+         final GVector2D textureExtent = new GVector2D(_attributes._textureWidth, _attributes._textureHeight);
+
+         final IVector2<?> topLeft = _tileBounds._lower.sub(ancestor._tileBounds._lower).scale(scale).div(_tileBoundsExtent).scale(
+                  textureExtent);
+
+         final IVector2<?> widthAndHeight = textureExtent.scale(scale);
+
+         final int width = (int) widthAndHeight.x();
+         final int height = (int) widthAndHeight.y();
+         final int x = (int) topLeft.x();
+         final int y = (int) -(topLeft.y() + height - _attributes._textureHeight);
 
          try {
-            final BufferedImage ancestorBufferedImage = ancestorImageFuture.get();
-
-            final IVector2<?> scale = _tileBoundsExtent.div(ancestor._tileBoundsExtent);
-
-            final GVector2D textureExtent = new GVector2D(_attributes._textureWidth, _attributes._textureHeight);
-
-            final IVector2<?> topLeft = _tileBounds._lower.sub(ancestor._tileBounds._lower).scale(scale).div(_tileBoundsExtent).scale(
-                     textureExtent);
-
-            final IVector2<?> widthAndHeight = textureExtent.scale(scale);
-
-            final int width = (int) widthAndHeight.x();
-            final int height = (int) widthAndHeight.y();
-            final int x = (int) topLeft.x();
-            final int y = (int) -(topLeft.y() + height - _attributes._textureHeight);
-
-            try {
-               final BufferedImage subimage = ancestorBufferedImage.getSubimage(x, y, width, height);
-               return markImageAsWorkInProgress(subimage);
-            }
-            catch (final RasterFormatException e) {
-
-            }
+            final BufferedImage subimage = ancestorImage.getSubimage(x, y, width, height);
+            return markImageAsWorkInProgress(subimage);
          }
-         catch (final InterruptedException e) {
-         }
-         catch (final ExecutionException e) {
+         catch (final RasterFormatException e) {
          }
 
 
@@ -742,14 +615,20 @@ public class GPolygon2DLayer
       }
 
 
-      private Tile findNearestAncestorWithImage() {
+      private GPair<Tile, BufferedImage> findNearestAncestorWithImage() {
          Tile ancestor = _parent;
          while (ancestor != null) {
             final RenderingKey ancestorKey = ancestor.createRenderingKey();
             final Future<BufferedImage> futureImage = IMAGES_CACHE.getValueOrNull(ancestorKey);
             if ((futureImage != null) && futureImage.isDone()) {
-               // if (ancestor._surfaceImage != null) {
-               return ancestor;
+
+               try {
+                  return new GPair<Tile, BufferedImage>(ancestor, futureImage.get());
+               }
+               catch (final InterruptedException e) {
+               }
+               catch (final ExecutionException e) {
+               }
             }
 
             ancestor = ancestor._parent;
@@ -836,7 +715,7 @@ public class GPolygon2DLayer
 
       _renderer = new GPolygon2DRenderer(polygons);
 
-      _attributes = createRenderingAttributes(polygonsBounds, debug);
+      _attributes = createRenderingAttributes(debug);
    }
 
 
@@ -846,34 +725,16 @@ public class GPolygon2DLayer
    }
 
 
-   private GRenderingAttributes createRenderingAttributes(@SuppressWarnings("unused") final GAxisAlignedRectangle polygonsBounds,
-                                                          final boolean debug) {
+   private GRenderingAttributes createRenderingAttributes(final boolean debug) {
       final boolean renderLODIgnores = true;
       final float borderWidth = 1f;
       final Color fillColor = createColor(new Color(1, 1, 0), _fillColorAlpha);
       final Color borderColor = createColor(Color.WHITE, _borderColorAlpha);
-      //      final Color borderColor = fillColor.darker().darker().darker();
       final double lodMinSize = 5;
       final boolean debugLODRendering = debug;
-      //      final int textureDimension = 256;
       final int textureWidth = 256;
       final int textureHeight = 256;
       final boolean renderBounds = debug;
-
-
-      //      final int textureWidth;
-      //      final int textureHeight;
-      //
-      //      final IVector2<?> extent = polygonsBounds.getExtent();
-      //
-      //      if (extent.x() > extent.y()) {
-      //         textureHeight = textureDimension;
-      //         textureWidth = (int) Math.round(extent.x() / extent.y() * textureDimension);
-      //      }
-      //      else {
-      //         textureWidth = textureDimension;
-      //         textureHeight = (int) Math.round(extent.y() / extent.x() * textureDimension);
-      //      }
 
       return new GRenderingAttributes(renderLODIgnores, borderWidth, fillColor, borderColor, lodMinSize, debugLODRendering,
                textureWidth, textureHeight, renderBounds);
@@ -960,78 +821,16 @@ public class GPolygon2DLayer
    public List<ILayerAttribute<?>> getLayerAttributes(final IGlobeApplication application) {
       final List<ILayerAttribute<?>> result = new ArrayList<ILayerAttribute<?>>();
 
-      final ILayerAttribute<?> borderWidth = new GFloatLayerAttribute("Width", "BorderWidth", 0, 5,
-               GFloatLayerAttribute.WidgetType.SPINNER, 0.25f) {
+      addBorderAttributes(result);
 
-         @Override
-         public boolean isVisible() {
-            return true;
-         }
+      addFillAttributes(result);
 
-
-         @Override
-         public Float get() {
-            return getBorderWidth();
-         }
+      return result;
+   }
 
 
-         @Override
-         public void set(final Float value) {
-            setBorderWidth(value);
-         }
-      };
-      //      result.add(borderWidth);
-
-
-      final ILayerAttribute<?> borderColor = new GColorLayerAttribute("Color", "BorderColor") {
-
-         @Override
-         public boolean isVisible() {
-            return true;
-         }
-
-
-         @Override
-         public Color get() {
-            return getBorderColor();
-         }
-
-
-         @Override
-         public void set(final Color value) {
-            setBorderColor(value);
-         }
-      };
-      //      result.add(borderColor);
-
-      final ILayerAttribute<?> borderAlpha = new GFloatLayerAttribute("Alpha", "BorderColorAlpha", 0, 255,
-               GFloatLayerAttribute.WidgetType.SPINNER, 1) {
-
-         @Override
-         public boolean isVisible() {
-            return true;
-         }
-
-
-         @Override
-         public Float get() {
-            return Float.valueOf(getBorderColorAlpha());
-         }
-
-
-         @Override
-         public void set(final Float value) {
-            setBorderColorAlpha(Math.round(value));
-         }
-      };
-      //      result.add(borderAlpha);
-
-
-      result.add(new GGroupAttribute("Border", borderWidth, borderColor, borderAlpha));
-
-
+   private void addFillAttributes(final List<ILayerAttribute<?>> result) {
       final ILayerAttribute<?> fillColor = new GColorLayerAttribute("Color", "FillColor") {
-
          @Override
          public boolean isVisible() {
             return true;
@@ -1049,12 +848,9 @@ public class GPolygon2DLayer
             setFillColor(value);
          }
       };
-      //      result.add(fillColor);
-
 
       final ILayerAttribute<?> fillAlpha = new GFloatLayerAttribute("Alpha", "FillColorAlpha", 0, 255,
                GFloatLayerAttribute.WidgetType.SPINNER, 1) {
-
          @Override
          public boolean isVisible() {
             return true;
@@ -1072,13 +868,72 @@ public class GPolygon2DLayer
             setFillColorAlpha(Math.round(value));
          }
       };
-      //      result.add(fillAlpha);
-
 
       result.add(new GGroupAttribute("Fill", fillColor, fillAlpha));
+   }
 
 
-      return result;
+   private void addBorderAttributes(final List<ILayerAttribute<?>> result) {
+      final ILayerAttribute<?> borderWidth = new GFloatLayerAttribute("Width", "BorderWidth", 0, 5,
+               GFloatLayerAttribute.WidgetType.SPINNER, 0.25f) {
+         @Override
+         public boolean isVisible() {
+            return true;
+         }
+
+
+         @Override
+         public Float get() {
+            return getBorderWidth();
+         }
+
+
+         @Override
+         public void set(final Float value) {
+            setBorderWidth(value);
+         }
+      };
+
+      final ILayerAttribute<?> borderColor = new GColorLayerAttribute("Color", "BorderColor") {
+         @Override
+         public boolean isVisible() {
+            return true;
+         }
+
+
+         @Override
+         public Color get() {
+            return getBorderColor();
+         }
+
+
+         @Override
+         public void set(final Color value) {
+            setBorderColor(value);
+         }
+      };
+
+      final ILayerAttribute<?> borderAlpha = new GFloatLayerAttribute("Alpha", "BorderColorAlpha", 0, 255,
+               GFloatLayerAttribute.WidgetType.SPINNER, 1) {
+         @Override
+         public boolean isVisible() {
+            return true;
+         }
+
+
+         @Override
+         public Float get() {
+            return Float.valueOf(getBorderColorAlpha());
+         }
+
+
+         @Override
+         public void set(final Float value) {
+            setBorderColorAlpha(Math.round(value));
+         }
+      };
+
+      result.add(new GGroupAttribute("Border", borderWidth, borderColor, borderAlpha));
    }
 
 
@@ -1213,7 +1068,10 @@ public class GPolygon2DLayer
 
 
    private void clearCache() {
-      _topTiles = null;
+      //      _topTiles = null;
+      for (final Tile topTile : _topTiles) {
+         topTile._surfaceImage = null;
+      }
       IMAGES_CACHE.clear();
       redraw();
    }
