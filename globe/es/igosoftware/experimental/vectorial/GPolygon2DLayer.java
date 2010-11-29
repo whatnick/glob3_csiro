@@ -377,7 +377,7 @@ public class GPolygon2DLayer
 
 
       //      try {
-      //GIOUtils.assureEmptyDirectory(RENDERING_CACHE_DIRECTORY_NAME, false);
+      //         GIOUtils.assureEmptyDirectory(RENDERING_CACHE_DIRECTORY_NAME, false);
       //      }
       //      catch (final IOException e) {
       //         e.printStackTrace();
@@ -550,8 +550,7 @@ public class GPolygon2DLayer
          if ((_surfaceImage == null) || (_ancestorContribution != null)) {
             //            final BufferedImage renderedImage = _renderer.render(_tileSectorBounds, _attributes);
 
-            final RenderingKey key = createRenderingKey();
-            final Future<BufferedImage> renderedImageFuture = IMAGES_CACHE.get(key);
+            final Future<BufferedImage> renderedImageFuture = IMAGES_CACHE.get(createRenderingKey());
 
             if (renderedImageFuture.isDone()) {
                try {
@@ -1140,7 +1139,7 @@ public class GPolygon2DLayer
    //   private float computeProjectedPixels(final DrawContext dc) {
    //      final long now = System.currentTimeMillis();
    //
-   //      // cache the result for 100ms
+   //      // cache the result for TIMEOUT_FOR_CACHED_RESULTS ms
    //      if ((_lastComputedProjectedPixelsTime > 0) || ((now - _lastComputedProjectedPixelsTime) <= TIMEOUT_FOR_CACHED_RESULTS)) {
    //         return _lastComputedProjectedPixels;
    //      }
@@ -1207,10 +1206,7 @@ public class GPolygon2DLayer
 
 
    private void calculateCurrentTiles(final DrawContext dc) {
-      //      final Globe globe = dc.getGlobe();
-
-      if ((_topTiles == null)/* || (_lastGlobe != globe)*/) {
-         //         _lastGlobe = globe;
+      if (_topTiles == null) {
 
          final List<Sector> topLevelSectors = createTopLevelSectors(_sector);
 
@@ -1222,7 +1218,7 @@ public class GPolygon2DLayer
 
       final long now = System.currentTimeMillis();
 
-      // cache the result for 100ms
+      // cache the result for TIMEOUT_FOR_CACHED_RESULTS ms
       if ((_lastCurrentTilesCalculated > 0) && ((now - _lastCurrentTilesCalculated) <= TIMEOUT_FOR_CACHED_RESULTS)) {
          return;
       }
