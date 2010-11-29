@@ -128,7 +128,7 @@ public class GGlobeDemo
 
       // layers.getLayerByName("MS Virtual Earth Aerial").setEnabled(true);
 
-      // layers.add(new OSMMapnikLayer());
+      //      layers.add(new OSMMapnikLayer());
 
       // layers.add(new TerrainProfileLayer());
 
