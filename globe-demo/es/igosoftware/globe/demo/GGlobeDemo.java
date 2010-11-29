@@ -265,7 +265,7 @@ public class GGlobeDemo
             try {
                final List<IPolygon2D<?>> polygons = GShapeLoader.readPolygons(fileName, convertToRadians);
 
-               final GPolygon2DLayer layer = new GPolygon2DLayer(polygons, projection, true);
+               final GPolygon2DLayer layer = new GPolygon2DLayer(new File(fileName).getName(), polygons, projection, true);
                layer.setShowExtents(true);
 
 

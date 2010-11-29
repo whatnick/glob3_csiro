@@ -120,12 +120,18 @@ public class GRenderingAttributes {
    }
 
 
+   public String uniqueName() {
+      return "" + (_renderLODIgnores ? "t" : "f") + _borderWidth + _fillColor.getRGB() + _borderColor.getRGB() + _lodMinSize
+             + (_debugLODRendering ? "t" : "f") + _renderBounds + _textureWidth + _textureHeight + _lodColor.getRGB();
+   }
+
+
    @Override
    public String toString() {
-      return "GRenderingAttributes [renderLODIgnores=" + _renderLODIgnores + ", borderWidth=" + _borderWidth + ", fillColor="
-             + _fillColor + ", borderColor=" + _borderColor + ", lodMinSize=" + _lodMinSize + ", debugLODRendering="
-             + _debugLODRendering + ", renderBounds=" + _renderBounds + ", textureWidth=" + _textureWidth + ", textureHeight="
-             + _textureHeight + ", lodColor=" + _lodColor + "]";
+      return "GRenderingAttributes [_renderLODIgnores=" + _renderLODIgnores + ", _borderWidth=" + _borderWidth + ", _fillColor="
+             + _fillColor + ", _borderColor=" + _borderColor + ", _lodMinSize=" + _lodMinSize + ", _debugLODRendering="
+             + _debugLODRendering + ", _renderBounds=" + _renderBounds + ", _textureWidth=" + _textureWidth + ", _textureHeight="
+             + _textureHeight + ", _lodColor=" + _lodColor + "]";
    }
 
 }

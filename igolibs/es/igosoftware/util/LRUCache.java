@@ -350,4 +350,9 @@ public final class LRUCache<KeyT, ValueT, ExceptionT extends Exception> {
    }
 
 
+   public synchronized void clear() {
+      _entries.clear();
+   }
+
+
 }
