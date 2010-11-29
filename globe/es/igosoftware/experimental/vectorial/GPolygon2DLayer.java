@@ -173,8 +173,9 @@ public class GPolygon2DLayer
             implements
                Comparable<RendererFutureTask> {
 
-      private final double _priority;
-      private final Sector _tileSector;
+      private final double    _priority;
+      private final Sector    _tileSector;
+      private GPolygon2DLayer _layer;
 
 
       private RendererFutureTask(final RenderingKey key,
@@ -237,6 +238,7 @@ public class GPolygon2DLayer
 
          _priority = priority;
          _tileSector = key._tileSector;
+         _layer = key._layer;
       }
 
 
@@ -286,27 +288,55 @@ public class GPolygon2DLayer
             return null;
          }
 
-         if (_lastVisibleSector == null) {
-            return null;
-         }
 
-         double biggestPriorityInVisibleSector = Double.NEGATIVE_INFINITY;
-         RendererFutureTask selectedTaskInVisibleSector = null;
+         double biggestPriority = Double.NEGATIVE_INFINITY;
+         RendererFutureTask selectedTask = null;
+
 
          for (final RendererFutureTask task : RENDERING_TASKS) {
-            final double currentPriority = task._priority;
+            //            final List<Tile> currentTiles = task._layer._currentTiles;
+            //            try {
+            //               for (final Tile currentTile : currentTiles) {
+            //                  if (task._tileSector.equals(currentTile._tileSector)) {
+            //                     final double currentPriority = task._priority;
+            //                     if (currentPriority > biggestPriority) {
+            //                        biggestPriority = currentPriority;
+            //                        selectedTask = task;
+            //                     }
+            //                  }
+            //               }
+            //            }
+            //            catch (final ConcurrentModificationException e) {
+            //
+            //            }
 
-            if (task._tileSector.intersects(_lastVisibleSector)) {
-               if (currentPriority > biggestPriorityInVisibleSector) {
-                  biggestPriorityInVisibleSector = currentPriority;
-                  selectedTaskInVisibleSector = task;
+            final List<Tile> currentTiles = task._layer._currentTiles;
+            synchronized (currentTiles) {
+               for (final Tile currentTile : currentTiles) {
+                  if (task._tileSector.equals(currentTile._tileSector)) {
+                     final double currentPriority = task._priority;
+                     if (currentPriority > biggestPriority) {
+                        biggestPriority = currentPriority;
+                        selectedTask = task;
+                     }
+                  }
                }
             }
+
+
+            //            final Sector lastVisibleSector = task._layer._lastVisibleSector;
+            //            if (task._tileSector.intersects(lastVisibleSector)) {
+            //               final double currentPriority = task._priority;
+            //               if (currentPriority > biggestPriority) {
+            //                  biggestPriority = currentPriority;
+            //                  selectedTask = task;
+            //               }
+            //            }
          }
 
-         if (selectedTaskInVisibleSector != null) {
-            RENDERING_TASKS.remove(selectedTaskInVisibleSector);
-            return selectedTaskInVisibleSector;
+         if (selectedTask != null) {
+            RENDERING_TASKS.remove(selectedTask);
+            return selectedTask;
          }
 
          return null;
@@ -489,7 +519,7 @@ public class GPolygon2DLayer
 
 
       private boolean needToSplit(final DrawContext dc) {
-         return computeProjectedPixels(dc) > (_attributes._textureWidth * _attributes._textureHeight * 2);
+         return computeProjectedPixels(dc) > (_attributes._textureWidth * _attributes._textureHeight);
       }
 
 
@@ -674,7 +704,7 @@ public class GPolygon2DLayer
    private final GProjection                             _projection;
 
    private final Sector                                  _sector;
-   private final LatLon[]                                _sectorCorners;
+   //   private final LatLon[]                                _sectorCorners;
 
 
    private final GPolygon2DRenderer                      _renderer;
@@ -682,23 +712,23 @@ public class GPolygon2DLayer
 
    private Globe                                         _lastGlobe;
    private List<Tile>                                    _topTiles;
-   private final List<Tile>                              _currentTiles                    = new ArrayList<Tile>();
+   private final List<Tile>                              _currentTiles               = new ArrayList<Tile>();
 
-   private boolean                                       _showExtents                     = false;
+   private boolean                                       _showExtents                = false;
 
-   private int                                           _fillColorAlpha                  = 127;
-   private int                                           _borderColorAlpha                = 255;
+   private int                                           _fillColorAlpha             = 127;
+   private int                                           _borderColorAlpha           = 255;
 
    private View                                          _lastView;
 
-   // TODO: this is static, it will not work with more than one 3D View at the same time (dgd)
-   private static Sector                                 _lastVisibleSector;
+
+   //   private Sector                                        _lastVisibleSector;
 
 
    private final String                                  _resourceName;
-   private long                                          _lastComputedProjectedPixelsTime = -1;
-   private float                                         _lastComputedProjectedPixels;
-   private long                                          _lastCurrentTilesCalculated      = -1;
+   //   private final long                                    _lastComputedProjectedPixelsTime = -1;
+   //   private float                                         _lastComputedProjectedPixels;
+   private long                                          _lastCurrentTilesCalculated = -1;
 
 
    public GPolygon2DLayer(final String resourceName,
@@ -711,7 +741,7 @@ public class GPolygon2DLayer
       final GAxisAlignedRectangle polygonsBounds = GAxisAlignedRectangle.minimumBoundingRectangle(polygons);
 
       _sector = GWWUtils.toSector(polygonsBounds, projection);
-      _sectorCorners = _sector.getCorners();
+      //      _sectorCorners = _sector.getCorners();
 
       _renderer = new GPolygon2DRenderer(polygons);
 
@@ -1107,60 +1137,60 @@ public class GPolygon2DLayer
    }
 
 
-   private float computeProjectedPixels(final DrawContext dc) {
-      final long now = System.currentTimeMillis();
-
-      // cache the result for 100ms
-      if ((_lastComputedProjectedPixelsTime > 0) || ((now - _lastComputedProjectedPixelsTime) <= TIMEOUT_FOR_CACHED_RESULTS)) {
-         return _lastComputedProjectedPixels;
-      }
-
-      final Vec4 firstProjected = GWWUtils.getScreenPoint(dc, _sectorCorners[0]);
-      double minX = firstProjected.x;
-      double maxX = firstProjected.x;
-      double minY = firstProjected.y;
-      double maxY = firstProjected.y;
-
-      for (int i = 1; i < _sectorCorners.length; i++) {
-         final Vec4 projected = GWWUtils.getScreenPoint(dc, _sectorCorners[i]);
-
-         if (projected.x < minX) {
-            minX = projected.x;
-         }
-         if (projected.y < minY) {
-            minY = projected.y;
-         }
-         if (projected.x > maxX) {
-            maxX = projected.x;
-         }
-         if (projected.y > maxY) {
-            maxY = projected.y;
-         }
-      }
-
-
-      // calculate the area of the rectangle
-      final double width = maxX - minX;
-      final double height = maxY - minY;
-      final double area = width * height;
-      final float result = (float) area;
-
-      _lastComputedProjectedPixelsTime = now;
-      _lastComputedProjectedPixels = result;
-
-      return result;
-   }
+   //   private float computeProjectedPixels(final DrawContext dc) {
+   //      final long now = System.currentTimeMillis();
+   //
+   //      // cache the result for 100ms
+   //      if ((_lastComputedProjectedPixelsTime > 0) || ((now - _lastComputedProjectedPixelsTime) <= TIMEOUT_FOR_CACHED_RESULTS)) {
+   //         return _lastComputedProjectedPixels;
+   //      }
+   //
+   //      final Vec4 firstProjected = GWWUtils.getScreenPoint(dc, _sectorCorners[0]);
+   //      double minX = firstProjected.x;
+   //      double maxX = firstProjected.x;
+   //      double minY = firstProjected.y;
+   //      double maxY = firstProjected.y;
+   //
+   //      for (int i = 1; i < _sectorCorners.length; i++) {
+   //         final Vec4 projected = GWWUtils.getScreenPoint(dc, _sectorCorners[i]);
+   //
+   //         if (projected.x < minX) {
+   //            minX = projected.x;
+   //         }
+   //         if (projected.y < minY) {
+   //            minY = projected.y;
+   //         }
+   //         if (projected.x > maxX) {
+   //            maxX = projected.x;
+   //         }
+   //         if (projected.y > maxY) {
+   //            maxY = projected.y;
+   //         }
+   //      }
+   //
+   //
+   //      // calculate the area of the rectangle
+   //      final double width = maxX - minX;
+   //      final double height = maxY - minY;
+   //      final double area = width * height;
+   //      final float result = (float) area;
+   //
+   //      _lastComputedProjectedPixelsTime = now;
+   //      _lastComputedProjectedPixels = result;
+   //
+   //      return result;
+   //   }
 
 
    private void selectVisibleTiles(final DrawContext dc,
                                    final Tile tile,
-                                   final Frustum currentFrustum,
+                                   final Frustum frustum,
                                    final int currentLevel) {
       if (!tile._tileSector.intersects(_sector)) {
          return;
       }
 
-      if (!tile.getBox(dc).intersects(currentFrustum)) {
+      if (!tile.getBox(dc).intersects(frustum)) {
          return;
       }
 
@@ -1168,7 +1198,7 @@ public class GPolygon2DLayer
       if ((currentLevel < maxLevel - 1) && tile.needToSplit(dc)) {
          final Tile[] subtiles = tile.slit();
          for (final Tile child : subtiles) {
-            selectVisibleTiles(dc, child, currentFrustum, currentLevel + 1);
+            selectVisibleTiles(dc, child, frustum, currentLevel + 1);
          }
          return;
       }
@@ -1177,10 +1207,10 @@ public class GPolygon2DLayer
 
 
    private void calculateCurrentTiles(final DrawContext dc) {
-      final Globe globe = dc.getGlobe();
+      //      final Globe globe = dc.getGlobe();
 
-      if ((_topTiles == null) || (_lastGlobe != globe)) {
-         _lastGlobe = globe;
+      if ((_topTiles == null)/* || (_lastGlobe != globe)*/) {
+         //         _lastGlobe = globe;
 
          final List<Sector> topLevelSectors = createTopLevelSectors(_sector);
 
@@ -1197,10 +1227,12 @@ public class GPolygon2DLayer
          return;
       }
 
-      _currentTiles.clear();
-      final Frustum currentFrustum = dc.getView().getFrustumInModelCoordinates();
-      for (final Tile tile : _topTiles) {
-         selectVisibleTiles(dc, tile, currentFrustum, 0);
+      final Frustum frustum = dc.getView().getFrustumInModelCoordinates();
+      synchronized (_currentTiles) {
+         _currentTiles.clear();
+         for (final Tile tile : _topTiles) {
+            selectVisibleTiles(dc, tile, frustum, 0);
+         }
       }
 
       _lastCurrentTilesCalculated = now;
@@ -1215,8 +1247,9 @@ public class GPolygon2DLayer
          return false;
       }
 
-      final boolean bigEnough = (computeProjectedPixels(dc) >= 25);
-      return bigEnough;
+      //      final boolean bigEnough = (computeProjectedPixels(dc) >= 25);
+      //      return bigEnough;
+      return true;
    }
 
 
@@ -1224,7 +1257,7 @@ public class GPolygon2DLayer
    protected final void doPreRender(final DrawContext dc) {
       _lastView = dc.getView();
 
-      _lastVisibleSector = dc.getVisibleSector();
+      //      _lastVisibleSector = dc.getVisibleSector();
 
       calculateCurrentTiles(dc);
 
@@ -1250,10 +1283,11 @@ public class GPolygon2DLayer
          tile.render(dc);
       }
 
-      for (final Tile topTile : _topTiles) {
-         topTile.moveUpInCache();
+      if (_topTiles != null) {
+         for (final Tile topTile : _topTiles) {
+            topTile.moveUpInCache();
+         }
       }
-
    }
 
 
