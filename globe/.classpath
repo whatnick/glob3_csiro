@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path=""/>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/euclid"/>
 	<classpathentry kind="lib" path="libs/jts-1.9.jar"/>
 	<classpathentry kind="lib" path="libs/TableLayout-bin-jdk1.5-2007-04-21.jar"/>
@@ -23,11 +22,11 @@
 	<classpathentry kind="lib" path="libs/jai_core.jar"/>
 	<classpathentry kind="lib" path="libs/jogl/gluegen-rt.jar">
 		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="globe/libs/jogl"/>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="globe/libs/jogl/linux-amd64"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="libs/jogl/jogl.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/worldwind.jar" sourcepath="/home/dgd/Escritorio/worldwind-0.6.651.14101"/>
+	<classpathentry exported="true" kind="lib" path="libs/worldwind.jar" sourcepath="/home/fpulido/Escritorio/IGO-Repository/ww/src/gov/nasa/worldwindow"/>
 	<classpathentry kind="lib" path="libs/netcdf/netcdf-4.2.jar"/>
 	<classpathentry kind="lib" path="libs/netcdf/slf4j-api-1.5.6.jar"/>
 	<classpathentry kind="lib" path="libs/netcdf/slf4j-jdk14-1.5.6.jar"/>
@@ -38,5 +37,6 @@
 	<classpathentry kind="lib" path="libs/gt/gt-referencing-2.7-M3.jar"/>
 	<classpathentry kind="lib" path="libs/gt/gt-shapefile-2.7-M3.jar"/>
 	<classpathentry kind="lib" path="libs/gt/jts-1.11.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.6.0_20"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
