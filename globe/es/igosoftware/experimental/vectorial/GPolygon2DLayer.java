@@ -710,7 +710,7 @@ public class GPolygon2DLayer
    private final GPolygon2DRenderer                      _renderer;
    private GRenderingAttributes                          _attributes;
 
-   private Globe                                         _lastGlobe;
+   //   private Globe                                         _lastGlobe;
    private List<Tile>                                    _topTiles;
    private final List<Tile>                              _currentTiles               = new ArrayList<Tile>();
 
