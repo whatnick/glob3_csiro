@@ -238,9 +238,16 @@ public class GGlobeDemo
       //      final GProjection projection = GProjection.EPSG_4326;
       //      final boolean convertToRadians = true;
 
-      final String fileName = "data/shp/british_isles.shp/roads.shp";
+      //      final String fileName = "data/shp/british_isles.shp/roads.shp";
+      //      final GProjection projection = GProjection.EPSG_4326;
+      //      final boolean convertToRadians = true;
+      //      
+      final String fileName = "data/shp/berlin.shp/roads.shp";
       final GProjection projection = GProjection.EPSG_4326;
       final boolean convertToRadians = true;
+
+      final String buidings = "data/shp/berlin.shp/buildings.shp";
+
 
       // final String fileName = "data/shp/parcelasEdificadas.shp";
       // final GProjection projection = GProjection.EPSG_23029;
@@ -260,7 +267,15 @@ public class GGlobeDemo
 
                final GPolygon2DLayer layer = new GPolygon2DLayer(polygons, projection, true);
                layer.setShowExtents(true);
+
+
+               final List<IPolygon2D<?>> buildings_ = GShapeLoader.readPolygons(buidings, convertToRadians);
+
+               final GPolygon2DLayer buildings_layer = new GPolygon2DLayer(buildings_, projection, true);
+               buildings_layer.setShowExtents(true);
+
                layers.add(layer);
+               layers.add(buildings_layer);
             }
             catch (final IOException e) {
                e.printStackTrace();
