@@ -96,7 +96,7 @@ public interface IGlobeApplication {
    public LayerList getLayerList();
 
 
-   public List<IGlobeLayer> getLayers();
+   public List<IGlobeLayer> getGlobeLayers();
 
 
    public void redraw();

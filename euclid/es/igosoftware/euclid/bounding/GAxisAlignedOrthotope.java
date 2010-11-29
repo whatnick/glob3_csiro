@@ -387,8 +387,8 @@ GeometryT extends GAxisAlignedOrthotope<VectorT, GeometryT>
    //      System.out.println(merge(orthotopes2));
    //   }
 
-   public boolean isFullInside(final GAxisAlignedOrthotope<VectorT, ?> orthotope) {
-      return _lower.greaterOrEquals(orthotope._lower) && _upper.lessOrEquals(orthotope._upper);
+   public boolean isFullInside(final GAxisAlignedOrthotope<VectorT, ?> that) {
+      return _lower.greaterOrEquals(that._lower) && _upper.lessOrEquals(that._upper);
    }
 
 

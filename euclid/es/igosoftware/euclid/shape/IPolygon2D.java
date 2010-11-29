@@ -58,4 +58,7 @@ GeometryT extends IPolygon<IVector2<?>, GSegment2D, GeometryT, GAxisAlignedRecta
    public IPolygon2D<?> createSimplified(final double capsRadiansTolerance);
 
 
+   public GRenderType getRenderType();
+
+
 }

@@ -41,7 +41,9 @@ import java.util.ArrayList;
 import com.sun.jna.Pointer;
 
 import es.igosoftware.euclid.vector.GVector2D;
+import es.igosoftware.euclid.vector.GVector2F;
 import es.igosoftware.euclid.vector.GVector3D;
+import es.igosoftware.euclid.vector.GVector3F;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
 
@@ -152,7 +154,15 @@ public enum GProjection {
       }
       //      }
 
-      return new GVector3D(xB[0], yB[0], zB[0]);
+      if (point instanceof GVector3D) {
+         return new GVector3D(xB[0], yB[0], zB[0]);
+      }
+      else if (point instanceof GVector3F) {
+         return new GVector3F((float) xB[0], (float) yB[0], (float) zB[0]);
+      }
+      else {
+         throw new IllegalArgumentException("Unsupported point type " + point.getClass());
+      }
    }
 
 
@@ -187,7 +197,15 @@ public enum GProjection {
       }
       //      }
 
-      return new GVector2D(xB[0], yB[0]);
+      if (point instanceof GVector2D) {
+         return new GVector2D(xB[0], yB[0]);
+      }
+      else if (point instanceof GVector2F) {
+         return new GVector2F((float) xB[0], (float) yB[0]);
+      }
+      else {
+         throw new IllegalArgumentException("Unsupported point type " + point.getClass());
+      }
    }
 
 

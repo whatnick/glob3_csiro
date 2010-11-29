@@ -42,11 +42,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 import es.igosoftware.euclid.vector.GVector2D;
+import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVectorTransformer;
 import es.igosoftware.util.GMath;
@@ -62,6 +64,33 @@ public final class GAxisAlignedRectangle
    private static final long                 serialVersionUID = 1L;
 
    public static final GAxisAlignedRectangle EMPTY            = new GAxisAlignedRectangle(GVector2D.ZERO, GVector2D.ZERO);
+
+
+   public static GAxisAlignedRectangle minimumBoundingRectangle(final Collection<? extends IPointsContainer<IVector2<?>, ?>> pointsContainers) {
+      double minX = Double.POSITIVE_INFINITY;
+      double minY = Double.POSITIVE_INFINITY;
+
+      double maxX = Double.NEGATIVE_INFINITY;
+      double maxY = Double.NEGATIVE_INFINITY;
+
+      for (final IPointsContainer<IVector2<?>, ?> pointsContainer : pointsContainers) {
+         for (final IVector2<?> point : pointsContainer) {
+            final double x = point.x();
+            final double y = point.y();
+
+            minX = Math.min(minX, x);
+            minY = Math.min(minY, y);
+
+            maxX = Math.max(maxX, x);
+            maxY = Math.max(maxY, y);
+         }
+      }
+
+      final IVector2<?> lower = new GVector2D(minX, minY);
+      final IVector2<?> upper = new GVector2D(maxX, maxY);
+
+      return new GAxisAlignedRectangle(lower, upper);
+   }
 
 
    public static GAxisAlignedRectangle minimumBoundingRectangle(final Iterable<? extends IVector2<?>> points) {
@@ -551,6 +580,23 @@ public final class GAxisAlignedRectangle
    @Override
    public boolean touchesBounds(final IBounds<IVector2<?>, ?> that) {
       return touches((IBounds2D<?>) that);
+   }
+
+
+   public double area() {
+      final double width = getWidth();
+      final double height = getHeight();
+      return width * height;
+   }
+
+
+   private double getWidth() {
+      return _upper.x() - _lower.x();
+   }
+
+
+   private double getHeight() {
+      return _upper.y() - _lower.y();
    }
 
 }
