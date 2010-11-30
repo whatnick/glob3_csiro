@@ -12,6 +12,7 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
 import es.igosoftware.globe.actions.ILayerAction;
+import es.igosoftware.globe.attributes.GBooleanLayerAttribute;
 import es.igosoftware.globe.attributes.GColorLayerAttribute;
 import es.igosoftware.globe.attributes.GFloatLayerAttribute;
 import es.igosoftware.globe.attributes.GGroupAttribute;
@@ -760,11 +761,12 @@ public class GPolygon2DLayer
    //   private float                                         _lastComputedProjectedPixels;
    private long                                          _lastCurrentTilesCalculated = -1;
 
+   private boolean                                       _debugRendering             = false;
+
 
    public GPolygon2DLayer(final String resourceName,
                           final List<IPolygon2D<?>> polygons,
-                          final GProjection projection,
-                          final boolean debug) {
+                          final GProjection projection) {
       _resourceName = resourceName;
       _projection = projection;
 
@@ -775,26 +777,27 @@ public class GPolygon2DLayer
 
       _renderer = new GPolygon2DRenderer(polygons);
 
-      _attributes = createRenderingAttributes(debug);
+      _attributes = createRenderingAttributes();
    }
 
 
    @Override
    public String getName() {
-      return "Vectorial: " + _resourceName;
+      //      return "Vectorial: " + _resourceName;
+      return _resourceName;
    }
 
 
-   private GRenderingAttributes createRenderingAttributes(final boolean debug) {
+   private GRenderingAttributes createRenderingAttributes() {
       final boolean renderLODIgnores = true;
       final float borderWidth = 1f;
       final Color fillColor = createColor(new Color(1, 1, 0), _fillColorAlpha);
       final Color borderColor = createColor(Color.WHITE, _borderColorAlpha);
       final double lodMinSize = 5;
-      final boolean debugLODRendering = debug;
+      final boolean debugLODRendering = _debugRendering;
       final int textureWidth = 256;
       final int textureHeight = 256;
-      final boolean renderBounds = debug;
+      final boolean renderBounds = _debugRendering;
 
       return new GRenderingAttributes(renderLODIgnores, borderWidth, fillColor, borderColor, lodMinSize, debugLODRendering,
                textureWidth, textureHeight, renderBounds);
@@ -885,7 +888,33 @@ public class GPolygon2DLayer
 
       addFillAttributes(result);
 
+      addAdvancedAttributes(result);
+
       return result;
+   }
+
+
+   private void addAdvancedAttributes(final List<ILayerAttribute<?>> result) {
+      final ILayerAttribute<?> debugRendering = new GBooleanLayerAttribute("Debug Rendering", "DebugRendering") {
+         @Override
+         public boolean isVisible() {
+            return true;
+         }
+
+
+         @Override
+         public Boolean get() {
+            return isDebugRendering();
+         }
+
+
+         @Override
+         public void set(final Boolean value) {
+            setDebugRendering(value);
+         }
+      };
+
+      result.add(new GGroupAttribute("Advanced", debugRendering));
    }
 
 
@@ -1341,6 +1370,28 @@ public class GPolygon2DLayer
       }
 
       GWWUtils.popOffset(gl);
+   }
+
+
+   public boolean isDebugRendering() {
+      return _debugRendering;
+   }
+
+
+   public void setDebugRendering(final boolean newValue) {
+      if (newValue == _debugRendering) {
+         return;
+      }
+
+      _debugRendering = newValue;
+
+      _attributes = new GRenderingAttributes(_attributes._renderLODIgnores, _attributes._borderWidth, _attributes._fillColor,
+               _attributes._borderColor, _attributes._lodMinSize, newValue, _attributes._textureWidth,
+               _attributes._textureHeight, newValue);
+
+      clearCache();
+
+      firePropertyChange("DebugRendering", !newValue, newValue);
    }
 
 
