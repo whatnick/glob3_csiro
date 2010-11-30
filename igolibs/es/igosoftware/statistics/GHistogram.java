@@ -62,8 +62,8 @@ import org.jCharts.properties.PropertyException;
 import org.jCharts.properties.util.ChartFont;
 import org.jCharts.types.ChartType;
 
-import es.igosoftware.util.GMath;
 import es.igosoftware.util.GLoggerObject;
+import es.igosoftware.util.GMath;
 
 
 public class GHistogram<T>
@@ -403,14 +403,13 @@ public class GHistogram<T>
          dataValues[0][i] = getFrequency(i);
       }
 
-
       final String axisYTitle = "Frequency";
       //      final String averageStr = NumberFormat.getInstance().format(GMath.roundTo(getAverage(), decimals)) + unitName;
       //      final String standardDeviationString = NumberFormat.getInstance().format(GMath.roundTo(getStandardDeviation(), decimals))
       //                                             + unitName;
-      final String averageStr = NumberFormat.getInstance().format(GMath.roundTo(getAverage(), decimals)) + unitName;
+      final String averageStr = NumberFormat.getInstance().format(GMath.roundTo(getAverage(), decimals));
       final String standardDeviationString = NumberFormat.getInstance().format(GMath.roundTo(getStandardDeviation(), decimals));
-      final String title = "GHistogram: " + chartTitle + "  (Average: " + averageStr + " , Standard Deviation: "
+      final String title = "GHistogram " + unitName + ": " + chartTitle + "  (Average: " + averageStr + " , Standard Deviation: "
                            + standardDeviationString + ")";
       plot(fileName, title, axisXTitle, axisYTitle, new String[] { axisYTitle }, new Paint[] { color }, dataLabels, dataValues);
    }

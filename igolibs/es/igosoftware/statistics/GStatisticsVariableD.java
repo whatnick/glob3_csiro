@@ -157,9 +157,8 @@ public class GStatisticsVariableD
 
 
          _histogram.showStatistics();
-
-         _histogram.savePNG(this._name + " Distribution.png", this._name, this._name + " Distribution", new Color(0.8f, 0.1f, 0),
-                  3, this._name);
+         final String targetFile = _targetDirectory + this._unitName + "-" + this._name + ".png";
+         _histogram.savePNG(targetFile, this._name, this._name + " Distribution", new Color(0.8f, 0.1f, 0), 3, this._unitName);
       }
 
    }
