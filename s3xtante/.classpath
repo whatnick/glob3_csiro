@@ -31,7 +31,7 @@
 	<classpathentry kind="lib" path="lib/sextante/sextante_gridCategorical-0.6-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/sextante/sextante_gridStatistics-0.6-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/sextante/sextante_gridTools-0.6-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/sextante/sextante_gui-0.6-SNAPSHOT.jar" sourcepath="E:/projects/sextante/workspaces/gvsig_1_9/sextante_gui"/>
+	<classpathentry kind="lib" path="lib/sextante/sextante_gui-0.6-SNAPSHOT.jar" sourcepath="/home/fpulido/Escritorio/IGO-Repository/s3xtante/lib/sextante/sextante_gui-0.6-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/sextante/sextante_hydrology-0.6-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/sextante/sextante_imageAnalysis-0.6-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/sextante/sextante_lighting-0.6-SNAPSHOT.jar"/>
