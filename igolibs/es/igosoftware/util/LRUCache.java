@@ -247,6 +247,19 @@ public final class LRUCache<KeyT, ValueT, ExceptionT extends Exception> {
    }
 
 
+   public synchronized boolean moveUp(final KeyT key) {
+      for (final LRUCache.Entry<KeyT, ValueT, ExceptionT> entry : _entries) {
+         if (entry._key.equals(key)) {
+            _entries.remove(entry);
+            _entries.addFirst(entry);
+            return true;
+         }
+      }
+
+      return false;
+   }
+
+
    @SuppressWarnings("unchecked")
    public synchronized ValueT get(final KeyT key) throws ExceptionT {
       _callsCount++;
