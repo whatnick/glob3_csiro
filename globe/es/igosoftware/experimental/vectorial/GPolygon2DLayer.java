@@ -279,65 +279,63 @@ public class GPolygon2DLayer
 
    private static RendererFutureTask findTask() {
       synchronized (RENDERING_TASKS) {
-
          if (RENDERING_TASKS.isEmpty()) {
             return null;
          }
 
-
-         double biggestPriority = Double.NEGATIVE_INFINITY;
-         RendererFutureTask selectedTask = null;
-
-
-         for (final RendererFutureTask task : RENDERING_TASKS) {
-            //            final List<Tile> currentTiles = task._layer._currentTiles;
-            //            try {
-            //               for (final Tile currentTile : currentTiles) {
-            //                  if (task._tileSector.equals(currentTile._tileSector)) {
-            //                     final double currentPriority = task._priority;
-            //                     if (currentPriority > biggestPriority) {
-            //                        biggestPriority = currentPriority;
-            //                        selectedTask = task;
-            //                     }
-            //                  }
-            //               }
-            //            }
-            //            catch (final ConcurrentModificationException e) {
-            //
-            //            }
-
-            final List<Tile> currentTiles = task._layer._currentTiles;
-            synchronized (currentTiles) {
-               for (final Tile currentTile : currentTiles) {
-                  if (task._tileSector.equals(currentTile._tileSector)) {
-                     final double currentPriority = task._priority;
-                     if (currentPriority > biggestPriority) {
-                        biggestPriority = currentPriority;
-                        selectedTask = task;
-                     }
-                  }
-               }
-            }
-
-
-            //            final Sector lastVisibleSector = task._layer._lastVisibleSector;
-            //            if (task._tileSector.intersects(lastVisibleSector)) {
-            //               final double currentPriority = task._priority;
-            //               if (currentPriority > biggestPriority) {
-            //                  biggestPriority = currentPriority;
-            //                  selectedTask = task;
-            //               }
-            //            }
+         RendererFutureTask selectedTask = findBestTaskForCurrentTiles();
+         if (selectedTask == null) {
+            selectedTask = findBestTask();
          }
 
          if (selectedTask != null) {
             RENDERING_TASKS.remove(selectedTask);
             return selectedTask;
          }
-
-         return null;
-
       }
+
+      return null;
+   }
+
+
+   private static RendererFutureTask findBestTask() {
+      double biggestPriority = Double.NEGATIVE_INFINITY;
+      RendererFutureTask selectedTask = null;
+
+
+      for (final RendererFutureTask task : RENDERING_TASKS) {
+         final double currentPriority = task._priority;
+         if (currentPriority > biggestPriority) {
+            biggestPriority = currentPriority;
+            selectedTask = task;
+         }
+      }
+
+      return selectedTask;
+   }
+
+
+   private static RendererFutureTask findBestTaskForCurrentTiles() {
+      double biggestPriority = Double.NEGATIVE_INFINITY;
+      RendererFutureTask selectedTask = null;
+
+
+      for (final RendererFutureTask task : RENDERING_TASKS) {
+         final List<Tile> currentTiles = task._layer._currentTiles;
+         synchronized (currentTiles) {
+            for (final Tile currentTile : currentTiles) {
+               if (task._tileSector.equals(currentTile._tileSector)) {
+                  final double currentPriority = task._priority;
+                  if (currentPriority > biggestPriority) {
+                     biggestPriority = currentPriority;
+                     selectedTask = task;
+                  }
+               }
+            }
+         }
+      }
+
+      return selectedTask;
    }
 
 
