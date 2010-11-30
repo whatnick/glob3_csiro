@@ -710,6 +710,7 @@ public class GPolygon2DLayer
 
       private void moveUpInCache() {
          IMAGES_CACHE.get(createRenderingKey());
+         //         IMAGES_CACHE.moveUp(createRenderingKey());
       }
    }
 
@@ -1310,7 +1311,18 @@ public class GPolygon2DLayer
       }
 
       if (_topTiles != null) {
+         //         final Frustum frustum = dc.getView().getFrustumInModelCoordinates();
+
          for (final Tile topTile : _topTiles) {
+
+            //            if (!topTile._tileSector.intersects(_sector)) {
+            //               continue;
+            //            }
+            //
+            //            if (!topTile.getBox(dc).intersects(frustum)) {
+            //               continue;
+            //            }
+
             topTile.moveUpInCache();
          }
       }
