@@ -360,4 +360,10 @@ public final class GSimplePolygon2D
       throw new RuntimeException("not yet implemented");
    }
 
+
+   @Override
+   public GRenderType getRenderType() {
+      return GRenderType.POLYGON;
+   }
+
 }

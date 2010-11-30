@@ -226,4 +226,10 @@ public final class GQuad2D
       return result;
    }
 
+
+   @Override
+   public GRenderType getRenderType() {
+      return GRenderType.POLYGON;
+   }
+
 }

@@ -190,4 +190,10 @@ public final class GComplexPolygon2D
       return false;
    }
 
+
+   @Override
+   public GRenderType getRenderType() {
+      return GRenderType.POLYGON;
+   }
+
 }

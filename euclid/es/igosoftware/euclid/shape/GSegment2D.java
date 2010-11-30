@@ -36,6 +36,9 @@
 
 package es.igosoftware.euclid.shape;
 
+import java.util.Collections;
+import java.util.List;
+
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.vector.GMutableVector2;
 import es.igosoftware.euclid.vector.GVector2D;
@@ -46,7 +49,9 @@ import es.igosoftware.util.GMath;
 
 public final class GSegment2D
          extends
-            GSegment<IVector2<?>, GSegment2D, GAxisAlignedRectangle> {
+            GSegment<IVector2<?>, GSegment2D, GAxisAlignedRectangle>
+         implements
+            IPolygon2D<GSegment2D> {
 
    private static final long serialVersionUID = 1L;
 
@@ -139,5 +144,55 @@ public final class GSegment2D
       return new GSegment2D(_from.transformedBy(transformer), _to.transformedBy(transformer));
    }
 
+
+   @Override
+   public boolean isConvex() {
+      return false;
+   }
+
+
+   @Override
+   public boolean isSelfIntersected() {
+      return false;
+   }
+
+
+   @Override
+   public IPolytope<IVector2<?>, GSegment2D, ?, GAxisAlignedRectangle> getHull() {
+      return this;
+   }
+
+
+   @Override
+   public List<GSegment2D> getEdges() {
+      return Collections.singletonList(this);
+   }
+
+
+   @Override
+   public boolean closeTo(final IPolytope<IVector2<?>, GSegment2D, ?, GAxisAlignedRectangle> that) {
+      if (getClass() == that.getClass()) {
+         return closeTo((GSegment2D) that);
+      }
+      return false;
+   }
+
+
+   @Override
+   public List<GTriangle2D> triangulate() {
+      return null;
+   }
+
+
+   @Override
+   public IPolygon2D<?> createSimplified(final double capsRadiansTolerance) {
+      return this;
+   }
+
+
+   @Override
+   public GRenderType getRenderType() {
+      return GRenderType.POLYLINE;
+   }
 
 }

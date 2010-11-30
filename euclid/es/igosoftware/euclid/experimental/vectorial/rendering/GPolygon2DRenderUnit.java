@@ -19,38 +19,33 @@ import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
 
 
-class GPolygon2DRenderUnit {
+class GPolygon2DRenderUnit
+         implements
+            IPolygon2DRenderUnit {
 
 
-   private final GGeometryQuadtree<IPolygon2D<?>> _quadtree;
-   private final GAxisAlignedRectangle            _region;
-   private final GRenderingAttributes             _attributes;
+   @Override
+   public BufferedImage render(final GGeometryQuadtree<IPolygon2D<?>> quadtree,
+                               final GAxisAlignedRectangle region,
+                               final GRenderingAttributes attributes) {
 
+      final IVector2<?> extent = region.getExtent();
 
-   GPolygon2DRenderUnit(final GGeometryQuadtree<IPolygon2D<?>> quadtree,
-                        final GAxisAlignedRectangle region,
-                        final GRenderingAttributes attributes) {
-      _quadtree = quadtree;
-      _region = region;
-      _attributes = attributes;
-   }
+      //      final int width;
+      //      final int height;
+      //
+      //      if (extent.x() > extent.y()) {
+      //         height = attributes._textureDimension;
+      //         width = (int) Math.round(extent.x() / extent.y() * attributes._textureDimension);
+      //      }
+      //      else {
+      //         width = attributes._textureDimension;
+      //         height = (int) Math.round(extent.y() / extent.x() * attributes._textureDimension);
+      //      }
+      final int width = attributes._textureWidth;
+      final int height = attributes._textureHeight;
 
-
-   BufferedImage render() {
-
-      final IVector2<?> extent = _region.getExtent();
-
-      final int width;
-      final int height;
-
-      if (extent.x() > extent.y()) {
-         height = _attributes._textureDimension;
-         width = (int) Math.round(extent.x() / extent.y() * _attributes._textureDimension);
-      }
-      else {
-         width = _attributes._textureDimension;
-         height = (int) Math.round(extent.y() / extent.x() * _attributes._textureDimension);
-      }
+      //      System.out.println("Rendering image of " + width + "x" + height);
 
       final IVector2<?> scale = new GVector2D(width, height).div(extent);
 
@@ -60,47 +55,50 @@ class GPolygon2DRenderUnit {
 
       final Graphics2D g2d = renderedImage.createGraphics();
       g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-      g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+      //      g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
 
       final AffineTransform transformFlipY = AffineTransform.getScaleInstance(1, -1);
       transformFlipY.concatenate(AffineTransform.getTranslateInstance(0, -height));
 
-      final AffineTransform translation = AffineTransform.getTranslateInstance(-_region._lower.x(), -_region._lower.y());
-      final AffineTransform scaling = AffineTransform.getScaleInstance(scale.x(), scale.y());
+      //      final AffineTransform translation = AffineTransform.getTranslateInstance(-region._lower.x(), -region._lower.y());
+      //      final AffineTransform scaling = AffineTransform.getScaleInstance(scale.x(), scale.y());
 
       final AffineTransform transform = new AffineTransform();
       transform.concatenate(transformFlipY);
-      transform.concatenate(scaling);
-      transform.concatenate(translation);
+      //      transform.concatenate(scaling);
+      //      transform.concatenate(translation);
 
       g2d.setTransform(transform);
 
-      processNode(_quadtree.getRoot(), scale, g2d, renderedImage);
+      processNode(quadtree.getRoot(), quadtree, region, attributes, scale, g2d, renderedImage);
 
       return renderedImage;
    }
 
 
    private void processNode(final GGTNode<IVector2<?>, GAxisAlignedRectangle, IPolygon2D<?>> node,
+                            final GGeometryQuadtree<IPolygon2D<?>> quadtree,
+                            final GAxisAlignedRectangle region,
+                            final GRenderingAttributes attributes,
                             final IVector2<?> scale,
                             final Graphics2D g2d,
                             final BufferedImage renderedImage) {
 
       final GAxisAlignedRectangle nodeBounds = node.getBounds();
 
-      if (!nodeBounds.touches(_region)) {
+      if (!nodeBounds.touches(region)) {
          return;
       }
 
 
       final IVector2<?> scaledNodeExtent = nodeBounds.getExtent().scale(scale);
       final double projectedSize = scaledNodeExtent.x() * scaledNodeExtent.y();
-      if (projectedSize <= _attributes._lodMinSize) {
-         if (_attributes._renderLODIgnores || _attributes._debugLODRendering) {
-            final Color color = _attributes._debugLODRendering ? Color.RED : _attributes._borderColor;
+      if (projectedSize <= attributes._lodMinSize) {
+         if (attributes._renderLODIgnores || attributes._debugLODRendering) {
+            final Color color = attributes._debugLODRendering ? Color.RED : attributes._lodColor;
 
-            final IVector2<?> projectedCenter = nodeBounds._center.sub(_region._lower).scale(scale);
+            final IVector2<?> projectedCenter = nodeBounds._center.sub(region._lower).scale(scale);
             setPixel(renderedImage, projectedCenter, color);
          }
 
@@ -112,27 +110,30 @@ class GPolygon2DRenderUnit {
          final GGTInnerNode<IVector2<?>, GAxisAlignedRectangle, IPolygon2D<?>> inner = (GGTInnerNode<IVector2<?>, GAxisAlignedRectangle, IPolygon2D<?>>) node;
 
          for (final GGTNode<IVector2<?>, GAxisAlignedRectangle, IPolygon2D<?>> child : inner.getChildren()) {
-            processNode(child, scale, g2d, renderedImage);
+            processNode(child, quadtree, region, attributes, scale, g2d, renderedImage);
          }
       }
 
-      renderNodeGeometries(node, scale, g2d, renderedImage);
+      // renderNodeGeometries(node, scale, g2d, renderedImage);
+      renderNodeGeometries(node, region, attributes, scale, g2d, renderedImage);
    }
 
 
    private void renderNodeGeometries(final GGTNode<IVector2<?>, GAxisAlignedRectangle, IPolygon2D<?>> node,
+                                     final GAxisAlignedRectangle region,
+                                     final GRenderingAttributes attributes,
                                      final IVector2<?> scale,
                                      final Graphics2D g2d,
                                      final BufferedImage renderedImage) {
 
 
-      if (_attributes._renderBounds) {
+      if (attributes._renderBounds) {
          final GAxisAlignedRectangle nodeBounds = node.getBounds();
 
-         final IVector2<?> nodeLower = nodeBounds._lower;
-         final IVector2<?> nodeUpper = nodeBounds._upper;
+         final IVector2<?> nodeLower = nodeBounds._lower.sub(region._lower).scale(scale);
+         final IVector2<?> nodeUpper = nodeBounds._upper.sub(region._lower).scale(scale);
 
-         g2d.setStroke(new BasicStroke(2));
+         g2d.setStroke(new BasicStroke(0.25f));
          g2d.setColor(Color.GREEN);
          final int x = Math.round((float) nodeLower.x());
          final int y = Math.round((float) nodeLower.y());
@@ -143,53 +144,11 @@ class GPolygon2DRenderUnit {
 
 
       for (final IPolygon2D<?> geometry : node.getGeometries()) {
-         if (geometry.getBounds().touches(_region)) {
-            renderGeometry(geometry, scale, renderedImage, g2d);
+         if (geometry.getBounds().touches(region)) {
+            renderGeometry(geometry, scale, renderedImage, g2d, region, attributes);
          }
       }
 
-   }
-
-
-   private void renderGeometry(final IPolygon2D<?> geometry,
-                               final IVector2<?> scale,
-                               final Graphics2D g2d,
-                               final BufferedImage renderedImage) {
-      final IVector2<?> scaledGeometryExtent = geometry.getBounds().getExtent().scale(scale);
-      final double projectedSize = scaledGeometryExtent.x() * scaledGeometryExtent.y();
-      if (projectedSize <= _attributes._lodMinSize) {
-         if (_attributes._renderLODIgnores || _attributes._debugLODRendering) {
-            final Color color = _attributes._debugLODRendering ? Color.MAGENTA : _attributes._borderColor;
-
-            final IVector2<?> projectedCenter = geometry.getBounds()._center.sub(_region._lower).scale(scale);
-            setPixel(renderedImage, projectedCenter, color);
-         }
-
-         return;
-      }
-
-
-      final int nPoints = geometry.getPointsCount();
-      final int[] xPoints = new int[nPoints];
-      final int[] yPoints = new int[nPoints];
-
-      int i = 0;
-      for (final IVector2<?> point : geometry.getPoints()) {
-         xPoints[i] = Math.round((float) point.x());
-         yPoints[i] = Math.round((float) point.y());
-
-         i++;
-      }
-
-
-      if (_attributes._stroke != null) {
-         g2d.setStroke(_attributes._stroke);
-         g2d.setColor(_attributes._fillColor);
-         g2d.fillPolygon(xPoints, yPoints, nPoints);
-      }
-
-      g2d.setColor(_attributes._borderColor);
-      g2d.drawPolygon(xPoints, yPoints, nPoints);
    }
 
 
@@ -224,14 +183,16 @@ class GPolygon2DRenderUnit {
          final int imageHeight = renderedImage.getHeight();
 
          if ((imageX < imageWidth) && (imageY < imageHeight)) {
-            final int oldRGB = renderedImage.getRGB(imageX, imageY);
+            final int rotatedImageY = imageHeight - 1 - imageY;
+
+            final int oldRGB = renderedImage.getRGB(imageX, rotatedImageY);
             if (oldRGB == 0) {
-               renderedImage.setRGB(imageX, imageHeight - 1 - imageY, color.getRGB());
+               renderedImage.setRGB(imageX, rotatedImageY, color.getRGB());
             }
             else {
                final Color oldColor = new Color(oldRGB);
                final Color mixed = mix(oldColor, color);
-               renderedImage.setRGB(imageX, imageHeight - 1 - imageY, mixed.getRGB());
+               renderedImage.setRGB(imageX, rotatedImageY, mixed.getRGB());
             }
          }
       }
@@ -260,13 +221,103 @@ class GPolygon2DRenderUnit {
    private void renderGeometry(final IPolygon2D<?> geometry,
                                final IVector2<?> scale,
                                final BufferedImage renderedImage,
-                               final Graphics2D g2d) {
+                               final Graphics2D g2d,
+                               final GAxisAlignedRectangle region,
+                               final GRenderingAttributes attributes) {
+
+      final IPolygon2D<?> geometryToDraw;
       if (geometry instanceof GComplexPolytope) {
-         renderGeometry((IPolygon2D<?>) geometry.getHull(), scale, g2d, renderedImage);
+         geometryToDraw = (IPolygon2D<?>) geometry.getHull();
       }
       else {
-         renderGeometry(geometry, scale, g2d, renderedImage);
+         geometryToDraw = geometry;
+      }
+
+
+      final GAxisAlignedRectangle geometryBounds = geometryToDraw.getBounds();
+      final IVector2<?> scaledGeometryExtent = geometryBounds.getExtent().scale(scale);
+      final double projectedSize = scaledGeometryExtent.x() * scaledGeometryExtent.y();
+      if (projectedSize <= attributes._lodMinSize) {
+         if (attributes._renderLODIgnores || attributes._debugLODRendering) {
+            final Color color = attributes._debugLODRendering ? Color.MAGENTA : attributes._lodColor;
+
+            final IVector2<?> projectedCenter = geometryBounds._center.sub(region._lower).scale(scale);
+            setPixel(renderedImage, projectedCenter, color);
+         }
+
+         return;
+      }
+
+
+      final int nPoints = geometryToDraw.getPointsCount();
+      final int[] xPoints = new int[nPoints];
+      final int[] yPoints = new int[nPoints];
+
+      for (int i = 0; i < nPoints; i++) {
+         final IVector2<?> point = geometryToDraw.getPoint(i).sub(region._lower).scale(scale);
+
+         xPoints[i] = Math.round((float) point.x());
+         yPoints[i] = Math.round((float) point.y());
+      }
+
+      switch (geometryToDraw.getRenderType()) {
+         case POLYGON:
+
+            drawPolygon(g2d, attributes, nPoints, xPoints, yPoints);
+
+            break;
+
+         case POLYLINE:
+            renderPolyline(g2d, attributes, nPoints, xPoints, yPoints);
+
+            break;
+      }
+
+
+   }
+
+
+   private void renderPolyline(final Graphics2D g2d,
+                               final GRenderingAttributes attributes,
+                               final int nPoints,
+                               final int[] xPoints,
+                               final int[] yPoints) {
+      // render border
+      if (attributes._borderWidth > 0) {
+         //final float borderWidth = (float) (attributes._borderWidth / ((scale.x() + scale.y()) / 2));
+         final float borderWidth = attributes._borderWidth;
+         if (borderWidth > 0) {
+            final BasicStroke borderStroke = new BasicStroke(borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+            g2d.setStroke(borderStroke);
+            g2d.setColor(attributes._borderColor);
+            g2d.drawPolyline(xPoints, yPoints, nPoints);
+         }
       }
    }
 
+
+   private void drawPolygon(final Graphics2D g2d,
+                            final GRenderingAttributes attributes,
+                            final int nPoints,
+                            final int[] xPoints,
+                            final int[] yPoints) {
+      // fill polygon
+      g2d.setColor(attributes._fillColor);
+      g2d.fillPolygon(xPoints, yPoints, nPoints);
+
+
+      // render border
+      if (attributes._borderWidth > 0) {
+         //final float borderWidth = (float) (attributes._borderWidth / ((scale.x() + scale.y()) / 2));
+         final float borderWidth = attributes._borderWidth;
+         if (borderWidth > 0) {
+            final BasicStroke borderStroke = new BasicStroke(borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+            g2d.setStroke(borderStroke);
+            g2d.setColor(attributes._borderColor);
+            g2d.drawPolygon(xPoints, yPoints, nPoints);
+         }
+      }
+   }
 }

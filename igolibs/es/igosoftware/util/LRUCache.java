@@ -51,6 +51,31 @@ public final class LRUCache<KeyT, ValueT, ExceptionT extends Exception> {
    }
 
 
+   public static interface ValuesVisitor<KeyT, ValueT, ExceptionT extends Exception> {
+      public void visit(final KeyT key,
+                        final ValueT value,
+                        final ExceptionT exception);
+   }
+
+
+   public static class Value<KeyT, ValueT, ExceptionT extends Exception> {
+
+      public final KeyT       _key;
+      public final ValueT     _value;
+      public final ExceptionT _exception;
+
+
+      private Value(final KeyT key,
+                    final ValueT value,
+                    final ExceptionT exception) {
+         _key = key;
+         _value = value;
+         _exception = exception;
+      }
+
+   }
+
+
    public static class Entry<KeyT, ValueT, ExceptionT extends Exception> {
       private static final long serialVersionUID = 1L;
 
@@ -82,10 +107,9 @@ public final class LRUCache<KeyT, ValueT, ExceptionT extends Exception> {
       }
 
 
-      @SuppressWarnings("cast")
       public ValueT getValue() throws ExceptionT {
          if (_exception != null) {
-            throw (ExceptionT) _exception;
+            throw _exception;
          }
          return _value;
       }
@@ -128,8 +152,12 @@ public final class LRUCache<KeyT, ValueT, ExceptionT extends Exception> {
 
    private final LinkedList<LRUCache.Entry<KeyT, ValueT, ExceptionT>> _entries;
 
-   private int                                                        _hits   = 0;
-   private int                                                        _misses = 0;
+   private final LRUCache.ValuesVisitor<KeyT, ValueT, ExceptionT>     _entryRemovedVisitor;
+
+   private int                                                        _hits       = 0;
+   private int                                                        _misses     = 0;
+   private int                                                        _callsCount = 0;
+   private final int                                                  _statisticsInterval;
 
 
    public LRUCache(final int maximumSize,
@@ -146,6 +174,21 @@ public final class LRUCache<KeyT, ValueT, ExceptionT extends Exception> {
 
 
    public LRUCache(final LRUCache.SizePolicy<KeyT, ValueT, ExceptionT> sizePolicy,
+                   final LRUCache.ValueFactory<KeyT, ValueT, ExceptionT> factory,
+                   final LRUCache.ValuesVisitor<KeyT, ValueT, ExceptionT> entryRemovedVisitor,
+                   final int statisticsInterval) {
+      this(sizePolicy, factory, entryRemovedVisitor, null, statisticsInterval);
+   }
+
+
+   public LRUCache(final LRUCache.SizePolicy<KeyT, ValueT, ExceptionT> sizePolicy,
+                   final LRUCache.ValueFactory<KeyT, ValueT, ExceptionT> factory,
+                   final int statisticsInterval) {
+      this(sizePolicy, factory, null, null, statisticsInterval);
+   }
+
+
+   public LRUCache(final LRUCache.SizePolicy<KeyT, ValueT, ExceptionT> sizePolicy,
                    final LRUCache.ValueFactory<KeyT, ValueT, ExceptionT> factory) {
       this(sizePolicy, factory, null);
    }
@@ -154,8 +197,18 @@ public final class LRUCache<KeyT, ValueT, ExceptionT extends Exception> {
    public LRUCache(final LRUCache.SizePolicy<KeyT, ValueT, ExceptionT> sizePolicy,
                    final LRUCache.ValueFactory<KeyT, ValueT, ExceptionT> factory,
                    final List<GTriplet<KeyT, ValueT, ExceptionT>> initialValues) {
+      this(sizePolicy, factory, null, initialValues, 0);
+   }
+
+
+   public LRUCache(final LRUCache.SizePolicy<KeyT, ValueT, ExceptionT> sizePolicy,
+                   final LRUCache.ValueFactory<KeyT, ValueT, ExceptionT> factory,
+                   final LRUCache.ValuesVisitor<KeyT, ValueT, ExceptionT> entryRemovedVisitor,
+                   final List<GTriplet<KeyT, ValueT, ExceptionT>> initialValues,
+                   final int statisticsInterval) {
       _sizePolicy = sizePolicy;
       _factory = factory;
+      _entryRemovedVisitor = entryRemovedVisitor;
 
       if (initialValues == null) {
          _entries = new LinkedList<LRUCache.Entry<KeyT, ValueT, ExceptionT>>();
@@ -167,19 +220,51 @@ public final class LRUCache<KeyT, ValueT, ExceptionT extends Exception> {
                      initialValue._third));
          }
       }
+
+      _statisticsInterval = statisticsInterval;
+   }
+
+
+   public synchronized boolean hasValue(final KeyT key) {
+      for (final LRUCache.Entry<KeyT, ValueT, ExceptionT> entry : _entries) {
+         if (entry._key.equals(key)) {
+            return true;
+         }
+      }
+
+      return false;
+   }
+
+
+   public synchronized ValueT getValueOrNull(final KeyT key) throws ExceptionT {
+      for (final LRUCache.Entry<KeyT, ValueT, ExceptionT> entry : _entries) {
+         if (entry._key.equals(key)) {
+            return entry.getValue();
+         }
+      }
+
+      return null;
    }
 
 
    @SuppressWarnings("unchecked")
    public synchronized ValueT get(final KeyT key) throws ExceptionT {
+      _callsCount++;
+
+      final boolean showStatistics = (_statisticsInterval != 0) && (_callsCount % _statisticsInterval == 0);
+
       for (final LRUCache.Entry<KeyT, ValueT, ExceptionT> entry : _entries) {
-         if (entry != null) {
-            if (entry._key.equals(key)) {
-               _entries.remove(entry);
-               _entries.addFirst(entry);
-               _hits++;
-               return entry.getValue();
+         if (entry._key.equals(key)) {
+            _entries.remove(entry);
+            _entries.addFirst(entry);
+
+            _hits++;
+
+            if (showStatistics) {
+               showStatistics();
             }
+
+            return entry.getValue();
          }
       }
 
@@ -192,24 +277,47 @@ public final class LRUCache<KeyT, ValueT, ExceptionT extends Exception> {
       }
       catch (final Exception e) {
          exception = (ExceptionT) e;
-
       }
 
       final LRUCache.Entry<KeyT, ValueT, ExceptionT> newEntry = new LRUCache.Entry<KeyT, ValueT, ExceptionT>(key, value,
                exception);
 
       while (_sizePolicy.isOversized(Collections.unmodifiableList(_entries))) {
-         _entries.removeLast();
+         entryRemoved(_entries.removeLast());
       }
+      //      if (!_entries.isEmpty()) {
+      //         entryRemoved(_entries.removeLast());
+      //      }
 
       _entries.addFirst(newEntry);
+
+      if (showStatistics) {
+         showStatistics();
+      }
 
       return newEntry.getValue();
    }
 
 
+   private void entryRemoved(final Entry<KeyT, ValueT, ExceptionT> entry) {
+      if (_entryRemovedVisitor != null) {
+         _entryRemovedVisitor.visit(entry._key, entry._value, entry._exception);
+      }
+   }
+
+
+   public void showStatistics() {
+      System.out.println("-----------------------------------------------------------");
+      System.out.println("Cache Statistics:");
+      System.out.println("  Size: " + _entries.size());
+      System.out.println("  Calls: " + getCallsCount());
+      System.out.println("  Hits: " + getHitsCount() + " (" + GMath.roundTo(100 * getHitsRatio(), 2) + "%)");
+      System.out.println("-----------------------------------------------------------");
+   }
+
+
    public int getCallsCount() {
-      return (_hits + _misses);
+      return _callsCount;
    }
 
 
@@ -223,14 +331,28 @@ public final class LRUCache<KeyT, ValueT, ExceptionT extends Exception> {
    }
 
 
-   public List<GTriplet<KeyT, ValueT, ExceptionT>> getValues() {
-      final List<GTriplet<KeyT, ValueT, ExceptionT>> result = new ArrayList<GTriplet<KeyT, ValueT, ExceptionT>>(_entries.size());
+   public synchronized List<LRUCache.Value<KeyT, ValueT, ExceptionT>> getValues() {
+      final List<LRUCache.Value<KeyT, ValueT, ExceptionT>> result = new ArrayList<LRUCache.Value<KeyT, ValueT, ExceptionT>>(
+               _entries.size());
 
       for (final LRUCache.Entry<KeyT, ValueT, ExceptionT> entry : _entries) {
-         result.add(new GTriplet<KeyT, ValueT, ExceptionT>(entry._key, entry._value, entry._exception));
+         result.add(new LRUCache.Value<KeyT, ValueT, ExceptionT>(entry._key, entry._value, entry._exception));
       }
 
-      return result;
+      return Collections.unmodifiableList(result);
    }
+
+
+   public synchronized void visitValues(final LRUCache.ValuesVisitor<KeyT, ValueT, ExceptionT> visitor) {
+      for (final LRUCache.Entry<KeyT, ValueT, ExceptionT> entry : _entries) {
+         visitor.visit(entry._key, entry._value, entry._exception);
+      }
+   }
+
+
+   public synchronized void clear() {
+      _entries.clear();
+   }
+
 
 }

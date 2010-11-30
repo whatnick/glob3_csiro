@@ -111,6 +111,22 @@ public final class GShape {
    }
 
 
+   public static IPolygon2D<?> createLine2(final boolean validate,
+                                           final List<IVector2<?>> points) {
+      final int pointsCount = points.size();
+
+      if (pointsCount < 2) {
+         throw new IllegalArgumentException("Can't create lines with less than 2 points");
+      }
+
+      if (pointsCount == 2) {
+         return new GSegment2D(points.get(0), points.get(1));
+      }
+
+      return new GLinesStrip2D(validate, points);
+   }
+
+
    public static IPolygon2D<?> createPolygon2(final boolean validate,
                                               final List<IVector2<?>> points) {
       final int pointsCount = points.size();
