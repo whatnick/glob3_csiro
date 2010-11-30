@@ -152,12 +152,7 @@ public class GPolygon2DLayer
 
 
       private String uniqueName() {
-         return _layer.uniqueName() + getID() + _renderingAttributes.uniqueName();
-      }
-
-
-      private String getID() {
-         return _id;
+         return _layer.uniqueName() + _id + _renderingAttributes.uniqueName();
       }
    }
 
@@ -467,7 +462,12 @@ public class GPolygon2DLayer
 
          _parent = parent;
          //         _level = (parent == null) ? 0 : parent._level + 1;
-         _id = (parent == null) ? "_" : parent._id + positionInParent;
+         if (parent == null) {
+            _id = Integer.toHexString(positionInParent);
+         }
+         else {
+            _id = parent._id + Integer.toHexString(positionInParent);
+         }
 
          _tileSector = tileSector;
 
@@ -1238,12 +1238,13 @@ public class GPolygon2DLayer
 
    private void calculateCurrentTiles(final DrawContext dc) {
       if (_topTiles == null) {
-
          final List<Sector> topLevelSectors = createTopLevelSectors(_sector);
 
          _topTiles = new ArrayList<Tile>(topLevelSectors.size());
-         for (final Sector sector : topLevelSectors) {
-            _topTiles.add(new Tile(null, 0, sector));
+         //         for (final Sector sector : topLevelSectors) {
+         for (int i = 0; i < topLevelSectors.size(); i++) {
+            final Sector topLevelSector = topLevelSectors.get(i);
+            _topTiles.add(new Tile(null, i, topLevelSector));
          }
       }
 
