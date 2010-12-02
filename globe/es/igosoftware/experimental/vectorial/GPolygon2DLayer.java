@@ -302,7 +302,6 @@ public class GPolygon2DLayer
       double biggestPriority = Double.NEGATIVE_INFINITY;
       RendererFutureTask selectedTask = null;
 
-
       for (final RendererFutureTask task : RENDERING_TASKS) {
          final double currentPriority = task._priority;
          if (currentPriority > biggestPriority) {
@@ -318,7 +317,6 @@ public class GPolygon2DLayer
    private static RendererFutureTask findBestTaskForCurrentTiles() {
       double biggestPriority = Double.NEGATIVE_INFINITY;
       RendererFutureTask selectedTask = null;
-
 
       for (final RendererFutureTask task : RENDERING_TASKS) {
          final List<Tile> currentTiles = task._layer._currentTiles;
@@ -340,7 +338,7 @@ public class GPolygon2DLayer
 
 
    private String uniqueName() {
-      return _resourceName;
+      return _uniqueName;
    }
 
 
@@ -382,7 +380,7 @@ public class GPolygon2DLayer
 
 
       final int numberOfThreads = Math.max(Runtime.getRuntime().availableProcessors() / 4, 1);
-      //      final int numberOfThreads = 2;
+      //      final int numberOfThreads = 1;
       for (int i = 0; i < numberOfThreads; i++) {
          new RenderingWorker().start();
       }
@@ -761,11 +759,15 @@ public class GPolygon2DLayer
 
    private boolean                                       _debugRendering             = false;
 
+   private final String                                  _uniqueName;
+
 
    public GPolygon2DLayer(final String resourceName,
+                          final String uniqueName,
                           final List<IPolygon2D<?>> polygons,
                           final GProjection projection) {
       _resourceName = resourceName;
+      _uniqueName = uniqueName;
       _projection = projection;
 
       final GAxisAlignedRectangle polygonsBounds = GAxisAlignedRectangle.minimumBoundingRectangle(polygons);

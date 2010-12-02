@@ -53,6 +53,7 @@ import es.igosoftware.experimental.ndimensional.G3DImageMultidimensionalData;
 import es.igosoftware.experimental.ndimensional.GMultidimensionalDataModule;
 import es.igosoftware.experimental.ndimensional.IMultidimensionalData;
 import es.igosoftware.experimental.vectorial.GPolygon2DLayer;
+import es.igosoftware.experimental.vectorial.GPolygon2DModule;
 import es.igosoftware.experimental.vectorial.GShapeLoader;
 import es.igosoftware.globe.GGlobeApplication;
 import es.igosoftware.globe.GHomePositionModule;
@@ -250,7 +251,10 @@ public class GGlobeDemo
             try {
                final List<IPolygon2D<?>> polygons = GShapeLoader.readPolygons(fileName, convertToRadians);
 
-               final GPolygon2DLayer layer = new GPolygon2DLayer(new File(fileName).getName(), polygons, projection);
+               final File file = new File(fileName);
+               final GPolygon2DLayer layer = new GPolygon2DLayer(file.getName(), file.getName()
+                                                                                 + Long.toHexString(file.lastModified()),
+                        polygons, projection);
                layer.setShowExtents(true);
                layers.add(layer);
             }
@@ -277,9 +281,9 @@ public class GGlobeDemo
 
       final GPointsCloudModule pointsCloudModule = new GPointsCloudModule(loader);
 
-      return new IGlobeModule[] { homePositionModule, new GLayersManagerModule(), new GFullScreenModule(), pointsCloudModule,
-               new GAnaglyphViewerModule(false), new GStatisticsModule(), new GFlatWorldModule(),
-               new GShowLatLonGraticuleModule(), new GShowUTMGraticuleModule(),
+      return new IGlobeModule[] { homePositionModule, new GLayersManagerModule(), new GPolygon2DModule(),
+               new GFullScreenModule(), pointsCloudModule, new GAnaglyphViewerModule(false), new GStatisticsModule(),
+               new GFlatWorldModule(), new GShowLatLonGraticuleModule(), new GShowUTMGraticuleModule(),
                new GMultidimensionalDataModule(_multidimentionaldata), new ShowMeasureTool() };
    }
 
