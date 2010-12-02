@@ -12,6 +12,7 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
 import es.igosoftware.globe.actions.ILayerAction;
+import es.igosoftware.globe.attributes.GBooleanLayerAttribute;
 import es.igosoftware.globe.attributes.GColorLayerAttribute;
 import es.igosoftware.globe.attributes.GFloatLayerAttribute;
 import es.igosoftware.globe.attributes.GGroupAttribute;
@@ -152,12 +153,7 @@ public class GPolygon2DLayer
 
 
       private String uniqueName() {
-         return _layer.uniqueName() + getID() + _renderingAttributes.uniqueName();
-      }
-
-
-      private String getID() {
-         return _id;
+         return _layer.uniqueName() + _id + _renderingAttributes.uniqueName();
       }
    }
 
@@ -283,70 +279,66 @@ public class GPolygon2DLayer
 
    private static RendererFutureTask findTask() {
       synchronized (RENDERING_TASKS) {
-
          if (RENDERING_TASKS.isEmpty()) {
             return null;
          }
 
-
-         double biggestPriority = Double.NEGATIVE_INFINITY;
-         RendererFutureTask selectedTask = null;
-
-
-         for (final RendererFutureTask task : RENDERING_TASKS) {
-            //            final List<Tile> currentTiles = task._layer._currentTiles;
-            //            try {
-            //               for (final Tile currentTile : currentTiles) {
-            //                  if (task._tileSector.equals(currentTile._tileSector)) {
-            //                     final double currentPriority = task._priority;
-            //                     if (currentPriority > biggestPriority) {
-            //                        biggestPriority = currentPriority;
-            //                        selectedTask = task;
-            //                     }
-            //                  }
-            //               }
-            //            }
-            //            catch (final ConcurrentModificationException e) {
-            //
-            //            }
-
-            final List<Tile> currentTiles = task._layer._currentTiles;
-            synchronized (currentTiles) {
-               for (final Tile currentTile : currentTiles) {
-                  if (task._tileSector.equals(currentTile._tileSector)) {
-                     final double currentPriority = task._priority;
-                     if (currentPriority > biggestPriority) {
-                        biggestPriority = currentPriority;
-                        selectedTask = task;
-                     }
-                  }
-               }
-            }
-
-
-            //            final Sector lastVisibleSector = task._layer._lastVisibleSector;
-            //            if (task._tileSector.intersects(lastVisibleSector)) {
-            //               final double currentPriority = task._priority;
-            //               if (currentPriority > biggestPriority) {
-            //                  biggestPriority = currentPriority;
-            //                  selectedTask = task;
-            //               }
-            //            }
+         RendererFutureTask selectedTask = findBestTaskForCurrentTiles();
+         if (selectedTask == null) {
+            selectedTask = findBestTask();
          }
 
          if (selectedTask != null) {
             RENDERING_TASKS.remove(selectedTask);
             return selectedTask;
          }
-
-         return null;
-
       }
+
+      return null;
+   }
+
+
+   private static RendererFutureTask findBestTask() {
+      double biggestPriority = Double.NEGATIVE_INFINITY;
+      RendererFutureTask selectedTask = null;
+
+      for (final RendererFutureTask task : RENDERING_TASKS) {
+         final double currentPriority = task._priority;
+         if (currentPriority > biggestPriority) {
+            biggestPriority = currentPriority;
+            selectedTask = task;
+         }
+      }
+
+      return selectedTask;
+   }
+
+
+   private static RendererFutureTask findBestTaskForCurrentTiles() {
+      double biggestPriority = Double.NEGATIVE_INFINITY;
+      RendererFutureTask selectedTask = null;
+
+      for (final RendererFutureTask task : RENDERING_TASKS) {
+         final List<Tile> currentTiles = task._layer._currentTiles;
+         synchronized (currentTiles) {
+            for (final Tile currentTile : currentTiles) {
+               if (task._tileSector.equals(currentTile._tileSector)) {
+                  final double currentPriority = task._priority;
+                  if (currentPriority > biggestPriority) {
+                     biggestPriority = currentPriority;
+                     selectedTask = task;
+                  }
+               }
+            }
+         }
+      }
+
+      return selectedTask;
    }
 
 
    private String uniqueName() {
-      return _resourceName;
+      return _uniqueName;
    }
 
 
@@ -377,7 +369,7 @@ public class GPolygon2DLayer
 
 
       //      try {
-      //GIOUtils.assureEmptyDirectory(RENDERING_CACHE_DIRECTORY_NAME, false);
+      //         GIOUtils.assureEmptyDirectory(RENDERING_CACHE_DIRECTORY_NAME, false);
       //      }
       //      catch (final IOException e) {
       //         e.printStackTrace();
@@ -388,7 +380,7 @@ public class GPolygon2DLayer
 
 
       final int numberOfThreads = Math.max(Runtime.getRuntime().availableProcessors() / 4, 1);
-      //      final int numberOfThreads = 2;
+      //      final int numberOfThreads = 1;
       for (int i = 0; i < numberOfThreads; i++) {
          new RenderingWorker().start();
       }
@@ -467,7 +459,12 @@ public class GPolygon2DLayer
 
          _parent = parent;
          //         _level = (parent == null) ? 0 : parent._level + 1;
-         _id = (parent == null) ? "_" : parent._id + positionInParent;
+         if (parent == null) {
+            _id = Integer.toHexString(positionInParent);
+         }
+         else {
+            _id = parent._id + Integer.toHexString(positionInParent);
+         }
 
          _tileSector = tileSector;
 
@@ -548,20 +545,11 @@ public class GPolygon2DLayer
 
       private void preRender(final DrawContext dc) {
          if ((_surfaceImage == null) || (_ancestorContribution != null)) {
-            //            final BufferedImage renderedImage = _renderer.render(_tileSectorBounds, _attributes);
-
-            final RenderingKey key = createRenderingKey();
-            final Future<BufferedImage> renderedImageFuture = IMAGES_CACHE.get(key);
+            final Future<BufferedImage> renderedImageFuture = IMAGES_CACHE.get(createRenderingKey());
 
             if (renderedImageFuture.isDone()) {
                try {
-                  final BufferedImage renderedImage = renderedImageFuture.get();
-                  if (_surfaceImage == null) {
-                     _surfaceImage = new SurfaceImage(renderedImage, _tileSector);
-                  }
-                  else {
-                     _surfaceImage.setImageSource(renderedImage, _tileSector);
-                  }
+                  setImageToSurfaceImage(renderedImageFuture.get());
                   _ancestorContribution = null;
                }
                catch (final InterruptedException e) {
@@ -574,18 +562,27 @@ public class GPolygon2DLayer
 
          if ((_surfaceImage == null) && (_ancestorContribution == null)) {
             _ancestorContribution = calculateAncestorContribution();
-            if (_ancestorContribution != null) {
-               if (_surfaceImage == null) {
-                  _surfaceImage = new SurfaceImage(_ancestorContribution, _tileSector);
-               }
-               else {
-                  _surfaceImage.setImageSource(_ancestorContribution, _tileSector);
-               }
-            }
+            setImageToSurfaceImage(_ancestorContribution);
          }
+
 
          if (_surfaceImage != null) {
             _surfaceImage.preRender(dc);
+         }
+
+      }
+
+
+      private void setImageToSurfaceImage(final BufferedImage image) {
+         if (image == null) {
+            return;
+         }
+
+         if (_surfaceImage == null) {
+            _surfaceImage = new SurfaceImage(image, _tileSector);
+         }
+         else {
+            _surfaceImage.setImageSource(image, _tileSector);
          }
       }
 
@@ -617,7 +614,7 @@ public class GPolygon2DLayer
          final int width = (int) widthAndHeight.x();
          final int height = (int) widthAndHeight.y();
          final int x = (int) topLeft.x();
-         final int y = (int) -(topLeft.y() + height - _attributes._textureHeight);
+         final int y = (int) -(topLeft.y() + height - _attributes._textureHeight); // flip y
 
          try {
             final BufferedImage subimage = ancestorImage.getSubimage(x, y, width, height);
@@ -631,12 +628,37 @@ public class GPolygon2DLayer
       }
 
 
-      private BufferedImage markImageAsWorkInProgress(final BufferedImage image) {
-         //         final Image workingIcon = GGlobeApplication.instance().getImage("working.png");
+      //      private final Image workingIcon = GGlobeApplication.instance().getImage("working.png");
 
+
+      private BufferedImage markImageAsWorkInProgress(final BufferedImage image) {
          final int TODO_flag_the_image_as_work_in_progress;
 
          return image;
+         //         if (image == null) {
+         //            return null;
+         //         }
+         //
+         //         final int width = _attributes._textureWidth;
+         //         final int height = _attributes._textureHeight;
+         //
+         //         final BufferedImage result = new BufferedImage(width, height,
+         //                  image.getColorModel().hasAlpha() ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR);
+         //         final Graphics2D g2d = result.createGraphics();
+         //
+         //         g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+         //         g2d.drawImage(image, 0, 0, width, height, null);
+         //
+         //         if (workingIcon != null) {
+         //            //            final int iconWidth = workingIcon.getWidth(null);
+         //            //            final int iconHeight = workingIcon.getHeight(null);
+         //            //g2d.drawImage(workingIcon, (width - iconWidth) / 2, (height - iconHeight) / 2, iconWidth, iconHeight, null);
+         //            g2d.drawImage(workingIcon, 0, 0, width, height, null);
+         //         }
+         //
+         //         g2d.dispose();
+         //
+         //         return result;
       }
 
 
@@ -646,6 +668,10 @@ public class GPolygon2DLayer
 
 
       private GPair<Tile, BufferedImage> findNearestAncestorWithImage() {
+         //         final int TODO;
+         //
+         //         return null;
+
          Tile ancestor = _parent;
          while (ancestor != null) {
             final RenderingKey ancestorKey = ancestor.createRenderingKey();
@@ -681,6 +707,7 @@ public class GPolygon2DLayer
 
       private void moveUpInCache() {
          IMAGES_CACHE.get(createRenderingKey());
+         //         IMAGES_CACHE.moveUp(createRenderingKey());
       }
    }
 
@@ -730,12 +757,17 @@ public class GPolygon2DLayer
    //   private float                                         _lastComputedProjectedPixels;
    private long                                          _lastCurrentTilesCalculated = -1;
 
+   private boolean                                       _debugRendering             = false;
+
+   private final String                                  _uniqueName;
+
 
    public GPolygon2DLayer(final String resourceName,
+                          final String uniqueName,
                           final List<IPolygon2D<?>> polygons,
-                          final GProjection projection,
-                          final boolean debug) {
+                          final GProjection projection) {
       _resourceName = resourceName;
+      _uniqueName = uniqueName;
       _projection = projection;
 
       final GAxisAlignedRectangle polygonsBounds = GAxisAlignedRectangle.minimumBoundingRectangle(polygons);
@@ -745,26 +777,27 @@ public class GPolygon2DLayer
 
       _renderer = new GPolygon2DRenderer(polygons);
 
-      _attributes = createRenderingAttributes(debug);
+      _attributes = createRenderingAttributes();
    }
 
 
    @Override
    public String getName() {
-      return "Vectorial: " + _resourceName;
+      //      return "Vectorial: " + _resourceName;
+      return _resourceName;
    }
 
 
-   private GRenderingAttributes createRenderingAttributes(final boolean debug) {
+   private GRenderingAttributes createRenderingAttributes() {
       final boolean renderLODIgnores = true;
       final float borderWidth = 1f;
       final Color fillColor = createColor(new Color(1, 1, 0), _fillColorAlpha);
       final Color borderColor = createColor(Color.WHITE, _borderColorAlpha);
       final double lodMinSize = 5;
-      final boolean debugLODRendering = debug;
+      final boolean debugLODRendering = _debugRendering;
       final int textureWidth = 256;
       final int textureHeight = 256;
-      final boolean renderBounds = debug;
+      final boolean renderBounds = _debugRendering;
 
       return new GRenderingAttributes(renderLODIgnores, borderWidth, fillColor, borderColor, lodMinSize, debugLODRendering,
                textureWidth, textureHeight, renderBounds);
@@ -855,7 +888,33 @@ public class GPolygon2DLayer
 
       addFillAttributes(result);
 
+      addAdvancedAttributes(result);
+
       return result;
+   }
+
+
+   private void addAdvancedAttributes(final List<ILayerAttribute<?>> result) {
+      final ILayerAttribute<?> debugRendering = new GBooleanLayerAttribute("Debug Rendering", "DebugRendering") {
+         @Override
+         public boolean isVisible() {
+            return true;
+         }
+
+
+         @Override
+         public Boolean get() {
+            return isDebugRendering();
+         }
+
+
+         @Override
+         public void set(final Boolean value) {
+            setDebugRendering(value);
+         }
+      };
+
+      result.add(new GGroupAttribute("Advanced", debugRendering));
    }
 
 
@@ -1140,7 +1199,7 @@ public class GPolygon2DLayer
    //   private float computeProjectedPixels(final DrawContext dc) {
    //      final long now = System.currentTimeMillis();
    //
-   //      // cache the result for 100ms
+   //      // cache the result for TIMEOUT_FOR_CACHED_RESULTS ms
    //      if ((_lastComputedProjectedPixelsTime > 0) || ((now - _lastComputedProjectedPixelsTime) <= TIMEOUT_FOR_CACHED_RESULTS)) {
    //         return _lastComputedProjectedPixels;
    //      }
@@ -1207,22 +1266,20 @@ public class GPolygon2DLayer
 
 
    private void calculateCurrentTiles(final DrawContext dc) {
-      //      final Globe globe = dc.getGlobe();
-
-      if ((_topTiles == null)/* || (_lastGlobe != globe)*/) {
-         //         _lastGlobe = globe;
-
+      if (_topTiles == null) {
          final List<Sector> topLevelSectors = createTopLevelSectors(_sector);
 
          _topTiles = new ArrayList<Tile>(topLevelSectors.size());
-         for (final Sector sector : topLevelSectors) {
-            _topTiles.add(new Tile(null, 0, sector));
+         //         for (final Sector sector : topLevelSectors) {
+         for (int i = 0; i < topLevelSectors.size(); i++) {
+            final Sector topLevelSector = topLevelSectors.get(i);
+            _topTiles.add(new Tile(null, i, topLevelSector));
          }
       }
 
       final long now = System.currentTimeMillis();
 
-      // cache the result for 100ms
+      // cache the result for TIMEOUT_FOR_CACHED_RESULTS ms
       if ((_lastCurrentTilesCalculated > 0) && ((now - _lastCurrentTilesCalculated) <= TIMEOUT_FOR_CACHED_RESULTS)) {
          return;
       }
@@ -1284,7 +1341,18 @@ public class GPolygon2DLayer
       }
 
       if (_topTiles != null) {
+         //         final Frustum frustum = dc.getView().getFrustumInModelCoordinates();
+
          for (final Tile topTile : _topTiles) {
+
+            //            if (!topTile._tileSector.intersects(_sector)) {
+            //               continue;
+            //            }
+            //
+            //            if (!topTile.getBox(dc).intersects(frustum)) {
+            //               continue;
+            //            }
+
             topTile.moveUpInCache();
          }
       }
@@ -1302,6 +1370,28 @@ public class GPolygon2DLayer
       }
 
       GWWUtils.popOffset(gl);
+   }
+
+
+   public boolean isDebugRendering() {
+      return _debugRendering;
+   }
+
+
+   public void setDebugRendering(final boolean newValue) {
+      if (newValue == _debugRendering) {
+         return;
+      }
+
+      _debugRendering = newValue;
+
+      _attributes = new GRenderingAttributes(_attributes._renderLODIgnores, _attributes._borderWidth, _attributes._fillColor,
+               _attributes._borderColor, _attributes._lodMinSize, newValue, _attributes._textureWidth,
+               _attributes._textureHeight, newValue);
+
+      clearCache();
+
+      firePropertyChange("DebugRendering", !newValue, newValue);
    }
 
 

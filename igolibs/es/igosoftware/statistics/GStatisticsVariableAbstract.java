@@ -55,6 +55,8 @@ public abstract class GStatisticsVariableAbstract<TypeT extends Number> {
    protected final String  _name;
    protected final int     _flags;
    protected long          _counter           = 0;
+   protected String        _unitName          = "";
+   protected String        _targetDirectory   = "";
 
 
    public GStatisticsVariableAbstract(final String name,
@@ -82,6 +84,16 @@ public abstract class GStatisticsVariableAbstract<TypeT extends Number> {
 
    public long getCounter() {
       return _counter;
+   }
+
+
+   public void setUnitName(final String unitName) {
+      _unitName = unitName;
+   }
+
+
+   public void setTargetDirectory(final String targetDirectory) {
+      _targetDirectory = targetDirectory;
    }
 
 
