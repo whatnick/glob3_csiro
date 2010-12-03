@@ -26,13 +26,10 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="globe/libs/jogl"/>
 		</attributes>
 	</classpathentry>
-<<<<<<< HEAD
+
 	<classpathentry kind="lib" path="libs/jogl/jogl.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/worldwind.jar" sourcepath="/home/oliver/Desktop/IGO-Repository/ww"/>
-=======
-	<classpathentry kind="lib" path="libs/jogl/jogl.jar" sourcepath="/home/dgd/Escritorio/jogl-1.1.1-src.zip"/>
-	<classpathentry exported="true" kind="lib" path="libs/worldwind.jar" sourcepath="/home/dgd/Escritorio/worldwind-0.6.651.14101"/>
->>>>>>> 2f4e7e3b7393d4b59b864101d349fb03c894d3d8
+
 	<classpathentry kind="lib" path="libs/netcdf/netcdf-4.2.jar"/>
 	<classpathentry kind="lib" path="libs/netcdf/slf4j-api-1.5.6.jar"/>
 	<classpathentry kind="lib" path="libs/netcdf/slf4j-jdk14-1.5.6.jar"/>

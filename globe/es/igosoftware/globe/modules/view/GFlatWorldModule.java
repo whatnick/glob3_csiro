@@ -47,7 +47,9 @@ import es.igosoftware.globe.actions.GCheckBoxGenericAction;
 import es.igosoftware.globe.actions.IGenericAction;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
+import es.igosoftware.globe.view.customView.GCustomView;
 import es.igosoftware.util.GPair;
+import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.globes.Earth;
 import gov.nasa.worldwind.globes.EarthFlat;
 import gov.nasa.worldwind.layers.LayerList;
@@ -62,6 +64,7 @@ public class GFlatWorldModule
             GAbstractGlobeModule {
 
    private boolean _isActive = false;
+   private View    _oldView;
 
 
    @Override
@@ -86,35 +89,70 @@ public class GFlatWorldModule
 
             if (_isActive) {
                application.getModel().setGlobe(new EarthFlat());
-               final BasicOrbitView orbitView = (BasicOrbitView) application.getWorldWindowGLCanvas().getView();
-               final FlatOrbitView flatOrbitView = new FlatOrbitView();
-               flatOrbitView.setCenterPosition(orbitView.getCenterPosition());
-               flatOrbitView.setZoom(orbitView.getZoom());
-               flatOrbitView.setHeading(orbitView.getHeading());
-               flatOrbitView.setPitch(orbitView.getPitch());
-               application.getWorldWindowGLCanvas().setView(flatOrbitView);
-               final LayerList layers = application.getModel().getLayers();
-               for (int i = 0; i < layers.size(); i++) {
-                  if (layers.get(i) instanceof SkyGradientLayer) {
-                     layers.set(i, new SkyColorLayer());
+               _oldView = application.getWorldWindowGLCanvas().getView();
+               if (_oldView instanceof BasicOrbitView) {
+                  final BasicOrbitView orbitView = (BasicOrbitView) _oldView;
+                  final FlatOrbitView flatOrbitView = new FlatOrbitView();
+                  flatOrbitView.setCenterPosition(orbitView.getCenterPosition());
+                  flatOrbitView.setZoom(orbitView.getZoom());
+                  flatOrbitView.setHeading(orbitView.getHeading());
+                  flatOrbitView.setPitch(orbitView.getPitch());
+                  application.getWorldWindowGLCanvas().setView(flatOrbitView);
+                  final LayerList layers = application.getModel().getLayers();
+                  for (int i = 0; i < layers.size(); i++) {
+                     if (layers.get(i) instanceof SkyGradientLayer) {
+                        layers.set(i, new SkyColorLayer());
+                     }
+                  }
+               }
+               else if (_oldView instanceof GCustomView) {
+                  final GCustomView customView = (GCustomView) _oldView;
+                  final FlatOrbitView flatOrbitView = new FlatOrbitView();
+                  flatOrbitView.setCenterPosition(customView.getCenterPosition());
+                  flatOrbitView.setZoom(customView.getZoom());
+                  flatOrbitView.setHeading(customView.getHeading());
+                  flatOrbitView.setPitch(customView.getPitch());
+                  application.getWorldWindowGLCanvas().setView(flatOrbitView);
+                  final LayerList layers = application.getModel().getLayers();
+                  for (int i = 0; i < layers.size(); i++) {
+                     if (layers.get(i) instanceof SkyGradientLayer) {
+                        layers.set(i, new SkyColorLayer());
+                     }
                   }
                }
             }
             else {
                application.getModel().setGlobe(new Earth());
                final FlatOrbitView flatOrbitView = (FlatOrbitView) application.getWorldWindowGLCanvas().getView();
-               final BasicOrbitView orbitView = new BasicOrbitView();
-               orbitView.setCenterPosition(flatOrbitView.getCenterPosition());
-               orbitView.setZoom(flatOrbitView.getZoom());
-               orbitView.setHeading(flatOrbitView.getHeading());
-               orbitView.setPitch(flatOrbitView.getPitch());
-               application.getWorldWindowGLCanvas().setView(orbitView);
-               final LayerList layers = application.getModel().getLayers();
-               for (int i = 0; i < layers.size(); i++) {
-                  if (layers.get(i) instanceof SkyColorLayer) {
-                     layers.set(i, new SkyGradientLayer());
+               if (_oldView instanceof BasicOrbitView) {
+                  final BasicOrbitView orbitView = new BasicOrbitView();
+                  orbitView.setCenterPosition(flatOrbitView.getCenterPosition());
+                  orbitView.setZoom(flatOrbitView.getZoom());
+                  orbitView.setHeading(flatOrbitView.getHeading());
+                  orbitView.setPitch(flatOrbitView.getPitch());
+                  application.getWorldWindowGLCanvas().setView(orbitView);
+                  final LayerList layers = application.getModel().getLayers();
+                  for (int i = 0; i < layers.size(); i++) {
+                     if (layers.get(i) instanceof SkyColorLayer) {
+                        layers.set(i, new SkyGradientLayer());
+                     }
                   }
                }
+               else if (_oldView instanceof GCustomView) {
+                  final GCustomView customView = new GCustomView();
+                  customView.setCenterPosition(flatOrbitView.getCenterPosition());
+                  customView.setZoom(flatOrbitView.getZoom());
+                  customView.setHeading(flatOrbitView.getHeading());
+                  customView.setPitch(flatOrbitView.getPitch());
+                  application.getWorldWindowGLCanvas().setView(customView);
+                  final LayerList layers = application.getModel().getLayers();
+                  for (int i = 0; i < layers.size(); i++) {
+                     if (layers.get(i) instanceof SkyColorLayer) {
+                        layers.set(i, new SkyGradientLayer());
+                     }
+                  }
+               }
+
             }
 
          }
