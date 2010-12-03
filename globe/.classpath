@@ -37,6 +37,6 @@
 	<classpathentry kind="lib" path="libs/gt/gt-referencing-2.7-M3.jar"/>
 	<classpathentry kind="lib" path="libs/gt/gt-shapefile-2.7-M3.jar"/>
 	<classpathentry kind="lib" path="libs/gt/jts-1.11.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.6.0_20"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre1.6.0_21_64"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
