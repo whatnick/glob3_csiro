@@ -72,7 +72,6 @@ public abstract class GColorLayerAttribute
    public GPair<Component, EventListener> createWidget(final IGlobeApplication application,
                                                        final IGlobeLayer layer) {
       final JButton widget = new JButton(" ");
-      //      widget.putClientProperty(SubstanceLookAndFeel.FLAT_PROPERTY, Boolean.TRUE);
       widget.setBackground(get());
 
       if (isReadOnly()) {
@@ -82,7 +81,7 @@ public abstract class GColorLayerAttribute
          widget.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent e) {
-               final Color newColor = JColorChooser.showDialog(application.getFrame(), "Choose Points Color", get());
+               final Color newColor = JColorChooser.showDialog(application.getFrame(), getLabel(), get());
 
                if (newColor != null) {
                   set(newColor);

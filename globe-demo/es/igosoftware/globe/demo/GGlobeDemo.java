@@ -41,19 +41,15 @@ import java.awt.Color;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import es.igosoftware.concurrent.GConcurrent;
-import es.igosoftware.euclid.projection.GProjection;
-import es.igosoftware.euclid.shape.IPolygon2D;
 import es.igosoftware.experimental.ndimensional.G3DImageMultidimensionalData;
 import es.igosoftware.experimental.ndimensional.GMultidimensionalDataModule;
 import es.igosoftware.experimental.ndimensional.IMultidimensionalData;
-import es.igosoftware.experimental.vectorial.GPolygon2DLayer;
-import es.igosoftware.experimental.vectorial.GShapeLoader;
+import es.igosoftware.experimental.vectorial.GPolygon2DModule;
 import es.igosoftware.globe.GGlobeApplication;
 import es.igosoftware.globe.GHomePositionModule;
 import es.igosoftware.globe.GLayersManagerModule;
@@ -154,7 +150,7 @@ public class GGlobeDemo
       //      iconLayer.addIcon(icon);
       //      layers.add(iconLayer);
 
-      createVectorialLayer(layers);
+      //      createVectorialLayer(layers);
 
 
       return layers;
@@ -220,49 +216,52 @@ public class GGlobeDemo
    }
 
 
-   private void createVectorialLayer(final LayerList layers) {
-
-      // final String fileName = "data/shp/world.shp";
-      // final GProjection projection = GProjection.EPSG_4326;
-      // final boolean convertToRadians = true;
-
-      // final String fileName = "data/shp/S_Naturales_forestales.shp";
-      // final GProjection projection = GProjection.EPSG_23030;
-      // final boolean convertToRadians = false;
-
-      final String fileName = "data/shp/S_Naturales_forestales_WG84.shp";
-      final GProjection projection = GProjection.EPSG_4326;
-      final boolean convertToRadians = true;
-
-      // final String fileName = "data/shp/parcelasEdificadas.shp";
-      // final GProjection projection = GProjection.EPSG_23029;
-      // final boolean convertToRadians = false;
-
-
-      if (!new File(fileName).exists()) {
-         logWarning("Can't find file " + fileName);
-         return;
-      }
-
-      final Thread worker = new Thread() {
-         @Override
-         public void run() {
-            try {
-               final List<IPolygon2D<?>> polygons = GShapeLoader.readPolygons(fileName, convertToRadians);
-
-               final GPolygon2DLayer layer = new GPolygon2DLayer(new File(fileName).getName(), polygons, projection, true);
-               layer.setShowExtents(true);
-               layers.add(layer);
-            }
-            catch (final IOException e) {
-               e.printStackTrace();
-            }
-         }
-      };
-      worker.setPriority(Thread.MIN_PRIORITY);
-      worker.setDaemon(true);
-      worker.start();
-   }
+   //   private void createVectorialLayer(final LayerList layers) {
+   //
+   //      // final String fileName = "data/shp/world.shp";
+   //      // final GProjection projection = GProjection.EPSG_4326;
+   //      // final boolean convertToRadians = true;
+   //
+   //      // final String fileName = "data/shp/S_Naturales_forestales.shp";
+   //      // final GProjection projection = GProjection.EPSG_23030;
+   //      // final boolean convertToRadians = false;
+   //
+   //      final String fileName = "data/shp/S_Naturales_forestales_WG84.shp";
+   //      final GProjection projection = GProjection.EPSG_4326;
+   //      final boolean convertToRadians = true;
+   //
+   //      // final String fileName = "data/shp/parcelasEdificadas.shp";
+   //      // final GProjection projection = GProjection.EPSG_23029;
+   //      // final boolean convertToRadians = false;
+   //
+   //
+   //      if (!new File(fileName).exists()) {
+   //         logWarning("Can't find file " + fileName);
+   //         return;
+   //      }
+   //
+   //      final Thread worker = new Thread() {
+   //         @Override
+   //         public void run() {
+   //            try {
+   //               final List<IPolygon2D<?>> polygons = GShapeLoader.readPolygons(fileName, convertToRadians);
+   //
+   //               final File file = new File(fileName);
+   //               final GPolygon2DLayer layer = new GPolygon2DLayer(file.getName(), file.getName()
+   //                                                                                 + Long.toHexString(file.lastModified()),
+   //                        polygons, projection);
+   //               layer.setShowExtents(true);
+   //               layers.add(layer);
+   //            }
+   //            catch (final IOException e) {
+   //               e.printStackTrace();
+   //            }
+   //         }
+   //      };
+   //      worker.setPriority(Thread.MIN_PRIORITY);
+   //      worker.setDaemon(true);
+   //      worker.start();
+   //   }
 
 
    @Override
@@ -277,9 +276,9 @@ public class GGlobeDemo
 
       final GPointsCloudModule pointsCloudModule = new GPointsCloudModule(loader);
 
-      return new IGlobeModule[] { homePositionModule, new GLayersManagerModule(), new GFullScreenModule(), pointsCloudModule,
-               new GAnaglyphViewerModule(false), new GStatisticsModule(), new GFlatWorldModule(),
-               new GShowLatLonGraticuleModule(), new GShowUTMGraticuleModule(),
+      return new IGlobeModule[] { homePositionModule, new GLayersManagerModule(), new GPolygon2DModule(),
+               new GFullScreenModule(), pointsCloudModule, new GAnaglyphViewerModule(false), new GStatisticsModule(),
+               new GFlatWorldModule(), new GShowLatLonGraticuleModule(), new GShowUTMGraticuleModule(),
                new GMultidimensionalDataModule(_multidimentionaldata), new ShowMeasureTool() };
    }
 

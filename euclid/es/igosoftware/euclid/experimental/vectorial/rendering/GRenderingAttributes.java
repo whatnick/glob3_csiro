@@ -121,8 +121,10 @@ public class GRenderingAttributes {
 
 
    public String uniqueName() {
-      return "" + (_renderLODIgnores ? "t" : "f") + _borderWidth + _fillColor.getRGB() + _borderColor.getRGB() + _lodMinSize
-             + (_debugLODRendering ? "t" : "f") + _renderBounds + _textureWidth + _textureHeight + _lodColor.getRGB();
+      return (_renderLODIgnores ? "t" : "f") + _borderWidth + Integer.toHexString(_fillColor.getRGB())
+             + Integer.toHexString(_borderColor.getRGB()) + _lodMinSize + (_debugLODRendering ? "t" : "f")
+             + (_renderBounds ? "t" : "f") + Integer.toHexString(_textureWidth) + Integer.toHexString(_textureHeight)
+             + Integer.toHexString(_lodColor.getRGB());
    }
 
 
