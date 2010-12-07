@@ -1,3 +1,5 @@
+
+
 package es.unex.s3xtante.tables;
 
 import java.io.BufferedReader;
@@ -8,6 +10,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.swing.table.DefaultTableModel;
+
 
 public class CSVFileTools {
 
@@ -35,7 +38,8 @@ public class CSVFileTools {
          try {
             fin.close();
          }
-         catch (final IOException e) {}
+         catch (final IOException e) {
+         }
       }
 
       return model;

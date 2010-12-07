@@ -1,3 +1,5 @@
+
+
 package es.unex.s3xtante.modules.tables;
 
 import java.awt.Component;
@@ -20,6 +22,7 @@ import es.unex.s3xtante.modules.sextante.bindings.WWTable;
 import es.unex.s3xtante.tables.CSVFileTools;
 import es.unex.s3xtante.tables.Tables;
 import es.unex.sextante.gui.algorithm.GenericFileFilter;
+
 
 public class AddTable
          extends

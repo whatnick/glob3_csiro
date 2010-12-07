@@ -663,8 +663,7 @@ public final class GPanoramicLayerOLD
    }
 
 
-   private void validateZoomLevels(@SuppressWarnings("unused")
-   final GPanoramicCompiler.ZoomLevels zoomLevels) {
+   private void validateZoomLevels(@SuppressWarnings("unused") final GPanoramicCompiler.ZoomLevels zoomLevels) {
       //      System.out.println("Found " + zoomLevels.getLevels().size() + " levels");
       //
       //      for (final GPanoramicCompiler.ZoomLevel level : zoomLevels.getLevels()) {

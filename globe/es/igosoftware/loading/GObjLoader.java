@@ -63,20 +63,20 @@ public class GObjLoader {
    private static final GLogger logger          = GLogger.instance();
 
 
-   public static final String  VERTEX_DATA     = "v ";
-   public static final String  NORMAL_DATA     = "vn ";
-   public static final String  TEXTURE_DATA    = "vt ";
-   public static final String  FACE_DATA       = "f ";
-   public static final String  SMOOTHING_GROUP = "s ";
-   public static final String  GROUP           = "g ";
-   public static final String  OBJECT          = "o ";
-   public static final String  COMMENT         = "#";
-   public static final String  EMPTY           = "";
+   public static final String   VERTEX_DATA     = "v ";
+   public static final String   NORMAL_DATA     = "vn ";
+   public static final String   TEXTURE_DATA    = "vt ";
+   public static final String   FACE_DATA       = "f ";
+   public static final String   SMOOTHING_GROUP = "s ";
+   public static final String   GROUP           = "g ";
+   public static final String   OBJECT          = "o ";
+   public static final String   COMMENT         = "#";
+   public static final String   EMPTY           = "";
 
    //   private String             baseDirectoryName        = null;
 
-   private GModelMesh          _currentMesh    = null;
-   private GModelData          _model          = null;
+   private GModelMesh           _currentMesh    = null;
+   private GModelData           _model          = null;
 
 
    public GObjLoader() {
