@@ -283,10 +283,10 @@ public class GPolygon2DLayer
             return null;
          }
 
-         RendererFutureTask selectedTask = findBestTaskForCurrentTiles();
-         if (selectedTask == null) {
-            selectedTask = findBestTask();
-         }
+         final RendererFutureTask selectedTask = findBestTaskForCurrentTiles();
+         //         if (selectedTask == null) {
+         //            selectedTask = findBestTask();
+         //         }
 
          if (selectedTask != null) {
             RENDERING_TASKS.remove(selectedTask);
@@ -298,20 +298,20 @@ public class GPolygon2DLayer
    }
 
 
-   private static RendererFutureTask findBestTask() {
-      double biggestPriority = Double.NEGATIVE_INFINITY;
-      RendererFutureTask selectedTask = null;
-
-      for (final RendererFutureTask task : RENDERING_TASKS) {
-         final double currentPriority = task._priority;
-         if (currentPriority > biggestPriority) {
-            biggestPriority = currentPriority;
-            selectedTask = task;
-         }
-      }
-
-      return selectedTask;
-   }
+   //   private static RendererFutureTask findBestTask() {
+   //      double biggestPriority = Double.NEGATIVE_INFINITY;
+   //      RendererFutureTask selectedTask = null;
+   //
+   //      for (final RendererFutureTask task : RENDERING_TASKS) {
+   //         final double currentPriority = task._priority;
+   //         if (currentPriority > biggestPriority) {
+   //            biggestPriority = currentPriority;
+   //            selectedTask = task;
+   //         }
+   //      }
+   //
+   //      return selectedTask;
+   //   }
 
 
    private static RendererFutureTask findBestTaskForCurrentTiles() {
@@ -404,8 +404,8 @@ public class GPolygon2DLayer
       };
 
 
-      final LRUCache.ValuesVisitor<RenderingKey, Future<BufferedImage>, RuntimeException> removedListener;
-      removedListener = new LRUCache.ValuesVisitor<RenderingKey, Future<BufferedImage>, RuntimeException>() {
+      final LRUCache.ValueVisitor<RenderingKey, Future<BufferedImage>, RuntimeException> removedListener;
+      removedListener = new LRUCache.ValueVisitor<RenderingKey, Future<BufferedImage>, RuntimeException>() {
          @Override
          public void visit(final RenderingKey key,
                            final Future<BufferedImage> value,
@@ -1161,7 +1161,16 @@ public class GPolygon2DLayer
       for (final Tile topTile : _topTiles) {
          topTile._surfaceImage = null;
       }
-      IMAGES_CACHE.clear();
+
+      IMAGES_CACHE.clear(new LRUCache.ValuePredicate<GPolygon2DLayer.RenderingKey, Future<BufferedImage>, RuntimeException>() {
+         @Override
+         public boolean evaluate(final RenderingKey key,
+                                 final Future<BufferedImage> value,
+                                 final RuntimeException exception) {
+            return (key._layer == GPolygon2DLayer.this);
+         }
+      });
+
       redraw();
    }
 
