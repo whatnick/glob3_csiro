@@ -40,17 +40,17 @@ import java.util.Arrays;
 
 
 public final class GMath {
-   private static final double LOG_2       = Math.log(2);
+   public static final double  LOG_10      = Math.log(10);
+   public static final double  LOG_2       = Math.log(2);
 
    public static final double  PI          = 3.14159265358979323846264338327950288;
 
-   public static final double  TWO_PI      = GMath.PI * 2;
-   public static final double  HALF_PI     = GMath.PI / 2;
-   public static final double  QUARTER_PI  = GMath.PI / 4;
+   public static final double  TWO_PI      = PI * 2;
+   public static final double  HALF_PI     = PI / 2;
+   public static final double  QUARTER_PI  = PI / 4;
 
    public static final double  DEGREES_60  = Math.toRadians(60);
    public static final double  DEGREES_360 = TWO_PI;
-
 
    private static final int    RADIX;
 
@@ -59,11 +59,6 @@ public final class GMath {
 
    public static final double  DEFAULT_NUMERICAL_PRECISION_DOUBLE;
    public static final float   DEFAULT_NUMERICAL_PRECISION_FLOAT;
-   //   public static final double  MINUS_DEFAULT_NUMERICAL_PRECISION_DOUBLE;
-   //   public static final float   MINUS_DEFAULT_NUMERICAL_PRECISION_FLOAT;
-
-
-   //private static final float  EPSILON = 0.0000001f;
 
    static {
       RADIX = computeRadix();
@@ -71,19 +66,15 @@ public final class GMath {
       MACHINE_PRECISION_DOUBLE = computeMachinePrecisionDouble();
       MACHINE_PRECISION_FLOAT = computeMachinePrecisionFloat();
 
-      DEFAULT_NUMERICAL_PRECISION_DOUBLE = Math.sqrt(GMath.MACHINE_PRECISION_DOUBLE);
-      //MINUS_DEFAULT_NUMERICAL_PRECISION_DOUBLE = -NumberUtils.DEFAULT_NUMERICAL_PRECISION_DOUBLE;
+      DEFAULT_NUMERICAL_PRECISION_DOUBLE = Math.sqrt(MACHINE_PRECISION_DOUBLE);
 
-      DEFAULT_NUMERICAL_PRECISION_FLOAT = (float) Math.sqrt(GMath.MACHINE_PRECISION_FLOAT);
-      //MINUS_DEFAULT_NUMERICAL_PRECISION_FLOAT = -NumberUtils.DEFAULT_NUMERICAL_PRECISION_FLOAT;
+      DEFAULT_NUMERICAL_PRECISION_FLOAT = (float) Math.sqrt(MACHINE_PRECISION_FLOAT);
 
-
-      //      System.out.println("Machine Double Precision: " + NumberUtils.MACHINE_PRECISION_DOUBLE + " " + Math.pow(2, -53));
-      //      System.out.println("Machine Float Precision: " + NumberUtils.MACHINE_PRECISION_FLOAT + " " + (float) Math.pow(2, -24));
+      //      System.out.println("Machine Double Precision: " + MACHINE_PRECISION_DOUBLE + " " + Math.pow(2, -53));
+      //      System.out.println("Machine Float Precision: " + MACHINE_PRECISION_FLOAT + " " + (float) Math.pow(2, -24));
       //      System.out.println();
-      //      System.out.println("Numerical Double Precision: " + NumberUtils.DEFAULT_NUMERICAL_PRECISION_DOUBLE);
-      //      System.out.println("Numerical Float Precision: " + NumberUtils.DEFAULT_NUMERICAL_PRECISION_FLOAT);
-
+      //      System.out.println("Numerical Double Precision: " + DEFAULT_NUMERICAL_PRECISION_DOUBLE);
+      //      System.out.println("Numerical Float Precision: " + DEFAULT_NUMERICAL_PRECISION_FLOAT);
    }
 
 
@@ -108,7 +99,7 @@ public final class GMath {
 
 
    private static double computeMachinePrecisionDouble() {
-      final double inverseRadix = 1.0d / GMath.RADIX;
+      final double inverseRadix = 1.0d / RADIX;
       double machinePrecision = 1.0d;
       double tmp = 1.0d + machinePrecision;
       while (tmp - 1.0d != 0.0d) {
@@ -120,7 +111,7 @@ public final class GMath {
 
 
    private static float computeMachinePrecisionFloat() {
-      final float inverseRadix = 1.0f / GMath.RADIX;
+      final float inverseRadix = 1.0f / RADIX;
       float machinePrecision = 1.0f;
       float tmp = 1.0f + machinePrecision;
       while (tmp - 1.0f != 0.0f) {
@@ -271,19 +262,19 @@ public final class GMath {
 
    public static boolean closeTo(final double num1,
                                  final double num2) {
-      return closeTo(num1, num2, GMath.DEFAULT_NUMERICAL_PRECISION_DOUBLE);
+      return closeTo(num1, num2, DEFAULT_NUMERICAL_PRECISION_DOUBLE);
    }
 
 
    public static boolean closeTo(final double num1,
                                  final float num2) {
-      return closeTo(num1, num2, GMath.DEFAULT_NUMERICAL_PRECISION_FLOAT);
+      return closeTo(num1, num2, DEFAULT_NUMERICAL_PRECISION_FLOAT);
    }
 
 
    public static boolean closeTo(final float num1,
                                  final double num2) {
-      return closeTo(num1, num2, GMath.DEFAULT_NUMERICAL_PRECISION_FLOAT);
+      return closeTo(num1, num2, DEFAULT_NUMERICAL_PRECISION_FLOAT);
    }
 
 
@@ -315,7 +306,7 @@ public final class GMath {
 
    public static boolean closeTo(final float num1,
                                  final float num2) {
-      return closeTo(num1, num2, GMath.DEFAULT_NUMERICAL_PRECISION_FLOAT);
+      return closeTo(num1, num2, DEFAULT_NUMERICAL_PRECISION_FLOAT);
    }
 
 
@@ -347,17 +338,12 @@ public final class GMath {
 
 
    public static boolean closeToZero(final double num) {
-      // TODO: Check if the following is faster
-      //      return (num > NumberUtils.MINUS_DEFAULT_NUMERICAL_PRECISION_DOUBLE)
-      //             && (num < NumberUtils.DEFAULT_NUMERICAL_PRECISION_DOUBLE);
-      return Math.abs(num) < GMath.DEFAULT_NUMERICAL_PRECISION_DOUBLE;
+      return Math.abs(num) < DEFAULT_NUMERICAL_PRECISION_DOUBLE;
    }
 
 
    public static boolean closeToZero(final float num) {
-      // TODO: Check if the following is faster
-      //return (num > NumberUtils.MINUS_DEFAULT_NUMERICAL_PRECISION_FLOAT) && (num < NumberUtils.DEFAULT_NUMERICAL_PRECISION_FLOAT);
-      return Math.abs(num) < GMath.DEFAULT_NUMERICAL_PRECISION_FLOAT;
+      return Math.abs(num) < DEFAULT_NUMERICAL_PRECISION_FLOAT;
    }
 
 
@@ -619,13 +605,13 @@ public final class GMath {
 
 
    private static double reduceSinAngle(final double rawRadians) {
-      double radians = rawRadians % GMath.TWO_PI; // put us in -2PI to +2PI space
+      double radians = rawRadians % TWO_PI; // put us in -2PI to +2PI space
 
-      if (Math.abs(radians) > GMath.PI) { // put us in -PI to +PI space
-         radians -= GMath.TWO_PI;
+      if (Math.abs(radians) > PI) { // put us in -PI to +PI space
+         radians -= TWO_PI;
       }
-      if (Math.abs(radians) > GMath.HALF_PI) {// put us in -PI/2 to +PI/2 space
-         radians = GMath.PI - radians;
+      if (Math.abs(radians) > HALF_PI) {// put us in -PI/2 to +PI/2 space
+         radians = PI - radians;
       }
 
       return radians;
@@ -638,11 +624,11 @@ public final class GMath {
       final double radians = reduceSinAngle(rawRadians); // limits angle to between -PI/2 and +PI/2
 
       final double result;
-      if (Math.abs(radians) <= GMath.QUARTER_PI) {
+      if (Math.abs(radians) <= QUARTER_PI) {
          result = Math.sin(radians);
       }
       else {
-         result = Math.cos(GMath.HALF_PI - radians);
+         result = Math.cos(HALF_PI - radians);
       }
 
 
@@ -663,7 +649,7 @@ public final class GMath {
 
 
    public static double cos(final double radians) {
-      return sin(radians + GMath.HALF_PI);
+      return sin(radians + HALF_PI);
    }
 
 
@@ -759,7 +745,7 @@ public final class GMath {
       final int intPart = (int) result; //integer part 
       final float fracPart = result - intPart; //fractional part
 
-      if (GMath.closeTo(fracPart, 1.0f)) {
+      if (closeTo(fracPart, 1.0f)) {
          return 0;
       }
 
@@ -774,7 +760,7 @@ public final class GMath {
       final long intPart = (long) result; //integer part 
       final double fracPart = result - intPart; //fractional part
 
-      if (GMath.closeTo(fracPart, 1.0d)) {
+      if (closeTo(fracPart, 1.0d)) {
          return 0;
       }
 
@@ -782,30 +768,74 @@ public final class GMath {
    }
 
 
-   public static int gcd(final int p,
-                         final int q) {
-      if (q == 0) {
-         return p;
-      }
-      return gcd(q, p % q);
+   //   public static int gcd(final int p,
+   //                         final int q) {
+   //      if (q == 0) {
+   //         return p;
+   //      }
+   //      return gcd(q, p % q);
+   //   }
+   //
+   //
+   //   public static long gcd(final long p,
+   //                          final long q) {
+   //      if (q == 0) {
+   //         return p;
+   //      }
+   //      return gcd(q, p % q);
+   //   }
+
+
+   /*
+    * "Nice Numbers for Graph Labels" by Paul Heckbert
+    * from "Graphics Gems", Academic Press, 1990
+    */
+   public static double niceNumber(final double x,
+                                   final boolean round) {
+
+      /* exponent of x */
+      final int expv = (int) Math.floor(Math.log(x) / LOG_10);
+
+      final double tenPowExpv = Math.pow(10, expv);
+
+      /* fractional part of x */
+      final double fraction = x / tenPowExpv; /* between 1 and 10 */
+
+      final double niceFraction = getRoundedFraction(round, fraction);
+
+      return niceFraction * tenPowExpv;
    }
 
 
-   public static long gcd(final long p,
-                          final long q) {
-      if (q == 0) {
-         return p;
+   private static double getRoundedFraction(final boolean round,
+                                            final double fraction) {
+
+      if (round) {
+         if (fraction < 1.5) {
+            return 1;
+         }
+         else if (fraction < 3) {
+            return 2;
+         }
+         else if (fraction < 7) {
+            return 5;
+         }
+         else {
+            return 10;
+         }
       }
-      return gcd(q, p % q);
-   }
-
-
-   public static void main(final String[] args) {
-      System.out.println(gcd(4, 16) == 4);
-      System.out.println(gcd(16, 4) == 4);
-      System.out.println(gcd(15, 60) == 15);
-      System.out.println(gcd(15, 65) == 5);
-      System.out.println(gcd(1052, 52) == 4);
+      else if (fraction <= 1) {
+         return 1;
+      }
+      else if (fraction <= 2) {
+         return 2;
+      }
+      else if (fraction <= 5) {
+         return 5;
+      }
+      else {
+         return 10;
+      }
    }
 
 }
