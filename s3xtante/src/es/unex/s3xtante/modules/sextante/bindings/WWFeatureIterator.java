@@ -1,3 +1,5 @@
+
+
 package es.unex.s3xtante.modules.sextante.bindings;
 
 import java.util.ArrayList;
@@ -7,6 +9,7 @@ import es.unex.sextante.dataObjects.FeatureImpl;
 import es.unex.sextante.dataObjects.IFeature;
 import es.unex.sextante.dataObjects.IFeatureIterator;
 import es.unex.sextante.exceptions.IteratorException;
+
 
 public class WWFeatureIterator
          implements
