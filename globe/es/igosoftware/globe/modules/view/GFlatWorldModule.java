@@ -48,6 +48,7 @@ import es.igosoftware.globe.actions.IGenericAction;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.globe.view.customView.GCustomView;
+import es.igosoftware.globe.view.customView.GFlatCustomView;
 import es.igosoftware.util.GPair;
 import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.globes.Earth;
@@ -56,7 +57,6 @@ import gov.nasa.worldwind.layers.LayerList;
 import gov.nasa.worldwind.layers.SkyColorLayer;
 import gov.nasa.worldwind.layers.SkyGradientLayer;
 import gov.nasa.worldwind.view.orbit.BasicOrbitView;
-import gov.nasa.worldwind.view.orbit.FlatOrbitView;
 
 
 public class GFlatWorldModule
@@ -92,7 +92,7 @@ public class GFlatWorldModule
                _oldView = application.getWorldWindowGLCanvas().getView();
                if (_oldView instanceof BasicOrbitView) {
                   final BasicOrbitView orbitView = (BasicOrbitView) _oldView;
-                  final FlatOrbitView flatOrbitView = new FlatOrbitView();
+                  final GFlatCustomView flatOrbitView = new GFlatCustomView();
                   flatOrbitView.setCenterPosition(orbitView.getCenterPosition());
                   flatOrbitView.setZoom(orbitView.getZoom());
                   flatOrbitView.setHeading(orbitView.getHeading());
@@ -107,7 +107,7 @@ public class GFlatWorldModule
                }
                else if (_oldView instanceof GCustomView) {
                   final GCustomView customView = (GCustomView) _oldView;
-                  final FlatOrbitView flatOrbitView = new FlatOrbitView();
+                  final GFlatCustomView flatOrbitView = new GFlatCustomView();
                   flatOrbitView.setCenterPosition(customView.getCenterPosition());
                   flatOrbitView.setZoom(customView.getZoom());
                   flatOrbitView.setHeading(customView.getHeading());
@@ -123,7 +123,7 @@ public class GFlatWorldModule
             }
             else {
                application.getModel().setGlobe(new Earth());
-               final FlatOrbitView flatOrbitView = (FlatOrbitView) application.getWorldWindowGLCanvas().getView();
+               final GFlatCustomView flatOrbitView = (GFlatCustomView) application.getWorldWindowGLCanvas().getView();
                if (_oldView instanceof BasicOrbitView) {
                   final BasicOrbitView orbitView = new BasicOrbitView();
                   orbitView.setCenterPosition(flatOrbitView.getCenterPosition());

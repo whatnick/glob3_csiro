@@ -47,6 +47,7 @@ import es.igosoftware.globe.actions.GCheckBoxGenericAction;
 import es.igosoftware.globe.actions.IGenericAction;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
+import es.igosoftware.globe.view.customView.GCustomView;
 import es.igosoftware.util.GPair;
 import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.view.firstperson.BasicFlyView;
@@ -58,6 +59,7 @@ public class UseFlyView
             GAbstractGlobeModule {
 
    private boolean _isActive = false;
+   private View    _oldView;
 
 
    @Override
@@ -80,13 +82,25 @@ public class UseFlyView
             if (_isActive) {
                final BasicFlyView view = new BasicFlyView();
                final View currentView = application.getWorldWindowGLCanvas().getView();
+               _oldView = currentView;
                view.copyViewState(currentView);
                application.getWorldWindowGLCanvas().setView(view);
 
             }
             else {
-               final BasicOrbitView view = new BasicOrbitView();
+
                final View currentView = application.getWorldWindowGLCanvas().getView();
+               final View view;
+               if (_oldView instanceof GCustomView) {
+                  view = new GCustomView();
+               }
+               else if (_oldView == null) {
+                  view = new BasicOrbitView();
+               }
+               else {
+                  view = new BasicOrbitView();
+               }
+
                view.copyViewState(currentView);
                application.getWorldWindowGLCanvas().setView(view);
             }
