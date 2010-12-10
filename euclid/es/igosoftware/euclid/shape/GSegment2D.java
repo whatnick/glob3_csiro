@@ -107,7 +107,9 @@ public final class GSegment2D
 
       if (GMath.closeToZero(denominator)) {
          if (GMath.closeToZero(numeratorA) && GMath.closeToZero(numeratorB)) {
-            return IntersectionResult.COINCIDENT;
+            if (this.contains(that._from) || (this.contains(that._to))) {
+               return IntersectionResult.COINCIDENT;
+            }
          }
 
          return IntersectionResult.PARALLEL;
@@ -194,5 +196,120 @@ public final class GSegment2D
    public GRenderType getRenderType() {
       return GRenderType.POLYLINE;
    }
+
+
+   public boolean neighborWith(final GSegment2D that) {
+
+      final double EPSILON = 0.0001;
+      final GVector2D minX = new GVector2D(this._from.x(), this._from.y() - EPSILON);
+      final GVector2D maxX = new GVector2D(this._to.x(), this._to.y() + EPSILON);
+      final GVector2D minY = new GVector2D(this._from.x() - EPSILON, this._from.y());
+      final GVector2D maxY = new GVector2D(this._to.x() + EPSILON, this._to.y());
+
+      final IntersectionResult intersection = getIntersection(that, null);
+
+      if ((intersection == IntersectionResult.COINCIDENT) || (intersection == IntersectionResult.PARALLEL)) {
+
+         boolean condition = false;
+         if (GMath.closeTo(this._from.y(), this._to.y())) {
+            condition = that._from.between(minX, maxX) || that._to.between(minX, maxX);
+         }
+         else {
+            condition = that._from.between(minY, maxY) || that._to.between(minY, maxY);
+         }
+
+         return condition;
+      }
+
+      return false;
+   }
+
+
+   //   public static void main(final String[] args) {
+   //      System.out.println("Segment2D 0.1");
+   //      System.out.println("---------------\n");
+   //
+   //      final GAxisAlignedRectangle rec1 = new GAxisAlignedRectangle(new GVector2D(0, 0), new GVector2D(4, 4));
+   //
+   //      final GSegment2D a = new GSegment2D(new GVector2D(0, 0), new GVector2D(4, 0));
+   //      final GSegment2D b = new GSegment2D(new GVector2D(0, GMath.nextUp(0)), new GVector2D(4, GMath.nextUp(0)));
+   //      final GSegment2D c = new GSegment2D(new GVector2D(GMath.nextUp(4), 0), new GVector2D(8, 0));
+   //      final GSegment2D d = new GSegment2D(new GVector2D(4, GMath.nextUp(0)), new GVector2D(8, GMath.nextUp(0)));
+   //      final GSegment2D e = new GSegment2D(new GVector2D(GMath.nextUp(4), GMath.nextUp(0)), new GVector2D(GMath.nextUp(8),
+   //               GMath.nextUp(0)));
+   //
+   //      final GSegment2D A = new GSegment2D(new GVector2D(0, 0), new GVector2D(0, 4));
+   //      final GSegment2D B = new GSegment2D(new GVector2D(GMath.nextUp(0), 0), new GVector2D(GMath.nextUp(0), 4));
+   //      final GSegment2D C = new GSegment2D(new GVector2D(0, GMath.nextUp(4)), new GVector2D(0, 8));
+   //      final GSegment2D D = new GSegment2D(new GVector2D(GMath.nextUp(0), 4), new GVector2D(GMath.nextUp(0), 8));
+   //      final GSegment2D E = new GSegment2D(new GVector2D(GMath.nextUp(0), GMath.nextUp(4)), new GVector2D(GMath.nextUp(0),
+   //               GMath.nextUp(8)));
+   //
+   //      final GSegment2D f = new GSegment2D(new GVector2D(1, 1), new GVector2D(4, 1));
+   //      final GSegment2D g = new GSegment2D(new GVector2D(1, 1.1), new GVector2D(4, 1.1));
+   //      final GSegment2D h = new GSegment2D(new GVector2D(GMath.nextUp(4), 1), new GVector2D(8, 1));
+   //      final GSegment2D i = new GSegment2D(new GVector2D(4, GMath.nextUp(1)), new GVector2D(8, GMath.nextUp(1)));
+   //      final GSegment2D j = new GSegment2D(new GVector2D(GMath.nextUp(4), GMath.nextUp(1)), new GVector2D(GMath.nextUp(8),
+   //               GMath.nextUp(1)));
+   //      final GSegment2D k = new GSegment2D(new GVector2D(3, 1), new GVector2D(6, 1));
+   //
+   //      final GSegment2D F = new GSegment2D(new GVector2D(1, 1), new GVector2D(1, 4));
+   //      final GSegment2D G = new GSegment2D(new GVector2D(1.1, 1), new GVector2D(1.1, 4));
+   //      final GSegment2D H = new GSegment2D(new GVector2D(1, GMath.nextUp(4)), new GVector2D(1, 8));
+   //      final GSegment2D I = new GSegment2D(new GVector2D(GMath.nextUp(1), 4), new GVector2D(GMath.nextUp(1), 8));
+   //      final GSegment2D J = new GSegment2D(new GVector2D(GMath.nextUp(1), GMath.nextUp(4)), new GVector2D(GMath.nextUp(1),
+   //               GMath.nextUp(8)));
+   //      final GSegment2D K = new GSegment2D(new GVector2D(1, 3), new GVector2D(1, 6));
+   //
+   //      // final GVector2D r = new GVector2D(a._from.sub(a._to).x(), a._from.sub(a._to).y());
+   //      final GVector2D vf = new GVector2D(f._from.sub(f._to).x(), f._from.sub(f._to).y());
+   //      final GVector2D vg = new GVector2D(g._from.sub(g._to).x(), g._from.sub(g._to).y());
+   //      final GVector2D vh = new GVector2D(h._from.sub(h._to).x(), h._from.sub(h._to).y());
+   //      final GVector2D vi = new GVector2D(i._from.sub(i._to).x(), i._from.sub(i._to).y());
+   //      final GVector2D vj = new GVector2D(j._from.sub(j._to).x(), j._from.sub(j._to).y());
+   //      final GVector2D vk = new GVector2D(k._from.sub(k._to).x(), k._from.sub(k._to).y());
+   //
+   //
+   //      System.out.println("INTERSECT g: " + f.intersects(g));
+   //      System.out.println("INTERSECT h: " + f.intersects(h));
+   //      System.out.println("INTERSECT i: " + f.intersects(i));
+   //      System.out.println("INTERSECT j: " + f.intersects(j));
+   //      System.out.println("INTERSECT k: " + f.intersects(k));
+   //      System.out.println();
+   //
+   //      System.out.println("NEIGHBOR b: " + a.neighborWith(b));
+   //      System.out.println("NEIGHBOR c: " + a.neighborWith(c));
+   //      System.out.println("NEIGHBOR d: " + a.neighborWith(d));
+   //      System.out.println("NEIGHBOR e: " + a.neighborWith(e));
+   //      System.out.println();
+   //
+   //      System.out.println("NEIGHBOR B: " + A.neighborWith(B));
+   //      System.out.println("NEIGHBOR C: " + A.neighborWith(C));
+   //      System.out.println("NEIGHBOR D: " + A.neighborWith(D));
+   //      System.out.println("NEIGHBOR E: " + A.neighborWith(E));
+   //      System.out.println();
+   //
+   //      System.out.println("NEIGHBOR g: " + f.neighborWith(g));
+   //      System.out.println("NEIGHBOR h: " + f.neighborWith(h));
+   //      System.out.println("NEIGHBOR i: " + f.neighborWith(i));
+   //      System.out.println("NEIGHBOR j: " + f.neighborWith(j));
+   //      System.out.println("NEIGHBOR k: " + f.neighborWith(k));
+   //      System.out.println();
+   //
+   //      System.out.println("NEIGHBOR G: " + f.neighborWith(g));
+   //      System.out.println("NEIGHBOR H: " + f.neighborWith(h));
+   //      System.out.println("NEIGHBOR I: " + f.neighborWith(i));
+   //      System.out.println("NEIGHBOR J: " + f.neighborWith(j));
+   //      System.out.println("NEIGHBOR K: " + f.neighborWith(k));
+   //      System.out.println();
+   //
+   //      //      System.out.println("DISTANCE vk: " + vf.distance(vk));
+   //      //      System.out.println("DISTANCE vg: " + vf.distance(vg));
+   //      //      System.out.println("DISTANCE vh: " + vf.distance(vh));
+   //      //      System.out.println("DISTANCE vi: " + vf.distance(vi));
+   //      //      System.out.println("DISTANCE vj: " + vf.distance(vj));
+   //
+   //
+   //   }
 
 }
