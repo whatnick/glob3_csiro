@@ -63,8 +63,8 @@ import es.igosoftware.loading.modelparts.GModelData;
 import es.igosoftware.loading.modelparts.GModelMesh;
 import es.igosoftware.scenegraph.G3DModelNode;
 import es.igosoftware.util.GCollections;
-import es.igosoftware.util.GPair;
 import es.igosoftware.util.GLogger;
+import es.igosoftware.util.GPair;
 import es.igosoftware.utils.GTexturesCache;
 import es.igosoftware.utils.GWWUtils;
 import gov.nasa.worldwind.geom.Matrix;
@@ -381,7 +381,7 @@ public class G3DModel {
       }
    }
 
-   private static final GLogger  logger                         = GLogger.instance();
+   private static final GLogger logger                         = GLogger.instance();
 
 
    private static final float[] LIGHT1_POSITION                = { 2, 1, 1, 0 };

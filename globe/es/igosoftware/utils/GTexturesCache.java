@@ -59,7 +59,7 @@ import gov.nasa.worldwind.util.WWMath;
 
 
 public class GTexturesCache {
-   private static final GLogger                               logger         = GLogger.instance();
+   private static final GLogger                              logger         = GLogger.instance();
 
    private static final Map<GPair<String, Boolean>, Texture> _texturesCache = new HashMap<GPair<String, Boolean>, Texture>();
 

@@ -167,6 +167,10 @@ public class GPolygon2DModule
 
          @Override
          public Icon getIcon(final File f) {
+            if (f.isDirectory()) {
+               return super.getIcon(f);
+            }
+
             final String extension = GIOUtils.getExtension(f);
 
             if ((extension != null) && extension.toLowerCase().equals("shp")) {
