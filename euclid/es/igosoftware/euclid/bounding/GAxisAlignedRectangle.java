@@ -294,7 +294,15 @@ public final class GAxisAlignedRectangle
 
 
    public boolean neighborWithRectangle(final GAxisAlignedRectangle that) {
-      final double epsilon = 0.00001;
+
+      final double epsilon = 0.0001;
+      return neighborWithRectangle(that, epsilon);
+   }
+
+
+   public boolean neighborWithRectangle(final GAxisAlignedRectangle that,
+                                        final double epsilon) {
+
       final IVector2<?> thatLower = that._lower;
       final IVector2<?> thatUpper = that._upper;
 
@@ -363,15 +371,15 @@ public final class GAxisAlignedRectangle
 
 
    public List<GSegment2D> getEdges() {
-      final List<GSegment2D> s = new ArrayList<GSegment2D>(4);
+      final List<GSegment2D> edges = new ArrayList<GSegment2D>(4);
 
-      s.add(new GSegment2D(new GVector2D(_lower.x(), _lower.y()), new GVector2D(_lower.x(), _upper.y())));
-      s.add(new GSegment2D(new GVector2D(_lower.x(), _upper.y()), new GVector2D(_upper.x(), _upper.y())));
+      edges.add(new GSegment2D(new GVector2D(_lower.x(), _lower.y()), new GVector2D(_lower.x(), _upper.y())));
+      edges.add(new GSegment2D(new GVector2D(_lower.x(), _upper.y()), new GVector2D(_upper.x(), _upper.y())));
 
-      s.add(new GSegment2D(new GVector2D(_upper.x(), _upper.y()), new GVector2D(_upper.x(), _lower.y())));
-      s.add(new GSegment2D(new GVector2D(_upper.x(), _lower.y()), new GVector2D(_lower.x(), _lower.y())));
+      edges.add(new GSegment2D(new GVector2D(_upper.x(), _upper.y()), new GVector2D(_upper.x(), _lower.y())));
+      edges.add(new GSegment2D(new GVector2D(_upper.x(), _lower.y()), new GVector2D(_lower.x(), _lower.y())));
 
-      return Collections.unmodifiableList(s);
+      return Collections.unmodifiableList(edges);
    }
 
 

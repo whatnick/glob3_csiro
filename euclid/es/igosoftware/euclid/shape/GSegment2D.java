@@ -198,27 +198,50 @@ public final class GSegment2D
    }
 
 
-   public boolean neighborWith(final GSegment2D that) {
+   public boolean neighborWithSegment(final GSegment2D that) {
 
-      final double EPSILON = 0.0001;
-      final GVector2D minX = new GVector2D(this._from.x(), this._from.y() - EPSILON);
-      final GVector2D maxX = new GVector2D(this._to.x(), this._to.y() + EPSILON);
-      final GVector2D minY = new GVector2D(this._from.x() - EPSILON, this._from.y());
-      final GVector2D maxY = new GVector2D(this._to.x() + EPSILON, this._to.y());
+      final double epsilon = 0.0001;
+
+      return neighborWithSegment(that, epsilon);
+
+   }
+
+
+   public boolean neighborWithSegment(final GSegment2D that,
+                                      final double epsilon) {
+
+      final GVector2D thisMinX = new GVector2D(this._from.x(), this._from.y() - epsilon);
+      final GVector2D thisMaxX = new GVector2D(this._to.x(), this._to.y() + epsilon);
+      final GVector2D thisMinY = new GVector2D(this._from.x() - epsilon, this._from.y());
+      final GVector2D thisMaxY = new GVector2D(this._to.x() + epsilon, this._to.y());
+
+      final GVector2D thatMinX = new GVector2D(that._from.x(), that._from.y() - epsilon);
+      final GVector2D thatMaxX = new GVector2D(that._to.x(), that._to.y() + epsilon);
+      final GVector2D thatMinY = new GVector2D(that._from.x() - epsilon, that._from.y());
+      final GVector2D thatMaxY = new GVector2D(that._to.x() + epsilon, that._to.y());
 
       final IntersectionResult intersection = getIntersection(that, null);
 
       if ((intersection == IntersectionResult.COINCIDENT) || (intersection == IntersectionResult.PARALLEL)) {
 
-         boolean condition = false;
-         if (GMath.closeTo(this._from.y(), this._to.y())) {
-            condition = that._from.between(minX, maxX) || that._to.between(minX, maxX);
+         boolean condition1 = false;
+         boolean condition2 = false;
+         if (GMath.closeTo(this._from.y(), this._to.y())) { // parallel to x axis
+            condition1 = that._from.between(thisMinX, thisMaxX) || that._to.between(thisMinX, thisMaxX);
+            condition2 = this._from.between(thatMinX, thatMaxX) || this._to.between(thatMinX, thatMaxX);
+         }
+         else if (GMath.closeTo(this._from.x(), this._to.x())) { // parallel to y axis
+            condition1 = that._from.between(thisMinY, thisMaxY) || that._to.between(thisMinY, thisMaxY);
+            condition2 = this._from.between(thatMinY, thatMaxY) || this._to.between(thatMinY, thatMaxY);
          }
          else {
-            condition = that._from.between(minY, maxY) || that._to.between(minY, maxY);
+            condition1 = (that._from.between(thisMinX, thisMaxX) && that._from.between(thisMinY, thisMaxY))
+                         || (that._to.between(thisMinX, thisMaxX) && that._to.between(thisMinY, thisMaxY));
+            condition2 = (this._from.between(thatMinX, thatMaxX) && this._from.between(thatMinY, thatMaxY))
+                         || (this._to.between(thatMinX, thatMaxX) && this._to.between(thatMinY, thatMaxY));
          }
 
-         return condition;
+         return condition1 || condition2;
       }
 
       return false;
@@ -261,6 +284,15 @@ public final class GSegment2D
    //               GMath.nextUp(8)));
    //      final GSegment2D K = new GSegment2D(new GVector2D(1, 3), new GVector2D(1, 6));
    //
+   //      final GSegment2D l = new GSegment2D(new GVector2D(1, 1), new GVector2D(3, 3));
+   //      final GSegment2D m = new GSegment2D(new GVector2D(GMath.nextUp(1), GMath.nextUp(1)), new GVector2D(GMath.nextUp(3),
+   //               GMath.nextUp(3)));
+   //      final GSegment2D n = new GSegment2D(new GVector2D(GMath.nextUp(3), GMath.nextUp(3)), new GVector2D(GMath.nextUp(6),
+   //               GMath.nextUp(6)));
+   //      final GSegment2D o = new GSegment2D(new GVector2D(GMath.nextUp(2), GMath.nextUp(2)), new GVector2D(GMath.nextUp(4),
+   //               GMath.nextUp(4)));
+   //      final GSegment2D p = new GSegment2D(new GVector2D(0, 0), new GVector2D(4, 4));
+   //
    //      // final GVector2D r = new GVector2D(a._from.sub(a._to).x(), a._from.sub(a._to).y());
    //      final GVector2D vf = new GVector2D(f._from.sub(f._to).x(), f._from.sub(f._to).y());
    //      final GVector2D vg = new GVector2D(g._from.sub(g._to).x(), g._from.sub(g._to).y());
@@ -277,30 +309,36 @@ public final class GSegment2D
    //      System.out.println("INTERSECT k: " + f.intersects(k));
    //      System.out.println();
    //
-   //      System.out.println("NEIGHBOR b: " + a.neighborWith(b));
-   //      System.out.println("NEIGHBOR c: " + a.neighborWith(c));
-   //      System.out.println("NEIGHBOR d: " + a.neighborWith(d));
-   //      System.out.println("NEIGHBOR e: " + a.neighborWith(e));
+   //      System.out.println("NEIGHBOR b: " + a.neighborWithSegment(b));
+   //      System.out.println("NEIGHBOR c: " + a.neighborWithSegment(c));
+   //      System.out.println("NEIGHBOR d: " + a.neighborWithSegment(d));
+   //      System.out.println("NEIGHBOR e: " + a.neighborWithSegment(e));
    //      System.out.println();
    //
-   //      System.out.println("NEIGHBOR B: " + A.neighborWith(B));
-   //      System.out.println("NEIGHBOR C: " + A.neighborWith(C));
-   //      System.out.println("NEIGHBOR D: " + A.neighborWith(D));
-   //      System.out.println("NEIGHBOR E: " + A.neighborWith(E));
+   //      System.out.println("NEIGHBOR B: " + A.neighborWithSegment(B));
+   //      System.out.println("NEIGHBOR C: " + A.neighborWithSegment(C));
+   //      System.out.println("NEIGHBOR D: " + A.neighborWithSegment(D));
+   //      System.out.println("NEIGHBOR E: " + A.neighborWithSegment(E));
    //      System.out.println();
    //
-   //      System.out.println("NEIGHBOR g: " + f.neighborWith(g));
-   //      System.out.println("NEIGHBOR h: " + f.neighborWith(h));
-   //      System.out.println("NEIGHBOR i: " + f.neighborWith(i));
-   //      System.out.println("NEIGHBOR j: " + f.neighborWith(j));
-   //      System.out.println("NEIGHBOR k: " + f.neighborWith(k));
+   //      System.out.println("NEIGHBOR g: " + f.neighborWithSegment(g));
+   //      System.out.println("NEIGHBOR h: " + f.neighborWithSegment(h));
+   //      System.out.println("NEIGHBOR i: " + f.neighborWithSegment(i));
+   //      System.out.println("NEIGHBOR j: " + f.neighborWithSegment(j));
+   //      System.out.println("NEIGHBOR k: " + f.neighborWithSegment(k));
    //      System.out.println();
    //
-   //      System.out.println("NEIGHBOR G: " + f.neighborWith(g));
-   //      System.out.println("NEIGHBOR H: " + f.neighborWith(h));
-   //      System.out.println("NEIGHBOR I: " + f.neighborWith(i));
-   //      System.out.println("NEIGHBOR J: " + f.neighborWith(j));
-   //      System.out.println("NEIGHBOR K: " + f.neighborWith(k));
+   //      System.out.println("NEIGHBOR G: " + f.neighborWithSegment(g));
+   //      System.out.println("NEIGHBOR H: " + f.neighborWithSegment(h));
+   //      System.out.println("NEIGHBOR I: " + f.neighborWithSegment(i));
+   //      System.out.println("NEIGHBOR J: " + f.neighborWithSegment(j));
+   //      System.out.println("NEIGHBOR K: " + f.neighborWithSegment(k));
+   //      System.out.println();
+   //
+   //      System.out.println("NEIGHBOR m: " + l.neighborWithSegment(m));
+   //      System.out.println("NEIGHBOR n: " + l.neighborWithSegment(n));
+   //      System.out.println("NEIGHBOR o: " + l.neighborWithSegment(o));
+   //      System.out.println("NEIGHBOR p: " + l.neighborWithSegment(p));
    //      System.out.println();
    //
    //      //      System.out.println("DISTANCE vk: " + vf.distance(vk));

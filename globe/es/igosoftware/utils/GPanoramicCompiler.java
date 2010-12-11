@@ -60,7 +60,7 @@ import es.igosoftware.util.GLogger;
 public class GPanoramicCompiler {
 
    private static final GLogger LOGGER          = GLogger.instance();
-   private static boolean      _forceLastLevel = false;
+   private static boolean       _forceLastLevel = false;
 
 
    private static void logInfo(final String msg) {

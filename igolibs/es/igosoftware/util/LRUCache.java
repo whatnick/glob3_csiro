@@ -38,6 +38,7 @@ package es.igosoftware.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -51,10 +52,17 @@ public final class LRUCache<KeyT, ValueT, ExceptionT extends Exception> {
    }
 
 
-   public static interface ValuesVisitor<KeyT, ValueT, ExceptionT extends Exception> {
+   public static interface ValueVisitor<KeyT, ValueT, ExceptionT extends Exception> {
       public void visit(final KeyT key,
                         final ValueT value,
                         final ExceptionT exception);
+   }
+
+
+   public static interface ValuePredicate<KeyT, ValueT, ExceptionT extends Exception> {
+      public boolean evaluate(final KeyT key,
+                              final ValueT value,
+                              final ExceptionT exception);
    }
 
 
@@ -152,7 +160,7 @@ public final class LRUCache<KeyT, ValueT, ExceptionT extends Exception> {
 
    private final LinkedList<LRUCache.Entry<KeyT, ValueT, ExceptionT>> _entries;
 
-   private final LRUCache.ValuesVisitor<KeyT, ValueT, ExceptionT>     _entryRemovedVisitor;
+   private final LRUCache.ValueVisitor<KeyT, ValueT, ExceptionT>      _entryRemovedVisitor;
 
    private int                                                        _hits       = 0;
    private int                                                        _misses     = 0;
@@ -175,7 +183,7 @@ public final class LRUCache<KeyT, ValueT, ExceptionT extends Exception> {
 
    public LRUCache(final LRUCache.SizePolicy<KeyT, ValueT, ExceptionT> sizePolicy,
                    final LRUCache.ValueFactory<KeyT, ValueT, ExceptionT> factory,
-                   final LRUCache.ValuesVisitor<KeyT, ValueT, ExceptionT> entryRemovedVisitor,
+                   final LRUCache.ValueVisitor<KeyT, ValueT, ExceptionT> entryRemovedVisitor,
                    final int statisticsInterval) {
       this(sizePolicy, factory, entryRemovedVisitor, null, statisticsInterval);
    }
@@ -203,7 +211,7 @@ public final class LRUCache<KeyT, ValueT, ExceptionT extends Exception> {
 
    public LRUCache(final LRUCache.SizePolicy<KeyT, ValueT, ExceptionT> sizePolicy,
                    final LRUCache.ValueFactory<KeyT, ValueT, ExceptionT> factory,
-                   final LRUCache.ValuesVisitor<KeyT, ValueT, ExceptionT> entryRemovedVisitor,
+                   final LRUCache.ValueVisitor<KeyT, ValueT, ExceptionT> entryRemovedVisitor,
                    final List<GTriplet<KeyT, ValueT, ExceptionT>> initialValues,
                    final int statisticsInterval) {
       _sizePolicy = sizePolicy;
@@ -356,7 +364,7 @@ public final class LRUCache<KeyT, ValueT, ExceptionT extends Exception> {
    }
 
 
-   public synchronized void visitValues(final LRUCache.ValuesVisitor<KeyT, ValueT, ExceptionT> visitor) {
+   public synchronized void visitValues(final LRUCache.ValueVisitor<KeyT, ValueT, ExceptionT> visitor) {
       for (final LRUCache.Entry<KeyT, ValueT, ExceptionT> entry : _entries) {
          visitor.visit(entry._key, entry._value, entry._exception);
       }
@@ -367,5 +375,16 @@ public final class LRUCache<KeyT, ValueT, ExceptionT extends Exception> {
       _entries.clear();
    }
 
+
+   public synchronized void clear(final LRUCache.ValuePredicate<KeyT, ValueT, ExceptionT> predicate) {
+      final Iterator<Entry<KeyT, ValueT, ExceptionT>> iterator = _entries.iterator();
+
+      while (iterator.hasNext()) {
+         final LRUCache.Entry<KeyT, ValueT, ExceptionT> entry = iterator.next();
+         if (predicate.evaluate(entry._key, entry._value, entry._exception)) {
+            iterator.remove();
+         }
+      }
+   }
 
 }

@@ -46,6 +46,12 @@ import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.globe.layers.Feature;
 import es.igosoftware.globe.layers.GVectorRenderer;
+import es.igosoftware.loading.G3DModel;
+import es.igosoftware.loading.GModelLoadException;
+import es.igosoftware.loading.GObjLoader;
+import es.igosoftware.loading.modelparts.GMaterial;
+import es.igosoftware.loading.modelparts.GModelData;
+import es.igosoftware.loading.modelparts.GModelMesh;
 import es.igosoftware.scenegraph.utils.GPrintSceneGraphStructureVisitor;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.utils.GWWUtils;
@@ -64,6 +70,7 @@ import gov.nasa.worldwind.globes.Globe;
 import gov.nasa.worldwind.layers.AbstractLayer;
 import gov.nasa.worldwind.render.DrawContext;
 
+import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -275,6 +282,56 @@ public class GPositionRenderableLayer
       _name = name;
       _iconName = iconName;
       _dumpSceneGraph = dumpSceneGraph;
+   }
+
+
+   public void add3DModel(final String objPath,
+                          final String name,
+                          final double heading,
+                          final Position position) {
+      try {
+         final GModelData modelData = new GObjLoader().load(objPath, true);
+         preprocess3DModel(modelData);
+
+         final G3DModel model = new G3DModel(modelData, true);
+         final G3DModelNode modelNode = new G3DModelNode(name, GTransformationOrder.ROTATION_SCALE_TRANSLATION, model);
+
+         final GGroupNode modelRootNode = new GGroupNode("Root " + name, GTransformationOrder.ROTATION_SCALE_TRANSLATION);
+         modelRootNode.setHeading(heading);
+         modelRootNode.addChild(modelNode);
+
+         addNode(modelRootNode, position, GElevationAnchor.SEA_LEVEL);
+      }
+      catch (final GModelLoadException e) {
+         e.printStackTrace();
+      }
+   }
+
+
+   public void add3DModel(final String objPath,
+                          final String name,
+                          final Position position) {
+      add3DModel(objPath, name, 0.0, position);
+   }
+
+
+   private void preprocess3DModel(final GModelData model) {
+      for (final GModelMesh mesh : model.getMeshes()) {
+         GMaterial material = mesh.getMaterial();
+
+         if (material == null) {
+            material = new GMaterial("");
+            material._diffuseColor = Color.WHITE;
+            mesh.setMaterial(material);
+         }
+         else {
+            if (material.getTextureFileName() != null) {
+               material._diffuseColor = Color.WHITE;
+            }
+         }
+
+         material._emissiveColor = new Color(0.2f, 0.2f, 0.2f);
+      }
    }
 
 
