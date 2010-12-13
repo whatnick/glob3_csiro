@@ -41,15 +41,20 @@ import java.awt.Color;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import es.igosoftware.concurrent.GConcurrent;
+import es.igosoftware.euclid.projection.GProjection;
+import es.igosoftware.euclid.shape.IPolygon2D;
 import es.igosoftware.experimental.ndimensional.G3DImageMultidimensionalData;
 import es.igosoftware.experimental.ndimensional.GMultidimensionalDataModule;
 import es.igosoftware.experimental.ndimensional.IMultidimensionalData;
+import es.igosoftware.experimental.vectorial.GPolygon2DLayer;
 import es.igosoftware.experimental.vectorial.GPolygon2DModule;
+import es.igosoftware.experimental.vectorial.GShapeLoader;
 import es.igosoftware.globe.GGlobeApplication;
 import es.igosoftware.globe.GHomePositionModule;
 import es.igosoftware.globe.GLayersManagerModule;
@@ -150,7 +155,7 @@ public class GGlobeDemo
       //      iconLayer.addIcon(icon);
       //      layers.add(iconLayer);
 
-      //      createVectorialLayer(layers);
+      createVectorialLayer(layers);
 
 
       return layers;
@@ -178,8 +183,8 @@ public class GGlobeDemo
       panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", "data/panoramics/example", 500,
                new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0)));
 
-      panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic 2", "data/panoramics/example", 500,
-               new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3660), 0)));
+      //      panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic 2", "data/panoramics/barruecos", 500,
+      //               new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3660), 0)));
 
       // panoramicLayer.setEnabled(false);
 
@@ -216,7 +221,6 @@ public class GGlobeDemo
    }
 
 
-<<<<<<< HEAD
    private void createVectorialLayer(final LayerList layers) {
 
       // final String fileName = "data/shp/world.shp";
@@ -286,54 +290,6 @@ public class GGlobeDemo
       worker.setDaemon(true);
       worker.start();
    }
-=======
-   //   private void createVectorialLayer(final LayerList layers) {
-   //
-   //      // final String fileName = "data/shp/world.shp";
-   //      // final GProjection projection = GProjection.EPSG_4326;
-   //      // final boolean convertToRadians = true;
-   //
-   //      // final String fileName = "data/shp/S_Naturales_forestales.shp";
-   //      // final GProjection projection = GProjection.EPSG_23030;
-   //      // final boolean convertToRadians = false;
-   //
-   //      final String fileName = "data/shp/S_Naturales_forestales_WG84.shp";
-   //      final GProjection projection = GProjection.EPSG_4326;
-   //      final boolean convertToRadians = true;
-   //
-   //      // final String fileName = "data/shp/parcelasEdificadas.shp";
-   //      // final GProjection projection = GProjection.EPSG_23029;
-   //      // final boolean convertToRadians = false;
-   //
-   //
-   //      if (!new File(fileName).exists()) {
-   //         logWarning("Can't find file " + fileName);
-   //         return;
-   //      }
-   //
-   //      final Thread worker = new Thread() {
-   //         @Override
-   //         public void run() {
-   //            try {
-   //               final List<IPolygon2D<?>> polygons = GShapeLoader.readPolygons(fileName, convertToRadians);
-   //
-   //               final File file = new File(fileName);
-   //               final GPolygon2DLayer layer = new GPolygon2DLayer(file.getName(), file.getName()
-   //                                                                                 + Long.toHexString(file.lastModified()),
-   //                        polygons, projection);
-   //               layer.setShowExtents(true);
-   //               layers.add(layer);
-   //            }
-   //            catch (final IOException e) {
-   //               e.printStackTrace();
-   //            }
-   //         }
-   //      };
-   //      worker.setPriority(Thread.MIN_PRIORITY);
-   //      worker.setDaemon(true);
-   //      worker.start();
-   //   }
->>>>>>> 099d754df54fd3ef0c6fff979425e13e594daeb9
 
 
    @Override
