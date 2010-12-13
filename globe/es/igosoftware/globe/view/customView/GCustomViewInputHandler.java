@@ -198,7 +198,8 @@ public class GCustomViewInputHandler
          inputState = ((GCustomView) view).getInputState();
       }
       if ((inputState != null) && (!inputState.isMoving())) {
-         System.out.println("No Movement allowed!!");
+         //System.out.println("No Movement allowed!!");
+         onRotateView(Angle.fromDegrees(-sideInput * 0.5), Angle.fromDegrees(forwardInput * 0.5), actionAttributes);
          return;
       }
 
@@ -331,7 +332,14 @@ public class GCustomViewInputHandler
 
       if (view instanceof GCustomView) {
          if (!headingChange.equals(Angle.ZERO)) {
-            this.changeHeading((GCustomView) view, uiAnimControl, headingChange, actionAttribs);
+            final GCustomView customView = (GCustomView) view;
+            final GInputState inputState = customView.getInputState();
+            if (inputState == GInputState.PANORAMICS) {
+               this.changeHeading((GCustomView) view, uiAnimControl, headingChange.multiply(-1.0), actionAttribs);
+            }
+            else {
+               this.changeHeading((GCustomView) view, uiAnimControl, headingChange, actionAttribs);
+            }
          }
 
          if (!pitchChange.equals(Angle.ZERO)) {
@@ -354,6 +362,7 @@ public class GCustomViewInputHandler
       this.stopUserInputAnimators(VIEW_ANIM_CENTER, VIEW_ANIM_ZOOM);
 
       if (actionAttributes.getMouseActions() != null) {
+
          // Switch the direction of heading change depending on whether the cursor is above or below
          // the center of the screen.
          //         if (getWorldWindow() instanceof Component) {
@@ -362,6 +371,8 @@ public class GCustomViewInputHandler
          //            }
          //         }
       }
+
+
       else {
          final double length = Math.sqrt(headingInput * headingInput + pitchInput * pitchInput);
          if (length > 0.0) {

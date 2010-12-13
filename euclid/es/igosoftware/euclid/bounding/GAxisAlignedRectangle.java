@@ -47,6 +47,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import es.igosoftware.euclid.shape.GSegment2D;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector2;
@@ -292,6 +293,27 @@ public final class GAxisAlignedRectangle
    }
 
 
+   public boolean neighborWithRectangle(final GAxisAlignedRectangle that) {
+
+      final double epsilon = 0.0001;
+      return neighborWithRectangle(that, epsilon);
+   }
+
+
+   public boolean neighborWithRectangle(final GAxisAlignedRectangle that,
+                                        final double epsilon) {
+
+      final IVector2<?> thatLower = that._lower;
+      final IVector2<?> thatUpper = that._upper;
+
+      return (GMath.greaterOrEquals(_upper.x() + epsilon, thatLower.x()))
+             && (GMath.greaterOrEquals(thatUpper.x() + epsilon, _lower.x()))
+             && (GMath.greaterOrEquals(_upper.y() + epsilon, thatLower.y()))
+             && (GMath.greaterOrEquals(thatUpper.y() + epsilon, _lower.y()));
+
+   }
+
+
    @Override
    public boolean touches(final IBounds2D<?> that) {
       return that.touchesWithRectangle(this);
@@ -310,9 +332,14 @@ public final class GAxisAlignedRectangle
    //      System.out.println("---------------\n");
    //
    //      final GAxisAlignedRectangle rec1 = new GAxisAlignedRectangle(new GVector2D(1, 1), new GVector2D(10, 10));
-   //      final GAxisAlignedRectangle rec2 = new GAxisAlignedRectangle(new GVector2D(-1, -1), new GVector2D(1, 1));
+   //      //final GAxisAlignedRectangle rec2 = new GAxisAlignedRectangle(new GVector2D(-1, -1), new GVector2D(1, 1));
+   //      //                  final GAxisAlignedRectangle rec2 = new GAxisAlignedRectangle(new GVector2D(-1, -1), new GVector2D(GMath.nextUp(1),
+   //      //                           GMath.nextUp(1)));
+   //      //      final GAxisAlignedRectangle rec2 = new GAxisAlignedRectangle(new GVector2D(-1, -1), new GVector2D(GMath.previousDown(1),
+   //      //               GMath.previousDown(1)));
+   //      final GAxisAlignedRectangle rec2 = new GAxisAlignedRectangle(new GVector2D(-1, -1), new GVector2D(1 - 0.001, 1 - 0.001));
    //
-   //      System.out.println(rec1.touches(rec2));
+   //      System.out.println("NEIGHBOR WITH: " + rec1.neighborWithRectangle(rec2));
    //
    //   }
 
@@ -340,6 +367,19 @@ public final class GAxisAlignedRectangle
       v.add(new GVector2D(_upper.x(), _upper.y()));
 
       return Collections.unmodifiableList(v);
+   }
+
+
+   public List<GSegment2D> getEdges() {
+      final List<GSegment2D> edges = new ArrayList<GSegment2D>(4);
+
+      edges.add(new GSegment2D(new GVector2D(_lower.x(), _lower.y()), new GVector2D(_lower.x(), _upper.y())));
+      edges.add(new GSegment2D(new GVector2D(_lower.x(), _upper.y()), new GVector2D(_upper.x(), _upper.y())));
+
+      edges.add(new GSegment2D(new GVector2D(_upper.x(), _upper.y()), new GVector2D(_upper.x(), _lower.y())));
+      edges.add(new GSegment2D(new GVector2D(_upper.x(), _lower.y()), new GVector2D(_lower.x(), _lower.y())));
+
+      return Collections.unmodifiableList(edges);
    }
 
 
