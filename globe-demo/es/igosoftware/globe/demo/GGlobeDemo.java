@@ -231,7 +231,7 @@ public class GGlobeDemo
       // final GProjection projection = GProjection.EPSG_23030;
       // final boolean convertToRadians = false;
 
-<<<<<<< HEAD
+
       //      final String fileName = "data/shp/S_Naturales_forestales_WG84.shp";
       //      final GProjection projection = GProjection.EPSG_4326;
       //      final boolean convertToRadians = true;
@@ -240,9 +240,9 @@ public class GGlobeDemo
       //      final GProjection projection = GProjection.EPSG_4326;
       //      final boolean convertToRadians = true;
 
-      final String fileName = "data/shp/british_isles.shp/roads.shp";
-      final GProjection projection = GProjection.EPSG_4326;
-      final boolean convertToRadians = true;
+      //      final String fileName = "data/shp/british_isles.shp/roads.shp";
+      //      final GProjection projection = GProjection.EPSG_4326;
+      //      final boolean convertToRadians = true;
       //      
       //      final String fileName = "data/shp/berlin.shp/roads.shp";
       //      final GProjection projection = GProjection.EPSG_4326;
@@ -250,11 +250,10 @@ public class GGlobeDemo
 
       final String buidings = "data/shp/berlin.shp/buildings.shp";
 
-=======
       final String fileName = "data/shp/S_Naturales_forestales_WG84.shp";
       final GProjection projection = GProjection.EPSG_4326;
       final boolean convertToRadians = true;
->>>>>>> 69c90ff089b5efccb56a9630f9edb541116f1276
+
 
       // final String fileName = "data/shp/parcelasEdificadas.shp";
       // final GProjection projection = GProjection.EPSG_23029;
@@ -277,7 +276,6 @@ public class GGlobeDemo
                                                                                  + Long.toHexString(file.lastModified()),
                         polygons, projection);
                layer.setShowExtents(true);
-<<<<<<< HEAD
 
 
                final List<IPolygon2D<?>> buildings_ = GShapeLoader.readPolygons(buidings, convertToRadians);
@@ -287,9 +285,8 @@ public class GGlobeDemo
 
                layers.add(layer);
                //     layers.add(buildings_layer);
-=======
-               layers.add(layer);
->>>>>>> 69c90ff089b5efccb56a9630f9edb541116f1276
+
+
             }
             catch (final IOException e) {
                e.printStackTrace();
