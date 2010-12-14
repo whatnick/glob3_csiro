@@ -85,9 +85,9 @@ import org.pushingpixels.substance.api.fonts.FontSet;
 import org.pushingpixels.substance.api.skin.SubstanceMistAquaLookAndFeel;
 
 import es.igosoftware.globe.actions.IGenericAction;
+import es.igosoftware.globe.layers.I3DContentCollectionLayer;
 import es.igosoftware.globe.view.customView.GCustomView;
 import es.igosoftware.globe.view.customView.GCustomViewInputHandler;
-import es.igosoftware.panoramic.GPanoramicLayer;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GLogger;
 import es.igosoftware.util.GPair;
@@ -1244,10 +1244,10 @@ public abstract class GGlobeApplication
    }
 
 
-   public GPanoramicLayer getPanoramicLayer() {
+   public I3DContentCollectionLayer getContentCollectionLayer() {
       for (final Layer layer : this.getLayerList()) {
-         if (layer instanceof GPanoramicLayer) {
-            return (GPanoramicLayer) layer;
+         if (layer instanceof I3DContentCollectionLayer) {
+            return (I3DContentCollectionLayer) layer;
          }
          continue;
       }

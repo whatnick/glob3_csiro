@@ -37,8 +37,8 @@
 package es.igosoftware.globe.view.customView;
 
 import es.igosoftware.globe.GGlobeApplication;
+import es.igosoftware.globe.layers.I3DContentCollectionLayer;
 import es.igosoftware.globe.view.GInputState;
-import es.igosoftware.panoramic.GPanoramicLayer;
 import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.animation.AngleAnimator;
 import gov.nasa.worldwind.animation.AnimationController;
@@ -1198,9 +1198,9 @@ public class GCustomViewInputHandler
 
       final GCustomView customView = (GCustomView) view;
       final GGlobeApplication application = GGlobeApplication.instance();
-      final GPanoramicLayer panoramicLayer = application.getPanoramicLayer();
+      final I3DContentCollectionLayer panoramicLayer = application.getContentCollectionLayer();
       if (panoramicLayer != null) {
-         panoramicLayer.exitPanoramic(customView);
+         panoramicLayer.exitContent(customView);
       }
       application.redraw();
 
