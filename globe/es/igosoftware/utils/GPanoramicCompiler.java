@@ -51,10 +51,11 @@ import java.util.List;
 import java.util.zip.GZIPOutputStream;
 
 import javax.imageio.ImageIO;
+import javax.media.jai.JAI;
 
 import es.igosoftware.io.GIOUtils;
-import es.igosoftware.util.GProgress;
 import es.igosoftware.util.GLogger;
+import es.igosoftware.util.GProgress;
 
 
 public class GPanoramicCompiler {
@@ -309,7 +310,9 @@ public class GPanoramicCompiler {
       GIOUtils.assureEmptyDirectory(outputDirectoryName, false);
 
       logInfo("Reading image \"" + sourceImage.getAbsolutePath() + "\"");
-      final BufferedImage image = ImageIO.read(sourceImage);
+
+      //      final BufferedImage image = ImageIO.read(sourceImage);
+      final BufferedImage image = JAI.create("fileload", sourceImage.getAbsolutePath()).getAsBufferedImage();
 
       final int width = image.getWidth();
       final int height = image.getHeight();
