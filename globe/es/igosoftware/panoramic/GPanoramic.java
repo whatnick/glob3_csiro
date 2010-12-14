@@ -175,7 +175,6 @@ public class GPanoramic
 
 
    public GPanoramic(final GPanoramicLayer containingLayer,
-
                      final String name,
                      final String directoryName,
                      final double radius,
@@ -186,7 +185,6 @@ public class GPanoramic
 
 
    public GPanoramic(final GPanoramicLayer containingLayer,
-
                      final String name,
                      final String directoryName,
                      final double radius,
