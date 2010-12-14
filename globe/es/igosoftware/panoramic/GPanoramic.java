@@ -175,7 +175,7 @@ public class GPanoramic
    private boolean                                                           _isHidden;
 
 
-   public GPanoramic(final GPanoramicLayer containingLayer,
+   public GPanoramic(final Layer containingLayer,
                      final String name,
                      final String directoryName,
                      final double radius,
@@ -185,7 +185,7 @@ public class GPanoramic
    }
 
 
-   public GPanoramic(final GPanoramicLayer containingLayer,
+   public GPanoramic(final Layer containingLayer,
                      final String name,
                      final String directoryName,
                      final double radius,
