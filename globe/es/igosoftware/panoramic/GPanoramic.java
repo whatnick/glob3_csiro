@@ -61,6 +61,7 @@ import gov.nasa.worldwind.geom.Sector;
 import gov.nasa.worldwind.geom.Sphere;
 import gov.nasa.worldwind.geom.Vec4;
 import gov.nasa.worldwind.globes.Globe;
+import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.render.DrawContext;
 import gov.nasa.worldwind.render.OrderedRenderable;
 import gov.nasa.worldwind.util.WWMath;
@@ -168,7 +169,7 @@ public class GPanoramic
    private final int                                                         _maxResolutionInPanoramic;
    private int                                                               _currentLevel;
 
-   private final GPanoramicLayer                                             _layer;
+   private final Layer                                                       _layer;
    private double                                                            _currentDistanceFromEye;
 
    private boolean                                                           _isHidden;
@@ -217,7 +218,7 @@ public class GPanoramic
    }
 
 
-   public GPanoramicLayer getLayer() {
+   public Layer getLayer() {
       return _layer;
    }
 
@@ -907,7 +908,7 @@ public class GPanoramic
       }
 
 
-      private GPanoramicLayer getOuterType() {
+      private Layer getOuterType() {
          return _layer;
       }
 
@@ -982,7 +983,7 @@ public class GPanoramic
       }
 
 
-      private GPanoramicLayer getOuterType() {
+      private Layer getOuterType() {
          return _layer;
       }
    }

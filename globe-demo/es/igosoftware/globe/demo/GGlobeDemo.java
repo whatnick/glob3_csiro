@@ -179,14 +179,7 @@ public class GGlobeDemo
       panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", "data/panoramics/example", 500,
                new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0)));
 
-      //      panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", "data/panoramics/PanoBig", 500,
-      //               new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0)));
-
-      //      panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic 2", "data/panoramics/example", 500,
-      //               new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3660), 0)));
-
       // panoramicLayer.setEnabled(false);
-
 
       panoramicLayer.addPickListener(new GPanoramicLayer.PickListener() {
          @Override
