@@ -86,7 +86,7 @@ public class GSearchResultLayer
             m_Features[i] = new Feature(geom, attribs);
          }
          catch (final Exception e) {
-            m_Features[i] = new Feature(geom, new Object[] { "", new Long(0) });
+            m_Features[i] = new Feature(geom, new Object[] { "", Long.valueOf(0) });
          }
 
       }

@@ -1039,7 +1039,7 @@ public class GPolygon2DLayer
    public void setBorderColorAlpha(final int newValue) {
       final Color newColor = createColor(getBorderColor(), newValue);
 
-      if (_attributes._borderColor.equals(newValue)) {
+      if (_attributes._borderColor.equals(newColor)) {
          return;
       }
 
@@ -1061,7 +1061,7 @@ public class GPolygon2DLayer
    public void setFillColorAlpha(final int newValue) {
       final Color newColor = createColor(getFillColor(), newValue);
 
-      if (_attributes._fillColor.equals(newValue)) {
+      if (_attributes._fillColor.equals(newColor)) {
          return;
       }
 

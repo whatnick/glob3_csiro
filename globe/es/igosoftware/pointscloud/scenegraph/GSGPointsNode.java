@@ -372,23 +372,24 @@ public final class GSGPointsNode
 
 
    private IColor getReferenceColor(final boolean useLOD) {
-
       if (_layer.getColorFromState()) {
-         if (_pointsLoader._errorLoading) {
-            return GColorF.newRGB(1, 0, 0);
-         }
-         //else if (_loading || (_wantedPoints > _availablePoints.get())) {
-         else if (_pointsLoader.isloading() || _pointsLoader.isIncomplete()) {
-            if (useLOD) {
-               return GColorF.newRGB(0.7f, 1f, 0.7f);
+         synchronized (_pointsLoader) {
+            if (_pointsLoader._errorLoading) {
+               return GColorF.newRGB(1, 0, 0);
             }
-            return GColorF.newRGB(0.7f, 0.7f, 1);
-         }
-         else {
-            if (useLOD) {
-               return GColorF.newRGB(1, 1, 0.7f);
+            //else if (_loading || (_wantedPoints > _availablePoints.get())) {
+            else if (_pointsLoader.isloading() || _pointsLoader.isIncomplete()) {
+               if (useLOD) {
+                  return GColorF.newRGB(0.7f, 1f, 0.7f);
+               }
+               return GColorF.newRGB(0.7f, 0.7f, 1);
             }
-            return GColorF.WHITE;
+            else {
+               if (useLOD) {
+                  return GColorF.newRGB(1, 1, 0.7f);
+               }
+               return GColorF.WHITE;
+            }
          }
       }
 

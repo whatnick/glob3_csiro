@@ -63,7 +63,7 @@ public class GGeometryNTreeParameters {
    }
 
 
-   private class DefaultAcceptLeafNodeCreationPolicy<
+   private static class DefaultAcceptLeafNodeCreationPolicy<
 
    VectorT extends IVector<VectorT, ?>,
 
