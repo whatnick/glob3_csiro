@@ -47,6 +47,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -89,6 +90,7 @@ import es.igosoftware.globe.layers.I3DContentCollectionLayer;
 import es.igosoftware.globe.view.customView.GCustomView;
 import es.igosoftware.globe.view.customView.GCustomViewInputHandler;
 import es.igosoftware.util.GCollections;
+import es.igosoftware.util.GHolder;
 import es.igosoftware.util.GLogger;
 import es.igosoftware.util.GPair;
 import es.igosoftware.util.GUtils;
@@ -144,6 +146,19 @@ public abstract class GGlobeApplication
       Configuration.setValue(AVKey.VIEW_CLASS_NAME, GCustomView.class.getName());
 
       Configuration.setValue(AVKey.TESSELLATOR_CLASS_NAME, RectangularNormalTessellator.class.getName());
+
+      //      System.setProperty("sun.java2d.noddraw", "true");
+      //      System.setProperty("sun.java2d.opengl", "true");
+
+      JPopupMenu.setDefaultLightWeightPopupEnabled(false);
+      ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
+
+      SwingUtilities.invokeLater(new Runnable() {
+         @Override
+         public void run() {
+            initializeSubstance();
+         }
+      });
    }
 
 
@@ -207,21 +222,6 @@ public abstract class GGlobeApplication
 
    private final LRUCache<IconKey, Icon, RuntimeException>  _iconsCache;
    private final LRUCache<IconKey, Image, RuntimeException> _imagesCache;
-
-   static {
-      //      System.setProperty("sun.java2d.noddraw", "true");
-      //      System.setProperty("sun.java2d.opengl", "true");
-
-      JPopupMenu.setDefaultLightWeightPopupEnabled(false);
-      ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
-
-      SwingUtilities.invokeLater(new Runnable() {
-         @Override
-         public void run() {
-            initializeSubstance();
-         }
-      });
-   }
 
 
    private static void initializeFonts() {
@@ -448,14 +448,32 @@ public abstract class GGlobeApplication
 
 
    private IGlobeModule[] initializeModules() {
-      final IGlobeModule[] modules = getModules();
 
-      for (final IGlobeModule module : modules) {
-         module.initialize(this);
-         module.initializeTranslations(this);
+      final GHolder<IGlobeModule[]> modules = new GHolder<IGlobeModule[]>(null);
+
+      try {
+         SwingUtilities.invokeAndWait(new Runnable() {
+            @Override
+            public void run() {
+               //            final IGlobeModule[] modules = getModules();
+               modules.set(getModules());
+
+               for (final IGlobeModule module : modules.get()) {
+                  module.initialize(GGlobeApplication.this);
+                  module.initializeTranslations(GGlobeApplication.this);
+               }
+            }
+         });
+      }
+      catch (final InterruptedException e) {
+         e.printStackTrace();
+      }
+      catch (final InvocationTargetException e) {
+         e.printStackTrace();
       }
 
-      return modules;
+
+      return modules.get();
    }
 
 
@@ -515,15 +533,28 @@ public abstract class GGlobeApplication
 
    @Override
    public void init() {
-      initGUI();
+      try {
+         SwingUtilities.invokeAndWait(new Runnable() {
+            @Override
+            public void run() {
+               initGUI();
 
-      IGlobeModule previousModule = null;
-      for (final IGlobeModule module : _modules) {
-         initModuleGUI(module, previousModule);
-         previousModule = module;
+               IGlobeModule previousModule = null;
+               for (final IGlobeModule module : _modules) {
+                  initModuleGUI(module, previousModule);
+                  previousModule = module;
+               }
+
+               postInitGUI();
+            }
+         });
       }
-
-      postInitGUI();
+      catch (final InterruptedException e) {
+         e.printStackTrace();
+      }
+      catch (final InvocationTargetException e) {
+         e.printStackTrace();
+      }
    }
 
 
@@ -582,7 +613,8 @@ public abstract class GGlobeApplication
 
    private void initModuleGUI(final IGlobeModule module,
                               final IGlobeModule previousModule) {
-      final List<IGenericAction> genericActions = module.getGenericActions(this);
+
+      final List<IGenericAction> genericActions = module.getGenericActions(GGlobeApplication.this);
 
       final Set<IGenericAction.MenuArea> firstUseFlags = new HashSet<IGenericAction.MenuArea>();
 
@@ -604,7 +636,7 @@ public abstract class GGlobeApplication
                      }
                   }
                }
-               _toolbar.add(action.createToolbarWidget(this));
+               _toolbar.add(action.createToolbarWidget(GGlobeApplication.this));
             }
          }
       }
@@ -708,6 +740,7 @@ public abstract class GGlobeApplication
     */
    protected final void initGUI() {
 
+
       final Container contentPane = getContentPane();
 
       _menubar = createMenuBar();
@@ -724,6 +757,7 @@ public abstract class GGlobeApplication
          final JSplitPane splitPane = createSplitPane(leftPane);
          contentPane.add(splitPane, BorderLayout.CENTER);
       }
+
    }
 
 

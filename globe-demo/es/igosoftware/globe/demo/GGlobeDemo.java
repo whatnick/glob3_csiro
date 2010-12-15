@@ -342,6 +342,16 @@ public class GGlobeDemo
    }
 
 
+   @Override
+   public void init() {
+      super.init();
+
+      checkDataDirectory();
+
+      loadMultidimensionalData();
+   }
+
+
    public static void main(final String[] args) {
 
       SwingUtilities.invokeLater(new Runnable() {
