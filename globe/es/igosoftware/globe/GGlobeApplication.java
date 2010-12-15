@@ -40,6 +40,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -448,11 +449,10 @@ public abstract class GGlobeApplication
 
 
    private IGlobeModule[] initializeModules() {
-
       final GHolder<IGlobeModule[]> modules = new GHolder<IGlobeModule[]>(null);
 
       try {
-         SwingUtilities.invokeAndWait(new Runnable() {
+         invokeAndWait(new Runnable() {
             @Override
             public void run() {
                //            final IGlobeModule[] modules = getModules();
@@ -472,8 +472,17 @@ public abstract class GGlobeApplication
          e.printStackTrace();
       }
 
-
       return modules.get();
+   }
+
+
+   private static void invokeAndWait(final Runnable runnable) throws InterruptedException, InvocationTargetException {
+      if (EventQueue.isDispatchThread()) {
+         runnable.run();
+      }
+      else {
+         SwingUtilities.invokeAndWait(runnable);
+      }
    }
 
 
@@ -534,7 +543,7 @@ public abstract class GGlobeApplication
    @Override
    public void init() {
       try {
-         SwingUtilities.invokeAndWait(new Runnable() {
+         invokeAndWait(new Runnable() {
             @Override
             public void run() {
                initGUI();
