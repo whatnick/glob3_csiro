@@ -316,11 +316,11 @@ public final class GWWUtils {
       final IVector2<?> max = new GVector2D(boundingRectangle.getMaxX(), boundingRectangle.getMaxY()).reproject(projection,
                GProjection.EPSG_4326);
 
-      final Angle minLatitude = Angle.fromRadians(min.y());
-      final Angle maxLatitude = Angle.fromRadians(max.y());
+      final Angle minLatitude = Angle.fromRadiansLatitude(min.y());
+      final Angle maxLatitude = Angle.fromRadiansLatitude(max.y());
 
-      final Angle minLongitude = Angle.fromRadians(min.x());
-      final Angle maxLongitude = Angle.fromRadians(max.x());
+      final Angle minLongitude = Angle.fromRadiansLongitude(min.x());
+      final Angle maxLongitude = Angle.fromRadiansLongitude(max.x());
 
       return new Sector(minLatitude, maxLatitude, minLongitude, maxLongitude);
    }
@@ -328,14 +328,14 @@ public final class GWWUtils {
 
    public static Sector toSector(final GAxisAlignedRectangle boundingRectangle,
                                  final GProjection projection) {
-      final IVector2<?> min = boundingRectangle._lower.reproject(projection, GProjection.EPSG_4326);
-      final IVector2<?> max = boundingRectangle._upper.reproject(projection, GProjection.EPSG_4326);
+      final IVector2<?> lower = boundingRectangle._lower.reproject(projection, GProjection.EPSG_4326);
+      final IVector2<?> upper = boundingRectangle._upper.reproject(projection, GProjection.EPSG_4326);
 
-      final Angle minLatitude = Angle.fromRadians(min.y());
-      final Angle maxLatitude = Angle.fromRadians(max.y());
+      final Angle minLatitude = Angle.fromRadiansLatitude(lower.y());
+      final Angle maxLatitude = Angle.fromRadiansLatitude(upper.y());
 
-      final Angle minLongitude = Angle.fromRadians(min.x());
-      final Angle maxLongitude = Angle.fromRadians(max.x());
+      final Angle minLongitude = Angle.fromRadiansLongitude(lower.x());
+      final Angle maxLongitude = Angle.fromRadiansLongitude(upper.x());
 
       return new Sector(minLatitude, maxLatitude, minLongitude, maxLongitude);
    }
@@ -562,6 +562,13 @@ public final class GWWUtils {
       }
 
       return toVec3(view.project(modelPoint));
+   }
+
+
+   public static Position toPosition(final IVector3<?> point,
+                                     final GProjection projection) {
+      final IVector3<?> geodesicPoint = point.reproject(projection, GProjection.EPSG_4326);
+      return Position.fromRadians(geodesicPoint.y(), geodesicPoint.x(), geodesicPoint.z());
    }
 
 
