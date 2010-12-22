@@ -452,7 +452,7 @@ public abstract class GGlobeApplication
       final GHolder<IGlobeModule[]> modules = new GHolder<IGlobeModule[]>(null);
 
       try {
-         invokeAndWait(new Runnable() {
+         invokeInEventThread(new Runnable() {
             @Override
             public void run() {
                //            final IGlobeModule[] modules = getModules();
@@ -476,7 +476,7 @@ public abstract class GGlobeApplication
    }
 
 
-   private static void invokeAndWait(final Runnable runnable) throws InterruptedException, InvocationTargetException {
+   private static void invokeInEventThread(final Runnable runnable) throws InterruptedException, InvocationTargetException {
       if (EventQueue.isDispatchThread()) {
          runnable.run();
       }
@@ -543,7 +543,7 @@ public abstract class GGlobeApplication
    @Override
    public void init() {
       try {
-         invokeAndWait(new Runnable() {
+         invokeInEventThread(new Runnable() {
             @Override
             public void run() {
                initGUI();

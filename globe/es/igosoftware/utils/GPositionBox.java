@@ -134,14 +134,14 @@ public final class GPositionBox {
 
    public GPositionBox(final GAxisAlignedOrthotope<IVector3<?>, ?> box,
                        final GProjection projection) {
-      this(GConverter.toPosition(projection, box._lower), GConverter.toPosition(projection, box._upper));
+      this(GWWUtils.toPosition(box._lower, projection), GWWUtils.toPosition(box._upper, projection));
    }
 
 
    public GPositionBox(final IVector3<?> lower,
                        final IVector3<?> upper,
                        final GProjection projection) {
-      this(GConverter.toPosition(projection, lower), GConverter.toPosition(projection, upper));
+      this(GWWUtils.toPosition(lower, projection), GWWUtils.toPosition(upper, projection));
    }
 
 

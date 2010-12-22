@@ -62,7 +62,7 @@ public class GShapeLoader {
 
 
       private GProgressListenerAdapter(final String taskName) {
-         super(100 * FACTOR, 1);
+         super(100 * FACTOR);
          _taskName = taskName;
       }
 

@@ -110,21 +110,16 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
          case GIVEN:
             return returnGivenBounds(givenBounds);
 
-
          case MINIMUM:
             return _geometriesBounds;
 
-
          case DIMENSIONS_MULTIPLE_OF_SMALLEST:
             return multipleOfSmallestDimention(_geometriesBounds);
-
          case DIMENSIONS_MULTIPLE_OF_SMALLEST_AND_CENTERED:
             return centerBounds(multipleOfSmallestDimention(_geometriesBounds));
 
-
          case REGULAR:
             return calculateRegularBounds(_geometriesBounds);
-
          case REGULAR_AND_CENTERED:
             return centerBounds(calculateRegularBounds(_geometriesBounds));
       }

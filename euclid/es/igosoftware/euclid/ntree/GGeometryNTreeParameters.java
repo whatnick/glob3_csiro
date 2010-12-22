@@ -101,24 +101,28 @@ public class GGeometryNTreeParameters {
    final boolean                      _verbose;
    final AcceptLeafNodeCreationPolicy _acceptLeafNodeCreationPolicy;
    final BoundsPolicy                 _boundsPolicy;
+   final boolean                      _multiThread;
 
 
    public GGeometryNTreeParameters(final boolean verbose,
                                    final AcceptLeafNodeCreationPolicy acceptLeafNodeCreationPolicy,
-                                   final BoundsPolicy boundsPolicy) {
+                                   final BoundsPolicy boundsPolicy,
+                                   final boolean multiThread) {
       GAssert.notNull(acceptLeafNodeCreationPolicy, "acceptLeafNodeCreationPolicy");
       GAssert.notNull(boundsPolicy, "boundsPolicy");
 
       _verbose = verbose;
       _acceptLeafNodeCreationPolicy = acceptLeafNodeCreationPolicy;
       _boundsPolicy = boundsPolicy;
+      _multiThread = multiThread;
    }
 
 
    public GGeometryNTreeParameters(final boolean verbose,
                                    final int maxDepth,
                                    final int maxGeometriesInLeafs,
-                                   final BoundsPolicy boundsPolicy) {
+                                   final BoundsPolicy boundsPolicy,
+                                   final boolean multiThread) {
       GAssert.isPositive(maxDepth, "maxDepth");
       GAssert.isPositive(maxGeometriesInLeafs, "maxGeometriesInLeafs");
       GAssert.notNull(boundsPolicy, "boundsPolicy");
@@ -126,6 +130,7 @@ public class GGeometryNTreeParameters {
       _verbose = verbose;
       _acceptLeafNodeCreationPolicy = new DefaultAcceptLeafNodeCreationPolicy(maxDepth, maxGeometriesInLeafs);
       _boundsPolicy = boundsPolicy;
+      _multiThread = multiThread;
    }
 
 }

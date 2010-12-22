@@ -199,15 +199,7 @@ GeometryT extends GAxisAlignedOrthotope<VectorT, GeometryT>
       _upper = lower.max(upper);
 
       _extent = _upper.sub(_lower);
-
-      //      try {
       _center = _lower.add(_upper).div(2);
-      //      }
-      //      catch (final IllegalArgumentException e) {
-      //         System.out.println(">>>>" + lower1 + " -> " + upper1);
-      //         System.out.println("   >" + lower + " -> " + upper);
-      //         throw e;
-      //      }
    }
 
 
@@ -371,21 +363,6 @@ GeometryT extends GAxisAlignedOrthotope<VectorT, GeometryT>
       return _lower.closeTo(that._lower) && _upper.closeTo(that._upper);
    }
 
-
-   //   public static void main(final String[] args) {
-   //      final List<GAxisAlignedOrthotope<IVector3<?>, ?>> orthotopes1 = new ArrayList<GAxisAlignedOrthotope<IVector3<?>, ?>>();
-   //      orthotopes1.add(new GAxisAlignedBox(new GVector3D(1, 10, 100), new GVector3D(2, 20, 200)));
-   //      orthotopes1.add(new GAxisAlignedBox(new GVector3D(3, 30, 300), new GVector3D(4, 40, 400)));
-   //
-   //      System.out.println(merge(orthotopes1));
-   //
-   //
-   //      final List<GAxisAlignedOrthotope<IVector2<?>, ?>> orthotopes2 = new ArrayList<GAxisAlignedOrthotope<IVector2<?>, ?>>();
-   //      orthotopes2.add(new GAxisAlignedRectangle(new GVector2D(1, 10), new GVector2D(2, 20)));
-   //      orthotopes2.add(new GAxisAlignedRectangle(new GVector2D(3, 30), new GVector2D(4, 40)));
-   //
-   //      System.out.println(merge(orthotopes2));
-   //   }
 
    public boolean isFullInside(final GAxisAlignedOrthotope<VectorT, ?> that) {
       return _lower.greaterOrEquals(that._lower) && _upper.lessOrEquals(that._upper);

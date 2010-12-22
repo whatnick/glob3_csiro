@@ -43,7 +43,6 @@ import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.pointscloud.GPointsCloudLayer;
 import es.igosoftware.util.GAssert;
-import es.igosoftware.utils.GConverter;
 import es.igosoftware.utils.GPositionBox;
 import es.igosoftware.utils.GWWUtils;
 import gov.nasa.worldwind.View;
@@ -93,7 +92,7 @@ public final class GSGPointsNode
       GAssert.isTrue(_pointsCount > 0, "_pointsCount");
 
       _referencePoint = node.getReferencePoint();
-      _referencePosition = GConverter.toPosition(projection, _referencePoint);
+      _referencePosition = GWWUtils.toPosition(_referencePoint, projection);
       _minimumBox = new GPositionBox(node.getMinimumBounds(), projection);
 
       _pointsLoader = new GSGPointsLoader(this);

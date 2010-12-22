@@ -178,7 +178,7 @@ public class GPolygon2DLayer
                                  final double priority) {
          super(new Callable<BufferedImage>() {
 
-            private BufferedImage getImageFromCache() {
+            private BufferedImage getImageFromDiskCache() {
                final File file = new File(RENDERING_CACHE_DIRECTORY, key.uniqueName() + ".png");
 
                if (!file.exists()) {
@@ -198,7 +198,7 @@ public class GPolygon2DLayer
             @Override
             public BufferedImage call() throws Exception {
 
-               final BufferedImage imageFromCache = getImageFromCache();
+               final BufferedImage imageFromCache = getImageFromDiskCache();
                if (imageFromCache != null) {
                   // System.out.println("disk cache hit");
                   key._layer.redraw();
@@ -221,7 +221,7 @@ public class GPolygon2DLayer
                final Thread worker = new Thread() {
                   @Override
                   public void run() {
-                     saveImage(key, renderedImage);
+                     saveImageIntoDiskCache(key, renderedImage);
                   }
                };
                worker.setDaemon(true);
@@ -342,12 +342,15 @@ public class GPolygon2DLayer
    }
 
 
-   private static boolean saveImage(final RenderingKey key,
-                                    final BufferedImage image) {
+   private static boolean saveImageIntoDiskCache(final RenderingKey key,
+                                                 final BufferedImage image) {
       try {
          if (image != null) {
             final String fileName = key.uniqueName() + ".png";
-            final File tempFile = new File(RENDERING_CACHE_DIRECTORY, fileName + ".PART");
+            //            final File tempFile = new File(RENDERING_CACHE_DIRECTORY, fileName + ".PART");
+            //            final File tempFile = new File(RENDERING_CACHE_DIRECTORY, fileName + ".PART");
+
+            final File tempFile = File.createTempFile("temp", "png", RENDERING_CACHE_DIRECTORY);
 
             ImageIO.write(image, "png", tempFile);
             //            final ByteBuffer buffer = DDSCompressor.compressImage(image);
@@ -387,7 +390,7 @@ public class GPolygon2DLayer
 
       final LRUCache.SizePolicy<RenderingKey, Future<BufferedImage>, RuntimeException> sizePolicy;
       sizePolicy = new LRUCache.SizePolicy<GPolygon2DLayer.RenderingKey, Future<BufferedImage>, RuntimeException>() {
-         final private long _maxImageCacheSizeInBytes = Runtime.getRuntime().maxMemory() / 4;
+         final private long _maxImageCacheSizeInBytes = Runtime.getRuntime().maxMemory() / 3;
 
 
          @Override
@@ -410,31 +413,27 @@ public class GPolygon2DLayer
          public void visit(final RenderingKey key,
                            final Future<BufferedImage> value,
                            final RuntimeException exception) {
-
             //            saveImage(key, value);
-
             //            System.out.println("Removed " + key);
-
          }
-
-
       };
 
 
-      IMAGES_CACHE = new LRUCache<RenderingKey, Future<BufferedImage>, RuntimeException>(sizePolicy,
-               new LRUCache.ValueFactory<RenderingKey, Future<BufferedImage>, RuntimeException>() {
-                  @Override
-                  public Future<BufferedImage> create(final RenderingKey key) {
-                     final double priority = key._tileBounds.area();
-                     final RendererFutureTask future = new RendererFutureTask(key, priority);
-                     synchronized (RENDERING_TASKS) {
-                        RENDERING_TASKS.add(future);
-                     }
-                     return future;
+      final LRUCache.ValueFactory<RenderingKey, Future<BufferedImage>, RuntimeException> factory = new LRUCache.ValueFactory<RenderingKey, Future<BufferedImage>, RuntimeException>() {
+         @Override
+         public Future<BufferedImage> create(final RenderingKey key) {
+            final double priority = key._tileBounds.area();
+            final RendererFutureTask future = new RendererFutureTask(key, priority);
+            synchronized (RENDERING_TASKS) {
+               RENDERING_TASKS.add(future);
+            }
+            return future;
 
-                     // return _renderer.render(key._tileSectorBounds, key._attributes);
-                  }
-               }, removedListener, 0);
+            // return _renderer.render(key._tileSectorBounds, key._attributes);
+         }
+      };
+
+      IMAGES_CACHE = new LRUCache<RenderingKey, Future<BufferedImage>, RuntimeException>(sizePolicy, factory, removedListener, 0);
    }
 
 
@@ -469,6 +468,7 @@ public class GPolygon2DLayer
          _tileSector = tileSector;
 
          _tileBounds = GWWUtils.toBoundingRectangle(tileSector, _projection);
+         //         _tileBounds = tileBounds;
          _tileBoundsExtent = _tileBounds.getExtent();
       }
 
@@ -480,7 +480,7 @@ public class GPolygon2DLayer
       }
 
 
-      private float computeProjectedPixels(final DrawContext dc) {
+      private double computeProjectedPixels(final DrawContext dc) {
          final LatLon[] tileSectorCorners = _tileSector.getCorners();
 
          final Vec4 firstProjected = GWWUtils.getScreenPoint(dc, tileSectorCorners[0]);
@@ -511,7 +511,7 @@ public class GPolygon2DLayer
          final double width = maxX - minX;
          final double height = maxY - minY;
          final double area = width * height;
-         return (float) area;
+         return area;
       }
 
 
@@ -668,16 +668,11 @@ public class GPolygon2DLayer
 
 
       private GPair<Tile, BufferedImage> findNearestAncestorWithImage() {
-         //         final int TODO;
-         //
-         //         return null;
-
          Tile ancestor = _parent;
          while (ancestor != null) {
             final RenderingKey ancestorKey = ancestor.createRenderingKey();
             final Future<BufferedImage> futureImage = IMAGES_CACHE.getValueOrNull(ancestorKey);
             if ((futureImage != null) && futureImage.isDone()) {
-
                try {
                   return new GPair<Tile, BufferedImage>(ancestor, futureImage.get());
                }
@@ -689,6 +684,7 @@ public class GPolygon2DLayer
 
             ancestor = ancestor._parent;
          }
+
          return null;
       }
 
@@ -1262,10 +1258,10 @@ public class GPolygon2DLayer
          return;
       }
 
-      final int maxLevel = 20;
+      final int maxLevel = 22;
       if ((currentLevel < maxLevel - 1) && tile.needToSplit(dc)) {
-         final Tile[] subtiles = tile.slit();
-         for (final Tile child : subtiles) {
+         final Tile[] children = tile.slit();
+         for (final Tile child : children) {
             selectVisibleTiles(dc, child, frustum, currentLevel + 1);
          }
          return;
@@ -1350,18 +1346,7 @@ public class GPolygon2DLayer
       }
 
       if (_topTiles != null) {
-         //         final Frustum frustum = dc.getView().getFrustumInModelCoordinates();
-
          for (final Tile topTile : _topTiles) {
-
-            //            if (!topTile._tileSector.intersects(_sector)) {
-            //               continue;
-            //            }
-            //
-            //            if (!topTile.getBox(dc).intersects(frustum)) {
-            //               continue;
-            //            }
-
             topTile.moveUpInCache();
          }
       }

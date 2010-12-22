@@ -71,10 +71,10 @@ import es.igosoftware.euclid.verticescontainer.IVertexContainer;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GHolder;
+import es.igosoftware.util.GLoggerObject;
 import es.igosoftware.util.GProgress;
 import es.igosoftware.util.IEvaluator;
-import es.igosoftware.util.GLoggerObject;
-import es.igosoftware.utils.GConverter;
+import es.igosoftware.utils.GWWUtils;
 import gov.nasa.worldwind.geom.Position;
 
 
@@ -180,10 +180,10 @@ public class GPointsCloudLODGenerator
          final boolean hasNormals = _vertices.hasNormals();
          final boolean hasColors = _vertices.hasColors();
 
-         final Position referenceReprojected = GConverter.toPosition(_projection, referencePoint);
+         final Position referenceReprojected = GWWUtils.toPosition(referencePoint, _projection);
 
          for (final int index : _sortedVertices) {
-            final Position pointReprojected = GConverter.toPosition(_projection, _vertices.getPoint(index));
+            final Position pointReprojected = GWWUtils.toPosition(_vertices.getPoint(index), _projection);
             //            final IVector3<?> point = _vertices.getPoint(index).sub(referencePoint);
             //            saveVector3F(output, point);
             output.writeFloat((float) (pointReprojected.latitude.radians - referenceReprojected.latitude.radians));

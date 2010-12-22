@@ -54,7 +54,7 @@ public class GPolygon2DRenderer {
       };
 
       final GGeometryNTreeParameters parameters = new GGeometryNTreeParameters(true, acceptLeafNodeCreationPolicy,
-               GGeometryNTreeParameters.BoundsPolicy.MINIMUM);
+               GGeometryNTreeParameters.BoundsPolicy.MINIMUM, true);
 
       return new GGeometryQuadtree<IPolygon2D<?>>("Rendering", null, _polygons, parameters);
    }

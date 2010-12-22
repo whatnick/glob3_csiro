@@ -146,7 +146,7 @@ public enum GProjection {
       //      synchronized (GProj4Library.MUTEX) {
       final Pointer src = getProj4Pointer();
       final Pointer dst = targetProjection.getProj4Pointer();
-      final int errorCode = GProj4Library.pj_transform(src, dst, 1, 1, xB, yB, zB);
+      final int errorCode = GProj4Library.pj_transform(src, dst, 1, 0, xB, yB, zB);
       if (errorCode != 0) {
          throw new RuntimeException("GProj4Library.pj_transform() errorCode=" + errorCode + " \""
                                     + GProj4Library.pj_strerrno(errorCode) + "\", point=" + point + ", source=" + this
@@ -189,7 +189,7 @@ public enum GProjection {
       //      synchronized (GProj4Library.MUTEX) {
       final Pointer src = getProj4Pointer();
       final Pointer dst = targetProjection.getProj4Pointer();
-      final int errorCode = GProj4Library.pj_transform(src, dst, 1, 1, xB, yB, null);
+      final int errorCode = GProj4Library.pj_transform(src, dst, 1, 0, xB, yB, null);
       if (errorCode != 0) {
          throw new RuntimeException("GProj4Library.pj_transform() errorCode=" + errorCode + " \""
                                     + GProj4Library.pj_strerrno(errorCode) + "\", point=" + point + ", source=" + this
