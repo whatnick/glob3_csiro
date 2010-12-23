@@ -353,8 +353,8 @@ public final class GWWUtils {
    }
 
 
-   public static GAxisAlignedRectangle toBoundingRectangle(final Sector sector,
-                                                           final GProjection projection) {
+   public static GAxisAlignedRectangle toAxisAlignedRectangle(final Sector sector,
+                                                              final GProjection projection) {
       final GVector2D lower = new GVector2D(sector.getMinLongitude().radians, sector.getMinLatitude().radians);
       final GVector2D upper = new GVector2D(sector.getMaxLongitude().radians, sector.getMaxLatitude().radians);
 
@@ -574,6 +574,12 @@ public final class GWWUtils {
       }
 
       return toVec3(view.project(modelPoint));
+   }
+
+
+   public static Vec4 getScreenPoint(final DrawContext dc,
+                                     final IVector2<?> location) {
+      return getScreenPoint(dc, new LatLon(Angle.fromRadians(location.y()), Angle.fromRadians(location.x())));
    }
 
 
