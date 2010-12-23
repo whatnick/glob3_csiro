@@ -211,13 +211,13 @@ public class GPolygon2DLayer
                final BufferedImage renderedImage = renderer.render(key._tileBounds, key._renderingAttributes);
                layer.redraw();
 
-               saveImageToCache(renderedImage);
+               saveImageIntoDiskoCache(renderedImage);
 
                return renderedImage;
             }
 
 
-            private void saveImageToCache(final BufferedImage renderedImage) {
+            private void saveImageIntoDiskoCache(final BufferedImage renderedImage) {
                final Thread worker = new Thread() {
                   @Override
                   public void run() {
@@ -227,8 +227,6 @@ public class GPolygon2DLayer
                worker.setDaemon(true);
                worker.setPriority(Thread.MIN_PRIORITY);
                worker.start();
-
-               // saveImage(key, renderedImage);
             }
          });
 
@@ -342,8 +340,8 @@ public class GPolygon2DLayer
    }
 
 
-   private static boolean saveImageIntoDiskCache(final RenderingKey key,
-                                                 final BufferedImage image) {
+   private static void saveImageIntoDiskCache(final RenderingKey key,
+                                              final BufferedImage image) {
       try {
          if (image != null) {
             final String fileName = key.uniqueName() + ".png";
@@ -357,20 +355,15 @@ public class GPolygon2DLayer
             //            WWIO.saveBuffer(buffer, tempFile);
 
             tempFile.renameTo(new File(RENDERING_CACHE_DIRECTORY, fileName));
-
-            return true;
          }
       }
       catch (final IOException e) {
          e.printStackTrace();
       }
-
-      return false;
    }
 
+
    static {
-
-
       //      try {
       //         GIOUtils.assureEmptyDirectory(RENDERING_CACHE_DIRECTORY_NAME, false);
       //      }
@@ -467,7 +460,7 @@ public class GPolygon2DLayer
 
          _tileSector = tileSector;
 
-         _tileBounds = GWWUtils.toBoundingRectangle(tileSector, _projection);
+         _tileBounds = GWWUtils.toBoundingRectangle(tileSector, GProjection.EPSG_4326);
          //         _tileBounds = tileBounds;
          _tileBoundsExtent = _tileBounds.getExtent();
       }
@@ -510,7 +503,7 @@ public class GPolygon2DLayer
          // calculate the area of the rectangle
          final double width = maxX - minX;
          final double height = maxY - minY;
-         final double area = width * height;
+         final double area = Math.abs(width) * Math.abs(height);
          return area;
       }
 
@@ -724,7 +717,7 @@ public class GPolygon2DLayer
    }
 
 
-   private final GProjection                             _projection;
+   //   private final GProjection                             _projection;
 
    private final Sector                                  _sector;
    //   private final LatLon[]                                _sectorCorners;
@@ -760,15 +753,13 @@ public class GPolygon2DLayer
 
    public GPolygon2DLayer(final String resourceName,
                           final String uniqueName,
-                          final List<IPolygon2D<?>> polygons,
-                          final GProjection projection) {
+                          final List<IPolygon2D<?>> polygons) {
       _resourceName = resourceName;
       _uniqueName = uniqueName;
-      _projection = projection;
 
       final GAxisAlignedRectangle polygonsBounds = GAxisAlignedRectangle.minimumBoundingRectangle(polygons);
 
-      _sector = GWWUtils.toSector(polygonsBounds, projection);
+      _sector = GWWUtils.toSector(polygonsBounds, GProjection.EPSG_4326);
       //      _sectorCorners = _sector.getCorners();
 
       _renderer = new GPolygon2DRenderer(polygons);
@@ -801,8 +792,8 @@ public class GPolygon2DLayer
 
 
    private static List<Sector> createTopLevelSectors(final Sector polygonsSector) {
-      final int latitudeSubdivisions = 5;
-      final int longitudeSubdivisions = 10;
+      final int latitudeSubdivisions = 2;
+      final int longitudeSubdivisions = 4;
       final List<Sector> allTopLevelSectors = GWWUtils.createTopLevelSectors(latitudeSubdivisions, longitudeSubdivisions);
 
       final List<Sector> intersectingSectors = GCollections.select(allTopLevelSectors, new IPredicate<Sector>() {
@@ -856,7 +847,7 @@ public class GPolygon2DLayer
 
    @Override
    public GProjection getProjection() {
-      return _projection;
+      return GProjection.EPSG_4326;
    }
 
 

@@ -2,19 +2,14 @@
 
 package es.igosoftware.experimental.vectorial;
 
-import java.awt.Color;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.imageio.ImageIO;
-
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
-import org.geotools.factory.GeoTools;
 import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.Feature;
 import org.opengis.feature.FeatureVisitor;
@@ -26,23 +21,15 @@ import org.opengis.util.ProgressListener;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineString;
 
-import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
-import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
-import es.igosoftware.euclid.experimental.vectorial.rendering.GPolygon2DRenderer;
-import es.igosoftware.euclid.experimental.vectorial.rendering.GRenderingAttributes;
+import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.shape.GComplexPolygon2D;
 import es.igosoftware.euclid.shape.GShape;
 import es.igosoftware.euclid.shape.IPolygon2D;
 import es.igosoftware.euclid.vector.GVector2D;
-import es.igosoftware.euclid.vector.GVectorUtils;
-import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.vector.IVector2;
-import es.igosoftware.io.GIOUtils;
 import es.igosoftware.util.GIntHolder;
-import es.igosoftware.util.GMath;
+import es.igosoftware.util.GPair;
 import es.igosoftware.util.GProgress;
-import es.igosoftware.util.GUtils;
-import es.igosoftware.util.StringUtils;
 
 
 public class GShapeLoader {
@@ -160,15 +147,15 @@ public class GShapeLoader {
 
 
    private static List<IVector2<?>> convert(final Coordinate[] coordinates,
-                                            final boolean convertToRadians) {
+                                            final GProjection projection) {
       final List<IVector2<?>> result = new ArrayList<IVector2<?>>(coordinates.length);
 
       for (final Coordinate coordinate : coordinates) {
-         if (convertToRadians) {
+         if (projection.isLatLong()) {
             result.add(new GVector2D(Math.toRadians(coordinate.x), Math.toRadians(coordinate.y)));
          }
          else {
-            result.add(new GVector2D(coordinate.x, coordinate.y));
+            result.add(new GVector2D(coordinate.x, coordinate.y).reproject(projection, GProjection.EPSG_4326));
          }
       }
 
@@ -209,9 +196,15 @@ public class GShapeLoader {
    }
 
 
-   public static List<IPolygon2D<?>> readPolygons(final String fileName,
-                                                  final boolean convertToRadians) throws IOException {
-      final FileDataStore store = FileDataStoreFinder.getDataStore(new File(fileName));
+   public static GPair<String, List<IPolygon2D<?>>> readPolygons(final String fileName,
+                                                                 final GProjection projection) throws IOException {
+      final File file = new File(fileName);
+      if (!file.exists()) {
+         throw new IOException("File not found!");
+      }
+
+
+      final FileDataStore store = FileDataStoreFinder.getDataStore(file);
 
       // final FeatureSource featureSource = new CachingFeatureSource(store.getFeatureSource());
       final FeatureSource featureSource = store.getFeatureSource();
@@ -241,7 +234,7 @@ public class GShapeLoader {
                   final com.vividsolutions.jts.geom.Polygon jtsPolygon = (com.vividsolutions.jts.geom.Polygon) multipolygon.getGeometryN(i);
 
                   try {
-                     final IPolygon2D<?> outerEuclidPolygon = createPolygon(jtsPolygon.getCoordinates(), convertToRadians);
+                     final IPolygon2D<?> outerEuclidPolygon = createPolygon(jtsPolygon.getCoordinates(), projection);
 
                      final int holesCount = jtsPolygon.getNumInteriorRing();
                      if (holesCount == 0) {
@@ -254,7 +247,7 @@ public class GShapeLoader {
                            final LineString jtsHole = jtsPolygon.getInteriorRingN(j);
 
                            try {
-                              final IPolygon2D<?> euclidHole = createPolygon(jtsHole.getCoordinates(), convertToRadians);
+                              final IPolygon2D<?> euclidHole = createPolygon(jtsHole.getCoordinates(), projection);
                               euclidHoles.add(euclidHole);
                            }
                            catch (final IllegalArgumentException e) {
@@ -291,7 +284,7 @@ public class GShapeLoader {
                   final com.vividsolutions.jts.geom.LineString jtsPolygon = (com.vividsolutions.jts.geom.LineString) multiline.getGeometryN(i);
 
                   try {
-                     final IPolygon2D<?> euclidLines = createLine(jtsPolygon.getCoordinates(), convertToRadians);
+                     final IPolygon2D<?> euclidLines = createLine(jtsPolygon.getCoordinates(), projection);
 
                      euclidPolygons.add(euclidLines);
                   }
@@ -329,192 +322,195 @@ public class GShapeLoader {
 
       System.out.println();
 
-      return euclidPolygons;
+
+      final String uniqueName = file.getName() + Long.toHexString(file.lastModified()) + Long.toHexString(file.length());
+
+      return new GPair<String, List<IPolygon2D<?>>>(uniqueName, euclidPolygons);
    }
 
 
    private static IPolygon2D<?> createPolygon(final Coordinate[] jtsCoordinates,
-                                              final boolean convertToRadians) {
+                                              final GProjection projection) {
       final List<IVector2<?>> points = removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeLastIfRepeated(convert(
-               jtsCoordinates, convertToRadians))))));
+               jtsCoordinates, projection))))));
 
       return GShape.createPolygon2(false, points);
    }
 
 
    private static IPolygon2D<?> createLine(final Coordinate[] jtsCoordinates,
-                                           final boolean convertToRadians) {
+                                           final GProjection projection) {
       final List<IVector2<?>> points = removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeLastIfRepeated(convert(
-               jtsCoordinates, convertToRadians))))));
+               jtsCoordinates, projection))))));
 
       return GShape.createLine2(false, points);
 
    }
 
 
-   public static void main(final String[] args) throws IOException {
-      System.out.println("Shape Loader 0.1");
-      System.out.println("----------------\n");
-
-      System.out.println("GeoTools version: " + GeoTools.getVersion() + "\n");
-
-
-      //      final String fileName = "data/parcelasEdificadas.shp";
-      //      final boolean convertToRadians = false;
-
-      //      final String fileName = "data/S_Naturales_forestales.shp";
-      //      final boolean convertToRadians = false;
-
-
-      final String fileName = "/home/dgd/Escritorio/trastero/cartobrutal/world-modified/world.shp";
-      final boolean convertToRadians = true;
-
-      final List<IPolygon2D<?>> polygons = readPolygons(fileName, convertToRadians);
-
-      //      System.out.println(">>>>>>>>>> CONNECT PROFILER");
-      //      GUtils.delay(20 * 1000);
-
-
-      final GAxisAlignedRectangle polygonsBounds = GAxisAlignedRectangle.minimumBoundingRectangle(polygons);
-
-
-      final GPolygon2DRenderer renderer = new GPolygon2DRenderer(polygons);
-
-
-      final GAxisAlignedRectangle region = ((GAxisAlignedRectangle) centerBounds(multipleOfSmallestDimention(polygonsBounds),
-               polygonsBounds._center));
-      final String directoryName = "render";
-      final boolean renderLODIgnores = true;
-      final float borderWidth = 0.0001f;
-      final Color fillColor = new Color(borderWidth, borderWidth, 1, 0.75f);
-      final Color borderColor = Color.BLACK;
-      final double lodMinSize = 5;
-      final boolean debugLODRendering = true;
-      final int textureDimension = 256;
-      final boolean renderBounds = false;
-
-      final IVector2<?> extent = region.getExtent();
-
-      final int textureWidth;
-      final int textureHeight;
-
-      if (extent.x() > extent.y()) {
-         textureHeight = textureDimension;
-         textureWidth = (int) Math.round(extent.x() / extent.y() * textureDimension);
-      }
-      else {
-         textureWidth = textureDimension;
-         textureHeight = (int) Math.round(extent.y() / extent.x() * textureDimension);
-      }
-
-      final GRenderingAttributes attributes = new GRenderingAttributes(renderLODIgnores, borderWidth, fillColor, borderColor,
-               lodMinSize, debugLODRendering, textureWidth, textureHeight, renderBounds);
-
-
-      GIOUtils.assureEmptyDirectory(directoryName, false);
-
-
-      final int maxDepth = 1;
-      render(renderer, region, directoryName, attributes, maxDepth);
-
-   }
-
-
-   private static <VectorT extends IVector<VectorT, ?>> GAxisAlignedOrthotope<VectorT, ?> centerBounds(final GAxisAlignedOrthotope<VectorT, ?> bounds,
-                                                                                                       final VectorT center) {
-      final VectorT delta = bounds.getCenter().sub(center);
-      return bounds.translatedBy(delta.negated());
-   }
-
-
-   private static <VectorT extends IVector<VectorT, ?>> GAxisAlignedOrthotope<VectorT, ?> multipleOfSmallestDimention(final GAxisAlignedOrthotope<VectorT, ?> bounds) {
-      final VectorT extent = bounds._extent;
-
-      double smallestExtension = Double.POSITIVE_INFINITY;
-      for (byte i = 0; i < bounds.dimensions(); i++) {
-         final double ext = extent.get(i);
-         if (ext < smallestExtension) {
-            smallestExtension = ext;
-         }
-      }
-
-      final VectorT newExtent = smallestBiggerMultipleOf(extent, smallestExtension);
-      final VectorT newUpper = bounds._lower.add(newExtent);
-      return GAxisAlignedOrthotope.create(bounds._lower, newUpper);
-   }
-
-
-   @SuppressWarnings("unchecked")
-   private static <VectorT extends IVector<VectorT, ?>> VectorT smallestBiggerMultipleOf(final VectorT lower,
-                                                                                         final double smallestExtension) {
-
-      final byte dimensionsCount = lower.dimensions();
-
-      final double[] dimensionsValues = new double[dimensionsCount];
-      for (byte i = 0; i < dimensionsCount; i++) {
-         dimensionsValues[i] = smallestBiggerMultipleOf(lower.get(i), smallestExtension);
-      }
-
-      return (VectorT) GVectorUtils.createD(dimensionsValues);
-   }
-
-
-   private static double smallestBiggerMultipleOf(final double value,
-                                                  final double multiple) {
-      if (GMath.closeTo(value, multiple)) {
-         return multiple;
-      }
-
-      final int times = (int) (value / multiple);
-
-      double result = times * multiple;
-      if (value < 0) {
-         if (result > value) {
-            result -= multiple;
-         }
-      }
-      else {
-         if (result < value) {
-            result += multiple;
-         }
-      }
-
-      return result;
-   }
-
-
-   private static void render(final GPolygon2DRenderer renderer,
-                              final GAxisAlignedRectangle region,
-                              final String directoryName,
-                              final GRenderingAttributes attributes,
-                              final int maxDepth) throws IOException {
-      render(renderer, region, directoryName, attributes, 0, maxDepth);
-   }
-
-
-   private static void render(final GPolygon2DRenderer renderer,
-                              final GAxisAlignedRectangle region,
-                              final String directoryName,
-                              final GRenderingAttributes attributes,
-                              final int depth,
-                              final int maxDepth) throws IOException {
-
-      final long start = System.currentTimeMillis();
-      final BufferedImage renderedImage = renderer.render(region, attributes);
-
-      final String imageName = depth + "_" + region.asParseableString();
-      final File file = new File(directoryName, imageName + ".png");
-      ImageIO.write(renderedImage, "png", file);
-
-      System.out.println(StringUtils.spaces(depth * 2) + "Rendered " + imageName + " in "
-                         + GUtils.getTimeMessage(System.currentTimeMillis() - start));
-
-      if (depth < maxDepth) {
-         final GAxisAlignedRectangle[] subRegions = region.subdivideAtCenter();
-         for (final GAxisAlignedRectangle subRegion : subRegions) {
-            render(renderer, subRegion, directoryName, attributes, depth + 1, maxDepth);
-         }
-      }
-   }
+   //   public static void main(final String[] args) throws IOException {
+   //      System.out.println("Shape Loader 0.1");
+   //      System.out.println("----------------\n");
+   //
+   //      System.out.println("GeoTools version: " + GeoTools.getVersion() + "\n");
+   //
+   //
+   //      //      final String fileName = "data/parcelasEdificadas.shp";
+   //      //      final boolean convertToRadians = false;
+   //
+   //      //      final String fileName = "data/S_Naturales_forestales.shp";
+   //      //      final boolean convertToRadians = false;
+   //
+   //
+   //      final String fileName = "/home/dgd/Escritorio/trastero/cartobrutal/world-modified/world.shp";
+   //      final boolean convertToRadians = true;
+   //
+   //      final List<IPolygon2D<?>> polygons = readPolygons(fileName, convertToRadians);
+   //
+   //      //      System.out.println(">>>>>>>>>> CONNECT PROFILER");
+   //      //      GUtils.delay(20 * 1000);
+   //
+   //
+   //      final GAxisAlignedRectangle polygonsBounds = GAxisAlignedRectangle.minimumBoundingRectangle(polygons);
+   //
+   //
+   //      final GPolygon2DRenderer renderer = new GPolygon2DRenderer(polygons);
+   //
+   //
+   //      final GAxisAlignedRectangle region = ((GAxisAlignedRectangle) centerBounds(multipleOfSmallestDimention(polygonsBounds),
+   //               polygonsBounds._center));
+   //      final String directoryName = "render";
+   //      final boolean renderLODIgnores = true;
+   //      final float borderWidth = 0.0001f;
+   //      final Color fillColor = new Color(borderWidth, borderWidth, 1, 0.75f);
+   //      final Color borderColor = Color.BLACK;
+   //      final double lodMinSize = 5;
+   //      final boolean debugLODRendering = true;
+   //      final int textureDimension = 256;
+   //      final boolean renderBounds = false;
+   //
+   //      final IVector2<?> extent = region.getExtent();
+   //
+   //      final int textureWidth;
+   //      final int textureHeight;
+   //
+   //      if (extent.x() > extent.y()) {
+   //         textureHeight = textureDimension;
+   //         textureWidth = (int) Math.round(extent.x() / extent.y() * textureDimension);
+   //      }
+   //      else {
+   //         textureWidth = textureDimension;
+   //         textureHeight = (int) Math.round(extent.y() / extent.x() * textureDimension);
+   //      }
+   //
+   //      final GRenderingAttributes attributes = new GRenderingAttributes(renderLODIgnores, borderWidth, fillColor, borderColor,
+   //               lodMinSize, debugLODRendering, textureWidth, textureHeight, renderBounds);
+   //
+   //
+   //      GIOUtils.assureEmptyDirectory(directoryName, false);
+   //
+   //
+   //      final int maxDepth = 2;
+   //      render(renderer, region, directoryName, attributes, maxDepth);
+   //
+   //   }
+   //
+   //
+   //   private static <VectorT extends IVector<VectorT, ?>> GAxisAlignedOrthotope<VectorT, ?> centerBounds(final GAxisAlignedOrthotope<VectorT, ?> bounds,
+   //                                                                                                       final VectorT center) {
+   //      final VectorT delta = bounds.getCenter().sub(center);
+   //      return bounds.translatedBy(delta.negated());
+   //   }
+   //
+   //
+   //   private static <VectorT extends IVector<VectorT, ?>> GAxisAlignedOrthotope<VectorT, ?> multipleOfSmallestDimention(final GAxisAlignedOrthotope<VectorT, ?> bounds) {
+   //      final VectorT extent = bounds._extent;
+   //
+   //      double smallestExtension = Double.POSITIVE_INFINITY;
+   //      for (byte i = 0; i < bounds.dimensions(); i++) {
+   //         final double ext = extent.get(i);
+   //         if (ext < smallestExtension) {
+   //            smallestExtension = ext;
+   //         }
+   //      }
+   //
+   //      final VectorT newExtent = smallestBiggerMultipleOf(extent, smallestExtension);
+   //      final VectorT newUpper = bounds._lower.add(newExtent);
+   //      return GAxisAlignedOrthotope.create(bounds._lower, newUpper);
+   //   }
+   //
+   //
+   //   @SuppressWarnings("unchecked")
+   //   private static <VectorT extends IVector<VectorT, ?>> VectorT smallestBiggerMultipleOf(final VectorT lower,
+   //                                                                                         final double smallestExtension) {
+   //
+   //      final byte dimensionsCount = lower.dimensions();
+   //
+   //      final double[] dimensionsValues = new double[dimensionsCount];
+   //      for (byte i = 0; i < dimensionsCount; i++) {
+   //         dimensionsValues[i] = smallestBiggerMultipleOf(lower.get(i), smallestExtension);
+   //      }
+   //
+   //      return (VectorT) GVectorUtils.createD(dimensionsValues);
+   //   }
+   //
+   //
+   //   private static double smallestBiggerMultipleOf(final double value,
+   //                                                  final double multiple) {
+   //      if (GMath.closeTo(value, multiple)) {
+   //         return multiple;
+   //      }
+   //
+   //      final int times = (int) (value / multiple);
+   //
+   //      double result = times * multiple;
+   //      if (value < 0) {
+   //         if (result > value) {
+   //            result -= multiple;
+   //         }
+   //      }
+   //      else {
+   //         if (result < value) {
+   //            result += multiple;
+   //         }
+   //      }
+   //
+   //      return result;
+   //   }
+   //
+   //
+   //   private static void render(final GPolygon2DRenderer renderer,
+   //                              final GAxisAlignedRectangle region,
+   //                              final String directoryName,
+   //                              final GRenderingAttributes attributes,
+   //                              final int maxDepth) throws IOException {
+   //      render(renderer, region, directoryName, attributes, 0, maxDepth);
+   //   }
+   //
+   //
+   //   private static void render(final GPolygon2DRenderer renderer,
+   //                              final GAxisAlignedRectangle region,
+   //                              final String directoryName,
+   //                              final GRenderingAttributes attributes,
+   //                              final int depth,
+   //                              final int maxDepth) throws IOException {
+   //
+   //      final long start = System.currentTimeMillis();
+   //      final BufferedImage renderedImage = renderer.render(region, attributes);
+   //
+   //      final String imageName = depth + "_" + region.asParseableString();
+   //      final File file = new File(directoryName, imageName + ".png");
+   //      ImageIO.write(renderedImage, "png", file);
+   //
+   //      System.out.println(StringUtils.spaces(depth * 2) + "Rendered " + imageName + " in "
+   //                         + GUtils.getTimeMessage(System.currentTimeMillis() - start));
+   //
+   //      if (depth < maxDepth) {
+   //         final GAxisAlignedRectangle[] subRegions = region.subdivideAtCenter();
+   //         for (final GAxisAlignedRectangle subRegion : subRegions) {
+   //            render(renderer, subRegion, directoryName, attributes, depth + 1, maxDepth);
+   //         }
+   //      }
+   //   }
 
 }

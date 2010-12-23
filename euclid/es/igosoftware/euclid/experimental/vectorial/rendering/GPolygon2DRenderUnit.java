@@ -45,6 +45,15 @@ class GPolygon2DRenderUnit
       g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
       //      g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
+      if (attributes._renderBounds) {
+         g2d.setColor(Color.YELLOW);
+         g2d.setStroke(new BasicStroke(2));
+
+         g2d.drawRect(0, 0, width, height);
+
+         //         g2d.drawString(region._lower.toString(), 10, 10);
+         //         g2d.drawString(" " + region._upper, 10, 20);
+      }
 
       final AffineTransform transformFlipY = AffineTransform.getScaleInstance(1, -1);
       transformFlipY.concatenate(AffineTransform.getTranslateInstance(0, -height));

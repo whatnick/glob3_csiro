@@ -40,8 +40,8 @@ import java.io.IOException;
 
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
-import es.igosoftware.util.GUtils;
 import es.igosoftware.util.GLoggerObject;
+import es.igosoftware.util.GUtils;
 
 
 public abstract class GPointsLoader<VectorT extends IVector<VectorT, ?>, VertexT extends IVertexContainer.Vertex<VectorT>>

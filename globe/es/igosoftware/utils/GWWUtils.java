@@ -322,6 +322,12 @@ public final class GWWUtils {
       final Angle minLongitude = Angle.fromRadiansLongitude(min.x());
       final Angle maxLongitude = Angle.fromRadiansLongitude(max.x());
 
+      //      final Angle minLatitude = Angle.fromRadians(min.y());
+      //      final Angle maxLatitude = Angle.fromRadians(max.y());
+      //
+      //      final Angle minLongitude = Angle.fromRadians(min.x());
+      //      final Angle maxLongitude = Angle.fromRadians(max.x());
+
       return new Sector(minLatitude, maxLatitude, minLongitude, maxLongitude);
    }
 
@@ -337,19 +343,25 @@ public final class GWWUtils {
       final Angle minLongitude = Angle.fromRadiansLongitude(lower.x());
       final Angle maxLongitude = Angle.fromRadiansLongitude(upper.x());
 
+      //      final Angle minLatitude = Angle.fromRadians(lower.y());
+      //      final Angle maxLatitude = Angle.fromRadians(upper.y());
+      //
+      //      final Angle minLongitude = Angle.fromRadians(lower.x());
+      //      final Angle maxLongitude = Angle.fromRadians(upper.x());
+
       return new Sector(minLatitude, maxLatitude, minLongitude, maxLongitude);
    }
 
 
    public static GAxisAlignedRectangle toBoundingRectangle(final Sector sector,
                                                            final GProjection projection) {
-      final IVector2<?> lower = new GVector2D(sector.getMinLongitude().radians, sector.getMinLatitude().radians).reproject(
-               GProjection.EPSG_4326, projection);
+      final GVector2D lower = new GVector2D(sector.getMinLongitude().radians, sector.getMinLatitude().radians);
+      final GVector2D upper = new GVector2D(sector.getMaxLongitude().radians, sector.getMaxLatitude().radians);
 
-      final IVector2<?> upper = new GVector2D(sector.getMaxLongitude().radians, sector.getMaxLatitude().radians).reproject(
-               GProjection.EPSG_4326, projection);
+      final IVector2<?> reprojectedLower = lower.reproject(GProjection.EPSG_4326, projection);
+      final IVector2<?> reprojectedUpper = upper.reproject(GProjection.EPSG_4326, projection);
 
-      return new GAxisAlignedRectangle(lower, upper);
+      return new GAxisAlignedRectangle(reprojectedLower, reprojectedUpper);
    }
 
 
