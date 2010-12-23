@@ -56,9 +56,10 @@ public final class GShape {
    private GShape() {
    }
 
-   private static int trianglesCounter = 0;
-   private static int quadsCounter     = 0;
-   private static int polygonsCounter  = 0;
+
+   //   private static int trianglesCounter = 0;
+   //   private static int quadsCounter     = 0;
+   //   private static int polygonsCounter  = 0;
 
 
    public static IPolygon3D<?> createPolygon(final boolean validate,
@@ -70,18 +71,16 @@ public final class GShape {
       }
 
       if (pointsCount == 3) {
-         trianglesCounter++;
-         //System.out.println("Creating triangle");
+         //         trianglesCounter++;
          return new GTriangle3D(points[0], points[1], points[2]);
       }
 
       if (pointsCount == 4) {
-         quadsCounter++;
-         //System.out.println("Creating quad");
+         //         quadsCounter++;
          return new GQuad3D(points[0], points[1], points[2], points[3]);
       }
 
-      polygonsCounter++;
+      //      polygonsCounter++;
       return new GSimplePolygon3D(validate, points);
    }
 
@@ -95,18 +94,16 @@ public final class GShape {
       }
 
       if (pointsCount == 3) {
-         trianglesCounter++;
-         //System.out.println("Creating triangle");
+         //         trianglesCounter++;
          return new GTriangle2D(points[0], points[1], points[2]);
       }
 
       if (pointsCount == 4) {
-         quadsCounter++;
-         //System.out.println("Creating quad");
+         //         quadsCounter++;
          return new GQuad2D(points[0], points[1], points[2], points[3]);
       }
 
-      polygonsCounter++;
+      //      polygonsCounter++;
       return new GSimplePolygon2D(validate, points);
    }
 
@@ -136,18 +133,16 @@ public final class GShape {
       }
 
       if (pointsCount == 3) {
-         trianglesCounter++;
-         //System.out.println("Creating triangle");
+         //         trianglesCounter++;
          return new GTriangle2D(points.get(0), points.get(1), points.get(2));
       }
 
       if (pointsCount == 4) {
-         quadsCounter++;
-         //System.out.println("Creating quad");
+         //         quadsCounter++;
          return new GQuad2D(points.get(0), points.get(1), points.get(2), points.get(3));
       }
 
-      polygonsCounter++;
+      //      polygonsCounter++;
       return new GSimplePolygon2D(validate, points);
    }
 
@@ -161,35 +156,35 @@ public final class GShape {
       }
 
       if (pointsCount == 3) {
-         trianglesCounter++;
+         //         trianglesCounter++;
          //System.out.println("Creating triangle");
          return new GTriangle3D(points.get(0), points.get(1), points.get(2));
       }
 
       if (pointsCount == 4) {
-         quadsCounter++;
+         //         quadsCounter++;
          //System.out.println("Creating quad");
          return new GQuad3D(points.get(0), points.get(1), points.get(2), points.get(3));
       }
 
-      polygonsCounter++;
+      //      polygonsCounter++;
       return new GSimplePolygon3D(validate, points);
    }
 
 
-   public static void showStatistics() {
-      final int total = trianglesCounter + quadsCounter + polygonsCounter;
-      System.out.println("total shapes: " + total);
-      System.out.println("triangles: " + format(trianglesCounter, total));
-      System.out.println("quads: " + format(quadsCounter, total));
-      System.out.println("polygons: " + format(polygonsCounter, total));
-   }
+   //   public static void showStatistics() {
+   //      final int total = trianglesCounter + quadsCounter + polygonsCounter;
+   //      System.out.println("total shapes: " + total);
+   //      System.out.println("triangles: " + format(trianglesCounter, total));
+   //      System.out.println("quads: " + format(quadsCounter, total));
+   //      System.out.println("polygons: " + format(polygonsCounter, total));
+   //   }
 
 
-   private static String format(final double value,
-                                final double total) {
-      return value + " (" + GMath.roundTo(100 * value / total, 2) + "%)";
-   }
+   //   private static String format(final double value,
+   //                                final double total) {
+   //      return value + " (" + GMath.roundTo(100 * value / total, 2) + "%)";
+   //   }
 
 
    public static boolean isConvexQuad(final IVector3<?> a,

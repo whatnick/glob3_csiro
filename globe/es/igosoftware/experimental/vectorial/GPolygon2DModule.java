@@ -115,7 +115,6 @@ public class GPolygon2DModule
          @Override
          public void run() {
             final int TODO_read_projection_or_ask_user;
-            //            final boolean convertToRadians = true;
             final GProjection projection = GProjection.EPSG_4326;
 
             try {
