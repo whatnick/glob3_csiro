@@ -111,7 +111,6 @@ public final class GKDTree<VectorT extends IVector<VectorT, ?>, VertexT extends 
 
       final ExecutorService executor = GConcurrent.getDefaultExecutor();
       try {
-         //_root = GKDNode.createNode(null, _vertices, verticesIndexes, axisValues, progress, executor, (byte) 127);
          _root = GKDNode.createNode(this, null, _vertices, bounds, verticesIndexes, axisValues, progress, executor);
       }
       catch (final InterruptedException e) {
@@ -127,7 +126,7 @@ public final class GKDTree<VectorT extends IVector<VectorT, ?>, VertexT extends 
    }
 
 
-   public int[] getVerticesIndexes() {
+   private int[] getVerticesIndexes() {
       return GCollections.rangeArray(0, _vertices.size() - 1);
    }
 
@@ -161,7 +160,7 @@ public final class GKDTree<VectorT extends IVector<VectorT, ?>, VertexT extends 
 
             final int childrenCount = innerNode.getChildrenCount();
 
-            splitAxisCounter[innerNode._splitAxis]++;
+            splitAxisCounter[innerNode.getSplitAxis()]++;
 
             totalChildrenCount.increment(childrenCount);
 
@@ -278,11 +277,11 @@ public final class GKDTree<VectorT extends IVector<VectorT, ?>, VertexT extends 
 
       vertices.addPoint(new GVector3F(1, 0, 0));
       vertices.addPoint(new GVector3F(0, 1, 0));
-      vertices.addPoint(new GVector3F(0, 0, 1));
+      vertices.addPoint(new GVector3F(0, 0, 2));
 
       vertices.addPoint(new GVector3F(1, 1, 0));
       vertices.addPoint(new GVector3F(1, 0, 1));
-      vertices.addPoint(new GVector3F(0, 1, 1));
+      vertices.addPoint(new GVector3F(0, 2, 1));
 
       vertices.addPoint(new GVector3F(1, 1, 1));
 

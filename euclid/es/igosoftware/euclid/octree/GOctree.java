@@ -159,14 +159,14 @@ public final class GOctree
          final IVector3<?> average = subVertices.getAverage()._point;
          final GAxisAlignedBox bounds = (GAxisAlignedBox) subVertices.getBounds();
          //            final GAxisAlignedBox bounds = innerBounds;
-         final IVector3<?> extents = bounds._extent;
+         final IVector3<?> boundsExtent = getBoundsExtent(bounds);
 
          if (_splitByOneAxis) {
-            if ((extents.x() > extents.y()) && (extents.x() > extents.z())) {
+            if ((boundsExtent.x() > boundsExtent.y()) && (boundsExtent.x() > boundsExtent.z())) {
                _xSubdivisions++;
                return bounds.subdividedByX(average.x());
             }
-            else if ((extents.y() > extents.x()) && (extents.y() > extents.z())) {
+            else if ((boundsExtent.y() > boundsExtent.x()) && (boundsExtent.y() > boundsExtent.z())) {
                _ySubdivisions++;
                return bounds.subdividedByY(average.y());
             }
@@ -177,9 +177,9 @@ public final class GOctree
          }
 
 
-         final double minXYExtent = Math.min(extents.x(), extents.y());
+         final double minXYExtent = Math.min(boundsExtent.x(), boundsExtent.y());
 
-         if (minXYExtent >= extents.z()) {
+         if (minXYExtent >= boundsExtent.z()) {
             _xySubdivisions++;
             return bounds.subdividedByXY(average.asVector2());
          }
@@ -187,6 +187,11 @@ public final class GOctree
          _xyzSubdivisions++;
          return bounds.subdividedByXYZ(average);
 
+      }
+
+
+      protected IVector3<?> getBoundsExtent(final GAxisAlignedBox bounds) {
+         return bounds._extent;
       }
 
 

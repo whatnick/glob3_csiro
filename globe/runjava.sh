@@ -87,18 +87,18 @@ fi
 
 
 # Test for local libs
-LIBS=../globe/libs
-IGOLIBS=../igolibs/libs
+LIBS=../../GLOB3-Repository/glob3/globe/libs
+IGOLIBS=../../GLOB3-Repository/igolibs/libs
 
 # Don't use MToolkit
 export AWT_TOOLKIT=XToolkit
 
 export CLASSPATH=.
 export CLASSPATH=${CLASSPATH}:${IGOLIBS}
-export CLASSPATH=${CLASSPATH}:../igolibs/
-export CLASSPATH=${CLASSPATH}:../euclid/
-export CLASSPATH=${CLASSPATH}:../euclid/libs/jna.jar
-export CLASSPATH=${CLASSPATH}:../globe/
+export CLASSPATH=${CLASSPATH}:../../GLOB3-Repository/glob3/igolibs/
+export CLASSPATH=${CLASSPATH}:../../GLOB3-Repository/glob3/euclid/
+export CLASSPATH=${CLASSPATH}:../../GLOB3-Repository/glob3/euclid/libs/jna.jar
+export CLASSPATH=${CLASSPATH}:../../GLOB3-Repository/glob3/globe/
 export CLASSPATH=${CLASSPATH}:../ww/src/
 export CLASSPATH=${CLASSPATH}:${LIBS}/substance6.0/substance.jar
 export CLASSPATH=${CLASSPATH}:${LIBS}/substance6.0/trident.jar

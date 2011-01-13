@@ -85,10 +85,8 @@ public final class GSGPointsNode
       super(node.getBounds(), projection, layer);
 
       _id = node.getId();
-      //      _lodIndices = initializeLODIndices(node.getLodIndices());
       _lodIndices = node.getLodIndices();
       _pointsCount = node.getPointsCount();
-      //      System.out.println("lodIndices=" + Arrays.toString(_lodIndices) + ", pointsCount=" + _pointsCount);
       GAssert.isTrue(_pointsCount > 0, "_pointsCount");
 
       _referencePoint = node.getReferencePoint();
@@ -97,18 +95,6 @@ public final class GSGPointsNode
 
       _pointsLoader = new GSGPointsLoader(this);
    }
-
-
-   //   private static int[] initializeLODIndices(final int[] lodIndices) {
-   //      final int resultLenght = lodIndices.length - 1;
-   //      if (resultLenght == 0) {
-   //         return lodIndices;
-   //      }
-   //      final int[] result = new int[resultLenght];
-   //      System.arraycopy(lodIndices, 0, result, 0, resultLenght);
-   //      result[resultLenght - 1] = lodIndices[resultLenght];
-   //      return result;
-   //   }
 
 
    @Override
@@ -136,7 +122,6 @@ public final class GSGPointsNode
       if (changed || reload) {
          reload();
       }
-
    }
 
 
@@ -147,7 +132,7 @@ public final class GSGPointsNode
 
 
    String getPointsFileName() {
-      return _layer.getPointsCloudName() + "/tile-" + _id + ".points";
+      return _layer.getPointsCloudName() + "/" + _id + ".tile";
    }
 
 
@@ -251,7 +236,8 @@ public final class GSGPointsNode
       view.pushReferenceCenter(dc, _referencePoint4);
       GWWUtils.pushOffset(gl);
 
-      final boolean directRendering = (pointsToDraw <= 32); // to few points, use direct rendering
+      //      final boolean directRendering = (pointsToDraw <= 32); // to few points, use direct rendering
+      final boolean directRendering = false;
       //            final boolean directRendering = true;
       if (directRendering) {
          directRender(gl, pointsToDraw, useLOD, buffers);
@@ -577,12 +563,6 @@ public final class GSGPointsNode
    @Override
    protected final GPositionBox getBoxForProjectedPixels() {
       return _minimumBox;
-   }
-
-
-   @Override
-   public Position getHomePosition() {
-      return _referencePosition;
    }
 
 

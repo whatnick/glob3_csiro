@@ -51,6 +51,7 @@ import java.util.Set;
 import java.util.zip.GZIPOutputStream;
 
 import es.igosoftware.concurrent.GConcurrent;
+import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 import es.igosoftware.euclid.colors.GColorI;
 import es.igosoftware.euclid.colors.IColor;
 import es.igosoftware.euclid.kdtree.GKDInnerNode;
@@ -66,8 +67,11 @@ import es.igosoftware.euclid.octree.IOctreeVisitor;
 import es.igosoftware.euclid.pointscloud.octree.GPCLeafNode;
 import es.igosoftware.euclid.pointscloud.octree.GPCPointsCloud;
 import es.igosoftware.euclid.projection.GProjection;
+import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.IVector3;
+import es.igosoftware.euclid.verticescontainer.GVertex3Container;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
+import es.igosoftware.euclid.verticescontainer.IVertexContainer.Vertex;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GHolder;
@@ -75,7 +79,9 @@ import es.igosoftware.util.GLoggerObject;
 import es.igosoftware.util.GProgress;
 import es.igosoftware.util.IEvaluator;
 import es.igosoftware.utils.GWWUtils;
+import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.geom.coords.UTMCoord;
 
 
 public class GPointsCloudLODGenerator
@@ -136,7 +142,12 @@ public class GPointsCloudLODGenerator
          validate();
 
          final IVector3<?> referencePoint = _vertices.getAverage()._point;
-         save(outputDirectoryName, referencePoint);
+         try {
+            save(outputDirectoryName, referencePoint);
+         }
+         catch (final IOException e) {
+            e.printStackTrace();
+         }
 
          final GPCLeafNode leafNode = leafNodes.get(_id);
          leafNode.setLodIndices(_lodIndices);
@@ -155,53 +166,44 @@ public class GPointsCloudLODGenerator
 
 
       private void save(final String outputDirectoryName,
-                        final IVector3<?> referencePoint) {
-         final String outputFileNameSansExtension = new File(new File(outputDirectoryName), "tile-" + _id).getPath();
+                        final IVector3<?> referencePoint) throws IOException {
+         final File outputFile = new File(new File(outputDirectoryName), _id + ".tile");
+         outputFile.getParentFile().mkdirs();
 
+         final String outputFileName = outputFile.getPath();
+
+         DataOutputStream output = null;
          try {
-            //            saveHeader(outputFileNameSansExtension);
+            output = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(outputFileName)));
 
-            //            final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> sortedVertices = _vertices.createSubContainer(GCollections.toArray(_sortedVertices));
-            //            GBinaryPoints3Loader.save(sortedVertices, _projection, outputFileNameSansExtension + ".bp", false);
-            savePoints(outputFileNameSansExtension, referencePoint);
-         }
-         catch (final IOException e) {
-            e.printStackTrace(System.err);
-         }
-      }
+            final boolean hasIntensities = _vertices.hasIntensities();
+            final boolean hasNormals = _vertices.hasNormals();
+            final boolean hasColors = _vertices.hasColors();
 
+            final Position referenceReprojected = GWWUtils.toPosition(referencePoint, _projection);
 
-      private void savePoints(final String outputFileNameSansExtension,
-                              final IVector3<?> referencePoint) throws IOException {
-         final String pointsFileName = outputFileNameSansExtension + ".points";
-         final DataOutputStream output = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(pointsFileName)));
+            for (final int index : _sortedVertices) {
+               final Position pointReprojected = GWWUtils.toPosition(_vertices.getPoint(index), _projection);
+               //            final IVector3<?> point = _vertices.getPoint(index).sub(referencePoint);
+               //            saveVector3F(output, point);
+               output.writeFloat((float) (pointReprojected.latitude.radians - referenceReprojected.latitude.radians));
+               output.writeFloat((float) (pointReprojected.longitude.radians - referenceReprojected.longitude.radians));
+               output.writeFloat((float) (pointReprojected.elevation - referenceReprojected.elevation));
 
-         final boolean hasIntensities = _vertices.hasIntensities();
-         final boolean hasNormals = _vertices.hasNormals();
-         final boolean hasColors = _vertices.hasColors();
-
-         final Position referenceReprojected = GWWUtils.toPosition(referencePoint, _projection);
-
-         for (final int index : _sortedVertices) {
-            final Position pointReprojected = GWWUtils.toPosition(_vertices.getPoint(index), _projection);
-            //            final IVector3<?> point = _vertices.getPoint(index).sub(referencePoint);
-            //            saveVector3F(output, point);
-            output.writeFloat((float) (pointReprojected.latitude.radians - referenceReprojected.latitude.radians));
-            output.writeFloat((float) (pointReprojected.longitude.radians - referenceReprojected.longitude.radians));
-            output.writeFloat((float) (pointReprojected.elevation - referenceReprojected.elevation));
-
-            if (hasIntensities) {
-               output.writeFloat(_vertices.getIntensity(index));
-            }
-            if (hasNormals) {
-               saveVector3F(output, _vertices.getNormal(index));
-            }
-            if (hasColors) {
-               saveColorInt(output, _vertices.getColor(index));
+               if (hasIntensities) {
+                  output.writeFloat(_vertices.getIntensity(index));
+               }
+               if (hasNormals) {
+                  saveVector3F(output, _vertices.getNormal(index));
+               }
+               if (hasColors) {
+                  saveColorInt(output, _vertices.getColor(index));
+               }
             }
          }
-
-         output.close();
+         finally {
+            GIOUtils.gentlyClose(output);
+         }
       }
 
 
@@ -378,7 +380,7 @@ public class GPointsCloudLODGenerator
       loader.load();
 
       _projection = loader.getProjection();
-      _vertices = loader.getVertices();
+      _vertices = toRadians(loader.getVertices(), _projection);
    }
 
 
@@ -392,7 +394,33 @@ public class GPointsCloudLODGenerator
       _outputDirectoryName = outputDirectoryName;
 
       _projection = projection;
-      _vertices = vertices;
+      _vertices = toRadians(vertices, projection);
+   }
+
+
+   private static IVertexContainer<IVector3<?>, Vertex<IVector3<?>>, ?> toRadians(final IVertexContainer<IVector3<?>, Vertex<IVector3<?>>, ?> vertices,
+                                                                                  final GProjection projection) {
+      if (projection.isLatLong()) {
+         final IVertexContainer<IVector3<?>, Vertex<IVector3<?>>, ?> radiansVertices = new GVertex3Container(
+                  vertices.vectorPrecision(), vertices.colorPrecision(), projection, vertices.hasIntensities(),
+                  vertices.hasColors(), vertices.hasNormals());
+
+         for (int i = 0; i < vertices.size(); i++) {
+            final IVector3<?> degreePoint = vertices.getPoint(i);
+            final float intensity = vertices.getIntensity(i);
+            final IColor color = vertices.getColor(i);
+            final IVector3<?> normal = vertices.getNormal(i);
+            final IVector3<?> radiansPoint = new GVector3D(Math.toRadians(degreePoint.x()), Math.toRadians(degreePoint.y()),
+                     degreePoint.z());
+            radiansVertices.addPoint(radiansPoint, intensity, normal, color);
+         }
+
+         radiansVertices.makeImmutable();
+
+         return radiansVertices;
+      }
+
+      return vertices;
    }
 
 
@@ -415,8 +443,6 @@ public class GPointsCloudLODGenerator
 
 
       final GHolder<GPCPointsCloud> octreeRepresentation = new GHolder<GPCPointsCloud>(null);
-
-
       final Map<String, GPCLeafNode> leafNodes = new HashMap<String, GPCLeafNode>();
       final List<GPointsCloudLODGenerator.Tile> tiles = createTiles(leafNodes, octreeRepresentation);
       processTiles(tiles, leafNodes);
@@ -487,9 +513,31 @@ public class GPointsCloudLODGenerator
          }
       };
 
-      //      final GOctree.Parameters parameters = new GOctree.Parameters(_maxLeafSideLength, _maxLeafVertices, true, true, false);
+
       final GOctree.Parameters parameters = new GOctree.Parameters(-1, _maxLeafSideLength, _maxLeafVertices, true, true, false,
-               true, duplicatesPolicy, new GOctree.DynamicAxisNodesCreationPolicy(true));
+               true, duplicatesPolicy, new GOctree.DynamicAxisNodesCreationPolicy(true) {
+                  @Override
+                  protected IVector3<?> getBoundsExtent(final GAxisAlignedBox bounds) {
+                     if (_projection.isLatLong()) {
+                        //                        final Earth earth = new Earth();
+                        //                        earth.getEquatorialRadius();
+                        //                        earth.getPolarRadius();
+
+                        final IVector3<?> lower = bounds._lower;
+                        final IVector3<?> upper = bounds._upper;
+
+                        final UTMCoord lowerUTM = UTMCoord.fromLatLon(Angle.fromRadians(lower.y()), Angle.fromRadians(lower.x()));
+                        final UTMCoord upperUTM = UTMCoord.fromLatLon(Angle.fromRadians(upper.y()), Angle.fromRadians(upper.x()));
+
+                        final double xInMeters = upperUTM.getEasting() - lowerUTM.getEasting();
+                        final double yInMeters = upperUTM.getNorthing() - lowerUTM.getNorthing();
+                        final double zInMeters = upper.z() - lower.z();
+                        return new GVector3D(xInMeters, yInMeters, zInMeters);
+                     }
+
+                     return bounds._extent;
+                  }
+               });
 
       final GOctree octree = new GOctree("Tiles", _vertices, parameters);
 
@@ -666,4 +714,6 @@ public class GPointsCloudLODGenerator
    //         }
    //      };
    //}
+
+
 }
