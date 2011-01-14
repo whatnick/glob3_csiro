@@ -138,7 +138,7 @@ public abstract class GKDNode<VectorT extends IVector<VectorT, ?>, VertexT exten
                                                                                                                                                                final int vertexIndex,
                                                                                                                                                                final GProgress progress) {
       if (parent == null) {
-         return new GKDMonoLeafNode<VectorT, VertexT>(tree, null, vertexIndex, progress) {
+         return new GKDMonoLeafNode<VectorT, VertexT>(null, vertexIndex, progress) {
             @Override
             public GKDTree<VectorT, VertexT> getTree() {
                return tree;
@@ -146,7 +146,7 @@ public abstract class GKDNode<VectorT extends IVector<VectorT, ?>, VertexT exten
          };
       }
 
-      return new GKDMonoLeafNode<VectorT, VertexT>(tree, parent, vertexIndex, progress);
+      return new GKDMonoLeafNode<VectorT, VertexT>(parent, vertexIndex, progress);
    }
 
 
@@ -308,13 +308,10 @@ public abstract class GKDNode<VectorT extends IVector<VectorT, ?>, VertexT exten
 
 
    //   private WeightedVertex<VectorT>    _averageVertex;
-   //   private final GKDTree<VectorT, VertexT>     _tree;
 
 
-   protected GKDNode(@SuppressWarnings("unused") final GKDTree<VectorT, VertexT> tree,
-                     final GKDInnerNode<VectorT, VertexT> parent) {
+   protected GKDNode(final GKDInnerNode<VectorT, VertexT> parent) {
       _parent = parent;
-      //      _tree = tree;
    }
 
 

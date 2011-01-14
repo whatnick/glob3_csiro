@@ -37,8 +37,7 @@ public class GFlatCustomView
 
 
    @Override
-   protected void doApply(@SuppressWarnings("hiding")
-   final DrawContext dc) {
+   protected void doApply(@SuppressWarnings("hiding") final DrawContext dc) {
       // Invoke superclass functionality.
       super.doApply(dc);
    }

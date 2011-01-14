@@ -180,8 +180,10 @@ final class GSGPointsLoader {
          _loading = true;
       }
 
-      final int bytesPerPoint = BYTES_PER_VECTOR3F + (_layer.hasColors() ? 4 : 0) + (_layer.hasIntensities() ? 4 : 0)
-                                + (_layer.hasNormals() ? 4 : 0);
+      final int bytesPerPoint = BYTES_PER_VECTOR3F + //
+                                (_layer.hasColors() ? 4 : 0) + //
+                                (_layer.hasIntensities() ? 4 : 0) + //
+                                (_layer.hasNormals() ? BYTES_PER_VECTOR3F : 0);
 
       synchronized (this) {
          final int bytesToLoad = _wantedPoints * bytesPerPoint;

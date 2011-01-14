@@ -206,7 +206,7 @@ public class GNetCDFMultidimentionalData
       }
       else {
          _elevationThresholdVariable = _ncFile.findVariable(elevationThresholdVariableName);
-         if (_elevationVariable == null) {
+         if (_elevationThresholdVariable == null) {
             throw new RuntimeException("Can't find the elevation threshold variable (\"" + elevationThresholdVariableName + "\")");
          }
       }
@@ -349,7 +349,7 @@ public class GNetCDFMultidimentionalData
                   final String section = indices.toString().substring(1, indices.toString().length() - 1);
                   final double value = var.read(section).getDouble(0);
 
-                  if ((missingValue != Double.NaN) && GMath.closeTo(value, missingValue)) {
+                  if (!Double.isNaN(missingValue) && GMath.closeTo(value, missingValue)) {
                      return;
                   }
 
@@ -615,7 +615,7 @@ public class GNetCDFMultidimentionalData
                final String section = indices.toString().substring(1, indices.toString().length() - 1);
                final double value = valueVariable._variable.read(section).getDouble(0);
 
-               if ((valueVariable._missingValue != Double.NaN) && GMath.closeTo(value, valueVariable._missingValue)) {
+               if (!Double.isNaN(valueVariable._missingValue) && GMath.closeTo(value, valueVariable._missingValue)) {
                   return;
                }
 
@@ -785,10 +785,10 @@ public class GNetCDFMultidimentionalData
                final double uValue = vectorVariable._uVariable.read(section).getDouble(0);
                final double vValue = vectorVariable._vVariable.read(section).getDouble(0);
 
-               if ((vectorVariable._uMissingValue != Double.NaN) && GMath.closeTo(uValue, vectorVariable._uMissingValue)) {
+               if (!Double.isNaN(vectorVariable._uMissingValue) && GMath.closeTo(uValue, vectorVariable._uMissingValue)) {
                   return;
                }
-               if ((vectorVariable._vMissingValue != Double.NaN) && GMath.closeTo(vValue, vectorVariable._vMissingValue)) {
+               if (!Double.isNaN(vectorVariable._vMissingValue) && GMath.closeTo(vValue, vectorVariable._vMissingValue)) {
                   return;
                }
 

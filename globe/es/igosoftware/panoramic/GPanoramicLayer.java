@@ -134,7 +134,7 @@ public class GPanoramicLayer
 
    private boolean isDuplicateName(final String name) {
       for (final GPanoramic panoramic : _panoramics) {
-         if (name == panoramic.getName()) {
+         if (name.equals(panoramic.getName())) {
             return true;
          }
       }

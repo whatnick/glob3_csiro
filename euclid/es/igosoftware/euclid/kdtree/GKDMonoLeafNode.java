@@ -48,11 +48,10 @@ public class GKDMonoLeafNode<VectorT extends IVector<VectorT, ?>, VertexT extend
    private final int _vertexIndex;
 
 
-   GKDMonoLeafNode(final GKDTree<VectorT, VertexT> tree,
-                   final GKDInnerNode<VectorT, VertexT> parent,
+   GKDMonoLeafNode(final GKDInnerNode<VectorT, VertexT> parent,
                    final int vertexIndex,
                    final GProgress progress) {
-      super(tree, parent);
+      super(parent);
       _vertexIndex = vertexIndex;
       progress.stepDone();
    }

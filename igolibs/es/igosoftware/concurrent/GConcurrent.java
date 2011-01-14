@@ -61,7 +61,7 @@ public final class GConcurrent {
    public static int              AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors();
 
    private static ExecutorService DEFAULT_EXECUTOR;
-   private final static GLogger    LOGGER               = GLogger.instance();
+   private final static GLogger   LOGGER               = GLogger.instance();
 
 
    static {

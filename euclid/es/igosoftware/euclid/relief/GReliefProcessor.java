@@ -60,8 +60,8 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.euclid.verticescontainer.IUnstructuredVertexContainer;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
-import es.igosoftware.util.GMath;
 import es.igosoftware.util.GLoggerObject;
+import es.igosoftware.util.GMath;
 
 
 public class GReliefProcessor

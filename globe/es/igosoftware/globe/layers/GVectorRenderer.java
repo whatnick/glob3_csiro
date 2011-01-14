@@ -89,9 +89,10 @@ public abstract class GVectorRenderer {
             }
          }
 
-         if (dMin == Double.POSITIVE_INFINITY) {
-            dMin = dMax = 0;
-         }
+         //         if (dMin == Double.POSITIVE_INFINITY) {
+         //            dMin = 0;
+         //            dMax = 0;
+         //         }
          _hasToRecalculateExtremeValues = false;
       }
 

@@ -50,8 +50,8 @@ import com.sun.opengl.util.texture.Texture;
 import com.sun.opengl.util.texture.TextureData;
 import com.sun.opengl.util.texture.TextureIO;
 
-import es.igosoftware.util.GPair;
 import es.igosoftware.util.GLogger;
+import es.igosoftware.util.GPair;
 import gov.nasa.worldwind.formats.dds.DDSCompressor;
 import gov.nasa.worldwind.formats.dds.DXTCompressionAttributes;
 import gov.nasa.worldwind.util.WWIO;

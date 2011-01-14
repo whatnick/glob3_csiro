@@ -43,8 +43,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.PriorityBlockingQueue;
 
-import es.igosoftware.util.GUtils;
 import es.igosoftware.util.GLoggerObject;
+import es.igosoftware.util.GUtils;
 
 
 abstract class GAbstractLoader

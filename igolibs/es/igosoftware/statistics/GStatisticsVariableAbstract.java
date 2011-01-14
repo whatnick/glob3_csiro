@@ -87,12 +87,12 @@ public abstract class GStatisticsVariableAbstract<TypeT extends Number> {
    }
 
 
-   public void setUnitName(final String unitName) {
+   public synchronized void setUnitName(final String unitName) {
       _unitName = unitName;
    }
 
 
-   public void setTargetDirectory(final String targetDirectory) {
+   public synchronized void setTargetDirectory(final String targetDirectory) {
       _targetDirectory = targetDirectory;
    }
 

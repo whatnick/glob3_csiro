@@ -7,7 +7,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
+import es.igosoftware.concurrent.GConcurrent;
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.IBounds;
@@ -71,8 +76,8 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
 
       final GAxisAlignedOrthotope<VectorT, ?>[] childrenBounds = bounds.subdivideAtCenter();
 
-      final ArrayList<GeometryT> ownGeometries = new ArrayList<GeometryT>(geometries.size());
-      final ArrayList<GeometryT> geometriesToDistribute = new ArrayList<GeometryT>(geometries.size());
+      final ArrayList<GeometryT> ownGeometries = new ArrayList<GeometryT>();
+      final ArrayList<GeometryT> geometriesToDistribute = new ArrayList<GeometryT>();
 
       for (final GeometryT geometry : geometries) {
          @SuppressWarnings("unchecked")
@@ -98,8 +103,8 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
       ownGeometries.trimToSize();
       geometriesToDistribute.trimToSize();
 
-      if (ownGeometries.size() + geometriesToDistribute.size() != geometries.size()) {
-         throw new RuntimeException("INVALID DISTRiBUTION");
+      if ((ownGeometries.size() + geometriesToDistribute.size()) != geometries.size()) {
+         throw new RuntimeException("INVALID DISTRIBUTION");
       }
 
       return new GeometriesDistribution<VectorT, GeometryT>(ownGeometries, geometriesToDistribute);
@@ -108,12 +113,12 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
 
    GGTInnerNode(final GGTInnerNode<VectorT, BoundsT, GeometryT> parent,
                 final BoundsT bounds,
-                final Collection<GeometryT> geometries,
+                final Collection<GeometryT> ownGeometries,
                 final Collection<GeometryT> geometriesToDistribute,
                 final int depth,
                 final GGeometryNTreeParameters parameters,
                 final GProgress progress) {
-      super(parent, bounds, geometries.isEmpty() ? null : geometries);
+      super(parent, bounds, ownGeometries.isEmpty() ? null : ownGeometries);
 
       _children = initializeChildren(geometriesToDistribute, depth, parameters, progress);
    }
@@ -145,9 +150,6 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
             }
          }
 
-         //         if (geometryAddedCounter != 1) {
-         //            System.out.println(">> geometry " + geometry + " added " + geometryAddedCounter + " times");
-         //         }
          if (geometryAddedCounter == 0) {
             System.out.println("WARNING >> geometry " + geometry + " don't added!!!!!");
          }
@@ -161,6 +163,25 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
       // the geometries at this point are splitted into geometriesByChild and it safe to clear the given geometries collection
       geometries.clear();
 
+
+      final GGTNode<VectorT, BoundsT, GeometryT>[] result;
+      if (parameters._multiThread) {
+         result = multiThreadChildrenCreation(depth, parameters, progress, childrenBounds, maxChildrenCount, geometriesByChild);
+      }
+      else {
+         result = singleThreadChildrenCreation(depth, parameters, progress, childrenBounds, maxChildrenCount, geometriesByChild);
+      }
+
+      return GCollections.rtrim(result);
+   }
+
+
+   private GGTNode<VectorT, BoundsT, GeometryT>[] singleThreadChildrenCreation(final int depth,
+                                                                               final GGeometryNTreeParameters parameters,
+                                                                               final GProgress progress,
+                                                                               final GAxisAlignedOrthotope<VectorT, ?>[] childrenBounds,
+                                                                               final int maxChildrenCount,
+                                                                               final List<ArrayList<GeometryT>> geometriesByChild) {
       @SuppressWarnings({ "cast", "unchecked" })
       final GGTNode<VectorT, BoundsT, GeometryT>[] result = (GGTNode<VectorT, BoundsT, GeometryT>[]) new GGTNode[maxChildrenCount];
 
@@ -172,7 +193,49 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
          result[i] = createChildNode(childBounds, childGeometries, depth + 1, parameters, progress);
       }
 
-      return GCollections.rtrim(result);
+      return result;
+   }
+
+
+   private GGTNode<VectorT, BoundsT, GeometryT>[] multiThreadChildrenCreation(final int depth,
+                                                                              final GGeometryNTreeParameters parameters,
+                                                                              final GProgress progress,
+                                                                              final GAxisAlignedOrthotope<VectorT, ?>[] childrenBounds,
+                                                                              final int maxChildrenCount,
+                                                                              final List<ArrayList<GeometryT>> geometriesByChild) {
+      final ExecutorService executor = GConcurrent.getDefaultExecutor();
+
+      @SuppressWarnings("unchecked")
+      final Future<GGTNode<VectorT, BoundsT, GeometryT>>[] futures = (Future<GGTNode<VectorT, BoundsT, GeometryT>>[]) new Future<?>[maxChildrenCount];
+
+      for (int i = 0; i < maxChildrenCount; i++) {
+         final GAxisAlignedOrthotope<VectorT, ?> childBounds = childrenBounds[i];
+         final ArrayList<GeometryT> childGeometries = geometriesByChild.get(i);
+         childGeometries.trimToSize();
+
+         futures[i] = executor.submit(new Callable<GGTNode<VectorT, BoundsT, GeometryT>>() {
+            @Override
+            public GGTNode<VectorT, BoundsT, GeometryT> call() {
+               return createChildNode(childBounds, childGeometries, depth + 1, parameters, progress);
+            }
+         });
+      }
+
+      @SuppressWarnings({ "cast", "unchecked" })
+      final GGTNode<VectorT, BoundsT, GeometryT>[] result = (GGTNode<VectorT, BoundsT, GeometryT>[]) new GGTNode[maxChildrenCount];
+      for (int i = 0; i < maxChildrenCount; i++) {
+         try {
+            result[i] = futures[i].get();
+         }
+         catch (final InterruptedException e) {
+            e.printStackTrace();
+         }
+         catch (final ExecutionException e) {
+            e.printStackTrace();
+         }
+      }
+
+      return result;
    }
 
 
@@ -211,7 +274,7 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
 
       // if the extent if too small, force a leaf creation
       for (byte i = 0; i < nodeExtent.dimensions(); i++) {
-         if (nodeExtent.get(i) <= 0.000001) {
+         if (nodeExtent.get(i) <= 0.00000001) {
             return true;
          }
       }

@@ -39,7 +39,6 @@ package es.igosoftware.globe.view.customView;
 import gov.nasa.worldwind.animation.AngleAnimator;
 import gov.nasa.worldwind.animation.AnimationSupport;
 import gov.nasa.worldwind.animation.CompoundAnimator;
-import gov.nasa.worldwind.animation.DoubleAnimator;
 import gov.nasa.worldwind.animation.Interpolator;
 import gov.nasa.worldwind.animation.PositionAnimator;
 import gov.nasa.worldwind.animation.ScheduledInterpolator;
@@ -68,14 +67,14 @@ public class GFlyToCustomViewAnimator
    public GFlyToCustomViewAnimator(final OrbitView orbitView,
                                    final Interpolator interpol,
                                    final boolean endCenterOnSurface,
-                                   final PositionAnimator centerAnimator,
-                                   final DoubleAnimator zoomAnimator,
+                                   final OnSurfacePositionAnimator centerAnimator,
+                                   final ViewElevationAnimator zoomAnimator,
                                    final AngleAnimator headingAnimator,
                                    final AngleAnimator pitchAnimator) {
       super(interpol, centerAnimator, zoomAnimator, headingAnimator, pitchAnimator);
       this._customView = (GCustomView) orbitView;
-      this._centerAnimator = (OnSurfacePositionAnimator) centerAnimator;
-      this._zoomAnimator = (ViewElevationAnimator) zoomAnimator;
+      this._centerAnimator = centerAnimator;
+      this._zoomAnimator = zoomAnimator;
       this._headingAnimator = headingAnimator;
       this._pitchAnimator = pitchAnimator;
       if (interpol == null) {
@@ -145,7 +144,8 @@ public class GFlyToCustomViewAnimator
          final int MAX_SMOOTHING = 1;
 
          final double CENTER_START = this.useMidZoom ? 0.2 : 0.0;
-         final double CENTER_STOP = this.useMidZoom ? 0.8 : 0.8;
+         // final double CENTER_STOP = this.useMidZoom ? 0.8 : 0.8;
+         final double CENTER_STOP = 0.8;
          final double latLonInterpolant = AnimationSupport.basicInterpolant(interpolant, CENTER_START, CENTER_STOP, MAX_SMOOTHING);
 
          // Invoke the standard next position functionality.

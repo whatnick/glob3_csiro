@@ -73,10 +73,9 @@ public class GModelMesh
 
    private GModelData        _model;
 
-   private Vec4              _centroid;
-   private Vec4              _centroidVec4;
-
-   private Matrix            _lastModelMatrix;
+   private transient Vec4    _centroid;
+   private transient Vec4    _centroidVec4;
+   private transient Matrix  _lastModelMatrix;
 
 
    public GModelMesh(final String name) {

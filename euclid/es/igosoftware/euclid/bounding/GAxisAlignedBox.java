@@ -47,7 +47,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.shape.GPlane;
 import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.IPointsContainer;
@@ -314,20 +313,16 @@ public final class GAxisAlignedBox
    }
 
 
-   public GAxisAlignedBox reproject(final GProjection sourceProjection,
-                                    final GProjection targetProjection) {
-      if (sourceProjection == targetProjection) {
-         return this;
-      }
-
-      //      if (sourceProjection.isGeodesic() || targetProjection.isGeodesic()) {
-      //         throw new IllegalArgumentException("Can't reproject an Axis Aligned Box with geodesic projections");
-      //      }
-
-      final IVector3<?> projectedLower = _lower.reproject(sourceProjection, targetProjection);
-      final IVector3<?> projectedUpper = _upper.reproject(sourceProjection, targetProjection);
-      return new GAxisAlignedBox(projectedLower, projectedUpper);
-   }
+   //   public GAxisAlignedBox reproject(final GProjection sourceProjection,
+   //                                    final GProjection targetProjection) {
+   //      if (sourceProjection == targetProjection) {
+   //         return this;
+   //      }
+   //
+   //      final IVector3<?> projectedLower = _lower.reproject(sourceProjection, targetProjection);
+   //      final IVector3<?> projectedUpper = _upper.reproject(sourceProjection, targetProjection);
+   //      return new GAxisAlignedBox(projectedLower, projectedUpper);
+   //   }
 
 
    private GAxisAlignedBox splitByXY(final int key,
@@ -701,15 +696,6 @@ public final class GAxisAlignedBox
       return this;
    }
 
-
-   //   public static void main(final String[] args) {
-   //      final GAxisAlignedBox box = new GAxisAlignedBox(GVector3D.ZERO, GVector3D.UNIT);
-   //      System.out.println(box);
-   //
-   //      for (final GAxisAlignedBox subdivision : box.subdividedByX()) {
-   //         System.out.println("  " + subdivision);
-   //      }
-   //   }
 
    @Override
    public GAxisAlignedBox[] subdivideByAxis(final byte axis) {

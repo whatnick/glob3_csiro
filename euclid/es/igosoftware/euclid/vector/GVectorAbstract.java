@@ -75,15 +75,12 @@ GeometryT extends GVectorAbstract<VectorT, GeometryT>
 
    @Override
    public final double angle(final VectorT that) {
-      //      // scale the vectors to reduce the floats problems
-      //      final VectorT thisScaled = scale(10);
-      //      final VectorT thatScaled = that.scale(10);
-      //
-      //      final double dot = thisScaled.dot(thatScaled) / (thisScaled.length() * thatScaled.length());
-      //      final double campledDot = GMath.clamp(dot, -1, 1);
-      //      return Math.acos(campledDot);
+      final double normProduct = length() * that.length();
+      if (GMath.closeToZero(normProduct)) {
+         throw new RuntimeException("the product of the lenght() of the vectors is zero");
+      }
 
-      final double dot = dot(that) / (length() * that.length());
+      final double dot = dot(that) / normProduct;
       final double campledDot = GMath.clamp(dot, -1, 1);
       return Math.acos(campledDot);
    }

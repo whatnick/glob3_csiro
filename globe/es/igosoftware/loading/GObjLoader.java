@@ -48,13 +48,14 @@ import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
+import es.igosoftware.io.GIOUtils;
 import es.igosoftware.loading.modelparts.GFace;
 import es.igosoftware.loading.modelparts.GMaterial;
 import es.igosoftware.loading.modelparts.GModelData;
 import es.igosoftware.loading.modelparts.GModelMesh;
+import es.igosoftware.util.GLogger;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.GUtils;
-import es.igosoftware.util.GLogger;
 import es.igosoftware.util.XStringTokenizer;
 
 
@@ -109,9 +110,10 @@ public class GObjLoader {
       }
 
       String currentName = null;
+      BufferedReader br = null;
       try {
          // Open a file handle and read the models data
-         final BufferedReader br = new BufferedReader(new InputStreamReader(stream));
+         br = new BufferedReader(new InputStreamReader(stream));
          String line = null;
          int linecount = 0;
          while ((line = br.readLine()) != null) {
@@ -211,6 +213,9 @@ public class GObjLoader {
       }
       catch (final IOException e) {
          throw new GModelLoadException("Failed to find or read OBJ: " + stream);
+      }
+      finally {
+         GIOUtils.gentlyClose(br);
       }
       _model.addmesh(_currentMesh);
 
@@ -329,22 +334,27 @@ public class GObjLoader {
 
       InputStream stream = null;
       try {
-         stream = GResourceRetriever.getResourceAsInputStream(baseDirectoryName + s[1]);
-      }
-      catch (final IOException ex) {
-         ex.printStackTrace();
-      }
-
-      if (stream == null) {
          try {
-            stream = new FileInputStream(baseDirectoryName + s[1]);
+            stream = GResourceRetriever.getResourceAsInputStream(baseDirectoryName + s[1]);
          }
-         catch (final FileNotFoundException ex) {
+         catch (final IOException ex) {
             ex.printStackTrace();
-            return;
          }
+
+         if (stream == null) {
+            try {
+               stream = new FileInputStream(baseDirectoryName + s[1]);
+            }
+            catch (final FileNotFoundException ex) {
+               ex.printStackTrace();
+               return;
+            }
+         }
+         loadMaterialFile(stream);
       }
-      loadMaterialFile(stream);
+      finally {
+         GIOUtils.gentlyClose(stream);
+      }
    }
 
 
@@ -404,7 +414,7 @@ public class GObjLoader {
             else if ((parts[0].equals("d") || parts[0].equals("Tr")) && (material != null)) {
                final float alpha = Float.parseFloat(parts[1]);
                if (alpha < 1.0) {
-                  if (material._diffuseColor != null) {
+                  if (material._diffuseColor == null) {
                      material._diffuseColor = new Color(1, 1, 1, alpha);
                   }
                   else {

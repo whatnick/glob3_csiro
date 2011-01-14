@@ -40,9 +40,9 @@ import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
 import es.igosoftware.util.GCollections;
+import es.igosoftware.util.GLoggerObject;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.IComparatorDouble;
-import es.igosoftware.util.GLoggerObject;
 
 
 public final class GResolution

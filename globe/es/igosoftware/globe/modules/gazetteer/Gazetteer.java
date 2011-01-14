@@ -86,8 +86,7 @@ public class Gazetteer
 
    @Override
    public List<GPair<String, Component>> getPanels(final IGlobeApplication application) {
-
-      final ArrayList<GPair<String, Component>> panels = new ArrayList<GPair<String, Component>>();
+      final List<GPair<String, Component>> panels = new ArrayList<GPair<String, Component>>();
 
       try {
          panels.add(new GPair<String, Component>("Go to", new GazetteerPanel(application.getWorldWindowGLCanvas(), null)));
@@ -96,8 +95,6 @@ public class Gazetteer
       }
 
       return panels;
-
-
    }
 
 
@@ -110,7 +107,6 @@ public class Gazetteer
 
    @Override
    public void initializeTranslations(final IGlobeApplication application) {
-      // TODO Auto-generated method stub
 
    }
 
