@@ -77,7 +77,7 @@ public class GCustomView
 
 
    /**
-    * Custom View Class. So far it is a simple copy of NASA's BasicOrbitView Class. The collision-code is commented out
+    * Custom View Class. So far it is a simple copy of NASA's BasicOrbitView Class.
     */
    public GCustomView() {
 
