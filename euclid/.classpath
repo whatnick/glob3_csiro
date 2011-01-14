@@ -4,6 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/igolibs"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="libs/jna.jar" sourcepath="/home/dgd/Desktop/JNA"/>
+	<classpathentry kind="lib" path="libs/jna.jar" />
 	<classpathentry kind="output" path=""/>
 </classpath>
