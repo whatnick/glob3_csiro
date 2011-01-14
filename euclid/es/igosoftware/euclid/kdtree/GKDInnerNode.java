@@ -53,10 +53,10 @@ public class GKDInnerNode<VectorT extends IVector<VectorT, ?>, VertexT extends I
          extends
             GKDNode<VectorT, VertexT> {
 
-   public final byte                               _splitAxis;
+   private final byte                              _splitAxis;
 
-   public final GKDNode<VectorT, VertexT>          _left;
-   public final GKDNode<VectorT, VertexT>          _right;
+   private final GKDNode<VectorT, VertexT>         _left;
+   private final GKDNode<VectorT, VertexT>         _right;
 
    private final GAxisAlignedOrthotope<VectorT, ?> _bounds;
 
@@ -76,7 +76,7 @@ public class GKDInnerNode<VectorT extends IVector<VectorT, ?>, VertexT extends I
                        final double[][] axisValues,
                        final GProgress progress,
                        final ExecutorService executor) throws InterruptedException, ExecutionException {
-      super(tree, parent);
+      super(parent);
       _bounds = bounds;
       _splitAxis = splitAxis;
       _vertexIndex = vertexIndex;
@@ -228,6 +228,11 @@ public class GKDInnerNode<VectorT extends IVector<VectorT, ?>, VertexT extends I
 
    public int getVertexIndex() {
       return _vertexIndex;
+   }
+
+
+   public byte getSplitAxis() {
+      return _splitAxis;
    }
 
 

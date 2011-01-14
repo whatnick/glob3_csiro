@@ -273,6 +273,8 @@ public class GGlobeDemo
       final GHomePositionModule homePositionModule = new GHomePositionModule(homePosition, heading, pitch, homeElevation, true);
 
       final GPointsCloudFileLoader loader = new GPointsCloudFileLoader("data/pointsclouds");
+      //      final GPointsCloudFileLoader loader = new GPointsCloudFileLoader("/home/dgd/Escritorio/LOD/");
+
 
       final GPointsCloudModule pointsCloudModule = new GPointsCloudModule(loader);
 

@@ -47,9 +47,8 @@ public abstract class GKDLeafNode<VectorT extends IVector<VectorT, ?>, VertexT e
             GKDNode<VectorT, VertexT> {
 
 
-   protected GKDLeafNode(final GKDTree<VectorT, VertexT> tree,
-                         final GKDInnerNode<VectorT, VertexT> parent) {
-      super(tree, parent);
+   protected GKDLeafNode(final GKDInnerNode<VectorT, VertexT> parent) {
+      super(parent);
    }
 
 

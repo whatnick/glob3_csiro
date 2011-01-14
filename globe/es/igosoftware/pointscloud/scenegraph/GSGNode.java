@@ -80,6 +80,7 @@ public abstract class GSGNode {
    private boolean                                             _forceComputationOfProjectedPixels = true;
    private float                                               _computedProjectedPixels           = -1;
    private float                                               _priority                          = Float.NEGATIVE_INFINITY;
+   private long                                                _lastTimeStampOfProjectedPixels    = Integer.MIN_VALUE;
 
 
    public GSGNode(final GAxisAlignedBox bounds,
@@ -113,19 +114,8 @@ public abstract class GSGNode {
 
 
    private void computeProjectedPixels(final DrawContext dc) {
-      //      double minX = Double.POSITIVE_INFINITY;
-      //      double minY = Double.POSITIVE_INFINITY;
-      //      double maxX = Double.NEGATIVE_INFINITY;
-      //      double maxY = Double.NEGATIVE_INFINITY;
-
-      // calculate the minimum enclosing rectangle
-      //      for (final Position boundsVertice : _box.getVertices()) {
       final GPositionBox box = getBoxForProjectedPixels();
       final Position[] vertices = box.getVertices();
-      //      if (vertices.length == 0) {
-      //         _computedProjectedPixels = 0;
-      //         return;
-      //      }
 
 
       final Vec4 firstProjectedVertex = GWWUtils.getScreenPoint(dc, vertices[0]);
@@ -158,7 +148,6 @@ public abstract class GSGNode {
       final double width = maxX - minX;
       final double height = maxY - minY;
       final double area = width * height;
-      //_computedProjectedPixels = Math.round((float) area);
       _computedProjectedPixels = (float) area;
    }
 
@@ -175,15 +164,11 @@ public abstract class GSGNode {
 
    public final void preRender(final DrawContext dc,
                                final boolean changed) {
-      //      if (!isVisible(dc)) {
-      //         return;
-      //      }
-      //
-      //      if (!isBigEnough(dc)) {
-      //         return;
-      //      }
-
-      _forceComputationOfProjectedPixels = true;
+      final long now = dc.getFrameTimeStamp();
+      if (_lastTimeStampOfProjectedPixels + 100 > now) {
+         _forceComputationOfProjectedPixels = true;
+         _lastTimeStampOfProjectedPixels = now;
+      }
 
       if (!isVisible(dc) || !isBigEnough(dc)) {
          setPriority(Integer.MIN_VALUE);
@@ -234,9 +219,6 @@ public abstract class GSGNode {
 
 
    public abstract void reload();
-
-
-   public abstract Position getHomePosition();
 
 
    public GPositionBox getBox() {
