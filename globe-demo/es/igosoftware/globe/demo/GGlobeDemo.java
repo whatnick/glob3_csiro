@@ -197,6 +197,7 @@ public class GGlobeDemo
       for (final GModelMesh mesh : model.getMeshes()) {
          GMaterial material = mesh.getMaterial();
 
+
          if (material == null) {
             material = new GMaterial("");
             material._diffuseColor = Color.WHITE;
@@ -290,12 +291,15 @@ public class GGlobeDemo
          final G3DModelNode caceres3DModelNode = new G3DModelNode("Caceres3D", GTransformationOrder.ROTATION_SCALE_TRANSLATION,
                   model);
 
+
          final GGroupNode caceres3DRootNode = new GGroupNode("Caceres3D root", GTransformationOrder.ROTATION_SCALE_TRANSLATION);
          caceres3DRootNode.setHeading(-90);
+         caceres3DRootNode.setScale(10);
          caceres3DRootNode.addChild(caceres3DModelNode);
 
          layer.addNode(caceres3DRootNode, new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710), 24.7),
                   GElevationAnchor.SEA_LEVEL);
+
       }
       catch (final GModelLoadException e) {
          e.printStackTrace();
