@@ -1157,8 +1157,10 @@ public class GPolygon2DLayer
 
    private void clearCache() {
       //      _topTiles = null;
-      for (final Tile topTile : _topTiles) {
-         topTile._surfaceImage = null;
+      if (_topTiles != null) {
+         for (final Tile topTile : _topTiles) {
+            topTile._surfaceImage = null;
+         }
       }
 
       IMAGES_CACHE.clear(new LRUCache.ValuePredicate<GPolygon2DLayer.RenderingKey, Future<BufferedImage>, RuntimeException>() {
