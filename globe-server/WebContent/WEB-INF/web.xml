@@ -13,7 +13,7 @@
     <description></description>
     <display-name>GPointsCloudServlet</display-name>
     <servlet-name>GPointsCloudServlet</servlet-name>
-    <servlet-class>es.igosoftware.globe.server.experimental.GPointsCloudServlet</servlet-class>
+    <servlet-class>es.igosoftware.globe.server.experimental.points.GPointsCloudServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>GPointsCloudServlet</servlet-name>
