@@ -77,7 +77,7 @@ public class GCustomView
 
 
    /**
-    * Custom View Class. So far it is a simple copy of NASA's BasicOrbitView Class.
+    * Custom View Class. So far it is mostly a copy of NASA's BasicOrbitView Class with some custom tweaks added
     */
    public GCustomView() {
 
@@ -199,6 +199,9 @@ public class GCustomView
    }
 
 
+   /**
+    * return the <code>Position</code> of the camera (lat/lon/alt)
+    */
    @Override
    public Position getEyePosition() {
       if (this.lastEyePosition == null) {
@@ -532,7 +535,7 @@ public class GCustomView
     * setCenterPosition, setHeading, setPitch, or setZoom will be limited by the parameters defined in <code>viewLimits</code>.
     * 
     * @param newViewLimits
-    *           the <code>ICustomViewLimits</code> that will apply to this <code>GCustomView</code>.
+    *           the <code>OrbitViewLimits</code> that will apply to this <code>GCustomView</code>.
     * @throws IllegalArgumentException
     *            if <code>viewLimits</code> is null.
     */
