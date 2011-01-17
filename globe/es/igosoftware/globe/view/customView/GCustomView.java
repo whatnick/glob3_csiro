@@ -1153,4 +1153,10 @@ public class GCustomView
       }
    }
 
+
+   @Override
+   public void setNearClipDistance(final double clipDistance) {
+      this.nearClipDistance = clipDistance;
+   }
+
 }

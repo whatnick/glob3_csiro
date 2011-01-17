@@ -148,6 +148,7 @@ public class GGlobeDemo
          e.printStackTrace();
       }
 
+
       //      final IconLayer iconLayer = new IconLayer();
       //      final Position iconPos = new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0.0);
       //      final UserFacingIcon icon = new UserFacingIcon(
@@ -256,7 +257,7 @@ public class GGlobeDemo
 
          final GGroupNode caceres3DRootNode = new GGroupNode("Caceres3D root", GTransformationOrder.ROTATION_SCALE_TRANSLATION);
          caceres3DRootNode.setHeading(-90);
-         caceres3DRootNode.setScale(10);
+         //caceres3DRootNode.setScale(10);
          caceres3DRootNode.addChild(caceres3DModelNode);
 
          layer.addNode(caceres3DRootNode, new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710), 24.7),
