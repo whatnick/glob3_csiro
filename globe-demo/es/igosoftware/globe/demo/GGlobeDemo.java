@@ -140,8 +140,13 @@ public class GGlobeDemo
       layers.add(caceres3DLayer);
 
 
-      final GPanoramicLayer panoramicLayer = createPanoramicLayer();
-      layers.add(panoramicLayer);
+      try {
+         final GPanoramicLayer panoramicLayer = createPanoramicLayer();
+         layers.add(panoramicLayer);
+      }
+      catch (final RuntimeException e) {
+         e.printStackTrace();
+      }
 
       //      final IconLayer iconLayer = new IconLayer();
       //      final Position iconPos = new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0.0);
@@ -217,54 +222,6 @@ public class GGlobeDemo
    }
 
 
-   //   private void createVectorialLayer(final LayerList layers) {
-   //
-   //      // final String fileName = "data/shp/world.shp";
-   //      // final GProjection projection = GProjection.EPSG_4326;
-   //      // final boolean convertToRadians = true;
-   //
-   //      // final String fileName = "data/shp/S_Naturales_forestales.shp";
-   //      // final GProjection projection = GProjection.EPSG_23030;
-   //      // final boolean convertToRadians = false;
-   //
-   //      final String fileName = "data/shp/S_Naturales_forestales_WG84.shp";
-   //      final GProjection projection = GProjection.EPSG_4326;
-   //      final boolean convertToRadians = true;
-   //
-   //      // final String fileName = "data/shp/parcelasEdificadas.shp";
-   //      // final GProjection projection = GProjection.EPSG_23029;
-   //      // final boolean convertToRadians = false;
-   //
-   //
-   //      if (!new File(fileName).exists()) {
-   //         logWarning("Can't find file " + fileName);
-   //         return;
-   //      }
-   //
-   //      final Thread worker = new Thread() {
-   //         @Override
-   //         public void run() {
-   //            try {
-   //               final List<IPolygon2D<?>> polygons = GShapeLoader.readPolygons(fileName, convertToRadians);
-   //
-   //               final File file = new File(fileName);
-   //               final GPolygon2DLayer layer = new GPolygon2DLayer(file.getName(), file.getName()
-   //                                                                                 + Long.toHexString(file.lastModified()),
-   //                        polygons, projection);
-   //               layer.setShowExtents(true);
-   //               layers.add(layer);
-   //            }
-   //            catch (final IOException e) {
-   //               e.printStackTrace();
-   //            }
-   //         }
-   //      };
-   //      worker.setPriority(Thread.MIN_PRIORITY);
-   //      worker.setDaemon(true);
-   //      worker.start();
-   //   }
-
-
    @Override
    public IGlobeModule[] getModules() {
       final Position homePosition = new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710), 0);
@@ -273,8 +230,8 @@ public class GGlobeDemo
       final double homeElevation = 2000;
       final GHomePositionModule homePositionModule = new GHomePositionModule(homePosition, heading, pitch, homeElevation, true);
 
-      final GPointsCloudFileLoader loader = new GPointsCloudFileLoader("data/pointsclouds");
-      //      final GPointsCloudFileLoader loader = new GPointsCloudFileLoader("/home/dgd/Escritorio/LOD/");
+      //      final GPointsCloudFileLoader loader = new GPointsCloudFileLoader("data/pointsclouds");
+      final GPointsCloudFileLoader loader = new GPointsCloudFileLoader("/home/dgd/Escritorio/LOD/");
 
 
       final GPointsCloudModule pointsCloudModule = new GPointsCloudModule(loader);
