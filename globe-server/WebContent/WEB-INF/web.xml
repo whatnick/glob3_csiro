@@ -14,6 +14,10 @@
     <display-name>GPointsCloudServlet</display-name>
     <servlet-name>GPointsCloudServlet</servlet-name>
     <servlet-class>es.igosoftware.globe.server.experimental.points.GPointsCloudServlet</servlet-class>
+    <init-param>
+      <param-name>points_cloud_directory</param-name>
+      <param-value>../GLOB3-Repository/glob3/globe-demo/data/pointsclouds/</param-value>
+    </init-param>
   </servlet>
   <servlet-mapping>
     <servlet-name>GPointsCloudServlet</servlet-name>

@@ -44,7 +44,7 @@ public abstract class GHttpServlet
       }
       catch (final GParameterException e) {
          response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-         response.getOutputStream().println(e.getMessage());
+         response.getOutputStream().println("ERROR:" + e.getMessage());
       }
    }
 
@@ -76,5 +76,6 @@ public abstract class GHttpServlet
 
       return values[0];
    }
+
 
 }
