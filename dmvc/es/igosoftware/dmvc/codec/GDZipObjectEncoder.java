@@ -2,13 +2,12 @@
 
 package es.igosoftware.dmvc.codec;
 
-import static org.jboss.netty.buffer.ChannelBuffers.dynamicBuffer;
-
 import java.io.ObjectOutputStream;
 import java.util.zip.GZIPOutputStream;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBufferOutputStream;
+import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipelineCoverage;
@@ -42,7 +41,7 @@ public class GDZipObjectEncoder
    protected Object encode(final ChannelHandlerContext ctx,
                            final Channel channel,
                            final Object msg) throws Exception {
-      final ChannelBufferOutputStream bout = new ChannelBufferOutputStream(dynamicBuffer(_estimatedLength,
+      final ChannelBufferOutputStream bout = new ChannelBufferOutputStream(ChannelBuffers.dynamicBuffer(_estimatedLength,
                ctx.getChannel().getConfig().getBufferFactory()));
       bout.write(LENGTH_PLACEHOLDER);
       final ObjectOutputStream oout = new GCompactObjectOutputStream(new GZIPOutputStream(bout));

@@ -11,7 +11,6 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipelineCoverage;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 
-import es.igosoftware.dmvc.GDUtils;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.protocol.GProtocolMultiplexor;
 import es.igosoftware.protocol.IProtocolObject;
@@ -57,7 +56,7 @@ public class GDProtocolObjectEncoder
          bout.write(LENGTH_PLACEHOLDER);
 
          final byte[] rawBytes = _multiplexor.getProtocolBytes(object);
-         final byte[] compressedBytes = GDUtils.compress(rawBytes);
+         final byte[] compressedBytes = GIOUtils.compress(rawBytes);
 
          //      final int TODO_Remove_Print;
          //      System.out.println("-----> sending message, raw " + rawBytes.length + ", compressed " + compressedBytes.length);

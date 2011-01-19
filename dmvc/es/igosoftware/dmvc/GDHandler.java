@@ -40,6 +40,7 @@ import es.igosoftware.dmvc.commands.server.GDFragmentServerCommand;
 import es.igosoftware.dmvc.commands.server.GDRemoteAsynchronousEvaluationCommand;
 import es.igosoftware.dmvc.commands.server.GDRemoteSynchronousEvaluationCommand;
 import es.igosoftware.dmvc.commands.server.GDRemovePropertyChangeListenerCommand;
+import es.igosoftware.io.GIOUtils;
 import es.igosoftware.protocol.GProtocolMultiplexor;
 import es.igosoftware.util.GLogger;
 import es.igosoftware.util.GPair;
@@ -269,7 +270,7 @@ public abstract class GDHandler
       final byte[] rawBytes = _multiplexor.getProtocolBytes(command);
 
       final int rawSize = rawBytes.length;
-      final int compressedSize = GDUtils.compress(rawBytes).length;
+      final int compressedSize = GIOUtils.compress(rawBytes).length;
 
       if (compressedSize < rawSize) {
          return (compressedSize + 4) + "bytes (compressed from " + (rawSize + 4) + "bytes)";

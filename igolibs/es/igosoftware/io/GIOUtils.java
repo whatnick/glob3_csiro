@@ -36,6 +36,8 @@
 
 package es.igosoftware.io;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
@@ -45,11 +47,72 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 
 public class GIOUtils {
 
    private GIOUtils() {
+   }
+
+
+   public static byte[] compress(final byte[] bytes) {
+      try {
+         final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+         final GZIPOutputStream gzip = new GZIPOutputStream(buffer, 1024);
+         gzip.write(bytes);
+         gzip.flush();
+         gzip.close();
+
+         return buffer.toByteArray();
+      }
+      catch (final IOException e) {
+         throw new RuntimeException(e);
+      }
+   }
+
+
+   public static byte[] uncompress(final byte[] compressedBytes) {
+      try {
+         final int uncompressedSize = uncompressedSize(compressedBytes);
+
+         final ByteArrayInputStream buffer = new ByteArrayInputStream(compressedBytes);
+         final GZIPInputStream gzip = new GZIPInputStream(buffer, 1024);
+
+         final byte[] result = new byte[uncompressedSize];
+         for (int i = 0; i < uncompressedSize; i++) {
+            result[i] = (byte) gzip.read();
+         }
+
+         gzip.close();
+
+         return result;
+      }
+      catch (final IOException e) {
+         throw new RuntimeException(e);
+      }
+   }
+
+
+   private static final int uncompressedSize(final byte[] compressedBytes) throws IOException {
+
+      GZIPInputStream gzip = null;
+
+      try {
+         gzip = new GZIPInputStream(new ByteArrayInputStream(compressedBytes));
+
+         int size = 0;
+         while (gzip.read() != -1) {
+            size++;
+         }
+         gzip.close();
+
+         return size;
+      }
+      finally {
+         GIOUtils.gentlyClose(gzip);
+      }
    }
 
 

@@ -167,60 +167,6 @@ public final class GDUtils {
    }
 
 
-   public static byte[] compress(final byte[] protocolBytes) {
-      try {
-         final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-         final GZIPOutputStream gzip = new GZIPOutputStream(buffer, 1024);
-         gzip.write(protocolBytes);
-         gzip.flush();
-         gzip.close();
-
-         return buffer.toByteArray();
-      }
-      catch (final IOException e) {
-         throw new RuntimeException(e);
-      }
-   }
-
-
-   public static byte[] uncompress(final byte[] rawBytes) {
-      try {
-         final int uncompressedSize = uncompressedSize(rawBytes);
-
-         final ByteArrayInputStream buffer = new ByteArrayInputStream(rawBytes);
-         final GZIPInputStream gzip = new GZIPInputStream(buffer, 1024);
-
-         final byte[] result = new byte[uncompressedSize];
-         for (int i = 0; i < uncompressedSize; i++) {
-            result[i] = (byte) gzip.read();
-         }
-
-         gzip.close();
-
-         return result;
-      }
-      catch (final IOException e) {
-         throw new RuntimeException(e);
-      }
-   }
-
-
-   private static final int uncompressedSize(final byte[] rawBytes) throws IOException {
-      final ByteArrayInputStream buffer = new ByteArrayInputStream(rawBytes);
-
-      final GZIPInputStream gzip = new GZIPInputStream(buffer);
-
-      int size = 0;
-      while (gzip.read() != -1) {
-         size++;
-      }
-      gzip.close();
-
-      return size;
-
-   }
-
-
    public static final String resultString(final Object result) {
       if (result == null) {
          return "null";

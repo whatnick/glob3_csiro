@@ -9,7 +9,7 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.frame.FrameDecoder;
 
-import es.igosoftware.dmvc.GDUtils;
+import es.igosoftware.io.GIOUtils;
 import es.igosoftware.protocol.GProtocolMultiplexor;
 
 
@@ -74,7 +74,7 @@ public class GDProtocolObjectDecoder
       buffer.skipBytes(4 + dataLen);
 
       if (compressedFlag) {
-         final byte[] bytes = GDUtils.uncompress(rawBytes);
+         final byte[] bytes = GIOUtils.uncompress(rawBytes);
          return _multiplexor.createObject(bytes);
       }
 
