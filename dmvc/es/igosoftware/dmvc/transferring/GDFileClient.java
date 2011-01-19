@@ -1,0 +1,227 @@
+
+
+package es.igosoftware.dmvc.transferring;
+
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import es.igosoftware.dmvc.model.IDAsynchronousExecutionListener;
+import es.igosoftware.io.GIOUtils;
+import es.igosoftware.util.GAssert;
+import es.igosoftware.util.GLogger;
+import es.igosoftware.util.GProcessor;
+
+
+public class GDFileClient
+         implements
+            IDFileClient {
+
+   private final class ResponseHandler
+            implements
+               IDAsynchronousExecutionListener<GDFileResponse, RuntimeException> {
+
+      private final String           _fileName;
+      private final GProcessor<File> _processor;
+
+
+      private ResponseHandler(final String fileName,
+                              final GProcessor<File> processor) {
+         _fileName = fileName;
+         _processor = processor;
+      }
+
+
+      @Override
+      public void evaluated(final GDFileResponse response,
+                            final RuntimeException exception) {
+
+         File fileToProcess;
+         if (response.getStatus() == GDFileResponse.Status.OK) {
+            try {
+               saveResponse(response);
+
+               fileToProcess = new File(_cacheDirectory, _fileName);
+            }
+            catch (final IOException e) {
+               LOGGER.severe(e);
+               fileToProcess = null;
+            }
+         }
+         else {
+            LOGGER.severe(response.toString());
+            fileToProcess = null;
+         }
+
+         synchronized (_downloading) {
+            _downloading.remove(_fileName);
+         }
+
+         processDownloadedFile(_fileName, fileToProcess, _processor);
+      }
+
+
+      private void saveResponse(final GDFileResponse response) throws IOException {
+         final File file = new File(_cacheDirectory, _fileName);
+         final File parentFile = file.getParentFile();
+         if (!parentFile.exists()) {
+            if (!parentFile.mkdirs()) {
+               throw new IOException("Can't create directory \"" + parentFile.getAbsolutePath() + "\"");
+            }
+         }
+
+         BufferedOutputStream os = null;
+         try {
+            os = new BufferedOutputStream(new FileOutputStream(file));
+
+            os.write(response.getBytes());
+
+            os.flush();
+         }
+         finally {
+            GIOUtils.gentlyClose(os);
+
+            if (!file.setLastModified(response.getLastModified())) {
+               throw new IOException("Can't change the lastModified attribute on \"" + file.getAbsolutePath() + "\"");
+            }
+         }
+      }
+   }
+
+
+   private static final GLogger                      LOGGER                     = GLogger.instance();
+
+
+   private final IDFileServer                        _fileServer;
+   private final File                                _cacheDirectory;
+
+   private final Set<String>                         _downloading               = new HashSet<String>();
+   private final Map<String, List<GProcessor<File>>> _extraDownloadedProcessors = new HashMap<String, List<GProcessor<File>>>();
+
+
+   public GDFileClient(final IDFileServer fileServer,
+                       final String cacheDirectoryName) {
+      GAssert.notNull(fileServer, "fileServer");
+      GAssert.notNull(cacheDirectoryName, "cacheDirectoryName");
+
+      _fileServer = fileServer;
+      _cacheDirectory = initializeCache(cacheDirectoryName);
+   }
+
+
+   private File initializeCache(final String cacheDirectoryName) {
+      final File directory = new File(cacheDirectoryName);
+
+      if (!directory.exists()) {
+         if (!directory.mkdirs()) {
+            throw new RuntimeException("Can't create directory \"" + cacheDirectoryName + "\"");
+         }
+      }
+
+      return directory;
+   }
+
+
+   @Override
+   public File getFile(final String fileName) {
+
+      synchronized (_downloading) {
+         final boolean isDownloading = _downloading.contains(fileName);
+
+         if (isDownloading) {
+            return null;
+         }
+
+         final File file = new File(_cacheDirectory, fileName);
+         if (file.exists()) {
+            return file;
+         }
+
+         _downloading.add(fileName);
+      }
+
+      final GDFileRequest request = new GDFileRequest(fileName);
+      _fileServer.getFile(request, new ResponseHandler(fileName, null));
+
+      return null;
+   }
+
+
+   @Override
+   public void getFile(final String fileName,
+                       final GProcessor<File> processor) {
+
+      synchronized (_downloading) {
+         final boolean isDownloading = _downloading.contains(fileName);
+
+         if (isDownloading) {
+            if (processor != null) {
+               addExtraDownloadedProcessor(fileName, processor);
+            }
+            return;
+         }
+
+         final File file = new File(_cacheDirectory, fileName);
+         if (file.exists()) {
+            if (processor != null) {
+               processor.process(file);
+            }
+            return;
+         }
+
+         _downloading.add(fileName);
+      }
+
+      final GDFileRequest request = new GDFileRequest(fileName);
+      _fileServer.getFile(request, new ResponseHandler(fileName, processor));
+
+   }
+
+
+   private void addExtraDownloadedProcessor(final String fileName,
+                                            final GProcessor<File> processor) {
+      synchronized (_extraDownloadedProcessors) {
+         List<GProcessor<File>> currentProcessors = _extraDownloadedProcessors.get(fileName);
+
+         if (currentProcessors == null) {
+            currentProcessors = new ArrayList<GProcessor<File>>();
+            _extraDownloadedProcessors.put(fileName, currentProcessors);
+         }
+
+         currentProcessors.add(processor);
+      }
+   }
+
+
+   private void processDownloadedFile(final String fileName,
+                                      final File fileOrNull,
+                                      final GProcessor<File> firstProcessor) {
+
+      //      GUtils.delay(10000);
+
+      if (firstProcessor != null) {
+         firstProcessor.process(fileOrNull);
+      }
+
+
+      final List<GProcessor<File>> processors;
+      synchronized (_extraDownloadedProcessors) {
+         processors = _extraDownloadedProcessors.remove(fileName);
+      }
+
+      if (processors != null) {
+         for (final GProcessor<File> each : processors) {
+            each.process(fileOrNull);
+         }
+      }
+   }
+
+
+}
