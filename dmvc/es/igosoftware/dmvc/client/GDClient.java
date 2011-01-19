@@ -236,4 +236,9 @@ public class GDClient
    }
 
 
+   @Override
+   public String logName() {
+      return "dMVC-Client";
+   }
+
 }

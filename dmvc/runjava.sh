@@ -92,12 +92,12 @@ else
     LIBS=../3d/libs
 fi
 
-IGOLIBS=../../GLOB3-Repository/glob3/igolibs/libs
+IGOLIBS=../igolibs/libs
 
 # Don't use MToolkit
 export AWT_TOOLKIT=XToolkit
 
-export CLASSPATH=${IGOLIBS}:../../GLOB3-Repository/glob3/igolibs/:../3d/:../dmvc/:.
+export CLASSPATH=${IGOLIBS}:../igolibs/:../3d/:../dmvc/:.
 export CLASSPATH=${CLASSPATH}:../dmvc/libs/netty-3.1.5.GA/netty-3.1.5.GA.jar
 export CLASSPATH=${CLASSPATH}:${IGOLIBS}/bsh/bsh-2.0b4.jar
 

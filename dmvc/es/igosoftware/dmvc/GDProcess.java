@@ -31,12 +31,6 @@ public abstract class GDProcess
    }
 
 
-   @Override
-   public String logName() {
-      return "dMVC";
-   }
-
-
    public byte[] accumulateFragment(final int groupID,
                                     final byte[] fragment) {
       final byte[] accumulated;

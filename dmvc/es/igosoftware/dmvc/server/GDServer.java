@@ -344,4 +344,10 @@ public class GDServer
       _handler.logReceivedCommand(command, remoteAddress);
    }
 
+
+   @Override
+   public String logName() {
+      return "dMVC-Server";
+   }
+
 }
