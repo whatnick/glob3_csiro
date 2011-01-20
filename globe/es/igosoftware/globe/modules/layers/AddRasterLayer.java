@@ -126,8 +126,7 @@ public class AddRasterLayer
 
 
          @Override
-         public void set(final String value) {
-         }
+         public void set(final String value) {}
 
       };
 
@@ -145,8 +144,7 @@ public class AddRasterLayer
 
 
          @Override
-         public void set(final String value) {
-         }
+         public void set(final String value) {}
 
       };
 
@@ -257,7 +255,7 @@ public class AddRasterLayer
             }
          }
          catch (final Exception e) {
-            //TODO:
+            e.printStackTrace();
          }
       }
 
@@ -279,7 +277,7 @@ public class AddRasterLayer
 
    @Override
    public void initializeTranslations(final IGlobeApplication application) {
-      // TODO Auto-generated method stub
+   // TODO Auto-generated method stub
 
    }
 

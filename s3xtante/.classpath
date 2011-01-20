@@ -19,8 +19,8 @@
 	<classpathentry kind="lib" path="lib/sextante/jsr108-0.01.jar"/>
 	<classpathentry kind="lib" path="lib/sextante/jsr173_api-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/sextante/kxml2.jar"/>
-	<classpathentry kind="lib" path="lib/sextante/libDocEngines-0.6-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/sextante/libMath-0.6-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/libDocEngines-0.6-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sextante/libMath-0.6-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/sextante/prefuse.jar"/>
 	<classpathentry kind="lib" path="lib/sextante/prefusex.jar"/>
 	<classpathentry kind="lib" path="lib/sextante/sextante_fireSimulation-0.6-SNAPSHOT.jar"/>

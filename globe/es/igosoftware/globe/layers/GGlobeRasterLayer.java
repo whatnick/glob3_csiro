@@ -89,7 +89,9 @@ public class GGlobeRasterLayer
          _surfaceImage = new SurfaceImage(imageSource, extent.getAsSector());
          addRenderable(_surfaceImage);
       }
-      throw new RuntimeException("Image source not supported: " + imageSource);
+      else {
+         throw new RuntimeException("Image source not supported: " + imageSource);
+      }
    }
 
 
