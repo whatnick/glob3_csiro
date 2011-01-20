@@ -706,7 +706,8 @@ public class GLayersManagerModule
 
          if (firstAttributeOnPanel) {
             firstAttributeOnPanel = false;
-            if (_layerPropertiesPanel.getComponents().length > 0) {
+            final Component[] components = _layerPropertiesPanel.getComponents();
+            if ((components.length > 0) && (!(components[components.length - 1] instanceof JToolBar))) {
                _layerPropertiesPanel.add(new JSeparator(SwingConstants.HORIZONTAL), "growx, wrap, span 2");
             }
          }

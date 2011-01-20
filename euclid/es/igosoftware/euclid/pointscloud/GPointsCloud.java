@@ -64,10 +64,10 @@ import es.igosoftware.euclid.verticescontainer.IUnstructuredVertexContainer;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer.WeightedVertex;
 import es.igosoftware.util.GCollections;
+import es.igosoftware.util.GLoggerObject;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.GProgress;
 import es.igosoftware.util.IPredicate;
-import es.igosoftware.util.GLoggerObject;
 
 
 public abstract class GPointsCloud

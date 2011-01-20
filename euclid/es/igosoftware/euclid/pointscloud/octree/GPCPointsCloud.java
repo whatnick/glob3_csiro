@@ -51,14 +51,17 @@ public class GPCPointsCloud
    private static final long  serialVersionUID = 1L;
 
 
-   private final GProjection  _projection;
    private final GPCInnerNode _root;
+   private final GProjection  _projection;
    private final int          _verticesCount;
+
    private final boolean      _hasColors;
    private final boolean      _hasNormals;
    private final boolean      _hasIntensities;
+
    private final float        _minIntensity;
    private final float        _maxIntensity;
+
    private final double       _minElevation;
    private final double       _maxElevation;
 
@@ -74,9 +77,9 @@ public class GPCPointsCloud
                          final float maxIntensity,
                          final double minElevation,
                          final double maxElevation) {
+      _root = new GPCInnerNode(root, leafNodes);
       _projection = projection;
       _verticesCount = verticesCount;
-      _root = new GPCInnerNode(root, leafNodes);
 
       _hasIntensities = hasIntensities;
       _hasNormals = hasNormals;

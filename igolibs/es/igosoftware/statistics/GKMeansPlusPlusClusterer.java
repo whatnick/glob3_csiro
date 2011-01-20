@@ -46,6 +46,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import es.igosoftware.util.GArrayListInt;
 import es.igosoftware.util.GCollections;
+import es.igosoftware.util.GLogger;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.GProgress;
 import es.igosoftware.util.GUnmodifiableListInt;
@@ -55,7 +56,6 @@ import es.igosoftware.util.IEvaluator;
 import es.igosoftware.util.IEvaluatorInt;
 import es.igosoftware.util.IListInt;
 import es.igosoftware.util.IRangeEvaluator;
-import es.igosoftware.util.GLogger;
 
 
 public class GKMeansPlusPlusClusterer {

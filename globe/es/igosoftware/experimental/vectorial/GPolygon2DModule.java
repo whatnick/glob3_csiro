@@ -115,15 +115,12 @@ public class GPolygon2DModule
          @Override
          public void run() {
             final int TODO_read_projection_or_ask_user;
-            final boolean convertToRadians = true;
             final GProjection projection = GProjection.EPSG_4326;
 
             try {
-               final List<IPolygon2D<?>> polygons = GShapeLoader.readPolygons(file.getAbsolutePath(), convertToRadians);
+               final GPair<String, List<IPolygon2D<?>>> polygons = GShapeLoader.readPolygons(file.getAbsolutePath(), projection);
 
-               final GPolygon2DLayer layer = new GPolygon2DLayer(file.getName(), file.getName()
-                                                                                 + Long.toHexString(file.lastModified()),
-                        polygons, projection);
+               final GPolygon2DLayer layer = new GPolygon2DLayer(file.getName(), polygons._first, polygons._second);
                //               layer.setShowExtents(true);
                application.getLayerList().add(layer);
 

@@ -62,8 +62,8 @@ import es.igosoftware.euclid.verticescontainer.GVertex3Container;
 import es.igosoftware.euclid.verticescontainer.IUnstructuredVertexContainer;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
 import es.igosoftware.io.GIOUtils;
-import es.igosoftware.util.GProgress;
 import es.igosoftware.util.GLogger;
+import es.igosoftware.util.GProgress;
 
 
 public final class GBinaryPoints3Loader

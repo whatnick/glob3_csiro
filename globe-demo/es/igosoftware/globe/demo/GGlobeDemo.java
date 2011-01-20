@@ -140,8 +140,14 @@ public class GGlobeDemo
       layers.add(caceres3DLayer);
 
 
-      final GPanoramicLayer panoramicLayer = createPanoramicLayer();
-      layers.add(panoramicLayer);
+      try {
+         final GPanoramicLayer panoramicLayer = createPanoramicLayer();
+         layers.add(panoramicLayer);
+      }
+      catch (final RuntimeException e) {
+         e.printStackTrace();
+      }
+
 
       //      final IconLayer iconLayer = new IconLayer();
       //      final Position iconPos = new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0.0);
@@ -176,7 +182,10 @@ public class GGlobeDemo
    private GPanoramicLayer createPanoramicLayer() {
       final GPanoramicLayer panoramicLayer = new GPanoramicLayer("Panoramics");
 
-      panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", "data/panoramics/example", 500,
+      //      panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", "data/panoramics/example", 500,
+      //               new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0)));
+
+      panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", "data/panoramics/barruecos", 500,
                new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0)));
 
       // panoramicLayer.setEnabled(false);
@@ -197,6 +206,7 @@ public class GGlobeDemo
       for (final GModelMesh mesh : model.getMeshes()) {
          GMaterial material = mesh.getMaterial();
 
+
          if (material == null) {
             material = new GMaterial("");
             material._diffuseColor = Color.WHITE;
@@ -213,54 +223,6 @@ public class GGlobeDemo
    }
 
 
-   //   private void createVectorialLayer(final LayerList layers) {
-   //
-   //      // final String fileName = "data/shp/world.shp";
-   //      // final GProjection projection = GProjection.EPSG_4326;
-   //      // final boolean convertToRadians = true;
-   //
-   //      // final String fileName = "data/shp/S_Naturales_forestales.shp";
-   //      // final GProjection projection = GProjection.EPSG_23030;
-   //      // final boolean convertToRadians = false;
-   //
-   //      final String fileName = "data/shp/S_Naturales_forestales_WG84.shp";
-   //      final GProjection projection = GProjection.EPSG_4326;
-   //      final boolean convertToRadians = true;
-   //
-   //      // final String fileName = "data/shp/parcelasEdificadas.shp";
-   //      // final GProjection projection = GProjection.EPSG_23029;
-   //      // final boolean convertToRadians = false;
-   //
-   //
-   //      if (!new File(fileName).exists()) {
-   //         logWarning("Can't find file " + fileName);
-   //         return;
-   //      }
-   //
-   //      final Thread worker = new Thread() {
-   //         @Override
-   //         public void run() {
-   //            try {
-   //               final List<IPolygon2D<?>> polygons = GShapeLoader.readPolygons(fileName, convertToRadians);
-   //
-   //               final File file = new File(fileName);
-   //               final GPolygon2DLayer layer = new GPolygon2DLayer(file.getName(), file.getName()
-   //                                                                                 + Long.toHexString(file.lastModified()),
-   //                        polygons, projection);
-   //               layer.setShowExtents(true);
-   //               layers.add(layer);
-   //            }
-   //            catch (final IOException e) {
-   //               e.printStackTrace();
-   //            }
-   //         }
-   //      };
-   //      worker.setPriority(Thread.MIN_PRIORITY);
-   //      worker.setDaemon(true);
-   //      worker.start();
-   //   }
-
-
    @Override
    public IGlobeModule[] getModules() {
       final Position homePosition = new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710), 0);
@@ -269,7 +231,9 @@ public class GGlobeDemo
       final double homeElevation = 2000;
       final GHomePositionModule homePositionModule = new GHomePositionModule(homePosition, heading, pitch, homeElevation, true);
 
-      final GPointsCloudFileLoader loader = new GPointsCloudFileLoader("data/pointsclouds");
+      //      final GPointsCloudFileLoader loader = new GPointsCloudFileLoader("data/pointsclouds");
+      final GPointsCloudFileLoader loader = new GPointsCloudFileLoader("/home/dgd/Escritorio/LOD/");
+
 
       final GPointsCloudModule pointsCloudModule = new GPointsCloudModule(loader);
 
@@ -290,12 +254,15 @@ public class GGlobeDemo
          final G3DModelNode caceres3DModelNode = new G3DModelNode("Caceres3D", GTransformationOrder.ROTATION_SCALE_TRANSLATION,
                   model);
 
+
          final GGroupNode caceres3DRootNode = new GGroupNode("Caceres3D root", GTransformationOrder.ROTATION_SCALE_TRANSLATION);
          caceres3DRootNode.setHeading(-90);
+         //caceres3DRootNode.setScale(10);
          caceres3DRootNode.addChild(caceres3DModelNode);
 
          layer.addNode(caceres3DRootNode, new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710), 24.7),
                   GElevationAnchor.SEA_LEVEL);
+
       }
       catch (final GModelLoadException e) {
          e.printStackTrace();

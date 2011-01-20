@@ -339,7 +339,7 @@ public final class GSimplePolygon2D
 
    @Override
    public GSimplePolygon2D transformedBy(final IVectorTransformer<IVector2<?>> transformer) {
-      return new GSimplePolygon2D(true, GCollections.collect(_points, transformer));
+      return new GSimplePolygon2D(false, GCollections.collect(_points, transformer));
    }
 
 

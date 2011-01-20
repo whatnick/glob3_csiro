@@ -264,14 +264,6 @@ public final class GAxisAlignedRectangle
    }
 
 
-   //   public GAxisAlignedRectangle(final double lowerX,
-   //                                final double lowerY,
-   //                                final double upperX,
-   //                                final double upperY) {
-   //      this(new GVector2D(lowerX, lowerY), new GVector2D(upperX, upperY));
-   //   }
-
-
    public GAxisAlignedRectangle(final IVector2<?> lower,
                                 final IVector2<?> upper) {
       super(lower, upper);
@@ -318,30 +310,6 @@ public final class GAxisAlignedRectangle
    public boolean touches(final IBounds2D<?> that) {
       return that.touchesWithRectangle(this);
    }
-
-
-   //   @Override
-   //   public boolean touchesWithBox(final GAxisAlignedBox box) {
-   //      // return ((upper.getX() > box.lower.getX()) && (box.upper.getX() > lower.getX()) && (upper.getY() > box.lower.getY()) && (box.upper.getY() > lower.getY()));
-   //      return box.touchesWithRectangle(this);
-   //   }
-
-
-   //   public static void main(final String[] args) {
-   //      System.out.println("Rectangle 0.1");
-   //      System.out.println("---------------\n");
-   //
-   //      final GAxisAlignedRectangle rec1 = new GAxisAlignedRectangle(new GVector2D(1, 1), new GVector2D(10, 10));
-   //      //final GAxisAlignedRectangle rec2 = new GAxisAlignedRectangle(new GVector2D(-1, -1), new GVector2D(1, 1));
-   //      //                  final GAxisAlignedRectangle rec2 = new GAxisAlignedRectangle(new GVector2D(-1, -1), new GVector2D(GMath.nextUp(1),
-   //      //                           GMath.nextUp(1)));
-   //      //      final GAxisAlignedRectangle rec2 = new GAxisAlignedRectangle(new GVector2D(-1, -1), new GVector2D(GMath.previousDown(1),
-   //      //               GMath.previousDown(1)));
-   //      final GAxisAlignedRectangle rec2 = new GAxisAlignedRectangle(new GVector2D(-1, -1), new GVector2D(1 - 0.001, 1 - 0.001));
-   //
-   //      System.out.println("NEIGHBOR WITH: " + rec1.neighborWithRectangle(rec2));
-   //
-   //   }
 
 
    @Override
@@ -392,31 +360,10 @@ public final class GAxisAlignedRectangle
    }
 
 
-   //   @Override
-   //   public boolean touchesWithBall(final GBall ball) {
-   //      final IVector3<?> ballCenter = ball.center;
-   //      final double ballRadius = ball.radius;
-   //      return (Math.abs(center.getX() - ballCenter.getX()) < (ballRadius + extent.getX()))
-   //             && (Math.abs(center.getY() - ballCenter.getY()) < (ballRadius + extent.getY()));
-   //   }
-
-
-   //   @Override
-   //   public GAxisAlignedBox asBox() {
-   //      return new GAxisAlignedBox(new GVector3D(lower, Double.NEGATIVE_INFINITY), new GVector3D(upper, Double.POSITIVE_INFINITY));
-   //   }
-
-
    @Override
    public GAxisAlignedRectangle getBounds() {
       return this;
    }
-
-
-   //   @Override
-   //   public boolean touchesWithPlane(final GPlane plane) {
-   //      return plane.touchesWithRectangle(this);
-   //   }
 
 
    @Override
@@ -430,17 +377,6 @@ public final class GAxisAlignedRectangle
       return new GAxisAlignedRectangle(_lower.add(delta), _upper.add(delta));
    }
 
-
-   //   public GAxisAlignedRectangle reproject(final GProjection sourceProjection,
-   //                                          final GProjection targetProjection) {
-   //      if (sourceProjection == targetProjection) {
-   //         return this;
-   //      }
-   //
-   //      final IVector2<?> projectedLower = lower.reproject(sourceProjection, targetProjection);
-   //      final IVector2<?> projectedUpper = upper.reproject(sourceProjection, targetProjection);
-   //      return new GAxisAlignedRectangle(projectedLower, projectedUpper);
-   //   }
 
    public GAxisAlignedRectangle[] subdividedByX() {
       return subdividedByFactorX(0.5);
@@ -607,15 +543,6 @@ public final class GAxisAlignedRectangle
       return touchesWithRectangle((GAxisAlignedRectangle) that);
    }
 
-
-   //   public static void main(final String[] args) {
-   //      final GAxisAlignedRectangle rectangle = new GAxisAlignedRectangle(GVector2D.ZERO, new GVector2D(10, 10));
-   //      final GAxisAlignedRectangle[] subdivisions = rectangle.subdivideAtCenter();
-   //
-   //      for (final GAxisAlignedRectangle subdivision : subdivisions) {
-   //         System.out.println(subdivision);
-   //      }
-   //   }
 
    @Override
    public boolean touchesBounds(final IBounds<IVector2<?>, ?> that) {

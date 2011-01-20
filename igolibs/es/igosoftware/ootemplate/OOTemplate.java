@@ -94,7 +94,7 @@ import es.igosoftware.util.GLogger;
 
 
 public class OOTemplate {
-   private static final GLogger  _logger = GLogger.instance();
+   private static final GLogger _logger = GLogger.instance();
 
    //   private static final String  OPEN_TAG  = "{{";
    //   private static final String  CLOSE_TAG = "}}";

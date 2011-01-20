@@ -44,7 +44,7 @@ import java.util.StringTokenizer;
 
 public final class GLogger {
    private static final DateFormat format   = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS: ");
-   private static final GLogger     instance = new GLogger();
+   private static final GLogger    instance = new GLogger();
 
 
    synchronized public static GLogger instance() {

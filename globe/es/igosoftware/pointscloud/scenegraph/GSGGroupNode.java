@@ -43,7 +43,6 @@ import es.igosoftware.euclid.pointscloud.octree.GPCLeafNode;
 import es.igosoftware.euclid.pointscloud.octree.GPCNode;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.pointscloud.GPointsCloudLayer;
-import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.DrawContext;
 
 
@@ -161,17 +160,6 @@ public final class GSGGroupNode
             child.reload();
          }
       }
-   }
-
-
-   @Override
-   public Position getHomePosition() {
-      for (final GSGNode child : _children) {
-         if (child != null) {
-            return child.getHomePosition();
-         }
-      }
-      return null;
    }
 
 

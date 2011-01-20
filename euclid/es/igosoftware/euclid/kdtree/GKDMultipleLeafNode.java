@@ -50,11 +50,10 @@ public class GKDMultipleLeafNode<VectorT extends IVector<VectorT, ?>, VertexT ex
    private final int[] _verticesIndexes;
 
 
-   GKDMultipleLeafNode(final GKDTree<VectorT, VertexT> tree,
-                       final GKDInnerNode<VectorT, VertexT> parent,
+   GKDMultipleLeafNode(final GKDInnerNode<VectorT, VertexT> parent,
                        final int[] verticesIndexes,
                        final GProgress progress) {
-      super(tree, parent);
+      super(parent);
 
       final int verticesCount = verticesIndexes.length;
       _verticesIndexes = Arrays.copyOf(verticesIndexes, verticesCount);

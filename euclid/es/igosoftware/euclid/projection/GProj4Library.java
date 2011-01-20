@@ -48,7 +48,6 @@ public class GProj4Library
 
    static {
       // Native.setProtected(true);
-      //Native.register(es.igosoftware.euclid.projection.GProj4Library.JNA_LIBRARY_NAME);
 
       //Native.register(Platform.isWindows() ? "msvcrt" : "proj");
       Native.register("proj");
@@ -122,14 +121,11 @@ public class GProj4Library
       System.out.println("-----------------\n");
 
       final Pointer pj_src = pj_init_plus("+proj=utm +zone=29 +ellps=intl +units=m +no_defs");
-      System.out.println(pj_src);
 
       final Pointer pj_dest = pj_init_plus("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs");
-      System.out.println(pj_dest);
 
-
-      final double[] x = { 698590.00 };
-      final double[] y = { 4374720.00 };
+      final double[] x = { 698590 };
+      final double[] y = { 4374720 };
       final double[] z = { 315.75 };
 
       final int error = pj_transform(pj_src, pj_dest, 1, 1, x, y, z);
@@ -137,11 +133,8 @@ public class GProj4Library
          System.out.println("Error " + error + " " + pj_strerrno(error));
       }
 
-      //      System.out.println(Math.toDegrees(x.get(0)));
-      //      System.out.println(Math.toDegrees(y.get(0)));
-      //      System.out.println(z.get(0));
-      System.out.println(Math.toDegrees(x[0]));
       System.out.println(Math.toDegrees(y[0]));
+      System.out.println(Math.toDegrees(x[0]));
       System.out.println(z[0]);
 
       pj_free(pj_dest);
