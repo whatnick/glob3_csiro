@@ -1,5 +1,3 @@
-
-
 package es.unex.s3xtante.modules.sextante.bindings;
 
 import java.awt.geom.Rectangle2D;
@@ -95,13 +93,11 @@ public class WWVectorLayer
 
 
    @Override
-   public void open() {
-   }
+   public void open() {}
 
 
    @Override
-   public void close() {
-   }
+   public void close() {}
 
 
    @Override
@@ -243,10 +239,10 @@ public class WWVectorLayer
 
                try {
                   final List<Object> attributes = new ArrayList<Object>();
-                  attributes.add(geom);
                   attributes.addAll(Arrays.asList(feature._attributes));
                   final SimpleFeature sf = featWriter.next();
                   sf.setAttributes(attributes);
+                  sf.setDefaultGeometry(geom);
                   featWriter.write();
                }
                catch (final Exception e) {
