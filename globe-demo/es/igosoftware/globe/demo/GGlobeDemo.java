@@ -62,7 +62,7 @@ import es.igosoftware.globe.modules.view.GShowLatLonGraticuleModule;
 import es.igosoftware.globe.modules.view.GShowUTMGraticuleModule;
 import es.igosoftware.globe.modules.view.ShowMeasureTool;
 import es.igosoftware.globe.view.customView.GCustomView;
-import es.igosoftware.io.GPointsCloudFileLoader;
+import es.igosoftware.io.pointscloud.GPointsCloudFileLoader;
 import es.igosoftware.loading.G3DModel;
 import es.igosoftware.loading.GModelLoadException;
 import es.igosoftware.loading.GObjLoader;

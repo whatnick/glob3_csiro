@@ -34,42 +34,17 @@
 */
 
 
-package es.igosoftware.io;
+package es.igosoftware.io.pointscloud;
 
-import java.io.File;
-import java.util.ArrayList;
+import java.io.IOException;
+
+import es.igosoftware.io.ILoader;
 
 
-public final class GPointsCloudFileLoader
+public interface IPointsCloudLoader
          extends
-            GFileLoader
-         implements
-            IPointsCloudLoader {
+            ILoader {
 
-   public GPointsCloudFileLoader(final File rootDirectory) {
-      super(rootDirectory);
-   }
-
-
-   public GPointsCloudFileLoader(final String rootDirectoryName) {
-      super(rootDirectoryName);
-   }
-
-
-   @Override
-   public String[] getPointsCloudsNames() {
-      final ArrayList<String> result = new ArrayList<String>();
-
-      for (final File child : _rootDirectory.listFiles()) {
-         if (child.isDirectory() && child.canRead()) {
-            final File pointsCloudFile = new File(child, "tree.object.gz");
-            if (pointsCloudFile.exists() && pointsCloudFile.canRead()) {
-               result.add(child.getName());
-            }
-         }
-      }
-
-      return result.toArray(new String[] {});
-   }
+   public String[] getPointsCloudsNames() throws IOException;
 
 }

@@ -10,5 +10,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry combineaccessrules="false" kind="src" path="/euclid"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/globe"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

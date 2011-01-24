@@ -32,6 +32,7 @@ import es.igosoftware.euclid.pointscloud.octree.GPCNode;
 import es.igosoftware.euclid.pointscloud.octree.GPCPointsCloud;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.io.GIOUtils;
+import es.igosoftware.io.pointscloud.GPointsClouseServerCommands;
 
 
 @ChannelPipelineCoverage("all")
@@ -40,13 +41,7 @@ public class GPointsServerHandler
             SimpleChannelUpstreamHandler {
 
 
-   private static final String  CLOSE_COMMAND      = "close";
-   private static final String  DIR_COMMAND        = "dir";
-   private static final String  GET_COMMAND        = "get:";
-   private static final int     GET_COMMAND_LENGTH = GET_COMMAND.length();
-
-
-   private static final boolean LOG_REQUESTS       = true;
+   private static final boolean LOG_REQUESTS = true;
 
 
    private final GPointsServer  _server;
@@ -100,18 +95,18 @@ public class GPointsServerHandler
       if (request == null) {
          requestError(e, request);
       }
-      else if (request.equalsIgnoreCase(DIR_COMMAND)) {
+      else if (request.equalsIgnoreCase(GPointsClouseServerCommands.DIR_COMMAND)) {
          sendResponse(e, _server.getPointsCloudsNames());
       }
-      else if (request.equalsIgnoreCase(CLOSE_COMMAND)) {
+      else if (request.equalsIgnoreCase(GPointsClouseServerCommands.CLOSE_COMMAND)) {
          closeChannel(e.getChannel());
       }
-      else if (request.startsWith(GET_COMMAND)) {
-         if (request.length() <= GET_COMMAND_LENGTH) {
+      else if (request.startsWith(GPointsClouseServerCommands.GET_COMMAND)) {
+         if (request.length() <= GPointsClouseServerCommands.GET_COMMAND_LENGTH) {
             requestError(e, request);
          }
          else {
-            final String pointsCloudName = request.substring(GET_COMMAND_LENGTH);
+            final String pointsCloudName = request.substring(GPointsClouseServerCommands.GET_COMMAND_LENGTH);
             sendPointsCloud(e, pointsCloudName);
          }
       }

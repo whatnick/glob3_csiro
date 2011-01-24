@@ -38,6 +38,7 @@ package es.igosoftware.pointscloud;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -55,7 +56,7 @@ import es.igosoftware.globe.attributes.GBooleanLayerAttribute;
 import es.igosoftware.globe.attributes.GColorLayerAttribute;
 import es.igosoftware.globe.attributes.GFloatLayerAttribute;
 import es.igosoftware.globe.attributes.ILayerAttribute;
-import es.igosoftware.io.IPointsCloudLoader;
+import es.igosoftware.io.pointscloud.IPointsCloudLoader;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GPair;
 
@@ -414,9 +415,15 @@ public class GPointsCloudModule
 
    @Override
    public List<ILayerInfo> getAvailableLayers(final IGlobeApplication application) {
-      final String[] pointsCloudsNames = _pointsCloudLoader.getPointsCloudsNames();
-      Arrays.sort(pointsCloudsNames);
-      return GLayerInfo.createFromNames(pointsCloudsNames);
+      try {
+         final String[] pointsCloudsNames = _pointsCloudLoader.getPointsCloudsNames();
+         Arrays.sort(pointsCloudsNames);
+         return GLayerInfo.createFromNames(pointsCloudsNames);
+      }
+      catch (final IOException e) {
+         application.logSevere(e);
+         return Collections.emptyList();
+      }
    }
 
 
