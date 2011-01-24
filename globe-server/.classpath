@@ -9,5 +9,6 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/globe/libs/gson-1.6/gson-1.6-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry combineaccessrules="false" kind="src" path="/euclid"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

@@ -83,7 +83,7 @@ public class GDielmoWMSLayer
 
 
    public GDielmoWMSLayer(final GDielmoWMSLayer.ImageFormat imageFormat) {
-      this(imageFormat, 5000);
+      this(imageFormat, 50000);
    }
 
 

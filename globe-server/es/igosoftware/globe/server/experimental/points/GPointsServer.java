@@ -24,10 +24,8 @@ public class GPointsServer
          extends
             GLoggerObject {
 
-   private final boolean              _verbose;
-   private final File                 _pointsCloudsDirectory;
-   private final int                  _port;
-   private final GPointsServerHandler _handler;
+   private final boolean _verbose;
+   final File            _pointsCloudsDirectory;
 
 
    public GPointsServer(final int port,
@@ -36,44 +34,40 @@ public class GPointsServer
       GAssert.isPositive(port, "port");
       GAssert.notNull(pointsCloudsDirectoryName, "pointsCloudsDirectoryName");
 
-      _port = port;
+      //      _port = port;
       _verbose = verbose;
 
       _pointsCloudsDirectory = initializePointsCloudsDirectory(pointsCloudsDirectoryName);
 
-      _handler = start();
+      start(port);
    }
 
 
-   private GPointsServerHandler start() {
-      logInfo("Starting server at port " + _port);
+   private void start(final int port) {
+      logInfo("Starting server at port " + port);
 
       // Configure the server. 
       final NioServerSocketChannelFactory channelFactory = new NioServerSocketChannelFactory(Executors.newCachedThreadPool(),
                Executors.newCachedThreadPool(), Runtime.getRuntime().availableProcessors());
+
       final ServerBootstrap bootstrap = new ServerBootstrap(channelFactory);
 
       final ChannelPipeline pipeline = bootstrap.getPipeline();
 
       // Decoders
-      pipeline.addLast("frameDecoder", new DelimiterBasedFrameDecoder(80, Delimiters.lineDelimiter()));
+      pipeline.addLast("frameDecoder", new DelimiterBasedFrameDecoder(256, Delimiters.lineDelimiter()));
       pipeline.addLast("stringDecoder", new StringDecoder("UTF-8"));
 
       // Encoder
       pipeline.addLast("stringEncoder", new StringEncoder("UTF-8"));
 
-      // Set up the default event pipeline.
+      // Set up the handler
       final GPointsServerHandler handler = new GPointsServerHandler(this);
       pipeline.addLast("handler", handler);
 
 
-      //      // Configure the pipeline factory.
-      //      bootstrap.setPipelineFactory(new GPointsServerPipelineFactory());
-
       // Bind and start to accept incoming connections.
-      bootstrap.bind(new InetSocketAddress(_port));
-
-      return handler;
+      bootstrap.bind(new InetSocketAddress(port));
    }
 
 
@@ -128,26 +122,6 @@ public class GPointsServer
    void channelClosed(final Channel channel,
                       final int sessionID) {
       logInfo("RemoteAddress=" + channel.getRemoteAddress() + ", Session=" + sessionID + " closed.");
-
-      //      synchronized (_propertyChangeListeners) {
-      //         final Iterator<Entry<PropertyChangeListenerKey, PropertyChangeListenerData>> iterator = _propertyChangeListeners.entrySet().iterator();
-      //         while (iterator.hasNext()) {
-      //            final Entry<PropertyChangeListenerKey, PropertyChangeListenerData> entry = iterator.next();
-      //            final PropertyChangeListenerKey listenerKey = entry.getKey();
-      //
-      //            final int listenerSessionID = listenerKey._sessionID;
-      //            if (listenerSessionID == sessionID) {
-      //               final PropertyChangeListenerData listenerData = entry.getValue();
-      //
-      //               logInfo("  Removing listener for session=" + sessionID + ", listenerID=" + listenerKey._subscriptionID
-      //                       + ", propertyName=\"" + listenerData._propertyName + "\"");
-      //
-      //               listenerData._model.removePropertyChangeListener(listenerData._propertyName, listenerData._listener);
-      //
-      //               iterator.remove();
-      //            }
-      //         }
-      //      }
    }
 
 
@@ -164,7 +138,6 @@ public class GPointsServer
 
       final String pointsCloudDirectoryName = args[0];
       final int port = (args.length >= 2) ? Integer.parseInt(args[1]) : 8000;
-
 
       new GPointsServer(port, pointsCloudDirectoryName, true);
    }

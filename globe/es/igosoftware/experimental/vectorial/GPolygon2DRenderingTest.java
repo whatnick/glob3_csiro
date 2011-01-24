@@ -52,7 +52,7 @@ public class GPolygon2DRenderingTest {
 
 
       final GAxisAlignedRectangle region = ((GAxisAlignedRectangle) centerBounds(multipleOfSmallestDimention(polygonsBounds),
-               polygonsBounds._center));
+               polygonsBounds.getCenter()));
       final String directoryName = "render";
       final boolean renderLODIgnores = true;
       final float borderWidth = 0.0001f;
@@ -98,7 +98,7 @@ public class GPolygon2DRenderingTest {
 
 
    private static <VectorT extends IVector<VectorT, ?>> GAxisAlignedOrthotope<VectorT, ?> multipleOfSmallestDimention(final GAxisAlignedOrthotope<VectorT, ?> bounds) {
-      final VectorT extent = bounds._extent;
+      final VectorT extent = bounds.getCenter();
 
       double smallestExtension = Double.POSITIVE_INFINITY;
       for (byte i = 0; i < bounds.dimensions(); i++) {

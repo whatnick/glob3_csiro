@@ -92,7 +92,7 @@ class GPolygon2DRenderUnit
          if (attributes._renderLODIgnores || attributes._debugLODRendering) {
             final Color color = attributes._debugLODRendering ? Color.RED : attributes._lodColor;
 
-            final IVector2<?> projectedCenter = nodeBounds._center.sub(region._lower).scale(scale);
+            final IVector2<?> projectedCenter = nodeBounds.getCenter().sub(region._lower).scale(scale);
             setPixel(renderedImage, projectedCenter, color);
          }
 
@@ -235,7 +235,7 @@ class GPolygon2DRenderUnit
          if (attributes._renderLODIgnores || attributes._debugLODRendering) {
             final Color color = attributes._debugLODRendering ? Color.MAGENTA : attributes._lodColor;
 
-            final IVector2<?> projectedCenter = geometryBounds._center.sub(region._lower).scale(scale);
+            final IVector2<?> projectedCenter = geometryBounds.getCenter().sub(region._lower).scale(scale);
             setPixel(renderedImage, projectedCenter, color);
          }
 

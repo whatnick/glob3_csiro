@@ -97,7 +97,7 @@ IGOLIBS=../igolibs/libs
 # Don't use MToolkit
 export AWT_TOOLKIT=XToolkit
 
-export CLASSPATH=${IGOLIBS}:../igolibs/:../3d/:../dmvc/:.
+export CLASSPATH=${IGOLIBS}:../igolibs/:../3d/:../dmvc/:../euclid/:.
 export CLASSPATH=${CLASSPATH}:../dmvc/libs/netty-3.1.5.GA/netty-3.1.5.GA.jar
 export CLASSPATH=${CLASSPATH}:${IGOLIBS}/bsh/bsh-2.0b4.jar
 export CLASSPATH=${CLASSPATH}:../globe/libs/gson-1.6/gson-1.6.jar
