@@ -1,6 +1,6 @@
 
 
-package es.igosoftware.dmvc.codec;
+package es.igosoftware.globe.server.experimental.points;
 
 import java.io.StreamCorruptedException;
 
@@ -10,30 +10,21 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.frame.FrameDecoder;
 
 import es.igosoftware.io.GIOUtils;
-import es.igosoftware.protocol.GProtocolMultiplexor;
 
 
-public class GDProtocolObjectDecoder
+public class GPointsProtocolDecoder
          extends
             FrameDecoder {
 
-   private final int                  _maxObjectSize;
-   private final GProtocolMultiplexor _multiplexor;
+   private final int _maxObjectSize;
 
 
-   public GDProtocolObjectDecoder(final GProtocolMultiplexor multiplexor) {
-      this(1048576, multiplexor);
-   }
-
-
-   public GDProtocolObjectDecoder(final int maxObjectSize,
-                                  final GProtocolMultiplexor multiplexor) {
+   public GPointsProtocolDecoder(final int maxObjectSize) {
       if (maxObjectSize <= 0) {
          throw new IllegalArgumentException("_maxObjectSize: " + maxObjectSize);
       }
 
       _maxObjectSize = maxObjectSize;
-      _multiplexor = multiplexor;
    }
 
 
@@ -73,11 +64,10 @@ public class GDProtocolObjectDecoder
 
       if (compressedFlag) {
          final byte[] bytes = GIOUtils.uncompress(rawBytes);
-         return _multiplexor.createObject(bytes);
+         return new String(bytes, "UTF-8");
       }
 
-      return _multiplexor.createObject(rawBytes);
+      return new String(rawBytes, "UTF-8");
    }
-
 
 }

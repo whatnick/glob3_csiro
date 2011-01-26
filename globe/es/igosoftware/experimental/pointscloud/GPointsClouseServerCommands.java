@@ -1,6 +1,6 @@
 
 
-package es.igosoftware.io.pointscloud;
+package es.igosoftware.experimental.pointscloud;
 
 public class GPointsClouseServerCommands {
    public static final String CLOSE_COMMAND      = "close";
