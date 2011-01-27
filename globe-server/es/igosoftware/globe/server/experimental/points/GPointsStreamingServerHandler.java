@@ -31,23 +31,21 @@ import es.igosoftware.euclid.pointscloud.octree.GPCLeafNode;
 import es.igosoftware.euclid.pointscloud.octree.GPCNode;
 import es.igosoftware.euclid.pointscloud.octree.GPCPointsCloud;
 import es.igosoftware.euclid.vector.IVector3;
+import es.igosoftware.experimental.pointscloud.GPointsClouseServerCommands;
 import es.igosoftware.io.GIOUtils;
-import es.igosoftware.io.pointscloud.GPointsClouseServerCommands;
 
 
 @ChannelPipelineCoverage("all")
-public class GPointsServerHandler
+public class GPointsStreamingServerHandler
          extends
             SimpleChannelUpstreamHandler {
+   private static final boolean         LOG_REQUESTS = true;
 
 
-   private static final boolean LOG_REQUESTS = true;
+   private final GPointsStreamingServer _server;
 
 
-   private final GPointsServer  _server;
-
-
-   GPointsServerHandler(final GPointsServer server) {
+   GPointsStreamingServerHandler(final GPointsStreamingServer server) {
       _server = server;
    }
 
@@ -113,7 +111,7 @@ public class GPointsServerHandler
       else {
          requestError(e, request);
       }
-      final int TODO;
+      final int __Diego_at_work;
 
    }
 
@@ -212,15 +210,6 @@ public class GPointsServerHandler
    }
 
 
-   //   @Override
-   //   public final void channelOpen(final ChannelHandlerContext ctx,
-   //                                 final ChannelStateEvent e) throws Exception {
-   //      super.channelOpen(ctx, e);
-   //
-   //      final ChannelPipeline pipeline = e.getChannel().getPipeline();
-   //   }
-
-
    private Map<String, Object> convertToJSON(final GAxisAlignedOrthotope<IVector3<?>, ?> box) {
       final Map<String, Object> result = new HashMap<String, Object>();
       result.put("lower", convertToJSON(box._lower));
@@ -250,7 +239,7 @@ public class GPointsServerHandler
 
       final Channel channel = e.getChannel();
       channel.write(jsonResponse);
-      channel.write("\n");
+      //      channel.write("\n");
    }
 
 
@@ -286,6 +275,15 @@ public class GPointsServerHandler
    }
 
 
+   //   @Override
+   //   public final void channelOpen(final ChannelHandlerContext ctx,
+   //                                 final ChannelStateEvent e) throws Exception {
+   //      super.channelOpen(ctx, e);
+   //
+   //      final ChannelPipeline pipeline = e.getChannel().getPipeline();
+   //   }
+
+
    @Override
    public final void exceptionCaught(final ChannelHandlerContext ctx,
                                      final ExceptionEvent e) {
@@ -298,5 +296,4 @@ public class GPointsServerHandler
       _server.logInfo("Closing " + channel);
       channel.close();
    }
-
 }

@@ -11,16 +11,12 @@ import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
-import org.jboss.netty.handler.codec.frame.DelimiterBasedFrameDecoder;
-import org.jboss.netty.handler.codec.frame.Delimiters;
-import org.jboss.netty.handler.codec.string.StringDecoder;
-import org.jboss.netty.handler.codec.string.StringEncoder;
 
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GLoggerObject;
 
 
-public class GPointsServer
+public class GPointsStreamingServer
          extends
             GLoggerObject {
 
@@ -28,9 +24,9 @@ public class GPointsServer
    final File            _pointsCloudsDirectory;
 
 
-   public GPointsServer(final int port,
-                        final String pointsCloudsDirectoryName,
-                        final boolean verbose) {
+   public GPointsStreamingServer(final int port,
+                                 final String pointsCloudsDirectoryName,
+                                 final boolean verbose) {
       GAssert.isPositive(port, "port");
       GAssert.notNull(pointsCloudsDirectoryName, "pointsCloudsDirectoryName");
 
@@ -40,6 +36,29 @@ public class GPointsServer
       _pointsCloudsDirectory = initializePointsCloudsDirectory(pointsCloudsDirectoryName);
 
       start(port);
+   }
+
+
+   @Override
+   public String logName() {
+      return "GPointsServer";
+   }
+
+
+   @Override
+   public boolean logVerbose() {
+      return _verbose;
+   }
+
+
+   private File initializePointsCloudsDirectory(final String pointsCloudsDirectoryName) {
+      final File pointsCloudsDirectory = new File(pointsCloudsDirectoryName);
+
+      if (!pointsCloudsDirectory.exists()) {
+         throw new RuntimeException("Invalid pointsCloudsDirectoryName (" + pointsCloudsDirectory.getAbsolutePath() + ")");
+      }
+
+      return pointsCloudsDirectory;
    }
 
 
@@ -54,15 +73,19 @@ public class GPointsServer
 
       final ChannelPipeline pipeline = bootstrap.getPipeline();
 
-      // Decoders
-      pipeline.addLast("frameDecoder", new DelimiterBasedFrameDecoder(256, Delimiters.lineDelimiter()));
-      pipeline.addLast("stringDecoder", new StringDecoder("UTF-8"));
+      //      // Decoders
+      //      pipeline.addLast("frameDecoder", new DelimiterBasedFrameDecoder(256, Delimiters.lineDelimiter()));
+      //      pipeline.addLast("stringDecoder", new StringDecoder("UTF-8"));
+      //
+      //      // Encoder
+      //      pipeline.addLast("stringEncoder", new StringEncoder("UTF-8"));
 
-      // Encoder
-      pipeline.addLast("stringEncoder", new StringEncoder("UTF-8"));
+
+      pipeline.addLast("encoder", new GPointsProtocolEncoder(512));
+      pipeline.addLast("decoder", new GPointsProtocolDecoder(512 * 1024));
 
       // Set up the handler
-      final GPointsServerHandler handler = new GPointsServerHandler(this);
+      final GPointsStreamingServerHandler handler = new GPointsStreamingServerHandler(this);
       pipeline.addLast("handler", handler);
 
 
@@ -71,14 +94,15 @@ public class GPointsServer
    }
 
 
-   private File initializePointsCloudsDirectory(final String pointsCloudsDirectoryName) {
-      final File pointsCloudsDirectory = new File(pointsCloudsDirectoryName);
+   void channelConnected(final Channel channel,
+                         final int sessionID) {
+      logInfo("RemoteAddress=" + channel.getRemoteAddress() + ", Session=" + sessionID + " connected.");
+   }
 
-      if (!pointsCloudsDirectory.exists()) {
-         throw new RuntimeException("Invalid pointsCloudsDirectoryName (" + pointsCloudsDirectory.getAbsolutePath() + ")");
-      }
 
-      return pointsCloudsDirectory;
+   void channelClosed(final Channel channel,
+                      final int sessionID) {
+      logInfo("RemoteAddress=" + channel.getRemoteAddress() + ", Session=" + sessionID + " closed.");
    }
 
 
@@ -101,30 +125,6 @@ public class GPointsServer
    }
 
 
-   @Override
-   public String logName() {
-      return "GPointsServer";
-   }
-
-
-   @Override
-   public boolean logVerbose() {
-      return _verbose;
-   }
-
-
-   void channelConnected(final Channel channel,
-                         final int sessionID) {
-      logInfo("RemoteAddress=" + channel.getRemoteAddress() + ", Session=" + sessionID + " connected.");
-   }
-
-
-   void channelClosed(final Channel channel,
-                      final int sessionID) {
-      logInfo("RemoteAddress=" + channel.getRemoteAddress() + ", Session=" + sessionID + " closed.");
-   }
-
-
    @SuppressWarnings("unused")
    public static void main(final String[] args) {
       System.out.println("GPointsServer 0.1");
@@ -132,15 +132,13 @@ public class GPointsServer
 
 
       if ((args.length < 1) || (args.length > 2)) {
-         System.err.println("Usage: " + GPointsServer.class.getSimpleName() + " pointsCloudDirectoryName [<port>]");
+         System.err.println("Usage: " + GPointsStreamingServer.class.getSimpleName() + " pointsCloudDirectoryName [<port>]");
          return;
       }
 
       final String pointsCloudDirectoryName = args[0];
       final int port = (args.length >= 2) ? Integer.parseInt(args[1]) : 8000;
 
-      new GPointsServer(port, pointsCloudDirectoryName, true);
+      new GPointsStreamingServer(port, pointsCloudDirectoryName, true);
    }
-
-
 }
