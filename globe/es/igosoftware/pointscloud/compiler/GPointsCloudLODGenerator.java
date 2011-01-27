@@ -167,8 +167,7 @@ public class GPointsCloudLODGenerator
 
       private void save(final String outputDirectoryName,
                         final IVector3<?> referencePoint) throws IOException {
-         final File outputFile = new File(new File(outputDirectoryName), _id + ".tile");
-         outputFile.getParentFile().mkdirs();
+         final File outputFile = new File(new File(outputDirectoryName), "tile-" + _id + ".points");
 
          final String outputFileName = outputFile.getPath();
 
@@ -449,8 +448,7 @@ public class GPointsCloudLODGenerator
 
 
       try {
-         // octree.save(_outputDirectoryName);
-         saveOctree(octreeRepresentation.get());
+         saveSerializedOctree(octreeRepresentation.get());
       }
       catch (final IOException e) {
          e.printStackTrace();
@@ -606,7 +604,7 @@ public class GPointsCloudLODGenerator
    }
 
 
-   private void saveOctree(final GPCPointsCloud pointsCloud) throws IOException {
+   private void saveSerializedOctree(final GPCPointsCloud pointsCloud) throws IOException {
       ObjectOutputStream output = null;
       try {
          final String fileName = _outputDirectoryName + "/tree.object.gz";
