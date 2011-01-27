@@ -1,5 +1,3 @@
-
-
 package es.unex.s3xtante.modules.sextante.bindings;
 
 import java.awt.Component;
@@ -16,6 +14,7 @@ import es.unex.s3xtante.tables.Tables;
 import es.unex.sextante.core.GeoAlgorithm;
 import es.unex.sextante.core.ObjectAndDescription;
 import es.unex.sextante.core.OutputObjectsSet;
+import es.unex.sextante.dataObjects.I3DRasterLayer;
 import es.unex.sextante.dataObjects.IRasterLayer;
 import es.unex.sextante.dataObjects.ITable;
 import es.unex.sextante.dataObjects.IVectorLayer;
@@ -30,11 +29,14 @@ public class WWPostProcessTask
             Runnable {
 
    private final OutputObjectsSet m_Output;
+   private final boolean          m_bShowResultsDialog;
 
 
-   public WWPostProcessTask(final GeoAlgorithm algorithm) {
+   public WWPostProcessTask(final GeoAlgorithm algorithm,
+                            final boolean bShowResultsDialog) {
 
       m_Output = algorithm.getOutputObjects();
+      m_bShowResultsDialog = bShowResultsDialog;
 
    }
 
@@ -62,16 +64,18 @@ public class WWPostProcessTask
             final GGlobeRasterLayer rl = (GGlobeRasterLayer) layer.getBaseDataObject();
             final Model model = ((WWGUIFactory) SextanteGUI.getGUIFactory()).getGlobeModel();
             model.getLayers().add(rl);
-            //SextanteGUI.getInputFactory().addDataObject(layer);
-            //S3xtanteApp.updateLayersPanel();
+         }
+         if (object instanceof I3DRasterLayer) {
+            /*final WWRasterLayer layer = (WWRasterLayer) object;
+            final GGlobeRasterLayer rl = (GGlobeRasterLayer) layer.getBaseDataObject();
+            final Model model = ((WWGUIFactory) SextanteGUI.getGUIFactory()).getGlobeModel();
+            model.getLayers().add(rl);*/
          }
          else if (object instanceof IVectorLayer) {
             final IVectorLayer layer = (IVectorLayer) object;
             final IGlobeVectorLayer vl = (IGlobeVectorLayer) layer.getBaseDataObject();
             final Model model = ((WWGUIFactory) SextanteGUI.getGUIFactory()).getGlobeModel();
             model.getLayers().add(vl);
-            //SextanteGUI.getInputFactory().addDataObject(layer);
-            //S3xtanteApp.updateLayersPanel();
          }
          else if (object instanceof ITable) {
             final WWTable table = (WWTable) object;
@@ -98,7 +102,7 @@ public class WWPostProcessTask
 
       }
 
-      if (bShowAdditionalPanel) {
+      if (bShowAdditionalPanel && m_bShowResultsDialog) {
          AdditionalResults.showPanel();
       }
 

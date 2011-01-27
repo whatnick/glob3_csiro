@@ -11,5 +11,11 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/euclid"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/globe"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/s3xtante"/>
+	<classpathentry kind="lib" path="/globe/libs/jogl/gluegen-rt.jar"/>
+	<classpathentry kind="lib" path="/globe/libs/jogl/jogl.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="globe/libs/jogl"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

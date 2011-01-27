@@ -5,7 +5,7 @@ import java.io.File;
 
 import javax.swing.JFrame;
 
-import es.unex.meigas.core.gis.GISConnection;
+import es.unex.meigas.core.gis.IGISConnection;
 import es.unex.meigas.equations.Equations;
 import es.unex.meigas.extBase.IMeigasExtension;
 import es.unex.meigas.extCalculateVolume.CalculateVolumeExtension;
@@ -38,7 +38,7 @@ public class Meigas {
    "es.unex.meigas.extSpeciesEditor.SpeciesEditorExtension", "es.unex.meigas.extOperations.PerformOperationExtension"*/
 
    //private static IMeigasExtension[] m_Extensions;
-   private static GISConnection     m_GISConnection;
+   private static IGISConnection    m_GISConnection;
    private static Frame             m_MainFrame;
    private static SpeciesCatalog    m_SpeciesCatalog;
    private static Equations         m_Equations;
@@ -84,12 +84,26 @@ public class Meigas {
    public static void initialize() {
 
       m_SpeciesCatalog = new SpeciesCatalog();
-      m_GISConnection = new GISConnection();
+      //m_GISConnection = new IGISConnection();
       m_Equations = new Equations();
       String sFile = Meigas.getDataFolder() + File.separator + "data" + File.separator + "eq.csv";
       m_Equations.open(sFile);
       sFile = Meigas.getDataFolder() + File.separator + "data" + File.separator + "species.txt";
       m_SpeciesCatalog.open(sFile);
+
+   }
+
+
+   public static void setGISConnection(final IGISConnection gisConnection) {
+
+      m_GISConnection = gisConnection;
+
+   }
+
+
+   public static IGISConnection getGISConnection() {
+
+      return m_GISConnection;
 
    }
 
@@ -121,11 +135,5 @@ public class Meigas {
       return m_DasocraticProject;
    }
 
-
-   public static GISConnection getGIS() {
-
-      return m_GISConnection;
-
-   }
 
 }

@@ -1,11 +1,10 @@
-
-
 package es.unex.s3xtante.modules.sextante.bindings;
 
 import javax.swing.JDialog;
 
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.globe.GField;
+import es.unex.sextante.core.AnalysisExtent;
 import es.unex.sextante.core.OutputFactory;
 import es.unex.sextante.dataObjects.IRasterLayer;
 import es.unex.sextante.dataObjects.ITable;
@@ -14,7 +13,6 @@ import es.unex.sextante.exceptions.UnsupportedOutputChannelException;
 import es.unex.sextante.gui.core.DefaultTaskMonitor;
 import es.unex.sextante.outputs.FileOutputChannel;
 import es.unex.sextante.outputs.IOutputChannel;
-import es.unex.sextante.rasterWrappers.GridExtent;
 
 
 public class WWOutputFactory
@@ -48,7 +46,7 @@ public class WWOutputFactory
    @Override
    public IRasterLayer getNewRasterLayer(final String sName,
                                          final int iDataType,
-                                         final GridExtent extent,
+                                         final AnalysisExtent extent,
                                          final int iBands,
                                          final IOutputChannel channel,
                                          final Object crs) throws UnsupportedOutputChannelException {

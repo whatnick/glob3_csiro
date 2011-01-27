@@ -1,5 +1,3 @@
-
-
 package es.unex.s3xtante.modules.sextante.bindings;
 
 import es.unex.sextante.core.GeoAlgorithm;
@@ -11,9 +9,10 @@ public class WWPostProcessTaskFactory
             IPostProcessTaskFactory {
 
    @Override
-   public Runnable getPostProcessTask(final GeoAlgorithm alg) {
+   public Runnable getPostProcessTask(final GeoAlgorithm alg,
+                                      final boolean bShowResultsDialog) {
 
-      return new WWPostProcessTask(alg);
+      return new WWPostProcessTask(alg, bShowResultsDialog);
 
    }
 

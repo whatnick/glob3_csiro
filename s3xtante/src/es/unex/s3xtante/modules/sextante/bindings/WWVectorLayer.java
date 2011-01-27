@@ -48,17 +48,21 @@ import es.unex.s3xtante.utils.ProjectionUtils;
 import es.unex.sextante.dataObjects.AbstractVectorLayer;
 import es.unex.sextante.dataObjects.IFeatureIterator;
 import es.unex.sextante.dataObjects.IVectorLayer;
+import es.unex.sextante.dataObjects.vectorFilters.IVectorLayerFilter;
 
 
 public class WWVectorLayer
          extends
             AbstractVectorLayer {
 
-   private String      m_sFilename;
-   private String      m_sName;
-   private GProjection m_CRS;
+   private String                              m_sFilename;
+   private String                              m_sName;
+   private GProjection                         m_CRS;
 
-   private GField[]    _fields;
+   private GField[]                            _fields;
+
+   private WWFeatureIterator                   m_Iter;
+   private final ArrayList<IVectorLayerFilter> m_Filters = new ArrayList<IVectorLayerFilter>();
 
 
    public void create(final IGlobeVectorLayer layer) {
@@ -114,22 +118,6 @@ public class WWVectorLayer
 
 
    @Override
-   public IFeatureIterator iterator() {
-
-      if (m_BaseDataObject != null) {
-         if (m_BaseDataObject instanceof IGlobeVectorLayer) {
-            return new WWFeatureIterator(((IGlobeVectorLayer) m_BaseDataObject).getFeatures());
-         }
-         return new WWFeatureIterator(m_BaseDataObject);
-      }
-
-      return null;
-
-
-   }
-
-
-   @Override
    public String getFieldName(final int i) {
       return _fields[i].getName();
    }
@@ -147,23 +135,23 @@ public class WWVectorLayer
    }
 
 
-   @Override
-   @SuppressWarnings("unchecked")
-   public int getShapesCount() {
-
-      if (m_BaseDataObject instanceof ArrayList) {
-         final ArrayList<Feature> list = (ArrayList<Feature>) m_BaseDataObject;
-         return list.size();
-      }
-      else if (m_BaseDataObject instanceof IGlobeVectorLayer) {
-         final Feature[] features = ((IGlobeVectorLayer) m_BaseDataObject).getFeatures();
-         return features.length;
-      }
-      else {
-         return 0;
-      }
-
-   }
+   //   @Override
+   //   @SuppressWarnings("unchecked")
+   //   public int getShapesCount() {
+   //
+   //      if (m_BaseDataObject instanceof ArrayList) {
+   //         final ArrayList<Feature> list = (ArrayList<Feature>) m_BaseDataObject;
+   //         return list.size();
+   //      }
+   //      else if (m_BaseDataObject instanceof IGlobeVectorLayer) {
+   //         final Feature[] features = ((IGlobeVectorLayer) m_BaseDataObject).getFeatures();
+   //         return features.length;
+   //      }
+   //      else {
+   //         return 0;
+   //      }
+   //
+   //   }
 
 
    public int getShapeType(final Geometry geom) {
@@ -392,5 +380,41 @@ public class WWVectorLayer
 
    }
 
+
+   @Override
+   protected IFeatureIterator createIterator() {
+
+      if (m_Iter == null) {
+         if (m_BaseDataObject instanceof IGlobeVectorLayer) {
+            final IGlobeVectorLayer layer = (IGlobeVectorLayer) m_BaseDataObject;
+            m_Iter = new WWFeatureIterator(layer.getFeatures(), m_Filters);
+         }
+         else {
+            m_Iter = new WWFeatureIterator();
+         }
+      }
+
+      return m_Iter.getNewInstance();
+
+
+   }
+
+
+   @Override
+   public void addFilter(final IVectorLayerFilter filter) {
+
+      m_Filters.add(filter);
+      m_Iter = null;
+
+   }
+
+
+   @Override
+   public void removeFilters() {
+
+      m_Filters.clear();
+      m_Iter = null;
+
+   }
 
 }

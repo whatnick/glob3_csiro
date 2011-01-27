@@ -1,5 +1,3 @@
-
-
 package es.unex.s3xtante.modules.sextante.bindings;
 
 import java.awt.geom.Rectangle2D;
@@ -16,8 +14,8 @@ import es.igosoftware.globe.layers.ESRIAsciiFileTools;
 import es.igosoftware.globe.layers.GGlobeRasterLayer;
 import es.igosoftware.globe.layers.RasterGeodata;
 import es.unex.s3xtante.utils.ProjectionUtils;
+import es.unex.sextante.core.AnalysisExtent;
 import es.unex.sextante.dataObjects.AbstractRasterLayer;
-import es.unex.sextante.rasterWrappers.GridExtent;
 
 
 public class WWRasterLayer
@@ -30,7 +28,7 @@ public class WWRasterLayer
    private String              m_sFilename;
    private Raster              m_Raster;
 
-   private GridExtent          m_LayerExtent;
+   private AnalysisExtent      m_LayerExtent;
 
    private double              m_dNoDataValue;
    private String              m_sName;
@@ -38,7 +36,7 @@ public class WWRasterLayer
 
    public void create(final String name,
                       final String filename,
-                      final GridExtent ge,
+                      final AnalysisExtent ae,
                       int dataType,
                       final int numBands,
                       final GProjection crs) {
@@ -54,13 +52,13 @@ public class WWRasterLayer
          dataType = DataBuffer.TYPE_FLOAT;
       }
 
-      System.out.println(ge.getNX());
-      System.out.println(ge.getNY());
-      m_Raster = RasterFactory.createBandedRaster(dataType, ge.getNX(), ge.getNY(), numBands, null);
+      System.out.println(ae.getNX());
+      System.out.println(ae.getNY());
+      m_Raster = RasterFactory.createBandedRaster(dataType, ae.getNX(), ae.getNY(), numBands, null);
 
       m_sFilename = filename;
       m_sName = name;
-      m_LayerExtent = ge;
+      m_LayerExtent = ae;
       m_dNoDataValue = DEFAULT_NO_DATA_VALUE;
 
    }
@@ -72,49 +70,16 @@ public class WWRasterLayer
       m_CRS = layer.getRasterGeodata()._crs;
       m_Raster = layer.getRaster();
       final RasterGeodata extent = layer.getRasterGeodata();
-      m_LayerExtent = new GridExtent();
+      m_LayerExtent = new AnalysisExtent();
 
-      m_LayerExtent.setXRange(extent._xllcorner, extent._xllcorner + extent._cols * extent._cellsize);
-      m_LayerExtent.setYRange(extent._yllcorner, extent._yllcorner + extent._rows * extent._cellsize);
       m_LayerExtent.setCellSize(extent._cellsize);
+      m_LayerExtent.setXRange(extent._xllcorner, extent._xllcorner + extent._cols * extent._cellsize, true);
+      m_LayerExtent.setYRange(extent._yllcorner, extent._yllcorner + extent._rows * extent._cellsize, true);
+
 
       m_sName = layer.getName();
 
       m_dNoDataValue = layer.getNoDataValue();
-
-   }
-
-
-   @Override
-   public void fitToGridExtent(final GridExtent gridExtent) {
-
-      if (gridExtent != null) {
-         if (gridExtent != m_LayerExtent) {
-            final WritableRaster raster = RasterFactory.createBandedRaster(getDataType(), gridExtent.getNX(), gridExtent.getNY(),
-                     getBandsCount(), null);
-
-            this.setWindowExtent(gridExtent);
-            for (int x = 0; x < gridExtent.getNX(); x++) {
-               for (int y = 0; y < gridExtent.getNY(); y++) {
-                  for (int i = 0; i < getBandsCount(); i++) {
-                     raster.setSample(x, y, i, this.getCellValueAsDouble(x, y, i));
-                  }
-               }
-            }
-
-            m_Raster = raster;
-            m_LayerExtent = gridExtent;
-
-            /*final RasterGeodata extent = new RasterGeodata(m_LayerExtent.getXMin(), m_LayerExtent.getYMin(),
-                     m_LayerExtent.getCellSize(), m_LayerExtent.getNY(), m_LayerExtent.getNX(),
-                     ProjectionUtils.getDefaultProjection());*/
-
-            final RasterGeodata extent = new RasterGeodata(Math.toRadians(m_LayerExtent.getXMin()),
-                     Math.toRadians(m_LayerExtent.getYMin()), Math.toRadians(m_LayerExtent.getCellSize()), m_LayerExtent.getNY(),
-                     m_LayerExtent.getNX(), ProjectionUtils.getDefaultProjection());
-            m_BaseDataObject = new GGlobeRasterLayer(m_Raster, extent);
-         }
-      }
 
    }
 
@@ -163,7 +128,7 @@ public class WWRasterLayer
 
 
    @Override
-   public GridExtent getLayerGridExtent() {
+   public AnalysisExtent getLayerGridExtent() {
 
       return m_LayerExtent;
 
