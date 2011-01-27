@@ -55,7 +55,7 @@ public class GProtocolMultiplexor {
    }
 
 
-   public byte[] getProtocolBytes(final IProtocolObject object) {
+   public final byte[] getProtocolBytes(final IProtocolObject object) {
 
       DataOutputStream output = null;
       try {
@@ -93,7 +93,7 @@ public class GProtocolMultiplexor {
    }
 
 
-   public IProtocolObject createObject(final DataInputStream input) {
+   public final IProtocolObject createObject(final DataInputStream input) {
       try {
          final byte classID = input.readByte();
 
@@ -125,7 +125,7 @@ public class GProtocolMultiplexor {
    }
 
 
-   public IProtocolObject createObject(final byte[] bytes) {
+   public final IProtocolObject createObject(final byte[] bytes) {
       DataInputStream input = null;
       try {
          final ByteArrayInputStream buffer = new ByteArrayInputStream(bytes);
@@ -144,10 +144,6 @@ public class GProtocolMultiplexor {
             instance = constructor.newInstance(this);
          }
 
-         //         final IProtocolObject instance = klass.newInstance();
-
-         //         final byte[] bytesSansHeader = new byte[bytes.length - 1];
-         //         System.arraycopy(bytes, 1, bytesSansHeader, 0, bytesSansHeader.length);
          instance.initializeFromProtocolBytes(bytes, 1);
          return instance;
       }

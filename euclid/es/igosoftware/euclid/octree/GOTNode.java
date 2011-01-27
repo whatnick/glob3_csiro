@@ -101,7 +101,7 @@ public abstract class GOTNode
          return Byte.toString(myId);
       }
 
-      return parentId + "/" + myId;
+      return parentId + "-" + myId;
    }
 
 

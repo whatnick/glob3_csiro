@@ -132,7 +132,7 @@ public final class GSGPointsNode
 
 
    String getPointsFileName() {
-      return _layer.getPointsCloudName() + "/" + _id + ".tile";
+      return _layer.getPointsCloudName() + "/tile-" + _id + ".points";
    }
 
 

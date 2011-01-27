@@ -13,4 +13,6 @@ export ARCHITECTURE="32"
 #export EXTRA_JAVAVM_ARG="-server -XX:+DoEscapeAnalysis"
 #export JAVAVM="/home/dgd/Desktop/jdk1.6.0_19/bin/java"
 
-./runjava.sh es.igosoftware.globe.server.experimental.points.GPointsServer $*
+export EXTRA_CLASSPATH="../euclid:../euclid/libs/jna.jar"
+
+../dmvc/runjava.sh es.igosoftware.experimental.pointscloud.client.GPointsStreamingClient $*

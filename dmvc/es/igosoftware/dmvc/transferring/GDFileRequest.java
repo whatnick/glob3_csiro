@@ -11,15 +11,14 @@ import java.io.Serializable;
 public class GDFileRequest
          implements
             Serializable {
+   private static final long serialVersionUID = 1L;
 
-   private final String _fileName;
+   private final String      _fileName;
 
 
    public GDFileRequest(final String fileName) {
       _fileName = fileName;
    }
-
-   private static final long serialVersionUID = 1L;
 
 
    public String getFileName() {

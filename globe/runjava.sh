@@ -99,14 +99,15 @@ export CLASSPATH=${CLASSPATH}:../../GLOB3-Repository/glob3/igolibs/
 export CLASSPATH=${CLASSPATH}:../../GLOB3-Repository/glob3/euclid/
 export CLASSPATH=${CLASSPATH}:../../GLOB3-Repository/glob3/euclid/libs/jna.jar
 export CLASSPATH=${CLASSPATH}:../../GLOB3-Repository/glob3/globe/
-export CLASSPATH=${CLASSPATH}:../ww/src/
+#export CLASSPATH=${CLASSPATH}:../ww/src/
 export CLASSPATH=${CLASSPATH}:${LIBS}/substance6.0/substance.jar
 export CLASSPATH=${CLASSPATH}:${LIBS}/substance6.0/trident.jar
 export CLASSPATH=${CLASSPATH}:${LIBS}/miglayout/miglayout-3.7.3.1-swing.jar
-export CLASSPATH=${CLASSPATH}:../dmvc/libs/netty-3.1.5.GA/netty-3.1.5.GA.jar
+export CLASSPATH=${CLASSPATH}:../../GLOB3-Repository/glob3/dmvc/libs/netty-3.1.5.GA/netty-3.1.5.GA.jar
 export CLASSPATH=${CLASSPATH}:${LIBS}/jogl/gluegen-rt.jar
 export CLASSPATH=${CLASSPATH}:${LIBS}/jogl/jogl.jar
 export CLASSPATH=${CLASSPATH}:${LIBS}/worldwind.jar
+export CLASSPATH=${CLASSPATH}:${LIBS}/gson-1.6/gson-1.6.jar
 
 if [ "$EXTRA_CLASSPATH" != "" ] ; then
     export CLASSPATH=${CLASSPATH}:${EXTRA_CLASSPATH}

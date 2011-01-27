@@ -381,4 +381,39 @@ public class GIOUtils {
    }
 
 
+   public static byte[] getBytesFromFile(final File file) throws IOException {
+      InputStream is = null;
+      try {
+         is = new FileInputStream(file);
+
+         // Get the size of the file
+         final long length = file.length();
+
+         if (length > Integer.MAX_VALUE) {
+            throw new IOException("file too large");
+         }
+
+         // Create the byte array to hold the data
+         final byte[] bytes = new byte[(int) length];
+
+         // Read in the bytes
+         int offset = 0;
+         int numRead = 0;
+         while ((offset < bytes.length) && ((numRead = is.read(bytes, offset, bytes.length - offset)) >= 0)) {
+            offset += numRead;
+         }
+
+         // Ensure all the bytes have been read in
+         if (offset < bytes.length) {
+            throw new IOException("Could not completely read file " + file.getName());
+         }
+
+         return bytes;
+      }
+      finally {
+         gentlyClose(is);
+      }
+   }
+
+
 }
