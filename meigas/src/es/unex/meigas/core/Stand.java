@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import com.vividsolutions.jts.geom.Envelope;
 
 import es.unex.meigas.core.parameters.MeigasNumericalValue;
+import es.unex.meigas.core.parameters.MeigasPolygonValue;
 import es.unex.meigas.core.parameters.MeigasStringValue;
 
 public class Stand
@@ -41,6 +42,7 @@ public class Stand
       m_Parameters.addParameter(new MeigasStringValue(NORTHERN_LIMIT, "Norte"));
       m_Parameters.addParameter(new MeigasStringValue(EASTERN_LIMIT, "Este"));
       m_Parameters.addParameter(new MeigasStringValue(WESTERN_LIMIT, "Oeste"));
+      m_Parameters.addParameter(new MeigasPolygonValue(POLYGON, "Polígono de contorno"));
    }
 
 

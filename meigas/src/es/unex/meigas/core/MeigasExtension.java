@@ -15,6 +15,7 @@ import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GPair;
+import es.unex.meigas.globe.GlobeGISConnection;
 import es.unex.meigas.gui.MeigasGUI;
 
 public class MeigasExtension
@@ -72,7 +73,11 @@ public class MeigasExtension
    @Override
    public void initialize(final IGlobeApplication application) {
 
+      //TODO: pasar application a meigas para que se comunique con el globe
+
       Meigas.initialize();
+
+      gisConnection = new GlobeGISConnection(application);
 
    }
 

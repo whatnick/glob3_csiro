@@ -1,5 +1,3 @@
-
-
 package es.unex.s3xtante.modules.sextante.bindings;
 
 import java.util.ArrayList;
@@ -9,6 +7,7 @@ import es.igosoftware.globe.IGlobeVectorLayer;
 import es.unex.s3xtante.tables.Tables;
 import es.unex.sextante.core.AbstractInputFactory;
 import es.unex.sextante.core.NamedExtent;
+import es.unex.sextante.dataObjects.I3DRasterLayer;
 import es.unex.sextante.dataObjects.IDataObject;
 import es.unex.sextante.dataObjects.ITable;
 import gov.nasa.worldwind.Model;
@@ -107,7 +106,7 @@ public class WWInputFactory
    @Override
    public void close(final String sName) {
 
-      // ///TODO
+   // ///TODO
 
    }
 
@@ -118,6 +117,13 @@ public class WWInputFactory
       return null;
       //return (IDataObject) FileTools.openFile(sFilename);
 
+   }
+
+
+   @Override
+   public I3DRasterLayer[] get3DRasterLayers() {
+      // TODO Auto-generated method stub
+      return null;
    }
 
 }
