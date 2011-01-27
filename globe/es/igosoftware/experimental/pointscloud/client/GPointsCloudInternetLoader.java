@@ -1,6 +1,6 @@
 
 
-package es.igosoftware.experimental.pointscloud;
+package es.igosoftware.experimental.pointscloud.client;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -10,6 +10,7 @@ import java.util.Arrays;
 
 import com.google.gson.Gson;
 
+import es.igosoftware.experimental.pointscloud.GPointsClouseServerCommands;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.io.ILoader;
 import es.igosoftware.io.pointscloud.IPointsCloudLoader;
@@ -19,9 +20,12 @@ public class GPointsCloudInternetLoader
          implements
             IPointsCloudLoader {
 
-   private final String _host;
-   private final int    _port;
-   private Session      _session;
+   private static final Gson GSON = new Gson();
+
+
+   private final String      _host;
+   private final int         _port;
+   private Session           _session;
 
 
    public GPointsCloudInternetLoader(final String serverName,
@@ -46,8 +50,8 @@ public class GPointsCloudInternetLoader
       }
 
 
-      private void sendCommand(final String command) throws IOException {
-         final byte[] bytes = command.getBytes("UTF-8");
+      private void sendRequest(final String request) throws IOException {
+         final byte[] bytes = request.getBytes("UTF-8");
 
          final byte[] compressed = GIOUtils.compress(bytes);
 
@@ -63,7 +67,7 @@ public class GPointsCloudInternetLoader
       }
 
 
-      private String readLine() throws IOException {
+      private String readResponse() throws IOException {
 
          final int sizeAndCompressedFlag = _is.readInt();
 
@@ -122,11 +126,10 @@ public class GPointsCloudInternetLoader
    public String[] getPointsCloudsNames() throws IOException {
       final Session session = getSession();
       try {
-         session.sendCommand(GPointsClouseServerCommands.DIR_COMMAND);
+         session.sendRequest(GPointsClouseServerCommands.DIR_COMMAND);
 
-         final String answer = session.readLine();
-         final Gson gson = new Gson();
-         return gson.fromJson(answer, String[].class);
+         final String answer = session.readResponse();
+         return GSON.fromJson(answer, String[].class);
       }
       finally {
          takeSession(session);

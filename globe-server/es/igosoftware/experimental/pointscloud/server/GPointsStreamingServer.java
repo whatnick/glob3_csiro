@@ -1,6 +1,6 @@
 
 
-package es.igosoftware.globe.server.experimental.points;
+package es.igosoftware.experimental.pointscloud.server;
 
 import java.io.File;
 import java.io.FilenameFilter;
