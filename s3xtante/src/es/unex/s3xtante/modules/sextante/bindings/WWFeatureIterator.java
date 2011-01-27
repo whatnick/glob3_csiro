@@ -1,3 +1,5 @@
+
+
 package es.unex.s3xtante.modules.sextante.bindings;
 
 import java.awt.geom.Rectangle2D;
@@ -55,6 +57,7 @@ public class WWFeatureIterator
    }
 
 
+   @Override
    public boolean hasNext() {
 
       return m_iCardinality > m_iSelectedIndex;
@@ -62,6 +65,7 @@ public class WWFeatureIterator
    }
 
 
+   @Override
    public IFeature next() throws IteratorException {
 
       try {
@@ -85,9 +89,12 @@ public class WWFeatureIterator
    }
 
 
-   public void close() {}
+   @Override
+   public void close() {
+   }
 
 
+   @Override
    public int getFeatureCount() {
 
       return m_iCardinality;
