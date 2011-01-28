@@ -34,14 +34,14 @@
 */
 
 
-package es.igosoftware.pointscloud.scenegraph;
+package es.igosoftware.experimental.pointscloud.rendering.scenegraph;
 
 import es.igosoftware.euclid.colors.GColorF;
 import es.igosoftware.euclid.colors.IColor;
 import es.igosoftware.euclid.pointscloud.octree.GPCLeafNode;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.IVector3;
-import es.igosoftware.pointscloud.GPointsCloudLayer;
+import es.igosoftware.experimental.pointscloud.rendering.GPointsCloudLayer;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.utils.GPositionBox;
 import es.igosoftware.utils.GWWUtils;

@@ -34,7 +34,7 @@
 */
 
 
-package es.igosoftware.pointscloud.compiler;
+package es.igosoftware.experimental.pointscloud;
 
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;

@@ -1,6 +1,6 @@
 
 
-package es.igosoftware.experimental.pointscloud;
+package es.igosoftware.experimental.pointscloud.loading;
 
 import java.io.IOException;
 import java.util.List;

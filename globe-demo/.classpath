@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/globe"/>
 	<classpathentry kind="lib" path="/globe/libs/worldwind.jar" sourcepath="/home/oliver/Desktop/IGO-Repository/ww"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/globe-points-streaming"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
