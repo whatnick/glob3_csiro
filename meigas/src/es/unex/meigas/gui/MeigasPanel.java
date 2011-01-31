@@ -1,5 +1,3 @@
-
-
 package es.unex.meigas.gui;
 
 import info.clearthought.layout.TableLayout;
@@ -40,10 +38,10 @@ import es.unex.meigas.core.DasocraticElement;
 import es.unex.meigas.core.DasocraticProject;
 import es.unex.meigas.core.FixedRadiusPlot;
 import es.unex.meigas.core.Meigas;
-import es.unex.meigas.core.MeigasExtension;
 import es.unex.meigas.core.Plot;
 import es.unex.meigas.core.Stand;
 import es.unex.meigas.core.Tree;
+import es.unex.meigas.core.gis.IGISConnection;
 import es.unex.meigas.extBase.IMeigasExtension;
 
 
@@ -493,16 +491,19 @@ public class MeigasPanel
 
 
    public void updateGeoPosition(final TreePath path) {
-      if (path != null) {
+
+      final IGISConnection gisConnection = Meigas.getGISConnection();
+
+      if ((path != null) && (gisConnection != null)) {
          final DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
          final DasocraticElement element = ((DasocraticElement) node.getUserObject());
          if (element instanceof Tree) {
             final Coordinate coord = ((Coordinate) element.getParameterValue(Tree.COORD));
-            MeigasExtension.getGisConnection().zoomToPosition(coord.x, coord.y, 1000);
+            gisConnection.zoomToPosition(coord.x, coord.y, 1000);
          }
          if (element instanceof Plot) {
             final Coordinate coord = ((Coordinate) element.getParameterValue(Plot.COORD));
-            MeigasExtension.getGisConnection().zoomToPosition(coord.x, coord.y, 1000);
+            gisConnection.zoomToPosition(coord.x, coord.y, 1000);
          }
       }
    }
