@@ -1,6 +1,6 @@
 
 
-package es.igosoftware.experimental.pointscloud.server;
+package es.igosoftware.experimental.pointscloud.loading;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,7 +16,6 @@ import es.igosoftware.dmvc.model.GDModel;
 import es.igosoftware.dmvc.model.IDProperty;
 import es.igosoftware.dmvc.server.GDServer;
 import es.igosoftware.euclid.pointscloud.octree.GPCPointsCloud;
-import es.igosoftware.experimental.pointscloud.model.IPointsStreamingServer;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.util.GAssert;
 

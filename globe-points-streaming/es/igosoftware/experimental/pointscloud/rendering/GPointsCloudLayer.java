@@ -34,10 +34,12 @@
 */
 
 
-package es.igosoftware.pointscloud;
+package es.igosoftware.experimental.pointscloud.rendering;
 
 import es.igosoftware.euclid.pointscloud.octree.GPCPointsCloud;
 import es.igosoftware.euclid.projection.GProjection;
+import es.igosoftware.experimental.pointscloud.rendering.scenegraph.GSGGroupNode;
+import es.igosoftware.experimental.pointscloud.rendering.scenegraph.GSGPointsNode;
 import es.igosoftware.globe.GField;
 import es.igosoftware.globe.GVectorLayerType;
 import es.igosoftware.globe.IGlobeApplication;
@@ -47,8 +49,6 @@ import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.globe.layers.Feature;
 import es.igosoftware.globe.layers.GVectorRenderer;
 import es.igosoftware.io.ILoader;
-import es.igosoftware.pointscloud.scenegraph.GSGGroupNode;
-import es.igosoftware.pointscloud.scenegraph.GSGPointsNode;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GHolder;
 import es.igosoftware.util.GIntHolder;

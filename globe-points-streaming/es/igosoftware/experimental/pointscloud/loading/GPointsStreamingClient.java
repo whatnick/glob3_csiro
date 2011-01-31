@@ -1,12 +1,11 @@
 
 
-package es.igosoftware.experimental.pointscloud.client;
+package es.igosoftware.experimental.pointscloud.loading;
 
 import java.io.IOException;
 import java.util.List;
 
 import es.igosoftware.dmvc.client.GDClient;
-import es.igosoftware.experimental.pointscloud.model.IPointsStreamingServer;
 
 
 public class GPointsStreamingClient {

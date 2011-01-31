@@ -34,7 +34,7 @@
 */
 
 
-package es.igosoftware.pointscloud.scenegraph;
+package es.igosoftware.experimental.pointscloud.rendering.scenegraph;
 
 import java.awt.Color;
 
@@ -42,7 +42,7 @@ import es.igosoftware.euclid.pointscloud.octree.GPCInnerNode;
 import es.igosoftware.euclid.pointscloud.octree.GPCLeafNode;
 import es.igosoftware.euclid.pointscloud.octree.GPCNode;
 import es.igosoftware.euclid.projection.GProjection;
-import es.igosoftware.pointscloud.GPointsCloudLayer;
+import es.igosoftware.experimental.pointscloud.rendering.GPointsCloudLayer;
 import gov.nasa.worldwind.render.DrawContext;
 
 

@@ -34,13 +34,13 @@
 */
 
 
-package es.igosoftware.pointscloud.scenegraph;
+package es.igosoftware.experimental.pointscloud.rendering.scenegraph;
 
 import java.awt.Color;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 import es.igosoftware.euclid.projection.GProjection;
-import es.igosoftware.pointscloud.GPointsCloudLayer;
+import es.igosoftware.experimental.pointscloud.rendering.GPointsCloudLayer;
 import es.igosoftware.util.GMath;
 import es.igosoftware.utils.GGlobeStateKeyCache;
 import es.igosoftware.utils.GPositionBox;

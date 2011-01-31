@@ -15,4 +15,4 @@ export ARCHITECTURE="32"
 
 export EXTRA_CLASSPATH="../euclid:../euclid/libs/jna.jar"
 
-../dmvc/runjava.sh es.igosoftware.experimental.pointscloud.client.GPointsStreamingClient $*
+../dmvc/runjava.sh es.igosoftware.experimental.pointscloud.GPointsStreamingClient $*

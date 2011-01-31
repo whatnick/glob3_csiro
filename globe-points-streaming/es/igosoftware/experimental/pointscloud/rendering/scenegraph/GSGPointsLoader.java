@@ -34,7 +34,7 @@
 */
 
 
-package es.igosoftware.pointscloud.scenegraph;
+package es.igosoftware.experimental.pointscloud.rendering.scenegraph;
 
 import java.awt.Color;
 import java.io.BufferedInputStream;
@@ -49,11 +49,11 @@ import java.nio.FloatBuffer;
 import es.igosoftware.euclid.colors.GColorF;
 import es.igosoftware.euclid.colors.GColorI;
 import es.igosoftware.euclid.vector.GVector3F;
+import es.igosoftware.experimental.pointscloud.rendering.GPointsCloudLayer;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.io.ILoader;
 import es.igosoftware.io.ILoader.ErrorType;
 import es.igosoftware.io.ILoader.IHandler;
-import es.igosoftware.pointscloud.GPointsCloudLayer;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.GUtils;
 import es.igosoftware.utils.GWWUtils;

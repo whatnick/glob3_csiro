@@ -34,7 +34,7 @@
 */
 
 
-package es.igosoftware.pointscloud;
+package es.igosoftware.experimental.pointscloud.rendering;
 
 import java.awt.Color;
 import java.awt.Component;
