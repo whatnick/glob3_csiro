@@ -1,3 +1,5 @@
+
+
 package es.unex.meigas.gui;
 
 import info.clearthought.layout.TableLayout;
@@ -29,6 +31,8 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import com.vividsolutions.jts.geom.Coordinate;
+
 import es.unex.meigas.core.AdministrativeUnit;
 import es.unex.meigas.core.ConcentricPlot;
 import es.unex.meigas.core.Cruise;
@@ -36,10 +40,12 @@ import es.unex.meigas.core.DasocraticElement;
 import es.unex.meigas.core.DasocraticProject;
 import es.unex.meigas.core.FixedRadiusPlot;
 import es.unex.meigas.core.Meigas;
+import es.unex.meigas.core.MeigasExtension;
 import es.unex.meigas.core.Plot;
 import es.unex.meigas.core.Stand;
 import es.unex.meigas.core.Tree;
 import es.unex.meigas.extBase.IMeigasExtension;
+
 
 public class MeigasPanel
          extends
@@ -486,6 +492,22 @@ public class MeigasPanel
    }
 
 
+   public void updateGeoPosition(final TreePath path) {
+      if (path != null) {
+         final DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+         final DasocraticElement element = ((DasocraticElement) node.getUserObject());
+         if (element instanceof Tree) {
+            final Coordinate coord = ((Coordinate) element.getParameterValue(Tree.COORD));
+            MeigasExtension.getGisConnection().zoomToPosition(coord.x, coord.y, 1000);
+         }
+         if (element instanceof Plot) {
+            final Coordinate coord = ((Coordinate) element.getParameterValue(Plot.COORD));
+            MeigasExtension.getGisConnection().zoomToPosition(coord.x, coord.y, 1000);
+         }
+      }
+   }
+
+
    private void addElement(final Class clazz) {
 
       DasocraticElement element = null;
@@ -509,9 +531,9 @@ public class MeigasPanel
 
       if (!(m_ActiveElement instanceof DasocraticProject)) {
          final Class[] classes = element.getParentElementClass();
-         for (int i = 0; i < classes.length; i++) {
-            parentElement = m_ActiveElement.getParentOfType(classes[i]);
-            parentPath = getParentPathOfType(classes[i]);
+         for (final Class classe : classes) {
+            parentElement = m_ActiveElement.getParentOfType(classe);
+            parentPath = getParentPathOfType(classe);
             if ((parentElement != null) && (parentPath != null)) {
                break;
             }
@@ -596,6 +618,7 @@ public class MeigasPanel
             }
             if (m_DEPanel.checkDataAndUpdate()) {
                updateSelection(path);
+               updateGeoPosition(path);
             }
             else {
                JOptionPane.showMessageDialog(null, "Parámetros inválidos", "Aviso", JOptionPane.WARNING_MESSAGE);
