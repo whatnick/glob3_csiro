@@ -15,7 +15,8 @@ import es.igosoftware.experimental.wms.GWMSLayerData;
 public class GDatosForTablaFactory {
 
    //private final GDatosForTabla datosForTabla;
-   private static final String unselectedStyle = "          ...";
+   //private static final String unselectedStyle = "          ...";
+   private static final String unselectedStyle = "(double click)";
 
 
    public GDatosForTablaFactory() {
