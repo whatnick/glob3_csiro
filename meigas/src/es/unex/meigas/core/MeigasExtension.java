@@ -1,3 +1,5 @@
+
+
 package es.unex.meigas.core;
 
 import java.awt.Component;
@@ -18,12 +20,13 @@ import es.igosoftware.util.GPair;
 import es.unex.meigas.globe.GlobeGISConnection;
 import es.unex.meigas.gui.MeigasGUI;
 
+
 public class MeigasExtension
          extends
             GAbstractGlobeModule {
 
 
-   private GlobeGISConnection _gisConnection;
+   private static GlobeGISConnection gisConnection;
 
 
    @Override
@@ -77,11 +80,10 @@ public class MeigasExtension
    public void initialize(final IGlobeApplication application) {
 
       //TODO: pasar application a meigas para que se comunique con el globe
-
+      Meigas.setDataFolder(System.getProperty("user.dir"));
       Meigas.initialize();
 
-      _gisConnection = new GlobeGISConnection(application);
-
+      setGisConnection(new GlobeGISConnection(application));
    }
 
 
@@ -102,5 +104,16 @@ public class MeigasExtension
 
 
    }
+
+
+   public static GlobeGISConnection getGisConnection() {
+      return gisConnection;
+   }
+
+
+   public static void setGisConnection(final GlobeGISConnection gisConnection) {
+      MeigasExtension.gisConnection = gisConnection;
+   }
+
 
 }
