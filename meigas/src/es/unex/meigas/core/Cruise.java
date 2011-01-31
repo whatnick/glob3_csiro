@@ -102,7 +102,7 @@ public class Cruise
 
 
    @Override
-   public String[] getReport() {
+   public String[] getErrorsReport() {
 
       return null;
 

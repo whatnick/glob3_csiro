@@ -9,8 +9,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.HashMap;
-import java.util.Set;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
@@ -19,16 +17,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.category.DefaultCategoryDataset;
 
 import es.unex.meigas.core.DasocraticElement;
 import es.unex.meigas.core.Specie;
 import es.unex.meigas.core.Tree;
-import es.unex.meigas.core.parameters.DistributionStats;
 
 public class DistributionPanel
          extends
@@ -42,9 +36,9 @@ public class DistributionPanel
    private JComboBox               jComboBoxParameter;
    private JLabel                  jLabelParameter;
    private JLabel                  jLabelInterval;
-   private JFreeChart              chart;
+   //private JFreeChart              chart;
    private ChartPanel              jPanelChart = null;
-   private DefaultCategoryDataset  dataset;
+   //private DefaultCategoryDataset  dataset;
    private final DasocraticElement m_Element;
 
 
@@ -62,7 +56,7 @@ public class DistributionPanel
 
    protected void initGUI() {
 
-      dataset = new DefaultCategoryDataset();
+      //dataset = new DefaultCategoryDataset();
       m_iInterval = 5;
 
       final TableLayout thisLayout = new TableLayout(new double[][] { { TableLayout.FILL },
@@ -88,9 +82,9 @@ public class DistributionPanel
          {
             jComboBoxSpecie = new JComboBox();
             jPanelSettings.add(jComboBoxSpecie, "2, 1");
-            final ComboBoxModel jComboBoxSpecieModel = new DefaultComboBoxModel(m_Element.getSpeciesNames());
+            final ComboBoxModel jComboBoxSpecieModel = new DefaultComboBoxModel(m_Element.getSpecies());
             jComboBoxSpecie.setModel(jComboBoxSpecieModel);
-            jComboBoxSpecie.insertItemAt("Todas", 0);
+            jComboBoxSpecie.insertItemAt(Specie.ALL_SPECIES, 0);
             jComboBoxSpecie.setSelectedIndex(0);
             jComboBoxSpecie.addItemListener(new ItemListener() {
                public void itemStateChanged(final ItemEvent e) {
@@ -106,8 +100,8 @@ public class DistributionPanel
             jLabelInterval.setText("Intervalo de clase");
          }
          {
-            final Set<String> names = Tree.getParametersDefinition().getParameterNames();
-            final ComboBoxModel jComboBoxParameterModel = new DefaultComboBoxModel(names.toArray(new String[0]));
+            final String[] names = Tree.getParametersDefinition().getParameterDescriptions();
+            final ComboBoxModel jComboBoxParameterModel = new DefaultComboBoxModel(names);
             jComboBoxParameter = new JComboBox();
             jComboBoxParameter.setModel(jComboBoxParameterModel);
             jComboBoxParameter.setSelectedIndex(0);
@@ -160,8 +154,10 @@ public class DistributionPanel
    public ChartPanel getChart() {
 
       if (jPanelChart == null) {
-         chart = ChartFactory.createBarChart("Valores por clase diamétrica", "Clase diamétrica", "", dataset,
-                  PlotOrientation.VERTICAL, true, false, false);
+         final Specie specie = (Specie) jComboBoxSpecie.getSelectedItem();
+         final String sParameterDescription = jComboBoxParameter.getSelectedItem().toString();
+         final String sParameterName = m_Element.getParameters().getParameterNameFromDescription(sParameterDescription);
+         final JFreeChart chart = DasocraticElementChartFactory.getChart(m_Element, specie, sParameterName, m_iInterval);
          jPanelChart = new ChartPanel(chart);
       }
       return jPanelChart;
@@ -212,34 +208,12 @@ public class DistributionPanel
 
    private void updateDataset() {
 
-      int i;
-      String sName;
-      final Object specie = jComboBoxSpecie.getSelectedItem();
-      final String sParameter = jComboBoxParameter.getSelectedItem().toString();
-      String sSpecie;
+      final Specie specie = (Specie) jComboBoxSpecie.getSelectedItem();
+      final String sParameterDescription = jComboBoxParameter.getSelectedItem().toString();
+      final String sParameterName = m_Element.getParameters().getParameterNameFromDescription(sParameterDescription);
+      final JFreeChart chart = DasocraticElementChartFactory.getChart(m_Element, specie, sParameterName, m_iInterval);
 
-      HashMap<String, DistributionStats[]> distributions;
-      final DistributionStats[] distribution;
-      if (specie.equals("Todas")) {
-         sSpecie = "Todas las especies";
-         distributions = m_Element.getDistributions(null);
-      }
-      else {
-         sSpecie = specie.toString();
-         distributions = m_Element.getDistributions((Specie) specie);
-      }
-
-      distribution = distributions.get(sParameter);
-
-
-      dataset.clear();
-
-      if (distribution != null) {
-         for (i = 0; i < distribution.length; i++) {
-            sName = Integer.toString((i) * m_iInterval) + "-" + Integer.toString((i + 1) * m_iInterval);
-            dataset.addValue(distribution[i].mean, sSpecie, sName);
-         }
-      }
+      getChart().setChart(chart);
 
    }
 

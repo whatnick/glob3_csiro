@@ -8,6 +8,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import es.unex.meigas.core.DasocraticElement;
+import es.unex.meigas.core.Specie;
 import es.unex.meigas.core.Tree;
 
 public class DasocraticElementPanel
@@ -34,7 +35,7 @@ public class DasocraticElementPanel
       m_MeigasPanel = panel;
 
       if (m_Element != null) {
-         m_Element.calculateParameters(null);
+         m_Element.calculateParameters(Specie.ALL_SPECIES);
       }
 
       initializeContent();

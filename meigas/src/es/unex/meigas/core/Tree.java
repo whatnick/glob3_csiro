@@ -90,11 +90,11 @@ public class Tree
 
 
    @Override
-   public String[] getSpeciesNames() {
+   public Specie[] getSpecies() {
 
-      final String[] species = new String[1];
+      final Specie[] species = new Specie[1];
 
-      final String specie = ((Specie) getParameterValue(SPECIE)).name;
+      final Specie specie = ((Specie) getParameterValue(SPECIE));
 
       species[0] = specie;
 
@@ -181,7 +181,7 @@ public class Tree
 
 
    @Override
-   public String[] getReport() {
+   public String[] getErrorsReport() {
 
       final ArrayList<String> list = new ArrayList<String>();
       final String[] errors = m_Parameters.getReport();

@@ -16,9 +16,6 @@ import javax.swing.JPanel;
 
 import es.unex.meigas.core.Meigas;
 import es.unex.meigas.core.NamedGeometry;
-import es.unex.meigas.dataObjects.IFeature;
-import es.unex.meigas.dataObjects.IFeatureIterator;
-import es.unex.meigas.dataObjects.IVectorLayer;
 import es.unex.meigas.exceptions.IteratorException;
 
 public class SelectGeometryDialog

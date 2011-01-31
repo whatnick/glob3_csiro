@@ -23,6 +23,9 @@ public class MeigasExtension
             GAbstractGlobeModule {
 
 
+   private GlobeGISConnection _gisConnection;
+
+
    @Override
    public String getDescription() {
 
@@ -77,7 +80,7 @@ public class MeigasExtension
 
       Meigas.initialize();
 
-      gisConnection = new GlobeGISConnection(application);
+      _gisConnection = new GlobeGISConnection(application);
 
    }
 

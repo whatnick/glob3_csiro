@@ -95,7 +95,7 @@ public class AdministrativeUnit
 
 
    @Override
-   public String[] getReport() {
+   public String[] getErrorsReport() {
 
       return null;
 

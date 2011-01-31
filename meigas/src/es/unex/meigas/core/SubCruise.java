@@ -70,7 +70,7 @@ public class SubCruise
 
 
    @Override
-   public String[] getReport() {
+   public String[] getErrorsReport() {
 
       return null;
 

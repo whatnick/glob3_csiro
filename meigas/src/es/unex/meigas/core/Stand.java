@@ -34,15 +34,16 @@ public class Stand
 
       m_Parameters.addParameter(new MeigasNumericalValue(AREA, "�rea", 0, Double.MAX_VALUE));
       m_Parameters.addParameter(new MeigasNumericalValue(MIN_AGE, "Edad mínima", 0, 200));
-      m_Parameters.addParameter(new MeigasNumericalValue(MAX_AGE, "Edad míxima", 0, 200));
+      m_Parameters.addParameter(new MeigasNumericalValue(MAX_AGE, "Edad máxima", 0, 200));
       m_Parameters.addParameter(new MeigasNumericalValue(MIN_ELEVATION, "Cota mínima", 0, 5000));
       m_Parameters.addParameter(new MeigasNumericalValue(MAX_ELEVATION, "Cota máxima", 0, 5000));
-      m_Parameters.addParameter(new MeigasStringValue(SITE_INDEX, "�ndice de estaci�n"));
-      m_Parameters.addParameter(new MeigasStringValue(SOUTHERN_LIMIT, "Sur"));
-      m_Parameters.addParameter(new MeigasStringValue(NORTHERN_LIMIT, "Norte"));
-      m_Parameters.addParameter(new MeigasStringValue(EASTERN_LIMIT, "Este"));
-      m_Parameters.addParameter(new MeigasStringValue(WESTERN_LIMIT, "Oeste"));
+      m_Parameters.addParameter(new MeigasStringValue(SITE_INDEX, "Índice de estación"));
+      m_Parameters.addParameter(new MeigasStringValue(SOUTHERN_LIMIT, "Límite Sur"));
+      m_Parameters.addParameter(new MeigasStringValue(NORTHERN_LIMIT, "Límite Norte"));
+      m_Parameters.addParameter(new MeigasStringValue(EASTERN_LIMIT, "Límite Este"));
+      m_Parameters.addParameter(new MeigasStringValue(WESTERN_LIMIT, "Límite Oeste"));
       m_Parameters.addParameter(new MeigasPolygonValue(POLYGON, "Polígono de contorno"));
+
    }
 
 
@@ -124,7 +125,7 @@ public class Stand
 
 
    @Override
-   public String[] getReport() {
+   public String[] getErrorsReport() {
 
       final ArrayList<String> list = new ArrayList<String>();
       final String[] errors = m_Parameters.getReport();
@@ -144,7 +145,7 @@ public class Stand
       dMin = ((Double) m_Parameters.getParameter(MIN_ELEVATION).getValue()).doubleValue();
       dMax = ((Double) m_Parameters.getParameter(MAX_ELEVATION).getValue()).doubleValue();
       if (dMin > dMax) {
-         list.add("La edad máxima es menor que la edad mínima");
+         list.add("La elevación máxima es menor que la edad mínima");
       }
 
       if (list.size() > 0) {
