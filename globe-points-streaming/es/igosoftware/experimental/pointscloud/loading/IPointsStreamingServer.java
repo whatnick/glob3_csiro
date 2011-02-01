@@ -53,12 +53,19 @@ public interface IPointsStreamingServer
    public GPCPointsCloud getPointsCloud(final String pointsCloudName);
 
 
-   public int loadPoints(final String pointsCloudName,
+   public int loadPoints(final int sessionID,
+                         final String pointsCloudName,
                          final String tileID,
                          final int wantedPoints,
                          final int priority);
 
 
-   public GPointsData poll(final int taskID);
+   //   public GPointsData poll(final int taskID);
 
+
+   public void cancel(final int taskID);
+
+
+   public void setPriority(final int taskID,
+                           final int priority);
 }

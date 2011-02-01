@@ -36,6 +36,8 @@
 
 package es.igosoftware.experimental.pointscloud.loading;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.List;
 
@@ -44,6 +46,7 @@ import es.igosoftware.euclid.pointscloud.octree.GPCInnerNode;
 import es.igosoftware.euclid.pointscloud.octree.GPCLeafNode;
 import es.igosoftware.euclid.pointscloud.octree.GPCNode;
 import es.igosoftware.euclid.pointscloud.octree.GPCPointsCloud;
+import es.igosoftware.util.GUtils;
 
 
 public class GPointsStreamingClient {
@@ -66,11 +69,21 @@ public class GPointsStreamingClient {
 
       final GDClient client = new GDClient(host, port, true);
 
-      //      final int sessionID = client.getSessionID();
+      final int sessionID = client.getSessionID();
       //      System.out.println("Session ID=" + sessionID);
 
       final IPointsStreamingServer server = (IPointsStreamingServer) client.getRootObject();
       System.out.println("Root Model=" + server);
+
+
+      server.addPropertyChangeListener("points_" + sessionID, new PropertyChangeListener() {
+         @Override
+         public void propertyChange(final PropertyChangeEvent evt) {
+            final GPointsData result = (GPointsData) evt.getNewValue();
+            System.out.println("Received " + result);
+         }
+      });
+
 
       final List<String> pointsCloudsNames = server.getPointsCloudsNames();
       System.out.println("PointsCloudsNames=" + pointsCloudsNames);
@@ -85,14 +98,26 @@ public class GPointsStreamingClient {
 
       final int wantedPoints = 22100 / 2;
       final int priority = 100;
-      final int taskID = server.loadPoints(pointsCloudName, leaf.getId(), wantedPoints, priority);
 
-      int loadedPoints = 0;
-      while (loadedPoints < wantedPoints) {
-         final GPointsData points = server.poll(taskID);
-         //         System.out.println("Received " + points.pointsCount() + " points");
-         loadedPoints += points.pointsCount();
-      }
+      final int taskID = server.loadPoints(sessionID, pointsCloudName, leaf.getId(), wantedPoints, priority);
+
+      //      int loadedPoints = 0;
+      //      while (loadedPoints < wantedPoints) {
+      //         final GPointsData points = server.poll(taskID);
+      //         //         System.out.println("Received " + points.pointsCount() + " points");
+      //         loadedPoints += points.pointsCount();
+      //      }
+      //
+      //
+      final int cancelableTaskID = server.loadPoints(sessionID, pointsCloudName, leaf.getId(), wantedPoints, priority + 1);
+
+      GUtils.delay(300);
+      server.cancel(cancelableTaskID);
+      //      if (server.poll(cancelableTaskID) != null) {
+      //         throw new RuntimeException("The poll must return null");
+      //      }
+
+
    }
 
 

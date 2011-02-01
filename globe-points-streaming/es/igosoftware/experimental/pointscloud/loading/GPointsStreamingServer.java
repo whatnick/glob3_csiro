@@ -47,9 +47,14 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.GZIPInputStream;
+
+import org.jboss.netty.channel.Channel;
 
 import es.igosoftware.dmvc.model.GDModel;
 import es.igosoftware.dmvc.model.IDProperty;
@@ -75,6 +80,7 @@ public class GPointsStreamingServer
    private final LinkedList<Task>                              _tasks             = new LinkedList<GPointsStreamingServer.Task>();
 
    private int                                                 TASK_ID_COUNTER    = 0;
+   private final Map<Integer, Long>                            _lastSends         = new HashMap<Integer, Long>();
 
    private final LRUCache<String, GPCPointsCloud, IOException> _pointsCloudCache;
 
@@ -107,6 +113,46 @@ public class GPointsStreamingServer
                      }
                   }
                });
+
+
+      initializeWorker();
+   }
+
+
+   private Thread initializeWorker() {
+
+      final Thread worker = new Thread() {
+         @Override
+         public void run() {
+            try {
+               while (true) {
+                  final Task task = selectTask();
+
+                  if (task == null) {
+                     Thread.sleep(150);
+                  }
+                  else {
+                     synchronized (_lastSends) {
+                        _lastSends.put(task._sessionID, System.currentTimeMillis());
+                     }
+                     final GPointsData result = task.execute();
+                     if (result != null) {
+                        firePropertyChange("points_" + task._sessionID, null, result);
+                     }
+                  }
+               }
+            }
+            catch (final InterruptedException e) {
+               // do nothing, just exit from run()
+            }
+         }
+      };
+
+      worker.setDaemon(true);
+      worker.setPriority(Thread.MAX_PRIORITY);
+      worker.start();
+
+      return worker;
    }
 
 
@@ -158,34 +204,15 @@ public class GPointsStreamingServer
    }
 
 
-   @SuppressWarnings("unused")
-   public static void main(final String[] args) {
-      System.out.println("GPointsStreamingServer 0.1");
-      System.out.println("--------------------------\n");
-
-
-      if ((args.length < 1) || (args.length > 2)) {
-         System.err.println("Usage: " + GPointsStreamingServer.class.getSimpleName() + " pointsCloudDirectoryName [<port>]");
-         return;
-      }
-
-      final String pointsCloudDirectoryName = args[0];
-      final int port = (args.length >= 2) ? Integer.parseInt(args[1]) : 8000;
-
-      final GPointsStreamingServer model = new GPointsStreamingServer(pointsCloudDirectoryName);
-
-      new GDServer(port, model, true);
-   }
-
-
    private class Task {
 
       private final String _pointsCloudName;
       private final String _tileID;
       private final int    _from;
       private final int    _to;
-      private final int    _priority;
+      private int          _priority;
       private final int    _taskID;
+      private final int    _sessionID;
 
 
       private Task(final String pointsCloudName,
@@ -193,17 +220,19 @@ public class GPointsStreamingServer
                    final int from,
                    final int to,
                    final int priority,
-                   final int taskID) {
+                   final int taskID,
+                   final int sessionID) {
          _pointsCloudName = pointsCloudName;
          _tileID = tileID;
          _from = from;
          _to = to;
          _priority = priority;
          _taskID = taskID;
+         _sessionID = sessionID;
       }
 
 
-      private GPointsData doIt() {
+      private GPointsData execute() {
          final GPCPointsCloud pointsCloud = getPointsCloud(_pointsCloudName);
          if (pointsCloud == null) {
             return null;
@@ -280,7 +309,8 @@ public class GPointsStreamingServer
 
 
    @Override
-   public int loadPoints(final String pointsCloudName,
+   public int loadPoints(final int sessionID,
+                         final String pointsCloudName,
                          final String tileID,
                          final int wantedPoints,
                          final int priority) {
@@ -292,7 +322,7 @@ public class GPointsStreamingServer
          while (from < wantedPoints) {
             final int to = Math.min(from + POINTS_GROUP_SIZE, wantedPoints) - 1;
 
-            _tasks.add(new Task(pointsCloudName, tileID, from, to, priority, taskID));
+            _tasks.add(new Task(pointsCloudName, tileID, from, to, priority, taskID, sessionID));
 
             from += POINTS_GROUP_SIZE;
          }
@@ -307,13 +337,36 @@ public class GPointsStreamingServer
    }
 
 
-   private Task selectTask(final int taskID) {
+   //   private Task selectTask(final int taskID) {
+   //      Task selectedTask = null;
+   //
+   //      synchronized (_tasks) {
+   //         for (final Task task : _tasks) {
+   //            if (task._taskID == taskID) {
+   //               if ((selectedTask == null) || (selectedTask._priority > task._priority)) {
+   //                  selectedTask = task;
+   //               }
+   //            }
+   //         }
+   //
+   //         if (selectedTask != null) {
+   //            _tasks.remove(selectedTask);
+   //         }
+   //      }
+   //
+   //      return selectedTask;
+   //   }
+
+
+   private Task selectTask() {
       Task selectedTask = null;
+
+      final long threshold = System.currentTimeMillis() - 150;
 
       synchronized (_tasks) {
          for (final Task task : _tasks) {
-            if (task._taskID == taskID) {
-               if ((selectedTask == null) || (selectedTask._priority > task._priority)) {
+            if ((selectedTask == null) || (selectedTask._priority > task._priority)) {
+               if (lastSend(task._sessionID) < threshold) {
                   selectedTask = task;
                }
             }
@@ -328,15 +381,89 @@ public class GPointsStreamingServer
    }
 
 
-   @Override
-   public GPointsData poll(final int taskID) {
-      final Task selectedTask = selectTask(taskID);
+   private long lastSend(final int sessionID) {
+      synchronized (_lastSends) {
+         final Long lastSend = _lastSends.get(sessionID);
+         if (lastSend == null) {
+            return Long.MIN_VALUE;
+         }
+         return lastSend;
+      }
+   }
 
-      if (selectedTask == null) {
-         return null;
+
+   @Override
+   public void cancel(final int taskID) {
+      synchronized (_tasks) {
+         final Iterator<Task> iterator = _tasks.iterator();
+         while (iterator.hasNext()) {
+            final Task task = iterator.next();
+            if (task._taskID == taskID) {
+               iterator.remove();
+            }
+         }
+      }
+   }
+
+
+   //   @Override
+   //   public GPointsData poll(final int taskID) {
+   //      final Task selectedTask = selectTask(taskID);
+   //
+   //      if (selectedTask == null) {
+   //         return null;
+   //      }
+   //
+   //      return selectedTask.execute();
+   //   }
+
+
+   @Override
+   public void setPriority(final int taskID,
+                           final int priority) {
+      synchronized (_tasks) {
+         for (final Task task : _tasks) {
+            if (task._taskID == taskID) {
+               task._priority = priority;
+            }
+         }
+      }
+   }
+
+
+   private void sessionClosed(final int sessionID) {
+      synchronized (_lastSends) {
+         _lastSends.remove(Integer.valueOf(sessionID));
+      }
+   }
+
+
+   @SuppressWarnings("unused")
+   public static void main(final String[] args) {
+      System.out.println("GPointsStreamingServer 0.1");
+      System.out.println("--------------------------\n");
+
+
+      if ((args.length < 1) || (args.length > 2)) {
+         System.err.println("Usage: " + GPointsStreamingServer.class + " pointsCloudDirectoryName [<port>]");
+         return;
       }
 
-      return selectedTask.doIt();
+      final String pointsCloudDirectoryName = args[0];
+      final int port = (args.length >= 2) ? Integer.parseInt(args[1]) : 8000;
+
+      final GPointsStreamingServer model = new GPointsStreamingServer(pointsCloudDirectoryName);
+
+      new GDServer(port, model, true) {
+         @Override
+         public void channelClosed(final Channel channel,
+                                   final int sessionID) {
+            super.channelClosed(channel, sessionID);
+
+            model.sessionClosed(sessionID);
+         }
+      };
    }
+
 
 }
