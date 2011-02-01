@@ -37,6 +37,7 @@
 package es.igosoftware.io.pointscloud;
 
 import java.io.IOException;
+import java.util.List;
 
 import es.igosoftware.io.ILoader;
 
@@ -45,6 +46,6 @@ public interface IPointsCloudLoader
          extends
             ILoader {
 
-   public String[] getPointsCloudsNames() throws IOException;
+   public List<String> getPointsCloudsNames() throws IOException;
 
 }

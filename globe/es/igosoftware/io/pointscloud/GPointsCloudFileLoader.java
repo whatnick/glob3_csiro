@@ -38,6 +38,7 @@ package es.igosoftware.io.pointscloud;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import es.igosoftware.io.GFileLoader;
 
@@ -59,8 +60,8 @@ public final class GPointsCloudFileLoader
 
 
    @Override
-   public String[] getPointsCloudsNames() {
-      final ArrayList<String> result = new ArrayList<String>();
+   public List<String> getPointsCloudsNames() {
+      final List<String> result = new ArrayList<String>();
 
       for (final File child : _rootDirectory.listFiles()) {
          if (child.isDirectory() && child.canRead()) {
@@ -71,7 +72,8 @@ public final class GPointsCloudFileLoader
          }
       }
 
-      return result.toArray(new String[] {});
+      //return result.toArray(new String[] {});
+      return result;
    }
 
 }
