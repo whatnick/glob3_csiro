@@ -12,7 +12,11 @@ public enum GWMSDefaultServers {
    PNOA("PNOA", "http://www.idee.es/wms/PNOA/PNOA", "", ""),
    CATASTRO("CATASTRO", "http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx", "", ""),
    NASA("NASA", "http://wms.jpl.nasa.gov/wms.cgi", "", ""),
-   DM_SOLUTIONS("DM SOLUTIONS", "http://www2.dmsolutions.ca/cgi-bin/mswms_gmap", "", "");
+   DM_SOLUTIONS("DM SOLUTIONS", "http://www2.dmsolutions.ca/cgi-bin/mswms_gmap", "", ""),
+   CLIMA_IBERIA("CLIMA_IBERIA", "http://www.opengis.uab.es/cgi-bin/iberia/Miramon5_0.cgi?", "", ""),
+   SIGPAC("SIGPAC", "http://wms.mapa.es/wms/wms.aspx?", "", ""),
+   IGN_CORINE("IGN_CORINE", "http://www.idee.es/wms/IGN-Corine/IGN-Corine?", "", ""),
+   IGN_IDEE("IGN_IDEE", "http://www.idee.es/wms/IDEE-Base/IDEE-Base?", "", "");
 
    //   private final String _name;
    //   private final String _URL;
