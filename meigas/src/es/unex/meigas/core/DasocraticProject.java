@@ -70,7 +70,7 @@ public class DasocraticProject
 
 
    @Override
-   public String[] getReport() {
+   public String[] getErrorsReport() {
 
       return null;
 

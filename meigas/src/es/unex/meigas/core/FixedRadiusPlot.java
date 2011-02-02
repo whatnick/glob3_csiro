@@ -52,7 +52,7 @@ public class FixedRadiusPlot
 
 
    @Override
-   public String[] getReport() {
+   public String[] getErrorsReport() {
 
       return m_Parameters.getReport();
 

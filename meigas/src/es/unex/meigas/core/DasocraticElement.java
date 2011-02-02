@@ -40,12 +40,12 @@ public abstract class DasocraticElement
 
    //TODO add errors
 
-   protected boolean m_bHasChanged = false;
-   protected boolean m_bCalculated = false;
-   protected Specie  m_CurrentSpecieForParameterCalculation;
+   protected boolean m_bHasChanged                          = false;
 
 
-   //protected Color m_Color;
+   protected boolean m_bCalculated                          = false;
+   protected Specie  m_CurrentSpecieForParameterCalculation = Specie.ALL_SPECIES;
+
 
    public abstract Rectangle2D getBoundingBox();
 
@@ -53,7 +53,7 @@ public abstract class DasocraticElement
    public abstract double getArea(); // in ha
 
 
-   public abstract String[] getReport();
+   public abstract String[] getErrorsReport();
 
 
    public DasocraticElement() {
@@ -70,15 +70,8 @@ public abstract class DasocraticElement
 
    public HashMap<String, DistributionStats[]> getDistributions(final Specie specie) {
 
-      if (!m_bCalculated) {
-         if (specie == null) {
-            if (m_CurrentSpecieForParameterCalculation == null) {
-               calculateParameters(specie);
-            }
-         }
-         else if (specie.equals(m_CurrentSpecieForParameterCalculation)) {
-            calculateParameters(specie);
-         }
+      if (!m_bCalculated || !m_CurrentSpecieForParameterCalculation.equals(specie)) {
+         calculateParameters(specie);
       }
       return m_Distributions;
 
@@ -316,7 +309,7 @@ public abstract class DasocraticElement
          if (project != null) {
             project.setHasChanged(bHasChanged);
          }
-         m_bCalculated = true;
+         m_bCalculated = false;
       }
 
 
@@ -351,26 +344,22 @@ public abstract class DasocraticElement
    }
 
 
-   public String[] getSpeciesNames() {
+   public Specie[] getSpecies() {
 
       int i, j;
-      final ArrayList list = new ArrayList();
-      String[] species;
-      String[] speciesArray;
+      final ArrayList<Specie> list = new ArrayList<Specie>();
+      Specie[] species;
 
       for (i = 0; i < m_Elements.size(); i++) {
-         species = (m_Elements.get(i)).getSpeciesNames();
+         species = (m_Elements.get(i)).getSpecies();
          for (j = 0; j < species.length; j++) {
             if (!list.contains(species[j])) {
-               list.add(new String(species[j]));
+               list.add(species[j]);
             }
          }
       }
 
-      speciesArray = new String[list.size()];
-      speciesArray = (String[]) list.toArray(speciesArray);
-
-      return speciesArray;
+      return list.toArray(new Specie[0]);
 
    }
 
@@ -530,7 +519,7 @@ public abstract class DasocraticElement
 
    public void calculateParameters(final Specie specie) {
 
-      m_CurrentSpecieForParameterCalculation = specie;
+      //m_CurrentSpecieForParameterCalculation = specie;
 
       m_bCalculated = true;
 
@@ -590,7 +579,7 @@ public abstract class DasocraticElement
 
       for (int i = 0; i < m_Elements.size(); i++) {
          final DasocraticElement child = m_Elements.get(i);
-         final HashMap<String, DistributionStats[]> distributions = child.getDistributions(m_CurrentSpecieForParameterCalculation);
+         final HashMap<String, DistributionStats[]> distributions = child.getDistributions(specie);
          final Set<String> distParams = m_Distributions.keySet();
          for (final String sName : distParams) {
             final DistributionStats[] childDistribution = distributions.get(sName);
