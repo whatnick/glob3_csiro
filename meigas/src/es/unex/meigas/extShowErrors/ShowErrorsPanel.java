@@ -102,7 +102,7 @@ public class ShowErrorsPanel
 
       for (i = 0; i < elements.size(); i++) {
          de = (DasocraticElement) elements.get(i);
-         errs = de.getReport();
+         errs = de.getErrorsReport();
          if (errs != null) {
             for (j = 0; j < errs.length; j++) {
                errors.add(errs[j]);

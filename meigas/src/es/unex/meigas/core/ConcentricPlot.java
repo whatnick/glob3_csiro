@@ -245,7 +245,7 @@ public class ConcentricPlot
 
 
    @Override
-   public String[] getReport() {
+   public String[] getErrorsReport() {
       // TODO Auto-generated method stub
       return null;
    }
