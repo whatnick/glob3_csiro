@@ -63,6 +63,20 @@ public class GLayerInfo
    }
 
 
+   public static List<ILayerInfo> createFromNames(final List<String> names) {
+      if (names == null) {
+         return null;
+      }
+
+      final ArrayList<ILayerInfo> result = new ArrayList<ILayerInfo>(names.size());
+      for (final String name : names) {
+         result.add(new GLayerInfo(name));
+      }
+
+      return result;
+   }
+
+
    private final String _name;
    private final Icon   _icon;
 

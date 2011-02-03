@@ -49,6 +49,7 @@ import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.globe.layers.Feature;
 import es.igosoftware.globe.layers.GVectorRenderer;
 import es.igosoftware.io.ILoader;
+import es.igosoftware.io.pointscloud.IPointsCloudLoader;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GHolder;
 import es.igosoftware.util.GIntHolder;
@@ -89,7 +90,7 @@ public final class GPointsCloudLayer
 
 
    private final String                _pointsCloudName;
-   private final ILoader               _loader;
+   private final IPointsCloudLoader    _loader;
 
    private final GHolder<GSGGroupNode> _rootNode          = new GHolder<GSGGroupNode>(null);
    private final GIntHolder            _pointsCount       = new GIntHolder(0);
@@ -124,7 +125,7 @@ public final class GPointsCloudLayer
 
 
    public GPointsCloudLayer(final String pointsCloudName,
-                            final ILoader loader) {
+                            final IPointsCloudLoader loader) {
       GAssert.notNull(pointsCloudName, "pointsCloudName");
       GAssert.notNull(loader, "loader");
 
@@ -397,7 +398,7 @@ public final class GPointsCloudLayer
 
 
    private void initializeWorkers() {
-      final int workersCount = Math.max(Runtime.getRuntime().availableProcessors() * 2, 2);
+      final int workersCount = Math.max(Runtime.getRuntime().availableProcessors(), 2);
       //final int workersCount = 1;
 
       final ThreadGroup group = new ThreadGroup("Node Workers Group");

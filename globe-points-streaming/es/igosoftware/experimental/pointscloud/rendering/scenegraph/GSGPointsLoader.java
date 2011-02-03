@@ -180,13 +180,9 @@ final class GSGPointsLoader {
          _loading = true;
       }
 
-      final int bytesPerPoint = BYTES_PER_VECTOR3F + //
-                                (_layer.hasColors() ? 4 : 0) + //
-                                (_layer.hasIntensities() ? 4 : 0) + //
-                                (_layer.hasNormals() ? BYTES_PER_VECTOR3F : 0);
 
       synchronized (this) {
-         final int bytesToLoad = _wantedPoints * bytesPerPoint;
+         final int bytesToLoad = _wantedPoints * _bytesPerPoint;
          _layer.getLoader().load(_node.getPointsFileName(), bytesToLoad, Math.round(_priority), createHandler());
       }
    }
@@ -455,25 +451,4 @@ final class GSGPointsLoader {
    }
 
 
-   private static int getNextLevel(final int pointsCount,
-                                   final int[] lodIndices) {
-      int bigggerIndexLessThanPointsCount = 0;
-      for (int i = 0; i < lodIndices.length - 1; i++) {
-         final int lodIndex = lodIndices[i];
-         if (lodIndex >= pointsCount) {
-            return lodIndex;
-         }
-         if (lodIndex >= bigggerIndexLessThanPointsCount) {
-            bigggerIndexLessThanPointsCount = i;
-         }
-      }
-
-      return lodIndices[lodIndices.length - 1];
-   }
-
-
-   public static void main(final String[] args) {
-      final int[] lodIndices = { 0, 4, 8, 16 };
-      System.out.println(getNextLevel(1, lodIndices));
-   }
 }
