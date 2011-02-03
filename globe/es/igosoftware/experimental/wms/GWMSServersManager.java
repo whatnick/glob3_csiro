@@ -23,6 +23,7 @@ import javax.xml.stream.XMLStreamException;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GLogger;
+import gov.nasa.worldwind.exception.WWRuntimeException;
 import gov.nasa.worldwind.ogc.wms.WMSCapabilities;
 import gov.nasa.worldwind.ogc.wms.WMSLayerCapabilities;
 import gov.nasa.worldwind.ogc.wms.WMSLayerStyle;
@@ -31,8 +32,13 @@ import gov.nasa.worldwind.wms.CapabilitiesRequest;
 
 public class GWMSServersManager {
 
-   private final static GLogger logger   = GLogger.instance();
-   private final static String  fileName = "data/wmsservers.dat";
+   private final static GLogger logger           = GLogger.instance();
+   private final static String  fileName         = "data/wmsservers.dat";
+
+   protected final static int   CONNECTION_OK    = 1;
+   protected final static int   INVALID_URL      = -1;
+   protected final static int   XML_PARSE_ERROR  = -2;
+   protected final static int   CONNECTION_ERROR = -3;
 
 
    //private final Set<GWMSServerData> _serversSet = new HashSet();
@@ -42,8 +48,7 @@ public class GWMSServersManager {
     * 
     */
    public GWMSServersManager() {
-      super();
-      // TODO load servers list from file
+
    }
 
 
@@ -53,6 +58,7 @@ public class GWMSServersManager {
 
 
    public static WMSCapabilities getCapabilitiesforServer(final GWMSServerData server) {
+
       return retrieveCapabilities(server.getURL());
    }
 
@@ -61,20 +67,28 @@ public class GWMSServersManager {
       try {
          final CapabilitiesRequest request = new CapabilitiesRequest(new URI(uRL));
          logger.info("GetCapabilities URI: " + request.getUri());
-         System.out.println();
+         //System.out.println();
          final WMSCapabilities caps = new WMSCapabilities(request);
          caps.parse();
+         //TODO comprobar que soporta EPSG_4326, y si no lanzar error
          return caps;
 
       }
       catch (final URISyntaxException e) {
-         e.printStackTrace();
+         logger.info("Connection ERROR: Invalid URL");
+         //e.printStackTrace();
       }
       catch (final MalformedURLException e) {
-         e.printStackTrace();
+         logger.info("Connection ERROR: Invalid URL");
+         //e.printStackTrace();
       }
       catch (final XMLStreamException e) {
-         e.printStackTrace();
+         logger.info("Connection ERROR: Invalid XML stream");
+         //e.printStackTrace();
+      }
+      catch (final WWRuntimeException e) {
+         logger.info("Server connection error");
+         //e.printStackTrace();
       }
 
       return null;
@@ -118,7 +132,8 @@ public class GWMSServersManager {
             return layersDataList;
          }
          catch (final XMLStreamException e) {
-            e.printStackTrace();
+            logger.info("Connection ERROR: invalid XML stream");
+            //e.printStackTrace();
          }
       }
 
