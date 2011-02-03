@@ -151,6 +151,9 @@ public abstract class GGlobeApplication
       //      System.setProperty("sun.java2d.noddraw", "true");
       //      System.setProperty("sun.java2d.opengl", "true");
 
+
+      UIManager.put("ClassLoader", GGlobeApplication.class.getClassLoader());
+
       JPopupMenu.setDefaultLightWeightPopupEnabled(false);
       ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
 
@@ -546,6 +549,8 @@ public abstract class GGlobeApplication
          invokeInEventThread(new Runnable() {
             @Override
             public void run() {
+               SwingUtilities.updateComponentTreeUI(GGlobeApplication.this);
+
                initGUI();
 
                IGlobeModule previousModule = null;
