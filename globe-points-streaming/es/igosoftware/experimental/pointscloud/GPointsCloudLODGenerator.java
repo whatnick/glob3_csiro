@@ -507,7 +507,7 @@ public class GPointsCloudLODGenerator
                }
             }
 
-            return GCollections.toArray(selectedIndices);
+            return GCollections.toIntArray(selectedIndices);
          }
       };
 

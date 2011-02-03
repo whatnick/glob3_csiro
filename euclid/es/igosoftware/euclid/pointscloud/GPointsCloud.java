@@ -272,7 +272,7 @@ public abstract class GPointsCloud
                }
             }
 
-            return GCollections.toArray(selectedIndices);
+            return GCollections.toIntArray(selectedIndices);
          }
       };
 

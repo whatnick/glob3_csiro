@@ -221,7 +221,7 @@ public class GProcessingTest
             //               System.out.println("OJO ! .. ELIMINADOS DUPLICADOS !!!");
             //            }
 
-            return GCollections.toArray(selectedIndices);
+            return GCollections.toIntArray(selectedIndices);
          }
       };
 

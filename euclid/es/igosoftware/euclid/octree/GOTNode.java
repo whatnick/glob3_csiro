@@ -109,7 +109,7 @@ public abstract class GOTNode
    public int[] getVerticesIndexes() {
       final List<Integer> list = new ArrayList<Integer>(getVerticesIndexesCount());
       putVerticesIndexesIn(list);
-      return GCollections.toArray(list);
+      return GCollections.toIntArray(list);
    }
 
 
@@ -126,7 +126,7 @@ public abstract class GOTNode
    public final int[] getVerticesIndexesInRegion(final IBounds3D<?> region) {
       final List<Integer> list = new ArrayList<Integer>();
       putRegionVerticesIndexesIn(region, list);
-      return GCollections.toArray(list);
+      return GCollections.toIntArray(list);
    }
 
 
@@ -135,7 +135,7 @@ public abstract class GOTNode
                                                     final GOTLeafNode excludedLeaf) {
       final List<Integer> list = new ArrayList<Integer>();
       putRegionVerticesIndexesIn(region, list, excludedLeaf);
-      return GCollections.toArray(list);
+      return GCollections.toIntArray(list);
    }
 
 

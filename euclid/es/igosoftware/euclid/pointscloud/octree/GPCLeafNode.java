@@ -99,7 +99,7 @@ public class GPCLeafNode
 
 
    public void setLodIndices(final List<Integer> lodIndices) {
-      _lodIndices = GCollections.toArray(lodIndices);
+      _lodIndices = GCollections.toIntArray(lodIndices);
    }
 
 

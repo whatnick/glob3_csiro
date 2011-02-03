@@ -832,8 +832,25 @@ public final class GCollections {
    }
 
 
-   public static int[] toArray(final List<Integer> list) {
+   public static int[] toIntArray(final List<Integer> list) {
+      if (list == null) {
+         return null;
+      }
+
       final int[] result = new int[list.size()];
+      for (int i = 0; i < result.length; i++) {
+         result[i] = list.get(i);
+      }
+      return result;
+   }
+
+
+   public static float[] toFloatArray(final List<Float> list) {
+      if (list == null) {
+         return null;
+      }
+
+      final float[] result = new float[list.size()];
       for (int i = 0; i < result.length; i++) {
          result[i] = list.get(i);
       }
@@ -867,7 +884,7 @@ public final class GCollections {
             resultL.add(i);
          }
       }
-      return toArray(resultL);
+      return toIntArray(resultL);
    }
 
 

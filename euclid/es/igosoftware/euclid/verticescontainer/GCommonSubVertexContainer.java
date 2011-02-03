@@ -70,7 +70,7 @@ OuterT extends IVertexContainer<VectorT, VertexT, ?>
 
    public GCommonSubVertexContainer(final OuterT outer,
                                     final List<Integer> indices) {
-      this(outer, GCollections.toArray(indices));
+      this(outer, GCollections.toIntArray(indices));
    }
 
 

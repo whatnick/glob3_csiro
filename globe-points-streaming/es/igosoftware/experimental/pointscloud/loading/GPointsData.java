@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import es.igosoftware.euclid.vector.IVector3;
+import es.igosoftware.util.GCollections;
 
 
 public class GPointsData
@@ -26,48 +27,18 @@ public class GPointsData
                final List<IVector3<?>> normals,
                final List<Integer> colors) {
       _points = toVectorsArray(points);
-      _intensities = toFloatArray(intensities);
+      _intensities = GCollections.toFloatArray(intensities);
       _normals = toVectorsArray(normals);
-      _colors = toIntArray(colors);
+      _colors = GCollections.toIntArray(colors);
    }
 
 
-   private int[] toIntArray(final List<Integer> ints) {
-      if ((ints == null) || ints.isEmpty()) {
+   private static IVector3<?>[] toVectorsArray(final List<IVector3<?>> vectors) {
+      if (vectors == null) {
          return null;
       }
 
-      final int[] result = new int[ints.size()];
-
-      for (int i = 0; i < result.length; i++) {
-         result[i] = ints.get(i);
-      }
-
-      return result;
-   }
-
-
-   private float[] toFloatArray(final List<Float> floats) {
-      if ((floats == null) || floats.isEmpty()) {
-         return null;
-      }
-
-      final float[] result = new float[floats.size()];
-
-      for (int i = 0; i < result.length; i++) {
-         result[i] = floats.get(i);
-      }
-
-      return result;
-   }
-
-
-   private IVector3<?>[] toVectorsArray(final List<IVector3<?>> vectors) {
-      if ((vectors == null) || vectors.isEmpty()) {
-         return null;
-      }
-
-      return vectors.toArray(new IVector3<?>[] {});
+      return vectors.toArray(new IVector3<?>[vectors.size()]);
    }
 
 

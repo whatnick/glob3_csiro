@@ -200,7 +200,7 @@ public class GOctreeTest {
                }
             }
 
-            return GCollections.toArray(selectedIndices);
+            return GCollections.toIntArray(selectedIndices);
          }
       };
 
