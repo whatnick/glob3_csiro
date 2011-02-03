@@ -285,7 +285,7 @@ public class GWMSDialog
             return;
          }
          final int rowCount = _layersTable.getTable().getSelectedRowCount();
-         _infoArea.setText(rowCount + " rows selected");
+         _infoArea.setText(rowCount + " layers selected");
       }
    }
 
@@ -333,7 +333,7 @@ public class GWMSDialog
    private void executeDeleteServerCommand() {
       final int option = JOptionPane.showConfirmDialog(this.getContentPane(), "Are you sure you want to delete this server?",
                "Delete server", JOptionPane.YES_NO_OPTION);
-      System.out.println("OPTION: " + option);
+      //System.out.println("OPTION: " + option);
       if (option == 0) {
          final String selectedServer = (String) _serversCombo.getSelectedItem();
          _serversCombo.removeItemAt(_serversCombo.getSelectedIndex());
@@ -370,16 +370,20 @@ public class GWMSDialog
       _infoArea.setText("Connecting to " + serverName + " server.. ");
       _infoArea.paintImmediately(_infoArea.getBounds());
       _caps = GWMSServersManager.getCapabilitiesforServer(_serverMap.get(serverName));
-      final GWMSLayerData[] layerDataList = GWMSServersManager.getLayersForServer(_serverMap.get(serverName));
-      if (layerDataList != null) {
-         _infoArea.setText("Connected to " + serverName + " server");
-         for (final GWMSLayerData layer : layerDataList) {
-            _layersTable.addRow(layer);
-         }
+      if (_caps == null) {
+         _infoArea.setText("Server " + serverName + " connection error");
       }
       else {
-         //TODO tratar este error 
-         _infoArea.setText("Connection error with server " + serverName);
+         final GWMSLayerData[] layerDataList = GWMSServersManager.getLayersForServer(_serverMap.get(serverName));
+         if (layerDataList != null) {
+            _infoArea.setText("Connected to " + serverName + " server");
+            for (final GWMSLayerData layer : layerDataList) {
+               _layersTable.addRow(layer);
+            }
+         }
+         else {
+            _infoArea.setText("Server " + serverName + " connection error");
+         }
       }
    }
 

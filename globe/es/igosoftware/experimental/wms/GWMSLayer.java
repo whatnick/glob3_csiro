@@ -147,6 +147,9 @@ public class GWMSLayer
       params.setValue(AVKey.LEVEL_ZERO_TILE_DELTA, new LatLon(Angle.fromDegrees(36), Angle.fromDegrees(36)));
       params.setValue(AVKey.SECTOR, Sector.FULL_SPHERE);
       params.setValue(AVKey.ICON_NAME, "earth.png");
+      //params.setValue(AVKey.EXPIRY_TIME, 5000);
+      params.setValue(AVKey.URL_READ_TIMEOUT, 5000);
+      //params.setValue(AVKey.WAKEUP_TIMEOUT, 5000);
 
       //      final Object styles = params.getValue(AVKey.STYLE_NAMES);
       //      System.out.println("STYLES: " + styles.toString());
