@@ -398,8 +398,8 @@ public final class GPointsCloudLayer
 
 
    private void initializeWorkers() {
-      final int workersCount = Math.max(Runtime.getRuntime().availableProcessors(), 2);
-      //final int workersCount = 1;
+      //      final int workersCount = Math.max(Runtime.getRuntime().availableProcessors(), 2);
+      final int workersCount = 1;
 
       final ThreadGroup group = new ThreadGroup("Node Workers Group");
       group.setDaemon(true);

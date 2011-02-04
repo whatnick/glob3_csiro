@@ -41,6 +41,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JToggleButton;
 
@@ -115,5 +116,31 @@ public class GSwingUtils {
       item.addActionListener(actionListener);
       return item;
    }
+
+
+   public static void repaint(final Component component) {
+      if (component == null) {
+         return;
+      }
+
+      if (component instanceof JList) {
+         repaint((JList) component);
+         return;
+      }
+
+      component.invalidate();
+      component.doLayout();
+      component.repaint();
+   }
+
+
+   public static void repaint(final JList list) {
+      if (list == null) {
+         return;
+      }
+
+      list.updateUI();
+   }
+
 
 }

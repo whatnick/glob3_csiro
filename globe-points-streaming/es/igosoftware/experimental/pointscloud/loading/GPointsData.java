@@ -16,16 +16,30 @@ public class GPointsData
 
    private static final long   serialVersionUID = 1L;
 
+   private final String        _pointsCloudName;
+   private final String        _tileID;
+   private final int           _from;
+   private final int           _to;
+
    private final IVector3<?>[] _points;
    private final float[]       _intensities;
    private final IVector3<?>[] _normals;
    private final int[]         _colors;
 
 
-   GPointsData(final List<IVector3<?>> points,
+   GPointsData(final String pointsCloudName,
+               final String tileID,
+               final int from,
+               final int to,
+               final List<IVector3<?>> points,
                final List<Float> intensities,
                final List<IVector3<?>> normals,
                final List<Integer> colors) {
+      _pointsCloudName = pointsCloudName;
+      _tileID = tileID;
+      _from = from;
+      _to = to;
+
       _points = toVectorsArray(points);
       _intensities = GCollections.toFloatArray(intensities);
       _normals = toVectorsArray(normals);
@@ -69,7 +83,8 @@ public class GPointsData
 
    @Override
    public String toString() {
-      return "GPointsData [points=" + _points.length + "]";
+      return "GPointsData [" + _pointsCloudName + "-" + _tileID + ", range=" + _from + "->" + _to + ", points=" + _points.length
+             + "]";
    }
 
 }

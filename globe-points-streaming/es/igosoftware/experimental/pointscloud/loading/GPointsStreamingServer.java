@@ -287,7 +287,7 @@ public class GPointsStreamingServer
             }
 
 
-            return new GPointsData(points, intensities, normals, colors);
+            return new GPointsData(_pointsCloudName, _tileID, _from, _to, points, intensities, normals, colors);
          }
          catch (final IOException e) {
             e.printStackTrace();
