@@ -58,13 +58,12 @@ public final class GDFragmentServerCommand
    @Override
    public void evaluateInServer(final Channel channel,
                                 final GDServer server) {
-      final Integer groupID = _groupID.get();
+      final int groupID = _groupID.get();
       final byte[] accumulated = server.accumulateFragment(groupID, _bytes.get());
       if (_isLastInGroup.get()) {
          server.removeAccumulation(groupID);
 
          try {
-            //            final IDServerCommand command = (IDServerCommand) GDUtils.getObject(accumulated);
             final IDServerCommand command = (IDServerCommand) server.getMultiplexor().createObject(accumulated);
 
             server.logReceivedCommand(command, channel.getRemoteAddress());

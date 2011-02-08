@@ -42,7 +42,7 @@ public abstract class GDAbstractServerCommand
    protected final List<IDCommand> getFragmentsCommands(final byte[][] fragments,
                                                         final int fragmentsGroupID) {
       final int fragmentsLength = fragments.length;
-      final ArrayList<IDCommand> result = new ArrayList<IDCommand>(fragmentsLength);
+      final List<IDCommand> result = new ArrayList<IDCommand>(fragmentsLength);
       // all but last
       for (int i = 0; i < fragmentsLength - 1; i++) {
          result.add(new GDFragmentServerCommand(fragmentsGroupID, fragments[i], false));

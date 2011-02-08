@@ -22,13 +22,9 @@ public abstract class GDAbstractCommand
 
 
    protected final byte[][] getFragments(final GProtocolMultiplexor multiplexor) {
-      //      final byte[] serialized = GDUtils.getSerializedBytes(this);
       final byte[] serialized = multiplexor.getProtocolBytes(this);
 
-      //      System.out.println(">>>> " + Arrays.toString(serialized));
-
-      final byte[][] fragments = GCollections.split(serialized, FRAGMENT_SIZE);
-      return fragments;
+      return GCollections.split(serialized, FRAGMENT_SIZE);
    }
 
 

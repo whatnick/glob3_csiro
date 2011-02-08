@@ -64,13 +64,12 @@ public final class GDFragmentClientCommand
    @Override
    public void evaluateInClient(final Channel channel,
                                 final GDClient client) {
-      final Integer groupID = _groupID.get();
+      final int groupID = _groupID.get();
       final byte[] accumulated = client.accumulateFragment(groupID, _bytes.get());
       if (_isLastInGroup.get()) {
          client.removeAccumulation(groupID);
 
          try {
-            //            final IDClientCommand command = (IDClientCommand) GDUtils.getObject(accumulated);
             final IDClientCommand command = (IDClientCommand) client.getMultiplexor().createObject(accumulated);
 
             client.logReceivedCommand(command, channel.getRemoteAddress());
