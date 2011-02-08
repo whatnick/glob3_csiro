@@ -75,7 +75,7 @@ public interface IGlobeApplication {
    public Dimension initialDimension();
 
 
-   public abstract IGlobeModule[] getModules();
+   public IGlobeModule[] getModules();
 
 
    public WorldWindowGLCanvas getWorldWindowGLCanvas();

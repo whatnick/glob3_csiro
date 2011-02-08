@@ -416,4 +416,17 @@ public class GIOUtils {
    }
 
 
+   public static void copyFile(final byte[] data,
+                               final File file) throws IOException {
+      FileOutputStream output = null;
+      try {
+         output = new FileOutputStream(file);
+         output.write(data);
+      }
+      finally {
+         GIOUtils.gentlyClose(output);
+      }
+   }
+
+
 }

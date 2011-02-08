@@ -39,7 +39,6 @@ package es.igosoftware.experimental.pointscloud.loading;
 import java.util.List;
 
 import es.igosoftware.dmvc.model.IDModel;
-import es.igosoftware.euclid.pointscloud.octree.GPCPointsCloud;
 
 
 public interface IPointsStreamingServer
@@ -50,17 +49,11 @@ public interface IPointsStreamingServer
    public List<String> getPointsCloudsNames();
 
 
-   public GPCPointsCloud getPointsCloud(final String pointsCloudName);
-
-
-   public int loadPoints(final int sessionID,
-                         final String pointsCloudName,
-                         final String tileID,
-                         final int wantedPoints,
-                         final int priority);
-
-
-   //   public GPointsData poll(final int taskID);
+   public int loadFile(final int sessionID,
+                       final String fileName,
+                       final int fromBytes,
+                       final int toBytes,
+                       final int priority);
 
 
    public void cancel(final int taskID);
@@ -68,4 +61,5 @@ public interface IPointsStreamingServer
 
    public void setPriority(final int taskID,
                            final int priority);
+
 }

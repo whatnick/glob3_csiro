@@ -55,7 +55,6 @@ import es.igosoftware.io.ILoader;
 import es.igosoftware.io.ILoader.ErrorType;
 import es.igosoftware.io.ILoader.IHandler;
 import es.igosoftware.util.GMath;
-import es.igosoftware.util.GUtils;
 import es.igosoftware.utils.GWWUtils;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Vec4;
@@ -195,10 +194,7 @@ final class GSGPointsLoader {
 
    private IHandler createHandler() {
       return new ILoader.IHandler() {
-         //         private final AtomicBoolean _stop    = new AtomicBoolean(false);
-         //         private final AtomicBoolean _stopped = new AtomicBoolean(false);
-         private boolean _stop    = false;
-         private boolean _stopped = false;
+         private final boolean _stop = false;
 
 
          @Override
@@ -215,13 +211,12 @@ final class GSGPointsLoader {
          @SuppressWarnings("null")
          @Override
          public void loaded(final File file,
-                            final int bytesLoaded) throws ILoader.AbortLoading {
+                            final int bytesLoaded,
+                            final boolean completeLoaded) throws ILoader.AbortLoading {
             try {
                if (_stop) {
                   throw new ILoader.AbortLoading();
                }
-
-               _stopped = false;
 
                final int loadedPoints = bytesLoaded / _bytesPerPoint;
 
@@ -384,8 +379,6 @@ final class GSGPointsLoader {
                _layer.redraw();
             }
             finally {
-               _stopped = true;
-
                synchronized (GSGPointsLoader.this) {
                   _loading = false;
                }
@@ -401,16 +394,6 @@ final class GSGPointsLoader {
             return new GVector3F(x, y, z);
          }
 
-
-         @Override
-         public void stop() {
-            //            _stopped = false;
-            _stop = true;
-
-            while (!_stopped) {
-               GUtils.delay(5);
-            }
-         }
 
       };
 

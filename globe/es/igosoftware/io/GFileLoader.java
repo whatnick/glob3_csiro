@@ -82,16 +82,6 @@ public class GFileLoader
                     final int priority,
                     final ILoader.IHandler handler) {
 
-      //      submitTask(new GAbstractLoader.Task(fileName, priority) {
-      //         private boolean _stoped = false;
-      //
-      //
-      //         @Override
-      //         public void run() {
-      //            if (_stoped) {
-      //               return;
-      //            }
-
       final File file = new File(_rootDirectory, fileName);
 
       if (!file.exists()) {
@@ -102,43 +92,14 @@ public class GFileLoader
       }
       else {
          try {
-            //                  final boolean simulateSlowLoad = false;
-            //
-            //                  if (simulateSlowLoad) {
-            //                     final int stepWidth = 1024;
-            //
-            //                     int available = stepWidth;
-            //                     while (available <= bytesToLoad) {
-            //                        handler.loaded(file, available);
-            //                        Utils.delay(5);
-            //                        available += stepWidth;
-            //                     }
-            //                     if (available != bytesToLoad + stepWidth) {
-            //                        handler.loaded(file, available);
-            //                     }
-            //                  }
-            //                  else {
             // in files, all the needed bytes are available in a shot 
-            final int bytesLoaded = bytesToLoad;
-            handler.loaded(file, bytesLoaded);
-            //                  }
+            final int bytesLoaded = (int) file.length();
+            handler.loaded(file, bytesLoaded, true);
          }
          catch (final ILoader.AbortLoading e) {
             // do nothing
          }
       }
-
-      //         }
-      //
-      //
-      //         @Override
-      //         protected void stop() {
-      //            _stoped = true;
-      //            handler.stop();
-      //         }
-      //      });
-
-
    }
 
 

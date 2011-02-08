@@ -19,7 +19,7 @@
        names of its contributors may be used to endorse or promote products
        derived from this software without specific prior written permission.
 
- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HERS AND CONTRIBUTORS "AS IS" AND
  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
  DISCLAIMED. IN NO EVENT SHALL IGO Software SL BE LIABLE FOR ANY
@@ -37,14 +37,11 @@
 package es.igosoftware.experimental.pointscloud.loading;
 
 import java.io.BufferedInputStream;
-import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -52,19 +49,14 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.GZIPInputStream;
 
 import org.jboss.netty.channel.Channel;
 
 import es.igosoftware.dmvc.model.GDModel;
 import es.igosoftware.dmvc.model.IDProperty;
 import es.igosoftware.dmvc.server.GDServer;
-import es.igosoftware.euclid.pointscloud.octree.GPCPointsCloud;
-import es.igosoftware.euclid.vector.GVector3F;
-import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.util.GAssert;
-import es.igosoftware.util.LRUCache;
 
 
 public class GPointsStreamingServer
@@ -73,47 +65,19 @@ public class GPointsStreamingServer
          implements
             IPointsStreamingServer {
 
-   private static final int                                    POINTS_GROUP_SIZE  = 1024;
-   private static final int                                    BYTES_PER_VECTOR3F = 3 * 4;                                        // x, y, z * float 
+   private static final int         POINTS_GROUP_SIZE = 1024 * 4;
 
-   private final File                                          _pointsCloudsDirectory;
-   private final LinkedList<Task>                              _tasks             = new LinkedList<GPointsStreamingServer.Task>();
+   private final File               _rootDirectory;
+   private final LinkedList<Task>   _tasks            = new LinkedList<Task>();
 
-   private int                                                 TASK_ID_COUNTER    = 0;
-   private final Map<Integer, Long>                            _lastSends         = new HashMap<Integer, Long>();
-
-   private final LRUCache<String, GPCPointsCloud, IOException> _pointsCloudCache;
+   private int                      TASK_ID_COUNTER   = 0;
+   private final Map<Integer, Long> _lastSends        = new HashMap<Integer, Long>();
 
 
-   public GPointsStreamingServer(final String pointsCloudsDirectoryName) {
-      GAssert.notNull(pointsCloudsDirectoryName, "pointsCloudsDirectoryName");
+   public GPointsStreamingServer(final String rootDirectoryName) {
+      GAssert.notNull(rootDirectoryName, "rootDirectoryName");
 
-      _pointsCloudsDirectory = initializePointsCloudsDirectory(pointsCloudsDirectoryName);
-
-      _pointsCloudCache = new LRUCache<String, GPCPointsCloud, IOException>(25,
-               new LRUCache.ValueFactory<String, GPCPointsCloud, IOException>() {
-                  @Override
-                  public GPCPointsCloud create(final String pointsCloudName) throws IOException {
-                     ObjectInputStream input = null;
-                     try {
-                        final File treeObjectGZFile = new File(new File(_pointsCloudsDirectory, pointsCloudName),
-                                 "/tree.object.gz");
-
-                        input = new ObjectInputStream(new GZIPInputStream(new FileInputStream(treeObjectGZFile), 2048));
-
-                        final GPCPointsCloud pointsCloud = (GPCPointsCloud) input.readObject();
-
-                        return pointsCloud;
-                     }
-                     catch (final ClassNotFoundException ex) {
-                        return null;
-                     }
-                     finally {
-                        GIOUtils.gentlyClose(input);
-                     }
-                  }
-               });
-
+      _rootDirectory = initializeRootDirectory(rootDirectoryName);
 
       initializeWorker();
    }
@@ -129,15 +93,15 @@ public class GPointsStreamingServer
                   final Task task = selectTask();
 
                   if (task == null) {
-                     Thread.sleep(150);
+                     Thread.sleep(100);
                   }
                   else {
                      synchronized (_lastSends) {
                         _lastSends.put(task._sessionID, System.currentTimeMillis());
                      }
-                     final GPointsData result = task.execute();
+                     final GFileData result = task.execute();
                      if (result != null) {
-                        firePropertyChange("points_" + task._sessionID, null, result);
+                        firePropertyChange("FileData_" + task._sessionID, null, result);
                      }
                   }
                }
@@ -156,14 +120,14 @@ public class GPointsStreamingServer
    }
 
 
-   private File initializePointsCloudsDirectory(final String pointsCloudsDirectoryName) {
-      final File pointsCloudsDirectory = new File(pointsCloudsDirectoryName);
+   private File initializeRootDirectory(final String rootDirectoryName) {
+      final File rootDirectory = new File(rootDirectoryName);
 
-      if (!pointsCloudsDirectory.exists() || !pointsCloudsDirectory.canRead()) {
-         throw new RuntimeException("Invalid pointsCloudsDirectoryName (" + pointsCloudsDirectory.getAbsolutePath() + ")");
+      if (!rootDirectory.exists() || !rootDirectory.canRead()) {
+         throw new RuntimeException("Invalid rootDirectoryName (" + rootDirectory.getAbsolutePath() + ")");
       }
 
-      return pointsCloudsDirectory;
+      return rootDirectory;
    }
 
 
@@ -175,7 +139,7 @@ public class GPointsStreamingServer
 
    @Override
    public List<String> getPointsCloudsNames() {
-      final String[] directoriesNames = _pointsCloudsDirectory.list(new FilenameFilter() {
+      final String[] directoriesNames = _rootDirectory.list(new FilenameFilter() {
          @Override
          public boolean accept(final File dir,
                                final String name) {
@@ -193,101 +157,70 @@ public class GPointsStreamingServer
    }
 
 
-   @Override
-   public GPCPointsCloud getPointsCloud(final String pointsCloudName) {
-      try {
-         return _pointsCloudCache.get(pointsCloudName);
-      }
-      catch (final IOException e) {
-         return null;
-      }
-   }
+   //   @Override
+   //   public GPCPointsCloud getPointsCloud(final String pointsCloudName) {
+   //      try {
+   //         return _pointsCloudCache.get(pointsCloudName);
+   //      }
+   //      catch (final IOException e) {
+   //         return null;
+   //      }
+   //   }
 
 
    private class Task {
 
-      private final String _pointsCloudName;
-      private final String _tileID;
-      private final int    _from;
-      private final int    _to;
-      private int          _priority;
-      private final int    _taskID;
-      private final int    _sessionID;
+      private final String  _fileName;
+      private final int     _from;
+      private final int     _to;
+      private int           _priority;
+      private final int     _taskID;
+      private final int     _sessionID;
+      private final boolean _lastPacket;
 
 
-      private Task(final String pointsCloudName,
-                   final String tileID,
+      private Task(final String fileName,
                    final int from,
                    final int to,
+                   final boolean lastPacket,
                    final int priority,
                    final int taskID,
                    final int sessionID) {
-         _pointsCloudName = pointsCloudName;
-         _tileID = tileID;
+         _fileName = fileName;
          _from = from;
          _to = to;
+         _lastPacket = lastPacket;
          _priority = priority;
          _taskID = taskID;
          _sessionID = sessionID;
       }
 
 
-      private GPointsData execute() {
-         final GPCPointsCloud pointsCloud = getPointsCloud(_pointsCloudName);
-         if (pointsCloud == null) {
-            return null;
-         }
+      private GFileData execute() {
+         final File file = new File(_rootDirectory, _fileName);
 
-         final boolean hasColors = pointsCloud.hasColors();
-         final boolean hasIntensities = pointsCloud.hasIntensities();
-         final boolean hasNormals = pointsCloud.hasNormals();
-
-         final int bytesPerPoint = BYTES_PER_VECTOR3F + //
-                                   (hasColors ? 4 : 0) + //
-                                   (hasIntensities ? 4 : 0) + // 
-                                   (hasNormals ? BYTES_PER_VECTOR3F : 0);
-
-         final String tileFileName = _pointsCloudName + "/tile-" + _tileID + ".points";
-         final File tileFile = new File(_pointsCloudsDirectory, tileFileName);
-
-         DataInputStream input = null;
+         BufferedInputStream input = null;
          try {
-            input = new DataInputStream(new BufferedInputStream(new FileInputStream(tileFile.getAbsolutePath()), 16 * 1024));
+            input = new BufferedInputStream(new FileInputStream(file.getAbsolutePath()), 16 * 1024);
 
-            input.skipBytes(_from * bytesPerPoint);
-
-            final List<IVector3<?>> points = new ArrayList<IVector3<?>>(_to - _from + 1);
-            final List<Float> intensities = hasIntensities ? new ArrayList<Float>(_to - _from + 1) : null;
-            final List<IVector3<?>> normals = hasNormals ? new ArrayList<IVector3<?>>(_to - _from + 1) : null;
-            final List<Integer> colors = hasColors ? new ArrayList<Integer>(_to - _from + 1) : null;
+            final byte[] bytes = new byte[_to - _from + 1];
 
             try {
-               for (int i = _from; i <= _to; i++) {
-                  final GVector3F point = readVector3F(input);
-                  points.add(point);
-
-                  if (hasIntensities) {
-                     final float intensity = input.readFloat();
-                     intensities.add(intensity);
-                  }
-
-                  if (hasNormals) {
-                     final GVector3F normal = readVector3F(input);
-                     normals.add(normal);
-                  }
-
-                  if (hasColors) {
-                     final int color = input.readInt();
-                     colors.add(color);
-                  }
+               if (input.skip(_from) == _from) {
+                  input.read(bytes);
                }
+
+               //               int index = 0;
+               //               for (int i = _from; i <= _to; i++) {
+               //                  bytes[index++] = input.readByte();
+               //               }
             }
             catch (final EOFException eof) {
 
             }
 
 
-            return new GPointsData(_pointsCloudName, _tileID, _from, _to, points, intensities, normals, colors);
+            return new GFileData(_taskID, _from, _to, _lastPacket, bytes);
          }
          catch (final IOException e) {
             e.printStackTrace();
@@ -300,29 +233,31 @@ public class GPointsStreamingServer
    }
 
 
-   private static GVector3F readVector3F(final DataInputStream input) throws IOException {
-      final float x = input.readFloat();
-      final float y = input.readFloat();
-      final float z = input.readFloat();
-      return new GVector3F(x, y, z);
-   }
-
-
    @Override
-   public int loadPoints(final int sessionID,
-                         final String pointsCloudName,
-                         final String tileID,
-                         final int wantedPoints,
-                         final int priority) {
-      int from = 0;
+   public int loadFile(final int sessionID,
+                       final String fileName,
+                       final int fromBytes,
+                       final int toBytes,
+                       final int priority) {
+      int from = fromBytes;
+
+      final int normalizedToBytes;
+      if (toBytes < 0) {
+         normalizedToBytes = getFileLenght(fileName);
+      }
+      else {
+         normalizedToBytes = toBytes;
+      }
 
       synchronized (_tasks) {
          final int taskID = calculateTaskID();
 
-         while (from < wantedPoints) {
-            final int to = Math.min(from + POINTS_GROUP_SIZE, wantedPoints) - 1;
 
-            _tasks.add(new Task(pointsCloudName, tileID, from, to, priority, taskID, sessionID));
+         while (from < normalizedToBytes) {
+            final int to = Math.min(from + POINTS_GROUP_SIZE, normalizedToBytes) - 1;
+
+            final boolean lastPacket = (to == (normalizedToBytes - 1));
+            _tasks.add(new Task(fileName, from, to, lastPacket, priority, taskID, sessionID));
 
             from += POINTS_GROUP_SIZE;
          }
@@ -332,30 +267,15 @@ public class GPointsStreamingServer
    }
 
 
-   private int calculateTaskID() {
-      return TASK_ID_COUNTER++;
+   private int getFileLenght(final String fileName) {
+      final File file = new File(_rootDirectory, fileName);
+      return (int) file.length();
    }
 
 
-   //   private Task selectTask(final int taskID) {
-   //      Task selectedTask = null;
-   //
-   //      synchronized (_tasks) {
-   //         for (final Task task : _tasks) {
-   //            if (task._taskID == taskID) {
-   //               if ((selectedTask == null) || (selectedTask._priority > task._priority)) {
-   //                  selectedTask = task;
-   //               }
-   //            }
-   //         }
-   //
-   //         if (selectedTask != null) {
-   //            _tasks.remove(selectedTask);
-   //         }
-   //      }
-   //
-   //      return selectedTask;
-   //   }
+   private int calculateTaskID() {
+      return TASK_ID_COUNTER++;
+   }
 
 
    private Task selectTask() {
@@ -404,18 +324,6 @@ public class GPointsStreamingServer
          }
       }
    }
-
-
-   //   @Override
-   //   public GPointsData poll(final int taskID) {
-   //      final Task selectedTask = selectTask(taskID);
-   //
-   //      if (selectedTask == null) {
-   //         return null;
-   //      }
-   //
-   //      return selectedTask.execute();
-   //   }
 
 
    @Override

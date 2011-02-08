@@ -459,13 +459,17 @@ public abstract class GGlobeApplication
             @Override
             public void run() {
                //            final IGlobeModule[] modules = getModules();
-               modules.set(getModules());
+               modules.set(getInitialModules());
 
                for (final IGlobeModule module : modules.get()) {
-                  module.initialize(GGlobeApplication.this);
-                  module.initializeTranslations(GGlobeApplication.this);
+                  if (module != null) {
+                     module.initialize(GGlobeApplication.this);
+                     module.initializeTranslations(GGlobeApplication.this);
+                  }
                }
             }
+
+
          });
       }
       catch (final InterruptedException e) {
@@ -1302,5 +1306,16 @@ public abstract class GGlobeApplication
       return null;
    }
 
+
+   protected abstract IGlobeModule[] getInitialModules();
+
+
+   @Override
+   public final IGlobeModule[] getModules() {
+      //      if (_modules == null) {
+      //         _modules = initializeModules();
+      //      }
+      return _modules;
+   }
 
 }

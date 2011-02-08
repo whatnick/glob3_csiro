@@ -1,3 +1,5 @@
+
+
 package es.unex.s3xtante;
 
 import java.awt.Image;
@@ -37,8 +39,7 @@ public class S3xtante
 
 
    @Override
-   public IGlobeModule[] getModules() {
-
+   protected IGlobeModule[] getInitialModules() {
       //final GPointsCloudFileLoader loader = new GPointsCloudFileLoader("/home/dgd/Desktop/LOD/");
       //final GPointsCloudModule pointsCloudModule = new GPointsCloudModule(loader);
 

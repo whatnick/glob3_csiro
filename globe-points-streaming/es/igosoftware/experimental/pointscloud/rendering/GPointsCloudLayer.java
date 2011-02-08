@@ -139,7 +139,7 @@ public final class GPointsCloudLayer
    private void loadPointsCloud() {
       final long started = System.currentTimeMillis();
 
-      _loader.load(_pointsCloudName + "/tree.object.gz", -1, Integer.MAX_VALUE, new ILoader.IHandler() {
+      _loader.load(_pointsCloudName + "/tree.object.gz", -1, Integer.MIN_VALUE, new ILoader.IHandler() {
 
          @Override
          public void loadError(final File file,
@@ -150,7 +150,12 @@ public final class GPointsCloudLayer
 
          @Override
          public void loaded(final File file,
-                            final int bytesLoaded) {
+                            final int bytesLoaded,
+                            final boolean completeLoaded) {
+            if (!completeLoaded) {
+               return;
+            }
+
             try {
                //               if (_verbose) {
                final long now = System.currentTimeMillis();
@@ -191,9 +196,6 @@ public final class GPointsCloudLayer
          }
 
 
-         @Override
-         public void stop() {
-         }
       });
    }
 
