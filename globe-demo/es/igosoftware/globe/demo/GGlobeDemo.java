@@ -64,6 +64,7 @@ import es.igosoftware.globe.modules.view.GShowUTMGraticuleModule;
 import es.igosoftware.globe.modules.view.ShowMeasureTool;
 import es.igosoftware.globe.view.customView.GCustomView;
 import es.igosoftware.io.pointscloud.GPointsCloudFileLoader;
+import es.igosoftware.io.pointscloud.IPointsCloudLoader;
 import es.igosoftware.loading.G3DModel;
 import es.igosoftware.loading.GModelLoadException;
 import es.igosoftware.loading.GObjLoader;
@@ -78,7 +79,6 @@ import es.igosoftware.scenegraph.GGroupNode;
 import es.igosoftware.scenegraph.GPositionRenderableLayer;
 import es.igosoftware.scenegraph.GTransformationOrder;
 import es.igosoftware.util.GUtils;
-import es.igosoftware.utils.GDielmoWMSLayer;
 import gov.nasa.worldwind.AnaglyphSceneController;
 import gov.nasa.worldwind.Configuration;
 import gov.nasa.worldwind.avlist.AVKey;
@@ -134,9 +134,9 @@ public class GGlobeDemo
 
       // layers.add(new TerrainProfileLayer());
 
-      // layers.add(new GPNOAWMSLayer(GPNOAWMSLayer.ImageFormat.JPEG));
+      //      layers.add(new GPNOAWMSLayer(GPNOAWMSLayer.ImageFormat.JPEG));
 
-      layers.add(new GDielmoWMSLayer(GDielmoWMSLayer.ImageFormat.PNG));
+      //      layers.add(new GDielmoWMSLayer(GDielmoWMSLayer.ImageFormat.PNG));
 
       final GPositionRenderableLayer caceres3DLayer = createCaceres3DModelLayer();
       layers.add(caceres3DLayer);
@@ -226,18 +226,25 @@ public class GGlobeDemo
 
 
    @Override
-   public IGlobeModule[] getModules() {
+   protected IGlobeModule[] getInitialModules() {
       final Position homePosition = new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710), 0);
       final Angle heading = Angle.ZERO;
       final Angle pitch = Angle.fromDegrees(45);
       final double homeElevation = 2000;
       final GHomePositionModule homePositionModule = new GHomePositionModule(homePosition, heading, pitch, homeElevation, true);
 
-      final GPointsCloudFileLoader loader = new GPointsCloudFileLoader("data/pointsclouds");
-      //final GPointsCloudFileLoader loader = new GPointsCloudFileLoader("/home/dgd/Escritorio/LOD/");
-
-
+      final IPointsCloudLoader loader = new GPointsCloudFileLoader("data/pointsclouds");
       final GPointsCloudModule pointsCloudModule = new GPointsCloudModule(loader);
+
+      //      GPointsCloudModule pointsCloudModule = null;
+      //      try {
+      //         final IPointsCloudLoader loader = new GPointsCloudStreamingLoader("127.0.0.1", 8000);
+      //
+      //         pointsCloudModule = new GPointsCloudModule(loader);
+      //      }
+      //      catch (final IOException e) {
+      //         e.printStackTrace();
+      //      }
 
       return new IGlobeModule[] { homePositionModule, new GLayersManagerModule(), new GPolygon2DModule(),
                new GFullScreenModule(), pointsCloudModule, new GAnaglyphViewerModule(false), new GStatisticsModule(),
