@@ -87,23 +87,24 @@ fi
 
 
 # Test for local libs
-LIBS=../../GLOB3-Repository/glob3/globe/libs
-IGOLIBS=../../GLOB3-Repository/igolibs/libs
+LIBS=../../../GLOB3-Repository/glob3/globe/libs
+IGOLIBS=../../../GLOB3-Repository/igolibs/libs
 
 # Don't use MToolkit
 export AWT_TOOLKIT=XToolkit
 
 export CLASSPATH=.
 export CLASSPATH=${CLASSPATH}:${IGOLIBS}
-export CLASSPATH=${CLASSPATH}:../../GLOB3-Repository/glob3/igolibs/
-export CLASSPATH=${CLASSPATH}:../../GLOB3-Repository/glob3/euclid/
-export CLASSPATH=${CLASSPATH}:../../GLOB3-Repository/glob3/euclid/libs/jna.jar
-export CLASSPATH=${CLASSPATH}:../../GLOB3-Repository/glob3/globe/
+export CLASSPATH=${CLASSPATH}:../../../GLOB3-Repository/glob3/igolibs/
+export CLASSPATH=${CLASSPATH}:../../../GLOB3-Repository/glob3/euclid/
+export CLASSPATH=${CLASSPATH}:../../../GLOB3-Repository/glob3/euclid/libs/jna.jar
+export CLASSPATH=${CLASSPATH}:../../../GLOB3-Repository/glob3/globe/
+export CLASSPATH=${CLASSPATH}:../../../GLOB3-Repository/glob3/globe-points-streaming/
 #export CLASSPATH=${CLASSPATH}:../ww/src/
 export CLASSPATH=${CLASSPATH}:${LIBS}/substance6.0/substance.jar
 export CLASSPATH=${CLASSPATH}:${LIBS}/substance6.0/trident.jar
 export CLASSPATH=${CLASSPATH}:${LIBS}/miglayout/miglayout-3.7.3.1-swing.jar
-export CLASSPATH=${CLASSPATH}:../../GLOB3-Repository/glob3/dmvc/libs/netty-3.1.5.GA/netty-3.1.5.GA.jar
+export CLASSPATH=${CLASSPATH}:../../../GLOB3-Repository/glob3/dmvc/libs/netty-3.1.5.GA/netty-3.1.5.GA.jar
 export CLASSPATH=${CLASSPATH}:${LIBS}/jogl/gluegen-rt.jar
 export CLASSPATH=${CLASSPATH}:${LIBS}/jogl/jogl.jar
 export CLASSPATH=${CLASSPATH}:${LIBS}/worldwind.jar

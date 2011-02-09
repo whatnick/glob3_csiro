@@ -15,6 +15,6 @@ export DEVELOPMENT=on
 export LOW_END=off
 #export ARCHITECTURE="32"
 
-#export EXTRA_CLASSPATH="../globe/libs/JMF-2.1.1e/lib/jmf.jar"
+export EXTRA_CLASSPATH="../../../GLOB3-Repository/glob3/dmvc"
 
 ../globe/runjava.sh es.igosoftware.globe.demo.GGlobeDemo $*
