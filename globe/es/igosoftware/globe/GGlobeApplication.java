@@ -1311,7 +1311,7 @@ public abstract class GGlobeApplication
 
 
    @Override
-   public final IGlobeModule[] getModules() {
+   public IGlobeModule[] getModules() {
       //      if (_modules == null) {
       //         _modules = initializeModules();
       //      }

@@ -69,6 +69,7 @@ import gov.nasa.worldwind.util.WWMath;
 import java.awt.Point;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -294,7 +295,19 @@ public class GPanoramic
 
    private GPanoramicCompiler.ZoomLevels readZoomLevels() {
       final String path = _directoryName + "/" + GPanoramicCompiler.LEVELS_FILE_NAME;
-      final URL url = getClass().getClassLoader().getResource(path);
+      URL url = getClass().getClassLoader().getResource(path);
+
+
+      if (url == null) {
+         //throw new RuntimeException("Can't find a resource for " + path);
+         try {
+            url = new URL(path);
+         }
+         catch (final MalformedURLException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+         }
+      }
 
       if (url == null) {
          throw new RuntimeException("Can't find a resource for " + path);
@@ -676,7 +689,7 @@ public class GPanoramic
       private final int                _level;
       private final int                _row;
       private final int                _column;
-      private final URL                _url;
+      private URL                      _url;
 
 
       private PanoramicTile(final Sector sector,
@@ -695,6 +708,17 @@ public class GPanoramic
 
          final String path = _directoryName + "/" + _level + "/" + _row + "-" + _column + ".jpg";
          _url = getClass().getClassLoader().getResource(path);
+         if (_url == null) {
+            try {
+               _url = new URL(path);
+            }
+            catch (final MalformedURLException e) {
+               // TODO Auto-generated catch block
+               _url = null;
+               e.printStackTrace();
+            }
+         }
+
       }
 
 
