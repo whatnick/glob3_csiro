@@ -67,7 +67,9 @@ public abstract class GNodeAbstract
    protected double                   _heading;                            // in degrees
    protected double                   _roll;                               // in degrees
    protected double                   _pitch;                              // in degrees
-   protected double                   _scale;
+
+   //protected double                   _scale;
+   protected IVector3<?>              _scale;
    protected IVector3<?>              _translation;
 
    private final GTransformationOrder _transformOrder;
@@ -96,6 +98,19 @@ public abstract class GNodeAbstract
                            final double pitch,
                            final double scale,
                            final IVector3<?> translation) {
+      this(name, transformOrder, heading, roll, pitch, scale, scale, scale, translation);
+   }
+
+
+   protected GNodeAbstract(final String name,
+                           final GTransformationOrder transformOrder,
+                           final double heading,
+                           final double roll,
+                           final double pitch,
+                           final double scaleX,
+                           final double scaleY,
+                           final double scaleZ,
+                           final IVector3<?> translation) {
       GAssert.notNull(name, "name");
       GAssert.notNull(transformOrder, "transformOrder");
 
@@ -105,7 +120,7 @@ public abstract class GNodeAbstract
       _heading = heading;
       _roll = roll;
       _pitch = pitch;
-      _scale = scale;
+      _scale = new GVector3D(scaleX, scaleY, scaleZ);
       _translation = translation;
 
       calculateLocalTransformMatrix();
@@ -256,8 +271,9 @@ public abstract class GNodeAbstract
 
 
    private void applyScaleToLocalMatrix() {
-      if (_scale != 1) {
-         _localMatrix = _localMatrix.multiply(Matrix.fromScale(_scale));
+      if ((_scale.x() != 1) || (_scale.y() != 1) || (_scale.z() != 1)) {
+         _localMatrix = _localMatrix.multiply(Matrix.fromScale(_scale.x(), _scale.y(), _scale.z()));
+
       }
    }
 
@@ -334,7 +350,7 @@ public abstract class GNodeAbstract
 
    @Override
    public boolean hasScaleTransformation() {
-      if (_scale != 1) {
+      if ((_scale.x() != 1) || (_scale.y() != 1) || (_scale.z() != 1)) {
          return true;
       }
 
@@ -408,7 +424,7 @@ public abstract class GNodeAbstract
          buffer.append(_translation);
       }
 
-      if (_scale != 1) {
+      if ((_scale.x() != 1) || (_scale.y() != 1) || (_scale.z() != 1)) {
          buffer.append(", scale=");
          buffer.append(_scale);
       }
@@ -448,7 +464,7 @@ public abstract class GNodeAbstract
    }
 
 
-   public double getScale() {
+   public IVector3<?> getScale() {
       return _scale;
    }
 

@@ -38,6 +38,7 @@ package es.igosoftware.scenegraph;
 
 import es.igosoftware.euclid.mutability.GMutableSupport;
 import es.igosoftware.euclid.mutability.IMutable;
+import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.IVector3;
 
 
@@ -134,7 +135,18 @@ public abstract class GMutableNodeAbstract<MutableT extends GMutableNodeAbstract
    public void setScale(final double scale) {
       checkMutable();
 
-      _scale = scale;
+      _scale = new GVector3D(scale, scale, scale);
+      cleanCaches();
+      changed();
+   }
+
+
+   public void setScale(final double scaleX,
+                        final double scaleY,
+                        final double scaleZ) {
+      checkMutable();
+
+      _scale = new GVector3D(scaleX, scaleY, scaleZ);
       cleanCaches();
       changed();
    }

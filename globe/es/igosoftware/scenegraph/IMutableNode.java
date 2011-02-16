@@ -58,6 +58,11 @@ public interface IMutableNode<MutableT extends IMutableNode<MutableT>>
    public void setScale(final double scale);
 
 
+   //   public void setScale(final double scaleX,
+   //                        final double scaleY,
+   //                        final double scaleZ);
+
+
    public void setTranslation(final IVector3<?> translation);
 
 }
