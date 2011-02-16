@@ -47,28 +47,16 @@ public class GPanoramicViewLimits
 
 
    public GPanoramicViewLimits() {
-      centerLocationLimits = Sector.FULL_SPHERE;
-      minCenterElevation = -Double.MAX_VALUE;
-      maxCenterElevation = Double.MAX_VALUE;
       minHeading = Angle.NEG180;
       maxHeading = Angle.POS180;
 
-      //      //      minPitch = Angle.NEG90;
-      //      minPitch = Angle.fromDegrees(-85);
-      //      //      maxPitch = Angle.POS90;
-      //      maxPitch = Angle.fromDegrees(85);
-
       minPitch = Angle.ZERO;
-      //      maxPitch = Angle.POS90;
       maxPitch = Angle.fromDegrees(170);
 
-      minZoom = 0;
-      maxZoom = 1;
-   }
+      setCenterLocationLimits(Sector.FULL_SPHERE);
 
+      setCenterElevationLimits(-Double.MAX_VALUE, Double.MAX_VALUE);
 
-   @Override
-   public Angle[] getPitchLimits() {
-      return new Angle[] { this.minPitch, this.maxPitch };
+      setZoomLimits(0, 1);
    }
 }

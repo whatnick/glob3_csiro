@@ -22,6 +22,38 @@ public class GPointsCloudStreamingLoader
             IPointsCloudLoader {
 
 
+   //   private static class FileDataRequest {
+   //      private final int                    _taskID;
+   //      private final long                   _from;
+   //      private final long                   _to;
+   //      private final List<ILoader.IHandler> _handlers = new ArrayList<ILoader.IHandler>();
+   //
+   //
+   //      private FileDataRequest(final int taskID,
+   //                              final long from,
+   //                              final long to) {
+   //         _taskID = taskID;
+   //         _from = from;
+   //         _to = to;
+   //      }
+   //
+   //
+   //   }
+   //
+   //
+   //   private static class FileData {
+   //      private final String                _fileName;
+   //      private final long                  _available = 0;
+   //      private final List<FileDataRequest> _requested = new ArrayList<FileDataRequest>();
+   //
+   //
+   //      private FileData(final String fileName) {
+   //         _fileName = fileName;
+   //      }
+   //
+   //   }
+
+
    private final GDClient                       _client;
    private final int                            _sessionID;
    private final IPointsStreamingServer         _server;
@@ -109,9 +141,18 @@ public class GPointsCloudStreamingLoader
 
    @Override
    public void load(final String fileName,
-                    final int bytesToLoad,
+                    final long bytesToLoad,
                     final int priority,
                     final ILoader.IHandler handler) {
+
+      //      synchronized (_mutex) {
+      //         final Integer taskID = _tasksIDs.get(fileName);
+      //         if (taskID != null) {
+      //            _server.cancel(taskID);
+      //         }
+      //      cancelLoading(fileName);
+      //      }
+
       final Integer taskID = Integer.valueOf(_server.loadFile(_sessionID, fileName, 0, bytesToLoad, priority));
       synchronized (_mutex) {
          _tasksIDs.put(fileName, taskID);

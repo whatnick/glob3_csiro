@@ -838,4 +838,12 @@ public final class GMath {
       }
    }
 
+
+   public static int toInt(final long longValue) {
+      if ((longValue < Integer.MIN_VALUE) || (longValue > Integer.MAX_VALUE)) {
+         throw new RuntimeException("Can't cast the long " + longValue + " into an int");
+      }
+      return (int) longValue;
+   }
+
 }

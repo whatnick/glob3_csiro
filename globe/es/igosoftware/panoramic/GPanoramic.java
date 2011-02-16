@@ -84,12 +84,10 @@ public class GPanoramic
          implements
             OrderedRenderable {
 
-
    private static final int                                                  TILE_THETA_SUBDIVISIONS = 2;
    private static final int                                                  TILE_RHO_SUBDIVISIONS   = 1;
 
    private static final double                                               MIN_PROYECTED_SIZE      = 12;
-
 
    private static final GDisplayListCache<PanoramicTile>                     QUAD_STRIPS_DISPLAY_LIST_CACHE;
 
@@ -112,10 +110,8 @@ public class GPanoramic
                gl.glBegin(GL.GL_QUAD_STRIP);
 
                for (final Vertex vertex : quadStrip) {
-                  //                  final IVector2<?> texCoord = vertex._texCoord;
-                  //                  gl.glTexCoord2f((float) texCoord.x(), (float) texCoord.y());
-                  //                  gl.glTexCoord2f(vertex._texCoordS.floatValue(), vertex._texCoordT.floatValue());
-                  gl.glTexCoord2f((float) vertex._texCoord.x(), (float) vertex._texCoord.y());
+                  final IVector2<?> texCoord = vertex._texCoord;
+                  gl.glTexCoord2f((float) texCoord.x(), (float) vertex._texCoord.y());
 
                   final IVector3<?> point = vertex._point;
                   gl.glVertex3f((float) point.x(), (float) point.y(), (float) point.z());
@@ -176,17 +172,16 @@ public class GPanoramic
    private boolean                                                           _isHidden;
 
 
-   public GPanoramic(final Layer containingLayer,
+   public GPanoramic(final Layer layer,
                      final String name,
                      final String directoryName,
                      final double radius,
                      final Position position) {
-
-      this(containingLayer, name, directoryName, radius, position, 0, GElevationAnchor.SURFACE);
+      this(layer, name, directoryName, radius, position, 0, GElevationAnchor.SURFACE);
    }
 
 
-   public GPanoramic(final Layer containingLayer,
+   public GPanoramic(final Layer layer,
                      final String name,
                      final String directoryName,
                      final double radius,
@@ -199,7 +194,7 @@ public class GPanoramic
       GAssert.notNull(position, "position");
       GAssert.notNull(anchor, "anchor");
 
-      _layer = containingLayer;
+      _layer = layer;
 
       _name = name;
       _directoryName = directoryName;
@@ -213,7 +208,6 @@ public class GPanoramic
       _zoomLevels = readZoomLevels();
 
       _maxResolutionInPanoramic = _zoomLevels.getLevels().size() - 1;
-
 
       //setOpacity(DEFAULT_OPACITY);
    }
@@ -609,11 +603,9 @@ public class GPanoramic
 
       gl.glPushAttrib(GL.GL_TEXTURE_BIT | GL.GL_LIGHTING_BIT | GL.GL_DEPTH_BUFFER_BIT /*| GL.GL_HINT_BIT*/);
 
-
       gl.glMatrixMode(GL.GL_MODELVIEW);
       gl.glPushMatrix();
       gl.glLoadMatrixf(_modelViewMatrixArray, 0);
-
 
       final double opacity = _layer.getOpacity();
       if ((opacity > 0) && (opacity < 1)) {
@@ -621,7 +613,6 @@ public class GPanoramic
          gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
          gl.glColor4d(1, 1, 1, opacity);
       }
-
 
       try {
          if (_renderWireframe) {
@@ -806,6 +797,10 @@ public class GPanoramic
             _displayList = QUAD_STRIPS_DISPLAY_LIST_CACHE.getDisplayList(this, dc, true);
          }
 
+         if (_displayList < 0) {
+            return;
+         }
+
          final Texture texture = GTexturesCache.getTexture(_url, true);
          if (texture != null) {
             texture.enable();
@@ -875,7 +870,7 @@ public class GPanoramic
          // _extent is already calculated as getExtent() was called before needToSplit()
          final double proyectedSize = WWMath.computeSizeInWindowCoordinates(dc, _extent);
 
-         return (proyectedSize > 256 * 4);
+         return (proyectedSize > 256 * 2);
       }
 
 

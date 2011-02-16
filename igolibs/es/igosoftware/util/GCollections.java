@@ -36,6 +36,7 @@
 
 package es.igosoftware.util;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -650,11 +651,18 @@ public final class GCollections {
    //      return result;
    //   }
 
-   @SuppressWarnings("unchecked")
-   public static <ElementT> ElementT[] select(final ElementT[] array,
-                                              final IPredicate<ElementT> predicate) {
-      final List<ElementT> selected = select(Arrays.asList(array), predicate);
-      return selected.toArray((ElementT[]) new Object[0]);
+
+   public static <T> T[] select(final T[] array,
+                                final IPredicate<T> predicate) {
+      final List<T> selected = select(Arrays.asList(array), predicate);
+
+      final Class<? extends Object[]> newType = array.getClass();
+      @SuppressWarnings("unchecked")
+      final T[] arrayResult = (newType == Object[].class) ? //
+                                                         (T[]) new Object[selected.size()] : //
+                                                         (T[]) Array.newInstance(newType.getComponentType(), selected.size());
+
+      return selected.toArray(arrayResult);
    }
 
 

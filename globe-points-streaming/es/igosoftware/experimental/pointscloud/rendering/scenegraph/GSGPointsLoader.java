@@ -211,14 +211,14 @@ final class GSGPointsLoader {
          @SuppressWarnings("null")
          @Override
          public void loaded(final File file,
-                            final int bytesLoaded,
+                            final long bytesLoaded,
                             final boolean completeLoaded) throws ILoader.AbortLoading {
             try {
                if (_stop) {
                   throw new ILoader.AbortLoading();
                }
 
-               final int loadedPoints = bytesLoaded / _bytesPerPoint;
+               final int loadedPoints = (int) bytesLoaded / _bytesPerPoint;
 
                //            if (_wantedPoints != loadedPoints) {
                //               System.out.println("Loaded " + loadedPoints + " of " + _wantedPoints + " requested");

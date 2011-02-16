@@ -54,7 +54,7 @@ public interface ILoader {
 
 
       public void loaded(final File file,
-                         final int bytesLoaded,
+                         final long bytesLoaded,
                          final boolean completeLoaded) throws ILoader.AbortLoading;
 
    }
@@ -67,7 +67,7 @@ public interface ILoader {
 
 
    public void load(final String fileName,
-                    final int bytesToLoad,
+                    final long bytesToLoad,
                     final int priority,
                     final ILoader.IHandler handler);
 

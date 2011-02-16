@@ -54,7 +54,9 @@ import es.igosoftware.globe.view.customView.GCustomView;
 import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
+import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Line;
+import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Sector;
 import gov.nasa.worldwind.geom.Sphere;
 import gov.nasa.worldwind.globes.Globe;
@@ -193,9 +195,11 @@ public class GPanoramicLayer
 
    @Override
    public void doDefaultAction(final IGlobeApplication application) {
-
       if (isEnabled()) {
-         application.zoomToSector(getExtent());
+         final Sector sector = getExtent();
+
+         final double altitude = application.calculateAltitudeForZooming(sector);
+         application.goTo(new Position(sector.getCentroid(), 0), Angle.ZERO, Angle.fromDegrees(75), altitude);
       }
    }
 
@@ -235,6 +239,7 @@ public class GPanoramicLayer
       if (dc.isPickingMode()) {
          return;
       }
+
       if (!_isInitialized) {
          final View view = GGlobeApplication.instance().getView();
          if (view instanceof GCustomView) {
@@ -245,16 +250,14 @@ public class GPanoramicLayer
          }
 
       }
-      initializeEvents();
-      for (final GPanoramic panoramic : _panoramics) {
 
+      initializeEvents();
+
+      for (final GPanoramic panoramic : _panoramics) {
          if (!panoramic.isHidden()) {
             panoramic.doRender(dc);
-
          }
       }
-
-
    }
 
    public static interface PickListener {
@@ -324,9 +327,12 @@ public class GPanoramicLayer
 
       application.jumpTo(panoramic.getPosition(), 0);
       view.setInputState(GInputState.PANORAMICS);
-      view.setOrbitViewLimits(new GPanoramicViewLimits());
+      final GPanoramicViewLimits viewLimits = new GPanoramicViewLimits();
+      view.setOrbitViewLimits(viewLimits);
       hideOtherLayers(this);
-      this.hideOtherPanoramics(panoramic);
+      hideOtherPanoramics(panoramic);
+
+      view.setFieldOfView(Angle.fromDegrees(120));
    }
 
 

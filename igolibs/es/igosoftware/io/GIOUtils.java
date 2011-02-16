@@ -36,6 +36,7 @@
 
 package es.igosoftware.io;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
@@ -44,6 +45,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -426,6 +428,20 @@ public class GIOUtils {
       finally {
          GIOUtils.gentlyClose(output);
       }
+   }
+
+
+   public static String getContents(final InputStream is) throws IOException {
+      final BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+
+      final StringBuffer buffer = new StringBuffer();
+      String line = null;
+      while ((line = reader.readLine()) != null) {
+         buffer.append(line);
+         buffer.append('\n');
+      }
+
+      return buffer.toString();
    }
 
 

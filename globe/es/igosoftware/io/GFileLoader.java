@@ -78,7 +78,7 @@ public class GFileLoader
 
    @Override
    public void load(final String fileName,
-                    final int bytesToLoad,
+                    final long bytesToLoad,
                     final int priority,
                     final ILoader.IHandler handler) {
 
@@ -93,7 +93,7 @@ public class GFileLoader
       else {
          try {
             // in files, all the needed bytes are available in a shot 
-            final int bytesLoaded = (int) file.length();
+            final long bytesLoaded = file.length();
             handler.loaded(file, bytesLoaded, true);
          }
          catch (final ILoader.AbortLoading e) {
