@@ -43,8 +43,10 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -64,11 +66,14 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.border.LineBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.pushingpixels.substance.api.SubstanceLookAndFeel;
 import org.pushingpixels.substance.api.skin.SubstanceMistAquaLookAndFeel;
@@ -100,7 +105,7 @@ public class GPlanarPanoramicViewer {
                    final int y) {
          super(zoomLevel.getLevel() + " " + x + "@" + y);
 
-         setBorder(new LineBorder(Color.BLUE, 1));
+         //         setBorder(new LineBorder(Color.BLUE, 1));
 
          _zoomLevel = zoomLevel;
          _x = x;
@@ -108,15 +113,26 @@ public class GPlanarPanoramicViewer {
       }
 
 
-      private void positionate(final int offsetX,
-                               final int offsetY) throws IOException {
+      private void positionate() throws IOException {
          if (_image == null) {
             final URL url = createURL();
             _image = getImageFrom(url);
             setIcon(new ImageIcon(_image));
             setText("");
          }
-         setBounds(offsetX + (_x * 256), offsetY + (_y * 256), 256, 256);
+
+         setBounds(calculateXPosition(), calculateYPosition(), GPlanarPanoramicZoomLevel.TILE_WIDTH,
+                  GPlanarPanoramicZoomLevel.TILE_HEIGHT);
+      }
+
+
+      private int calculateXPosition() {
+         return _offsetX + (_x * GPlanarPanoramicZoomLevel.TILE_WIDTH);
+      }
+
+
+      private int calculateYPosition() {
+         return _offsetY + (_y * GPlanarPanoramicZoomLevel.TILE_HEIGHT);
       }
 
 
@@ -140,6 +156,13 @@ public class GPlanarPanoramicViewer {
       private void remove() {
          final int TODO_CancelDownloading;
       }
+
+
+      private boolean touches(final Rectangle bounds) {
+         return bounds.intersects(calculateXPosition(), calculateYPosition(), GPlanarPanoramicZoomLevel.TILE_WIDTH,
+                  GPlanarPanoramicZoomLevel.TILE_HEIGHT);
+      }
+
    }
 
 
@@ -155,6 +178,7 @@ public class GPlanarPanoramicViewer {
 
    private JLabel                                _zoomInButton;
    private JLabel                                _zoomOutButton;
+   private JSlider                               _zoomSlider;
 
 
    public GPlanarPanoramicViewer(final String name,
@@ -176,30 +200,17 @@ public class GPlanarPanoramicViewer {
       _minLevel = minLevel;
       _maxLevel = maxLevel;
       _currentLevel = minLevel;
-
-      SwingUtilities.invokeLater(new Runnable() {
-         @Override
-         public void run() {
-            createTiles();
-         }
-      });
-   }
-
-
-   private void createTiles() {
-      final GPlanarPanoramicZoomLevel currentZoomLevel = getCurrentZoomLevel();
-
-      for (int x = 0; x < currentZoomLevel.getWidthInTiles(); x++) {
-         for (int y = 0; y < currentZoomLevel.getHeightInTiles(); y++) {
-            _tiles.add(new Tile(currentZoomLevel, x, y));
-         }
-      }
    }
 
 
    private GPlanarPanoramicZoomLevel getCurrentZoomLevel() {
+      return getZoomLevel(_currentLevel);
+   }
+
+
+   private GPlanarPanoramicZoomLevel getZoomLevel(final int level) {
       for (final GPlanarPanoramicZoomLevel zoomLevel : _zoomLevels) {
-         if (zoomLevel.getLevel() == _currentLevel) {
+         if (zoomLevel.getLevel() == level) {
             return zoomLevel;
          }
       }
@@ -260,56 +271,37 @@ public class GPlanarPanoramicViewer {
       });
 
 
-      //      container.addKeyListener(new KeyAdapter() {
-      //         @Override
-      //         public void keyTyped(final KeyEvent keyEvent) {
-      //            final int keyCode = keyEvent.getKeyCode();
-      //            //            final int eventID = keyEvent.getID();
-      //
-      //            //            if (eventID == KeyEvent.KEY_RELEASED) {
-      //            final int targetX = (int) container.getBounds().getCenterX();
-      //            final int targetY = (int) container.getBounds().getCenterY();
-      //
-      //            System.out.println(keyEvent + "--->" + keyCode);
-      //
-      //            switch (keyCode) {
-      //               case KeyEvent.VK_ADD:
-      //               case KeyEvent.VK_PLUS:
-      //                  try {
-      //                     setZoomLevel(container, _currentLevel + 1, targetX, targetY);
-      //                  }
-      //                  catch (final IOException e) {
-      //                     e.printStackTrace();
-      //                  }
-      //
-      //                  break;
-      //               case KeyEvent.VK_SUBTRACT:
-      //               case KeyEvent.VK_MINUS:
-      //                  try {
-      //                     setZoomLevel(container, _currentLevel - 1, targetX, targetY);
-      //                  }
-      //                  catch (final IOException e) {
-      //                     e.printStackTrace();
-      //                  }
-      //
-      //                  break;
-      //            }
-      //            //            }
-      //         }
-      //      });
-
       createHUD(container);
 
       frame.setVisible(true);
 
-      final Dimension paneSize = container.getSize();
+      final Dimension containerSize = container.getSize();
+      _currentLevel = calculateInitialLevel(containerSize);
+
       final GPlanarPanoramicZoomLevel currentZoomLevel = getCurrentZoomLevel();
-      _offsetX = (paneSize.width - currentZoomLevel.getWidth()) / 2;
-      _offsetY = (paneSize.height - currentZoomLevel.getHeight()) / 2;
+      _offsetX = (containerSize.width - currentZoomLevel.getWidth()) / 2;
+      _offsetY = (containerSize.height - currentZoomLevel.getHeight()) / 2;
 
-      updateZoomButtons();
+      updateZoomWidgets();
 
-      addTiles(container);
+      recreateTiles(container);
+   }
+
+
+   private int calculateInitialLevel(final Dimension containerSize) {
+      int result = _minLevel;
+
+      final double currentWidth = containerSize.getWidth();
+      final double currentHeight = containerSize.getHeight();
+
+      for (int i = _minLevel + 1; i < _maxLevel; i++) {
+         final GPlanarPanoramicZoomLevel currentLevel = getZoomLevel(i);
+         if ((currentLevel.getWidth() < currentWidth) && (currentLevel.getHeight() < currentHeight)) {
+            result = i;
+         }
+      }
+
+      return result;
    }
 
 
@@ -340,10 +332,58 @@ public class GPlanarPanoramicViewer {
          }
       });
 
-      frame.getContentPane().setLayout(null);
-      frame.getContentPane().setBackground(Color.WHITE);
+      final Container contentPane = frame.getContentPane();
+      contentPane.setFocusable(true);
+      contentPane.setLayout(null);
+      contentPane.setBackground(Color.WHITE);
+      if (contentPane instanceof JPanel) {
+         ((JPanel) contentPane).putClientProperty(SubstanceLookAndFeel.COLORIZATION_FACTOR, Double.valueOf(1));
+      }
+
+      contentPane.addKeyListener(new KeyAdapter() {
+         @Override
+         public void keyPressed(final KeyEvent e) {
+            final int keyCode = e.getKeyCode();
+            try {
+               if ((keyCode == KeyEvent.VK_PLUS) || (keyCode == KeyEvent.VK_ADD)) {
+                  setZoomLevel(contentPane, _currentLevel + 1);
+               }
+               else if ((keyCode == KeyEvent.VK_MINUS) || (keyCode == KeyEvent.VK_SUBTRACT)) {
+                  setZoomLevel(contentPane, _currentLevel - 1);
+               }
+               else if (keyCode == KeyEvent.VK_LEFT) {
+                  moveLeft(contentPane);
+               }
+               else if (keyCode == KeyEvent.VK_RIGHT) {
+                  moveRight(contentPane);
+               }
+               else if (keyCode == KeyEvent.VK_UP) {
+                  moveUp(contentPane);
+               }
+               else if (keyCode == KeyEvent.VK_DOWN) {
+                  moveDown(contentPane);
+               }
+            }
+            catch (final IOException e1) {
+               e1.printStackTrace();
+            }
+         }
+      });
+
+      focusTo(contentPane);
 
       return frame;
+   }
+
+
+   private void focusTo(final Container contentPane) {
+      SwingUtilities.invokeLater(new Runnable() {
+         @Override
+         public void run() {
+            contentPane.requestFocus();
+            contentPane.requestFocusInWindow();
+         }
+      });
    }
 
 
@@ -380,7 +420,7 @@ public class GPlanarPanoramicViewer {
       final int margin = 2;
 
       createNavigationButtons(container, buttonExtent, margin);
-      createZoomButtons(container, buttonExtent, margin);
+      createZoomWidgets(container, buttonExtent, margin);
    }
 
 
@@ -388,37 +428,61 @@ public class GPlanarPanoramicViewer {
                                         final int buttonExtent,
                                         final int margin) {
       final JLabel buttonUp = new JLabel(getImageIcon("icons/go-up.png", buttonExtent, buttonExtent));
-      hackComponent(buttonUp);
+      buttonUp.addMouseListener(new MouseAdapter() {
+         @Override
+         public void mouseClicked(final MouseEvent e) {
+            moveUp(container);
+         }
+      });
+      setLook(buttonUp);
       container.add(buttonUp);
       setPosition(buttonUp, margin + buttonExtent, margin + 0);
 
 
       final JLabel buttonDown = new JLabel(getImageIcon("icons/go-down.png", buttonExtent, buttonExtent));
-      hackComponent(buttonDown);
+      buttonDown.addMouseListener(new MouseAdapter() {
+         @Override
+         public void mouseClicked(final MouseEvent e) {
+            moveDown(container);
+         }
+      });
+      setLook(buttonDown);
       container.add(buttonDown);
       setPosition(buttonDown, margin + buttonExtent, margin + buttonExtent * 2);
 
 
       final JLabel buttonLeft = new JLabel(getImageIcon("icons/go-left.png", buttonExtent, buttonExtent));
-      hackComponent(buttonLeft);
+      buttonLeft.addMouseListener(new MouseAdapter() {
+         @Override
+         public void mouseClicked(final MouseEvent e) {
+            moveLeft(container);
+         }
+      });
+      setLook(buttonLeft);
       container.add(buttonLeft);
       setPosition(buttonLeft, margin + 0, margin + buttonExtent);
 
 
       final JLabel buttonRight = new JLabel(getImageIcon("icons/go-right.png", buttonExtent, buttonExtent));
-      hackComponent(buttonRight);
+      buttonRight.addMouseListener(new MouseAdapter() {
+         @Override
+         public void mouseClicked(final MouseEvent e) {
+            moveRight(container);
+         }
+      });
+      setLook(buttonRight);
       container.add(buttonRight);
       setPosition(buttonRight, margin + buttonExtent * 2, margin + buttonExtent);
    }
 
 
-   private void hackComponent(final JLabel button) {
-      //      button.setBorder(new LineBorder(Color.RED, 1));
-      button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+   private void setLook(final JComponent widget) {
+      //      widget.setBorder(new LineBorder(Color.RED, 1));
+      widget.setCursor(new Cursor(Cursor.HAND_CURSOR));
    }
 
 
-   private void createZoomButtons(final Container container,
+   private void createZoomWidgets(final Container container,
                                   final int buttonExtent,
                                   final int margin) {
       _zoomInButton = new JLabel(getImageIcon("icons/zoom-in.png", buttonExtent, buttonExtent));
@@ -426,18 +490,40 @@ public class GPlanarPanoramicViewer {
          @Override
          public void mouseClicked(final MouseEvent e) {
             try {
-               final int targetX = (int) container.getBounds().getCenterX();
-               final int targetY = (int) container.getBounds().getCenterY();
-               setZoomLevel(container, _currentLevel + 1, targetX, targetY);
+               setZoomLevel(container, _currentLevel + 1);
             }
             catch (final IOException e1) {
                e1.printStackTrace();
             }
          }
       });
-      hackComponent(_zoomInButton);
+      setLook(_zoomInButton);
       container.add(_zoomInButton);
       setPosition(_zoomInButton, margin + buttonExtent, margin + buttonExtent * 4 + 0);
+
+
+      _zoomSlider = new JSlider(JSlider.VERTICAL, _minLevel, _maxLevel, _currentLevel);
+      _zoomSlider.setMajorTickSpacing(0);
+      _zoomSlider.setMinorTickSpacing(1);
+      _zoomSlider.setSnapToTicks(true);
+      _zoomSlider.setOpaque(false);
+      _zoomSlider.setPreferredSize(new Dimension(_zoomSlider.getPreferredSize().width, _zoomLevels.size() * buttonExtent * 2 / 3));
+      _zoomSlider.addChangeListener(new ChangeListener() {
+         @Override
+         public void stateChanged(final ChangeEvent e) {
+            try {
+               setZoomLevel(container, _zoomSlider.getValue());
+            }
+            catch (final IOException e1) {
+               e1.printStackTrace();
+            }
+            focusTo(container);
+         }
+      });
+
+      setLook(_zoomSlider);
+      container.add(_zoomSlider);
+      setPosition(_zoomSlider, margin + buttonExtent, margin + buttonExtent * 5);
 
 
       _zoomOutButton = new JLabel(getImageIcon("icons/zoom-out.png", buttonExtent, buttonExtent));
@@ -445,18 +531,25 @@ public class GPlanarPanoramicViewer {
          @Override
          public void mouseClicked(final MouseEvent e) {
             try {
-               final int targetX = (int) container.getBounds().getCenterX();
-               final int targetY = (int) container.getBounds().getCenterY();
-               setZoomLevel(container, _currentLevel - 1, targetX, targetY);
+               setZoomLevel(container, _currentLevel - 1);
             }
             catch (final IOException e1) {
                e1.printStackTrace();
             }
          }
       });
-      hackComponent(_zoomOutButton);
+      setLook(_zoomOutButton);
       container.add(_zoomOutButton);
-      setPosition(_zoomOutButton, margin + buttonExtent, margin + buttonExtent * 4 + buttonExtent);
+      setPosition(_zoomOutButton, margin + buttonExtent, margin + buttonExtent * 5 + _zoomSlider.getHeight());
+   }
+
+
+   private void setZoomLevel(final Container container,
+                             final int newLevel) throws IOException {
+      final Rectangle containerBounds = container.getBounds();
+      final int targetX = (int) containerBounds.getCenterX();
+      final int targetY = (int) containerBounds.getCenterY();
+      setZoomLevel(container, newLevel, targetX, targetY);
    }
 
 
@@ -483,21 +576,35 @@ public class GPlanarPanoramicViewer {
       _offsetX = (int) (targetXForNewZoom - targetX) * -1;
       _offsetY = (int) (targetYForNewZoom - targetY) * -1;
 
-      updateZoomButtons();
+      updateZoomWidgets();
 
       recreateTiles(container);
    }
 
 
-   private void updateZoomButtons() {
+   private void setOffset(final Container container,
+                          final int offsetX,
+                          final int offsetY) throws IOException {
+      if ((offsetX == _offsetX) && (offsetY == _offsetY)) {
+         return;
+      }
+      _offsetX = offsetX;
+      _offsetY = offsetY;
+      recreateTiles(container);
+   }
+
+
+   private void updateZoomWidgets() {
       _zoomInButton.setEnabled(_currentLevel < _maxLevel);
       _zoomOutButton.setEnabled(_currentLevel > _minLevel);
+
+      _zoomSlider.setValue(_currentLevel);
    }
 
 
    private void recreateTiles(final Container container) throws IOException {
       removeTiles(container);
-      createTiles();
+      createTiles(container);
       addTiles(container);
 
       container.invalidate();
@@ -508,8 +615,23 @@ public class GPlanarPanoramicViewer {
 
    private void addTiles(final Container container) throws IOException {
       for (final Tile tile : _tiles) {
-         tile.positionate(_offsetX, _offsetY);
+         tile.positionate();
          container.add(tile);
+      }
+   }
+
+
+   private void createTiles(final Container container) {
+      final GPlanarPanoramicZoomLevel currentZoomLevel = getCurrentZoomLevel();
+
+      final Rectangle containerBounds = container.getBounds();
+      for (int x = 0; x < currentZoomLevel.getWidthInTiles(); x++) {
+         for (int y = 0; y < currentZoomLevel.getHeightInTiles(); y++) {
+            final Tile tile = new Tile(currentZoomLevel, x, y);
+            if (tile.touches(containerBounds)) {
+               _tiles.add(tile);
+            }
+         }
       }
    }
 
@@ -528,6 +650,46 @@ public class GPlanarPanoramicViewer {
                             final int y) {
       final Dimension size = component.getPreferredSize();
       component.setBounds(x, y, size.width, size.height);
+   }
+
+
+   private void moveDown(final Container container) {
+      try {
+         setOffset(container, _offsetX, _offsetY + GPlanarPanoramicZoomLevel.TILE_HEIGHT / 3);
+      }
+      catch (final IOException e1) {
+         e1.printStackTrace();
+      }
+   }
+
+
+   private void moveUp(final Container container) {
+      try {
+         setOffset(container, _offsetX, _offsetY - GPlanarPanoramicZoomLevel.TILE_HEIGHT / 3);
+      }
+      catch (final IOException e1) {
+         e1.printStackTrace();
+      }
+   }
+
+
+   private void moveLeft(final Container container) {
+      try {
+         setOffset(container, _offsetX - GPlanarPanoramicZoomLevel.TILE_WIDTH / 3, _offsetY);
+      }
+      catch (final IOException e1) {
+         e1.printStackTrace();
+      }
+   }
+
+
+   private void moveRight(final Container container) {
+      try {
+         setOffset(container, _offsetX + GPlanarPanoramicZoomLevel.TILE_WIDTH / 3, _offsetY);
+      }
+      catch (final IOException e1) {
+         e1.printStackTrace();
+      }
    }
 
 
@@ -572,7 +734,6 @@ public class GPlanarPanoramicViewer {
                viewer.open();
             }
             catch (final IOException e) {
-               // TODO Auto-generated catch block
                e.printStackTrace();
             }
          }
