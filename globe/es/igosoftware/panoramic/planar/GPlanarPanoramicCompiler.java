@@ -17,8 +17,6 @@ import es.igosoftware.io.GIOUtils;
 
 
 public class GPlanarPanoramicCompiler {
-   private static final int TILE_WIDTH  = 256;
-   private static final int TILE_HEIGHT = 256;
 
 
    private static GPlanarPanoramicZoomLevel[] getZoomLevels(final BufferedImage bi) {
@@ -30,7 +28,7 @@ public class GPlanarPanoramicCompiler {
          currentHeight /= 2;
          levelCount++;
       }
-      while ((currentWidth > TILE_WIDTH) && (currentHeight > TILE_HEIGHT));
+      while ((currentWidth > GPlanarPanoramicZoomLevel.TILE_WIDTH) && (currentHeight > GPlanarPanoramicZoomLevel.TILE_HEIGHT));
 
       final GPlanarPanoramicZoomLevel[] levels = new GPlanarPanoramicZoomLevel[levelCount];
 
@@ -38,7 +36,8 @@ public class GPlanarPanoramicCompiler {
       currentHeight = bi.getHeight();
 
       for (int i = 0; i < levelCount; i++) {
-         levels[i] = new GPlanarPanoramicZoomLevel(levelCount - i, currentWidth, currentHeight, TILE_WIDTH, TILE_HEIGHT);
+         levels[i] = new GPlanarPanoramicZoomLevel(levelCount - i, currentWidth, currentHeight,
+                  GPlanarPanoramicZoomLevel.TILE_WIDTH, GPlanarPanoramicZoomLevel.TILE_HEIGHT);
 
          currentWidth /= 2;
          currentHeight /= 2;
@@ -134,15 +133,15 @@ public class GPlanarPanoramicCompiler {
 
             for (int widthIndex = 0; widthIndex < zoomLevel.getWidthInTiles(); widthIndex++) {
                for (int heightIndex = 0; heightIndex < zoomLevel.getHeightInTiles(); heightIndex++) {
-                  final int tileX = TILE_WIDTH * widthIndex;
-                  final int tileY = TILE_HEIGHT * heightIndex;
+                  final int tileX = GPlanarPanoramicZoomLevel.TILE_WIDTH * widthIndex;
+                  final int tileY = GPlanarPanoramicZoomLevel.TILE_HEIGHT * heightIndex;
 
-                  int tileWidth = TILE_WIDTH;
+                  int tileWidth = GPlanarPanoramicZoomLevel.TILE_WIDTH;
                   if ((tileX + tileWidth) > scaleImageWidth) {
                      tileWidth += (scaleImageWidth - (tileX + tileWidth));
                   }
 
-                  int tileHeight = TILE_HEIGHT;
+                  int tileHeight = GPlanarPanoramicZoomLevel.TILE_HEIGHT;
                   if ((tileY + tileHeight) > scaleImageHeight) {
                      tileHeight += (scaleImageHeight - (tileY + tileHeight));
                   }
@@ -151,7 +150,7 @@ public class GPlanarPanoramicCompiler {
                   //                                     + tileHeight + "...");
 
                   final BufferedImage tileImage = resize(scaledRenderedImage.getSubimage(tileX, tileY, tileWidth, tileHeight),
-                           TILE_WIDTH, TILE_HEIGHT);
+                           GPlanarPanoramicZoomLevel.TILE_WIDTH, GPlanarPanoramicZoomLevel.TILE_HEIGHT);
 
                   final File tileFile = new File(levelDirectory + "tile-" + widthIndex + "-" + heightIndex + ".jpg");
                   ImageIO.write(tileImage, "jpeg", tileFile);

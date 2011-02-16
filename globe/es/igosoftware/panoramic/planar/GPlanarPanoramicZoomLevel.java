@@ -6,24 +6,29 @@ import com.google.gson.annotations.SerializedName;
 
 
 class GPlanarPanoramicZoomLevel {
+
+   public static final int TILE_WIDTH  = 256;
+   public static final int TILE_HEIGHT = 256;
+
+
    @SerializedName("level")
-   private int _level;
+   private int             _level;
 
    @SerializedName("width")
-   private int _width;
+   private int             _width;
 
    @SerializedName("height")
-   private int _height;
+   private int             _height;
 
    @SerializedName("widthInTiles")
-   private int _widthInTiles;
+   private int             _widthInTiles;
 
    @SerializedName("heightInTiles")
-   private int _heightInTiles;
+   private int             _heightInTiles;
 
 
    GPlanarPanoramicZoomLevel() {
-      // empty constructor for GSON deserializing
+      // empty constructor for GSON deserialization
    }
 
 
@@ -51,13 +56,6 @@ class GPlanarPanoramicZoomLevel {
    }
 
 
-   @Override
-   public String toString() {
-      return "Level=" + _level + ", Pixels=" + _width + "x" + _height + ", " + ((float) (_width * _height) / 1024 / 1024)
-             + "Mpx, Tiles=" + _widthInTiles + "x" + _heightInTiles;
-   }
-
-
    public int getLevel() {
       return _level;
    }
@@ -81,4 +79,12 @@ class GPlanarPanoramicZoomLevel {
    public int getHeightInTiles() {
       return _heightInTiles;
    }
+
+
+   @Override
+   public String toString() {
+      return "Level=" + _level + ", Pixels=" + _width + "x" + _height + ", " + ((float) (_width * _height) / 1024 / 1024)
+             + "Mpx, Tiles=" + _widthInTiles + "x" + _heightInTiles;
+   }
+
 }
