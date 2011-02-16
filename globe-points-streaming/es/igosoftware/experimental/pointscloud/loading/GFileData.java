@@ -13,15 +13,15 @@ public class GFileData
    private static final long serialVersionUID = 1L;
 
    private final int         _taskID;
-   private final int         _from;
-   private final int         _to;
+   private final long        _from;
+   private final long        _to;
    private final boolean     _lastPacket;
    private final byte[]      _data;
 
 
    GFileData(final int taskID,
-             final int from,
-             final int to,
+             final long from,
+             final long to,
              final boolean lastPacket,
              final byte[] data) {
       _taskID = taskID;
@@ -37,12 +37,12 @@ public class GFileData
    }
 
 
-   public int getFrom() {
+   public long getFrom() {
       return _from;
    }
 
 
-   public int getTo() {
+   public long getTo() {
       return _to;
    }
 

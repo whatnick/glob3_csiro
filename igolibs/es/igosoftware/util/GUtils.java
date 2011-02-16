@@ -128,8 +128,7 @@ public final class GUtils {
       try {
          Thread.sleep(millis, nanos);
       }
-      catch (final InterruptedException e) {
-      }
+      catch (final InterruptedException e) {}
    }
 
 
@@ -158,6 +157,16 @@ public final class GUtils {
 
    public static ImageIcon getImageIcon(final String iconName) {
       return new ImageIcon(getImage(iconName));
+   }
+
+
+   public static ImageIcon getImageIcon(final String iconName,
+                                        final ClassLoader classLoader) {
+      final Image image = getImage(iconName, classLoader);
+      if (image == null) {
+         return null;
+      }
+      return new ImageIcon(image);
    }
 
 

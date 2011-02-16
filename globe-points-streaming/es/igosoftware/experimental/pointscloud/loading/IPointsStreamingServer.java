@@ -51,8 +51,8 @@ public interface IPointsStreamingServer
 
    public int loadFile(final int sessionID,
                        final String fileName,
-                       final int fromBytes,
-                       final int toBytes,
+                       final long fromBytes,
+                       final long toBytes,
                        final int priority);
 
 

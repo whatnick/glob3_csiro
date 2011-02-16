@@ -95,6 +95,7 @@ import es.igosoftware.util.GHolder;
 import es.igosoftware.util.GLogger;
 import es.igosoftware.util.GPair;
 import es.igosoftware.util.GUtils;
+import es.igosoftware.util.IPredicate;
 import es.igosoftware.util.LRUCache;
 import es.igosoftware.utils.GSwingUtils;
 import es.igosoftware.utils.GWrapperFontSet;
@@ -479,7 +480,13 @@ public abstract class GGlobeApplication
          e.printStackTrace();
       }
 
-      return modules.get();
+
+      return GCollections.select(modules.get(), new IPredicate<IGlobeModule>() {
+         @Override
+         public boolean evaluate(final IGlobeModule element) {
+            return element != null;
+         }
+      });
    }
 
 
@@ -1280,19 +1287,30 @@ public abstract class GGlobeApplication
          return;
       }
 
+      final double altitude = calculateAltitudeForZooming(sector);
+      if (altitude < 0) {
+         return;
+      }
+
+      goTo(new Position(sector.getCentroid(), 0), Angle.ZERO, Angle.ZERO, altitude);
+   }
+
+
+   @Override
+   public double calculateAltitudeForZooming(final Sector sector) {
       final View view = getView();
       if (view == null) {
-         return;
+         return -1;
       }
 
       final Globe globe = getGlobe();
       if (globe == null) {
-         return;
+         return -1;
       }
 
       final double w = 0.5 * sector.getDeltaLonRadians() * globe.getEquatorialRadius();
       final double altitude = w / view.getFieldOfView().tanHalfAngle();
-      goTo(new Position(sector.getCentroid(), 0), Angle.ZERO, Angle.ZERO, altitude);
+      return altitude;
    }
 
 

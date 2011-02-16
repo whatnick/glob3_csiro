@@ -36,6 +36,7 @@
 
 package es.igosoftware.globe.view.customView;
 
+import es.igosoftware.util.GAssert;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.LatLon;
 import gov.nasa.worldwind.geom.Position;
@@ -53,50 +54,49 @@ public class GCustomViewLimits
          implements
             OrbitViewLimits {
 
-   protected Sector centerLocationLimits;
-   protected double minCenterElevation;
-   protected double maxCenterElevation;
-   protected double minZoom;
-   protected double maxZoom;
+   private Sector _centerLocationLimits;
+   private double _minCenterElevation;
+   private double _maxCenterElevation;
+   private double _minZoom;
+   private double _maxZoom;
 
 
    public GCustomViewLimits() {
-      this.centerLocationLimits = Sector.FULL_SPHERE;
-      this.minCenterElevation = -Double.MAX_VALUE;
-      this.maxCenterElevation = Double.MAX_VALUE;
-      this.minHeading = Angle.NEG180;
-      this.maxHeading = Angle.POS180;
-      this.minPitch = Angle.ZERO;
-      this.maxPitch = Angle.POS90;
-      this.minZoom = 0;
-      this.maxZoom = Double.MAX_VALUE;
+      _centerLocationLimits = Sector.FULL_SPHERE;
+      _minCenterElevation = -Double.MAX_VALUE;
+      _maxCenterElevation = Double.MAX_VALUE;
+      minHeading = Angle.NEG180;
+      maxHeading = Angle.POS180;
+      minPitch = Angle.ZERO;
+      maxPitch = Angle.POS90;
+      _minZoom = 0;
+      _maxZoom = Double.MAX_VALUE;
    }
 
 
    @Override
    public double[] getCenterElevationLimits() {
-      return new double[] { this.minCenterElevation, this.maxCenterElevation };
+      return new double[] { _minCenterElevation, _maxCenterElevation };
    }
 
 
    @Override
    public Sector getCenterLocationLimits() {
-      return this.centerLocationLimits;
+      return _centerLocationLimits;
    }
 
 
    @Override
    public double[] getZoomLimits() {
-      return new double[] { this.minZoom, this.maxZoom };
+      return new double[] { _minZoom, _maxZoom };
    }
 
 
    @Override
    public void setCenterElevationLimits(final double minValue,
                                         final double maxValue) {
-      this.minCenterElevation = minValue;
-      this.maxCenterElevation = maxValue;
-
+      _minCenterElevation = minValue;
+      _maxCenterElevation = maxValue;
    }
 
 
@@ -108,32 +108,22 @@ public class GCustomViewLimits
          throw new IllegalArgumentException(message);
       }
 
-      this.centerLocationLimits = sector;
-
+      _centerLocationLimits = sector;
    }
 
 
    @Override
    public void setZoomLimits(final double minValue,
                              final double maxValue) {
-      this.minZoom = minValue;
-      this.maxZoom = maxValue;
-
+      _minZoom = minValue;
+      _maxZoom = maxValue;
    }
 
 
    public static void applyLimits(final OrbitView view,
                                   final OrbitViewLimits viewLimits) {
-      if (view == null) {
-         final String message = Logging.getMessage("nullValue.ViewIsNull");
-         Logging.logger().severe(message);
-         throw new IllegalArgumentException(message);
-      }
-      if (viewLimits == null) {
-         final String message = Logging.getMessage("nullValue.ViewLimitsIsNull");
-         Logging.logger().severe(message);
-         throw new IllegalArgumentException(message);
-      }
+      GAssert.notNull(view, "view");
+      GAssert.notNull(viewLimits, "viewLimits");
 
       view.setCenterPosition(limitCenterPosition(view.getCenterPosition(), viewLimits));
       view.setHeading(limitHeading(view.getHeading(), viewLimits));
@@ -144,36 +134,20 @@ public class GCustomViewLimits
 
    public static Position limitCenterPosition(final Position position,
                                               final OrbitViewLimits viewLimits) {
-      if (position == null) {
-         final String message = Logging.getMessage("nullValue.PositionIsNull");
-         Logging.logger().severe(message);
-         throw new IllegalArgumentException(message);
-      }
-      if (viewLimits == null) {
-         final String message = Logging.getMessage("nullValue.ViewLimitsIsNull");
-         Logging.logger().severe(message);
-         throw new IllegalArgumentException(message);
-      }
+      GAssert.notNull(position, "position");
+      GAssert.notNull(viewLimits, "viewLimits");
 
       return new Position(limitCenterLocation(position.getLatitude(), position.getLongitude(), viewLimits), limitCenterElevation(
                position.getElevation(), viewLimits));
-
    }
 
 
    public static LatLon limitCenterLocation(final Angle latitude,
                                             final Angle longitude,
                                             final OrbitViewLimits viewLimits) {
-      if ((latitude == null) || (longitude == null)) {
-         final String message = Logging.getMessage("nullValue.LatitudeOrLongitudeIsNull");
-         Logging.logger().severe(message);
-         throw new IllegalArgumentException(message);
-      }
-      if (viewLimits == null) {
-         final String message = Logging.getMessage("nullValue.ViewLimitsIsNull");
-         Logging.logger().severe(message);
-         throw new IllegalArgumentException(message);
-      }
+      GAssert.notNull(latitude, "latitude");
+      GAssert.notNull(longitude, "longitude");
+      GAssert.notNull(viewLimits, "viewLimits");
 
       final Sector limits = viewLimits.getCenterLocationLimits();
       Angle newLatitude = latitude;
@@ -199,11 +173,7 @@ public class GCustomViewLimits
 
    public static double limitCenterElevation(final double value,
                                              final OrbitViewLimits viewLimits) {
-      if (viewLimits == null) {
-         final String message = Logging.getMessage("nullValue.ViewLimitsIsNull");
-         Logging.logger().severe(message);
-         throw new IllegalArgumentException(message);
-      }
+      GAssert.notNull(viewLimits, "viewLimits");
 
       final double[] limits = viewLimits.getCenterElevationLimits();
       double newValue = value;
@@ -221,11 +191,7 @@ public class GCustomViewLimits
 
    public static double limitZoom(final double value,
                                   final OrbitViewLimits viewLimits) {
-      if (viewLimits == null) {
-         final String message = Logging.getMessage("nullValue.ViewLimitsIsNull");
-         Logging.logger().severe(message);
-         throw new IllegalArgumentException(message);
-      }
+      GAssert.notNull(viewLimits, "viewLimits");
 
       final double[] limits = viewLimits.getZoomLimits();
       double newValue = value;
@@ -250,11 +216,11 @@ public class GCustomViewLimits
                                   final RestorableSupport.StateObject context) {
       super.getRestorableState(rs, context);
 
-      rs.addStateValueAsSector(context, "centerLocationLimits", this.centerLocationLimits);
-      rs.addStateValueAsDouble(context, "minCenterElevation", this.minCenterElevation);
-      rs.addStateValueAsDouble(context, "maxCenterElevation", this.maxCenterElevation);
-      rs.addStateValueAsDouble(context, "minZoom", this.minZoom);
-      rs.addStateValueAsDouble(context, "maxZoom", this.maxZoom);
+      rs.addStateValueAsSector(context, "centerLocationLimits", _centerLocationLimits);
+      rs.addStateValueAsDouble(context, "minCenterElevation", _minCenterElevation);
+      rs.addStateValueAsDouble(context, "maxCenterElevation", _maxCenterElevation);
+      rs.addStateValueAsDouble(context, "minZoom", _minZoom);
+      rs.addStateValueAsDouble(context, "maxZoom", _maxZoom);
    }
 
 
@@ -265,11 +231,11 @@ public class GCustomViewLimits
 
       final Sector sector = rs.getStateValueAsSector(context, "centerLocationLimits");
       if (sector != null) {
-         this.setCenterLocationLimits(sector);
+         setCenterLocationLimits(sector);
       }
 
       // Min and max center elevation.
-      double[] minAndMaxValue = this.getCenterElevationLimits();
+      double[] minAndMaxValue = getCenterElevationLimits();
       Double min = rs.getStateValueAsDouble(context, "minCenterElevation");
       if (min != null) {
          minAndMaxValue[0] = min;
@@ -281,11 +247,11 @@ public class GCustomViewLimits
       }
 
       if ((min != null) || (max != null)) {
-         this.setCenterElevationLimits(minAndMaxValue[0], minAndMaxValue[1]);
+         setCenterElevationLimits(minAndMaxValue[0], minAndMaxValue[1]);
       }
 
       // Min and max zoom value.        
-      minAndMaxValue = this.getZoomLimits();
+      minAndMaxValue = getZoomLimits();
       min = rs.getStateValueAsDouble(context, "minZoom");
       if (min != null) {
          minAndMaxValue[0] = min;
@@ -297,7 +263,7 @@ public class GCustomViewLimits
       }
 
       if ((min != null) || (max != null)) {
-         this.setZoomLimits(minAndMaxValue[0], minAndMaxValue[1]);
+         setZoomLimits(minAndMaxValue[0], minAndMaxValue[1]);
       }
    }
 

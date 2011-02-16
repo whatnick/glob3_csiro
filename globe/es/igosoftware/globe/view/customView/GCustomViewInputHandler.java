@@ -39,6 +39,7 @@ package es.igosoftware.globe.view.customView;
 import es.igosoftware.globe.GGlobeApplication;
 import es.igosoftware.globe.layers.I3DContentCollectionLayer;
 import es.igosoftware.globe.view.GInputState;
+import es.igosoftware.util.GMath;
 import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.animation.AngleAnimator;
 import gov.nasa.worldwind.animation.AnimationController;
@@ -79,20 +80,21 @@ public class GCustomViewInputHandler
          extends
             BasicViewInputHandler {
 
-   protected AnimationController gotoAnimControl         = new AnimationController();
-   protected AnimationController uiAnimControl           = new AnimationController();
-   protected static final String VIEW_ANIM_HEADING       = "ViewAnimHeading";
-   protected static final String VIEW_ANIM_PITCH         = "ViewAnimPitch";
-   protected static final String VIEW_ANIM_HEADING_PITCH = "ViewAnimHeadingPitch";
-   protected static final String VIEW_ANIM_POSITION      = "ViewAnimPosition";
-   protected static final String VIEW_ANIM_CENTER        = "ViewAnimCenter";
-   protected static final String VIEW_ANIM_ZOOM          = "ViewAnimZoom";
-   protected static final String VIEW_ANIM_PAN           = "ViewAnimPan";
-   protected static final String VIEW_ANIM_APP           = "ViewAnimApp";
+   private static final String       VIEW_ANIM_HEADING       = "ViewAnimHeading";
+   private static final String       VIEW_ANIM_PITCH         = "ViewAnimPitch";
+   private static final String       VIEW_ANIM_HEADING_PITCH = "ViewAnimHeadingPitch";
+   private static final String       VIEW_ANIM_POSITION      = "ViewAnimPosition";
+   private static final String       VIEW_ANIM_CENTER        = "ViewAnimCenter";
+   private static final String       VIEW_ANIM_ZOOM          = "ViewAnimZoom";
+   private static final String       VIEW_ANIM_PAN           = "ViewAnimPan";
+   private static final String       VIEW_ANIM_APP           = "ViewAnimApp";
+
+
+   private final AnimationController _gotoAnimControl        = new AnimationController();
+   private final AnimationController _uiAnimControl          = new AnimationController();
 
 
    public GCustomViewInputHandler() {
-
 
    }
 
@@ -112,9 +114,8 @@ public class GCustomViewInputHandler
                            final ViewInputAttributes.DeviceAttributes deviceAttributes,
                            final ViewInputAttributes.ActionAttributes actionAttribs) {
 
-      final View view = this.getView();
-      if (view == null) // include this test to ensure any derived implementation performs it
-      {
+      final View view = getView();
+      if (view == null) { // include this test to ensure any derived implementation performs it
          return;
       }
 
@@ -127,22 +128,21 @@ public class GCustomViewInputHandler
       }
 
       //System.out.println("onMoveTo");
-      this.stopAllAnimators();
+      stopAllAnimators();
       if (view instanceof OrbitView) {
-
          // We're treating a speed parameter as smoothing here. A greater speed results in greater smoothing and
          // slower response. Therefore the min speed used at lower altitudes ought to be *greater* than the max
          // speed used at higher altitudes.
          //double[] values = actionAttribs.getValues();
-         double smoothing = this.getScaleValueZoom(actionAttribs);
+         double smoothing = getScaleValueZoom(actionAttribs);
          if (!actionAttribs.isEnableSmoothing()) {
             smoothing = 0.0;
          }
 
-         final GCustomViewCenterAnimator centerAnimator = new GCustomViewCenterAnimator((GCustomView) this.getView(),
+         final GCustomViewCenterAnimator centerAnimator = new GCustomViewCenterAnimator((GCustomView) getView(),
                   view.getEyePosition(), focalPosition, smoothing,
                   GCustomViewPropertyAccessor.createCenterPositionAccessor((OrbitView) view), true);
-         this.gotoAnimControl.put(VIEW_ANIM_CENTER, centerAnimator);
+         _gotoAnimControl.put(VIEW_ANIM_CENTER, centerAnimator);
          view.firePropertyChange(AVKey.VIEW, null, view);
       }
    }
@@ -153,12 +153,11 @@ public class GCustomViewInputHandler
                                            final Angle longitudeChange,
                                            final ViewInputAttributes.ActionAttributes actionAttribs) {
 
-      this.stopGoToAnimators();
-      this.stopUserInputAnimators(VIEW_ANIM_HEADING, VIEW_ANIM_PITCH, VIEW_ANIM_ZOOM);
+      stopGoToAnimators();
+      stopUserInputAnimators(VIEW_ANIM_HEADING, VIEW_ANIM_PITCH, VIEW_ANIM_ZOOM);
 
-      final View view = this.getView();
-      if (view == null) // include this test to ensure any derived implementation performs it
-      {
+      final View view = getView();
+      if (view == null) { // include this test to ensure any derived implementation performs it
          return;
       }
 
@@ -176,11 +175,10 @@ public class GCustomViewInputHandler
 
       //System.out.println("onHorizontalTranslateAbs");
       if (view instanceof OrbitView) {
-
          final Position newPosition = ((OrbitView) view).getCenterPosition().add(
                   new Position(latitudeChange, longitudeChange, 0.0));
 
-         this.setCenterPosition((GCustomView) view, uiAnimControl, newPosition, actionAttribs);
+         setCenterPosition((GCustomView) view, _uiAnimControl, newPosition, actionAttribs);
       }
    }
 
@@ -192,21 +190,20 @@ public class GCustomViewInputHandler
                                            final double totalSideInput,
                                            final ViewInputAttributes.DeviceAttributes deviceAttributes,
                                            final ViewInputAttributes.ActionAttributes actionAttributes) {
-      final View view = this.getView();
+      final View view = getView();
       GInputState inputState = null;
       if (view instanceof GCustomView) {
          inputState = ((GCustomView) view).getInputState();
       }
       if ((inputState != null) && (!inputState.isMoving())) {
-         //System.out.println("No Movement allowed!!");
          onRotateView(Angle.fromDegrees(-sideInput * 0.5), Angle.fromDegrees(forwardInput * 0.5), actionAttributes);
          return;
       }
 
 
       //System.out.println("onHorizontalTranslateRel(6 args)");
-      this.stopGoToAnimators();
-      this.stopUserInputAnimators(VIEW_ANIM_HEADING, VIEW_ANIM_PITCH, VIEW_ANIM_ZOOM);
+      stopGoToAnimators();
+      stopUserInputAnimators(VIEW_ANIM_HEADING, VIEW_ANIM_PITCH, VIEW_ANIM_ZOOM);
 
       if (actionAttributes.getMouseActions() != null) {
          // Normalize the forward and right magnitudes.
@@ -240,8 +237,6 @@ public class GCustomViewInputHandler
 
          // Cursor is on the globe, pan between the two positions.
          if ((vec != null) && (lastVec != null)) {
-
-
             // Compute the change in view location given two screen points and corresponding world vectors.
             final LatLon latlon = getChangeInLocation(lastPoint, point, lastVec, vec);
             onHorizontalTranslateAbs(latlon.getLatitude(), latlon.getLongitude(), actionAttributes);
@@ -266,9 +261,8 @@ public class GCustomViewInputHandler
                                            final Angle sideChange,
                                            final ActionAttributes actionAttribs) {
       //System.out.println("onHorizontalTranslateRel(3args)");
-      final View view = this.getView();
-      if (view == null) // include this test to ensure any derived implementation performs it
-      {
+      final View view = getView();
+      if (view == null) { // include this test to ensure any derived implementation performs it
          return;
       }
 
@@ -283,38 +277,35 @@ public class GCustomViewInputHandler
          final double lonChange = sinHeading * forwardChange.getDegrees() + cosHeading * sideChange.getDegrees();
          final Position newPosition = ((OrbitView) view).getCenterPosition().add(Position.fromDegrees(latChange, lonChange, 0.0));
 
-         this.setCenterPosition((GCustomView) view, this.uiAnimControl, newPosition, actionAttribs);
+         setCenterPosition((GCustomView) view, _uiAnimControl, newPosition, actionAttribs);
       }
-
    }
 
 
    @Override
    protected void onResetHeading(final ViewInputAttributes.ActionAttributes actionAttribs) {
       //System.out.println("onResetHeading");
-      this.stopAllAnimators();
+      stopAllAnimators();
 
-      final View view = this.getView();
-      if (view == null) // include this test to ensure any derived implementation performs it
-      {
+      final View view = getView();
+      if (view == null) { // include this test to ensure any derived implementation performs it
          return;
       }
-      this.addHeadingAnimator(view.getHeading(), Angle.ZERO);
+      addHeadingAnimator(view.getHeading(), Angle.ZERO);
    }
 
 
    @Override
    protected void onResetHeadingAndPitch(final ViewInputAttributes.ActionAttributes actionAttribs) {
       //System.out.println("onResetHeadingAndPitch");
-      this.stopAllAnimators();
+      stopAllAnimators();
 
-      final View view = this.getView();
-      if (view == null) // include this test to ensure any derived implementation performs it
-      {
+      final View view = getView();
+      if (view == null) { // include this test to ensure any derived implementation performs it
          return;
       }
 
-      this.addHeadingPitchAnimator(view.getHeading(), Angle.ZERO, view.getPitch(), Angle.ZERO);
+      addHeadingPitchAnimator(view.getHeading(), Angle.ZERO, view.getPitch(), Angle.ZERO);
    }
 
 
@@ -323,30 +314,27 @@ public class GCustomViewInputHandler
                                final Angle pitchChange,
                                final ActionAttributes actionAttribs) {
       //System.out.println("onRotateView (3args)");
-      final View view = this.getView();
-      if (view == null) // include this test to ensure any derived implementation performs it
-      {
+      final View view = getView();
+      if (view == null) { // include this test to ensure any derived implementation performs it
          return;
       }
-
 
       if (view instanceof GCustomView) {
          if (!headingChange.equals(Angle.ZERO)) {
             final GCustomView customView = (GCustomView) view;
             final GInputState inputState = customView.getInputState();
             if (inputState == GInputState.PANORAMICS) {
-               this.changeHeading((GCustomView) view, uiAnimControl, headingChange.multiply(-1.0), actionAttribs);
+               changeHeading((GCustomView) view, _uiAnimControl, headingChange.multiply(-1.0), actionAttribs);
             }
             else {
-               this.changeHeading((GCustomView) view, uiAnimControl, headingChange, actionAttribs);
+               changeHeading((GCustomView) view, _uiAnimControl, headingChange, actionAttribs);
             }
          }
 
          if (!pitchChange.equals(Angle.ZERO)) {
-            this.changePitch((GCustomView) view, uiAnimControl, pitchChange, actionAttribs);
+            changePitch((GCustomView) view, _uiAnimControl, pitchChange, actionAttribs);
          }
       }
-
    }
 
 
@@ -358,11 +346,10 @@ public class GCustomViewInputHandler
                                final DeviceAttributes deviceAttributes,
                                final ActionAttributes actionAttributes) {
       //System.out.println("onRotateView (6 args)");
-      this.stopGoToAnimators();
-      this.stopUserInputAnimators(VIEW_ANIM_CENTER, VIEW_ANIM_ZOOM);
+      stopGoToAnimators();
+      stopUserInputAnimators(VIEW_ANIM_CENTER, VIEW_ANIM_ZOOM);
 
       if (actionAttributes.getMouseActions() != null) {
-
          // Switch the direction of heading change depending on whether the cursor is above or below
          // the center of the screen.
          //         if (getWorldWindow() instanceof Component) {
@@ -371,23 +358,18 @@ public class GCustomViewInputHandler
          //            }
          //         }
       }
-
-
       else {
          final double length = Math.sqrt(headingInput * headingInput + pitchInput * pitchInput);
          if (length > 0.0) {
             headingInput /= length;
             pitchInput /= length;
          }
-
-
       }
 
       final Angle headingChange = Angle.fromDegrees(headingInput * getScaleValueRotate(actionAttributes));
       final Angle pitchChange = Angle.fromDegrees(pitchInput * getScaleValueRotate(actionAttributes));
 
       onRotateView(headingChange, pitchChange, actionAttributes);
-
    }
 
 
@@ -396,31 +378,28 @@ public class GCustomViewInputHandler
                                       final double totalTranslateChange,
                                       final DeviceAttributes deviceAttributes,
                                       final ActionAttributes actionAttributes) {
-      //System.out.println("onVerticalTranslate (4 args)");
-      this.stopGoToAnimators();
-      this.stopUserInputAnimators(VIEW_ANIM_CENTER, VIEW_ANIM_HEADING, VIEW_ANIM_PITCH);
+      stopGoToAnimators();
+      stopUserInputAnimators(VIEW_ANIM_CENTER, VIEW_ANIM_HEADING, VIEW_ANIM_PITCH);
 
       final double zoomChange = translateChange * getScaleValueRotate(actionAttributes);
       onVerticalTranslate(zoomChange, actionAttributes);
-
    }
 
 
    @Override
    protected void onVerticalTranslate(final double translateChange,
                                       final ViewInputAttributes.ActionAttributes actionAttribs) {
-      //System.out.println("onVerticalTranslate (2 args)");
-      final View view = this.getView();
-      if (view == null) // include this test to ensure any derived implementation performs it
-      {
+      final View view = getView();
+      if (view == null) { // include this test to ensure any derived implementation performs it
          return;
       }
 
       if (translateChange == 0) {
          return;
       }
+
       if (view instanceof GCustomView) {
-         this.changeZoom((GCustomView) view, uiAnimControl, translateChange, actionAttribs);
+         changeZoom((GCustomView) view, _uiAnimControl, translateChange, actionAttribs);
       }
    }
 
@@ -433,9 +412,8 @@ public class GCustomViewInputHandler
    protected void handlePropertyChange(final java.beans.PropertyChangeEvent e) {
       super.handlePropertyChange(e);
 
-      //noinspection StringEquality
       if (e.getPropertyName() == OrbitView.CENTER_STOPPED) {
-         this.handleCustomViewCenterStopped();
+         handleCustomViewCenterStopped();
       }
    }
 
@@ -445,12 +423,12 @@ public class GCustomViewInputHandler
       // from this data structure without invoking stop(), the animator has no way of knowing it was forcibly stopped.
       // An animator's owner - potentially an object other than this ViewInputHandler - may need to know if an
       // animator has been forcibly stopped in order to react correctly to that event.
-      this.uiAnimControl.stopAnimations();
-      this.gotoAnimControl.stopAnimations();
-      this.uiAnimControl.clear();
-      this.gotoAnimControl.clear();
+      _uiAnimControl.stopAnimations();
+      _gotoAnimControl.stopAnimations();
+      _uiAnimControl.clear();
+      _gotoAnimControl.clear();
 
-      final View view = this.getView();
+      final View view = getView();
       if (view == null) {
          return;
       }
@@ -466,20 +444,20 @@ public class GCustomViewInputHandler
       // animator from this data structure without invoking stop(), the animator has no way of knowing it was forcibly
       // stopped. An animator's owner - likely an application object other - may need to know if an animator has been
       // forcibly stopped in order to react correctly to that event.
-      this.gotoAnimControl.stopAnimations();
-      this.gotoAnimControl.clear();
+      _gotoAnimControl.stopAnimations();
+      _gotoAnimControl.clear();
    }
 
 
    protected void stopUserInputAnimators(final Object... names) {
       for (final Object o : names) {
-         if (this.uiAnimControl.get(o) != null) {
+         if (_uiAnimControl.get(o) != null) {
             // Explicitly stop the 'ui' animator, then clear it from the data structure which holds it. If we remove
             // an animator from this data structure without invoking stop(), the animator has no way of knowing it
             // was forcibly stopped. Though applications cannot access the 'ui' animator data structure, stopping
             // the animators here is the correct action.
-            this.uiAnimControl.get(o).stop();
-            this.uiAnimControl.remove(o);
+            _uiAnimControl.get(o).stop();
+            _uiAnimControl.remove(o);
          }
       }
    }
@@ -487,14 +465,14 @@ public class GCustomViewInputHandler
 
    @Override
    protected void handleViewStopped() {
-      this.stopAllAnimators();
+      stopAllAnimators();
    }
 
 
    protected void handleCustomViewCenterStopped() {
       // The "center stopped" message instructs components to stop modifying the OrbitView's center position.
       // Therefore we stop any center position animations started by this view controller.
-      this.stopUserInputAnimators(VIEW_ANIM_CENTER);
+      stopUserInputAnimators(VIEW_ANIM_CENTER);
    }
 
 
@@ -506,7 +484,7 @@ public class GCustomViewInputHandler
                                     final Position position,
                                     final ViewInputAttributes.ActionAttributes attrib) {
       double smoothing = attrib.getSmoothingValue();
-      if (!(attrib.isEnableSmoothing() && this.isEnableSmoothing())) {
+      if (!(attrib.isEnableSmoothing() && isEnableSmoothing())) {
          smoothing = 0.0;
       }
 
@@ -524,7 +502,7 @@ public class GCustomViewInputHandler
 
          if ((centerAnimator == null) || !centerAnimator.hasNext()) {
             final Position newPosition = computeNewPosition(position, view.getOrbitViewLimits());
-            centerAnimator = new GCustomViewCenterAnimator((GCustomView) this.getView(), cur, newPosition, smoothing,
+            centerAnimator = new GCustomViewCenterAnimator((GCustomView) getView(), cur, newPosition, smoothing,
                      GCustomViewPropertyAccessor.createCenterPositionAccessor(view), true);
             animControl.put(VIEW_ANIM_CENTER, centerAnimator);
          }
@@ -538,6 +516,7 @@ public class GCustomViewInputHandler
 
          centerAnimator.start();
       }
+
       view.firePropertyChange(AVKey.VIEW, null, view);
    }
 
@@ -549,7 +528,7 @@ public class GCustomViewInputHandler
       view.computeAndSetViewCenterIfNeeded();
 
       double smoothing = attrib.getSmoothingValue();
-      if (!(attrib.isEnableSmoothing() && this.isEnableSmoothing())) {
+      if (!(attrib.isEnableSmoothing() && isEnableSmoothing())) {
          smoothing = 0.0;
       }
 
@@ -588,7 +567,7 @@ public class GCustomViewInputHandler
       view.computeAndSetViewCenterIfNeeded();
 
       double smoothing = attrib.getSmoothingValue();
-      if (!(attrib.isEnableSmoothing() && this.isEnableSmoothing())) {
+      if (!(attrib.isEnableSmoothing() && isEnableSmoothing())) {
          smoothing = 0.0;
       }
 
@@ -631,7 +610,7 @@ public class GCustomViewInputHandler
       view.computeAndSetViewCenterIfNeeded();
 
       double smoothing = attrib.getSmoothingValue();
-      if (!(attrib.isEnableSmoothing() && this.isEnableSmoothing())) {
+      if (!(attrib.isEnableSmoothing() && isEnableSmoothing())) {
          smoothing = 0.0;
       }
 
@@ -692,10 +671,10 @@ public class GCustomViewInputHandler
       return GCustomViewLimits.limitZoom(newZoom, limits);
    }
 
-   //**************************************************************//
-   //********************  Input Handler Property Accessors  ******//
-   //**************************************************************//
 
+   // ************************************************ //
+   // ******  Input Handler Property Accessors  ****** //
+   // ************************************************ //
    /**
     * CollisionAwarePitchAccessor implements an {@link gov.nasa.worldwind.util.PropertyAccessor.AngleAccessor} interface onto the
     * pitch property of an {@link gov.nasa.worldwind.view.orbit.OrbitView}. In addition to accessing the pitch property, this
@@ -725,7 +704,7 @@ public class GCustomViewInputHandler
             throw new IllegalArgumentException(message);
          }
 
-         this._customView = customView;
+         _customView = customView;
       }
 
 
@@ -736,7 +715,7 @@ public class GCustomViewInputHandler
        */
       @Override
       public Angle getAngle() {
-         return this._customView.getPitch();
+         return _customView.getPitch();
       }
 
 
@@ -758,12 +737,12 @@ public class GCustomViewInputHandler
 
          // If the view supports surface collision detection, then clear the view's collision flag prior to
          // making any property changes.
-         if (this._customView.isDetectCollisions()) {
-            this._customView.hadCollisions();
+         if (_customView.isDetectCollisions()) {
+            _customView.hadCollisions();
          }
 
          try {
-            this._customView.setPitch(value);
+            _customView.setPitch(value);
          }
          catch (final Exception e) {
             final String message = Logging.getMessage("generic.ExceptionWhileChangingView");
@@ -773,7 +752,7 @@ public class GCustomViewInputHandler
 
          // If the view supports surface collision detection, then return false if the collision flag is set,
          // otherwise return true.
-         return !(this._customView.isDetectCollisions() && this._customView.hadCollisions());
+         return !(_customView.isDetectCollisions() && _customView.hadCollisions());
       }
    }
 
@@ -784,55 +763,60 @@ public class GCustomViewInputHandler
    protected double getScaleValueHorizTransRel(final ViewInputAttributes.DeviceAttributes deviceAttributes,
                                                final ViewInputAttributes.ActionAttributes actionAttributes) {
 
-      final View view = this.getView();
+      final View view = getView();
       if (view == null) {
          return 0.0;
       }
+
       if (view instanceof OrbitView) {
          final double[] range = actionAttributes.getValues();
          // If this is a CustomView, we use the zoom value to set the scale
-         final double radius = this.getWorldWindow().getModel().getGlobe().getRadius();
+         final double radius = getWorldWindow().getModel().getGlobe().getRadius();
          final double t = getScaleValue(range[0], range[1], ((OrbitView) view).getZoom(), 3.0 * radius, true);
-         return (t);
+         return t;
       }
 
       // Any other view, use the base class scaling method
-      return (super.getScaleValueElevation(deviceAttributes, actionAttributes));
+      return super.getScaleValueElevation(deviceAttributes, actionAttributes);
 
    }
 
 
    protected double getScaleValueRotate(final ViewInputAttributes.ActionAttributes actionAttributes) {
 
-      final View view = this.getView();
+      final View view = getView();
       if (view == null) {
          return 0.0;
       }
+
       if (view instanceof OrbitView) {
          final double[] range = actionAttributes.getValues();
          // If this is a CustomView, we use the zoom value to set the scale
-         final double radius = this.getWorldWindow().getModel().getGlobe().getRadius();
+         final double radius = getWorldWindow().getModel().getGlobe().getRadius();
          final double t = getScaleValue(range[0], range[1], ((OrbitView) view).getZoom(), 3.0 * radius, false);
-         return (t);
+         return t;
       }
-      return (1.0);
+
+      return 1.0;
    }
 
 
    protected double getScaleValueZoom(final ViewInputAttributes.ActionAttributes actionAttributes) {
-      final View view = this.getView();
+      final View view = getView();
       if (view == null) {
          return 0.0;
       }
+
       if (view instanceof OrbitView) {
          final double[] range = actionAttributes.getValues();
          // If this is a CustomView, we use the zoom value to set the scale
-         final double radius = this.getWorldWindow().getModel().getGlobe().getRadius();
+         final double radius = getWorldWindow().getModel().getGlobe().getRadius();
          double t = ((OrbitView) view).getZoom() / (3.0 * radius);
          t = (t < 0 ? 0 : (t > 1 ? 1 : t));
          return range[0] * (1.0 - t) + range[1] * t;
       }
-      return (1.0);
+
+      return 1.0;
    }
 
 
@@ -846,14 +830,13 @@ public class GCustomViewInputHandler
                                 final double endZoom,
                                 final long timeToMove,
                                 final boolean endCenterOnSurface) {
-      final OrbitView customView = (OrbitView) this.getView();
+      final OrbitView customView = (OrbitView) getView();
       final GFlyToCustomViewAnimator panAnimator = GFlyToCustomViewAnimator.createFlyToCustomViewAnimator(customView,
                beginCenterPos, endCenterPos, beginHeading, endHeading, beginPitch, endPitch, beginZoom, endZoom, timeToMove,
                endCenterOnSurface);
 
-
-      this.gotoAnimControl.put(VIEW_ANIM_PAN, panAnimator);
-      this.getView().firePropertyChange(AVKey.VIEW, null, this.getView());
+      _gotoAnimControl.put(VIEW_ANIM_PAN, panAnimator);
+      getView().firePropertyChange(AVKey.VIEW, null, getView());
    }
 
 
@@ -872,14 +855,13 @@ public class GCustomViewInputHandler
       final long MAX_LENGTH_MILLIS = 16000;
       final long timeToMove = AnimationSupport.getScaledTimeMillisecs(beginCenterPos, endCenterPos, MIN_LENGTH_MILLIS,
                MAX_LENGTH_MILLIS);
-      final OrbitView customView = (OrbitView) this.getView();
+      final OrbitView customView = (OrbitView) getView();
       final GFlyToCustomViewAnimator panAnimator = GFlyToCustomViewAnimator.createFlyToCustomViewAnimator(customView,
                beginCenterPos, endCenterPos, beginHeading, endHeading, beginPitch, endPitch, beginZoom, endZoom, timeToMove,
                endCenterOnSurface);
 
-
-      this.gotoAnimControl.put(VIEW_ANIM_PAN, panAnimator);
-      this.getView().firePropertyChange(AVKey.VIEW, null, this.getView());
+      _gotoAnimControl.put(VIEW_ANIM_PAN, panAnimator);
+      getView().firePropertyChange(AVKey.VIEW, null, getView());
    }
 
 
@@ -889,10 +871,10 @@ public class GCustomViewInputHandler
                                 final double zoom,
                                 final long timeToMove,
                                 final boolean endCenterOnSurface) {
-      final OrbitView view = (OrbitView) this.getView();
+      final OrbitView view = (OrbitView) getView();
       addPanToAnimator(view.getCenterPosition(), centerPos, view.getHeading(), heading, view.getPitch(), pitch, view.getZoom(),
                zoom, timeToMove, endCenterOnSurface);
-      this.getView().firePropertyChange(AVKey.VIEW, null, this.getView());
+      getView().firePropertyChange(AVKey.VIEW, null, getView());
    }
 
 
@@ -901,10 +883,10 @@ public class GCustomViewInputHandler
                                 final Angle pitch,
                                 final double zoom,
                                 final boolean endCenterOnSurface) {
-      final OrbitView view = (OrbitView) this.getView();
+      final OrbitView view = (OrbitView) getView();
       addPanToAnimator(view.getCenterPosition(), centerPos, view.getHeading(), heading, view.getPitch(), pitch, view.getZoom(),
                zoom, endCenterOnSurface);
-      this.getView().firePropertyChange(AVKey.VIEW, null, this.getView());
+      getView().firePropertyChange(AVKey.VIEW, null, getView());
    }
 
 
@@ -912,38 +894,38 @@ public class GCustomViewInputHandler
                                 final Angle heading,
                                 final Angle pitch,
                                 final double zoom) {
-      final OrbitView view = (OrbitView) this.getView();
+      final OrbitView view = (OrbitView) getView();
       addPanToAnimator(view.getCenterPosition(), centerPos, view.getHeading(), heading, view.getPitch(), pitch, view.getZoom(),
                zoom, false);
-      this.getView().firePropertyChange(AVKey.VIEW, null, this.getView());
+      getView().firePropertyChange(AVKey.VIEW, null, getView());
    }
 
 
    public void addEyePositionAnimator(final long timeToIterate,
                                       final Position beginPosition,
                                       final Position endPosition) {
-      final PositionAnimator eyePosAnimator = ViewUtil.createEyePositionAnimator(this.getView(), timeToIterate, beginPosition,
+      final PositionAnimator eyePosAnimator = ViewUtil.createEyePositionAnimator(getView(), timeToIterate, beginPosition,
                endPosition);
-      this.gotoAnimControl.put(VIEW_ANIM_POSITION, eyePosAnimator);
-      this.getView().firePropertyChange(AVKey.VIEW, null, this.getView());
+      _gotoAnimControl.put(VIEW_ANIM_POSITION, eyePosAnimator);
+      getView().firePropertyChange(AVKey.VIEW, null, getView());
    }
 
 
    public void addHeadingAnimator(final Angle begin,
                                   final Angle end) {
-      this.gotoAnimControl.remove(VIEW_ANIM_HEADING_PITCH);
-      final AngleAnimator headingAnimator = ViewUtil.createHeadingAnimator(this.getView(), begin, end);
-      this.gotoAnimControl.put(VIEW_ANIM_HEADING, headingAnimator);
-      this.getView().firePropertyChange(AVKey.VIEW, null, this.getView());
+      _gotoAnimControl.remove(VIEW_ANIM_HEADING_PITCH);
+      final AngleAnimator headingAnimator = ViewUtil.createHeadingAnimator(getView(), begin, end);
+      _gotoAnimControl.put(VIEW_ANIM_HEADING, headingAnimator);
+      getView().firePropertyChange(AVKey.VIEW, null, getView());
    }
 
 
    public void addPitchAnimator(final Angle begin,
                                 final Angle end) {
-      this.gotoAnimControl.remove(VIEW_ANIM_HEADING_PITCH);
-      final AngleAnimator pitchAnimator = ViewUtil.createPitchAnimator(this.getView(), begin, end);
-      this.gotoAnimControl.put(VIEW_ANIM_PITCH, pitchAnimator);
-      this.getView().firePropertyChange(AVKey.VIEW, null, this.getView());
+      _gotoAnimControl.remove(VIEW_ANIM_HEADING_PITCH);
+      final AngleAnimator pitchAnimator = ViewUtil.createPitchAnimator(getView(), begin, end);
+      _gotoAnimControl.put(VIEW_ANIM_PITCH, pitchAnimator);
+      getView().firePropertyChange(AVKey.VIEW, null, getView());
    }
 
 
@@ -951,12 +933,12 @@ public class GCustomViewInputHandler
                                        final Angle endHeading,
                                        final Angle beginPitch,
                                        final Angle endPitch) {
-      this.gotoAnimControl.remove(VIEW_ANIM_PITCH);
-      this.gotoAnimControl.remove(VIEW_ANIM_HEADING);
-      final CompoundAnimator headingPitchAnimator = ViewUtil.createHeadingPitchAnimator(this.getView(), beginHeading, endHeading,
+      _gotoAnimControl.remove(VIEW_ANIM_PITCH);
+      _gotoAnimControl.remove(VIEW_ANIM_HEADING);
+      final CompoundAnimator headingPitchAnimator = ViewUtil.createHeadingPitchAnimator(getView(), beginHeading, endHeading,
                beginPitch, endPitch);
-      this.gotoAnimControl.put(VIEW_ANIM_HEADING_PITCH, headingPitchAnimator);
-      this.getView().firePropertyChange(AVKey.VIEW, null, this.getView());
+      _gotoAnimControl.put(VIEW_ANIM_HEADING_PITCH, headingPitchAnimator);
+      getView().firePropertyChange(AVKey.VIEW, null, getView());
    }
 
 
@@ -964,9 +946,9 @@ public class GCustomViewInputHandler
                                final double zoomEnd) {
       final long DEFAULT_LENGTH_MILLIS = 4000;
       final DoubleAnimator zoomAnimator = new DoubleAnimator(new ScheduledInterpolator(DEFAULT_LENGTH_MILLIS), zoomStart,
-               zoomEnd, OrbitViewPropertyAccessor.createZoomAccessor(((OrbitView) this.getView())));
-      this.gotoAnimControl.put(VIEW_ANIM_ZOOM, zoomAnimator);
-      this.getView().firePropertyChange(AVKey.VIEW, null, this.getView());
+               zoomEnd, OrbitViewPropertyAccessor.createZoomAccessor(((OrbitView) getView())));
+      _gotoAnimControl.put(VIEW_ANIM_ZOOM, zoomAnimator);
+      getView().firePropertyChange(AVKey.VIEW, null, getView());
    }
 
 
@@ -978,7 +960,8 @@ public class GCustomViewInputHandler
          Logging.logger().severe(message);
          throw new IllegalArgumentException(message);
       }
-      final View view = this.getView();
+
+      final View view = getView();
       if (view instanceof OrbitView) {
          final OrbitView customView = (OrbitView) view;
          final Angle beginHeading = customView.getHeading();
@@ -994,9 +977,9 @@ public class GCustomViewInputHandler
          final AngleAnimator pitchAnimator = new AngleAnimator(new ScheduledInterpolator(lengthMillis), beginPitch, pitch,
                   ViewPropertyAccessor.createPitchAccessor(customView));
 
-         this.gotoAnimControl.put(VIEW_ANIM_ZOOM, zoomAnimator);
-         this.gotoAnimControl.put(VIEW_ANIM_HEADING, headingAnimator);
-         this.gotoAnimControl.put(VIEW_ANIM_PITCH, pitchAnimator);
+         _gotoAnimControl.put(VIEW_ANIM_ZOOM, zoomAnimator);
+         _gotoAnimControl.put(VIEW_ANIM_HEADING, headingAnimator);
+         _gotoAnimControl.put(VIEW_ANIM_PITCH, pitchAnimator);
          customView.firePropertyChange(AVKey.VIEW, null, customView);
       }
    }
@@ -1011,11 +994,11 @@ public class GCustomViewInputHandler
          throw new IllegalArgumentException(message);
       }
 
-      final View view = this.getView();
+      final View view = getView();
       if (view instanceof OrbitView) {
          // TODO: length-scaling factory function
          final long DEFAULT_LENGTH_MILLIS = 4000;
-         this.addCenterAnimator(begin, end, DEFAULT_LENGTH_MILLIS, smoothed);
+         addCenterAnimator(begin, end, DEFAULT_LENGTH_MILLIS, smoothed);
       }
    }
 
@@ -1030,7 +1013,7 @@ public class GCustomViewInputHandler
          throw new IllegalArgumentException(message);
       }
 
-      final View view = this.getView();
+      final View view = getView();
       if (view instanceof OrbitView) {
          final OrbitView customView = (OrbitView) view;
          Interpolator interpolator;
@@ -1042,7 +1025,7 @@ public class GCustomViewInputHandler
          }
          final Animator centerAnimator = new PositionAnimator(interpolator, begin, end,
                   GCustomViewPropertyAccessor.createCenterPositionAccessor(customView));
-         this.gotoAnimControl.put(VIEW_ANIM_CENTER, centerAnimator);
+         _gotoAnimControl.put(VIEW_ANIM_CENTER, centerAnimator);
          customView.firePropertyChange(AVKey.VIEW, null, customView);
       }
    }
@@ -1051,21 +1034,21 @@ public class GCustomViewInputHandler
    @Override
    public void goTo(final Position lookAtPos,
                     final double distance) {
-      final OrbitView view = (OrbitView) this.getView();
+      final OrbitView view = (OrbitView) getView();
       stopAnimators();
       addPanToAnimator(lookAtPos, view.getHeading(), view.getPitch(), distance, true);
-      this.getView().firePropertyChange(AVKey.VIEW, null, this.getView());
+      getView().firePropertyChange(AVKey.VIEW, null, getView());
    }
 
 
    public void jumpTo(final Position lookAtPos,
                       final double distance) {
-      final OrbitView view = (OrbitView) this.getView();
+      final OrbitView view = (OrbitView) getView();
       stopAnimators();
       view.setCenterPosition(new Position(lookAtPos.latitude, lookAtPos.longitude, view.getGlobe().getElevation(
                lookAtPos.latitude, lookAtPos.longitude)));
       view.setZoom(distance);
-      this.getView().firePropertyChange(AVKey.VIEW, null, this.getView());
+      getView().firePropertyChange(AVKey.VIEW, null, getView());
    }
 
 
@@ -1075,22 +1058,20 @@ public class GCustomViewInputHandler
    @Override
    public void addAnimator(final Animator animator) {
       final long date = new Date().getTime();
-      this.gotoAnimControl.put(VIEW_ANIM_APP + date, animator);
-
+      _gotoAnimControl.put(VIEW_ANIM_APP + date, animator);
    }
 
 
    @Override
    public boolean isAnimating() {
-      return (this.uiAnimControl.hasActiveAnimation() || this.gotoAnimControl.hasActiveAnimation());
+      return (_uiAnimControl.hasActiveAnimation() || _gotoAnimControl.hasActiveAnimation());
    }
 
 
    @Override
    public void stopAnimators() {
-      this.uiAnimControl.stopAnimations();
-      this.gotoAnimControl.stopAnimations();
-
+      _uiAnimControl.stopAnimations();
+      _gotoAnimControl.stopAnimations();
    }
 
 
@@ -1103,23 +1084,23 @@ public class GCustomViewInputHandler
    public void apply() {
       super.apply();
 
-      final View view = this.getView();
+      final View view = getView();
       if (view == null) {
          return;
       }
 
-      if (this.gotoAnimControl.stepAnimators()) {
+      if (_gotoAnimControl.stepAnimators()) {
          view.firePropertyChange(AVKey.VIEW, null, view);
       }
       else {
-         this.gotoAnimControl.clear();
+         _gotoAnimControl.clear();
       }
 
-      if (this.uiAnimControl.stepAnimators()) {
+      if (_uiAnimControl.stepAnimators()) {
          view.firePropertyChange(AVKey.VIEW, null, view);
       }
       else {
-         this.uiAnimControl.clear();
+         _uiAnimControl.clear();
       }
    }
 
@@ -1131,16 +1112,13 @@ public class GCustomViewInputHandler
    protected void handleMouseWheelMoved(final MouseWheelEvent e) {
       boolean eventHandled = false;
 
-
-      final View view = this.getView();
-      GInputState inputState = null;
+      final View view = getView();
       if (view instanceof GCustomView) {
-         inputState = ((GCustomView) view).getInputState();
+         final GInputState inputState = ((GCustomView) view).getInputState();
+         if ((inputState != null) && (inputState.isPanoramicZoom())) {
+            eventHandled = onChangeFieldOfView(e, view);
+         }
       }
-      if ((inputState != null) && (inputState.isPanoramicZoom())) {
-         eventHandled = onChangeFieldOfView(e, view);
-      }
-
 
       if (!eventHandled) {
          super.handleMouseWheelMoved(e);
@@ -1150,26 +1128,21 @@ public class GCustomViewInputHandler
 
    @Override
    protected void handleKeyPressed(final KeyEvent e) {
-
       boolean eventHandled = false;
 
-      //Escape
-      if (e.getKeyCode() == 27) {
-         final View view = this.getView();
-         GInputState inputState = null;
+      if (e.getKeyCode() == 27) { // Escape
+         final View view = getView();
          if (view instanceof GCustomView) {
-            inputState = ((GCustomView) view).getInputState();
-         }
-         if (inputState == GInputState.PANORAMICS) {
-            eventHandled = onExitPanoramic(view);
+            final GInputState inputState = ((GCustomView) view).getInputState();
+            if (inputState == GInputState.PANORAMICS) {
+               eventHandled = onExitPanoramic(view);
+            }
          }
       }
 
       if (!eventHandled) {
          super.handleKeyPressed(e);
       }
-
-
    }
 
 
@@ -1178,24 +1151,16 @@ public class GCustomViewInputHandler
 
 
       final double oldFov = view.getFieldOfView().degrees;
-      double newFov = oldFov + e.getWheelRotation();
-      if (newFov <= 20.0) {
-         newFov = 20.0;
-      }
-      if (newFov >= 100.0) {
-         newFov = 100.0;
-      }
-      view.setFieldOfView(Angle.fromDegrees(newFov));
-      e.consume();
+      final double newFov = oldFov + (e.getWheelRotation() * 1.25);
 
+      view.setFieldOfView(Angle.fromDegrees(GMath.clamp(newFov, 20, 120)));
+      e.consume();
 
       return true;
    }
 
 
    private boolean onExitPanoramic(final View view) {
-
-
       final GCustomView customView = (GCustomView) view;
       final GGlobeApplication application = GGlobeApplication.instance();
       final I3DContentCollectionLayer panoramicLayer = application.getContentCollectionLayer();
@@ -1204,10 +1169,8 @@ public class GCustomViewInputHandler
       }
       application.redraw();
 
-
       //System.out.println(customView.getRestorableState());
       //customView.goTo(new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710), 270000), 270000);
-
 
       return true;
    }

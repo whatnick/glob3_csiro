@@ -41,6 +41,7 @@ import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.experimental.pointscloud.rendering.scenegraph.GSGGroupNode;
 import es.igosoftware.experimental.pointscloud.rendering.scenegraph.GSGPointsNode;
 import es.igosoftware.globe.GField;
+import es.igosoftware.globe.GGlobeApplication;
 import es.igosoftware.globe.GVectorLayerType;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeVectorLayer;
@@ -150,7 +151,7 @@ public final class GPointsCloudLayer
 
          @Override
          public void loaded(final File file,
-                            final int bytesLoaded,
+                            final long bytesLoaded,
                             final boolean completeLoaded) {
             if (!completeLoaded) {
                return;
@@ -193,6 +194,9 @@ public final class GPointsCloudLayer
             catch (final Throwable e) {
                e.printStackTrace(System.err);
             }
+
+
+            doDefaultAction(GGlobeApplication.instance());
          }
 
 

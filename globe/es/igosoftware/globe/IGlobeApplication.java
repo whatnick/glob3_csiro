@@ -148,4 +148,7 @@ public interface IGlobeApplication {
 
    public void zoomToSector(final Sector sector);
 
+
+   public double calculateAltitudeForZooming(final Sector sector);
+
 }

@@ -57,6 +57,7 @@ import es.igosoftware.dmvc.model.IDProperty;
 import es.igosoftware.dmvc.server.GDServer;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.util.GAssert;
+import es.igosoftware.util.GMath;
 
 
 public class GPointsStreamingServer
@@ -65,13 +66,14 @@ public class GPointsStreamingServer
          implements
             IPointsStreamingServer {
 
-   private static final int         POINTS_GROUP_SIZE = 1024 * 4;
+   //   private static final int         ____TODO_CHANGE_GROUP_SIZE_dgd = 0;
+   private static final int         POINTS_GROUP_SIZE    = 1024;
 
    private final File               _rootDirectory;
-   private final LinkedList<Task>   _tasks            = new LinkedList<Task>();
+   private final LinkedList<Task>   _tasks               = new LinkedList<Task>();
 
-   private int                      TASK_ID_COUNTER   = 0;
-   private final Map<Integer, Long> _lastSends        = new HashMap<Integer, Long>();
+   private int                      _taskIDCounter       = 0;
+   private final Map<Integer, Long> _lastSendsTimestamps = new HashMap<Integer, Long>();
 
 
    public GPointsStreamingServer(final String rootDirectoryName) {
@@ -96,8 +98,8 @@ public class GPointsStreamingServer
                      Thread.sleep(100);
                   }
                   else {
-                     synchronized (_lastSends) {
-                        _lastSends.put(task._sessionID, System.currentTimeMillis());
+                     synchronized (_lastSendsTimestamps) {
+                        _lastSendsTimestamps.put(task._sessionID, System.currentTimeMillis());
                      }
                      final GFileData result = task.execute();
                      if (result != null) {
@@ -171,8 +173,8 @@ public class GPointsStreamingServer
    private class Task {
 
       private final String  _fileName;
-      private final int     _from;
-      private final int     _to;
+      private final long    _from;
+      private final long    _to;
       private int           _priority;
       private final int     _taskID;
       private final int     _sessionID;
@@ -180,8 +182,8 @@ public class GPointsStreamingServer
 
 
       private Task(final String fileName,
-                   final int from,
-                   final int to,
+                   final long from,
+                   final long to,
                    final boolean lastPacket,
                    final int priority,
                    final int taskID,
@@ -203,17 +205,12 @@ public class GPointsStreamingServer
          try {
             input = new BufferedInputStream(new FileInputStream(file.getAbsolutePath()), 16 * 1024);
 
-            final byte[] bytes = new byte[_to - _from + 1];
+            final byte[] bytes = new byte[GMath.toInt(_to - _from + 1)];
 
             try {
                if (input.skip(_from) == _from) {
                   input.read(bytes);
                }
-
-               //               int index = 0;
-               //               for (int i = _from; i <= _to; i++) {
-               //                  bytes[index++] = input.readByte();
-               //               }
             }
             catch (final EOFException eof) {
 
@@ -236,14 +233,14 @@ public class GPointsStreamingServer
    @Override
    public int loadFile(final int sessionID,
                        final String fileName,
-                       final int fromBytes,
-                       final int toBytes,
+                       final long fromBytes,
+                       final long toBytes,
                        final int priority) {
-      int from = fromBytes;
+      long from = fromBytes;
 
-      final int normalizedToBytes;
+      final long normalizedToBytes;
       if (toBytes < 0) {
-         normalizedToBytes = getFileLenght(fileName);
+         normalizedToBytes = new File(_rootDirectory, fileName).length();
       }
       else {
          normalizedToBytes = toBytes;
@@ -254,7 +251,7 @@ public class GPointsStreamingServer
 
 
          while (from < normalizedToBytes) {
-            final int to = Math.min(from + POINTS_GROUP_SIZE, normalizedToBytes) - 1;
+            final long to = Math.min(from + POINTS_GROUP_SIZE, normalizedToBytes) - 1;
 
             final boolean lastPacket = (to == (normalizedToBytes - 1));
             _tasks.add(new Task(fileName, from, to, lastPacket, priority, taskID, sessionID));
@@ -267,21 +264,15 @@ public class GPointsStreamingServer
    }
 
 
-   private int getFileLenght(final String fileName) {
-      final File file = new File(_rootDirectory, fileName);
-      return (int) file.length();
-   }
-
-
    private int calculateTaskID() {
-      return TASK_ID_COUNTER++;
+      return _taskIDCounter++;
    }
 
 
    private Task selectTask() {
       Task selectedTask = null;
 
-      final long threshold = System.currentTimeMillis() - 150;
+      final long threshold = System.currentTimeMillis() - 50;
 
       synchronized (_tasks) {
          for (final Task task : _tasks) {
@@ -302,8 +293,8 @@ public class GPointsStreamingServer
 
 
    private long lastSend(final int sessionID) {
-      synchronized (_lastSends) {
-         final Long lastSend = _lastSends.get(sessionID);
+      synchronized (_lastSendsTimestamps) {
+         final Long lastSend = _lastSendsTimestamps.get(sessionID);
          if (lastSend == null) {
             return Long.MIN_VALUE;
          }
@@ -340,8 +331,8 @@ public class GPointsStreamingServer
 
 
    private void sessionClosed(final int sessionID) {
-      synchronized (_lastSends) {
-         _lastSends.remove(Integer.valueOf(sessionID));
+      synchronized (_lastSendsTimestamps) {
+         _lastSendsTimestamps.remove(Integer.valueOf(sessionID));
       }
    }
 
