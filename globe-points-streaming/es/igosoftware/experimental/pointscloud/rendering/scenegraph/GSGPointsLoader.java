@@ -182,7 +182,8 @@ final class GSGPointsLoader {
 
       synchronized (this) {
          final int bytesToLoad = _wantedPoints * _bytesPerPoint;
-         _layer.getLoader().load(_node.getPointsFileName(), bytesToLoad, Math.round(_priority), createHandler());
+         _layer.getLoader().load(_node.getPointsFileName(), bytesToLoad, Math.round(_priority),
+                  createHandler(_node.getPointsFileName()));
       }
    }
 
@@ -192,15 +193,15 @@ final class GSGPointsLoader {
    }
 
 
-   private IHandler createHandler() {
+   private IHandler createHandler(final String fileName) {
       return new ILoader.IHandler() {
          private final boolean _stop = false;
 
 
          @Override
-         public void loadError(final File file,
-                               final ErrorType error) {
-            System.err.println(error + " trying to load " + file.getAbsolutePath());
+         public void loadError(final ErrorType error,
+                               final Throwable e) {
+            System.err.println("Error=" + error + ", exception=" + e + " trying to load " + fileName);
             synchronized (GSGPointsLoader.this) {
                _errorLoading = true;
                _loading = false;

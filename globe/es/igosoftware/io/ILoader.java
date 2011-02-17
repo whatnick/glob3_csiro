@@ -41,6 +41,7 @@ import java.io.File;
 
 public interface ILoader {
 
+
    public static class AbortLoading
             extends
                Exception {
@@ -48,9 +49,10 @@ public interface ILoader {
 
    }
 
+
    public static interface IHandler {
-      public void loadError(final File file,
-                            final ILoader.ErrorType error);
+      public void loadError(final ILoader.ErrorType error,
+                            final Throwable e);
 
 
       public void loaded(final File file,

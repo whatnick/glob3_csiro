@@ -55,65 +55,6 @@ abstract class GAbstractLoader
             Thread.UncaughtExceptionHandler {
 
 
-   //   private static class TaskId {
-   //      private final String _name;
-   //
-   //
-   //      //      private final int    _bytesToLoad;
-   //
-   //
-   //      private TaskId(final String _name/*, final int bytesToLoad*/) {
-   //         _name = _name;
-   //         //         _bytesToLoad = bytesToLoad;
-   //      }
-   //
-   //
-   //      @Override
-   //      public int hashCode() {
-   //         final int prime = 31;
-   //         int result = 1;
-   //         //         result = prime * result + _bytesToLoad;
-   //         result = prime * result + ((_name == null) ? 0 : _name.hashCode());
-   //         return result;
-   //      }
-   //
-   //
-   //      @Override
-   //      public boolean equals(final Object obj) {
-   //         if (this == obj) {
-   //            return true;
-   //         }
-   //         if (obj == null) {
-   //            return false;
-   //         }
-   //         if (getClass() != obj.getClass()) {
-   //            return false;
-   //         }
-   //         final TaskId other = (TaskId) obj;
-   //         //         if (_bytesToLoad != other._bytesToLoad) {
-   //         //            return false;
-   //         //         }
-   //         if (_name == null) {
-   //            if (other._name != null) {
-   //               return false;
-   //            }
-   //         }
-   //         else if (!_name.equals(other._name)) {
-   //            return false;
-   //         }
-   //         return true;
-   //      }
-   //
-   //
-   //      @Override
-   //      public String toString() {
-   //         //return "TaskId [_name=" + _name + ", bytesToLoad=" + _bytesToLoad + "]";
-   //         return "TaskId [_name=" + _name + "]";
-   //      }
-   //
-   //   }
-
-
    protected abstract static class Task
             implements
                Runnable {
@@ -165,7 +106,6 @@ abstract class GAbstractLoader
       final ThreadGroup group = new ThreadGroup("Loader Workers Group");
       group.setDaemon(true);
       group.setMaxPriority(Thread.MIN_PRIORITY);
-      //group.setMaxPriority(Thread.MAX_PRIORITY);
 
       for (int i = 0; i < workersCount; i++) {
          createWorker(group, i);
@@ -178,7 +118,6 @@ abstract class GAbstractLoader
       final Thread thread = new Thread(group, "Loader Worker #" + i) {
          @Override
          public void run() {
-            //            try {
             while (true) {
                final Task task = _tasksQueue.poll();
                if (task == null) {
@@ -204,16 +143,11 @@ abstract class GAbstractLoader
                   _activeTasks.remove(task);
                }
             }
-            //            }
-            //            catch (final InterruptedException e) {
-            //               e.printStackTrace(System.err);
-            //            }
          }
       };
 
       thread.setDaemon(true);
       thread.setPriority(Thread.MIN_PRIORITY);
-      //thread.setPriority(Thread.MAX_PRIORITY);
 
       thread.start();
    }
@@ -224,17 +158,17 @@ abstract class GAbstractLoader
 
 
       //      task.run();
-      //      synchronized (_tasksQueue) {
-      final Iterator<Task> iterator = _tasksQueue.iterator();
-      while (iterator.hasNext()) {
-         final Task oldTask = iterator.next();
-         if (oldTask._name.equals(task._name)) {
-            iterator.remove();
+      synchronized (_tasksQueue) {
+         final Iterator<Task> iterator = _tasksQueue.iterator();
+         while (iterator.hasNext()) {
+            final Task oldTask = iterator.next();
+            if (oldTask._name.equals(task._name)) {
+               iterator.remove();
+            }
          }
-      }
 
-      _tasksQueue.add(task);
-      //      }
+         _tasksQueue.add(task);
+      }
    }
 
 
@@ -253,15 +187,15 @@ abstract class GAbstractLoader
 
    @Override
    public final void cancelLoading(final String taskName) {
-      //      synchronized (_tasksQueue) {
-      final Iterator<Task> iterator = _tasksQueue.iterator();
-      while (iterator.hasNext()) {
-         final Task oldTask = iterator.next();
-         if (oldTask._name.equals(taskName)) {
-            iterator.remove();
+      synchronized (_tasksQueue) {
+         final Iterator<Task> iterator = _tasksQueue.iterator();
+         while (iterator.hasNext()) {
+            final Task oldTask = iterator.next();
+            if (oldTask._name.equals(taskName)) {
+               iterator.remove();
+            }
          }
       }
-      //      }
    }
 
 
