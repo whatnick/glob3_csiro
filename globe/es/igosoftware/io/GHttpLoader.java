@@ -182,9 +182,9 @@ public class GHttpLoader
    private final boolean                     _verbose;
 
 
-   //   private int                               _loadCounter     = 0;
-   //   private int                               _loadCacheHits   = 0;
-   //   private long                              _bytesDownloaded = 0;
+   private int                               _loadCounter     = 0;
+   private int                               _loadCacheHits   = 0;
+   private long                              _bytesDownloaded = 0;
 
 
    public GHttpLoader(final URL root,
