@@ -46,6 +46,8 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -86,6 +88,8 @@ import es.igosoftware.util.GUtils;
 
 
 public class GPlanarPanoramicViewer {
+   private static final int HORIZONTAL_INCREMENT = GPlanarPanoramicZoomLevel.TILE_WIDTH / 3;
+   private static final int VERTICAL_INCREMENT   = GPlanarPanoramicZoomLevel.TILE_HEIGHT / 3;
 
 
    private class Tile
@@ -169,12 +173,13 @@ public class GPlanarPanoramicViewer {
    private final String                          _name;
    private final URL                             _url;
    private final List<GPlanarPanoramicZoomLevel> _zoomLevels;
-   private int                                   _currentLevel;
-   private final List<Tile>                      _tiles   = new ArrayList<Tile>();
-   private int                                   _offsetX = 0;
-   private int                                   _offsetY = 0;
    private final int                             _minLevel;
    private final int                             _maxLevel;
+   private final List<Tile>                      _tiles   = new ArrayList<Tile>();
+
+   private int                                   _currentLevel;
+   private int                                   _offsetX = 0;
+   private int                                   _offsetY = 0;
 
    private JLabel                                _zoomInButton;
    private JLabel                                _zoomOutButton;
@@ -296,7 +301,7 @@ public class GPlanarPanoramicViewer {
 
       for (int i = _minLevel + 1; i < _maxLevel; i++) {
          final GPlanarPanoramicZoomLevel currentLevel = getZoomLevel(i);
-         if ((currentLevel.getWidth() < currentWidth) && (currentLevel.getHeight() < currentHeight)) {
+         if ((currentLevel.getWidth() <= currentWidth) && (currentLevel.getHeight() <= currentHeight)) {
             result = i;
          }
       }
@@ -370,13 +375,32 @@ public class GPlanarPanoramicViewer {
          }
       });
 
-      focusTo(contentPane);
+
+      frame.addComponentListener(new ComponentAdapter() {
+         @Override
+         public void componentResized(final ComponentEvent e) {
+            //            final Dimension containerSize = contentPane.getSize();
+            //
+            //            final GPlanarPanoramicZoomLevel currentZoomLevel = getCurrentZoomLevel();
+            //            _offsetX = (containerSize.width - currentZoomLevel.getWidth()) / 2;
+            //            _offsetY = (containerSize.height - currentZoomLevel.getHeight()) / 2;
+
+            try {
+               recreateTiles(contentPane);
+            }
+            catch (final IOException e1) {
+               e1.printStackTrace();
+            }
+         }
+      });
+
+      requestFocus(contentPane);
 
       return frame;
    }
 
 
-   private void focusTo(final Container contentPane) {
+   private void requestFocus(final Container contentPane) {
       SwingUtilities.invokeLater(new Runnable() {
          @Override
          public void run() {
@@ -416,7 +440,7 @@ public class GPlanarPanoramicViewer {
 
 
    private void createHUD(final Container container) {
-      final int buttonExtent = 24;
+      final int buttonExtent = 20;
       final int margin = 2;
 
       createNavigationButtons(container, buttonExtent, margin);
@@ -517,7 +541,7 @@ public class GPlanarPanoramicViewer {
             catch (final IOException e1) {
                e1.printStackTrace();
             }
-            focusTo(container);
+            requestFocus(container);
          }
       });
 
@@ -588,8 +612,11 @@ public class GPlanarPanoramicViewer {
       if ((offsetX == _offsetX) && (offsetY == _offsetY)) {
          return;
       }
+
       _offsetX = offsetX;
       _offsetY = offsetY;
+
+      //      System.out.println("offset=" + _offsetX + "x" + _offsetY);
       recreateTiles(container);
    }
 
@@ -606,17 +633,25 @@ public class GPlanarPanoramicViewer {
       removeTiles(container);
       createTiles(container);
       addTiles(container);
+      layoutTiles();
 
+      // force redraw
       container.invalidate();
       container.doLayout();
       container.repaint();
    }
 
 
-   private void addTiles(final Container container) throws IOException {
+   private void addTiles(final Container container) {
+      for (final Tile tile : _tiles) {
+         container.add(tile);
+      }
+   }
+
+
+   private void layoutTiles() throws IOException {
       for (final Tile tile : _tiles) {
          tile.positionate();
-         container.add(tile);
       }
    }
 
@@ -625,6 +660,7 @@ public class GPlanarPanoramicViewer {
       final GPlanarPanoramicZoomLevel currentZoomLevel = getCurrentZoomLevel();
 
       final Rectangle containerBounds = container.getBounds();
+      //      System.out.println("containerBounds=" + containerBounds);
       for (int x = 0; x < currentZoomLevel.getWidthInTiles(); x++) {
          for (int y = 0; y < currentZoomLevel.getHeightInTiles(); y++) {
             final Tile tile = new Tile(currentZoomLevel, x, y);
@@ -655,7 +691,7 @@ public class GPlanarPanoramicViewer {
 
    private void moveDown(final Container container) {
       try {
-         setOffset(container, _offsetX, _offsetY + GPlanarPanoramicZoomLevel.TILE_HEIGHT / 3);
+         setOffset(container, _offsetX, _offsetY + VERTICAL_INCREMENT);
       }
       catch (final IOException e1) {
          e1.printStackTrace();
@@ -665,7 +701,7 @@ public class GPlanarPanoramicViewer {
 
    private void moveUp(final Container container) {
       try {
-         setOffset(container, _offsetX, _offsetY - GPlanarPanoramicZoomLevel.TILE_HEIGHT / 3);
+         setOffset(container, _offsetX, _offsetY - VERTICAL_INCREMENT);
       }
       catch (final IOException e1) {
          e1.printStackTrace();
@@ -675,7 +711,7 @@ public class GPlanarPanoramicViewer {
 
    private void moveLeft(final Container container) {
       try {
-         setOffset(container, _offsetX - GPlanarPanoramicZoomLevel.TILE_WIDTH / 3, _offsetY);
+         setOffset(container, _offsetX - HORIZONTAL_INCREMENT, _offsetY);
       }
       catch (final IOException e1) {
          e1.printStackTrace();
@@ -685,7 +721,7 @@ public class GPlanarPanoramicViewer {
 
    private void moveRight(final Container container) {
       try {
-         setOffset(container, _offsetX + GPlanarPanoramicZoomLevel.TILE_WIDTH / 3, _offsetY);
+         setOffset(container, _offsetX + HORIZONTAL_INCREMENT, _offsetY);
       }
       catch (final IOException e1) {
          e1.printStackTrace();
