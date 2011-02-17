@@ -305,9 +305,6 @@ public abstract class GGlobeApplication
    private String                                 _currentLanguage;
 
 
-   //      private final boolean             _verbose;
-
-
    protected GGlobeApplication() {
       this(Locale.getDefault().getLanguage());
    }
@@ -331,8 +328,6 @@ public abstract class GGlobeApplication
 
       _iconsCache = initializaIconsCache();
       _imagesCache = initializaImagesCache();
-
-      //            _verbose = GUtils.isDevelopment();
 
       registerInstance(this);
    }
@@ -469,8 +464,6 @@ public abstract class GGlobeApplication
                   }
                }
             }
-
-
          });
       }
       catch (final InterruptedException e) {
@@ -587,8 +580,6 @@ public abstract class GGlobeApplication
       if (_fileMenu == null) {
          return;
       }
-
-      //      _fileMenu.addSeparator();
 
       final JMenuItem exitItem = GSwingUtils.createMenuItem(getTranslation("Exit"), getIcon("quit.png"), 'x',
                new ActionListener() {
@@ -717,7 +708,6 @@ public abstract class GGlobeApplication
       if (imageIcon != null) {
          _frame.setIconImage(imageIcon);
       }
-      // _frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       _frame.setSize(initialDimension());
 
       _frame.addWindowListener(new WindowAdapter() {
@@ -728,18 +718,12 @@ public abstract class GGlobeApplication
       });
 
       _frame.add(this, BorderLayout.CENTER);
-      // frame.pack();
 
       _frame.setLocationRelativeTo(null);
       _frame.setVisible(true);
+
       init();
       start();
-      // _frame.pack();
-
-      //      final Dimension parentSize = Toolkit.getDefaultToolkit().getScreenSize();
-      //      final int x = (parentSize.width - getSize().width) / 2;
-      //      final int y = (parentSize.height - getSize().height) / 2;
-      //      _frame.setLocation(x, y);
 
       _wwGLCanvas.requestFocus();
       _wwGLCanvas.requestFocusInWindow();
@@ -911,7 +895,6 @@ public abstract class GGlobeApplication
 
    @Override
    public void logSevere(final Throwable e) {
-      //LOGGER.severe(e);
       logSevere("", e);
    }
 
@@ -955,13 +938,8 @@ public abstract class GGlobeApplication
 
                customViewInputHandler.stopAnimators();
                customViewInputHandler.addPanToAnimator(position, heading, pitch, elevation, true);
-               //               final int TODO_RESTORE_ANIMATIONS;
-               //               view.setCenterPosition(new Position(position.latitude, position.longitude, view.getGlobe().getElevation(
-               //                        position.latitude, position.longitude)));
-               //               view.setZoom(elevation);
 
                redraw();
-
             }
             else {
                final OrbitView view = (OrbitView) this.getView();
@@ -1043,7 +1021,6 @@ public abstract class GGlobeApplication
       splitPane.setOneTouchExpandable(true);
 
       splitPane.setDividerLocation(Math.round(initialDimension().width * getLeftPanelWidthRatio()) + splitPane.getInsets().left);
-      // splitPane.setDividerLocation(0.15);
 
       splitPane.setLeftComponent(leftPane);
       splitPane.setRightComponent(getWorldWindowGLCanvas());
@@ -1329,10 +1306,7 @@ public abstract class GGlobeApplication
 
 
    @Override
-   public IGlobeModule[] getModules() {
-      //      if (_modules == null) {
-      //         _modules = initializeModules();
-      //      }
+   public final IGlobeModule[] getModules() {
       return _modules;
    }
 
