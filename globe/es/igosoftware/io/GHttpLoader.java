@@ -58,30 +58,17 @@ public class GHttpLoader
 
 
       private void execute() {
-         final File file = new File(_rootCacheDirectory, _fileName);
-
-         if (file.exists()) {
-            cacheHit();
-
-            try {
-               _handler.loaded(file, file.length(), true);
-            }
-            catch (final ILoader.AbortLoading e) {
-               // do nothing, the file is already on the cache and there are no download to cancel
-            }
-
-            //            tryToShowStatistics();
-            return;
+         final File partFile = new File(_rootCacheDirectory, _fileName + ".part");
+         if (partFile.exists()) {
+            LOGGER.severe("partFile is present: " + partFile);
          }
 
-         final File tempFile = new File(_rootCacheDirectory, _fileName + ".part");
-         if (tempFile.exists()) {
-            LOGGER.severe("tempFile is present: " + tempFile);
-         }
-         final File directory = tempFile.getParentFile();
-         if (!directory.exists()) {
-            if (!directory.mkdirs()) {
-               LOGGER.severe("can't create directory " + directory);
+         final File directory = partFile.getParentFile();
+         synchronized (_rootCacheDirectory) {
+            if (!directory.exists()) {
+               if (!directory.mkdirs()) {
+                  LOGGER.severe("can't create directory " + directory);
+               }
             }
          }
 
@@ -92,7 +79,7 @@ public class GHttpLoader
 
             is = new BufferedInputStream(url.openStream());
 
-            out = new BufferedOutputStream(new FileOutputStream(tempFile));
+            out = new BufferedOutputStream(new FileOutputStream(partFile));
 
             GIOUtils.copy(is, out);
             is = null; // GIOUtils.copy() closes the in stream
@@ -101,16 +88,20 @@ public class GHttpLoader
             out.close();
             out = null;
 
-            if (!tempFile.renameTo(file)) {
-               LOGGER.severe("can't rename " + tempFile + " to " + file);
+            final File cacheFile = new File(_rootCacheDirectory, _fileName);
+
+            if (!partFile.renameTo(cacheFile)) {
+               LOGGER.severe("can't rename " + partFile + " to " + cacheFile);
+               _handler.loadError(ILoader.ErrorType.CANT_READ, null);
+               return;
             }
 
-            final long bytesLoaded = file.length();
+            final long bytesLoaded = cacheFile.length();
             cacheMiss(bytesLoaded);
 
             if (!_isCanceled) {
                try {
-                  _handler.loaded(file, bytesLoaded, true);
+                  _handler.loaded(cacheFile, bytesLoaded, true);
                }
                catch (final ILoader.AbortLoading e) {
                   // do nothing, the file is already downloaded
@@ -127,8 +118,6 @@ public class GHttpLoader
             GIOUtils.gentlyClose(is);
             GIOUtils.gentlyClose(out);
          }
-
-         //         tryToShowStatistics();
       }
 
 
@@ -177,10 +166,10 @@ public class GHttpLoader
       public void run() {
          try {
             while (true) {
-               final Task task = _tasks.poll(100, TimeUnit.MILLISECONDS);
+               final Task task = _tasks.poll(250, TimeUnit.MILLISECONDS);
                if (task != null) {
                   if (task._isCanceled) {
-                     continue;
+                     continue; // ignored the canceled task
                   }
 
                   task.execute();
@@ -286,6 +275,21 @@ public class GHttpLoader
          throw new RuntimeException("fragment downloading is not supported");
       }
 
+      final File file = new File(_rootCacheDirectory, fileName);
+
+      if (file.exists()) {
+         cacheHit();
+
+         try {
+            handler.loaded(file, file.length(), true);
+         }
+         catch (final ILoader.AbortLoading e) {
+            // do nothing, the file is already on the cache and there are no download to cancel
+         }
+
+         return;
+      }
+
 
       synchronized (_tasks) {
          for (final Task task : _tasks) {
@@ -296,8 +300,6 @@ public class GHttpLoader
 
          _tasks.add(new Task(fileName, priority, handler));
       }
-
-      //      tryToShowStatistics();
    }
 
 
