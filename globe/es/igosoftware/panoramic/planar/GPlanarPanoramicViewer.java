@@ -711,22 +711,22 @@ public class GPlanarPanoramicViewer {
 
 
    private void moveDown(final Container container) {
-      setOffset(container, _offsetX, _offsetY + VERTICAL_INCREMENT);
-   }
-
-
-   private void moveUp(final Container container) {
       setOffset(container, _offsetX, _offsetY - VERTICAL_INCREMENT);
    }
 
 
+   private void moveUp(final Container container) {
+      setOffset(container, _offsetX, _offsetY + VERTICAL_INCREMENT);
+   }
+
+
    private void moveLeft(final Container container) {
-      setOffset(container, _offsetX - HORIZONTAL_INCREMENT, _offsetY);
+      setOffset(container, _offsetX + HORIZONTAL_INCREMENT, _offsetY);
    }
 
 
    private void moveRight(final Container container) {
-      setOffset(container, _offsetX + HORIZONTAL_INCREMENT, _offsetY);
+      setOffset(container, _offsetX - HORIZONTAL_INCREMENT, _offsetY);
    }
 
 
