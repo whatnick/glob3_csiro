@@ -58,12 +58,11 @@ public class GHttpLoader
 
 
       private void execute() {
-         _loadCounter++;
-
          final File file = new File(_rootCacheDirectory, _fileName);
 
          if (file.exists()) {
-            _loadCacheHits++;
+            cacheHit();
+
             try {
                _handler.loaded(file, file.length(), true);
             }
@@ -71,13 +70,19 @@ public class GHttpLoader
                // do nothing, the file is already on the cache and there are no download to cancel
             }
 
-            tryToShowStatistics();
+            //            tryToShowStatistics();
             return;
          }
 
          final File tempFile = new File(_rootCacheDirectory, _fileName + ".part");
          if (tempFile.exists()) {
             LOGGER.severe("tempFile is present: " + tempFile);
+         }
+         final File directory = tempFile.getParentFile();
+         if (!directory.exists()) {
+            if (!directory.mkdirs()) {
+               LOGGER.severe("can't create directory " + directory);
+            }
          }
 
          InputStream is = null;
@@ -101,7 +106,7 @@ public class GHttpLoader
             }
 
             final long bytesLoaded = file.length();
-            _bytesDownloaded += bytesLoaded;
+            cacheMiss(bytesLoaded);
 
             if (!_isCanceled) {
                try {
@@ -123,12 +128,32 @@ public class GHttpLoader
             GIOUtils.gentlyClose(out);
          }
 
-         tryToShowStatistics();
+         //         tryToShowStatistics();
       }
 
 
       private void cancel() {
          _isCanceled = true;
+      }
+   }
+
+
+   private void cacheHit() {
+      synchronized (_statisticsMutex) {
+         _loadCounter++;
+         _loadCacheHits++;
+
+         tryToShowStatistics();
+      }
+   }
+
+
+   private void cacheMiss(final long bytesLoaded) {
+      synchronized (_statisticsMutex) {
+         _loadCounter++;
+         _bytesDownloaded += bytesLoaded;
+
+         tryToShowStatistics();
       }
    }
 
@@ -182,6 +207,7 @@ public class GHttpLoader
    private final boolean                     _verbose;
 
 
+   private final Object                      _statisticsMutex = new Object();
    private int                               _loadCounter     = 0;
    private int                               _loadCacheHits   = 0;
    private long                              _bytesDownloaded = 0;
@@ -210,13 +236,13 @@ public class GHttpLoader
          @Override
          public int compare(final Task task1,
                             final Task task2) {
-            final int d1 = task1._priority;
-            final int d2 = task2._priority;
+            final int priority1 = task1._priority;
+            final int priority2 = task2._priority;
 
-            if (d1 < d2) {
+            if (priority1 < priority2) {
                return -1;
             }
-            else if (d1 > d2) {
+            else if (priority1 > priority2) {
                return 1;
             }
             else {
@@ -271,14 +297,12 @@ public class GHttpLoader
          _tasks.add(new Task(fileName, priority, handler));
       }
 
-
       //      tryToShowStatistics();
-
    }
 
 
    private void tryToShowStatistics() {
-      if ((_loadCounter != 0) && ((_loadCounter % 25) == 0)) {
+      if ((_loadCounter != 0) && ((_loadCounter % 50) == 0)) {
          //      if (_loadCounter != 0) {
          showStatistics();
       }
