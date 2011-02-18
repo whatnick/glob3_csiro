@@ -438,4 +438,18 @@ public class GIOUtils {
    }
 
 
+   public static String getContents(final File file) throws IOException {
+      FileInputStream is = null;
+
+      try {
+         is = new FileInputStream(file);
+
+         return getContents(is);
+      }
+      finally {
+         GIOUtils.gentlyClose(is);
+      }
+   }
+
+
 }
