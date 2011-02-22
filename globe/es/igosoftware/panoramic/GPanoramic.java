@@ -870,7 +870,7 @@ public class GPanoramic
          // _extent is already calculated as getExtent() was called before needToSplit()
          final double proyectedSize = WWMath.computeSizeInWindowCoordinates(dc, _extent);
 
-         return (proyectedSize > 256 * 2);
+         return (proyectedSize > (256.0 * 3.5));
       }
 
 

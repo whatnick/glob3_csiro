@@ -1153,7 +1153,7 @@ public class GCustomViewInputHandler
       final double oldFov = view.getFieldOfView().degrees;
       final double newFov = oldFov + (e.getWheelRotation() * 1.25);
 
-      view.setFieldOfView(Angle.fromDegrees(GMath.clamp(newFov, 20, 120)));
+      view.setFieldOfView(Angle.fromDegrees(GMath.clamp(newFov, 10, 110)));
       e.consume();
 
       return true;

@@ -205,16 +205,33 @@ public class GHttpLoader
    public GHttpLoader(final URL root,
                       final int workersCount,
                       final boolean verbose) {
+
+      this(root, null, workersCount, verbose);
+   }
+
+
+   public GHttpLoader(final URL root,
+                      final File cacheRootDirectory,
+                      final int workersCount,
+                      final boolean verbose) {
       GAssert.notNull(root, "root");
 
       if (!root.getProtocol().equals("http")) {
          throw new RuntimeException("Only http urls are supported");
       }
 
+
       _rootURL = root;
       _verbose = verbose;
 
-      _rootCacheDirectory = new File(RENDERING_CACHE_DIRECTORY, getDirectoryName(_rootURL));
+      if (cacheRootDirectory != null) {
+         _rootCacheDirectory = new File(cacheRootDirectory, getDirectoryName(_rootURL).replace(":", "_"));
+      }
+      else {
+         _rootCacheDirectory = new File(RENDERING_CACHE_DIRECTORY, getDirectoryName(_rootURL).replace(":", "_"));
+      }
+
+      System.out.println("root cache dir : " + _rootCacheDirectory);
       if (!_rootCacheDirectory.exists()) {
          if (!_rootCacheDirectory.mkdirs()) {
             throw new RuntimeException("Can't create cache directory: " + _rootCacheDirectory.getAbsolutePath());
