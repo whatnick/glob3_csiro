@@ -527,11 +527,6 @@ public abstract class GGlobeApplication
       // statusLayer.setCoordDecimalPlaces(2); // default is 4
       layers.add(statusLayer);
 
-      // initWMS(layers);
-      // layers.getLayerByName("pnoa").setEnabled(false);
-      //
-      // layers.getLayerByName("orto2006").setEnabled(false);
-
       layers.getLayerByName("NASA Blue Marble Image").setEnabled(true);
 
       layers.getLayerByName("Blue Marble (WMS) 2004").setEnabled(true);
