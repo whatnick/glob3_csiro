@@ -60,6 +60,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -687,7 +688,63 @@ public class GPlanarPanoramicViewer {
       _offset.x = offsetX;
       _offset.y = offsetY;
 
-      recreateTiles(container);
+      layoutTiles();
+      updateTilesGrid(container);
+   }
+
+
+   private void updateTilesGrid(final Container container) {
+      removeNotVisibleTiles(container);
+
+      final List<Tile> tilesToCreate = new ArrayList<Tile>();
+
+      final GPlanarPanoramicZoomLevel currentZoomLevel = getCurrentZoomLevel();
+
+      final Rectangle containerBounds = new Rectangle(0, 0, (int) container.getBounds().getWidth(),
+               (int) container.getBounds().getHeight());
+      for (int x = 0; x < currentZoomLevel.getWidthInTiles(); x++) {
+         for (int y = 0; y < currentZoomLevel.getHeightInTiles(); y++) {
+            final Tile tile = new Tile(currentZoomLevel, x, y);
+            if (tile.touches(containerBounds)) {
+               if (!hasTileInTheSamePosition(tile)) {
+                  tilesToCreate.add(tile);
+               }
+            }
+         }
+      }
+
+      for (final Tile tileToCreate : tilesToCreate) {
+         _tiles.add(tileToCreate);
+         container.add(tileToCreate);
+         tileToCreate.positionate();
+      }
+
+   }
+
+
+   private boolean hasTileInTheSamePosition(final Tile tile) {
+      for (final Tile each : _tiles) {
+         if ((each._x == tile._x) && (each._y == tile._y)) {
+            return true;
+         }
+      }
+      return false;
+   }
+
+
+   private void removeNotVisibleTiles(final Container container) {
+      final Rectangle containerBounds = new Rectangle(0, 0, (int) container.getBounds().getWidth(),
+               (int) container.getBounds().getHeight());
+
+      final Iterator<Tile> iterator = _tiles.iterator();
+      while (iterator.hasNext()) {
+         final Tile tile = iterator.next();
+         if (!tile.touches(containerBounds)) {
+            tile.remove();
+            iterator.remove();
+            container.remove(tile);
+         }
+      }
    }
 
 
@@ -729,7 +786,6 @@ public class GPlanarPanoramicViewer {
    private void createTiles(final Container container) {
       final GPlanarPanoramicZoomLevel currentZoomLevel = getCurrentZoomLevel();
 
-      //      final Rectangle containerBounds = container.getBounds();
       final Rectangle containerBounds = new Rectangle(0, 0, (int) container.getBounds().getWidth(),
                (int) container.getBounds().getHeight());
       for (int x = 0; x < currentZoomLevel.getWidthInTiles(); x++) {
