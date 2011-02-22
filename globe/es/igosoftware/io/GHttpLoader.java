@@ -206,7 +206,6 @@ public class GHttpLoader
    public GHttpLoader(final URL root,
                       final int workersCount,
                       final boolean verbose) {
-
       this(root, null, workersCount, verbose);
    }
 
@@ -225,14 +224,14 @@ public class GHttpLoader
       _rootURL = root;
       _verbose = verbose;
 
-      if (cacheRootDirectory != null) {
-         _rootCacheDirectory = new File(cacheRootDirectory, getDirectoryName(_rootURL).replace(":", "_"));
+      if (cacheRootDirectory == null) {
+         _rootCacheDirectory = new File(RENDERING_CACHE_DIRECTORY, getDirectoryName(_rootURL));
       }
       else {
-         _rootCacheDirectory = new File(RENDERING_CACHE_DIRECTORY, getDirectoryName(_rootURL).replace(":", "_"));
+         _rootCacheDirectory = new File(cacheRootDirectory, getDirectoryName(_rootURL));
       }
 
-      System.out.println("root cache dir : " + _rootCacheDirectory);
+      //      System.out.println("root cache dir : " + _rootCacheDirectory);
       if (!_rootCacheDirectory.exists()) {
          if (!_rootCacheDirectory.mkdirs()) {
             throw new RuntimeException("Can't create cache directory: " + _rootCacheDirectory.getAbsolutePath());
