@@ -59,6 +59,7 @@ public class GHttpLoader
 
       private void execute() {
          final File partFile = new File(_rootCacheDirectory, _fileName + ".part");
+         partFile.deleteOnExit(); // just in case...
          if (partFile.exists()) {
             LOGGER.severe("partFile is present: " + partFile);
          }
@@ -166,7 +167,7 @@ public class GHttpLoader
       public void run() {
          try {
             while (true) {
-               final Task task = _tasks.poll(250, TimeUnit.MILLISECONDS);
+               final Task task = _tasks.poll(1, TimeUnit.DAYS);
                if (task != null) {
                   if (task._isCanceled) {
                      continue; // ignored the canceled task
@@ -246,10 +247,10 @@ public class GHttpLoader
             final int priority2 = task2._priority;
 
             if (priority1 < priority2) {
-               return -1;
+               return 1;
             }
             else if (priority1 > priority2) {
-               return 1;
+               return -1;
             }
             else {
                return 0;
@@ -269,6 +270,8 @@ public class GHttpLoader
       }
 
       result = result.replace("/", "_");
+      result = result.replace(":", "_");
+
       return result;
    }
 
