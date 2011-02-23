@@ -42,8 +42,8 @@ import es.igosoftware.util.GAssert;
 
 
 public class GFileLoader
-         extends
-            GAbstractLoader {
+         implements
+            ILoader {
 
    protected final File _rootDirectory;
 
@@ -77,10 +77,10 @@ public class GFileLoader
 
 
    @Override
-   public void load(final String fileName,
-                    final long bytesToLoad,
-                    final int priority,
-                    final ILoader.IHandler handler) {
+   public ILoader.LoadID load(final String fileName,
+                              final long bytesToLoad,
+                              final int priority,
+                              final ILoader.IHandler handler) {
 
       final File file = new File(_rootDirectory, fileName);
 
@@ -100,6 +100,20 @@ public class GFileLoader
             // do nothing
          }
       }
+
+      return null;
+   }
+
+
+   @Override
+   public void cancelLoad(final ILoader.LoadID id) {
+      // do nothing, the loads in GFileLoader are not asynchronous
+   }
+
+
+   @Override
+   public void cancelAllLoads(final String fileName) {
+      // do nothing, the loads in GFileLoader are not asynchronous
    }
 
 

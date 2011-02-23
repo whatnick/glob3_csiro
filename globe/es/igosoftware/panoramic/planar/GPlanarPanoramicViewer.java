@@ -165,9 +165,8 @@ public class GPlanarPanoramicViewer {
 
          if ((_handler == null) && (_image == null)) {
             final String fileName = getTileFileName();
+
             _handler = new ILoader.IHandler() {
-
-
                @Override
                public void loaded(final File file,
                                   final long bytesLoaded,
@@ -260,7 +259,10 @@ public class GPlanarPanoramicViewer {
 
 
       private void remove() {
-         _loader.cancelLoading(getTileFileName());
+         if (_loadID != null) {
+            _loader.cancelLoad(_loadID);
+         }
+
          if (_timer != null) {
             _timer.stop();
          }
@@ -293,6 +295,9 @@ public class GPlanarPanoramicViewer {
    private JSlider                               _zoomSlider;
 
    private Point                                 _dragLastPosition;
+
+
+   private ILoader.LoadID                        _loadID;
 
 
    public GPlanarPanoramicViewer(final String name,
@@ -349,7 +354,8 @@ public class GPlanarPanoramicViewer {
       final GHolder<Boolean> completed = new GHolder<Boolean>(false);
       final GHolder<List<GPlanarPanoramicZoomLevel>> resultHolder = new GHolder<List<GPlanarPanoramicZoomLevel>>(null);
 
-      _loader.load("info.txt", -1, Integer.MAX_VALUE, new ILoader.IHandler() {
+
+      _loadID = _loader.load("info.txt", -1, Integer.MAX_VALUE, new ILoader.IHandler() {
          @Override
          public void loaded(final File file,
                             final long bytesLoaded,
@@ -945,14 +951,15 @@ public class GPlanarPanoramicViewer {
       //       final URL url = new URL("file:///home/dgd/Desktop/PruebaPanoramicas/PLANAR/PANOS/cantabria1.jpg/");
       //       final URL url = new URL("http://localhost/PANOS/cantabria1.jpg/");
       //       final URL url = new URL("http://localhost/PANOS/PlazaSanJorge-Caceres-Espana.jpg/");
-      final URL url = new URL("http://213.165.81.201:8080/gigapixel/Cantabria1/");
-      //      final URL url = new URL("http://213.165.81.201:8080/gigapixel/PlazaSanJorge-Caceres-Espana.jpg/");
+      //      final URL url = new URL("http://213.165.81.201:8080/gigapixel/Cantabria1/");
+      final URL url = new URL("http://213.165.81.201:8080/gigapixel/PlazaSanJorge-Caceres-Espana/");
 
       final int workersCount = GConcurrent.AVAILABLE_PROCESSORS * 2;
-      final ILoader loader = new GHttpLoader(url, workersCount, true);
+      //      final int workersCount = 1;
+      final ILoader loader = new GHttpLoader(url, workersCount, true, false);
 
 
-      final GPlanarPanoramicViewer viewer = new GPlanarPanoramicViewer("Sample Gigapixel Picture", loader, true);
+      final GPlanarPanoramicViewer viewer = new GPlanarPanoramicViewer("Sample Gigapixel Picture", loader, false);
 
       SwingUtilities.invokeLater(new Runnable() {
          @Override

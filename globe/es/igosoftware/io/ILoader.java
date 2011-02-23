@@ -61,6 +61,50 @@ public interface ILoader {
 
    }
 
+   public static class LoadID {
+      private final int _id;
+
+
+      public LoadID(final int id) {
+         _id = id;
+      }
+
+
+      public int getID() {
+         return _id;
+      }
+
+
+      @Override
+      public int hashCode() {
+         final int prime = 31;
+         int result = 1;
+         result = prime * result + _id;
+         return result;
+      }
+
+
+      @Override
+      public boolean equals(final Object obj) {
+         if (this == obj) {
+            return true;
+         }
+         if (obj == null) {
+            return false;
+         }
+         if (getClass() != obj.getClass()) {
+            return false;
+         }
+         final LoadID other = (LoadID) obj;
+         if (_id != other._id) {
+            return false;
+         }
+         return true;
+      }
+
+
+   }
+
 
    public static enum ErrorType {
       NOT_FOUND,
@@ -68,13 +112,16 @@ public interface ILoader {
    }
 
 
-   public void load(final String fileName,
-                    final long bytesToLoad,
-                    final int priority,
-                    final ILoader.IHandler handler);
+   public ILoader.LoadID load(final String fileName,
+                              final long bytesToLoad,
+                              final int priority,
+                              final ILoader.IHandler handler);
 
 
-   public void cancelLoading(final String fileName);
+   public void cancelLoad(final ILoader.LoadID id);
+
+
+   public void cancelAllLoads(final String fileName);
 
 
    //   public void cancelLoad(final String fileName);
