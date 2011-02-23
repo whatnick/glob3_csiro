@@ -757,7 +757,9 @@ public class GPlanarPanoramicViewer {
 
 
       //      final URL url = new URL("file:///home/dgd/Escritorio/PruebaPanoramicas/PLANAR/PANOS/cantabria1.jpg/");
-      final URL url = new URL("http://localhost/PANOS/cantabria1.jpg/");
+      // final URL url = new URL("http://localhost/PANOS/cantabria1.jpg/");
+
+      final URL url = new URL("file:///Users/mdelacalle/Desktop/elvas/elvas.jpg/");
       //      final URL url = new URL("http://82.165.133.233:8888/gigapixel/panoramas/MartirioDeSanPelayo/");
 
       final GPlanarPanoramicViewer viewer = new GPlanarPanoramicViewer("Panorámica de Cantabria", url);
