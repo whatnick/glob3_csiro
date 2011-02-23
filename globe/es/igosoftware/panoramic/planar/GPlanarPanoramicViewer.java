@@ -909,8 +909,8 @@ public class GPlanarPanoramicViewer {
 
       //      final URL url = new URL("file:///home/dgd/Escritorio/PruebaPanoramicas/PLANAR/PANOS/cantabria1.jpg/");
       //      final URL url = new URL("http://localhost/PANOS/cantabria1.jpg/");
-      final URL url = new URL("http://localhost/PANOS/PlazaSanJorge-Caceres-Espana.jpg/");
-      //      final URL url = new URL("http://213.165.81.201:8080/gigapixel/Cantabria1/");
+      //      final URL url = new URL("http://localhost/PANOS/PlazaSanJorge-Caceres-Espana.jpg/");
+      final URL url = new URL("http://213.165.81.201:8080/gigapixel/Cantabria1/");
 
       //      final ILoader loader = new GFileLoader("/home/dgd/Escritorio/PruebaPanoramicas/PLANAR/PANOS/cantabria1.jpg/");
       final int workersCount = GConcurrent.AVAILABLE_PROCESSORS * 2;
