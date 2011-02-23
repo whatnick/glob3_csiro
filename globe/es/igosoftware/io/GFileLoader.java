@@ -85,10 +85,10 @@ public class GFileLoader
       final File file = new File(_rootDirectory, fileName);
 
       if (!file.exists()) {
-         handler.loadError(file, ILoader.ErrorType.NOT_FOUND);
+         handler.loadError(ILoader.ErrorType.NOT_FOUND, null);
       }
       else if (!file.canRead()) {
-         handler.loadError(file, ILoader.ErrorType.CANT_READ);
+         handler.loadError(ILoader.ErrorType.CANT_READ, null);
       }
       else {
          try {

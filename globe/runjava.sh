@@ -164,7 +164,7 @@ else
         #MEMORY_JAVAVM_ARG="-Xms750M -Xmx750M"
     else
         #MEMORY_JAVAVM_ARG="-Xms4096M -Xmx7168M"
-        MEMORY_JAVAVM_ARG="-Xms6G -Xmx6G"
+        MEMORY_JAVAVM_ARG="-Xms3G -Xmx3G"
     fi
 fi
 
