@@ -79,6 +79,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -98,6 +99,15 @@ import es.igosoftware.util.GLogger;
 import es.igosoftware.util.GUtils;
 
 
+/**
+ * Viewer for Gigapixel Pictures.<br/>
+ * <br/>
+ * To use this viewer, the picture has to be processed with {@link es.igosoftware.panoramic.planar.GPlanarPanoramicCompiler}.<br/>
+ * 
+ * 
+ * @author dgd
+ * 
+ */
 public class GPlanarPanoramicViewer {
    private static final GLogger LOGGER               = GLogger.instance();
 
@@ -127,11 +137,11 @@ public class GPlanarPanoramicViewer {
       private Tile(final GPlanarPanoramicZoomLevel zoomLevel,
                    final int x,
                    final int y) {
-         //super(zoomLevel.getLevel() + " " + x + "@" + y);
-         //         super("");
          super();
 
-         // setBorder(new LineBorder(Color.BLUE, 1));
+         //         if (_debug) {
+         //            setBorder(new LineBorder(Color.BLUE, 1));
+         //         }
 
          _zoomLevel = zoomLevel;
          _x = x;
@@ -171,9 +181,6 @@ public class GPlanarPanoramicViewer {
                      _image = ImageIO.read(file);
                      _timer = new Timer(20, Tile.this);
                      _timer.start();
-
-                     //                     setIcon(new ImageIcon(_image));
-                     //                     setText("");
                   }
                   catch (final IOException e) {
                      LOGGER.severe("Error loading " + fileName, e);
@@ -209,12 +216,30 @@ public class GPlanarPanoramicViewer {
 
       @Override
       public void paint(final Graphics g) {
-         //         super.paint(g);
          if (_image != null) {
             final Graphics2D g2d = (Graphics2D) g;
 
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, _alpha));
             g2d.drawImage(_image, 0, 0, null);
+         }
+
+         if (_debug) {
+            final Graphics2D g2d = (Graphics2D) g;
+            g2d.setColor(Color.BLUE);
+            g2d.drawRect(0, 0, GPlanarPanoramicZoomLevel.TILE_WIDTH - 1, GPlanarPanoramicZoomLevel.TILE_HEIGHT - 1);
+
+            final int x = 5;
+            final int y = 20;
+
+            g2d.setColor(Color.WHITE);
+            final String debugMsg = "Level=" + _currentLevel + ", Tile=" + _x + "x" + _y;
+            g2d.drawString(debugMsg, x + 1, y + 1);
+            g2d.drawString(debugMsg, x - 1, y - 1);
+            g2d.drawString(debugMsg, x + 1, y - 1);
+            g2d.drawString(debugMsg, x - 1, y + 1);
+
+            g2d.setColor(Color.BLACK);
+            g2d.drawString(debugMsg, x, y);
          }
       }
 
@@ -252,6 +277,9 @@ public class GPlanarPanoramicViewer {
 
    private final String                          _name;
    private final ILoader                         _loader;
+   private final boolean                         _debug;
+
+
    private final List<GPlanarPanoramicZoomLevel> _zoomLevels;
    private final int                             _minLevel;
    private final int                             _maxLevel;
@@ -269,8 +297,16 @@ public class GPlanarPanoramicViewer {
 
    public GPlanarPanoramicViewer(final String name,
                                  final ILoader loader) throws IOException {
+      this(name, loader, false);
+   }
+
+
+   public GPlanarPanoramicViewer(final String name,
+                                 final ILoader loader,
+                                 final boolean debug) throws IOException {
       _name = name;
       _loader = loader;
+      _debug = debug;
 
       _zoomLevels = readZoomLevels();
 
@@ -630,7 +666,9 @@ public class GPlanarPanoramicViewer {
 
 
    private void setLook(final JComponent widget) {
-      // widget.setBorder(new LineBorder(Color.RED, 1));
+      if (_debug) {
+         widget.setBorder(new LineBorder(Color.RED, 1));
+      }
       widget.setCursor(new Cursor(Cursor.HAND_CURSOR));
    }
 
@@ -901,22 +939,20 @@ public class GPlanarPanoramicViewer {
       });
 
 
-      // http://82.165.133.233:8888/gigapixel/
-      // http://82.165.133.233:8888/gigapixel/panoramas/MartirioDeSanPelayo/
-
-      //      http://213.165.81.201:8080/gigapixel/Cantabria1/
+      //       final ILoader loader = new GFileLoader("/home/dgd/Escritorio/PruebaPanoramicas/PLANAR/PANOS/cantabria1.jpg/");
 
 
-      //      final URL url = new URL("file:///home/dgd/Escritorio/PruebaPanoramicas/PLANAR/PANOS/cantabria1.jpg/");
-      //      final URL url = new URL("http://localhost/PANOS/cantabria1.jpg/");
-      //      final URL url = new URL("http://localhost/PANOS/PlazaSanJorge-Caceres-Espana.jpg/");
+      //       final URL url = new URL("file:///home/dgd/Escritorio/PruebaPanoramicas/PLANAR/PANOS/cantabria1.jpg/");
+      //       final URL url = new URL("http://localhost/PANOS/cantabria1.jpg/");
+      //       final URL url = new URL("http://localhost/PANOS/PlazaSanJorge-Caceres-Espana.jpg/");
       final URL url = new URL("http://213.165.81.201:8080/gigapixel/Cantabria1/");
+      //      final URL url = new URL("http://213.165.81.201:8080/gigapixel/PlazaSanJorge-Caceres-Espana.jpg/");
 
-      //      final ILoader loader = new GFileLoader("/home/dgd/Escritorio/PruebaPanoramicas/PLANAR/PANOS/cantabria1.jpg/");
       final int workersCount = GConcurrent.AVAILABLE_PROCESSORS * 2;
       final ILoader loader = new GHttpLoader(url, workersCount, true);
 
-      final GPlanarPanoramicViewer viewer = new GPlanarPanoramicViewer("Panorámica de Cantabria", loader);
+
+      final GPlanarPanoramicViewer viewer = new GPlanarPanoramicViewer("Panorámica de Cantabria", loader, true);
 
       SwingUtilities.invokeLater(new Runnable() {
          @Override
