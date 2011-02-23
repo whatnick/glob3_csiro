@@ -939,10 +939,10 @@ public class GPlanarPanoramicViewer {
       });
 
 
-      //       final ILoader loader = new GFileLoader("/home/dgd/Escritorio/PruebaPanoramicas/PLANAR/PANOS/cantabria1.jpg/");
+      //       final ILoader loader = new GFileLoader("/home/dgd/Desktop/PruebaPanoramicas/PLANAR/PANOS/cantabria1.jpg/");
 
 
-      //       final URL url = new URL("file:///home/dgd/Escritorio/PruebaPanoramicas/PLANAR/PANOS/cantabria1.jpg/");
+      //       final URL url = new URL("file:///home/dgd/Desktop/PruebaPanoramicas/PLANAR/PANOS/cantabria1.jpg/");
       //       final URL url = new URL("http://localhost/PANOS/cantabria1.jpg/");
       //       final URL url = new URL("http://localhost/PANOS/PlazaSanJorge-Caceres-Espana.jpg/");
       final URL url = new URL("http://213.165.81.201:8080/gigapixel/Cantabria1/");
@@ -952,7 +952,7 @@ public class GPlanarPanoramicViewer {
       final ILoader loader = new GHttpLoader(url, workersCount, true);
 
 
-      final GPlanarPanoramicViewer viewer = new GPlanarPanoramicViewer("Panorámica de Cantabria", loader, true);
+      final GPlanarPanoramicViewer viewer = new GPlanarPanoramicViewer("Sample Gigapixel Picture", loader, true);
 
       SwingUtilities.invokeLater(new Runnable() {
          @Override
