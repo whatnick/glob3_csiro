@@ -212,7 +212,7 @@ public class GHttpLoader
       @Override
       public void uncaughtException(final Thread thread,
                                     final Throwable e) {
-         LOGGER.severe("EncaughtException in thread " + thread, e);
+         LOGGER.severe("Uncaught exception in thread " + thread, e);
       }
    }
 
@@ -243,7 +243,7 @@ public class GHttpLoader
       GAssert.notNull(root, "root");
 
       if (!root.getProtocol().equals("http")) {
-         throw new RuntimeException("Only http urls are supported");
+         throw new RuntimeException("Only http URLs are supported");
       }
 
 
