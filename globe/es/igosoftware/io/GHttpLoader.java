@@ -58,13 +58,9 @@ public class GHttpLoader
 
 
       private void execute() {
-         final File partFile = new File(_rootCacheDirectory, _fileName + ".part");
-         partFile.deleteOnExit(); // just in case...
-         if (partFile.exists()) {
-            LOGGER.severe("partFile is present: " + partFile);
-         }
+         //         final File partFile = new File(_rootCacheDirectory, _fileName + ".part");
 
-         final File directory = partFile.getParentFile();
+         final File directory = new File(_rootCacheDirectory, _fileName).getParentFile();
          synchronized (_rootCacheDirectory) {
             if (!directory.exists()) {
                if (!directory.mkdirs()) {
@@ -72,6 +68,21 @@ public class GHttpLoader
                }
             }
          }
+
+         File partFile = null;
+         try {
+            partFile = File.createTempFile(_fileName, ".part", _rootCacheDirectory);
+         }
+         catch (final IOException e) {
+            _handler.loadError(ILoader.ErrorType.NOT_FOUND, e);
+            return;
+         }
+
+         partFile.deleteOnExit(); // just in case...
+         //         if (partFile.exists()) {
+         //            LOGGER.severe("partFile is present: " + partFile);
+         //         }
+
 
          InputStream is = null;
          OutputStream out = null;
@@ -89,23 +100,38 @@ public class GHttpLoader
             out.close();
             out = null;
 
-            final File cacheFile = new File(_rootCacheDirectory, _fileName);
+            synchronized (_rootCacheDirectory) {
+               final File cacheFile = new File(_rootCacheDirectory, _fileName);
 
-            if (!partFile.renameTo(cacheFile)) {
-               LOGGER.severe("can't rename " + partFile + " to " + cacheFile);
-               _handler.loadError(ILoader.ErrorType.CANT_READ, null);
-               return;
-            }
-
-            final long bytesLoaded = cacheFile.length();
-            cacheMiss(bytesLoaded);
-
-            if (!_isCanceled) {
-               try {
-                  _handler.loaded(cacheFile, bytesLoaded, true);
+               //               if (cacheFile.exists()) {
+               //                  if (cacheFile.length() != partFile.length()) {
+               //                     LOGGER.severe("file " + cacheFile + " (" + cacheFile.length()
+               //                                   + ") already exists and it's size it's different than " + partFile + " (" + partFile.length()
+               //                                   + ")");
+               //                     partFile.delete();
+               //                     _handler.loadError(ILoader.ErrorType.CANT_READ, null);
+               //                     return;
+               //                  }
+               //                  partFile.delete();
+               //               }
+               //               else {
+               if (!partFile.renameTo(cacheFile)) {
+                  LOGGER.severe("can't rename " + partFile + " to " + cacheFile);
+                  _handler.loadError(ILoader.ErrorType.CANT_READ, null);
+                  return;
                }
-               catch (final ILoader.AbortLoading e) {
-                  // do nothing, the file is already downloaded
+               //               }
+
+               final long bytesLoaded = cacheFile.length();
+               cacheMiss(bytesLoaded);
+
+               if (!_isCanceled) {
+                  try {
+                     _handler.loaded(cacheFile, bytesLoaded, true);
+                  }
+                  catch (final ILoader.AbortLoading e) {
+                     // do nothing, the file is already downloaded
+                  }
                }
             }
          }
@@ -158,7 +184,7 @@ public class GHttpLoader
       private Worker(final int id) {
          super("GHttpLoader " + _rootURL + ", worker #" + id);
          setDaemon(true);
-         setPriority(MIN_PRIORITY);
+         setPriority(MAX_PRIORITY);
          setUncaughtExceptionHandler(this);
       }
 
@@ -186,7 +212,7 @@ public class GHttpLoader
       @Override
       public void uncaughtException(final Thread thread,
                                     final Throwable e) {
-         LOGGER.severe("EncaughtException in thread " + thread, e);
+         LOGGER.severe("Uncaught exception in thread " + thread, e);
       }
    }
 
@@ -217,7 +243,7 @@ public class GHttpLoader
       GAssert.notNull(root, "root");
 
       if (!root.getProtocol().equals("http")) {
-         throw new RuntimeException("Only http urls are supported");
+         throw new RuntimeException("Only http URLs are supported");
       }
 
 
@@ -390,9 +416,12 @@ public class GHttpLoader
       while (!downloaded.get()) {
          GUtils.delay(10);
       }
-      loader.load("info.txt", -1, 1, handler);
-      loader.load("info.txt", -1, 1, handler);
-      loader.load("info.txt", -1, 1, handler);
+
+      for (int i = 0; i < 100; i++) {
+         loader.load("info.txt", -1, 1, handler);
+         loader.load("info.txt", -1, 1, handler);
+         loader.load("info.txt", -1, 1, handler);
+      }
 
    }
 
