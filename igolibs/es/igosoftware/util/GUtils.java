@@ -231,25 +231,6 @@ public final class GUtils {
    }
 
 
-   public static String getTimeMessage(final long ms) {
-      if (ms < 1000) {
-         return ms + "ms";
-      }
-
-      if (ms < 60000) {
-         final double seconds = ms / 1000d;
-         return Math.round(seconds) + "s";
-      }
-
-      final long minutes = ms / 60000;
-      final long seconds = (ms - (minutes * 60000)) / 1000;
-      if (seconds <= 0) {
-         return minutes + "m";
-      }
-      return minutes + "m " + seconds + "s";
-   }
-
-
    public static String toString(final Object object) {
       if (object == null) {
          return "null";

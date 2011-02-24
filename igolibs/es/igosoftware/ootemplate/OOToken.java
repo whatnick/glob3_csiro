@@ -47,7 +47,7 @@ import java.util.Set;
 
 import org.xml.sax.Attributes;
 
-import es.igosoftware.util.StringUtils;
+import es.igosoftware.util.GStringUtils;
 
 
 public abstract class OOToken {
@@ -56,7 +56,7 @@ public abstract class OOToken {
 
    private static void printIdentation(final Writer output,
                                        final int level) throws IOException {
-      output.write(StringUtils.spaces(level * 2));
+      output.write(GStringUtils.spaces(level * 2));
    }
 
 

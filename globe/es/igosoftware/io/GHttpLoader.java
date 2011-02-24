@@ -85,6 +85,8 @@ public class GHttpLoader
 
          partFile.deleteOnExit(); // just in case...
 
+         final long start = System.currentTimeMillis();
+
          InputStream is = null;
          OutputStream out = null;
          try {
@@ -101,6 +103,8 @@ public class GHttpLoader
             out.close();
             out = null;
 
+            final long ellapsed = System.currentTimeMillis() - start;
+
             synchronized (_rootCacheDirectory) {
                final File cacheFile = new File(_rootCacheDirectory, _fileName);
 
@@ -111,7 +115,7 @@ public class GHttpLoader
                }
 
                final long bytesLoaded = cacheFile.length();
-               cacheMiss(bytesLoaded);
+               cacheMiss(bytesLoaded, ellapsed);
 
                if (!_isCanceled) {
                   notifyLoadToHandlers(cacheFile, bytesLoaded);
@@ -187,10 +191,12 @@ public class GHttpLoader
    }
 
 
-   private void cacheMiss(final long bytesLoaded) {
+   private void cacheMiss(final long bytesLoaded,
+                          final long ellapsedTimeInMS) {
       synchronized (_statisticsMutex) {
          _loadCounter++;
          _bytesDownloaded += bytesLoaded;
+         _downloadEllapsedTime += ellapsedTimeInMS;
 
          tryToShowStatistics();
       }
@@ -268,18 +274,20 @@ public class GHttpLoader
 
    private final URL               _rootURL;
    private final File              _rootCacheDirectory;
-   private final Map<String, Task> _tasks           = new HashMap<String, Task>();
+   private final Map<String, Task> _tasks                = new HashMap<String, Task>();
    private final boolean           _verbose;
 
 
-   private final Object            _statisticsMutex = new Object();
-   private int                     _loadCounter     = 0;
-   private int                     _loadCacheHits   = 0;
-   private long                    _bytesDownloaded = 0;
+   private final Object            _statisticsMutex      = new Object();
+   private int                     _loadCounter          = 0;
+   private int                     _loadCacheHits        = 0;
+   private long                    _bytesDownloaded      = 0;
+   private long                    _downloadEllapsedTime = 0;
+
 
    private final boolean           _debug;
 
-   private int                     _loadID          = Integer.MIN_VALUE;
+   private int                     _loadID               = Integer.MIN_VALUE;
 
 
    public GHttpLoader(final URL root,
@@ -420,10 +428,19 @@ public class GHttpLoader
 
    private void showStatistics() {
       final double hitsPercent = (double) _loadCacheHits / _loadCounter;
-      LOGGER.info("HttpLoader \"" + _rootURL + "\": " + //
-                  "loads=" + _loadCounter + ", " + //
-                  "cache hits=" + _loadCacheHits + " (" + GStringUtils.formatPercent(hitsPercent) + "), " + //
-                  "bytesDownloaded=" + _bytesDownloaded);
+
+      final String msg = "HttpLoader \"" + _rootURL + "\": " + //
+                         "loads=" + _loadCounter + ", " + //
+                         "cache hits=" + _loadCacheHits + " (" + GStringUtils.formatPercent(hitsPercent) + ")";
+
+      if (_bytesDownloaded != 0) {
+         final double throughput = (double) _bytesDownloaded / _downloadEllapsedTime * 1000;
+         LOGGER.info(msg + ", downloaded=" + GStringUtils.getSpaceMessage(_bytesDownloaded) + ", throughput="
+                     + GStringUtils.getSpaceMessage(throughput) + "/s");
+      }
+      else {
+         LOGGER.info(msg);
+      }
    }
 
 

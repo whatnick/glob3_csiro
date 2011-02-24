@@ -49,8 +49,8 @@ import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GLogger;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.GProgress;
+import es.igosoftware.util.GStringUtils;
 import es.igosoftware.util.GUnmodifiableListInt;
-import es.igosoftware.util.GUtils;
 import es.igosoftware.util.IComparatorInt;
 import es.igosoftware.util.IEvaluator;
 import es.igosoftware.util.IEvaluatorInt;
@@ -384,7 +384,7 @@ public class GKMeansPlusPlusClusterer {
 
             final long ellapsed = System.currentTimeMillis() - start;
             logger.info("  K-Means++: Converged after " + (count + 1) + " (max: " + max + ") iterations in "
-                        + GUtils.getTimeMessage(ellapsed));
+                        + GStringUtils.getTimeMessage(ellapsed));
 
             showStatistics(clusters, policy);
 
@@ -406,7 +406,7 @@ public class GKMeansPlusPlusClusterer {
       });
 
       final long ellapsed = System.currentTimeMillis() - start;
-      logger.info("  K-Means++: Converged after max (" + max + ") iterations in " + GUtils.getTimeMessage(ellapsed));
+      logger.info("  K-Means++: Converged after max (" + max + ") iterations in " + GStringUtils.getTimeMessage(ellapsed));
 
       showStatistics(clusters, policy);
 
@@ -706,7 +706,7 @@ public class GKMeansPlusPlusClusterer {
 
             final long ellapsed = System.currentTimeMillis() - start;
             logger.info("  K-Means++: Converged after " + (count + 1) + " (max: " + max + ") iterations in "
-                        + GUtils.getTimeMessage(ellapsed));
+                        + GStringUtils.getTimeMessage(ellapsed));
 
             showStatisticsInt(clusters, policy);
 
@@ -728,7 +728,7 @@ public class GKMeansPlusPlusClusterer {
       });
 
       final long ellapsed = System.currentTimeMillis() - start;
-      logger.info("  K-Means++: Converged after max (" + max + ") iterations in " + GUtils.getTimeMessage(ellapsed));
+      logger.info("  K-Means++: Converged after max (" + max + ") iterations in " + GStringUtils.getTimeMessage(ellapsed));
 
       showStatisticsInt(clusters, policy);
 

@@ -55,7 +55,7 @@ import es.igosoftware.loading.modelparts.GModelData;
 import es.igosoftware.loading.modelparts.GModelMesh;
 import es.igosoftware.util.GLogger;
 import es.igosoftware.util.GMath;
-import es.igosoftware.util.GUtils;
+import es.igosoftware.util.GStringUtils;
 import es.igosoftware.util.XStringTokenizer;
 
 
@@ -226,7 +226,7 @@ public class GObjLoader {
          final long elapsed = System.currentTimeMillis() - start;
 
          logger.info("------------------------------------------------------------------------------------");
-         logger.info("Model \"" + path + "\" loaded in " + GUtils.getTimeMessage(elapsed));
+         logger.info("Model \"" + path + "\" loaded in " + GStringUtils.getTimeMessage(elapsed));
 
          _model.showStatistics();
 
