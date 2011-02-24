@@ -41,9 +41,10 @@ import java.text.DecimalFormat;
 
 public class GStringUtils {
 
-   private static final double        KILO           = 1024d;
-   private static final double        MEGA           = KILO * KILO;
-   private static final double        GIGA           = KILO * MEGA;
+   private static final long          KILO           = 1024;
+   private static final long          MEGA           = KILO * KILO;
+   private static final long          GIGA           = KILO * MEGA;
+   private static final long          TERA           = KILO * GIGA;
 
 
    private static final DecimalFormat PERCENT_FORMAT = new DecimalFormat("##0.00%");
@@ -182,26 +183,6 @@ public class GStringUtils {
    }
 
 
-   public static String getSpaceMessage(final double bytes) {
-      if (bytes < (KILO * 0.8)) {
-         return bytes + "b";
-      }
-
-      if (bytes < (MEGA * 0.8)) {
-         final double kilos = bytes / KILO;
-         return SPACE_FORMAT.format(kilos) + "kB";
-      }
-
-      if (bytes < (GIGA * 0.8)) {
-         final double megas = bytes / MEGA;
-         return SPACE_FORMAT.format(megas) + "MB";
-      }
-
-      final double gigas = bytes / GIGA;
-      return SPACE_FORMAT.format(gigas) + "GB";
-   }
-
-
    public static String toString(final Object obj) {
       if (obj == null) {
          return GStringUtils.NULL_STRING;
@@ -243,5 +224,36 @@ public class GStringUtils {
       return GStringUtils.SHARPS.substring(0, Math.min(count, GStringUtils.SHARPS.length() - 1));
    }
 
+
+   public static String getSpaceMessage(final double bytes) {
+      if (bytes < (KILO * 0.8)) {
+         return bytes + "B";
+      }
+
+      if (bytes < (MEGA * 0.8)) {
+         final double kilos = bytes / KILO;
+         return SPACE_FORMAT.format(kilos) + "kB";
+      }
+
+      if (bytes < (GIGA * 0.8)) {
+         final double megas = bytes / MEGA;
+         return SPACE_FORMAT.format(megas) + "MB";
+      }
+
+      if (bytes < (TERA * 0.8)) {
+         final double gigas = bytes / GIGA;
+         return SPACE_FORMAT.format(gigas) + "GB";
+      }
+
+      final double teras = bytes / TERA;
+      return SPACE_FORMAT.format(teras) + "TB";
+   }
+
+
+   //   public static void main(final String[] args) {
+   //      final double bytes = 1024d * 1024 * 1024 * 1024 * 1024;
+   //      System.out.println(bytes);
+   //      System.out.println(getSpaceMessage(bytes));
+   //   }
 
 }
