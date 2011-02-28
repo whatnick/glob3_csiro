@@ -40,8 +40,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.imageio.ImageIO;
 
@@ -52,6 +50,7 @@ import com.sun.opengl.util.texture.TextureIO;
 
 import es.igosoftware.util.GLogger;
 import es.igosoftware.util.GPair;
+import es.igosoftware.util.LRUCache;
 import gov.nasa.worldwind.formats.dds.DDSCompressor;
 import gov.nasa.worldwind.formats.dds.DXTCompressionAttributes;
 import gov.nasa.worldwind.util.WWIO;
@@ -59,13 +58,27 @@ import gov.nasa.worldwind.util.WWMath;
 
 
 public class GTexturesCache {
-   private static final GLogger                              logger         = GLogger.instance();
+   private static final GLogger                                                  logger = GLogger.instance();
 
-   private static final Map<GPair<String, Boolean>, Texture> _texturesCache = new HashMap<GPair<String, Boolean>, Texture>();
+
+   private static final LRUCache<GPair<URL, Boolean>, Texture, RuntimeException> _texturesCache;
+
+
+   static {
+      _texturesCache = new LRUCache<GPair<URL, Boolean>, Texture, RuntimeException>(50,
+               new LRUCache.ValueFactory<GPair<URL, Boolean>, Texture, RuntimeException>() {
+                  @Override
+                  public Texture create(final GPair<URL, Boolean> key) {
+                     final URL url = key._first;
+                     final boolean mipmap = key._second;
+
+                     return loadTexture(url, mipmap);
+                  }
+               });
+   }
 
 
    private GTexturesCache() {
-
    }
 
 
@@ -75,24 +88,9 @@ public class GTexturesCache {
          return null;
       }
 
-      final GPair<String, Boolean> textureKey = new GPair<String, Boolean>(url.toString(), mipmap);
+      final GPair<URL, Boolean> textureKey = new GPair<URL, Boolean>(url, mipmap);
       synchronized (_texturesCache) {
-         //         if (_texturesCache.containsKey(textureKey)) {
-         //            return _texturesCache.get(textureKey);
-         //         }
-         //
-         //         final Texture texture = loadTexture(url, mipmap);
-         //         _texturesCache.put(textureKey, texture);
-         //         return texture;
-
-         final Texture texture = _texturesCache.get(textureKey);
-         if (texture != null) {
-            return texture;
-         }
-
-         final Texture newTexture = loadTexture(url, mipmap);
-         _texturesCache.put(textureKey, newTexture);
-         return newTexture;
+         return _texturesCache.get(textureKey);
       }
    }
 
@@ -125,7 +123,6 @@ public class GTexturesCache {
          }
 
 
-         //         TextureData newTextureData = TextureIO.newTextureData(url, mipmap, null);
          if (newTextureData.getMustFlipVertically()) {
             final BufferedImage image = ImageIO.read(url);
             ImageUtil.flipImageVertically(image);
@@ -134,7 +131,6 @@ public class GTexturesCache {
             newTextureData.setMustFlipVertically(false);
          }
 
-         //         final Texture newTexture = TextureIO.newTexture(url, mipmap, null);
          final Texture newTexture = TextureIO.newTexture(newTextureData);
 
          if (!WWMath.isPowerOfTwo(newTexture.getImageHeight())) {
@@ -154,4 +150,5 @@ public class GTexturesCache {
 
       return null;
    }
+
 }
