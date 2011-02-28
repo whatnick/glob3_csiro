@@ -54,14 +54,14 @@ public class GPointsCloudStreamingLoader
    //   }
 
 
-   private final GDClient                       _client;
-   private final int                            _sessionID;
-   private final IPointsStreamingServer         _server;
+   private final GDClient                              _client;
+   private final int                                   _sessionID;
+   private final IPointsStreamingServer                _server;
 
-   private final Object                         _mutex     = new Object();
-   private final Map<String, Integer>           _tasksIDs  = new HashMap<String, Integer>();
-   private final Map<Integer, ILoader.IHandler> _handlers  = new HashMap<Integer, ILoader.IHandler>();
-   private final Map<Integer, byte[]>           _fragments = new HashMap<Integer, byte[]>();
+   private final Object                                _mutex     = new Object();
+   //   private final Map<String, ILoader.LoadTaskID>           _tasksIDs  = new HashMap<String, ILoader.LoadTaskID>();
+   private final Map<ILoader.LoadID, ILoader.IHandler> _handlers  = new HashMap<ILoader.LoadID, ILoader.IHandler>();
+   private final Map<ILoader.LoadID, byte[]>           _fragments = new HashMap<ILoader.LoadID, byte[]>();
 
 
    public GPointsCloudStreamingLoader(final String host,
@@ -91,7 +91,7 @@ public class GPointsCloudStreamingLoader
 
 
    private void processFileData(final GFileData result) {
-      final Integer taskID = Integer.valueOf(result.getTaskID());
+      final LoadID taskID = new ILoader.LoadID(result.getTaskID());
 
       byte[] accumulated = null;
       final byte[] data = result.getData();
@@ -123,7 +123,7 @@ public class GPointsCloudStreamingLoader
             e.printStackTrace();
          }
          catch (final ILoader.AbortLoading e) {
-            _server.cancel(taskID);
+            _server.cancel(taskID.getID());
             cancel = true;
          }
 
@@ -140,10 +140,10 @@ public class GPointsCloudStreamingLoader
 
 
    @Override
-   public void load(final String fileName,
-                    final long bytesToLoad,
-                    final int priority,
-                    final ILoader.IHandler handler) {
+   public ILoader.LoadID load(final String fileName,
+                              final long bytesToLoad,
+                              final int priority,
+                              final ILoader.IHandler handler) {
 
       //      synchronized (_mutex) {
       //         final Integer taskID = _tasksIDs.get(fileName);
@@ -153,26 +153,30 @@ public class GPointsCloudStreamingLoader
       //      cancelLoading(fileName);
       //      }
 
-      final Integer taskID = Integer.valueOf(_server.loadFile(_sessionID, fileName, 0, bytesToLoad, priority));
+      final ILoader.LoadID taskID = new ILoader.LoadID(_server.loadFile(_sessionID, fileName, 0, bytesToLoad, priority));
       synchronized (_mutex) {
-         _tasksIDs.put(fileName, taskID);
          _handlers.put(taskID, handler);
+      }
+      return taskID;
+   }
+
+
+   @Override
+   public void cancelLoad(final ILoader.LoadID id) {
+
+      synchronized (_mutex) {
+         _handlers.remove(id);
+      }
+
+      if (id != null) {
+         _server.cancel(id.getID());
       }
    }
 
 
    @Override
-   public void cancelLoading(final String fileName) {
-      Integer taskID = null;
-
-      synchronized (_mutex) {
-         taskID = _tasksIDs.remove(fileName);
-         _handlers.remove(taskID);
-      }
-
-      if (taskID != null) {
-         _server.cancel(taskID);
-      }
+   public void cancelAllLoads(final String fileName) {
+      throw new RuntimeException("Not yet implemented!");
    }
 
 

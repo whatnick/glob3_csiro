@@ -38,7 +38,7 @@ package es.igosoftware.scenegraph.utils;
 
 import es.igosoftware.scenegraph.INode;
 import es.igosoftware.scenegraph.IVisitor;
-import es.igosoftware.util.StringUtils;
+import es.igosoftware.util.GStringUtils;
 
 
 public class GPrintSceneGraphStructureVisitor
@@ -53,7 +53,7 @@ public class GPrintSceneGraphStructureVisitor
 
 
    private String getLevel(final INode node) {
-      return StringUtils.spaces(node.getDepth() * 2);
+      return GStringUtils.spaces(node.getDepth() * 2);
    }
 
 }

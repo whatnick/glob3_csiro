@@ -89,19 +89,19 @@ public abstract class GProgress {
       final int barSteps = 80;
 
       if (percent == 1) {
-         return "[" + StringUtils.sharps(barSteps) + "] " + percentString(1) + " [Finished in " + GUtils.getTimeMessage(elapsed)
-                + "]";
+         return "[" + GStringUtils.sharps(barSteps) + "] " + percentString(1) + " [Finished in "
+                + GStringUtils.getTimeMessage(elapsed) + "]";
       }
 
       final int doneBarsSteps = Math.max(Math.round((float) percent * barSteps), 0);
-      final String bar = "[" + StringUtils.sharps(doneBarsSteps) + StringUtils.dashes(Math.max(barSteps - doneBarsSteps, 0))
+      final String bar = "[" + GStringUtils.sharps(doneBarsSteps) + GStringUtils.dashes(Math.max(barSteps - doneBarsSteps, 0))
                          + "]";
 
       if (percent <= 0.005 /* 0.5% */) {
          return bar + " " + percentString(percent);
       }
 
-      return bar + " " + percentString(percent) + " (ETF: " + GUtils.getTimeMessage(estimatedMsToFinish) + ")";
+      return bar + " " + percentString(percent) + " (ETF: " + GStringUtils.getTimeMessage(estimatedMsToFinish) + ")";
    }
 
 

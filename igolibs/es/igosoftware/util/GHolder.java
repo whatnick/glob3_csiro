@@ -117,4 +117,9 @@ public final class GHolder<T> {
       return (_value == null);
    }
 
+
+   public boolean hasValue() {
+      return (_value != null);
+   }
+
 }

@@ -63,7 +63,7 @@ import bsh.EvalError;
 import bsh.Interpreter;
 import bsh.TargetError;
 import es.igosoftware.ootemplate.OOToken.XMLAttribute;
-import es.igosoftware.util.StringUtils;
+import es.igosoftware.util.GStringUtils;
 
 
 public abstract class OOTag {
@@ -150,7 +150,7 @@ public abstract class OOTag {
 
    private static void printIdentation(final Writer output,
                                        final int level) throws IOException {
-      output.write(StringUtils.spaces(level * 2));
+      output.write(GStringUtils.spaces(level * 2));
    }
 
 

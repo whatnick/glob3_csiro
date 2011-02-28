@@ -140,7 +140,7 @@ final class GSGPointsLoader {
 
 
    synchronized void reload() {
-      _layer.getLoader().cancelLoading(_node.getPointsFileName());
+      _layer.getLoader().cancelAllLoads(_node.getPointsFileName());
 
       _availablePoints = 0;
       _wantedPoints = 0;

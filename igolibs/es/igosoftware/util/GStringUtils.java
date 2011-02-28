@@ -41,7 +41,40 @@ import java.text.DecimalFormat;
 
 public class GStringUtils {
 
+   private static final long          KILO           = 1024;
+   private static final long          MEGA           = KILO * KILO;
+   private static final long          GIGA           = KILO * MEGA;
+   private static final long          TERA           = KILO * GIGA;
+
+
    private static final DecimalFormat PERCENT_FORMAT = new DecimalFormat("##0.00%");
+   private static final DecimalFormat SPACE_FORMAT   = new DecimalFormat("##0.#");
+
+   private static final String        SPACES;
+   private static final String        DASHES;
+   private static final String        SHARPS;
+
+   private static final String        NULL_STRING    = "<null>";
+
+   static {
+      String sp = "                                                                               ";
+      sp = sp + sp;
+      sp = sp + sp;
+      sp = sp + sp;
+      SPACES = sp;
+
+      String d = "-------------------------------------------------------------------------------";
+      d = d + d;
+      d = d + d;
+      d = d + d;
+      DASHES = d;
+
+      String s = "###############################################################################";
+      s = s + s;
+      s = s + s;
+      s = s + s;
+      SHARPS = s;
+   }
 
 
    private GStringUtils() {
@@ -131,9 +164,96 @@ public class GStringUtils {
    }
 
 
-   public static void main(final String[] args) {
-      System.out.println(formatPercent(0.1));
+   public static String getTimeMessage(final long ms) {
+      if (ms < 1000) {
+         return ms + "ms";
+      }
+
+      if (ms < 60000) {
+         final double seconds = ms / 1000d;
+         return Math.round(seconds) + "s";
+      }
+
+      final long minutes = ms / 60000;
+      final long seconds = (ms - (minutes * 60000)) / 1000;
+      if (seconds <= 0) {
+         return minutes + "m";
+      }
+      return minutes + "m " + seconds + "s";
    }
 
+
+   public static String toString(final Object obj) {
+      if (obj == null) {
+         return GStringUtils.NULL_STRING;
+      }
+      return obj.toString();
+   }
+
+
+   public static String toString(final Object[] collection) {
+      if (collection == null) {
+         return GStringUtils.NULL_STRING;
+      }
+
+      final StringBuilder buffer = new StringBuilder();
+      boolean first = true;
+      for (final Object o : collection) {
+         if (!first) {
+            first = false;
+            buffer.append(",");
+         }
+         buffer.append(o);
+      }
+
+      return buffer.toString();
+   }
+
+
+   public static String spaces(final int count) {
+      return GStringUtils.SPACES.substring(0, count);
+   }
+
+
+   public static String dashes(final int count) {
+      return GStringUtils.DASHES.substring(0, count);
+   }
+
+
+   public static String sharps(final int count) {
+      return GStringUtils.SHARPS.substring(0, Math.min(count, GStringUtils.SHARPS.length() - 1));
+   }
+
+
+   public static String getSpaceMessage(final double bytes) {
+      if (bytes < (KILO * 0.8)) {
+         return bytes + "B";
+      }
+
+      if (bytes < (MEGA * 0.8)) {
+         final double kilos = bytes / KILO;
+         return SPACE_FORMAT.format(kilos) + "kB";
+      }
+
+      if (bytes < (GIGA * 0.8)) {
+         final double megas = bytes / MEGA;
+         return SPACE_FORMAT.format(megas) + "MB";
+      }
+
+      if (bytes < (TERA * 0.8)) {
+         final double gigas = bytes / GIGA;
+         return SPACE_FORMAT.format(gigas) + "GB";
+      }
+
+      final double teras = bytes / TERA;
+      return SPACE_FORMAT.format(teras) + "TB";
+   }
+
+
+   //   public static void main(final String[] args) {
+   //      final double bytes = 1024d * 1024 * 1024 * 1024 * 1024;
+   //      System.out.println(bytes);
+   //      System.out.println(getSpaceMessage(bytes));
+   //   }
 
 }

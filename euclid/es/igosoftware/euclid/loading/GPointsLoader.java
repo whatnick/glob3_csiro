@@ -41,6 +41,7 @@ import java.io.IOException;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
 import es.igosoftware.util.GLoggerObject;
+import es.igosoftware.util.GStringUtils;
 import es.igosoftware.util.GUtils;
 
 
@@ -82,7 +83,7 @@ public abstract class GPointsLoader<VectorT extends IVector<VectorT, ?>, VertexT
       rawLoad();
       final long elapsed = System.currentTimeMillis() - start;
       //logInfo("Read in " + GMath.roundTo(elapsed / 1000f, 2) + " seconds");
-      logInfo("Read in " + elapsed + " ms. ( " + GUtils.getTimeMessage(elapsed) + " )");
+      logInfo("Read in " + elapsed + " ms. ( " + GStringUtils.getTimeMessage(elapsed) + " )");
 
    }
 

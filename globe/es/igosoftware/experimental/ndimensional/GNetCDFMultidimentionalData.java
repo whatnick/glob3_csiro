@@ -67,7 +67,7 @@ import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GHolder;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.GRange;
-import es.igosoftware.util.GUtils;
+import es.igosoftware.util.GStringUtils;
 import es.igosoftware.util.IPredicate;
 import es.igosoftware.util.ITransformer;
 import es.igosoftware.utils.GPositionBox;
@@ -377,7 +377,7 @@ public class GNetCDFMultidimentionalData
       if (_verbose) {
          final long elapsed = System.currentTimeMillis() - start;
          System.out.println("Range " + var.getName() + " (" + var.getDescription() + ")  " + range + "   calculated in "
-                            + GUtils.getTimeMessage(elapsed));
+                            + GStringUtils.getTimeMessage(elapsed));
       }
 
       return range;

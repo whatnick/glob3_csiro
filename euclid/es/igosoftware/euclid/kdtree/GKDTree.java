@@ -56,7 +56,7 @@ import es.igosoftware.util.GHolder;
 import es.igosoftware.util.GIntHolder;
 import es.igosoftware.util.GLoggerObject;
 import es.igosoftware.util.GProgress;
-import es.igosoftware.util.StringUtils;
+import es.igosoftware.util.GStringUtils;
 
 
 public final class GKDTree<VectorT extends IVector<VectorT, ?>, VertexT extends IVertexContainer.Vertex<VectorT>>
@@ -235,8 +235,7 @@ public final class GKDTree<VectorT extends IVector<VectorT, ?>, VertexT extends 
       try {
          _root.depthFirstAcceptVisitor(visitor);
       }
-      catch (final IKDTreeVisitor.AbortVisiting e) {
-      }
+      catch (final IKDTreeVisitor.AbortVisiting e) {}
 
       visitor.endVisiting(this);
    }
@@ -248,8 +247,7 @@ public final class GKDTree<VectorT extends IVector<VectorT, ?>, VertexT extends 
       try {
          _root.breadthFirstAcceptVisitor(visitor);
       }
-      catch (final IKDTreeVisitor.AbortVisiting e) {
-      }
+      catch (final IKDTreeVisitor.AbortVisiting e) {}
 
       visitor.endVisiting(this);
    }
@@ -315,7 +313,7 @@ public final class GKDTree<VectorT extends IVector<VectorT, ?>, VertexT extends 
 
 
          private void processNode(final GKDNode<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>> node) {
-            System.out.println(StringUtils.spaces(node.getDepth()) + node);
+            System.out.println(GStringUtils.spaces(node.getDepth()) + node);
          }
       });
    }
