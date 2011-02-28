@@ -64,6 +64,8 @@ import es.igosoftware.globe.modules.view.GShowLatLonGraticuleModule;
 import es.igosoftware.globe.modules.view.GShowUTMGraticuleModule;
 import es.igosoftware.globe.modules.view.ShowMeasureTool;
 import es.igosoftware.globe.view.customView.GCustomView;
+import es.igosoftware.io.GFileLoader;
+import es.igosoftware.io.ILoader;
 import es.igosoftware.io.pointscloud.IPointsCloudLoader;
 import es.igosoftware.loading.G3DModel;
 import es.igosoftware.loading.GModelLoadException;
@@ -184,7 +186,11 @@ public class GGlobeDemo
    private GPanoramicLayer createPanoramicLayer() {
       final GPanoramicLayer panoramicLayer = new GPanoramicLayer("Panoramics");
 
-      panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", "PANOS/Badajoz", 500, new Position(
+      //      panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", "PANOS/Badajoz", 500, new Position(
+      //               Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0)));
+
+      final ILoader loader = new GFileLoader("PANOS");
+      panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", loader, "Barrancos", 500, new Position(
                Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0)));
 
       //panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", "data/panoramics/barruecos", 500,
