@@ -622,8 +622,8 @@ public abstract class GGlobeApplication
    }
 
 
-   private void initModuleGUI(final IGlobeModule module,
-                              final IGlobeModule previousModule) {
+   public void initModuleGUI(final IGlobeModule module,
+                             final IGlobeModule previousModule) {
 
       final List<IGenericAction> genericActions = module.getGenericActions(GGlobeApplication.this);
 
