@@ -949,15 +949,19 @@ public class GPlanarPanoramicViewer {
 
 
       //      final URL url = new URL("file:///home/dgd/Escritorio/PruebaPanoramicas/PLANAR/PANOS/cantabria1.jpg/");
+
       //      final URL url = new URL("http://localhost/PANOS/cantabria1.jpg/");
-      //      final URL url = new URL("file:///Users/mdelacalle/Desktop/elvas/elvas.jpg/");
-      //      final URL url = new URL("http://82.165.133.233:8888/gigapixel/panoramas/MartirioDeSanPelayo/");
-      //      final URL url = new URL("file:///home/dgd/Desktop/PruebaPanoramicas/PLANAR/PANOS/cantabria1.jpg/");
+      //      final URL url = new URL("http://localhost/PANOS/LosBarruecos/");
       //      final URL url = new URL("http://localhost/PANOS/Caballos.jpg/");
+
+      //      final URL url = new URL("file:///Users/mdelacalle/Desktop/elvas/elvas.jpg/");
+      //      final URL url = new URL("file:///home/dgd/Desktop/PruebaPanoramicas/PLANAR/PANOS/cantabria1.jpg/");
+
       //      final URL url = new URL("http://213.165.81.201:8080/gigapixel/Cantabria1/");
       final URL url = new URL("http://213.165.81.201:8080/gigapixel/PlazaSanJorge-Caceres-Espana/");
 
-      final int workersCount = GConcurrent.AVAILABLE_PROCESSORS * 4;
+
+      final int workersCount = GConcurrent.AVAILABLE_PROCESSORS * 2;
       final ILoader loader = new GHttpLoader(url, workersCount, true, false);
 
 
