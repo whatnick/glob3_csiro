@@ -248,6 +248,7 @@ public class GHttpLoader
 
       private Task selectTask() throws InterruptedException {
          Task selected = null;
+
          synchronized (_tasks) {
             final Set<Entry<String, Task>> entries = _tasks.entrySet();
             for (final Entry<String, Task> entry : entries) {
@@ -258,6 +259,7 @@ public class GHttpLoader
                   }
                }
             }
+
             if (selected != null) {
                selected._isDownloading = true;
             }
@@ -276,16 +278,13 @@ public class GHttpLoader
    private final File              _rootCacheDirectory;
    private final Map<String, Task> _tasks                = new HashMap<String, Task>();
    private final boolean           _verbose;
-
+   private final boolean           _debug;
 
    private final Object            _statisticsMutex      = new Object();
    private int                     _loadCounter          = 0;
    private int                     _loadCacheHits        = 0;
    private long                    _bytesDownloaded      = 0;
    private long                    _downloadEllapsedTime = 0;
-
-
-   private final boolean           _debug;
 
    private int                     _loadID               = Integer.MIN_VALUE;
 
