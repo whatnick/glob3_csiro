@@ -254,7 +254,9 @@ public class GPlanarPanoramicViewer {
 
 
       private String getTileFileName() {
-         return _zoomLevel.getLevel() + "/tile-" + _x + "-" + _y + ".jpg";
+         final File levelFile = new File(Integer.toString(_zoomLevel.getLevel()));
+         final File tileFile = new File(levelFile, "tile-" + _x + "-" + _y + ".jpg");
+         return tileFile.getPath();
       }
 
 
