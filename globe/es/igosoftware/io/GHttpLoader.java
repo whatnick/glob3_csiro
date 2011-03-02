@@ -22,54 +22,45 @@ import java.util.Set;
 
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GLogger;
-import es.igosoftware.util.GPair;
 import es.igosoftware.util.GStringUtils;
+import es.igosoftware.util.GTriplet;
 
 
 public class GHttpLoader
          implements
             ILoader {
 
-   private static final GLogger LOGGER                         = GLogger.instance();
+   private static final GLogger LOGGER                       = GLogger.instance();
 
-   private static final String  RENDERING_CACHE_DIRECTORY_NAME = "http-cache";
-   private static final File    RENDERING_CACHE_DIRECTORY      = new File(RENDERING_CACHE_DIRECTORY_NAME);
-
-   static {
-      if (!RENDERING_CACHE_DIRECTORY.exists()) {
-         RENDERING_CACHE_DIRECTORY.mkdirs();
-      }
-   }
+   private static final String  DEFAULT_CACHE_DIRECTORY_NAME = "http-cache";
+   private static final File    DEFAULT_CACHE_DIRECTORY      = new File(DEFAULT_CACHE_DIRECTORY_NAME);
 
 
    private class Task {
-      private final String                        _fileName;
-      private int                                 _priority;
-      //      private final ILoader.IHandler _handler;
-      private final List<GPair<LoadID, IHandler>> _handlers;
+      private final String                                                    _fileName;
+      private int                                                             _priority;
+      private final List<GTriplet<ILoader.LoadID, ILoader.IHandler, Boolean>> _handlers;
 
-      private boolean                             _isCanceled    = false;
-      private boolean                             _isDownloading = false;
+      private boolean                                                         _isCanceled    = false;
+      private boolean                                                         _isDownloading = false;
 
 
       private Task(final String fileName,
                    final int priority,
-                   final GPair<LoadID, IHandler> idAndHandler) {
+                   final GTriplet<ILoader.LoadID, ILoader.IHandler, Boolean> idAndHandler) {
          _fileName = fileName;
          _priority = priority;
-         _handlers = new ArrayList<GPair<LoadID, IHandler>>(2);
+         _handlers = new ArrayList<GTriplet<ILoader.LoadID, ILoader.IHandler, Boolean>>(1);
          _handlers.add(idAndHandler);
       }
 
 
       private void execute() {
-         //         final File partFile = new File(_rootCacheDirectory, _fileName + ".part");
-
-         final File directory = new File(_rootCacheDirectory, _fileName).getParentFile();
+         final File parentDirectory = new File(_rootCacheDirectory, _fileName).getParentFile();
          synchronized (_rootCacheDirectory) {
-            if (!directory.exists()) {
-               if (!directory.mkdirs()) {
-                  LOGGER.severe("can't create directory " + directory);
+            if (!parentDirectory.exists()) {
+               if (!parentDirectory.mkdirs()) {
+                  LOGGER.severe("can't create directory " + parentDirectory);
                }
             }
          }
@@ -96,8 +87,9 @@ public class GHttpLoader
 
             out = new BufferedOutputStream(new FileOutputStream(partFile));
 
-            GIOUtils.copy(is, out);
-            is = null; // GIOUtils.copy() closes the in stream
+            copy(is, out, partFile);
+            is.close();
+            is = null;
 
             out.flush();
             out.close();
@@ -118,7 +110,7 @@ public class GHttpLoader
                cacheMiss(bytesLoaded, ellapsed);
 
                if (!_isCanceled) {
-                  notifyLoadToHandlers(cacheFile, bytesLoaded);
+                  notifyLoadToHandlers(cacheFile, bytesLoaded, true);
                }
             }
          }
@@ -135,17 +127,36 @@ public class GHttpLoader
       }
 
 
+      private void copy(final InputStream in,
+                        final OutputStream out,
+                        final File partFile) throws IOException {
+         final byte[] buf = new byte[4096];
+         int len;
+         int read = 0;
+         while ((len = in.read(buf)) > 0) {
+            out.write(buf, 0, len);
+            out.flush();
+            read += len;
+            notifyLoadToHandlers(partFile, read, false);
+         }
+      }
+
+
       private synchronized void notifyLoadToHandlers(final File cacheFile,
-                                                     final long bytesLoaded) {
+                                                     final long bytesLoaded,
+                                                     final boolean completeLoaded) {
 
          synchronized (_tasks) {
             _tasks.remove(_fileName);
          }
 
          try {
-            for (final GPair<LoadID, IHandler> idAndHandler : _handlers) {
+            for (final GTriplet<ILoader.LoadID, ILoader.IHandler, Boolean> idAndHandler : _handlers) {
                final ILoader.IHandler handler = idAndHandler._second;
-               handler.loaded(cacheFile, bytesLoaded, true);
+               final boolean reportIncompleteLoads = idAndHandler._third;
+               if (completeLoaded || reportIncompleteLoads) {
+                  handler.loaded(cacheFile, bytesLoaded, completeLoaded);
+               }
             }
          }
          catch (final ILoader.AbortLoading e) {
@@ -160,7 +171,7 @@ public class GHttpLoader
             _tasks.remove(_fileName);
          }
 
-         for (final GPair<LoadID, IHandler> idAndHandler : _handlers) {
+         for (final GTriplet<ILoader.LoadID, ILoader.IHandler, Boolean> idAndHandler : _handlers) {
             final ILoader.IHandler handler = idAndHandler._second;
             handler.loadError(error, exception);
          }
@@ -173,7 +184,7 @@ public class GHttpLoader
 
 
       private synchronized void addHandler(final int priority,
-                                           final GPair<ILoader.LoadID, ILoader.IHandler> idAndHandler) {
+                                           final GTriplet<ILoader.LoadID, ILoader.IHandler, Boolean> idAndHandler) {
          _priority = Math.max(priority, _priority);
          _handlers.add(idAndHandler);
          _isCanceled = false;
@@ -308,7 +319,7 @@ public class GHttpLoader
                       final int workersCount,
                       final boolean verbose,
                       final boolean debug) {
-      this(root, RENDERING_CACHE_DIRECTORY, workersCount, verbose, debug);
+      this(root, DEFAULT_CACHE_DIRECTORY, workersCount, verbose, debug);
    }
 
 
@@ -318,27 +329,23 @@ public class GHttpLoader
                       final boolean verbose,
                       final boolean debug) {
       GAssert.notNull(root, "root");
+      GAssert.isPositive(workersCount, "workersCount");
 
       if (!root.getProtocol().equals("http")) {
          throw new RuntimeException("Only http URLs are supported");
       }
 
-
       _rootURL = root;
       _verbose = verbose;
       _debug = debug;
 
-      if (cacheRootDirectory == null) {
-         _rootCacheDirectory = new File(RENDERING_CACHE_DIRECTORY, getDirectoryName(_rootURL));
-      }
-      else {
-         _rootCacheDirectory = new File(cacheRootDirectory, getDirectoryName(_rootURL));
-      }
 
-      //      System.out.println("root cache dir : " + _rootCacheDirectory);
+      final File directory = (cacheRootDirectory == null) ? DEFAULT_CACHE_DIRECTORY : cacheRootDirectory;
+      _rootCacheDirectory = new File(directory, getDirectoryName(_rootURL));
+
       if (!_rootCacheDirectory.exists()) {
          if (!_rootCacheDirectory.mkdirs()) {
-            throw new RuntimeException("Can't create cache directory: " + _rootCacheDirectory.getAbsolutePath());
+            throw new RuntimeException("Can't create cache directory \"" + _rootCacheDirectory.getAbsolutePath() + "\"");
          }
       }
 
@@ -347,12 +354,13 @@ public class GHttpLoader
 
 
    private static String getDirectoryName(final URL url) {
-      String result = url.toString().replace("http://", "");
+      String result = url.toString();
 
       if (result.endsWith("/")) {
          result = result.substring(0, result.length() - 1);
       }
 
+      result = result.replace("http://", "");
       result = result.replace("/", "_");
       result = result.replace(":", "_");
 
@@ -370,13 +378,14 @@ public class GHttpLoader
    @Override
    public ILoader.LoadID load(final String fileName,
                               final long bytesToLoad,
+                              final boolean reportIncompleteLoads,
                               final int priority,
                               final ILoader.IHandler handler) {
       GAssert.notNull(fileName, "fileName");
       GAssert.notNull(handler, "handler");
 
       if (_debug) {
-         LOGGER.info("load(" + fileName + ", " + bytesToLoad + ", " + priority + ", " + handler);
+         LOGGER.info("load(" + fileName + ", " + bytesToLoad + ", " + priority + ", " + handler + ")");
       }
 
       if (bytesToLoad >= 0) {
@@ -401,7 +410,8 @@ public class GHttpLoader
 
       synchronized (_tasks) {
          final ILoader.LoadID loadID = new ILoader.LoadID(_loadID++);
-         final GPair<ILoader.LoadID, ILoader.IHandler> idAndHandler = new GPair<ILoader.LoadID, ILoader.IHandler>(loadID, handler);
+         final GTriplet<ILoader.LoadID, ILoader.IHandler, Boolean> idAndHandler = new GTriplet<ILoader.LoadID, ILoader.IHandler, Boolean>(
+                  loadID, handler, reportIncompleteLoads);
 
          final Task existingTask = _tasks.get(fileName);
          if (existingTask == null) {
@@ -453,9 +463,9 @@ public class GHttpLoader
             final Entry<String, Task> entry = tasksIterator.next();
             final Task task = entry.getValue();
 
-            final Iterator<GPair<ILoader.LoadID, ILoader.IHandler>> taskHandlersIterator = task._handlers.iterator();
+            final Iterator<GTriplet<ILoader.LoadID, ILoader.IHandler, Boolean>> taskHandlersIterator = task._handlers.iterator();
             while (taskHandlersIterator.hasNext()) {
-               final GPair<ILoader.LoadID, ILoader.IHandler> idAndHandler = taskHandlersIterator.next();
+               final GTriplet<ILoader.LoadID, ILoader.IHandler, Boolean> idAndHandler = taskHandlersIterator.next();
                if (id.equals(idAndHandler._first)) {
                   taskHandlersIterator.remove();
                }

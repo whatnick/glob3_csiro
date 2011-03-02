@@ -61,6 +61,7 @@ public interface ILoader {
 
    }
 
+
    public static class LoadID {
       private final int _id;
 
@@ -114,6 +115,7 @@ public interface ILoader {
 
    public ILoader.LoadID load(final String fileName,
                               final long bytesToLoad,
+                              final boolean reportIncompleteLoads,
                               final int priority,
                               final ILoader.IHandler handler);
 

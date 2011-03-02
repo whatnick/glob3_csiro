@@ -301,7 +301,7 @@ public class GPanoramic
       final GHolder<RuntimeException> exception = new GHolder<RuntimeException>(null);
       final GHolder<Boolean> done = new GHolder<Boolean>(false);
 
-      _loader.load(fileName, -1, Integer.MAX_VALUE, new ILoader.IHandler() {
+      _loader.load(fileName, -1, false, Integer.MAX_VALUE, new ILoader.IHandler() {
          @Override
          public void loaded(final File file,
                             final long bytesLoaded,
@@ -824,7 +824,7 @@ public class GPanoramic
             final File levelFile = new File(_panoramicFile, Integer.toString(_level));
             final File tileFile = new File(levelFile, _row + "-" + _column + ".jpg");
             final String tilePath = tileFile.getPath();
-            _loader.load(tilePath, -1, _level, _handler);
+            _loader.load(tilePath, -1, false, _level, _handler);
          }
 
          final Texture texture = (_url == null) ? null : GTexturesCache.getTexture(_url, true);

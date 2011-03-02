@@ -140,7 +140,7 @@ public final class GPointsCloudLayer
    private void loadPointsCloud() {
       final long started = System.currentTimeMillis();
 
-      _loader.load(_pointsCloudName + "/tree.object.gz", -1, Integer.MIN_VALUE, new ILoader.IHandler() {
+      _loader.load(_pointsCloudName + "/tree.object.gz", -1, false, Integer.MIN_VALUE, new ILoader.IHandler() {
 
          @Override
          public void loadError(final ILoader.ErrorType error,

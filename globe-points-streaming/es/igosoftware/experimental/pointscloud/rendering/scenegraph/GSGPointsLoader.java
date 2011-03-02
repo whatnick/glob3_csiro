@@ -182,8 +182,8 @@ final class GSGPointsLoader {
 
       synchronized (this) {
          final int bytesToLoad = _wantedPoints * _bytesPerPoint;
-         _layer.getLoader().load(_node.getPointsFileName(), bytesToLoad, Math.round(_priority),
-                  createHandler(_node.getPointsFileName()));
+         final String pointsFileName = _node.getPointsFileName();
+         _layer.getLoader().load(pointsFileName, bytesToLoad, true, Math.round(_priority), createHandler(pointsFileName));
       }
    }
 
