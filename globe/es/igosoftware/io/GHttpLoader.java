@@ -30,6 +30,7 @@ public class GHttpLoader
          implements
             ILoader {
 
+
    private static final GLogger LOGGER                       = GLogger.instance();
 
    private static final String  DEFAULT_CACHE_DIRECTORY_NAME = "http-cache";
@@ -361,10 +362,8 @@ public class GHttpLoader
       }
 
       result = result.replace("http://", "");
-      result = result.replace("/", "_");
-      result = result.replace(":", "_");
 
-      return result;
+      return GIOUtils.replaceIllegalFileNameCharacters(result);
    }
 
 
@@ -491,5 +490,6 @@ public class GHttpLoader
          }
       }
    }
+
 
 }

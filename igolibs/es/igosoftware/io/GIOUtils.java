@@ -56,8 +56,13 @@ import java.nio.channels.WritableByteChannel;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import es.igosoftware.util.GAssert;
+
 
 public class GIOUtils {
+
+   private static final String ILLEGAL_FILE_NAME_CHARACTERS = "[" + "?/\\\\=+<>:;\\,\"\\|^\\[\\]" + "]";
+
 
    private GIOUtils() {
    }
@@ -478,5 +483,30 @@ public class GIOUtils {
       }
    }
 
+
+   public static String replaceIllegalFileNameCharacters(final String fileName) {
+      GAssert.notNull(fileName, "fileName");
+
+      return fileName.replaceAll(ILLEGAL_FILE_NAME_CHARACTERS, "_");
+   }
+
+
+   public static String buildPath(final String... parts) {
+      final StringBuilder buffer = new StringBuilder();
+
+      for (final String part : parts) {
+         if (part == null) {
+            continue;
+         }
+
+         if (buffer.length() > 0) {
+            buffer.append(File.separator);
+         }
+
+         buffer.append(part.replaceAll(ILLEGAL_FILE_NAME_CHARACTERS, "_"));
+      }
+
+      return buffer.toString();
+   }
 
 }
