@@ -171,6 +171,8 @@ public class GPlanarPanoramicViewer {
                public void loaded(final File file,
                                   final long bytesLoaded,
                                   final boolean completeLoaded) {
+                  //                  System.out.println("loaded " + GStringUtils.getSpaceMessage(bytesLoaded) + " in " + file + ", completed="
+                  //                                     + completeLoaded);
                   if (!completeLoaded) {
                      return;
                   }
@@ -194,7 +196,8 @@ public class GPlanarPanoramicViewer {
                }
             };
 
-            _loader.load(fileName, -1, _zoomLevel.getLevel(), _handler);
+            final int priority = (_zoomLevel.getLevel() * 1000000) - (_x * 1000) + _y;
+            _loader.load(fileName, -1, false, priority, _handler);
          }
       }
 
@@ -254,7 +257,9 @@ public class GPlanarPanoramicViewer {
 
 
       private String getTileFileName() {
-         return _zoomLevel.getLevel() + "/tile-" + _x + "-" + _y + ".jpg";
+         final File levelFile = new File(Integer.toString(_zoomLevel.getLevel()));
+         final File tileFile = new File(levelFile, "tile-" + _x + "-" + _y + ".jpg");
+         return tileFile.getPath();
       }
 
 
@@ -355,7 +360,7 @@ public class GPlanarPanoramicViewer {
       final GHolder<List<GPlanarPanoramicZoomLevel>> resultHolder = new GHolder<List<GPlanarPanoramicZoomLevel>>(null);
 
 
-      _loadID = _loader.load("info.txt", -1, Integer.MAX_VALUE, new ILoader.IHandler() {
+      _loadID = _loader.load("info.txt", -1, false, Integer.MAX_VALUE, new ILoader.IHandler() {
          @Override
          public void loaded(final File file,
                             final long bytesLoaded,

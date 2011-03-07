@@ -15,6 +15,7 @@ import es.igosoftware.io.GIOUtils;
 import es.igosoftware.io.ILoader;
 import es.igosoftware.io.pointscloud.IPointsCloudLoader;
 import es.igosoftware.util.GCollections;
+import es.igosoftware.util.GPair;
 
 
 public class GPointsCloudStreamingLoader
@@ -54,14 +55,14 @@ public class GPointsCloudStreamingLoader
    //   }
 
 
-   private final GDClient                              _client;
-   private final int                                   _sessionID;
-   private final IPointsStreamingServer                _server;
+   private final GDClient                                              _client;
+   private final int                                                   _sessionID;
+   private final IPointsStreamingServer                                _server;
 
-   private final Object                                _mutex     = new Object();
+   private final Object                                                _mutex     = new Object();
    //   private final Map<String, ILoader.LoadTaskID>           _tasksIDs  = new HashMap<String, ILoader.LoadTaskID>();
-   private final Map<ILoader.LoadID, ILoader.IHandler> _handlers  = new HashMap<ILoader.LoadID, ILoader.IHandler>();
-   private final Map<ILoader.LoadID, byte[]>           _fragments = new HashMap<ILoader.LoadID, byte[]>();
+   private final Map<ILoader.LoadID, GPair<ILoader.IHandler, Boolean>> _handlers  = new HashMap<ILoader.LoadID, GPair<ILoader.IHandler, Boolean>>();
+   private final Map<ILoader.LoadID, byte[]>                           _fragments = new HashMap<ILoader.LoadID, byte[]>();
 
 
    public GPointsCloudStreamingLoader(final String host,
@@ -106,15 +107,20 @@ public class GPointsCloudStreamingLoader
          }
 
          boolean cancel = false;
+         final boolean isLastPacket = result.isLastPacket();
          try {
             final File file = File.createTempFile("temp", ".cache");
             file.deleteOnExit();
 
-            GIOUtils.copyFile(accumulated, file);
+            GIOUtils.copy(accumulated, file);
 
-            final IHandler handler = _handlers.get(taskID);
-            if (handler != null) {
-               handler.loaded(file, accumulated.length, result.isLastPacket());
+            final GPair<IHandler, Boolean> handlerAndReportsInconpleteLoads = _handlers.get(taskID);
+            if (handlerAndReportsInconpleteLoads != null) {
+               final boolean reportsInconpleteLoads = handlerAndReportsInconpleteLoads._second;
+               if (isLastPacket || reportsInconpleteLoads) {
+                  final ILoader.IHandler handler = handlerAndReportsInconpleteLoads._first;
+                  handler.loaded(file, accumulated.length, isLastPacket);
+               }
             }
 
             file.delete();
@@ -127,7 +133,7 @@ public class GPointsCloudStreamingLoader
             cancel = true;
          }
 
-         if (cancel || result.isLastPacket()) {
+         if (cancel || isLastPacket) {
             _handlers.remove(taskID);
             _fragments.remove(taskID);
          }
@@ -142,8 +148,10 @@ public class GPointsCloudStreamingLoader
    @Override
    public ILoader.LoadID load(final String fileName,
                               final long bytesToLoad,
+                              final boolean reportIncompleteLoads,
                               final int priority,
                               final ILoader.IHandler handler) {
+
 
       //      synchronized (_mutex) {
       //         final Integer taskID = _tasksIDs.get(fileName);
@@ -155,7 +163,7 @@ public class GPointsCloudStreamingLoader
 
       final ILoader.LoadID taskID = new ILoader.LoadID(_server.loadFile(_sessionID, fileName, 0, bytesToLoad, priority));
       synchronized (_mutex) {
-         _handlers.put(taskID, handler);
+         _handlers.put(taskID, new GPair<ILoader.IHandler, Boolean>(handler, reportIncompleteLoads));
       }
       return taskID;
    }

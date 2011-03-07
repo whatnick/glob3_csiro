@@ -267,7 +267,7 @@ public class GNewObjLoader {
    private File loadObjFileToDisk() {
       final GHolder<Boolean> completed = new GHolder<Boolean>(false);
       final GHolder<File> objFileHolder = new GHolder<File>(null);
-      _loader.load(_fileName, -1, Integer.MAX_VALUE, new ILoader.IHandler() {
+      _loader.load(_fileName, -1, false, Integer.MAX_VALUE, new ILoader.IHandler() {
 
          @Override
          public void loaded(final File file,
@@ -319,7 +319,7 @@ public class GNewObjLoader {
    private File loadTexFileToDisk(final String texPath) {
       final GHolder<Boolean> completed = new GHolder<Boolean>(false);
       final GHolder<File> texFileHolder = new GHolder<File>(null);
-      _loader.load(texPath, -1, Integer.MAX_VALUE, new ILoader.IHandler() {
+      _loader.load(texPath, -1, false, Integer.MAX_VALUE, new ILoader.IHandler() {
 
          @Override
          public void loaded(final File file,
@@ -328,10 +328,10 @@ public class GNewObjLoader {
             if (!completeLoaded) {
                return;
             }
+
             try {
                texFileHolder.set(file);
                completed.set(true);
-
             }
             catch (final Exception e) {
                e.printStackTrace();
@@ -371,7 +371,7 @@ public class GNewObjLoader {
    private File loadMtlFileToDisk(final String mtlPath) {
       final GHolder<Boolean> completed = new GHolder<Boolean>(false);
       final GHolder<File> mtlFileHolder = new GHolder<File>(null);
-      _loader.load(mtlPath, -1, Integer.MAX_VALUE, new ILoader.IHandler() {
+      _loader.load(mtlPath, -1, false, Integer.MAX_VALUE, new ILoader.IHandler() {
 
          @Override
          public void loaded(final File file,
@@ -380,10 +380,10 @@ public class GNewObjLoader {
             if (!completeLoaded) {
                return;
             }
+
             try {
                mtlFileHolder.set(file);
                completed.set(true);
-
             }
             catch (final Exception e) {
                e.printStackTrace();

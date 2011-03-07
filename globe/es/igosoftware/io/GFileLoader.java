@@ -79,6 +79,7 @@ public class GFileLoader
    @Override
    public ILoader.LoadID load(final String fileName,
                               final long bytesToLoad,
+                              final boolean reportIncompleteLoads,
                               final int priority,
                               final ILoader.IHandler handler) {
 

@@ -49,11 +49,20 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import es.igosoftware.util.GAssert;
+
 
 public class GIOUtils {
+
+   private static final String ILLEGAL_FILE_NAME_CHARACTERS = "[" + "?/\\\\=+<>:;\\,\"\\|^\\[\\]" + "]";
+
 
    private GIOUtils() {
    }
@@ -118,8 +127,8 @@ public class GIOUtils {
    }
 
 
-   public static void copyFile(final File fromFile,
-                               final File toFile) throws IOException {
+   public static void copy(final File fromFile,
+                           final File toFile) throws IOException {
 
       File destinationFile = toFile;
 
@@ -159,37 +168,29 @@ public class GIOUtils {
          }
       }
 
-      FileInputStream from = null;
-      FileOutputStream to = null;
+      FileChannel from = null;
+      FileChannel to = null;
       try {
-         from = new FileInputStream(fromFile);
-         to = new FileOutputStream(destinationFile);
-         final byte[] buffer = new byte[4096];
-         int bytesRead;
+         from = new FileInputStream(fromFile).getChannel();
+         to = new FileOutputStream(destinationFile).getChannel();
+         to.transferFrom(from, 0, from.size());
 
-         while ((bytesRead = from.read(buffer)) != -1) {
-            to.write(buffer, 0, bytesRead); // write
-         }
+         //         final byte[] buffer = new byte[4096];
+         //         int bytesRead;
+         //
+         //         while ((bytesRead = from.read(buffer)) != -1) {
+         //            to.write(buffer, 0, bytesRead); // write
+         //         }
       }
       finally {
-         if (from != null) {
-            try {
-               from.close();
-            }
-            catch (final IOException e) {}
-         }
-         if (to != null) {
-            try {
-               to.close();
-            }
-            catch (final IOException e) {}
-         }
+         GIOUtils.gentlyClose(to);
+         GIOUtils.gentlyClose(from);
       }
    }
 
 
-   public static void copyFile(final String fromFileName,
-                               final String toFileName) throws IOException {
+   public static void copy(final String fromFileName,
+                           final String toFileName) throws IOException {
       final File fromFile = new File(fromFileName);
       File toFile = new File(toFileName);
 
@@ -258,14 +259,45 @@ public class GIOUtils {
    }
 
 
+   public static void copy(final ReadableByteChannel src,
+                           final WritableByteChannel dest) throws IOException {
+      final ByteBuffer buffer = ByteBuffer.allocateDirect(16 * 1024);
+      while (src.read(buffer) != -1) {
+         // prepare the buffer to be drained
+         buffer.flip();
+         // write to the channel, may block
+         dest.write(buffer);
+         // If partial transfer, shift remainder down
+         // If buffer is empty, same as doing clear()
+         buffer.compact();
+      }
+      // EOF will leave buffer in fill state
+      buffer.flip();
+      // make sure the buffer is fully drained.
+      while (buffer.hasRemaining()) {
+         dest.write(buffer);
+      }
+   }
+
+
    public static void copy(final InputStream in,
                            final OutputStream out) throws IOException {
-      final byte[] buf = new byte[1024];
+      final byte[] buf = new byte[4096];
       int len;
       while ((len = in.read(buf)) > 0) {
          out.write(buf, 0, len);
       }
       in.close();
+
+      //      final ReadableByteChannel inputChannel = Channels.newChannel(in);
+      //      final WritableByteChannel outputChannel = Channels.newChannel(out);
+      //      try {
+      //         copy(inputChannel, outputChannel);
+      //      }
+      //      finally {
+      //         GIOUtils.gentlyClose(inputChannel);
+      //         GIOUtils.gentlyClose(outputChannel);
+      //      }
    }
 
 
@@ -411,8 +443,8 @@ public class GIOUtils {
    }
 
 
-   public static void copyFile(final byte[] data,
-                               final File file) throws IOException {
+   public static void copy(final byte[] data,
+                           final File file) throws IOException {
       FileOutputStream output = null;
       try {
          output = new FileOutputStream(file);
@@ -451,5 +483,30 @@ public class GIOUtils {
       }
    }
 
+
+   public static String replaceIllegalFileNameCharacters(final String fileName) {
+      GAssert.notNull(fileName, "fileName");
+
+      return fileName.replaceAll(ILLEGAL_FILE_NAME_CHARACTERS, "_");
+   }
+
+
+   public static String buildPath(final String... parts) {
+      final StringBuilder buffer = new StringBuilder();
+
+      for (final String part : parts) {
+         if (part == null) {
+            continue;
+         }
+
+         if (buffer.length() > 0) {
+            buffer.append(File.separator);
+         }
+
+         buffer.append(part.replaceAll(ILLEGAL_FILE_NAME_CHARACTERS, "_"));
+      }
+
+      return buffer.toString();
+   }
 
 }
