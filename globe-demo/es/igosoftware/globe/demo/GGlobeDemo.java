@@ -65,6 +65,7 @@ import es.igosoftware.globe.modules.view.GShowUTMGraticuleModule;
 import es.igosoftware.globe.modules.view.ShowMeasureTool;
 import es.igosoftware.globe.view.customView.GCustomView;
 import es.igosoftware.io.GFileLoader;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.io.ILoader;
 import es.igosoftware.io.pointscloud.GPointsCloudFileLoader;
 import es.igosoftware.io.pointscloud.IPointsCloudLoader;
@@ -190,23 +191,28 @@ public class GGlobeDemo
       //      panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", "PANOS/Badajoz", 500, new Position(
       //               Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0)));
 
-      final ILoader loader = new GFileLoader("PANOS");
-      panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", loader, "Barrancos", 500, new Position(
-               Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0)));
+      try {
+         final ILoader loader = new GFileLoader("PANOS");
+         panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", loader, new GFileName("Barrancos"), 500,
+                  new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0)));
 
-      //panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", "data/panoramics/barruecos", 500,
-      //         new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0)));
+         //panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", "data/panoramics/barruecos", 500,
+         //         new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0)));
 
-      // panoramicLayer.setEnabled(false);
+         // panoramicLayer.setEnabled(false);
 
-      panoramicLayer.addPickListener(new GPanoramicLayer.PickListener() {
-         @Override
-         public void picked(final GPanoramic pickedPanoramic) {
-            if (pickedPanoramic != null) {
-               panoramicLayer.enterPanoramic(pickedPanoramic, (GCustomView) getView());
+         panoramicLayer.addPickListener(new GPanoramicLayer.PickListener() {
+            @Override
+            public void picked(final GPanoramic pickedPanoramic) {
+               if (pickedPanoramic != null) {
+                  panoramicLayer.enterPanoramic(pickedPanoramic, (GCustomView) getView());
+               }
             }
-         }
-      });
+         });
+      }
+      catch (final IOException e) {
+         logSevere(e);
+      }
       return panoramicLayer;
    }
 

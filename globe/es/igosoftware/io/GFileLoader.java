@@ -37,6 +37,8 @@
 package es.igosoftware.io;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import es.igosoftware.util.GAssert;
 
@@ -77,19 +79,19 @@ public class GFileLoader
 
 
    @Override
-   public ILoader.LoadID load(final String fileName,
+   public ILoader.LoadID load(final GFileName fileName,
                               final long bytesToLoad,
                               final boolean reportIncompleteLoads,
                               final int priority,
                               final ILoader.IHandler handler) {
 
-      final File file = new File(_rootDirectory, fileName);
+      final File file = new File(_rootDirectory, fileName.buildPath());
 
       if (!file.exists()) {
-         handler.loadError(ILoader.ErrorType.NOT_FOUND, null);
+         handler.loadError(new FileNotFoundException());
       }
       else if (!file.canRead()) {
-         handler.loadError(ILoader.ErrorType.CANT_READ, null);
+         handler.loadError(new IOException("Can't read file"));
       }
       else {
          try {
@@ -113,7 +115,7 @@ public class GFileLoader
 
 
    @Override
-   public void cancelAllLoads(final String fileName) {
+   public void cancelAllLoads(final GFileName fileName) {
       // do nothing, the loads in GFileLoader are not asynchronous
    }
 

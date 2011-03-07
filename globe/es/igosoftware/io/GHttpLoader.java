@@ -71,7 +71,7 @@ public class GHttpLoader
             partFile = File.createTempFile(_fileName, ".part", _rootCacheDirectory);
          }
          catch (final IOException e) {
-            notifyErrorToHandlers(ILoader.ErrorType.NOT_FOUND, e);
+            notifyErrorToHandlers(e);
             return;
          }
 
@@ -103,7 +103,7 @@ public class GHttpLoader
 
                if (!partFile.renameTo(cacheFile)) {
                   LOGGER.severe("can't rename " + partFile + " to " + cacheFile);
-                  notifyErrorToHandlers(ILoader.ErrorType.CANT_READ, null);
+                  notifyErrorToHandlers(new IOException("can't rename " + partFile + " to " + cacheFile));
                   return;
                }
 
@@ -116,10 +116,10 @@ public class GHttpLoader
             }
          }
          catch (final MalformedURLException e) {
-            notifyErrorToHandlers(ILoader.ErrorType.NOT_FOUND, e);
+            notifyErrorToHandlers(e);
          }
          catch (final IOException e) {
-            notifyErrorToHandlers(ILoader.ErrorType.CANT_READ, e);
+            notifyErrorToHandlers(e);
          }
          finally {
             GIOUtils.gentlyClose(is);
@@ -151,30 +151,29 @@ public class GHttpLoader
             _tasks.remove(_fileName);
          }
 
-         try {
-            for (final GTriplet<ILoader.LoadID, ILoader.IHandler, Boolean> idAndHandler : _handlers) {
-               final ILoader.IHandler handler = idAndHandler._second;
-               final boolean reportIncompleteLoads = idAndHandler._third;
-               if (completeLoaded || reportIncompleteLoads) {
+         for (final GTriplet<ILoader.LoadID, ILoader.IHandler, Boolean> idAndHandler : _handlers) {
+            final ILoader.IHandler handler = idAndHandler._second;
+            final boolean reportIncompleteLoads = idAndHandler._third;
+            if (completeLoaded || reportIncompleteLoads) {
+               try {
                   handler.loaded(cacheFile, bytesLoaded, completeLoaded);
                }
+               catch (final ILoader.AbortLoading e) {
+                  // do nothing, the file is already downloaded
+               }
             }
-         }
-         catch (final ILoader.AbortLoading e) {
-            // do nothing, the file is already downloaded
          }
       }
 
 
-      private synchronized void notifyErrorToHandlers(final ILoader.ErrorType error,
-                                                      final Throwable exception) {
+      private synchronized void notifyErrorToHandlers(final IOException e) {
          synchronized (_tasks) {
             _tasks.remove(_fileName);
          }
 
          for (final GTriplet<ILoader.LoadID, ILoader.IHandler, Boolean> idAndHandler : _handlers) {
             final ILoader.IHandler handler = idAndHandler._second;
-            handler.loadError(error, exception);
+            handler.loadError(e);
          }
       }
 
@@ -262,8 +261,8 @@ public class GHttpLoader
          Task selected = null;
 
          synchronized (_tasks) {
-            final Set<Entry<String, Task>> entries = _tasks.entrySet();
-            for (final Entry<String, Task> entry : entries) {
+            final Set<Entry<GFileName, Task>> entries = _tasks.entrySet();
+            for (final Entry<GFileName, Task> entry : entries) {
                final Task current = entry.getValue();
                if (!current._isDownloading && !current._isCanceled) {
                   if ((selected == null) || (current._priority > selected._priority)) {
@@ -286,19 +285,19 @@ public class GHttpLoader
    }
 
 
-   private final URL               _rootURL;
-   private final File              _rootCacheDirectory;
-   private final Map<String, Task> _tasks                = new HashMap<String, Task>();
-   private final boolean           _verbose;
-   private final boolean           _debug;
+   private final URL                  _rootURL;
+   private final File                 _rootCacheDirectory;
+   private final Map<GFileName, Task> _tasks                = new HashMap<GFileName, Task>();
+   private final boolean              _verbose;
+   private final boolean              _debug;
 
-   private final Object            _statisticsMutex      = new Object();
-   private int                     _loadCounter          = 0;
-   private int                     _loadCacheHits        = 0;
-   private long                    _bytesDownloaded      = 0;
-   private long                    _downloadEllapsedTime = 0;
+   private final Object               _statisticsMutex      = new Object();
+   private int                        _loadCounter          = 0;
+   private int                        _loadCacheHits        = 0;
+   private long                       _bytesDownloaded      = 0;
+   private long                       _downloadEllapsedTime = 0;
 
-   private int                     _loadID               = Integer.MIN_VALUE;
+   private int                        _loadID               = Integer.MIN_VALUE;
 
 
    public GHttpLoader(final URL root,
@@ -375,7 +374,7 @@ public class GHttpLoader
 
 
    @Override
-   public ILoader.LoadID load(final String fileName,
+   public ILoader.LoadID load(final GFileName fileName,
                               final long bytesToLoad,
                               final boolean reportIncompleteLoads,
                               final int priority,
@@ -391,13 +390,13 @@ public class GHttpLoader
          throw new RuntimeException("fragment downloading is not supported");
       }
 
-      final File file = new File(_rootCacheDirectory, fileName);
+      final File cacheFile = new File(_rootCacheDirectory, fileName.buildPath());
 
-      if (file.exists()) {
+      if (cacheFile.exists()) {
          cacheHit();
 
          try {
-            handler.loaded(file, file.length(), true);
+            handler.loaded(cacheFile, cacheFile.length(), true);
          }
          catch (final ILoader.AbortLoading e) {
             // do nothing, the file is already on the cache and there are no download to cancel
@@ -414,7 +413,7 @@ public class GHttpLoader
 
          final Task existingTask = _tasks.get(fileName);
          if (existingTask == null) {
-            _tasks.put(fileName, new Task(fileName, priority, idAndHandler));
+            _tasks.put(fileName, new Task(fileName.buildPath('/'), priority, idAndHandler));
          }
          else {
             existingTask.addHandler(priority, idAndHandler);
@@ -456,10 +455,10 @@ public class GHttpLoader
    public void cancelLoad(final ILoader.LoadID id) {
       synchronized (_tasks) {
 
-         final Iterator<Entry<String, Task>> tasksIterator = _tasks.entrySet().iterator();
+         final Iterator<Entry<GFileName, Task>> tasksIterator = _tasks.entrySet().iterator();
 
          while (tasksIterator.hasNext()) {
-            final Entry<String, Task> entry = tasksIterator.next();
+            final Entry<GFileName, Task> entry = tasksIterator.next();
             final Task task = entry.getValue();
 
             final Iterator<GTriplet<ILoader.LoadID, ILoader.IHandler, Boolean>> taskHandlersIterator = task._handlers.iterator();
@@ -482,7 +481,7 @@ public class GHttpLoader
 
 
    @Override
-   public void cancelAllLoads(final String fileName) {
+   public void cancelAllLoads(final GFileName fileName) {
       synchronized (_tasks) {
          final Task task = _tasks.remove(fileName);
          if (task != null) {
