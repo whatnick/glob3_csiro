@@ -48,6 +48,7 @@ import javax.swing.SwingUtilities;
 import es.igosoftware.concurrent.GConcurrent;
 import es.igosoftware.experimental.ndimensional.G3DImageMultidimensionalData;
 import es.igosoftware.experimental.ndimensional.GMultidimensionalDataModule;
+import es.igosoftware.experimental.ndimensional.GNetCDFMultidimentionalData;
 import es.igosoftware.experimental.ndimensional.IMultidimensionalData;
 import es.igosoftware.experimental.pointscloud.rendering.GPointsCloudModule;
 import es.igosoftware.experimental.vectorial.GPolygon2DModule;
@@ -301,12 +302,12 @@ public class GGlobeDemo
 
    private static void loadMultidimensionalData() {
       try {
-         //         final String[] valueVariablesNames = new String[] { "salt", "temp", "dens" };
-         //         final GNetCDFMultidimentionalData.VectorVariable[] vectorVariables = new GNetCDFMultidimentionalData.VectorVariable[] { new GNetCDFMultidimentionalData.VectorVariable(
-         //                  "Water Velocity", "u", "v") };
-         //
-         //         final IMultidimensionalData cfData = new GNetCDFMultidimentionalData("data/mackenzie_depth_out_cf.nc", "longitude",
-         //                  "latitude", "zc", "eta", valueVariablesNames, vectorVariables, "n", true, true);
+         final String[] valueVariablesNames = new String[] { "salt", "temp", "dens" };
+         final GNetCDFMultidimentionalData.VectorVariable[] vectorVariables = new GNetCDFMultidimentionalData.VectorVariable[] { new GNetCDFMultidimentionalData.VectorVariable(
+                  "Water Velocity", "u", "v") };
+
+         final IMultidimensionalData cfData = new GNetCDFMultidimentionalData("data/mackenzie_depth_out_cf.nc", "longitude",
+                  "latitude", "zc", "eta", null, vectorVariables, "n", true, true);
 
 
          final Position headPosition = new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710), 0);
@@ -314,8 +315,8 @@ public class GGlobeDemo
                   headPosition, 10, 10, 20);
 
 
-         //         _multidimentionaldata = new IMultidimensionalData[] { cfData, headData };
-         _multidimentionaldata = new IMultidimensionalData[] { headData };
+         _multidimentionaldata = new IMultidimensionalData[] { cfData, headData };
+         // _multidimentionaldata = new IMultidimensionalData[] { headData };
       }
       catch (final IOException e) {
          e.printStackTrace();

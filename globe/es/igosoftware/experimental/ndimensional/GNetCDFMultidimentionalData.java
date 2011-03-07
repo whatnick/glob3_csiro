@@ -170,7 +170,7 @@ public class GNetCDFMultidimentionalData
       GAssert.notNull(longitudeVariableName, "longitudeVariableName");
       GAssert.notNull(latitudeVariableName, "latitudeVariableName");
       GAssert.notNull(elevationVariableName, "elevationVariableName");
-      GAssert.notEmpty(valueVariablesNames, "valueVariablesNames");
+      //GAssert.notEmpty(valueVariablesNames, "valueVariablesNames");
 
       _verbose = verbose;
 
@@ -212,10 +212,30 @@ public class GNetCDFMultidimentionalData
       }
 
 
-      _valueVariablesNames = valueVariablesNames;
-      _valueVariables = new ValueVariable[valueVariablesNames.length];
-      for (int i = 0; i < valueVariablesNames.length; i++) {
-         final String valueVariableName = valueVariablesNames[i];
+      /**
+       * Auto-detect non-dimension variables in NetCDF need to also reject the vector component variables and only retain scalars
+       */
+      if (valueVariablesNames == null) {
+         final List<Variable> allVars = _ncFile.getVariables();
+         final ArrayList<String> autoVarName = new ArrayList<String>();
+         for (final Variable variable : allVars) {
+            final String varName = variable.getName();
+            if (!(latitudeVariableName.equals(varName) || elevationVariableName.equals(varName) || longitudeVariableName.equals(varName))) {
+               //FIXME: Current code supports only 4-D data
+               if (variable.getDimensionsAll().size() == 4) {
+                  autoVarName.add(varName);
+               }
+            }
+         }
+         _valueVariablesNames = autoVarName.toArray(new String[1]);
+      }
+      else {
+         _valueVariablesNames = valueVariablesNames;
+      }
+
+      _valueVariables = new ValueVariable[_valueVariablesNames.length];
+      for (int i = 0; i < _valueVariablesNames.length; i++) {
+         final String valueVariableName = _valueVariablesNames[i];
 
          final Variable valueVariable = _ncFile.findVariable(valueVariableName);
          if (valueVariable == null) {
