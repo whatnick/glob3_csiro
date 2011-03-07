@@ -37,6 +37,8 @@
 package es.igosoftware.io;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import es.igosoftware.util.GAssert;
 
@@ -86,10 +88,10 @@ public class GFileLoader
       final File file = new File(_rootDirectory, fileName);
 
       if (!file.exists()) {
-         handler.loadError(ILoader.ErrorType.NOT_FOUND, null);
+         handler.loadError(new FileNotFoundException());
       }
       else if (!file.canRead()) {
-         handler.loadError(ILoader.ErrorType.CANT_READ, null);
+         handler.loadError(new IOException("Can't read file"));
       }
       else {
          try {

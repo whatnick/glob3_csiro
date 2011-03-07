@@ -52,7 +52,6 @@ import es.igosoftware.euclid.vector.GVector3F;
 import es.igosoftware.experimental.pointscloud.rendering.GPointsCloudLayer;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.io.ILoader;
-import es.igosoftware.io.ILoader.ErrorType;
 import es.igosoftware.io.ILoader.IHandler;
 import es.igosoftware.util.GMath;
 import es.igosoftware.utils.GWWUtils;
@@ -199,9 +198,8 @@ final class GSGPointsLoader {
 
 
          @Override
-         public void loadError(final ErrorType error,
-                               final Throwable e) {
-            System.err.println("Error=" + error + ", exception=" + e + " trying to load " + fileName);
+         public void loadError(final IOException e) {
+            System.err.println("Error=" + e + " trying to load " + fileName);
             synchronized (GSGPointsLoader.this) {
                _errorLoading = true;
                _loading = false;
