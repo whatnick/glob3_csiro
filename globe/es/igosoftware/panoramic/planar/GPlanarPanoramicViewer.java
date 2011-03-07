@@ -90,6 +90,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import es.igosoftware.concurrent.GConcurrent;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GHttpLoader;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.io.ILoader;
@@ -164,7 +165,7 @@ public class GPlanarPanoramicViewer {
          }
 
          if ((_handler == null) && (_image == null)) {
-            final String fileName = getTileFileName();
+            final GFileName fileName = getTileFileName();
 
             _handler = new ILoader.IHandler() {
                @Override
@@ -255,10 +256,8 @@ public class GPlanarPanoramicViewer {
       }
 
 
-      private String getTileFileName() {
-         final File levelFile = new File(Integer.toString(_zoomLevel.getLevel()));
-         final File tileFile = new File(levelFile, "tile-" + _x + "-" + _y + ".jpg");
-         return tileFile.getPath();
+      private GFileName getTileFileName() {
+         return new GFileName(Integer.toString(_zoomLevel.getLevel()), "tile-" + _x + "-" + _y + ".jpg");
       }
 
 
@@ -359,7 +358,7 @@ public class GPlanarPanoramicViewer {
       final GHolder<List<GPlanarPanoramicZoomLevel>> resultHolder = new GHolder<List<GPlanarPanoramicZoomLevel>>(null);
 
 
-      _loadID = _loader.load("info.txt", -1, false, Integer.MAX_VALUE, new ILoader.IHandler() {
+      _loadID = _loader.load(new GFileName("info.txt"), -1, false, Integer.MAX_VALUE, new ILoader.IHandler() {
          @Override
          public void loaded(final File file,
                             final long bytesLoaded,

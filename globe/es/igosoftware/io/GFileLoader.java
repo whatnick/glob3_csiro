@@ -79,13 +79,13 @@ public class GFileLoader
 
 
    @Override
-   public ILoader.LoadID load(final String fileName,
+   public ILoader.LoadID load(final GFileName fileName,
                               final long bytesToLoad,
                               final boolean reportIncompleteLoads,
                               final int priority,
                               final ILoader.IHandler handler) {
 
-      final File file = new File(_rootDirectory, fileName);
+      final File file = new File(_rootDirectory, fileName.buildPath());
 
       if (!file.exists()) {
          handler.loadError(new FileNotFoundException());
@@ -115,7 +115,7 @@ public class GFileLoader
 
 
    @Override
-   public void cancelAllLoads(final String fileName) {
+   public void cancelAllLoads(final GFileName fileName) {
       // do nothing, the loads in GFileLoader are not asynchronous
    }
 

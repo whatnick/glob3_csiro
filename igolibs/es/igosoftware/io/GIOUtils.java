@@ -512,6 +512,28 @@ public class GIOUtils {
    }
 
 
+   public static String buildPath(final char separator,
+                                  final String... parts) {
+      GAssert.notEmpty(parts, "parts");
+
+      final StringBuilder buffer = new StringBuilder();
+
+      for (final String part : parts) {
+         if (part == null) {
+            continue;
+         }
+
+         if (buffer.length() > 0) {
+            buffer.append(separator);
+         }
+
+         buffer.append(part.replaceAll(ILLEGAL_FILE_NAME_CHARACTERS, "_"));
+      }
+
+      return buffer.toString();
+   }
+
+
    public static File buildFile(final String... parts) {
       GAssert.notEmpty(parts, "parts");
 

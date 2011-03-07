@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import es.igosoftware.dmvc.client.GDClient;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.io.ILoader;
 import es.igosoftware.io.pointscloud.IPointsCloudLoader;
@@ -146,7 +147,7 @@ public class GPointsCloudStreamingLoader
 
 
    @Override
-   public ILoader.LoadID load(final String fileName,
+   public ILoader.LoadID load(final GFileName fileName,
                               final long bytesToLoad,
                               final boolean reportIncompleteLoads,
                               final int priority,
@@ -183,7 +184,7 @@ public class GPointsCloudStreamingLoader
 
 
    @Override
-   public void cancelAllLoads(final String fileName) {
+   public void cancelAllLoads(final GFileName fileName) {
       throw new RuntimeException("Not yet implemented!");
    }
 

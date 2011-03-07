@@ -55,6 +55,7 @@ import org.jboss.netty.channel.Channel;
 import es.igosoftware.dmvc.model.GDModel;
 import es.igosoftware.dmvc.model.IDProperty;
 import es.igosoftware.dmvc.server.GDServer;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GMath;
@@ -232,7 +233,7 @@ public class GPointsStreamingServer
 
    @Override
    public int loadFile(final int sessionID,
-                       final String fileName,
+                       final GFileName fileName,
                        final long fromBytes,
                        final long toBytes,
                        final int priority) {
@@ -240,7 +241,7 @@ public class GPointsStreamingServer
 
       final long normalizedToBytes;
       if (toBytes < 0) {
-         normalizedToBytes = new File(_rootDirectory, fileName).length();
+         normalizedToBytes = new File(_rootDirectory, fileName.buildPath()).length();
       }
       else {
          normalizedToBytes = toBytes;
@@ -254,7 +255,7 @@ public class GPointsStreamingServer
             final long to = Math.min(from + POINTS_GROUP_SIZE, normalizedToBytes) - 1;
 
             final boolean lastPacket = (to == (normalizedToBytes - 1));
-            _tasks.add(new Task(fileName, from, to, lastPacket, priority, taskID, sessionID));
+            _tasks.add(new Task(fileName.buildPath(), from, to, lastPacket, priority, taskID, sessionID));
 
             from += POINTS_GROUP_SIZE;
          }
