@@ -39,6 +39,7 @@ package es.igosoftware.experimental.pointscloud.loading;
 import java.util.List;
 
 import es.igosoftware.dmvc.model.IDModel;
+import es.igosoftware.io.GFileName;
 
 
 public interface IPointsStreamingServer
@@ -50,7 +51,7 @@ public interface IPointsStreamingServer
 
 
    public int loadFile(final int sessionID,
-                       final String fileName,
+                       final GFileName fileName,
                        final long fromBytes,
                        final long toBytes,
                        final int priority);

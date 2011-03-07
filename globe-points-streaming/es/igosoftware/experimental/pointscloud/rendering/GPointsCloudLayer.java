@@ -49,6 +49,7 @@ import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.globe.layers.Feature;
 import es.igosoftware.globe.layers.GVectorRenderer;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.io.ILoader;
 import es.igosoftware.io.pointscloud.IPointsCloudLoader;
 import es.igosoftware.util.GAssert;
@@ -90,7 +91,7 @@ public final class GPointsCloudLayer
    public static final float           STEP_POINT_SIZE    = 1;
 
 
-   private final String                _pointsCloudName;
+   private final GFileName             _pointsCloudName;
    private final IPointsCloudLoader    _loader;
 
    private final GHolder<GSGGroupNode> _rootNode          = new GHolder<GSGGroupNode>(null);
@@ -125,7 +126,7 @@ public final class GPointsCloudLayer
    private Color                       _pointsColor       = null;
 
 
-   public GPointsCloudLayer(final String pointsCloudName,
+   public GPointsCloudLayer(final GFileName pointsCloudName,
                             final IPointsCloudLoader loader) {
       GAssert.notNull(pointsCloudName, "pointsCloudName");
       GAssert.notNull(loader, "loader");
@@ -140,7 +141,7 @@ public final class GPointsCloudLayer
    private void loadPointsCloud() {
       final long started = System.currentTimeMillis();
 
-      _loader.load(_pointsCloudName + "/tree.object.gz", -1, false, Integer.MIN_VALUE, new ILoader.IHandler() {
+      _loader.load(new GFileName(_pointsCloudName, "tree.object.gz"), -1, false, Integer.MIN_VALUE, new ILoader.IHandler() {
 
          @Override
          public void loadError(final IOException e) {
@@ -363,7 +364,7 @@ public final class GPointsCloudLayer
    }
 
 
-   public String getPointsCloudName() {
+   public GFileName getPointsCloudName() {
       return _pointsCloudName;
    }
 
@@ -610,7 +611,7 @@ public final class GPointsCloudLayer
 
    @Override
    public String getName() {
-      return _pointsCloudName;
+      return _pointsCloudName.buildPath('/');
    }
 
 

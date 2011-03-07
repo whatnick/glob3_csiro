@@ -42,6 +42,7 @@ import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.globe.GGlobeApplication;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.io.ILoader;
 import es.igosoftware.loading.GDisplayListCache;
@@ -144,7 +145,7 @@ public class GPanoramic
 
    private final String                                                      _name;
    private final ILoader                                                     _loader;
-   private final File                                                        _panoramicFile;
+   private final GFileName                                                   _panoramicFile;
    private final double                                                      _radius;
    private final Position                                                    _position;
    private final double                                                      _headingInDegrees;
@@ -180,7 +181,7 @@ public class GPanoramic
    public GPanoramic(final Layer layer,
                      final String name,
                      final ILoader loader,
-                     final String panoramicName,
+                     final GFileName panoramicName,
                      final double radius,
                      final Position position) throws IOException {
       this(layer, name, loader, panoramicName, radius, position, 0, GElevationAnchor.SURFACE);
@@ -190,7 +191,7 @@ public class GPanoramic
    public GPanoramic(final Layer layer,
                      final String name,
                      final ILoader loader,
-                     final String panoramicName,
+                     final GFileName panoramicName,
                      final double radius,
                      final Position position,
                      final double headingInDegrees,
@@ -205,7 +206,7 @@ public class GPanoramic
 
       _name = name;
       _loader = loader;
-      _panoramicFile = new File(panoramicName);
+      _panoramicFile = panoramicName;
       _radius = radius;
       _position = position;
       _headingInDegrees = headingInDegrees;
@@ -295,7 +296,7 @@ public class GPanoramic
 
    private GPanoramicCompiler.ZoomLevels readZoomLevels() throws IOException {
 
-      final String fileName = new File(_panoramicFile, GPanoramicCompiler.LEVELS_FILE_NAME).getPath();
+      final GFileName fileName = new GFileName(_panoramicFile, GPanoramicCompiler.LEVELS_FILE_NAME);
 
       final GHolder<GPanoramicCompiler.ZoomLevels> result = new GHolder<GPanoramicCompiler.ZoomLevels>(null);
       final GHolder<IOException> exception = new GHolder<IOException>(null);
@@ -819,9 +820,9 @@ public class GPanoramic
                   _handler = null;
                }
             };
-            final File levelFile = new File(_panoramicFile, Integer.toString(_level));
-            final File tileFile = new File(levelFile, _row + "-" + _column + ".jpg");
-            final String tilePath = tileFile.getPath();
+
+            final GFileName tilePath = new GFileName(_panoramicFile, Integer.toString(_level), _row + "-" + _column + ".jpg");
+
             _loader.load(tilePath, -1, false, _level, _handler);
          }
 

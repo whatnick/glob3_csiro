@@ -49,6 +49,7 @@ import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.io.ILoader;
 import es.igosoftware.loading.modelparts.GFace;
@@ -83,7 +84,7 @@ public class GNewObjLoader {
    private GModelMesh           _currentMesh    = null;
    private GModelData           _model          = null;
    private final ILoader        _loader;
-   private final String         _fileName;
+   private final GFileName      _fileName;
 
 
    // private String               path;
@@ -91,7 +92,7 @@ public class GNewObjLoader {
 
    //the ObjLoader takes as argument any type of loader (fileLoader, HttpLoader, JarLoader). Construct it with the base-directory containing the .obj file
    public GNewObjLoader(final ILoader loader,
-                        final String fileName) {
+                        final GFileName fileName) {
       _loader = loader;
       _fileName = fileName;
    }
@@ -302,7 +303,7 @@ public class GNewObjLoader {
    }
 
 
-   private File loadTexFileToDisk(final String texPath) {
+   private File loadTexFileToDisk(final GFileName texPath) {
       final GHolder<Boolean> completed = new GHolder<Boolean>(false);
       final GHolder<File> texFileHolder = new GHolder<File>(null);
       _loader.load(texPath, -1, false, Integer.MAX_VALUE, new ILoader.IHandler() {
@@ -353,7 +354,7 @@ public class GNewObjLoader {
    }
 
 
-   private File loadMtlFileToDisk(final String mtlPath) {
+   private File loadMtlFileToDisk(final GFileName mtlPath) {
       final GHolder<Boolean> completed = new GHolder<Boolean>(false);
       final GHolder<File> mtlFileHolder = new GHolder<File>(null);
       _loader.load(mtlPath, -1, false, Integer.MAX_VALUE, new ILoader.IHandler() {
@@ -498,7 +499,7 @@ public class GNewObjLoader {
    private void processMaterialLib(final String mtlData) {
       final String s[] = mtlData.split("\\s+");
 
-      final File mtlFile = loadMtlFileToDisk(s[1]);
+      final File mtlFile = loadMtlFileToDisk(new GFileName(s[1]));
 
       InputStream stream = null;
       try {
@@ -598,7 +599,7 @@ public class GNewObjLoader {
             }
             else if (parts[0].equals("map_Kd") && (material != null)) {
                if (parts.length > 1) {
-                  final File texFile = loadTexFileToDisk(line.substring(6).trim());
+                  final File texFile = loadTexFileToDisk(new GFileName(line.substring(6).trim()));
 
                   //                  material.setTextureFileName(line.substring(6).trim());
                   material.setTextureFileName(texFile.getPath());
@@ -607,7 +608,7 @@ public class GNewObjLoader {
             else if (parts[0].equals("map_Ka") && (material != null)) {
                if (parts.length > 1) {
 
-                  final File texFile = loadTexFileToDisk(line.substring(6).trim());
+                  final File texFile = loadTexFileToDisk(new GFileName(line.substring(6).trim()));
                   //                  material.setTextureFileName(line.substring(6).trim());
                   material.setTextureFileName(texFile.getPath());
                }

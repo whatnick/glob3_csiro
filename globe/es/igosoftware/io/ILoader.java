@@ -58,7 +58,6 @@ public interface ILoader {
       public void loaded(final File file,
                          final long bytesLoaded,
                          final boolean completeLoaded) throws ILoader.AbortLoading;
-
    }
 
 
@@ -107,7 +106,7 @@ public interface ILoader {
    }
 
 
-   public ILoader.LoadID load(final String fileName,
+   public ILoader.LoadID load(final GFileName fileName,
                               final long bytesToLoad,
                               final boolean reportIncompleteLoads,
                               final int priority,
@@ -117,7 +116,7 @@ public interface ILoader {
    public void cancelLoad(final ILoader.LoadID id);
 
 
-   public void cancelAllLoads(final String fileName);
+   public void cancelAllLoads(final GFileName fileName);
 
 
    //   public void cancelLoad(final String fileName);
