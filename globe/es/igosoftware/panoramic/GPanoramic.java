@@ -182,7 +182,7 @@ public class GPanoramic
                      final ILoader loader,
                      final String panoramicName,
                      final double radius,
-                     final Position position) {
+                     final Position position) throws IOException {
       this(layer, name, loader, panoramicName, radius, position, 0, GElevationAnchor.SURFACE);
    }
 
@@ -194,7 +194,7 @@ public class GPanoramic
                      final double radius,
                      final Position position,
                      final double headingInDegrees,
-                     final GElevationAnchor anchor) {
+                     final GElevationAnchor anchor) throws IOException {
       GAssert.notNull(name, "name");
       GAssert.notNull(loader, "loader");
       GAssert.isPositive(radius, "radius");
@@ -293,12 +293,12 @@ public class GPanoramic
    }
 
 
-   private GPanoramicCompiler.ZoomLevels readZoomLevels() {
+   private GPanoramicCompiler.ZoomLevels readZoomLevels() throws IOException {
 
       final String fileName = new File(_panoramicFile, GPanoramicCompiler.LEVELS_FILE_NAME).getPath();
 
       final GHolder<GPanoramicCompiler.ZoomLevels> result = new GHolder<GPanoramicCompiler.ZoomLevels>(null);
-      final GHolder<RuntimeException> exception = new GHolder<RuntimeException>(null);
+      final GHolder<IOException> exception = new GHolder<IOException>(null);
       final GHolder<Boolean> done = new GHolder<Boolean>(false);
 
       _loader.load(fileName, -1, false, Integer.MAX_VALUE, new ILoader.IHandler() {
@@ -321,13 +321,13 @@ public class GPanoramic
                result.set(zoomLevels);
             }
             catch (final IOException e) {
-               exception.set(new RuntimeException(e));
+               exception.set(e);
             }
             catch (final ClassNotFoundException e) {
-               exception.set(new RuntimeException(e));
+               exception.set(new IOException(e));
             }
             catch (final ClassCastException e) {
-               exception.set(new RuntimeException(e));
+               exception.set(new IOException(e));
             }
             finally {
                GIOUtils.gentlyClose(is);
@@ -338,9 +338,8 @@ public class GPanoramic
 
 
          @Override
-         public void loadError(final ILoader.ErrorType error,
-                               final Throwable e) {
-            exception.set(new RuntimeException(e));
+         public void loadError(final IOException e) {
+            exception.set(e);
             done.set(true);
          }
       });
@@ -815,9 +814,8 @@ public class GPanoramic
 
 
                @Override
-               public void loadError(final ILoader.ErrorType error,
-                                     final Throwable e) {
-                  System.err.println("error=" + error + ", exception=" + e);
+               public void loadError(final IOException e) {
+                  System.err.println("error=" + e);
                   _handler = null;
                }
             };

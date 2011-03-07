@@ -51,7 +51,6 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.io.ILoader;
-import es.igosoftware.io.ILoader.ErrorType;
 import es.igosoftware.loading.modelparts.GFace;
 import es.igosoftware.loading.modelparts.GMaterial;
 import es.igosoftware.loading.modelparts.GModelData;
@@ -277,8 +276,7 @@ public class GNewObjLoader {
 
 
          @Override
-         public void loadError(final ErrorType error,
-                               final Throwable e) {
+         public void loadError(final IOException e) {
             e.printStackTrace();
             completed.set(true);
          }
@@ -329,8 +327,7 @@ public class GNewObjLoader {
 
 
          @Override
-         public void loadError(final ErrorType error,
-                               final Throwable e) {
+         public void loadError(final IOException e) {
             e.printStackTrace();
             completed.set(true);
          }
@@ -381,8 +378,7 @@ public class GNewObjLoader {
 
 
          @Override
-         public void loadError(final ErrorType error,
-                               final Throwable e) {
+         public void loadError(final IOException e) {
             e.printStackTrace();
             completed.set(true);
          }

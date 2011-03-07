@@ -37,6 +37,7 @@
 package es.igosoftware.io;
 
 import java.io.File;
+import java.io.IOException;
 
 
 public interface ILoader {
@@ -51,8 +52,7 @@ public interface ILoader {
 
 
    public static interface IHandler {
-      public void loadError(final ILoader.ErrorType error,
-                            final Throwable e);
+      public void loadError(final IOException e);
 
 
       public void loaded(final File file,
@@ -104,12 +104,6 @@ public interface ILoader {
       }
 
 
-   }
-
-
-   public static enum ErrorType {
-      NOT_FOUND,
-      CANT_READ
    }
 
 

@@ -143,9 +143,8 @@ public final class GPointsCloudLayer
       _loader.load(_pointsCloudName + "/tree.object.gz", -1, false, Integer.MIN_VALUE, new ILoader.IHandler() {
 
          @Override
-         public void loadError(final ILoader.ErrorType error,
-                               final Throwable e) {
-            System.err.println("Error=" + error + ", exception=" + e + " while loading " + _pointsCloudName + "/tree.object.gz");
+         public void loadError(final IOException e) {
+            System.err.println("Error=" + e + " while loading " + _pointsCloudName + "/tree.object.gz");
          }
 
 

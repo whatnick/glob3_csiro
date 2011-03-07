@@ -71,7 +71,7 @@ public class GHttpLoader
             partFile = File.createTempFile(_fileName, ".part", _rootCacheDirectory);
          }
          catch (final IOException e) {
-            notifyErrorToHandlers(ILoader.ErrorType.NOT_FOUND, e);
+            notifyErrorToHandlers(e);
             return;
          }
 
@@ -103,7 +103,7 @@ public class GHttpLoader
 
                if (!partFile.renameTo(cacheFile)) {
                   LOGGER.severe("can't rename " + partFile + " to " + cacheFile);
-                  notifyErrorToHandlers(ILoader.ErrorType.CANT_READ, null);
+                  notifyErrorToHandlers(new IOException("can't rename " + partFile + " to " + cacheFile));
                   return;
                }
 
@@ -116,10 +116,10 @@ public class GHttpLoader
             }
          }
          catch (final MalformedURLException e) {
-            notifyErrorToHandlers(ILoader.ErrorType.NOT_FOUND, e);
+            notifyErrorToHandlers(e);
          }
          catch (final IOException e) {
-            notifyErrorToHandlers(ILoader.ErrorType.CANT_READ, e);
+            notifyErrorToHandlers(e);
          }
          finally {
             GIOUtils.gentlyClose(is);
@@ -151,30 +151,29 @@ public class GHttpLoader
             _tasks.remove(_fileName);
          }
 
-         try {
-            for (final GTriplet<ILoader.LoadID, ILoader.IHandler, Boolean> idAndHandler : _handlers) {
-               final ILoader.IHandler handler = idAndHandler._second;
-               final boolean reportIncompleteLoads = idAndHandler._third;
-               if (completeLoaded || reportIncompleteLoads) {
+         for (final GTriplet<ILoader.LoadID, ILoader.IHandler, Boolean> idAndHandler : _handlers) {
+            final ILoader.IHandler handler = idAndHandler._second;
+            final boolean reportIncompleteLoads = idAndHandler._third;
+            if (completeLoaded || reportIncompleteLoads) {
+               try {
                   handler.loaded(cacheFile, bytesLoaded, completeLoaded);
                }
+               catch (final ILoader.AbortLoading e) {
+                  // do nothing, the file is already downloaded
+               }
             }
-         }
-         catch (final ILoader.AbortLoading e) {
-            // do nothing, the file is already downloaded
          }
       }
 
 
-      private synchronized void notifyErrorToHandlers(final ILoader.ErrorType error,
-                                                      final Throwable exception) {
+      private synchronized void notifyErrorToHandlers(final IOException e) {
          synchronized (_tasks) {
             _tasks.remove(_fileName);
          }
 
          for (final GTriplet<ILoader.LoadID, ILoader.IHandler, Boolean> idAndHandler : _handlers) {
             final ILoader.IHandler handler = idAndHandler._second;
-            handler.loadError(error, exception);
+            handler.loadError(e);
          }
       }
 

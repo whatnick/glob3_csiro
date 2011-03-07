@@ -190,9 +190,8 @@ public class GPlanarPanoramicViewer {
 
 
                @Override
-               public void loadError(final ILoader.ErrorType error,
-                                     final Throwable e) {
-                  LOGGER.severe("error " + error + " loading " + fileName, e);
+               public void loadError(final IOException e) {
+                  LOGGER.severe("Error=" + e + " loading " + fileName, e);
                }
             };
 
@@ -388,8 +387,7 @@ public class GPlanarPanoramicViewer {
 
 
          @Override
-         public void loadError(final ILoader.ErrorType error,
-                               final Throwable e) {
+         public void loadError(final IOException e) {
             LOGGER.severe("Error loading 'info.txt'", e);
             completed.set(true);
          }
