@@ -598,18 +598,35 @@ public class GNewObjLoader {
             else if (parts[0].equals("map_Kd") && (material != null)) {
                if (parts.length > 1) {
 
-                  final File texFile = loadTexFileToDisk(new GFileName(line.substring(6).trim()));
+                  final String texPath = line.substring(6).trim();
+                  final String[] pathParts = texPath.split("/");
+                  GFileName baseFileName = new GFileName(pathParts[0]);
+                  GFileName finalName;
+                  if (pathParts.length > 1) {
+                     GFileName tempFileName;
+                     for (int i = 1; i < pathParts.length; i++) {
+                        tempFileName = new GFileName(baseFileName, pathParts[i]);
+                        baseFileName = tempFileName;
+                     }
+                     finalName = baseFileName;
+
+                  }
+                  else {
+                     finalName = baseFileName;
+                  }
+
 
                   //                  material.setTextureFileName(line.substring(6).trim());
+                  final File texFile = loadTexFileToDisk(finalName);
                   material.setTextureFileName(texFile.getPath());
                }
             }
             else if (parts[0].equals("map_Ka") && (material != null)) {
                if (parts.length > 1) {
 
-                  final File texFile = loadTexFileToDisk(new GFileName(line.substring(6).trim()));
-                  //                  material.setTextureFileName(line.substring(6).trim());
-                  material.setTextureFileName(texFile.getPath());
+                  //                  final File texFile = loadTexFileToDisk(new GFileName(line.substring(6).trim()));
+                  //                  //                  material.setTextureFileName(line.substring(6).trim());
+                  //                  material.setTextureFileName(texFile.getPath());
                }
             }
          }
