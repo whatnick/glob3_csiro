@@ -79,22 +79,12 @@ public class GNewObjLoader {
    public static final String   COMMENT         = "#";
    public static final String   EMPTY           = "";
 
-   //   private String             baseDirectoryName        = null;
 
    private GModelMesh           _currentMesh    = null;
    private GModelData           _model          = null;
    private final ILoader        _loader;
-   //<<<<<<< HEAD
-   //   private final String         _fileName;
-   //   private String               _supplement     = null;
-   //=======
+
    private final GFileName      _fileName;
-
-
-   //>>>>>>> 45a8a5ec8bc7248fc0a41b05e8992f8eba8ef878
-
-
-   // private String               path;
 
 
    //the ObjLoader takes as argument any type of loader (fileLoader, HttpLoader, JarLoader). Construct it with the base-directory containing the .obj file
@@ -103,17 +93,6 @@ public class GNewObjLoader {
       _loader = loader;
       _fileName = fileName;
    }
-
-
-   //in case you dont/cant give the base-directory, add a supplement that leads to it
-   //   public GNewObjLoader(final ILoader loader,
-   //                        final String fileName,
-   //                        final String pathSupplement) {
-   //      _loader = loader;
-   //      _fileName = fileName;
-   //      _supplement = pathSupplement;
-   //
-   //   }
 
 
    public GModelData load(final boolean verbose) throws GModelLoadException {
@@ -517,17 +496,7 @@ public class GNewObjLoader {
    private void processMaterialLib(final String mtlData) {
       final String s[] = mtlData.split("\\s+");
 
-      //<<<<<<< HEAD
-      //      final File mtlFile;
-      //      if (_supplement != null) {
-      //         mtlFile = loadMtlFileToDisk(_supplement + s[1]);
-      //      }
-      //      else {
-      //         mtlFile = loadMtlFileToDisk(s[1]);
-      //      }
-      //=======
       final File mtlFile = loadMtlFileToDisk(new GFileName(s[1]));
-      //>>>>>>> 45a8a5ec8bc7248fc0a41b05e8992f8eba8ef878
 
       InputStream stream = null;
       try {
@@ -628,17 +597,8 @@ public class GNewObjLoader {
             }
             else if (parts[0].equals("map_Kd") && (material != null)) {
                if (parts.length > 1) {
-                  //<<<<<<< HEAD
-                  //                  final File texFile;
-                  //                  if (_supplement != null) {
-                  //                     texFile = loadTexFileToDisk(_supplement + line.substring(6).trim());
-                  //                  }
-                  //                  else {
-                  //                     texFile = loadTexFileToDisk(line.substring(6).trim());
-                  //                  }
-                  //=======
+
                   final File texFile = loadTexFileToDisk(new GFileName(line.substring(6).trim()));
-                  //>>>>>>> 45a8a5ec8bc7248fc0a41b05e8992f8eba8ef878
 
                   //                  material.setTextureFileName(line.substring(6).trim());
                   material.setTextureFileName(texFile.getPath());
@@ -646,18 +606,8 @@ public class GNewObjLoader {
             }
             else if (parts[0].equals("map_Ka") && (material != null)) {
                if (parts.length > 1) {
-                  //<<<<<<< HEAD
-                  //                  final File texFile;
-                  //                  if (_supplement != null) {
-                  //                     texFile = loadTexFileToDisk(_supplement + line.substring(6).trim());
-                  //                  }
-                  //                  else {
-                  //                     texFile = loadTexFileToDisk(line.substring(6).trim());
-                  //                  }
-                  //=======
 
                   final File texFile = loadTexFileToDisk(new GFileName(line.substring(6).trim()));
-                  //>>>>>>> 45a8a5ec8bc7248fc0a41b05e8992f8eba8ef878
                   //                  material.setTextureFileName(line.substring(6).trim());
                   material.setTextureFileName(texFile.getPath());
                }
