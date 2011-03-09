@@ -38,6 +38,7 @@ package es.igosoftware.loading;
 
 import java.awt.Color;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -48,18 +49,31 @@ import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
+import es.igosoftware.io.ILoader;
 import es.igosoftware.loading.modelparts.GFace;
 import es.igosoftware.loading.modelparts.GMaterial;
 import es.igosoftware.loading.modelparts.GModelData;
 import es.igosoftware.loading.modelparts.GModelMesh;
+import es.igosoftware.util.GHolder;
 import es.igosoftware.util.GLogger;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.GStringUtils;
+import es.igosoftware.util.GUtils;
 import es.igosoftware.util.XStringTokenizer;
 
 
-public class GObjLoader {
+public class GAsyncObjLoader {
+
+
+   public static interface IHandler {
+      public void loadError(final IOException e);
+
+
+      public void loaded(final GModelData modelData);
+   }
+
 
    private static final GLogger logger          = GLogger.instance();
 
@@ -74,39 +88,64 @@ public class GObjLoader {
    public static final String   COMMENT         = "#";
    public static final String   EMPTY           = "";
 
-   //   private String             baseDirectoryName        = null;
 
    private GModelMesh           _currentMesh    = null;
    private GModelData           _model          = null;
+   private final ILoader        _loader;
 
 
-   public GObjLoader() {
+   //the ObjLoader takes as argument any type of loader (fileLoader, HttpLoader, JarLoader). Construct it with the base-directory containing the .obj file
+   public GAsyncObjLoader(final ILoader loader) {
+      _loader = loader;
    }
 
 
-   public GModelData load(final String path,
-                          final boolean verbose) throws GModelLoadException {
+   public void load(final GFileName fileName,
+                    final GAsyncObjLoader.IHandler handler,
+                    final boolean verbose) {
 
+      final GFileName objDirectory = fileName.getParent();
+
+      _loader.load(fileName, -1, false, Integer.MAX_VALUE, new ILoader.IHandler() {
+         @Override
+         public void loaded(final File objFile,
+                            final long bytesLoaded,
+                            final boolean completeLoaded) {
+            if (!completeLoaded) {
+               return;
+            }
+
+            try {
+               final GModelData data = processObjFile(objDirectory, objFile, verbose);
+
+               handler.loaded(data);
+            }
+            catch (final IOException e) {
+               handler.loadError(e);
+            }
+         }
+
+
+         @Override
+         public void loadError(final IOException e) {
+            handler.loadError(e);
+         }
+      });
+
+   }
+
+
+   private GModelData processObjFile(final GFileName objDirectory,
+                                     final File objFile,
+                                     final boolean verbose) throws IOException {
       final long start = System.currentTimeMillis();
 
-      _model = new GModelData(path);
+      _model = new GModelData(objFile.getPath());
       _currentMesh = null;
 
-      String baseDirectoryName = "";
-      final String tokens[] = path.split("/");
-      for (int i = 0; i < tokens.length - 1; i++) {
-         baseDirectoryName += tokens[i] + "/";
-      }
-
-      InputStream stream = null;
-      try {
-         stream = GResourceRetriever.getResourceAsInputStream(_model.getName());
-         if (stream == null) {
-            throw new GModelLoadException("Stream is null");
-         }
-      }
-      catch (final IOException e) {
-         throw new GModelLoadException("Caught IO exception: " + e);
+      final InputStream stream = GResourceRetriever.getResourceAsInputStream(_model.getName());
+      if (stream == null) {
+         throw new IOException("Stream is null");
       }
 
       String currentName = null;
@@ -184,7 +223,7 @@ public class GObjLoader {
             }
 
             if (line.startsWith("mtllib ")) {
-               processMaterialLib(line, baseDirectoryName);
+               processMaterialLib(objDirectory, line);
                continue;
             }
 
@@ -211,9 +250,6 @@ public class GObjLoader {
             }
          }
       }
-      catch (final IOException e) {
-         throw new GModelLoadException("Failed to find or read OBJ: " + stream);
-      }
       finally {
          GIOUtils.gentlyClose(br);
       }
@@ -226,7 +262,7 @@ public class GObjLoader {
          final long elapsed = System.currentTimeMillis() - start;
 
          logger.info("------------------------------------------------------------------------------------");
-         logger.info("Model \"" + path + "\" loaded in " + GStringUtils.getTimeMessage(elapsed));
+         logger.info("Model \"" + objFile.getPath() + "\" loaded in " + GStringUtils.getTimeMessage(elapsed));
 
          _model.showStatistics();
 
@@ -234,6 +270,108 @@ public class GObjLoader {
       }
 
       return _model;
+   }
+
+
+   //   private File loadTextureFileToDisk(final GFileName texPath) {
+   //      final GHolder<Boolean> completed = new GHolder<Boolean>(false);
+   //      final GHolder<File> texFileHolder = new GHolder<File>(null);
+   //      _loader.load(texPath, -1, false, Integer.MAX_VALUE, new ILoader.IHandler() {
+   //
+   //         @Override
+   //         public void loaded(final File file,
+   //                            final long bytesLoaded,
+   //                            final boolean completeLoaded) {
+   //            if (!completeLoaded) {
+   //               return;
+   //            }
+   //
+   //            try {
+   //               texFileHolder.set(file);
+   //               completed.set(true);
+   //            }
+   //            catch (final Exception e) {
+   //               e.printStackTrace();
+   //               //LOGGER.severe("error loading " + file, e);
+   //            }
+   //         }
+   //
+   //
+   //         @Override
+   //         public void loadError(final IOException e) {
+   //            e.printStackTrace();
+   //            completed.set(true);
+   //         }
+   //      });
+   //
+   //      while (!completed.get()) {
+   //         GUtils.delay(10);
+   //      }
+   //
+   //      if (texFileHolder.isEmpty()) {
+   //         try {
+   //            throw new IOException("Can't read " + texPath);
+   //         }
+   //         catch (final IOException e1) {
+   //            // TODO Auto-generated catch block
+   //            e1.printStackTrace();
+   //         }
+   //      }
+   //
+   //
+   //      return texFileHolder.get();
+   //
+   //   }
+
+
+   private File loadMtlFileToDisk(final GFileName mtlPath) {
+      final GHolder<Boolean> completed = new GHolder<Boolean>(false);
+      final GHolder<File> mtlFileHolder = new GHolder<File>(null);
+      _loader.load(mtlPath, -1, false, Integer.MAX_VALUE, new ILoader.IHandler() {
+
+         @Override
+         public void loaded(final File file,
+                            final long bytesLoaded,
+                            final boolean completeLoaded) {
+            if (!completeLoaded) {
+               return;
+            }
+
+            try {
+               mtlFileHolder.set(file);
+               completed.set(true);
+            }
+            catch (final Exception e) {
+               e.printStackTrace();
+               //LOGGER.severe("error loading " + file, e);
+            }
+         }
+
+
+         @Override
+         public void loadError(final IOException e) {
+            e.printStackTrace();
+            completed.set(true);
+         }
+      });
+
+      while (!completed.get()) {
+         GUtils.delay(10);
+      }
+
+      if (mtlFileHolder.isEmpty()) {
+         try {
+            throw new IOException("Can't read " + mtlPath);
+         }
+         catch (final IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+         }
+      }
+
+
+      return mtlFileHolder.get();
+
    }
 
 
@@ -328,14 +466,17 @@ public class GObjLoader {
    }
 
 
-   private void processMaterialLib(final String mtlData,
-                                   final String baseDirectoryName) {
+   private void processMaterialLib(final GFileName objDirectory,
+                                   final String mtlData) throws IOException {
       final String s[] = mtlData.split("\\s+");
+
+      final File mtlFile = loadMtlFileToDisk(GFileName.fromParentAndParts(objDirectory, s[1]));
 
       InputStream stream = null;
       try {
          try {
-            stream = GResourceRetriever.getResourceAsInputStream(baseDirectoryName + s[1]);
+
+            stream = GResourceRetriever.getResourceAsInputStream(mtlFile.getPath());
          }
          catch (final IOException ex) {
             ex.printStackTrace();
@@ -343,14 +484,14 @@ public class GObjLoader {
 
          if (stream == null) {
             try {
-               stream = new FileInputStream(baseDirectoryName + s[1]);
+               stream = new FileInputStream(mtlFile.getPath());
             }
             catch (final FileNotFoundException ex) {
                ex.printStackTrace();
                return;
             }
          }
-         loadMaterialFile(stream);
+         loadMaterialFile(objDirectory, stream);
       }
       finally {
          GIOUtils.gentlyClose(stream);
@@ -379,77 +520,102 @@ public class GObjLoader {
    }
 
 
-   private GMaterial loadMaterialFile(final InputStream stream) {
+   private GMaterial loadMaterialFile(final GFileName objDirectory,
+                                      final InputStream stream) throws IOException {
       GMaterial material = null;
 
-      try {
-         final BufferedReader br = new BufferedReader(new InputStreamReader(stream));
 
-         String line;
-         while ((line = br.readLine()) != null) {
+      final BufferedReader br = new BufferedReader(new InputStreamReader(stream));
 
-            final String parts[] = line.trim().split("\\s+");
+      String line;
+      while ((line = br.readLine()) != null) {
 
-            if (parts[0].equals("newmtl")) {
-               if (material != null) {
-                  _model.addMaterial(material);
+         final String parts[] = line.trim().split("\\s+");
+
+         if (parts[0].equals("newmtl")) {
+            if (material != null) {
+               _model.addMaterial(material);
+            }
+
+            material = new GMaterial(parts[1]);
+         }
+         else if (parts[0].equals("Ka") && (material != null)) {
+            material._ambientColor = parseColor(line);
+         }
+         else if (parts[0].equals("Kd") && (material != null)) {
+            material._diffuseColor = parseColor(line);
+         }
+         else if (parts[0].equals("Ks") && (material != null)) {
+            material._specularColor = parseColor(line);
+         }
+         else if (parts[0].equals("Ns") && (material != null)) {
+            if (parts.length > 1) {
+               material._shininess = Float.parseFloat(parts[1]);
+            }
+         }
+         else if ((parts[0].equals("d") || parts[0].equals("Tr")) && (material != null)) {
+            final float alpha = Float.parseFloat(parts[1]);
+            if (alpha < 1.0) {
+               if (material._diffuseColor == null) {
+                  material._diffuseColor = new Color(1, 1, 1, alpha);
                }
-
-               material = new GMaterial(parts[1]);
-            }
-            else if (parts[0].equals("Ka") && (material != null)) {
-               material._ambientColor = parseColor(line);
-            }
-            else if (parts[0].equals("Kd") && (material != null)) {
-               material._diffuseColor = parseColor(line);
-            }
-            else if (parts[0].equals("Ks") && (material != null)) {
-               material._specularColor = parseColor(line);
-            }
-            else if (parts[0].equals("Ns") && (material != null)) {
-               if (parts.length > 1) {
-                  material._shininess = Float.parseFloat(parts[1]);
-               }
-            }
-            else if ((parts[0].equals("d") || parts[0].equals("Tr")) && (material != null)) {
-               final float alpha = Float.parseFloat(parts[1]);
-               if (alpha < 1.0) {
-                  if (material._diffuseColor == null) {
-                     material._diffuseColor = new Color(1, 1, 1, alpha);
-                  }
-                  else {
-                     final float red = ((float) material._diffuseColor.getRed()) / 255;
-                     final float green = ((float) material._diffuseColor.getGreen()) / 255;
-                     final float blue = ((float) material._diffuseColor.getBlue()) / 255;
-                     material._diffuseColor = new Color(red, green, blue, alpha);
-                  }
-               }
-            }
-            else if (parts[0].equals("illum")) {
-
-            }
-            else if (parts[0].equals("map_Kd") && (material != null)) {
-               if (parts.length > 1) {
-                  material.setTextureFileName(line.substring(6).trim());
-               }
-            }
-            else if (parts[0].equals("map_Ka") && (material != null)) {
-               if (parts.length > 1) {
-                  material.setTextureFileName(line.substring(6).trim());
+               else {
+                  final float red = ((float) material._diffuseColor.getRed()) / 255;
+                  final float green = ((float) material._diffuseColor.getGreen()) / 255;
+                  final float blue = ((float) material._diffuseColor.getBlue()) / 255;
+                  material._diffuseColor = new Color(red, green, blue, alpha);
                }
             }
          }
+         else if (parts[0].equals("illum")) {
+
+         }
+         else if (parts[0].equals("map_Kd") && (material != null)) {
+            if (parts.length > 1) {
+
+               final String texPath = line.substring(6).trim();
+               final String[] pathParts = texPath.split("[/\\\\]");
+
+               final GFileName textureFileName = GFileName.fromParentAndParts(objDirectory, pathParts);
 
 
-         br.close();
-         _model.addMaterial(material);
+               final GMaterial finalMaterial = material;
+
+               _loader.load(textureFileName, -1, false, 1, new ILoader.IHandler() {
+
+                  @Override
+                  public void loaded(final File file,
+                                     final long bytesLoaded,
+                                     final boolean completeLoaded) {
+                     if (!completeLoaded) {
+                        return;
+                     }
+
+                     finalMaterial.setTextureFileName(file.getPath());
+                  }
+
+
+                  @Override
+                  public void loadError(final IOException e) {
+                     e.printStackTrace();
+                  }
+               });
+
+            }
+         }
+         else if (parts[0].equals("map_Ka") && (material != null)) {
+            if (parts.length > 1) {
+
+               //                  final File texFile = loadTexFileToDisk(new GFileName(line.substring(6).trim()));
+               //                  //                  material.setTextureFileName(line.substring(6).trim());
+               //                  material.setTextureFileName(texFile.getPath());
+            }
+         }
       }
-      catch (final FileNotFoundException e) {
-         e.printStackTrace();
-      }
-      catch (final IOException e) {
-         e.printStackTrace();
-      }
+
+
+      br.close();
+      _model.addMaterial(material);
 
       return material;
    }

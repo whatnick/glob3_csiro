@@ -50,12 +50,20 @@ public class GFileLoader
    protected final File _rootDirectory;
 
 
-   public GFileLoader(final String rootDirectoryName) {
+   public GFileLoader(final GFileName rootDirectoryName) {
       GAssert.notNull(rootDirectoryName, "rootDirectoryName");
 
-      _rootDirectory = new File(rootDirectoryName);
+      _rootDirectory = new File(rootDirectoryName.buildPath());
       validateRootDirectory();
    }
+
+
+   //   public GFileLoader(final File rootDirectory) {
+   //      GAssert.notNull(rootDirectory, "rootDirectory");
+   //
+   //      _rootDirectory = rootDirectory;
+   //      validateRootDirectory();
+   //   }
 
 
    private void validateRootDirectory() {
@@ -70,14 +78,6 @@ public class GFileLoader
    }
 
 
-   public GFileLoader(final File rootDirectory) {
-      GAssert.notNull(rootDirectory, "rootDirectory");
-
-      _rootDirectory = rootDirectory;
-      validateRootDirectory();
-   }
-
-
    @Override
    public ILoader.LoadID load(final GFileName fileName,
                               final long bytesToLoad,
@@ -88,7 +88,7 @@ public class GFileLoader
       final File file = new File(_rootDirectory, fileName.buildPath());
 
       if (!file.exists()) {
-         handler.loadError(new FileNotFoundException());
+         handler.loadError(new FileNotFoundException(fileName.buildPath()));
       }
       else if (!file.canRead()) {
          handler.loadError(new IOException("Can't read file"));

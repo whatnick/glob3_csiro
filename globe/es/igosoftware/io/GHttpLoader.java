@@ -23,7 +23,7 @@ import java.util.Set;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GLogger;
 import es.igosoftware.util.GStringUtils;
-import es.igosoftware.util.GTriplet;
+import es.igosoftware.util.GUtils;
 
 
 public class GHttpLoader
@@ -37,22 +37,38 @@ public class GHttpLoader
    private static final File    DEFAULT_CACHE_DIRECTORY      = new File(DEFAULT_CACHE_DIRECTORY_NAME);
 
 
-   private class Task {
-      private final String                                                    _fileName;
-      private int                                                             _priority;
-      private final List<GTriplet<ILoader.LoadID, ILoader.IHandler, Boolean>> _handlers;
+   private static class HandlerData {
+      private final ILoader.LoadID   _loadID;
+      private final ILoader.IHandler _handler;
+      private final boolean          _reportIncompleteLoads;
 
-      private boolean                                                         _isCanceled    = false;
-      private boolean                                                         _isDownloading = false;
+
+      private HandlerData(final ILoader.LoadID loadID,
+                          final ILoader.IHandler handler,
+                          final boolean reportIncompleteLoads) {
+         _loadID = loadID;
+         _handler = handler;
+         _reportIncompleteLoads = reportIncompleteLoads;
+      }
+   }
+
+
+   private class Task {
+      private final String            _fileName;
+      private int                     _priority;
+      private final List<HandlerData> _handlersData;
+
+      private boolean                 _isCanceled    = false;
+      private boolean                 _isDownloading = false;
 
 
       private Task(final String fileName,
                    final int priority,
-                   final GTriplet<ILoader.LoadID, ILoader.IHandler, Boolean> idAndHandler) {
+                   final HandlerData handlerData) {
          _fileName = fileName;
          _priority = priority;
-         _handlers = new ArrayList<GTriplet<ILoader.LoadID, ILoader.IHandler, Boolean>>(1);
-         _handlers.add(idAndHandler);
+         _handlersData = new ArrayList<HandlerData>(1);
+         _handlersData.add(handlerData);
       }
 
 
@@ -82,13 +98,13 @@ public class GHttpLoader
          InputStream is = null;
          OutputStream out = null;
          try {
-            final URL url = new URL(_rootURL, _fileName);
+            final URL url = new URL(_rootURL, convertToURL(_fileName));
 
             is = new BufferedInputStream(url.openStream());
 
             out = new BufferedOutputStream(new FileOutputStream(partFile));
 
-            copy(is, out, partFile);
+            copyDataToPartFile(is, out, partFile);
             is.close();
             is = null;
 
@@ -128,9 +144,14 @@ public class GHttpLoader
       }
 
 
-      private void copy(final InputStream in,
-                        final OutputStream out,
-                        final File partFile) throws IOException {
+      private String convertToURL(final String url) {
+         return url.replace(" ", "%20");
+      }
+
+
+      private void copyDataToPartFile(final InputStream in,
+                                      final OutputStream out,
+                                      final File partFile) throws IOException {
          final byte[] buf = new byte[4096];
          int len;
          int read = 0;
@@ -138,6 +159,11 @@ public class GHttpLoader
             out.write(buf, 0, len);
             out.flush();
             read += len;
+
+            if (_simulateSlowConnection) {
+               GUtils.delay(250);
+            }
+
             notifyLoadToHandlers(partFile, read, false);
          }
       }
@@ -147,34 +173,83 @@ public class GHttpLoader
                                                      final long bytesLoaded,
                                                      final boolean completeLoaded) {
 
-         synchronized (_tasks) {
-            _tasks.remove(_fileName);
-         }
+         final Thread notifierWorker = new Thread() {
 
-         for (final GTriplet<ILoader.LoadID, ILoader.IHandler, Boolean> idAndHandler : _handlers) {
-            final ILoader.IHandler handler = idAndHandler._second;
-            final boolean reportIncompleteLoads = idAndHandler._third;
-            if (completeLoaded || reportIncompleteLoads) {
-               try {
-                  handler.loaded(cacheFile, bytesLoaded, completeLoaded);
+            {
+               setDaemon(true);
+               setPriority(MAX_PRIORITY);
+            }
+
+
+            @Override
+            public void run() {
+               synchronized (_tasks) {
+                  _tasks.remove(_fileName);
                }
-               catch (final ILoader.AbortLoading e) {
-                  // do nothing, the file is already downloaded
+
+               for (final HandlerData handlerData : _handlersData) {
+                  final boolean reportIncompleteLoads = handlerData._reportIncompleteLoads;
+                  if (completeLoaded || reportIncompleteLoads) {
+                     try {
+                        handlerData._handler.loaded(cacheFile, bytesLoaded, completeLoaded);
+                     }
+                     catch (final ILoader.AbortLoading e) {
+                        // do nothing, the file is already downloaded
+                     }
+                  }
                }
             }
-         }
+         };
+         notifierWorker.start();
+
+         //         synchronized (_tasks) {
+         //            _tasks.remove(_fileName);
+         //         }
+         //
+         //         for (final HandlerData handlerData : _handlersData) {
+         //            final boolean reportIncompleteLoads = handlerData._reportIncompleteLoads;
+         //            if (completeLoaded || reportIncompleteLoads) {
+         //               try {
+         //                  handlerData._handler.loaded(cacheFile, bytesLoaded, completeLoaded);
+         //               }
+         //               catch (final ILoader.AbortLoading e) {
+         //                  // do nothing, the file is already downloaded
+         //               }
+         //            }
+         //         }
       }
 
 
       private synchronized void notifyErrorToHandlers(final IOException e) {
-         synchronized (_tasks) {
-            _tasks.remove(_fileName);
-         }
 
-         for (final GTriplet<ILoader.LoadID, ILoader.IHandler, Boolean> idAndHandler : _handlers) {
-            final ILoader.IHandler handler = idAndHandler._second;
-            handler.loadError(e);
-         }
+         final Thread notifierWorker = new Thread() {
+
+            {
+               setDaemon(true);
+               setPriority(MAX_PRIORITY);
+            }
+
+
+            @Override
+            public void run() {
+               synchronized (_tasks) {
+                  _tasks.remove(_fileName);
+               }
+
+               for (final HandlerData handlerData : _handlersData) {
+                  handlerData._handler.loadError(e);
+               }
+            }
+         };
+         notifierWorker.start();
+
+         //         synchronized (_tasks) {
+         //            _tasks.remove(_fileName);
+         //         }
+         //
+         //         for (final HandlerData handlerData : _handlersData) {
+         //            handlerData._handler.loadError(e);
+         //         }
       }
 
 
@@ -184,9 +259,9 @@ public class GHttpLoader
 
 
       private synchronized void addHandler(final int priority,
-                                           final GTriplet<ILoader.LoadID, ILoader.IHandler, Boolean> idAndHandler) {
+                                           final HandlerData handlerData) {
          _priority = Math.max(priority, _priority);
-         _handlers.add(idAndHandler);
+         _handlersData.add(handlerData);
          _isCanceled = false;
       }
    }
@@ -265,7 +340,9 @@ public class GHttpLoader
             for (final Entry<GFileName, Task> entry : entries) {
                final Task current = entry.getValue();
                if (!current._isDownloading && !current._isCanceled) {
-                  if ((selected == null) || (current._priority > selected._priority)) {
+                  if ((selected == null)
+                      || (current._priority > selected._priority)
+                      || ((current._priority == selected._priority) && (current._handlersData.size() > selected._handlersData.size()))) {
                      selected = current;
                   }
                }
@@ -290,6 +367,7 @@ public class GHttpLoader
    private final Map<GFileName, Task> _tasks                = new HashMap<GFileName, Task>();
    private final boolean              _verbose;
    private final boolean              _debug;
+   private final boolean              _simulateSlowConnection;
 
    private final Object               _statisticsMutex      = new Object();
    private int                        _loadCounter          = 0;
@@ -303,7 +381,7 @@ public class GHttpLoader
    public GHttpLoader(final URL root,
                       final int workersCount,
                       final boolean verbose) {
-      this(root, null, workersCount, verbose, false);
+      this(root, null, workersCount, verbose, false, false);
    }
 
 
@@ -311,7 +389,7 @@ public class GHttpLoader
                       final File cacheRootDirectory,
                       final int workersCount,
                       final boolean verbose) {
-      this(root, cacheRootDirectory, workersCount, verbose, false);
+      this(root, cacheRootDirectory, workersCount, verbose, false, false);
    }
 
 
@@ -319,7 +397,16 @@ public class GHttpLoader
                       final int workersCount,
                       final boolean verbose,
                       final boolean debug) {
-      this(root, DEFAULT_CACHE_DIRECTORY, workersCount, verbose, debug);
+      this(root, DEFAULT_CACHE_DIRECTORY, workersCount, verbose, debug, false);
+   }
+
+
+   public GHttpLoader(final URL root,
+                      final int workersCount,
+                      final boolean verbose,
+                      final boolean debug,
+                      final boolean simulateSlowConnection) {
+      this(root, DEFAULT_CACHE_DIRECTORY, workersCount, verbose, debug, simulateSlowConnection);
    }
 
 
@@ -327,7 +414,8 @@ public class GHttpLoader
                       final File cacheRootDirectory,
                       final int workersCount,
                       final boolean verbose,
-                      final boolean debug) {
+                      final boolean debug,
+                      final boolean simulateSlowConnection) {
       GAssert.notNull(root, "root");
       GAssert.isPositive(workersCount, "workersCount");
 
@@ -338,6 +426,7 @@ public class GHttpLoader
       _rootURL = root;
       _verbose = verbose;
       _debug = debug;
+      _simulateSlowConnection = simulateSlowConnection;
 
 
       final File directory = (cacheRootDirectory == null) ? DEFAULT_CACHE_DIRECTORY : cacheRootDirectory;
@@ -408,15 +497,14 @@ public class GHttpLoader
 
       synchronized (_tasks) {
          final ILoader.LoadID loadID = new ILoader.LoadID(_loadID++);
-         final GTriplet<ILoader.LoadID, ILoader.IHandler, Boolean> idAndHandler = new GTriplet<ILoader.LoadID, ILoader.IHandler, Boolean>(
-                  loadID, handler, reportIncompleteLoads);
+         final HandlerData handlerData = new HandlerData(loadID, handler, reportIncompleteLoads);
 
          final Task existingTask = _tasks.get(fileName);
          if (existingTask == null) {
-            _tasks.put(fileName, new Task(fileName.buildPath('/'), priority, idAndHandler));
+            _tasks.put(fileName, new Task(fileName.buildPath('/'), priority, handlerData));
          }
          else {
-            existingTask.addHandler(priority, idAndHandler);
+            existingTask.addHandler(priority, handlerData);
          }
          return loadID;
       }
@@ -461,16 +549,16 @@ public class GHttpLoader
             final Entry<GFileName, Task> entry = tasksIterator.next();
             final Task task = entry.getValue();
 
-            final Iterator<GTriplet<ILoader.LoadID, ILoader.IHandler, Boolean>> taskHandlersIterator = task._handlers.iterator();
-            while (taskHandlersIterator.hasNext()) {
-               final GTriplet<ILoader.LoadID, ILoader.IHandler, Boolean> idAndHandler = taskHandlersIterator.next();
-               if (id.equals(idAndHandler._first)) {
-                  taskHandlersIterator.remove();
+            final Iterator<HandlerData> handlersDataIterator = task._handlersData.iterator();
+            while (handlersDataIterator.hasNext()) {
+               final HandlerData handlerData = handlersDataIterator.next();
+               if (id.equals(handlerData._loadID)) {
+                  handlersDataIterator.remove();
                }
             }
 
             if (!task._isDownloading) {
-               if (task._handlers.isEmpty()) {
+               if (task._handlersData.isEmpty()) {
                   tasksIterator.remove();
                   task.cancel();
                }

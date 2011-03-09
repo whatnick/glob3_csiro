@@ -46,9 +46,10 @@ import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.globe.layers.Feature;
 import es.igosoftware.globe.layers.GVectorRenderer;
+import es.igosoftware.io.GFileLoader;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.loading.G3DModel;
-import es.igosoftware.loading.GModelLoadException;
-import es.igosoftware.loading.GObjLoader;
+import es.igosoftware.loading.GAsyncObjLoader;
 import es.igosoftware.loading.modelparts.GMaterial;
 import es.igosoftware.loading.modelparts.GModelData;
 import es.igosoftware.loading.modelparts.GModelMesh;
@@ -73,6 +74,7 @@ import gov.nasa.worldwind.render.DrawContext;
 import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -285,30 +287,39 @@ public class GPositionRenderableLayer
    }
 
 
-   public void add3DModel(final String objPath,
+   public void add3DModel(final GFileName objPath,
                           final String name,
                           final double heading,
                           final Position position) {
-      try {
-         final GModelData modelData = new GObjLoader().load(objPath, true);
-         preprocess3DModel(modelData);
 
-         final G3DModel model = new G3DModel(modelData, true);
-         final G3DModelNode modelNode = new G3DModelNode(name, GTransformationOrder.ROTATION_SCALE_TRANSLATION, model);
+      new GAsyncObjLoader(new GFileLoader(GFileName.CURRENT_DIRECTORY)).load(objPath, new GAsyncObjLoader.IHandler() {
 
-         final GGroupNode modelRootNode = new GGroupNode("Root " + name, GTransformationOrder.ROTATION_SCALE_TRANSLATION);
-         modelRootNode.setHeading(heading);
-         modelRootNode.addChild(modelNode);
+         @Override
+         public void loadError(final IOException e) {
+            e.printStackTrace();
+         }
 
-         addNode(modelRootNode, position, GElevationAnchor.SEA_LEVEL);
-      }
-      catch (final GModelLoadException e) {
-         e.printStackTrace();
-      }
+
+         @Override
+         public void loaded(final GModelData modelData) {
+            preprocess3DModel(modelData);
+
+            final G3DModel model = new G3DModel(modelData, true);
+            final G3DModelNode modelNode = new G3DModelNode(name, GTransformationOrder.ROTATION_SCALE_TRANSLATION, model);
+
+            final GGroupNode modelRootNode = new GGroupNode("Root " + name, GTransformationOrder.ROTATION_SCALE_TRANSLATION);
+            modelRootNode.setHeading(heading);
+            modelRootNode.addChild(modelNode);
+
+            addNode(modelRootNode, position, GElevationAnchor.SEA_LEVEL);
+         }
+      }, true);
+
+
    }
 
 
-   public void add3DModel(final String objPath,
+   public void add3DModel(final GFileName objPath,
                           final String name,
                           final Position position) {
       add3DModel(objPath, name, 0.0, position);

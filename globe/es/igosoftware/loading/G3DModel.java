@@ -621,13 +621,6 @@ public class G3DModel {
    }
 
 
-   public G3DModel(final String path,
-                   final boolean verbose,
-                   final boolean preFetchTextures) throws GModelLoadException {
-      this(new GObjLoader().load(path, verbose), preFetchTextures);
-   }
-
-
    private static List<RenderUnit> calculateRenderingUnits(final List<GModelMesh> meshes) {
 
       final HashMap<GPair<URL, Boolean>, List<GModelMesh>> textureRenderUnitsMap = new HashMap<GPair<URL, Boolean>, List<GModelMesh>>();
