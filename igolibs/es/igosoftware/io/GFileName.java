@@ -34,7 +34,7 @@ public class GFileName {
    private static void ensureNoSlashesOnParts(final String... parts) {
       for (final String part : parts) {
          if (part.contains("/") || part.contains("\\")) {
-            throw new RuntimeException("Invalid fileName " + Arrays.toString(parts));
+            throw new RuntimeException("Invalid fileName. Slashes ('/' or '\\') are not allowed. " + Arrays.toString(parts));
          }
       }
    }
@@ -94,6 +94,8 @@ public class GFileName {
    //      final GFileName fileName2 = new GFileName(fileName1, "fileName.ext");
    //      System.out.println(fileName2);
    //
+   //      final String parts[] = "dir1/dir2\\filename.ext".split("[/\\\\]");
+   //      System.out.println(Arrays.toString(parts));
    //   }
 
 }
