@@ -133,7 +133,7 @@ public final class GSGPointsNode
 
 
    GFileName getPointsFileName() {
-      return new GFileName(_layer.getPointsCloudName(), "tile-" + _id + ".points");
+      return GFileName.fromParentAndParts(_layer.getPointsCloudName(), "tile-" + _id + ".points");
    }
 
 

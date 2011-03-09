@@ -496,7 +496,7 @@ public class GNewObjLoader {
    private void processMaterialLib(final String mtlData) {
       final String s[] = mtlData.split("\\s+");
 
-      final File mtlFile = loadMtlFileToDisk(new GFileName(s[1]));
+      final File mtlFile = loadMtlFileToDisk(GFileName.fromParts(s[1]));
 
       InputStream stream = null;
       try {
@@ -598,18 +598,36 @@ public class GNewObjLoader {
             else if (parts[0].equals("map_Kd") && (material != null)) {
                if (parts.length > 1) {
 
-                  final File texFile = loadTexFileToDisk(new GFileName(line.substring(6).trim()));
+                  final String texPath = line.substring(6).trim();
+                  final String[] pathParts = texPath.split("[/\\\\]");
+                  final int ____TODO_Oliver_at_work____;
+                  //                  GFileName baseFileName = GFileName.fromParts(pathParts[0]);
+                  //                  GFileName finalName;
+                  //                  if (pathParts.length > 1) {
+                  //                     GFileName tempFileName;
+                  //                     for (int i = 1; i < pathParts.length; i++) {
+                  //                        tempFileName = GFileName.fromParentAndParts(baseFileName, pathParts[i]);
+                  //                        baseFileName = tempFileName;
+                  //                     }
+                  //                     finalName = baseFileName;
+                  //                  }
+                  //                  else {
+                  //                     finalName = baseFileName;
+                  //                  }
+
+                  final GFileName baseFileName = GFileName.fromParts(pathParts);
 
                   //                  material.setTextureFileName(line.substring(6).trim());
+                  final File texFile = loadTexFileToDisk(baseFileName);
                   material.setTextureFileName(texFile.getPath());
                }
             }
             else if (parts[0].equals("map_Ka") && (material != null)) {
                if (parts.length > 1) {
 
-                  final File texFile = loadTexFileToDisk(new GFileName(line.substring(6).trim()));
-                  //                  material.setTextureFileName(line.substring(6).trim());
-                  material.setTextureFileName(texFile.getPath());
+                  //                  final File texFile = loadTexFileToDisk(new GFileName(line.substring(6).trim()));
+                  //                  //                  material.setTextureFileName(line.substring(6).trim());
+                  //                  material.setTextureFileName(texFile.getPath());
                }
             }
          }

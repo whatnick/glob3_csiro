@@ -9,32 +9,52 @@ import es.igosoftware.util.GCollections;
 
 
 public class GFileName {
+
+
+   public static GFileName fromParts(final String... parts) {
+      return new GFileName(parts);
+   }
+
+
+   public static GFileName fromParentAndParts(final GFileName parent,
+                                              final String... parts) {
+      return new GFileName(parent, parts);
+   }
+
+
+   public static GFileName dissectPath(final String path) {
+      return new GFileName(path.split("[/\\\\]"));
+   }
+
+
    private final String[] _parts;
 
 
-   public GFileName(final String... parts) {
+   private GFileName(final String... parts) {
       GAssert.notEmpty(parts, "parts");
-      ensureNoSlashesOnParts(parts);
+
+      validateParts(parts);
 
       _parts = Arrays.copyOf(parts, parts.length);
    }
 
 
-   public GFileName(final GFileName parent,
-                    final String... parts) {
+   private GFileName(final GFileName parent,
+                     final String... parts) {
       GAssert.notNull(parent, "parent");
       GAssert.notEmpty(parts, "parts");
 
-      ensureNoSlashesOnParts(parts);
+      validateParts(parts);
 
       _parts = GCollections.concatenate(parent._parts, parts);
    }
 
 
-   private static void ensureNoSlashesOnParts(final String... parts) {
+   private static void validateParts(final String... parts) {
       for (final String part : parts) {
          if (part.contains("/") || part.contains("\\")) {
-            throw new RuntimeException("Invalid fileName. Slashes ('/' or '\\') are not allowed. " + Arrays.toString(parts));
+            throw new RuntimeException("Invalid fileName. Slashes ('/' or '\\') are not allowed in file-name parts. "
+                                       + Arrays.toString(parts));
          }
       }
    }
