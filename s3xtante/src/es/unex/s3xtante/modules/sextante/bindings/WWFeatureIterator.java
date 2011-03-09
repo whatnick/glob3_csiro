@@ -1,3 +1,5 @@
+
+
 package es.unex.s3xtante.modules.sextante.bindings;
 
 import java.awt.geom.Rectangle2D;
@@ -88,7 +90,8 @@ public class WWFeatureIterator
 
 
    @Override
-   public void close() {}
+   public void close() {
+   }
 
 
    @Override
@@ -99,6 +102,7 @@ public class WWFeatureIterator
    }
 
 
+   @SuppressWarnings("null")
    private void calculate() {
 
       m_iCardinality = 0;
