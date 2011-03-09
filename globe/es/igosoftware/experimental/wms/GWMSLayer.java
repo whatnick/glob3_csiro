@@ -50,6 +50,7 @@ import gov.nasa.worldwind.geom.Sector;
 import gov.nasa.worldwind.ogc.wms.WMSCapabilities;
 import gov.nasa.worldwind.wms.WMSTiledImageLayer;
 
+import java.io.File;
 import java.util.List;
 
 import javax.swing.Icon;
@@ -127,7 +128,8 @@ public class GWMSLayer
       //final String serviceTitle = caps.getServiceInformation().getServiceTitle();
       final String serviceName = caps.getServiceInformation().getServiceName();
       //final String layerName = caps.getNamedLayers().get(0).getName();
-      final String dataSetName = serviceName + ": " + caps.getVersion();
+      //final String dataSetName = serviceName + ": " + caps.getVersion();
+      final String dataSetName = serviceName + "_" + caps.getVersion();
 
       initParams.setValue(AVKey.LAYER_NAMES, layerNames.toString());
       if ((styleNames != null) && (styleNames.length() > 0)) {
@@ -138,7 +140,8 @@ public class GWMSLayer
 
       params.setValue(AVKey.TILE_WIDTH, 512);
       params.setValue(AVKey.TILE_HEIGHT, 512);
-      params.setValue(AVKey.DATA_CACHE_NAME, "Earth/" + serviceName);
+      //params.setValue(AVKey.DATA_CACHE_NAME, "Earth/" + serviceName);
+      params.setValue(AVKey.DATA_CACHE_NAME, "Earth" + File.separator + serviceName);
       params.setValue(AVKey.DATASET_NAME, dataSetName);
       params.setValue(AVKey.FORMAT_SUFFIX, imageFormat.getExtension());
 

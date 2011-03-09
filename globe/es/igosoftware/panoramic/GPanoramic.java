@@ -308,6 +308,8 @@ public class GPanoramic
                             final long bytesLoaded,
                             final boolean completeLoaded) {
 
+            System.out.println("Downloading levels.zip");
+
             if (!completeLoaded) {
                return;
             }
@@ -473,7 +475,9 @@ public class GPanoramic
 
 
    public void doRender(final DrawContext dc) {
+
       if (dc.isPickingMode()) {
+         System.out.println("--not rendering because in pickingMode---");
          return;
       }
 
@@ -501,6 +505,7 @@ public class GPanoramic
       if (!_visibleTiles.isEmpty()) {
          dc.addOrderedRenderable(this);
       }
+
    }
 
 
