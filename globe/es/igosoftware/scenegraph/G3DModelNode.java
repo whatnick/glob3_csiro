@@ -283,12 +283,6 @@ public class G3DModelNode
    }
 
 
-   @Override
-   public void preFetchContents(final DrawContext dc) {
-      _model.preFetchTextures();
-   }
-
-
    public boolean isRenderPickableBounds() {
       return _renderPickableBounds;
    }

@@ -192,11 +192,6 @@ public class GPositionRenderableLayer
       }
 
 
-      private void preFetchContents(final DrawContext dc) {
-         _rootNode.preFetchContents(dc);
-      }
-
-
       private void asureModelCoordinateOriginTransform(final DrawContext dc,
                                                        final boolean terrainChanged) {
          if (terrainChanged || (_modelCoordinateOriginTransform == null)) {
@@ -245,7 +240,7 @@ public class GPositionRenderableLayer
    //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-   private final List<NodeAndPosition> _rootNodes        = new ArrayList<NodeAndPosition>();
+   private final List<NodeAndPosition> _rootNodes      = new ArrayList<NodeAndPosition>();
 
    private Globe                       _lastGlobe;
    private double                      _lastVerticalExaggeration;
@@ -253,19 +248,17 @@ public class GPositionRenderableLayer
 
    private final String                _name;
 
-   private boolean                     _pushOffsetHack   = false;
-   private boolean                     _checkGLErrors    = false;
+   private boolean                     _pushOffsetHack = false;
+   private boolean                     _checkGLErrors  = false;
 
    private DrawContext                 _lastDC;
 
-   private boolean                     _initialized      = false;
+   private boolean                     _initialized    = false;
 
    private List<PickListener>          _pickListeners;
 
-   private boolean                     _checkViewPort    = false;
+   private boolean                     _checkViewPort  = false;
 
-
-   private final boolean               _preFecthContents = true;
 
    private final boolean               _dumpSceneGraph;
 
@@ -304,7 +297,7 @@ public class GPositionRenderableLayer
          public void loaded(final GModelData modelData) {
             preprocess3DModel(modelData);
 
-            final G3DModel model = new G3DModel(modelData, true);
+            final G3DModel model = new G3DModel(modelData);
             final G3DModelNode modelNode = new G3DModelNode(name, GTransformationOrder.ROTATION_SCALE_TRANSLATION, model);
 
             final GGroupNode modelRootNode = new GGroupNode("Root " + name, GTransformationOrder.ROTATION_SCALE_TRANSLATION);
@@ -396,13 +389,6 @@ public class GPositionRenderableLayer
             _initialized = true;
 
             initializeEvents();
-
-
-            if (_preFecthContents) {
-               for (final NodeAndPosition rootAndPosition : _rootNodes) {
-                  rootAndPosition.preFetchContents(dc);
-               }
-            }
 
 
             if (_dumpSceneGraph) {

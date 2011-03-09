@@ -292,7 +292,7 @@ public class GGlobeDemo
             public void loaded(final GModelData modelData) {
                hackCaceres3DModel(modelData);
 
-               final G3DModel model = new G3DModel(modelData, true);
+               final G3DModel model = new G3DModel(modelData);
                final G3DModelNode caceres3DModelNode = new G3DModelNode("Caceres3D",
                         GTransformationOrder.ROTATION_SCALE_TRANSLATION, model);
 

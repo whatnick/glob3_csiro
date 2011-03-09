@@ -606,18 +606,13 @@ public class G3DModel {
 
 
    private final GModelData                                     _modelData;
-   private final boolean                                        _preFetchTextures;
 
    private ArrayList<GModelMesh>                                _opaqueMeshes;
    private ArrayList<GModelMesh>                                _transparentMeshes;
 
 
-   public G3DModel(final GModelData modelData,
-                   final boolean preFetchTextures) {
+   public G3DModel(final GModelData modelData) {
       _modelData = modelData;
-
-      _preFetchTextures = preFetchTextures;
-
    }
 
 
@@ -1138,24 +1133,6 @@ public class G3DModel {
       gl.glPopMatrix();
 
       gl.glPopAttrib();
-   }
-
-
-   public void preFetchTextures() {
-      if (!_preFetchTextures) {
-         return;
-      }
-
-      //      final ExecutorService executor = GConcurrent.getDefaultExecutor();
-      //
-      //      executor.submit(new Runnable() {
-      //         @Override
-      //         public void run() {
-      //            for (final GModelMesh mesh : _modelData.getMeshes()) {
-      //               forceLoadTextures(mesh);
-      //            }
-      //         }
-      //      });
    }
 
 
