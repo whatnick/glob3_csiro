@@ -9,6 +9,7 @@ import es.igosoftware.util.GCollections;
 
 
 public class GFileName {
+   public static final GFileName CURRENT_DIRECTORY = new GFileName(".");
 
 
    public static GFileName fromParts(final String... parts) {
@@ -19,11 +20,6 @@ public class GFileName {
    public static GFileName fromParentAndParts(final GFileName parent,
                                               final String... parts) {
       return new GFileName(parent, parts);
-   }
-
-
-   public static GFileName dissectPath(final String path) {
-      return new GFileName(path.split("[/\\\\]"));
    }
 
 
@@ -104,15 +100,30 @@ public class GFileName {
    }
 
 
+   public GFileName getParent() {
+      if (_parts.length == 1) {
+         return CURRENT_DIRECTORY;
+      }
+
+      return new GFileName(Arrays.copyOf(_parts, _parts.length - 1));
+   }
+
+
    //   public static void main(final String[] args) {
    //      System.out.println("GFileName 0.1");
    //      System.out.println("-------------\n");
    //
    //      final GFileName fileName1 = new GFileName("dir1", "dir2", "dir3");
    //      System.out.println(fileName1);
+   //      System.out.println(fileName1.getParent());
    //
    //      final GFileName fileName2 = new GFileName(fileName1, "fileName.ext");
    //      System.out.println(fileName2);
+   //      System.out.println(fileName2.getParent());
+   //
+   //      final GFileName fileName3 = new GFileName("fileName.ext");
+   //      System.out.println(fileName3);
+   //      System.out.println(fileName3.getParent());
    //
    //      final String parts[] = "dir1/dir2\\filename.ext".split("[/\\\\]");
    //      System.out.println(Arrays.toString(parts));
