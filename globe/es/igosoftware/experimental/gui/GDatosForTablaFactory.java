@@ -109,7 +109,7 @@ public class GDatosForTablaFactory {
    /**********************************************************************************/
 
 
-   public class CenterTableCellRenderer
+   public static class CenterTableCellRenderer
             extends
                DefaultTableCellRenderer {
       /**
@@ -123,7 +123,7 @@ public class GDatosForTablaFactory {
       }
    }
 
-   public class RightTableCellRenderer
+   public static class RightTableCellRenderer
             extends
                DefaultTableCellRenderer {
       /**

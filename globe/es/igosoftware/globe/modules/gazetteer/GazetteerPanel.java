@@ -77,7 +77,7 @@ public class GazetteerPanel
    private static final long serialVersionUID = 1L;
 
    private final WorldWindow _wwd;
-   private Gazetteer         _gazeteer;
+   private final Gazetteer   _gazeteer;
    private JList             _jList;
    private JButton           _jButtonSearch;
    private JTextField        _jField;

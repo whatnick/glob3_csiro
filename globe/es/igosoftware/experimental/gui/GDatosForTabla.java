@@ -87,7 +87,7 @@ public class GDatosForTabla {
       final int tamCollection = _coleccion.size();
       for (int i = 0; i < tamCollection; i++) {
          final Vector<?> elementAux = _coleccion.get(i);
-         if ((Integer) element.get(0) == (Integer) elementAux.get(0)) {
+         if (((Integer) element.get(0)).intValue() == ((Integer) elementAux.get(0)).intValue()) {
             _coleccion.remove(i);
             i = tamCollection;
          }

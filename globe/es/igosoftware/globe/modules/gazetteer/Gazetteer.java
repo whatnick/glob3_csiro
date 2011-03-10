@@ -91,7 +91,14 @@ public class Gazetteer
       try {
          panels.add(new GPair<String, Component>("Go to", new GazetteerPanel(application.getWorldWindowGLCanvas(), null)));
       }
-      catch (final Exception e) {
+      catch (final ClassNotFoundException e) {
+         e.printStackTrace();
+      }
+      catch (final IllegalAccessException e) {
+         e.printStackTrace();
+      }
+      catch (final InstantiationException e) {
+         e.printStackTrace();
       }
 
       return panels;

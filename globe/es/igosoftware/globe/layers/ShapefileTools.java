@@ -37,6 +37,7 @@
 package es.igosoftware.globe.layers;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 
@@ -89,8 +90,8 @@ public class ShapefileTools {
          return new GGlobeVectorLayer(file.getName(), features, fields, null);
 
       }
-
-      catch (final Exception e) {
+      catch (final IOException e) {
+         e.printStackTrace();
          return null;
       }
 

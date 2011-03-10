@@ -64,7 +64,7 @@ public class ESRIAsciiFileTools {
       double dResolution;
       double dNoData;
       double dX, dY;
-      String sToken = new String();
+      String sToken = "";
       final BufferedReader fin = new BufferedReader(new FileReader(file));
 
       s = fin.readLine();

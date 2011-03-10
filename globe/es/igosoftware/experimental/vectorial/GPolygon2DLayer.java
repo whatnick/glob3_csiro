@@ -164,9 +164,7 @@ public class GPolygon2DLayer
 
    private static class RendererFutureTask
             extends
-               FutureTask<BufferedImage>
-            implements
-               Comparable<RendererFutureTask> {
+               FutureTask<BufferedImage> {
 
       private final double          _priority;
       //      private final Sector    _tileSector;
@@ -188,8 +186,7 @@ public class GPolygon2DLayer
                try {
                   return ImageIO.read(file);
                }
-               catch (final IOException e) {
-               }
+               catch (final IOException e) {}
 
                return null;
             }
@@ -234,12 +231,6 @@ public class GPolygon2DLayer
          //         _tileSector = key._tileSector;
          _tileBounds = key._tileBounds;
          _layer = key._layer;
-      }
-
-
-      @Override
-      public int compareTo(final RendererFutureTask that) {
-         return Double.compare(that._priority, _priority);
       }
 
    }
@@ -355,7 +346,9 @@ public class GPolygon2DLayer
             //            final ByteBuffer buffer = DDSCompressor.compressImage(image);
             //            WWIO.saveBuffer(buffer, tempFile);
 
-            tempFile.renameTo(new File(RENDERING_CACHE_DIRECTORY, fileName));
+            if (!tempFile.renameTo(new File(RENDERING_CACHE_DIRECTORY, fileName))) {
+               throw new RuntimeException("Can't rename " + tempFile + " to " + fileName);
+            }
          }
       }
       catch (final IOException e) {
@@ -372,7 +365,9 @@ public class GPolygon2DLayer
       //         e.printStackTrace();
       //      }
       if (!RENDERING_CACHE_DIRECTORY.exists()) {
-         RENDERING_CACHE_DIRECTORY.mkdirs();
+         if (!RENDERING_CACHE_DIRECTORY.mkdirs()) {
+            throw new RuntimeException("Can't create cache directory: " + RENDERING_CACHE_DIRECTORY_NAME);
+         }
       }
 
 
@@ -547,10 +542,8 @@ public class GPolygon2DLayer
                   setImageToSurfaceImage(renderedImageFuture.get());
                   _ancestorContribution = null;
                }
-               catch (final InterruptedException e) {
-               }
-               catch (final ExecutionException e) {
-               }
+               catch (final InterruptedException e) {}
+               catch (final ExecutionException e) {}
             }
          }
 
@@ -616,8 +609,7 @@ public class GPolygon2DLayer
             final BufferedImage subimage = ancestorImage.getSubimage(x, y, width, height);
             return markImageAsWorkInProgress(subimage);
          }
-         catch (final RasterFormatException e) {
-         }
+         catch (final RasterFormatException e) {}
 
 
          return null;
@@ -672,10 +664,8 @@ public class GPolygon2DLayer
                try {
                   return new GPair<Tile, BufferedImage>(ancestor, futureImage.get());
                }
-               catch (final InterruptedException e) {
-               }
-               catch (final ExecutionException e) {
-               }
+               catch (final InterruptedException e) {}
+               catch (final ExecutionException e) {}
             }
 
             ancestor = ancestor._parent;

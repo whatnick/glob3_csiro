@@ -32,20 +32,20 @@ public class GTablaIgoCusto
    /**
 	 * 
 	 */
-   private static final long serialVersionUID = 2644357468902374987L;
+   private static final long    serialVersionUID = 2644357468902374987L;
 
-   private static final int  stylesColumn     = 3;
+   private static final int     stylesColumn     = 3;
 
-   final GLogger             logger           = GLogger.instance();
+   private final static GLogger logger           = GLogger.instance();
 
 
-   private DefaultTableModel model            = null;
-   private JTable            table            = null;
-   private JScrollPane       jsContenedor     = null;
-   private GDatosForTabla    _datos           = null;
+   private DefaultTableModel    model            = null;
+   private JTable               table            = null;
+   private JScrollPane          jsContenedor     = null;
+   private GDatosForTabla       _datos           = null;
 
-   private TableColumn       _styleColumn     = null;
-   private JComboBox         _stylesComboBox  = null;
+   private TableColumn          _styleColumn     = null;
+   private JComboBox            _stylesComboBox  = null;
 
 
    public GTablaIgoCusto(final GDatosForTabla datos) {
@@ -290,7 +290,7 @@ public class GTablaIgoCusto
    }
 
 
-   private class WMSTableModel
+   private static class WMSTableModel
             extends
                DefaultTableModel {
       /**
