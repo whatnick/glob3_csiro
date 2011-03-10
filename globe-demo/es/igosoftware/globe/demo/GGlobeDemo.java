@@ -230,7 +230,7 @@ public class GGlobeDemo
             mesh.setMaterial(material);
          }
          else {
-            if (material.getTextureFileName() != null) {
+            if (material.hasTexture()) {
                material._diffuseColor = Color.WHITE;
             }
          }

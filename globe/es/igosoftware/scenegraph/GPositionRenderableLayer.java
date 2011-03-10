@@ -328,13 +328,6 @@ public class GPositionRenderableLayer
             material._diffuseColor = Color.WHITE;
             mesh.setMaterial(material);
          }
-         else {
-            if (material.getTextureFileName() != null) {
-               material._diffuseColor = Color.WHITE;
-            }
-         }
-
-         material._emissiveColor = new Color(0.2f, 0.2f, 0.2f);
       }
    }
 

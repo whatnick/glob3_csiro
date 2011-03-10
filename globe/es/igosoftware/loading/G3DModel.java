@@ -775,6 +775,10 @@ public class G3DModel {
          return false;
       }
 
+      if (!material.hasTexture()) {
+         return false;
+      }
+
       final GFileName textureName = material.getTextureFileName();
       if (textureName == null) {
          return false;

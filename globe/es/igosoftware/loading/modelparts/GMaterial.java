@@ -68,6 +68,9 @@ public class GMaterial
    public boolean            _mipmap          = true;
 
 
+   private boolean           _hasTexture      = false;
+
+
    public GMaterial(final String name) {
       _name = name;
    }
@@ -89,6 +92,10 @@ public class GMaterial
    public void setTextureFileName(final GFileName textureFileName) {
       if (GUtils.equals(_textureFileName, textureFileName)) {
          return;
+      }
+
+      if (textureFileName != null) {
+         setHasTexture(true);
       }
       //      System.out.println("\n======> changed texture from " + _textureFileName + " to " + textureFileName + " (" + this + ")");
       _textureFileName = textureFileName;
@@ -178,6 +185,21 @@ public class GMaterial
          return false;
       }
       return true;
+   }
+
+
+   public boolean hasTexture() {
+      return _hasTexture;
+   }
+
+
+   public void setHasTexture(final boolean hasTexture) {
+      if (hasTexture == _hasTexture) {
+         return;
+      }
+
+      _hasTexture = hasTexture;
+      changed();
    }
 
 

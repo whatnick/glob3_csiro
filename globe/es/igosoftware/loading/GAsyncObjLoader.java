@@ -453,11 +453,11 @@ public class GAsyncObjLoader {
 
       for (final GMaterial material : model.getMaterials()) {
          if ((material != null) && material._name.equals(s[1])) {
-            if (material.getTextureFileName() == null) {
-               mesh._hasTexCoords = false;
+            if (material.hasTexture()) {
+               mesh._hasTexCoords = true;
             }
             else {
-               mesh._hasTexCoords = true;
+               mesh._hasTexCoords = false;
             }
             mesh.setMaterial(material);
             break;
@@ -528,6 +528,7 @@ public class GAsyncObjLoader {
 
                final GMaterial finalMaterial = material;
 
+               finalMaterial.setHasTexture(true);
                _loader.load(textureFileName, -1, false, 1, new ILoader.IHandler() {
                   @Override
                   public void loaded(final File file,
