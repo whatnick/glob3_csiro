@@ -57,6 +57,7 @@ import es.igosoftware.euclid.mutability.GMutableAbstract;
 import es.igosoftware.euclid.mutability.IMutable;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.loading.modelparts.GFace;
 import es.igosoftware.loading.modelparts.GMaterial;
 import es.igosoftware.loading.modelparts.GModelData;
@@ -487,12 +488,12 @@ public class G3DModel {
          return null;
       }
 
-      final String textureFileName = material.getTextureFileName();
+      final GFileName textureFileName = material.getTextureFileName();
       if (textureFileName == null) {
          return null;
       }
 
-      final File textureFile = new File(textureFileName);
+      final File textureFile = textureFileName.asFile();
       if (textureFile.exists()) {
          try {
             return textureFile.toURI().toURL();
@@ -502,33 +503,43 @@ public class G3DModel {
          }
       }
 
+      final int __________TODO__________DIEGO_AT_WORK;
 
-      final String modelName = mesh.getModel().getName();
+      //      final String modelName = mesh.getModel().getName();
+      //
+      //      final String subFileName;
+      //      final int slashIndex = modelName.lastIndexOf('/');
+      //      if (slashIndex == -1) {
+      //         final int backSlashIndex = modelName.lastIndexOf('\\');
+      //         if (backSlashIndex == -1) {
+      //            subFileName = "";
+      //         }
+      //         else {
+      //            subFileName = modelName.substring(0, backSlashIndex + 1);
+      //         }
+      //      }
+      //      else {
+      //         subFileName = modelName.substring(0, slashIndex + 1);
+      //      }
 
-      final String subFileName;
-      final int slashIndex = modelName.lastIndexOf('/');
-      if (slashIndex == -1) {
-         final int backSlashIndex = modelName.lastIndexOf('\\');
-         if (backSlashIndex == -1) {
-            subFileName = "";
+
+      final GFileName textureFullFileName = GFileName.fromParts(mesh.getModel().getFileName().getParent(), textureFileName);
+
+      final File textureFullFile = textureFullFileName.asFile();
+      if (textureFullFile.exists()) {
+         try {
+            return textureFullFile.toURI().toURL();
          }
-         else {
-            subFileName = modelName.substring(0, backSlashIndex + 1);
+         catch (final MalformedURLException e) {
+            e.printStackTrace();
          }
       }
-      else {
-         subFileName = modelName.substring(0, slashIndex + 1);
-      }
 
-
-      final String filename = subFileName + textureFileName;
       try {
-         //  return GResourceRetriever.getResourceAsUrl(filename);
-         return GResourceRetriever.getResourceAsUrl(filename);
-
+         return GResourceRetriever.getResourceAsUrl(textureFullFileName);
       }
       catch (final IOException e) {
-         logger.severe("Load of texture " + filename + " failed", e);
+         logger.severe("Load of texture " + textureFullFileName + " failed", e);
       }
 
       return null;
@@ -783,7 +794,7 @@ public class G3DModel {
          return false;
       }
 
-      final String textureName = material.getTextureFileName();
+      final GFileName textureName = material.getTextureFileName();
       if (textureName == null) {
          return false;
       }

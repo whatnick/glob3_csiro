@@ -90,7 +90,6 @@ public class GAsyncObjLoader {
 
 
    private GModelMesh           _currentMesh    = null;
-   private GModelData           _model          = null;
    private final ILoader        _loader;
 
 
@@ -103,7 +102,6 @@ public class GAsyncObjLoader {
                     final GAsyncObjLoader.IHandler handler,
                     final boolean verbose) {
 
-      final GFileName objDirectory = fileName.getParent();
 
       _loader.load(fileName, -1, false, Integer.MAX_VALUE, new ILoader.IHandler() {
          @Override
@@ -115,7 +113,7 @@ public class GAsyncObjLoader {
             }
 
             try {
-               final GModelData data = processObjFile(objDirectory, objFile, verbose);
+               final GModelData data = processObjFile(fileName, objFile, verbose);
 
                handler.loaded(data);
             }
@@ -134,18 +132,20 @@ public class GAsyncObjLoader {
    }
 
 
-   private GModelData processObjFile(final GFileName objDirectory,
+   private GModelData processObjFile(final GFileName objFileName,
                                      final File objFile,
                                      final boolean verbose) throws IOException {
       final long start = System.currentTimeMillis();
 
-      _model = new GModelData(objFile.getPath());
+      final GFileName objDirectory = objFileName.getParent();
+
+      final GModelData model = new GModelData(objFileName);
       _currentMesh = null;
 
-      final InputStream stream = GResourceRetriever.getResourceAsInputStream(_model.getName());
-      if (stream == null) {
-         throw new IOException("Stream is null");
-      }
+      final InputStream stream = new FileInputStream(objFile);
+      //      if (stream == null) {
+      //         throw new IOException("Stream is null");
+      //      }
 
       String currentName = null;
       BufferedReader br = null;
@@ -188,7 +188,7 @@ public class GAsyncObjLoader {
             if (line.startsWith("v ")) {
                //System.out.println("Reading Vertex");
                final String dataString = line.substring(1);
-               _model.addVertex(parsePoint(dataString));
+               model.addVertex(parsePoint(dataString));
                continue;
             }
 
@@ -197,7 +197,7 @@ public class GAsyncObjLoader {
             if (line.startsWith(TEXTURE_DATA)) {
                //System.out.println("Reading TexCoord");
                final String dataString = line.substring(2);
-               _model.addTexCoord(parseUV(dataString));
+               model.addTexCoord(parseUV(dataString));
                continue;
             }
 
@@ -206,7 +206,7 @@ public class GAsyncObjLoader {
             if (line.startsWith("vn ")) {
                //getNormals(WaveFrontLoader.NORMAL_DATA, line, br);
                final String dataString = line.substring(2);
-               _model.addNormal(parseNormal(dataString));
+               model.addNormal(parseNormal(dataString));
                continue;
             }
 
@@ -222,16 +222,16 @@ public class GAsyncObjLoader {
             }
 
             if (line.startsWith("mtllib ")) {
-               processMaterialLib(objDirectory, line);
+               processMaterialLib(model, objDirectory, line);
                continue;
             }
 
             if (line.startsWith("usemtl ")) {
                if (_currentMesh != null) {
-                  _model.addmesh(_currentMesh);
+                  model.addmesh(_currentMesh);
                }
                final GModelMesh newMesh = new GModelMesh(currentName);
-               processMaterialType(line, newMesh);
+               processMaterialType(model, line, newMesh);
                _currentMesh = newMesh;
                continue;
             }
@@ -252,7 +252,7 @@ public class GAsyncObjLoader {
       finally {
          GIOUtils.gentlyClose(br);
       }
-      _model.addmesh(_currentMesh);
+      model.addmesh(_currentMesh);
 
 
       //model.setCenterPoint(center);
@@ -261,20 +261,22 @@ public class GAsyncObjLoader {
          final long elapsed = System.currentTimeMillis() - start;
 
          logger.info("------------------------------------------------------------------------------------");
-         logger.info("Model \"" + objFile.getPath() + "\" loaded in " + GStringUtils.getTimeMessage(elapsed));
+         logger.info("Model \"" + objFile + "\" loaded in " + GStringUtils.getTimeMessage(elapsed));
 
-         _model.showStatistics();
+         model.showStatistics();
 
          logger.info("------------------------------------------------------------------------------------");
       }
 
-      return _model;
+      return model;
    }
 
 
-   private File loadMtlFileToDisk(final GFileName mtlPath) {
-      final GHolder<Boolean> completed = new GHolder<Boolean>(false);
-      final GHolder<File> mtlFileHolder = new GHolder<File>(null);
+   private File loadMTLFile(final GFileName mtlPath) throws IOException {
+      final GHolder<Boolean> done = new GHolder<Boolean>(false);
+      final GHolder<File> result = new GHolder<File>(null);
+      final GHolder<IOException> exception = new GHolder<IOException>(null);
+
       _loader.load(mtlPath, -1, false, Integer.MAX_VALUE, new ILoader.IHandler() {
          @Override
          public void loaded(final File file,
@@ -285,8 +287,8 @@ public class GAsyncObjLoader {
             }
 
             try {
-               mtlFileHolder.set(file);
-               completed.set(true);
+               result.set(file);
+               done.set(true);
             }
             catch (final Exception e) {
                e.printStackTrace();
@@ -297,28 +299,24 @@ public class GAsyncObjLoader {
 
          @Override
          public void loadError(final IOException e) {
-            e.printStackTrace();
-            completed.set(true);
+            exception.set(e);
+            done.set(true);
          }
       });
 
-      while (!completed.get()) {
+      while (!done.get()) {
          GUtils.delay(10);
       }
 
-      if (mtlFileHolder.isEmpty()) {
-         try {
-            throw new IOException("Can't read " + mtlPath);
-         }
-         catch (final IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-         }
+      if (exception.hasValue()) {
+         throw exception.get();
       }
 
+      if (result.isEmpty()) {
+         throw new IOException("Can't read " + mtlPath);
+      }
 
-      return mtlFileHolder.get();
-
+      return result.get();
    }
 
 
@@ -413,16 +411,16 @@ public class GAsyncObjLoader {
    }
 
 
-   private void processMaterialLib(final GFileName objDirectory,
+   private void processMaterialLib(final GModelData model,
+                                   final GFileName objDirectory,
                                    final String mtlData) throws IOException {
       final String s[] = mtlData.split("\\s+");
 
-      final File mtlFile = loadMtlFileToDisk(GFileName.fromParentAndParts(objDirectory, s[1]));
+      final File mtlFile = loadMTLFile(GFileName.fromParentAndParts(objDirectory, s[1]));
 
       InputStream stream = null;
       try {
          try {
-
             stream = GResourceRetriever.getResourceAsInputStream(mtlFile.getPath());
          }
          catch (final IOException ex) {
@@ -438,7 +436,7 @@ public class GAsyncObjLoader {
                return;
             }
          }
-         loadMaterialFile(objDirectory, stream);
+         loadMaterialFile(model, objDirectory, stream);
       }
       finally {
          GIOUtils.gentlyClose(stream);
@@ -446,13 +444,14 @@ public class GAsyncObjLoader {
    }
 
 
-   private void processMaterialType(final String line,
+   private void processMaterialType(final GModelData model,
+                                    final String line,
                                     final GModelMesh mesh) {
       final String s[] = line.split("\\s+");
 
       mesh._hasTexCoords = false;
 
-      for (final GMaterial material : _model.getMaterials()) {
+      for (final GMaterial material : model.getMaterials()) {
          if ((material != null) && material._name.equals(s[1])) {
             if (material.getTextureFileName() == null) {
                mesh._hasTexCoords = false;
@@ -467,7 +466,8 @@ public class GAsyncObjLoader {
    }
 
 
-   private GMaterial loadMaterialFile(final GFileName objDirectory,
+   private GMaterial loadMaterialFile(final GModelData model,
+                                      final GFileName objDirectory,
                                       final InputStream stream) throws IOException {
       GMaterial material = null;
 
@@ -481,7 +481,7 @@ public class GAsyncObjLoader {
 
          if (parts[0].equals("newmtl")) {
             if (material != null) {
-               _model.addMaterial(material);
+               model.addMaterial(material);
             }
 
             material = new GMaterial(parts[1]);
@@ -537,7 +537,7 @@ public class GAsyncObjLoader {
                         return;
                      }
 
-                     finalMaterial.setTextureFileName(file.getPath());
+                     finalMaterial.setTextureFileName(GFileName.fromFile(file));
                   }
 
 
@@ -561,7 +561,7 @@ public class GAsyncObjLoader {
 
 
       br.close();
-      _model.addMaterial(material);
+      model.addMaterial(material);
 
       return material;
    }

@@ -36,14 +36,24 @@
 
 package es.igosoftware.loading;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import es.igosoftware.io.GFileName;
+
 
 public class GResourceRetriever {
+   public static URL getResourceAsUrl(final GFileName fileName) throws MalformedURLException {
+      if (fileName.isAbsolute()) {
+         return new URL("file://" + File.separatorChar + fileName.buildPath());
+      }
+
+      return new URL("file://." + File.separatorChar + fileName.buildPath());
+   }
 
 
    public static URL getResourceAsUrl(final String filename) throws IOException {
@@ -83,5 +93,6 @@ public class GResourceRetriever {
       }
       return result.openStream();
    }
+
 
 }
