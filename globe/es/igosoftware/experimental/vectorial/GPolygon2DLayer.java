@@ -64,7 +64,7 @@ public class GPolygon2DLayer
 
    private static final int    TIMEOUT_FOR_CACHED_RESULTS     = 200;
 
-   private static final String RENDERING_CACHE_DIRECTORY_NAME = "rendering-cache";
+   private static final String RENDERING_CACHE_DIRECTORY_NAME = ".rendering-cache";
    private static final File   RENDERING_CACHE_DIRECTORY      = new File(RENDERING_CACHE_DIRECTORY_NAME);
 
 
