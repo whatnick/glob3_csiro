@@ -193,9 +193,10 @@ public class GGlobeDemo
       //               Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0)));
 
       try {
-         final ILoader loader = new GFileLoader(GFileName.fromParts("PANOS"));
-         panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", loader, GFileName.fromParts("Barrancos"),
-                  500, new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0)));
+         final ILoader loader = new GFileLoader(GFileName.relativeFromParts("PANOS"));
+         panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", loader,
+                  GFileName.relativeFromParts("Barrancos"), 500, new Position(Angle.fromDegrees(39.4737),
+                           Angle.fromDegrees(-6.3910), 0)));
 
          //panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", "data/panoramics/barruecos", 500,
          //         new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0)));
@@ -247,7 +248,7 @@ public class GGlobeDemo
       final double homeElevation = 2000;
       final GHomePositionModule homePositionModule = new GHomePositionModule(homePosition, heading, pitch, homeElevation, true);
 
-      final IPointsCloudLoader loader = new GPointsCloudFileLoader(GFileName.fromParts("data", "pointsclouds"));
+      final IPointsCloudLoader loader = new GPointsCloudFileLoader(GFileName.relativeFromParts("data", "pointsclouds"));
       final GPointsCloudModule pointsCloudModule = new GPointsCloudModule(loader);
 
       //      GPointsCloudModule pointsCloudModule = null;
@@ -270,7 +271,7 @@ public class GGlobeDemo
    private void loadCaceres3DModel(final GPositionRenderableLayer layer) {
 
       ILoader loader = null;
-      //      loader = new GFileLoader(".");
+      //      loader = new GFileLoader(GFileName.CURRENT_DIRECTORY);
 
       final boolean verbose = true;
       try {
@@ -286,7 +287,7 @@ public class GGlobeDemo
       if (loader != null) {
          final GAsyncObjLoader objLoader = new GAsyncObjLoader(loader);
 
-         objLoader.load(GFileName.fromParts("data", "models", "caceres3d.obj"), new GAsyncObjLoader.IHandler() {
+         objLoader.load(GFileName.relativeFromParts("data", "models", "caceres3d.obj"), new GAsyncObjLoader.IHandler() {
             @Override
             public void loadError(final IOException e) {
                logSevere(e);

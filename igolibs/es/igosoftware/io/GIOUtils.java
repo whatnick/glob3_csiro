@@ -247,15 +247,13 @@ public class GIOUtils {
             try {
                from.close();
             }
-            catch (final IOException e) {
-            }
+            catch (final IOException e) {}
          }
          if (to != null) {
             try {
                to.close();
             }
-            catch (final IOException e) {
-            }
+            catch (final IOException e) {}
          }
       }
    }
@@ -311,8 +309,7 @@ public class GIOUtils {
       try {
          socket.close();
       }
-      catch (final IOException e) {
-      }
+      catch (final IOException e) {}
    }
 
 
@@ -324,8 +321,7 @@ public class GIOUtils {
       try {
          socket.close();
       }
-      catch (final IOException e) {
-      }
+      catch (final IOException e) {}
    }
 
 
@@ -337,8 +333,7 @@ public class GIOUtils {
       try {
          closeable.close();
       }
-      catch (final IOException e) {
-      }
+      catch (final IOException e) {}
 
    }
 
@@ -496,28 +491,7 @@ public class GIOUtils {
    }
 
 
-   public static String buildPath(final String... parts) {
-      GAssert.notEmpty(parts, "parts");
-
-      final StringBuilder buffer = new StringBuilder();
-
-      for (final String part : parts) {
-         if (part == null) {
-            continue;
-         }
-
-         if (buffer.length() > 0) {
-            buffer.append(File.separator);
-         }
-
-         buffer.append(part.replaceAll(ILLEGAL_FILE_NAME_CHARACTERS, "_"));
-      }
-
-      return buffer.toString();
-   }
-
-
-   public static String buildPath(final char separator,
+   public static String buildPath(final boolean isAbsolute,
                                   final String... parts) {
       GAssert.notEmpty(parts, "parts");
 
@@ -528,7 +502,30 @@ public class GIOUtils {
             continue;
          }
 
-         if (buffer.length() > 0) {
+         if (isAbsolute || (buffer.length() > 0)) {
+            buffer.append(File.separator);
+         }
+
+         buffer.append(part.replaceAll(ILLEGAL_FILE_NAME_CHARACTERS, "_"));
+      }
+
+      return buffer.toString();
+   }
+
+
+   public static String buildPath(final boolean isAbsolute,
+                                  final char separator,
+                                  final String... parts) {
+      GAssert.notEmpty(parts, "parts");
+
+      final StringBuilder buffer = new StringBuilder();
+
+      for (final String part : parts) {
+         if (part == null) {
+            continue;
+         }
+
+         if (isAbsolute || (buffer.length() > 0)) {
             buffer.append(separator);
          }
 

@@ -2,18 +2,73 @@
 
 package es.igosoftware.io;
 
+import java.io.File;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GCollections;
 
 
-public class GFileName {
-   public static final GFileName CURRENT_DIRECTORY = new GFileName(".");
+public class GFileName
+         implements
+            Serializable {
 
 
-   public static GFileName fromParts(final String... parts) {
-      return new GFileName(parts);
+   private static final long     serialVersionUID  = 1L;
+
+
+   public static final GFileName CURRENT_DIRECTORY = new GFileName(false, ".");
+
+
+   public static GFileName fromFile(final File file) {
+      GAssert.notNull(file, "file");
+
+      final String separatorRegExp;
+      if (File.separatorChar == '/') {
+         separatorRegExp = "/";
+      }
+      else if (File.separatorChar == '\\') {
+         separatorRegExp = "\\\\";
+      }
+      else {
+         throw new RuntimeException("File.separator not supported: " + File.separatorChar);
+      }
+
+      final String[] parts = file.getPath().split(separatorRegExp);
+      return new GFileName(file.isAbsolute(), parts);
+   }
+
+
+   public static GFileName relativeFromParts(final String... parts) {
+      return new GFileName(false, parts);
+   }
+
+
+   public static GFileName absoluteFromParts(final String... parts) {
+      return new GFileName(true, parts);
+   }
+
+
+   public static GFileName fromParts(final GFileName... parts) {
+      GAssert.notEmpty(parts, "parts");
+
+      for (int i = 1; i < parts.length; i++) {
+         if (parts[i]._isAbsolute) {
+            throw new RuntimeException("Only the first part can be absolute");
+         }
+      }
+
+      final ArrayList<String> allParts = new ArrayList<String>();
+
+      for (final GFileName fileNamePart : parts) {
+         for (final String part : fileNamePart._parts) {
+            allParts.add(part);
+         }
+      }
+
+      return new GFileName(parts[0]._isAbsolute, allParts.toArray(new String[0]));
    }
 
 
@@ -23,14 +78,17 @@ public class GFileName {
    }
 
 
+   private final boolean  _isAbsolute;
    private final String[] _parts;
 
 
-   private GFileName(final String... parts) {
+   private GFileName(final boolean isAbsolute,
+                     final String... parts) {
       GAssert.notEmpty(parts, "parts");
 
       validateParts(parts);
 
+      _isAbsolute = isAbsolute;
       _parts = Arrays.copyOf(parts, parts.length);
    }
 
@@ -43,6 +101,7 @@ public class GFileName {
       validateParts(parts);
 
       _parts = GCollections.concatenate(parent._parts, parts);
+      _isAbsolute = parent._isAbsolute;
    }
 
 
@@ -57,12 +116,12 @@ public class GFileName {
 
 
    public String buildPath() {
-      return GIOUtils.buildPath(_parts);
+      return GIOUtils.buildPath(_isAbsolute, _parts);
    }
 
 
    public String buildPath(final char separator) {
-      return GIOUtils.buildPath(separator, _parts);
+      return GIOUtils.buildPath(_isAbsolute, separator, _parts);
    }
 
 
@@ -96,7 +155,7 @@ public class GFileName {
 
    @Override
    public String toString() {
-      return "GFileName [" + buildPath() + "]";
+      return "GFileName [" + buildPath() + (_isAbsolute ? "  ABSOLUTE " : "") + "]";
    }
 
 
@@ -105,28 +164,48 @@ public class GFileName {
          return CURRENT_DIRECTORY;
       }
 
-      return new GFileName(Arrays.copyOf(_parts, _parts.length - 1));
+      return new GFileName(_isAbsolute, Arrays.copyOf(_parts, _parts.length - 1));
    }
 
 
-   //   public static void main(final String[] args) {
-   //      System.out.println("GFileName 0.1");
-   //      System.out.println("-------------\n");
-   //
-   //      final GFileName fileName1 = new GFileName("dir1", "dir2", "dir3");
-   //      System.out.println(fileName1);
-   //      System.out.println(fileName1.getParent());
-   //
-   //      final GFileName fileName2 = new GFileName(fileName1, "fileName.ext");
-   //      System.out.println(fileName2);
-   //      System.out.println(fileName2.getParent());
-   //
-   //      final GFileName fileName3 = new GFileName("fileName.ext");
-   //      System.out.println(fileName3);
-   //      System.out.println(fileName3.getParent());
-   //
-   //      final String parts[] = "dir1/dir2\\filename.ext".split("[/\\\\]");
-   //      System.out.println(Arrays.toString(parts));
-   //   }
+   public File asFile() {
+      return new File(buildPath());
+   }
+
+
+   public boolean isAbsolute() {
+      return _isAbsolute;
+   }
+
+
+   public static void main(final String[] args) {
+      System.out.println("GFileName 0.1");
+      System.out.println("-------------\n");
+
+
+      final GFileName fromParts1 = GFileName.relativeFromParts("dir1", "dir2", "dir3");
+      showFileNameInfo(fromParts1);
+
+      final GFileName fromParentAndParts = GFileName.fromParentAndParts(fromParts1, "fileName.ext");
+      showFileNameInfo(fromParentAndParts);
+
+      showFileNameInfo(GFileName.fromParts(fromParts1, fromParentAndParts));
+
+      showFileNameInfo(GFileName.relativeFromParts("fileName.ext"));
+
+      showFileNameInfo(GFileName.fromFile(new File("/pepe")));
+
+
+      final String parts[] = "dir1/dir2\\filename.ext".split("[/\\\\]");
+      System.out.println(Arrays.toString(parts));
+   }
+
+
+   private static void showFileNameInfo(final GFileName fileName) {
+      System.out.println(fileName);
+      System.out.println("  Parent: " + fileName.getParent());
+      System.out.println();
+   }
+
 
 }

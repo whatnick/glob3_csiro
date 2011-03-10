@@ -458,6 +458,10 @@ public class GHttpLoader
       GAssert.notNull(fileName, "fileName");
       GAssert.notNull(handler, "handler");
 
+      if (fileName.isAbsolute()) {
+         throw new RuntimeException("Absolutes fileNames are not supported");
+      }
+
       if (_debug) {
          LOGGER.info("  -> DEBUG: load(" + fileName + ", " + bytesToLoad + ", " + priority + ")");
       }

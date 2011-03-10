@@ -257,7 +257,7 @@ public class GPlanarPanoramicViewer {
 
 
       private GFileName getTileFileName() {
-         return GFileName.fromParts(Integer.toString(_zoomLevel.getLevel()), "tile-" + _x + "-" + _y + ".jpg");
+         return GFileName.relativeFromParts(Integer.toString(_zoomLevel.getLevel()), "tile-" + _x + "-" + _y + ".jpg");
       }
 
 
@@ -358,7 +358,7 @@ public class GPlanarPanoramicViewer {
       final GHolder<List<GPlanarPanoramicZoomLevel>> resultHolder = new GHolder<List<GPlanarPanoramicZoomLevel>>(null);
 
 
-      _loadID = _loader.load(GFileName.fromParts("info.txt"), -1, false, Integer.MAX_VALUE, new ILoader.IHandler() {
+      _loadID = _loader.load(GFileName.relativeFromParts("info.txt"), -1, false, Integer.MAX_VALUE, new ILoader.IHandler() {
          @Override
          public void loaded(final File file,
                             final long bytesLoaded,
