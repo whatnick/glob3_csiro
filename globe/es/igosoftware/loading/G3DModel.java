@@ -503,25 +503,6 @@ public class G3DModel {
          }
       }
 
-      final int __________TODO__________DIEGO_AT_WORK;
-
-      //      final String modelName = mesh.getModel().getName();
-      //
-      //      final String subFileName;
-      //      final int slashIndex = modelName.lastIndexOf('/');
-      //      if (slashIndex == -1) {
-      //         final int backSlashIndex = modelName.lastIndexOf('\\');
-      //         if (backSlashIndex == -1) {
-      //            subFileName = "";
-      //         }
-      //         else {
-      //            subFileName = modelName.substring(0, backSlashIndex + 1);
-      //         }
-      //      }
-      //      else {
-      //         subFileName = modelName.substring(0, slashIndex + 1);
-      //      }
-
 
       final GFileName textureFullFileName = GFileName.fromParts(mesh.getModel().getFileName().getParent(), textureFileName);
 
