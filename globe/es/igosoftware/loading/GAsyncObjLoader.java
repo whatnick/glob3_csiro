@@ -94,7 +94,6 @@ public class GAsyncObjLoader {
    private final ILoader        _loader;
 
 
-   //the ObjLoader takes as argument any type of loader (fileLoader, HttpLoader, JarLoader). Construct it with the base-directory containing the .obj file
    public GAsyncObjLoader(final ILoader loader) {
       _loader = loader;
    }
@@ -273,62 +272,10 @@ public class GAsyncObjLoader {
    }
 
 
-   //   private File loadTextureFileToDisk(final GFileName texPath) {
-   //      final GHolder<Boolean> completed = new GHolder<Boolean>(false);
-   //      final GHolder<File> texFileHolder = new GHolder<File>(null);
-   //      _loader.load(texPath, -1, false, Integer.MAX_VALUE, new ILoader.IHandler() {
-   //
-   //         @Override
-   //         public void loaded(final File file,
-   //                            final long bytesLoaded,
-   //                            final boolean completeLoaded) {
-   //            if (!completeLoaded) {
-   //               return;
-   //            }
-   //
-   //            try {
-   //               texFileHolder.set(file);
-   //               completed.set(true);
-   //            }
-   //            catch (final Exception e) {
-   //               e.printStackTrace();
-   //               //LOGGER.severe("error loading " + file, e);
-   //            }
-   //         }
-   //
-   //
-   //         @Override
-   //         public void loadError(final IOException e) {
-   //            e.printStackTrace();
-   //            completed.set(true);
-   //         }
-   //      });
-   //
-   //      while (!completed.get()) {
-   //         GUtils.delay(10);
-   //      }
-   //
-   //      if (texFileHolder.isEmpty()) {
-   //         try {
-   //            throw new IOException("Can't read " + texPath);
-   //         }
-   //         catch (final IOException e1) {
-   //            // TODO Auto-generated catch block
-   //            e1.printStackTrace();
-   //         }
-   //      }
-   //
-   //
-   //      return texFileHolder.get();
-   //
-   //   }
-
-
    private File loadMtlFileToDisk(final GFileName mtlPath) {
       final GHolder<Boolean> completed = new GHolder<Boolean>(false);
       final GHolder<File> mtlFileHolder = new GHolder<File>(null);
       _loader.load(mtlPath, -1, false, Integer.MAX_VALUE, new ILoader.IHandler() {
-
          @Override
          public void loaded(final File file,
                             final long bytesLoaded,
@@ -582,7 +529,6 @@ public class GAsyncObjLoader {
                final GMaterial finalMaterial = material;
 
                _loader.load(textureFileName, -1, false, 1, new ILoader.IHandler() {
-
                   @Override
                   public void loaded(final File file,
                                      final long bytesLoaded,
