@@ -41,6 +41,7 @@ import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
+import es.igosoftware.io.GIOUtils;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.avlist.AVList;
 import gov.nasa.worldwind.avlist.AVListImpl;
@@ -126,7 +127,7 @@ public class GWMSLayer
       final AVList initParams = new AVListImpl();
 
       //final String serviceTitle = caps.getServiceInformation().getServiceTitle();
-      final String serviceName = caps.getServiceInformation().getServiceName();
+      final String serviceName = GIOUtils.buildPath(true, caps.getServiceInformation().getServiceName());
       //final String layerName = caps.getNamedLayers().get(0).getName();
       //final String dataSetName = serviceName + ": " + caps.getVersion();
       final String dataSetName = serviceName + "_" + caps.getVersion();
