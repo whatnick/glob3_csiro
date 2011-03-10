@@ -963,8 +963,8 @@ public class GPlanarPanoramicViewer {
       final URL url = new URL("http://213.165.81.201:8080/gigapixel/PlazaSanJorge-Caceres-Espana/");
 
 
-      final int workersCount = GConcurrent.AVAILABLE_PROCESSORS * 2;
-      final ILoader loader = new GHttpLoader(url, workersCount, true, false);
+      final int workersCount = GConcurrent.AVAILABLE_PROCESSORS;
+      final ILoader loader = new GHttpLoader(url, workersCount, true, false, true);
 
 
       final GPlanarPanoramicViewer viewer = new GPlanarPanoramicViewer("Sample Gigapixel Picture", loader, false);

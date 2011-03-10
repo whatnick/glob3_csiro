@@ -3,4 +3,6 @@
 .metadata
 *~
 rendering-cache
+.rendering-cache
 http-cache
+.http-cache

@@ -271,8 +271,13 @@ public class GGlobeDemo
 
       ILoader loader = null;
       //      loader = new GFileLoader(".");
+
+      final boolean verbose = true;
       try {
-         loader = new GHttpLoader(new URL("http://localhost/globe-demo/"), GConcurrent.AVAILABLE_PROCESSORS, true, true, true);
+         final boolean debug = false;
+         final boolean simulateSlowConnection = false;
+         loader = new GHttpLoader(new URL("http://localhost/globe-demo/"), GConcurrent.AVAILABLE_PROCESSORS, verbose, debug,
+                  simulateSlowConnection);
       }
       catch (final MalformedURLException e1) {
          e1.printStackTrace();
@@ -306,7 +311,7 @@ public class GGlobeDemo
                layer.addNode(caceres3DRootNode, new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710), 24.7),
                         GElevationAnchor.SEA_LEVEL);
             }
-         }, true);
+         }, verbose);
       }
    }
 
