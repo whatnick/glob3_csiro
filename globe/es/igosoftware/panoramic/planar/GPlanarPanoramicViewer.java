@@ -95,6 +95,7 @@ import es.igosoftware.io.GHttpLoader;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.io.ILoader;
 import es.igosoftware.io.ILoader.IHandler;
+import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GHolder;
 import es.igosoftware.util.GLogger;
 import es.igosoftware.util.GUtils;
@@ -257,7 +258,7 @@ public class GPlanarPanoramicViewer {
 
 
       private GFileName getTileFileName() {
-         return GFileName.relativeFromParts(Integer.toString(_zoomLevel.getLevel()), "tile-" + _x + "-" + _y + ".jpg");
+         return GFileName.fromParentAndParts(_path, Integer.toString(_zoomLevel.getLevel()), "tile-" + _x + "-" + _y + ".jpg");
       }
 
 
@@ -279,9 +280,9 @@ public class GPlanarPanoramicViewer {
 
    }
 
-
-   private final String                          _name;
    private final ILoader                         _loader;
+   private final GFileName                       _path;
+   private final String                          _name;
    private final boolean                         _debug;
 
 
@@ -303,17 +304,24 @@ public class GPlanarPanoramicViewer {
    private ILoader.LoadID                        _loadID;
 
 
-   public GPlanarPanoramicViewer(final String name,
-                                 final ILoader loader) throws IOException {
-      this(name, loader, false);
+   public GPlanarPanoramicViewer(final ILoader loader,
+                                 final GFileName path,
+                                 final String name) throws IOException {
+      this(loader, path, name, false);
    }
 
 
-   public GPlanarPanoramicViewer(final String name,
-                                 final ILoader loader,
+   public GPlanarPanoramicViewer(final ILoader loader,
+                                 final GFileName path,
+                                 final String name,
                                  final boolean debug) throws IOException {
-      _name = name;
+      GAssert.notNull(loader, "loader");
+      GAssert.notNull(path, "path");
+      GAssert.notNull(name, "name");
+
       _loader = loader;
+      _path = path;
+      _name = name;
       _debug = debug;
 
       _zoomLevels = readZoomLevels();
@@ -358,39 +366,40 @@ public class GPlanarPanoramicViewer {
       final GHolder<List<GPlanarPanoramicZoomLevel>> resultHolder = new GHolder<List<GPlanarPanoramicZoomLevel>>(null);
 
 
-      _loadID = _loader.load(GFileName.relativeFromParts("info.txt"), -1, false, Integer.MAX_VALUE, new ILoader.IHandler() {
-         @Override
-         public void loaded(final File file,
-                            final long bytesLoaded,
-                            final boolean completeLoaded) {
-            if (!completeLoaded) {
-               return;
-            }
+      _loadID = _loader.load(GFileName.fromParentAndParts(_path, "info.txt"), -1, false, Integer.MAX_VALUE,
+               new ILoader.IHandler() {
+                  @Override
+                  public void loaded(final File file,
+                                     final long bytesLoaded,
+                                     final boolean completeLoaded) {
+                     if (!completeLoaded) {
+                        return;
+                     }
 
-            try {
-               final String infoString = GIOUtils.getContents(file);
+                     try {
+                        final String infoString = GIOUtils.getContents(file);
 
-               final Gson gson = new Gson();
+                        final Gson gson = new Gson();
 
-               final Type type = new TypeToken<List<GPlanarPanoramicZoomLevel>>() {
-               }.getType();
+                        final Type type = new TypeToken<List<GPlanarPanoramicZoomLevel>>() {
+                        }.getType();
 
-               final List<GPlanarPanoramicZoomLevel> result = gson.fromJson(infoString, type);
-               resultHolder.set(result);
-               completed.set(true);
-            }
-            catch (final IOException e) {
-               LOGGER.severe("error loading " + file, e);
-            }
-         }
+                        final List<GPlanarPanoramicZoomLevel> result = gson.fromJson(infoString, type);
+                        resultHolder.set(result);
+                        completed.set(true);
+                     }
+                     catch (final IOException e) {
+                        LOGGER.severe("error loading " + file, e);
+                     }
+                  }
 
 
-         @Override
-         public void loadError(final IOException e) {
-            LOGGER.severe("Error loading 'info.txt'", e);
-            completed.set(true);
-         }
-      });
+                  @Override
+                  public void loadError(final IOException e) {
+                     LOGGER.severe("Error loading 'info.txt'", e);
+                     completed.set(true);
+                  }
+               });
 
       while (!completed.get()) {
          GUtils.delay(10);
@@ -960,14 +969,15 @@ public class GPlanarPanoramicViewer {
       //      final URL url = new URL("file:///home/dgd/Desktop/PruebaPanoramicas/PLANAR/PANOS/cantabria1.jpg/");
 
       //      final URL url = new URL("http://213.165.81.201:8080/gigapixel/Cantabria1/");
-      final URL url = new URL("http://213.165.81.201:8080/gigapixel/PlazaSanJorge-Caceres-Espana/");
+      final URL url = new URL("http://213.165.81.201:8080/");
 
 
       final int workersCount = GConcurrent.AVAILABLE_PROCESSORS;
       final ILoader loader = new GHttpLoader(url, workersCount, true, false, true);
 
+      final GFileName path = GFileName.relativeFromParts("gigapixel", "PlazaSanJorge-Caceres-Espana");
 
-      final GPlanarPanoramicViewer viewer = new GPlanarPanoramicViewer("Sample Gigapixel Picture", loader, false);
+      final GPlanarPanoramicViewer viewer = new GPlanarPanoramicViewer(loader, path, "Sample Gigapixel Picture", false);
 
       SwingUtilities.invokeLater(new Runnable() {
          @Override
