@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -84,6 +83,9 @@ public class GHttpLoader
             }
          }
 
+
+         final long start = System.currentTimeMillis();
+
          File partFile = null;
          try {
             partFile = File.createTempFile(_fileName, ".part", _rootCacheDirectory);
@@ -94,8 +96,6 @@ public class GHttpLoader
          }
 
          partFile.deleteOnExit(); // just in case...
-
-         final long start = System.currentTimeMillis();
 
          InputStream is = null;
          OutputStream out = null;
@@ -114,9 +114,7 @@ public class GHttpLoader
             out.close();
             out = null;
 
-            final long ellapsed = System.currentTimeMillis() - start;
 
-            //            synchronized (_rootCacheDirectory) {
             final File cacheFile = new File(_rootCacheDirectory, _fileName);
 
             if (!partFile.renameTo(cacheFile)) {
@@ -125,15 +123,12 @@ public class GHttpLoader
             }
 
             final long bytesLoaded = cacheFile.length();
+            final long ellapsed = System.currentTimeMillis() - start;
             cacheMiss(bytesLoaded, ellapsed);
 
             if (!_isCanceled) {
-               notifyLoadToHandlers(cacheFile, bytesLoaded, true);
+               notifySuccessfullyLoadToHandlers(cacheFile, bytesLoaded, true);
             }
-            //            }
-         }
-         catch (final MalformedURLException e) {
-            notifyErrorToHandlers(e);
          }
          catch (final IOException e) {
             notifyErrorToHandlers(e);
@@ -171,72 +166,55 @@ public class GHttpLoader
                GUtils.delay(250);
             }
 
-            notifyLoadToHandlers(partFile, read, false);
+            notifySuccessfullyLoadToHandlers(partFile, read, false);
          }
       }
 
 
-      private synchronized void notifyLoadToHandlers(final File cacheFile,
-                                                     final long bytesLoaded,
-                                                     final boolean completeLoaded) {
+      private void notifySuccessfullyLoadToHandlers(final File cacheFile,
+                                                    final long bytesLoaded,
+                                                    final boolean completeLoaded) {
 
-         //         final Thread notifierWorker = new Thread() {
-         //
-         //            {
-         //               setDaemon(true);
-         //               setPriority(MAX_PRIORITY);
-         //            }
-         //
-         //
-         //            @Override
-         //            public void run() {
          synchronized (_tasks) {
             _tasks.remove(_fileName);
          }
 
-         for (final HandlerData handlerData : _handlersData) {
-            final boolean reportIncompleteLoads = handlerData._reportIncompleteLoads;
-            if (completeLoaded || reportIncompleteLoads) {
-               try {
-                  handlerData._handler.loaded(cacheFile, bytesLoaded, completeLoaded);
+         synchronized (_handlersData) {
+            for (final HandlerData handlerData : _handlersData) {
+               final boolean reportIncompleteLoads = handlerData._reportIncompleteLoads;
+               if (completeLoaded || reportIncompleteLoads) {
+                  try {
+                     handlerData._handler.loaded(cacheFile, bytesLoaded, completeLoaded);
+                  }
+                  catch (final ILoader.AbortLoading e) {
+                     // do nothing, the file is already downloaded
+                  }
+                  catch (final Exception e) {
+                     LOGGER.severe("Error while notifying to " + handlerData._handler, e);
+                  }
                }
-               catch (final ILoader.AbortLoading e) {
-                  // do nothing, the file is already downloaded
+            }
+
+         }
+      }
+
+
+      private void notifyErrorToHandlers(final IOException e) {
+
+         synchronized (_tasks) {
+            _tasks.remove(_fileName);
+         }
+
+         synchronized (_handlersData) {
+            for (final HandlerData handlerData : _handlersData) {
+               try {
+                  handlerData._handler.loadError(e);
+               }
+               catch (final Exception e2) {
+                  LOGGER.severe("Error while notifying loadError to " + handlerData._handler, e2);
                }
             }
          }
-         //            }
-         //         };
-         //         notifierWorker.start();
-
-
-      }
-
-
-      private synchronized void notifyErrorToHandlers(final IOException e) {
-
-         //         final Thread notifierWorker = new Thread() {
-         //
-         //            {
-         //               setDaemon(true);
-         //               setPriority(MAX_PRIORITY);
-         //            }
-         //
-         //
-         //            @Override
-         //            public void run() {
-         synchronized (_tasks) {
-            _tasks.remove(_fileName);
-         }
-
-         for (final HandlerData handlerData : _handlersData) {
-            handlerData._handler.loadError(e);
-         }
-         //            }
-         //         };
-         //         notifierWorker.start();
-
-
       }
 
 
@@ -245,11 +223,13 @@ public class GHttpLoader
       }
 
 
-      private synchronized void addHandler(final int priority,
-                                           final HandlerData handlerData) {
-         _priority = Math.max(priority, _priority);
-         _handlersData.add(handlerData);
-         _isCanceled = false;
+      private void addHandler(final int priority,
+                              final HandlerData handlerData) {
+         synchronized (_handlersData) {
+            _priority = Math.max(priority, _priority);
+            _handlersData.add(handlerData);
+            _isCanceled = false;
+         }
       }
    }
 
@@ -357,8 +337,8 @@ public class GHttpLoader
    private final boolean              _simulateSlowConnection;
 
    private final Object               _statisticsMutex      = new Object();
-   private int                        _loadCounter          = 0;
-   private int                        _loadCacheHits        = 0;
+   private long                       _loadCounter          = 0;
+   private long                       _loadCacheHits        = 0;
    private long                       _bytesDownloaded      = 0;
    private long                       _downloadEllapsedTime = 0;
 
@@ -458,6 +438,7 @@ public class GHttpLoader
       GAssert.notNull(fileName, "fileName");
       GAssert.notNull(handler, "handler");
 
+
       if (fileName.isAbsolute()) {
          throw new RuntimeException("Absolutes fileNames are not supported");
       }
@@ -501,6 +482,7 @@ public class GHttpLoader
          else {
             existingTask.addHandler(priority, handlerData);
          }
+
          return loadID;
       }
    }
@@ -544,18 +526,20 @@ public class GHttpLoader
             final Entry<GFileName, Task> entry = tasksIterator.next();
             final Task task = entry.getValue();
 
-            final Iterator<HandlerData> handlersDataIterator = task._handlersData.iterator();
-            while (handlersDataIterator.hasNext()) {
-               final HandlerData handlerData = handlersDataIterator.next();
-               if (id.equals(handlerData._loadID)) {
-                  handlersDataIterator.remove();
+            synchronized (task._handlersData) {
+               final Iterator<HandlerData> handlersDataIterator = task._handlersData.iterator();
+               while (handlersDataIterator.hasNext()) {
+                  final HandlerData handlerData = handlersDataIterator.next();
+                  if (id.equals(handlerData._loadID)) {
+                     handlersDataIterator.remove();
+                  }
                }
-            }
 
-            if (!task._isDownloading) {
-               if (task._handlersData.isEmpty()) {
-                  tasksIterator.remove();
-                  task.cancel();
+               if (!task._isDownloading) {
+                  if (task._handlersData.isEmpty()) {
+                     tasksIterator.remove();
+                     task.cancel();
+                  }
                }
             }
          }
