@@ -613,6 +613,8 @@ public class GPositionRenderableLayer
 
          _rootNodes.add(new NodeAndPosition(root, position, anchor));
       }
+
+      redraw();
    }
 
 
