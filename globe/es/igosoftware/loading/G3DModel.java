@@ -313,32 +313,6 @@ public class G3DModel {
          gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 
          try {
-            //            final List<GModelMesh> meshes = new ArrayList<GModelMesh>();
-            //            meshes.add(_mesh);
-            //
-            //            // Draw as many as we can in a batch to save ogl state switching.
-            //            final Queue<OrderedRenderable> queue = dc.getOrderedRenderables();
-            //            while (true) {
-            //               final OrderedRenderable peeked = queue.peek();
-            //               final boolean isSameType = (peeked != null) && (peeked instanceof MeshOrderedRenderable)
-            //                                          && (((MeshOrderedRenderable) peeked)._modelViewMatrixArray == _modelViewMatrixArray);
-            //               if (isSameType) {
-            //                  meshes.add(((MeshOrderedRenderable) peeked)._mesh);
-            //                  queue.poll();
-            //               }
-            //               else {
-            //                  break;
-            //               }
-            //            }
-            //
-            //            final List<RenderUnit> renderUnits = getRenderingUnits("ALPHA PASS", meshes);
-            //            final boolean forceRedraw = renderRenderingUnits(dc, renderUnits);
-            //
-            //            if (forceRedraw) {
-            //               _modelNode.redraw();
-            //            }
-
-
             boolean redraw = false;
             int displayList = _meshListCache.getDisplayList(_mesh, dc, false);
             if (displayList >= 0) {
@@ -429,10 +403,6 @@ public class G3DModel {
       if (texture.getMustFlipVertically()) {
          gl.glMatrixMode(GL.GL_TEXTURE);
          gl.glPushMatrix();
-         //         gl.glLoadIdentity();
-
-         //         gl.glScalef(1, -1, 1);
-         //         gl.glTranslatef(0, -1, 0);
          gl.glLoadMatrixf(FLIP_VERTICALLY_TRANSFORMATION, 0);
       }
 
@@ -563,6 +533,7 @@ public class G3DModel {
    private static final GDisplayListCache<GModelMesh>           _meshListCache;
    private static final GDisplayListCache<RenderUnit>           _renderUnitListCache;
 
+
    static {
       _meshListCache = new GDisplayListCache<GModelMesh>(false) {
          @Override
@@ -664,7 +635,6 @@ public class G3DModel {
          else {
             renderUnits.add(new TextureRenderUnit(entry.getKey(), unitMeshes));
          }
-         //         singleMeshes.addAll(unitMeshes);
       }
 
       if (!singleMeshes.isEmpty()) {
@@ -673,32 +643,9 @@ public class G3DModel {
          for (final List<GModelMesh> group : GCollections.split(singleMeshes, 25)) {
             renderUnits.add(new SlowRenderUnit(group));
          }
-
-         //         renderUnits.add(new SlowRenderUnit(singleMeshes));
       }
 
       renderUnits.trimToSize();
-
-      //      Collections.sort(renderUnits, new Comparator<RenderUnit>() {
-      //         @Override
-      //         public int compare(final RenderUnit o1,
-      //                            final RenderUnit o2) {
-      //            final int size1 = o1._meshes.size();
-      //            final int size2 = o2._meshes.size();
-      //
-      //            if (size1 > size2) {
-      //               return -1;
-      //            }
-      //            if (size1 < size2) {
-      //               return 1;
-      //            }
-      //            return 0;
-      //         }
-      //      });
-
-      //      for (final RenderUnit renderUnit : renderUnits) {
-      //         System.out.println(prefixMessage + ": " + renderUnit);
-      //      }
 
       return renderUnits;
    }
@@ -797,11 +744,7 @@ public class G3DModel {
       gl.glPushMatrix();
       gl.glLoadMatrixf(modelViewMatrixArray, 0);
 
-      // gl.glPushAttrib(GL.GL_TEXTURE_BIT | GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT | GL.GL_HINT_BIT | GL.GL_POLYGON_BIT
-      //                 | GL.GL_ENABLE_BIT | GL.GL_CURRENT_BIT | GL.GL_LIGHTING_BIT | GL.GL_TRANSFORM_BIT);
-
-      gl.glPushAttrib(GL.GL_TEXTURE_BIT | GL.GL_LIGHTING_BIT | GL.GL_DEPTH_BUFFER_BIT /*| GL.GL_HINT_BIT*/);
-
+      gl.glPushAttrib(GL.GL_TEXTURE_BIT | GL.GL_LIGHTING_BIT | GL.GL_DEPTH_BUFFER_BIT);
 
       //      gl.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_FASTEST);
 
@@ -823,7 +766,6 @@ public class G3DModel {
 
       if (_modelData.isUsingTexture()) {
          gl.glEnable(GL.GL_TEXTURE_2D);
-         //gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_REPLACE);
       }
       else {
          gl.glDisable(GL.GL_TEXTURE_2D);
@@ -859,7 +801,6 @@ public class G3DModel {
 
    public void render(final DrawContext dc,
                       final Matrix modelMatrix,
-                      //                      final Matrix modelViewMatrix,
                       final float[] modelViewMatrixArray,
                       final boolean hasScaleTransformation,
                       final G3DModelNode modelNode) {
