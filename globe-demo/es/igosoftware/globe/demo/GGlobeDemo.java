@@ -277,7 +277,9 @@ public class GGlobeDemo
       try {
          final boolean debug = false;
          final boolean simulateSlowConnection = false;
-         loader = new GHttpLoader(new URL("http://localhost/globe-demo/"), GConcurrent.AVAILABLE_PROCESSORS, verbose, debug,
+         //         loader = new GHttpLoader(new URL("http://localhost/globe-demo/"), GConcurrent.AVAILABLE_PROCESSORS, verbose, debug,
+         //                  simulateSlowConnection);
+         loader = new GHttpLoader(new URL("http://213.165.81.201:8080/"), GConcurrent.AVAILABLE_PROCESSORS, verbose, debug,
                   simulateSlowConnection);
       }
       catch (final MalformedURLException e1) {
@@ -287,32 +289,33 @@ public class GGlobeDemo
       if (loader != null) {
          final GAsyncObjLoader objLoader = new GAsyncObjLoader(loader);
 
-         objLoader.load(GFileName.relativeFromParts("data", "models", "caceres3d.obj"), new GAsyncObjLoader.IHandler() {
-            @Override
-            public void loadError(final IOException e) {
-               logSevere(e);
-            }
+         objLoader.load(GFileName.relativeFromParts("globe-demo-data", "models", "caceres3d.obj"),
+                  new GAsyncObjLoader.IHandler() {
+                     @Override
+                     public void loadError(final IOException e) {
+                        logSevere(e);
+                     }
 
 
-            @Override
-            public void loaded(final GModelData modelData) {
-               hackCaceres3DModel(modelData);
+                     @Override
+                     public void loaded(final GModelData modelData) {
+                        hackCaceres3DModel(modelData);
 
-               final G3DModel model = new G3DModel(modelData);
-               final G3DModelNode caceres3DModelNode = new G3DModelNode("Caceres3D",
-                        GTransformationOrder.ROTATION_SCALE_TRANSLATION, model);
+                        final G3DModel model = new G3DModel(modelData);
+                        final G3DModelNode caceres3DModelNode = new G3DModelNode("Caceres3D",
+                                 GTransformationOrder.ROTATION_SCALE_TRANSLATION, model);
 
 
-               final GGroupNode caceres3DRootNode = new GGroupNode("Caceres3D root",
-                        GTransformationOrder.ROTATION_SCALE_TRANSLATION);
-               caceres3DRootNode.setHeading(-90);
-               //caceres3DRootNode.setScale(10);
-               caceres3DRootNode.addChild(caceres3DModelNode);
+                        final GGroupNode caceres3DRootNode = new GGroupNode("Caceres3D root",
+                                 GTransformationOrder.ROTATION_SCALE_TRANSLATION);
+                        caceres3DRootNode.setHeading(-90);
+                        //caceres3DRootNode.setScale(10);
+                        caceres3DRootNode.addChild(caceres3DModelNode);
 
-               layer.addNode(caceres3DRootNode, new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710), 24.7),
-                        GElevationAnchor.SEA_LEVEL);
-            }
-         }, verbose);
+                        layer.addNode(caceres3DRootNode, new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710),
+                                 24.7), GElevationAnchor.SEA_LEVEL);
+                     }
+                  }, verbose);
       }
    }
 
