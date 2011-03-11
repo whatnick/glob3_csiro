@@ -1281,7 +1281,9 @@ public final class GCollections {
                                 final int left,
                                 final int right,
                                 final IComparatorInt comparator) {
-      final int pivot = array[(left + right) / 2];
+      // convert to long, and back to int, to avoid the possibility of an int overflow while adding
+      final int pivotIndex = (int) (((long) left + right) / 2);
+      final int pivot = array[pivotIndex];
 
       int i = left;
       int j = right;
@@ -1347,7 +1349,9 @@ public final class GCollections {
                                 final int left,
                                 final int right,
                                 final IComparatorDouble comparator) {
-      final double pivot = array[(left + right) / 2];
+      // convert to long, and back to int, to avoid the possibility of an int overflow while adding
+      final int pivotIndex = (int) (((long) left + right) / 2);
+      final double pivot = array[pivotIndex];
 
       int i = left;
       int j = right;
