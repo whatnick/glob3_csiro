@@ -171,6 +171,7 @@ public class GNetCDFMultidimentionalData
       GAssert.notNull(latitudeVariableName, "latitudeVariableName");
       GAssert.notNull(elevationVariableName, "elevationVariableName");
       //GAssert.notEmpty(valueVariablesNames, "valueVariablesNames");
+      GAssert.notEmpty(vectorVariables, "vectorVariables");
 
       _verbose = verbose;
 
@@ -216,18 +217,7 @@ public class GNetCDFMultidimentionalData
        * Auto-detect non-dimension variables in NetCDF need to also reject the vector component variables and only retain scalars
        */
       if (valueVariablesNames == null) {
-         final List<Variable> allVars = _ncFile.getVariables();
-         final ArrayList<String> autoVarName = new ArrayList<String>();
-         for (final Variable variable : allVars) {
-            final String varName = variable.getName();
-            if (!(latitudeVariableName.equals(varName) || elevationVariableName.equals(varName) || longitudeVariableName.equals(varName))) {
-               //FIXME: Current code supports only 4-D data
-               if (variable.getDimensionsAll().size() == 4) {
-                  autoVarName.add(varName);
-               }
-            }
-         }
-         _valueVariablesNames = autoVarName.toArray(new String[1]);
+         _valueVariablesNames = detectValueVariableNames(longitudeVariableName, latitudeVariableName, elevationVariableName);
       }
       else {
          _valueVariablesNames = valueVariablesNames;
@@ -262,6 +252,12 @@ public class GNetCDFMultidimentionalData
       //         _valueMissingValue = Double.NaN;
       //      }
 
+      /**
+       * Auto-detect non-dimension variables in NetCDF, only retain vectors
+       */
+      if (vectorVariables == null) {
+         //vectorVariables = detectVectorVariables(longitudeVariableName, latitudeVariableName, elevationVariableName);
+      }
 
       for (final VectorVariable vectorVariable : vectorVariables) {
          final Variable uVariable = _ncFile.findVariable(vectorVariable._uVariableName);
@@ -296,7 +292,7 @@ public class GNetCDFMultidimentionalData
 
       _timeDimension = _ncFile.findDimension(timeDimensionName);
       if (_timeDimension == null) {
-         throw new RuntimeException("Can't find the time dimensin (\"" + timeDimensionName + "\")");
+         throw new RuntimeException("Can't find the time dimension (\"" + timeDimensionName + "\")");
       }
       _timeDimensionLength = _timeDimension.getLength();
 
@@ -305,6 +301,40 @@ public class GNetCDFMultidimentionalData
       _dimensions = _ncFile.getDimensions();
 
       //      _valueRange = calculateRange(_valueVariable);
+   }
+
+
+   private VectorVariable[] detectVectorVariables(final String longitudeVariableName,
+                                                  final String latitudeVariableName,
+                                                  final String elevationVariableName) {
+      // TODO Auto-generated method stub
+      return null;
+   }
+
+
+   private String[] detectValueVariableNames(final String longitudeVariableName,
+                                             final String latitudeVariableName,
+                                             final String elevationVariableName) {
+      final List<Variable> allVars = _ncFile.getVariables();
+      final ArrayList<String> autoVarName = new ArrayList<String>();
+      for (final Variable variable : allVars) {
+         final String varName = variable.getName();
+         if (!(latitudeVariableName.equals(varName) || elevationVariableName.equals(varName) || longitudeVariableName.equals(varName))) {
+            //FIXME: Current code supports only 4-D data
+            if (variable.getDimensions().size() == 4) {
+               //FIXME: What is the correct way to detect vector variables ?
+               final List<Attribute> allAttr = variable.getAttributes();
+               boolean isVector = false;
+               for (final Attribute attribute : allAttr) {
+                  if (attribute.isString() && attribute.getName().contains("vector_components")) {
+                     isVector = true;
+                  }
+               }
+               autoVarName.add(varName);
+            }
+         }
+      }
+      return autoVarName.toArray(new String[1]);
    }
 
 
@@ -417,7 +447,9 @@ public class GNetCDFMultidimentionalData
       }
 
       final List<T> emptyStack = Collections.emptyList();
+      //FIXME: Safely back ground process
       pvtCombination(processor, emptyStack, sets);
+
    }
 
 
@@ -431,11 +463,11 @@ public class GNetCDFMultidimentionalData
       if (setsCount == 1) {
          final List<T> head = sets[0];
 
+
          for (final T each : head) {
             final List<T> newStack = new ArrayList<T>(stack.size() + 1);
             newStack.addAll(stack);
             newStack.add(each);
-
             processor.process(newStack);
          }
       }
