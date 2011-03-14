@@ -463,6 +463,8 @@ public class G3DModel {
          return null;
       }
 
+
+      // try textureFileName as Absolute
       final File textureFile = textureFileName.asFile();
       if (textureFile.exists()) {
          try {
@@ -471,27 +473,41 @@ public class G3DModel {
          catch (final MalformedURLException e) {
             e.printStackTrace();
          }
-      }
 
-
-      final GFileName textureFullFileName = GFileName.fromParts(mesh.getModel().getFileName().getParent(), textureFileName);
-
-      final File textureFullFile = textureFullFileName.asFile();
-      if (textureFullFile.exists()) {
          try {
-            return textureFullFile.toURI().toURL();
+            return GResourceRetriever.getResourceAsUrl(textureFileName);
          }
-         catch (final MalformedURLException e) {
-            e.printStackTrace();
+         catch (final IOException e) {
+            logger.severe("Load of texture " + textureFileName + " failed", e);
          }
       }
 
-      try {
-         return GResourceRetriever.getResourceAsUrl(textureFullFileName);
+
+      // try textureFileName as relative to the directory containing the .obj file
+      if (!textureFileName.isAbsolute()) {
+         final GFileName textureFullFileName = GFileName.fromParts(mesh.getModel().getFileName().getParent(), textureFileName);
+
+         final File textureFullFile = textureFullFileName.asFile();
+         if (textureFullFile.exists()) {
+            try {
+               return textureFullFile.toURI().toURL();
+            }
+            catch (final MalformedURLException e) {
+               e.printStackTrace();
+            }
+         }
+
+
+         try {
+            return GResourceRetriever.getResourceAsUrl(textureFullFileName);
+         }
+         catch (final IOException e) {
+            logger.severe("Load of texture " + textureFullFileName + " failed", e);
+         }
       }
-      catch (final IOException e) {
-         logger.severe("Load of texture " + textureFullFileName + " failed", e);
-      }
+
+      // oops, I can't find the texture
+      logger.severe("Load of texture " + textureFileName + " failed");
 
       return null;
    }
