@@ -44,6 +44,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.GVector3D;
@@ -423,7 +424,7 @@ public class GAsyncObjLoader {
          try {
             stream = GResourceRetriever.getResourceAsInputStream(mtlFile.getPath());
          }
-         catch (final IOException ex) {
+         catch (final MalformedURLException ex) {
             ex.printStackTrace();
          }
 
