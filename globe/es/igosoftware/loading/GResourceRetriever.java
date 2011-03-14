@@ -56,7 +56,7 @@ public class GResourceRetriever {
    }
 
 
-   public static URL getResourceAsUrl(final String filename) throws IOException {
+   public static URL getResourceAsUrl(final String filename) throws MalformedURLException {
       URL result;
 
       try {
@@ -84,7 +84,7 @@ public class GResourceRetriever {
       try {
          result = getResourceAsUrl(filename);
       }
-      catch (final IOException e) {
+      catch (final MalformedURLException e) {
          return new FileInputStream(filename);
       }
 
