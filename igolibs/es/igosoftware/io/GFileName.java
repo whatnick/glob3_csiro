@@ -55,8 +55,9 @@ public class GFileName
       GAssert.notEmpty(parts, "parts");
 
       for (int i = 1; i < parts.length; i++) {
-         if (parts[i]._isAbsolute) {
-            throw new RuntimeException("Only the first part can be absolute");
+         final GFileName part = parts[i];
+         if (part._isAbsolute) {
+            throw new RuntimeException("Only the first part can be absolute. Error part #" + i + " is absolute: " + part);
          }
       }
 
