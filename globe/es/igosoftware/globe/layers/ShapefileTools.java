@@ -70,10 +70,10 @@ public class ShapefileTools {
          final FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = dataStore.getFeatureSource(query.getTypeName());
          final FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = featureSource.getFeatures(query);
          final FeatureIterator<SimpleFeature> iterator = featureCollection.features();
-         final Feature[] features = new Feature[featureCollection.size()];
+         final GFeature[] features = new GFeature[featureCollection.size()];
          for (int i = 0; iterator.hasNext(); i++) {
             final SimpleFeature feature = iterator.next();
-            features[i] = new Feature((Geometry) feature.getDefaultGeometry(), feature.getAttributes().toArray(new Object[0]));
+            features[i] = new GFeature((Geometry) feature.getDefaultGeometry(), feature.getAttributes().toArray(new Object[0]));
          }
 
          final int iFields = featureSource.getSchema().getAttributeCount() - 1;

@@ -34,7 +34,7 @@
 */
 
 
-package es.igosoftware.globe.modules.locationManager;
+package es.igosoftware.globe.modules.layers;
 
 import java.awt.Component;
 import java.util.Collections;
@@ -50,56 +50,32 @@ import es.igosoftware.globe.actions.IGenericAction;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.util.GPair;
-import gov.nasa.worldwind.geom.Position;
 
 
-public class LocationManager
+public class GCreateNewVectorLayerModule
          extends
             GAbstractGlobeModule {
 
-   public LocationManager() {
-
-      Locations.setDefaultLocation(new NamedLocation("DEFAULT", Position.ZERO, 50000));
-
-
-   }
-
-
-   public LocationManager(final Position position,
-                          final double elevation) {
-
-      Locations.setDefaultLocation(new NamedLocation("DEFAULT", position, elevation));
-
-   }
-
-
    @Override
    public String getDescription() {
-
-      return "Location manager";
-
+      return "Create new vector layer";
    }
 
 
    @Override
    public List<IGenericAction> getGenericActions(final IGlobeApplication application) {
 
-      final IGenericAction action = new GButtonGenericAction("Location manager", ' ', null, IGenericAction.MenuArea.NAVIGATION,
+      final IGenericAction action = new GButtonGenericAction("Create new vector layer", ' ', null, IGenericAction.MenuArea.FILE,
                false) {
 
          @Override
          public void execute() {
-
-            final JDialog locationManager = new LocationManagerDialog(application);
-            locationManager.setVisible(true);
-
+            final JDialog newLayerDialog = new JDialog();
+            newLayerDialog.setVisible(true);
          }
-
       };
 
-      //      return new IGenericAction[] { action };
       return Collections.singletonList(action);
-
    }
 
 
@@ -119,7 +95,7 @@ public class LocationManager
 
    @Override
    public String getName() {
-      return "Location manager";
+      return "Create new vector layer";
    }
 
 
@@ -132,12 +108,6 @@ public class LocationManager
    @Override
    public List<GPair<String, Component>> getPanels(final IGlobeApplication application) {
       return null;
-   }
-
-
-   public void postInitialize() {
-
-
    }
 
 

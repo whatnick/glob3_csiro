@@ -34,46 +34,84 @@
 */
 
 
-package es.igosoftware.globe.modules.gazetteer;
+package es.igosoftware.globe.modules.view;
 
 import java.awt.Component;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import es.igosoftware.globe.GAbstractGlobeModule;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
+import es.igosoftware.globe.actions.GCheckBoxGenericAction;
 import es.igosoftware.globe.actions.IGenericAction;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
+import es.igosoftware.globe.view.customView.GCustomView;
 import es.igosoftware.util.GPair;
+import gov.nasa.worldwind.View;
+import gov.nasa.worldwind.view.firstperson.BasicFlyView;
+import gov.nasa.worldwind.view.orbit.BasicOrbitView;
 
 
-public class Gazetteer
+public class GUseFlyViewModule
          extends
             GAbstractGlobeModule {
 
-   @Override
-   public String getName() {
-      return "Gazetteer";
-   }
+   private boolean _isActive = false;
+   private View    _oldView;
 
 
    @Override
    public String getDescription() {
-      return "Gazetteer";
-   }
-
-
-   @Override
-   public String getVersion() {
-      return null;
+      return "Use fly view";
    }
 
 
    @Override
    public List<IGenericAction> getGenericActions(final IGlobeApplication application) {
-      return null;
+
+      final IGenericAction action = new GCheckBoxGenericAction("Use fly view", ' ', null, IGenericAction.MenuArea.VIEW, false,
+               false) {
+
+         @Override
+         public void execute() {
+
+            _isActive = !_isActive;
+
+            if (_isActive) {
+               final BasicFlyView view = new BasicFlyView();
+               final View currentView = application.getWorldWindowGLCanvas().getView();
+               _oldView = currentView;
+               view.copyViewState(currentView);
+               application.getWorldWindowGLCanvas().setView(view);
+
+            }
+            else {
+
+               final View currentView = application.getWorldWindowGLCanvas().getView();
+               final View view;
+               if (_oldView instanceof GCustomView) {
+                  view = new GCustomView();
+               }
+               else if (_oldView == null) {
+                  view = new BasicOrbitView();
+               }
+               else {
+                  view = new BasicOrbitView();
+               }
+
+               view.copyViewState(currentView);
+               application.getWorldWindowGLCanvas().setView(view);
+            }
+
+         }
+
+      };
+
+      //      return new IGenericAction[] { action };
+      return Collections.singletonList(action);
+
    }
 
 
@@ -85,27 +123,6 @@ public class Gazetteer
 
 
    @Override
-   public List<GPair<String, Component>> getPanels(final IGlobeApplication application) {
-      final List<GPair<String, Component>> panels = new ArrayList<GPair<String, Component>>();
-
-      try {
-         panels.add(new GPair<String, Component>("Go to", new GazetteerPanel(application.getWorldWindowGLCanvas(), null)));
-      }
-      catch (final ClassNotFoundException e) {
-         e.printStackTrace();
-      }
-      catch (final IllegalAccessException e) {
-         e.printStackTrace();
-      }
-      catch (final InstantiationException e) {
-         e.printStackTrace();
-      }
-
-      return panels;
-   }
-
-
-   @Override
    public List<ILayerAttribute<?>> getLayerAttributes(final IGlobeApplication application,
                                                       final IGlobeLayer layer) {
       return null;
@@ -113,7 +130,26 @@ public class Gazetteer
 
 
    @Override
+   public String getName() {
+      return "Use fly view";
+   }
+
+
+   @Override
+   public String getVersion() {
+      return null;
+   }
+
+
+   @Override
+   public List<GPair<String, Component>> getPanels(final IGlobeApplication application) {
+      return null;
+   }
+
+
+   @Override
    public void initializeTranslations(final IGlobeApplication application) {
+      // TODO Auto-generated method stub
 
    }
 

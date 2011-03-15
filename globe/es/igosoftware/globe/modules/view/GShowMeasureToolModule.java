@@ -50,7 +50,7 @@ import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.util.GPair;
 
 
-public class ShowMeasureTool
+public class GShowMeasureToolModule
          extends
             GAbstractGlobeModule {
 

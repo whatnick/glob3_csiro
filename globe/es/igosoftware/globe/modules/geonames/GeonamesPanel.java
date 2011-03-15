@@ -112,7 +112,7 @@ public class GeonamesPanel
                            TableLayoutConstants.MINIMUM, 6.0 } });
          thisLayout.setHGap(5);
          thisLayout.setVGap(5);
-         this.setLayout(thisLayout);
+         setLayout(thisLayout);
          {
             jButtonSearch = new JButton();
             this.add(jButtonSearch, "3, 1");
@@ -214,8 +214,7 @@ public class GeonamesPanel
          }
          m_Application.zoomToSector(totalSector);
       }
-      catch (final Exception e) {
-      }
+      catch (final Exception e) {}
       finally {
          jList.setModel(jListModel);
       }

@@ -54,28 +54,28 @@ public class GCustomViewMoveToZoomAnimator
                                  final PropertyAccessor.DoubleAccessor propertyAcc,
                                  final boolean endCenterOnSurface) {
       super(endValue, smoothingAmount, propertyAcc);
-      this._customView = customView;
-      this._endCenterOnSurface = endCenterOnSurface;
+      _customView = customView;
+      _endCenterOnSurface = endCenterOnSurface;
    }
 
 
    @Override
    protected void setImpl(final double interpolant) {
-      final Double newValue = this.nextDouble(interpolant);
+      final Double newValue = nextDouble(interpolant);
       if (newValue == null) {
          return;
       }
 
-      this.propertyAccessor.setDouble(newValue);
+      propertyAccessor.setDouble(newValue);
    }
 
 
    @Override
    public Double nextDouble(final double interpolant) {
-      final double newValue = (1 - interpolant) * propertyAccessor.getDouble() + interpolant * this.end;
+      final double newValue = (1 - interpolant) * propertyAccessor.getDouble() + interpolant * end;
       if (Math.abs(newValue - propertyAccessor.getDouble()) < minEpsilon) {
-         this.stop();
-         if (this._endCenterOnSurface) {
+         stop();
+         if (_endCenterOnSurface) {
             _customView.setViewOutOfFocus(true);
          }
          return (null);

@@ -34,27 +34,51 @@
 */
 
 
-package es.igosoftware.globe.modules.layers;
+package es.igosoftware.globe.layers;
 
-import javax.swing.JDialog;
-
-import es.igosoftware.globe.IGlobeApplication;
-
-
-public class NewLayerDialog
-         extends
-            JDialog {
-
-   private static final long       serialVersionUID = 1L;
-
-   @SuppressWarnings("unused")
-   private final IGlobeApplication _app;
+import es.igosoftware.euclid.projection.GProjection;
+import es.igosoftware.euclid.vector.GVector2D;
+import es.igosoftware.euclid.vector.IVector2;
+import gov.nasa.worldwind.geom.Angle;
+import gov.nasa.worldwind.geom.Sector;
 
 
-   public NewLayerDialog(final IGlobeApplication application) {
+public class GRasterGeodata {
 
-      super();
-      _app = application;
+   public final double _cellsize;
+   public final double _yllcorner;
+   public final double _xllcorner;
+   public final int    _rows;
+   public final int    _cols;
+   public GProjection  _projection;
+
+
+   public GRasterGeodata(final double xllcorner,
+                         final double yllcorner,
+                         final double cellsize,
+                         final int rows,
+                         final int cols,
+                         final GProjection projection) {
+      _xllcorner = xllcorner;
+      _yllcorner = yllcorner;
+      _cellsize = cellsize;
+      _cols = cols;
+      _rows = rows;
+      _projection = projection;
+   }
+
+
+   public Sector getAsSector() {
+
+      final IVector2<?> min = _projection.transformPoint(GProjection.EPSG_4326, new GVector2D(_xllcorner, _yllcorner));
+      final IVector2<?> max = _projection.transformPoint(GProjection.EPSG_4326, new GVector2D(_xllcorner + _cols * _cellsize,
+               _yllcorner + _rows * _cellsize));
+
+      final Sector sector = new Sector(Angle.fromRadians(min.y()), Angle.fromRadians(max.y()), Angle.fromRadians(min.x()),
+               Angle.fromRadians(max.x()));
+
+      return sector;
+
    }
 
 }

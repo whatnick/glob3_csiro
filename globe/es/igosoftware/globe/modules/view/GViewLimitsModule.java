@@ -37,55 +37,43 @@
 package es.igosoftware.globe.modules.view;
 
 import java.awt.Component;
-import java.util.Collections;
 import java.util.List;
-
-import javax.swing.ImageIcon;
 
 import es.igosoftware.globe.GAbstractGlobeModule;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
-import es.igosoftware.globe.actions.GCheckBoxGenericAction;
 import es.igosoftware.globe.actions.IGenericAction;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.util.GPair;
+import gov.nasa.worldwind.View;
+import gov.nasa.worldwind.view.orbit.BasicOrbitView;
+import gov.nasa.worldwind.view.orbit.BasicOrbitViewLimits;
+import gov.nasa.worldwind.view.orbit.OrbitView;
+import gov.nasa.worldwind.view.orbit.OrbitViewLimits;
 
 
-public class InfoTool
+public class GViewLimitsModule
          extends
             GAbstractGlobeModule {
 
-   private boolean          _isActive = false;
-   private InfoToolListener _listener;
+   private final OrbitViewLimits _limits;
+
+
+   public GViewLimitsModule(final OrbitViewLimits limits) {
+      _limits = limits;
+   }
 
 
    @Override
    public String getDescription() {
-      return "Info tool";
+      return "View limits";
    }
 
 
    @Override
    public List<IGenericAction> getGenericActions(final IGlobeApplication application) {
-
-      final IGenericAction action = new GCheckBoxGenericAction("Info tool", ' ', new ImageIcon("images/icon-16-_info.png"),
-               IGenericAction.MenuArea.VIEW, true, false) {
-
-         @Override
-         public void execute() {
-            _isActive = !_isActive;
-            if (!_isActive) {
-               application.getWorldWindowGLCanvas().removeMouseListener(_listener);
-            }
-            else {
-               application.getWorldWindowGLCanvas().addMouseListener(_listener);
-            }
-         }
-
-      };
-
-      return Collections.singletonList(action);
+      return null;
    }
 
 
@@ -105,7 +93,7 @@ public class InfoTool
 
    @Override
    public String getName() {
-      return "Info tool";
+      return "View limits";
    }
 
 
@@ -117,7 +105,11 @@ public class InfoTool
 
    @Override
    public void initialize(final IGlobeApplication application) {
-      _listener = new InfoToolListener(application);
+      final View view = application.getView();
+      if (view instanceof BasicOrbitView) {
+         BasicOrbitViewLimits.applyLimits((OrbitView) view, _limits);
+      }
+
    }
 
 

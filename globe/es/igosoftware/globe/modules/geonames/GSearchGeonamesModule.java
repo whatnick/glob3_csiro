@@ -64,7 +64,7 @@ import gov.nasa.worldwind.render.markers.BasicMarkerAttributes;
 import gov.nasa.worldwind.render.markers.MarkerAttributes;
 
 
-public class SearchGeonames
+public class GSearchGeonamesModule
          extends
             GAbstractGlobeModule {
 

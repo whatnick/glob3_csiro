@@ -44,8 +44,8 @@ import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
-import es.igosoftware.globe.layers.Feature;
-import es.igosoftware.globe.layers.GVectorRenderer;
+import es.igosoftware.globe.layers.GFeature;
+import es.igosoftware.globe.layers.GVectorRenderingTheme;
 import es.igosoftware.io.GFileLoader;
 import es.igosoftware.io.GFileName;
 import es.igosoftware.loading.G3DModel;
@@ -574,12 +574,6 @@ public class GPositionRenderableLayer
    }
 
 
-   @Override
-   public void setProjection(final GProjection projection) {
-      throw new RuntimeException("Can't change the projection");
-   }
-
-
    public void setPosition(final GGroupNode renderable,
                            final Position position) {
       synchronized (_rootNodes) {
@@ -643,7 +637,7 @@ public class GPositionRenderableLayer
 
 
    @Override
-   public Feature[] getFeatures() {
+   public GFeature[] getFeatures() {
       return null;
    }
 
@@ -655,7 +649,7 @@ public class GPositionRenderableLayer
 
 
    @Override
-   public GVectorRenderer getRenderer() {
+   public GVectorRenderingTheme getRenderingTheme() {
       return null;
    }
 

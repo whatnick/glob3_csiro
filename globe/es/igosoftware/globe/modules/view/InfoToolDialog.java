@@ -77,7 +77,7 @@ public class InfoToolDialog
       super(parent, "Info", false);
 
       initGUI(info);
-      this.setLocationRelativeTo(null);
+      setLocationRelativeTo(null);
 
       _dialog = this;
 

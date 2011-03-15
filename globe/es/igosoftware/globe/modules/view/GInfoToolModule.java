@@ -40,45 +40,52 @@ import java.awt.Component;
 import java.util.Collections;
 import java.util.List;
 
+import javax.swing.ImageIcon;
+
 import es.igosoftware.globe.GAbstractGlobeModule;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
-import es.igosoftware.globe.actions.GButtonGenericAction;
+import es.igosoftware.globe.actions.GCheckBoxGenericAction;
 import es.igosoftware.globe.actions.IGenericAction;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.util.GPair;
 
 
-public class ViewControls
+public class GInfoToolModule
          extends
             GAbstractGlobeModule {
 
+   private boolean          _isActive = false;
+   private InfoToolListener _listener;
+
+
    @Override
    public String getDescription() {
-
-      return "View configuration";
-
+      return "Info tool";
    }
 
 
    @Override
    public List<IGenericAction> getGenericActions(final IGlobeApplication application) {
 
-      final IGenericAction action = new GButtonGenericAction("View configuration...", ' ', null, IGenericAction.MenuArea.VIEW,
-               false) {
+      final IGenericAction action = new GCheckBoxGenericAction("Info tool", ' ', new ImageIcon("images/icon-16-_info.png"),
+               IGenericAction.MenuArea.VIEW, true, false) {
 
          @Override
          public void execute() {
-            final ViewControlsDialog dialog = new ViewControlsDialog(application.getWorldWindowGLCanvas());
-            dialog.setVisible(true);
+            _isActive = !_isActive;
+            if (!_isActive) {
+               application.getWorldWindowGLCanvas().removeMouseListener(_listener);
+            }
+            else {
+               application.getWorldWindowGLCanvas().addMouseListener(_listener);
+            }
          }
 
       };
 
-      //      return new IGenericAction[] { action };
       return Collections.singletonList(action);
-
    }
 
 
@@ -98,13 +105,19 @@ public class ViewControls
 
    @Override
    public String getName() {
-      return "View configuration";
+      return "Info tool";
    }
 
 
    @Override
    public String getVersion() {
       return null;
+   }
+
+
+   @Override
+   public void initialize(final IGlobeApplication application) {
+      _listener = new InfoToolListener(application);
    }
 
 

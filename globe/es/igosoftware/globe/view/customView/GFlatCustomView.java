@@ -23,7 +23,7 @@ public class GFlatCustomView
    @Override
    public double computeFarClipDistance() {
       // Use the current eye point to auto-configure the far clipping plane distance.
-      final Vec4 eyePoint = this.getCurrentEyePoint();
+      final Vec4 eyePoint = getCurrentEyePoint();
       return computeFarClipDistance(eyePoint);
    }
 
@@ -31,7 +31,7 @@ public class GFlatCustomView
    @Override
    public double computeHorizonDistance() {
       // Use the eye point from the last call to apply() to compute horizon distance.
-      final Vec4 eyePoint = this.getEyePoint();
+      final Vec4 eyePoint = getEyePoint();
       return this.computeHorizonDistance(eyePoint);
    }
 
@@ -52,21 +52,21 @@ public class GFlatCustomView
    protected double computeHorizonDistance(final Vec4 eyePoint) {
       double horizon = 0;
       // Compute largest distance to flat globe 'corners'.
-      if ((this.globe != null) && (eyePoint != null)) {
+      if ((globe != null) && (eyePoint != null)) {
          double dist = 0;
          Vec4 p;
          // Use max distance to six points around the map
-         p = this.globe.computePointFromPosition(Angle.POS90, Angle.NEG180, 0); // NW
+         p = globe.computePointFromPosition(Angle.POS90, Angle.NEG180, 0); // NW
          dist = Math.max(dist, eyePoint.distanceTo3(p));
-         p = this.globe.computePointFromPosition(Angle.POS90, Angle.POS180, 0); // NE
+         p = globe.computePointFromPosition(Angle.POS90, Angle.POS180, 0); // NE
          dist = Math.max(dist, eyePoint.distanceTo3(p));
-         p = this.globe.computePointFromPosition(Angle.NEG90, Angle.NEG180, 0); // SW
+         p = globe.computePointFromPosition(Angle.NEG90, Angle.NEG180, 0); // SW
          dist = Math.max(dist, eyePoint.distanceTo3(p));
-         p = this.globe.computePointFromPosition(Angle.NEG90, Angle.POS180, 0); // SE
+         p = globe.computePointFromPosition(Angle.NEG90, Angle.POS180, 0); // SE
          dist = Math.max(dist, eyePoint.distanceTo3(p));
-         p = this.globe.computePointFromPosition(Angle.ZERO, Angle.POS180, 0); // E
+         p = globe.computePointFromPosition(Angle.ZERO, Angle.POS180, 0); // E
          dist = Math.max(dist, eyePoint.distanceTo3(p));
-         p = this.globe.computePointFromPosition(Angle.ZERO, Angle.NEG180, 0); // W
+         p = globe.computePointFromPosition(Angle.ZERO, Angle.NEG180, 0); // W
          dist = Math.max(dist, eyePoint.distanceTo3(p));
          horizon = dist;
       }

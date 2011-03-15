@@ -63,18 +63,17 @@ import es.igosoftware.globe.attributes.GFloatLayerAttribute;
 import es.igosoftware.globe.attributes.GSelectionLayerAttribute;
 import es.igosoftware.globe.attributes.GVectorFieldLayerAttribute;
 import es.igosoftware.globe.attributes.ILayerAttribute;
-import es.igosoftware.globe.layers.GLinesRenderer;
-import es.igosoftware.globe.layers.GPointsRenderer;
-import es.igosoftware.globe.layers.GPolygonsRenderer;
-import es.igosoftware.globe.layers.GVectorRenderer;
-import es.igosoftware.globe.layers.RasterRenderer;
+import es.igosoftware.globe.layers.GLinesRenderingTheme;
+import es.igosoftware.globe.layers.GPointsRenderingTheme;
+import es.igosoftware.globe.layers.GPolygonsRenderingTheme;
+import es.igosoftware.globe.layers.GVectorRenderingTheme;
 import es.igosoftware.globe.layers.ShapefileTools;
 import es.igosoftware.io.GGenericFileFilter;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GPair;
 
 
-public class AddVectorLayer
+public class GAddVectorLayerModule
          extends
             GAbstractGlobeModule
          implements
@@ -136,23 +135,25 @@ public class AddVectorLayer
 
          @Override
          public String get() {
-            return coloringMethods[((IGlobeVectorLayer) layer).getRenderer().getColoringMethod()];
+            return coloringMethods[((IGlobeVectorLayer) layer).getRenderingTheme().getColoringMethod().ordinal()];
          }
 
 
          @Override
          public void set(final String value) {
-            int iMethod = GVectorRenderer.COLORING_METHOD_COLOR_RAMP;
+
+
+            GVectorRenderingTheme.ColoringMethod iMethod = GVectorRenderingTheme.ColoringMethod.COLOR_RAMP;
             if (value.equals("Unique color")) {
-               iMethod = GVectorRenderer.COLORING_METHOD_UNIQUE;
+               iMethod = GVectorRenderingTheme.ColoringMethod.UNIQUE;
             }
             else if (value.equals("Color ramp")) {
-               iMethod = GVectorRenderer.COLORING_METHOD_COLOR_RAMP;
+               iMethod = GVectorRenderingTheme.ColoringMethod.COLOR_RAMP;
             }
             else if (value.equals("Lookup table")) {
-               iMethod = RasterRenderer.COLORING_METHOD_LUT;
+               iMethod = GVectorRenderingTheme.ColoringMethod.COLOR_LUT;
             }
-            ((IGlobeVectorLayer) layer).getRenderer().setColoringMethod(iMethod);
+            ((IGlobeVectorLayer) layer).getRenderingTheme().setColoringMethod(iMethod);
             ((IGlobeVectorLayer) layer).redraw();
          }
 
@@ -167,13 +168,13 @@ public class AddVectorLayer
 
          @Override
          public Color get() {
-            return ((IGlobeVectorLayer) layer).getRenderer().getColor();
+            return ((IGlobeVectorLayer) layer).getRenderingTheme().getColor();
          }
 
 
          @Override
          public void set(final Color value) {
-            ((IGlobeVectorLayer) layer).getRenderer().setColor(value);
+            ((IGlobeVectorLayer) layer).getRenderingTheme().setColor(value);
             ((IGlobeVectorLayer) layer).redraw();
          }
       };
@@ -191,13 +192,13 @@ public class AddVectorLayer
 
          @Override
          public Color get() {
-            return ((IGlobeVectorLayer) layer).getRenderer().getColor();
+            return ((IGlobeVectorLayer) layer).getRenderingTheme().getColor();
          }
 
 
          @Override
          public void set(final Color value) {
-            ((IGlobeVectorLayer) layer).getRenderer().setColor(value);
+            ((IGlobeVectorLayer) layer).getRenderingTheme().setColor(value);
             ((IGlobeVectorLayer) layer).redraw();
          }
       };
@@ -212,13 +213,13 @@ public class AddVectorLayer
          @Override
          public LinearGradientPaint get() {
             final IGlobeVectorLayer vectorLayer = (IGlobeVectorLayer) layer;
-            return vectorLayer.getRenderer().getGradient();
+            return vectorLayer.getRenderingTheme().getGradient();
          }
 
 
          @Override
          public void set(final LinearGradientPaint gradient) {
-            ((IGlobeVectorLayer) layer).getRenderer().setGradient(gradient);
+            ((IGlobeVectorLayer) layer).getRenderingTheme().setGradient(gradient);
             ((IGlobeVectorLayer) layer).redraw();
          }
       };
@@ -237,7 +238,7 @@ public class AddVectorLayer
          @Override
          public String get() {
             final GField[] fields = ((IGlobeVectorLayer) layer).getFields();
-            final GPointsRenderer rend = (GPointsRenderer) ((IGlobeVectorLayer) layer).getRenderer();
+            final GPointsRenderingTheme rend = (GPointsRenderingTheme) ((IGlobeVectorLayer) layer).getRenderingTheme();
             return fields[rend.getFieldIndex()].getName();
          }
 
@@ -253,7 +254,7 @@ public class AddVectorLayer
                   iField = i;
                }
             }
-            final GPointsRenderer rend = (GPointsRenderer) ((IGlobeVectorLayer) layer).getRenderer();
+            final GPointsRenderingTheme rend = (GPointsRenderingTheme) ((IGlobeVectorLayer) layer).getRenderingTheme();
             rend.setFieldIndex(iField);
             ((IGlobeVectorLayer) layer).redraw();
          }
@@ -278,10 +279,10 @@ public class AddVectorLayer
          public Float get() {
             final GVectorLayerType iShapeType = ((IGlobeVectorLayer) layer).getShapeType();
             if (iShapeType == GVectorLayerType.LINE) {
-               return (float) ((GLinesRenderer) ((IGlobeVectorLayer) layer).getRenderer()).getLineThickness();
+               return (float) ((GLinesRenderingTheme) ((IGlobeVectorLayer) layer).getRenderingTheme()).getLineThickness();
             }
             else if (iShapeType == GVectorLayerType.POLYGON) {
-               return (float) ((GPolygonsRenderer) ((IGlobeVectorLayer) layer).getRenderer()).getBorderThickness();
+               return (float) ((GPolygonsRenderingTheme) ((IGlobeVectorLayer) layer).getRenderingTheme()).getBorderThickness();
             }
             else {
                return 1f;
@@ -293,10 +294,10 @@ public class AddVectorLayer
          public void set(final Float value) {
             final GVectorLayerType iShapeType = ((IGlobeVectorLayer) layer).getShapeType();
             if (iShapeType == GVectorLayerType.LINE) {
-               ((GLinesRenderer) ((IGlobeVectorLayer) layer).getRenderer()).setLineThickness(value.intValue());
+               ((GLinesRenderingTheme) ((IGlobeVectorLayer) layer).getRenderingTheme()).setLineThickness(value.intValue());
             }
             else if (iShapeType == GVectorLayerType.POLYGON) {
-               ((GPolygonsRenderer) ((IGlobeVectorLayer) layer).getRenderer()).setBorderThickness(value.intValue());
+               ((GPolygonsRenderingTheme) ((IGlobeVectorLayer) layer).getRenderingTheme()).setBorderThickness(value.intValue());
             }
             ((IGlobeVectorLayer) layer).redraw();
          }
@@ -317,24 +318,24 @@ public class AddVectorLayer
 
          @Override
          public String get() {
-            final GPointsRenderer rend = (GPointsRenderer) ((IGlobeVectorLayer) layer).getRenderer();
+            final GPointsRenderingTheme rend = (GPointsRenderingTheme) ((IGlobeVectorLayer) layer).getRenderingTheme();
             return altitudeMethods[rend.getAltitudeMethod()];
          }
 
 
          @Override
          public void set(final String value) {
-            int iMethod = GPointsRenderer.ALTITUDE_METHOD_CLAMPED_TO_GROUND;
+            int iMethod = GPointsRenderingTheme.ALTITUDE_METHOD_CLAMPED_TO_GROUND;
             if (value.equals("Clamped to the ground")) {
-               iMethod = GPointsRenderer.ALTITUDE_METHOD_CLAMPED_TO_GROUND;
+               iMethod = GPointsRenderingTheme.ALTITUDE_METHOD_CLAMPED_TO_GROUND;
             }
             else if (value.equals("Relative")) {
-               iMethod = GPointsRenderer.ALTITUDE_METHOD_RELATIVE_TO_GROUND;
+               iMethod = GPointsRenderingTheme.ALTITUDE_METHOD_RELATIVE_TO_GROUND;
             }
             else if (value.equals("Absolute")) {
-               iMethod = GPointsRenderer.ALTITUDE_METHOD_ABSOLUTE;
+               iMethod = GPointsRenderingTheme.ALTITUDE_METHOD_ABSOLUTE;
             }
-            final GPointsRenderer rend = (GPointsRenderer) ((IGlobeVectorLayer) layer).getRenderer();
+            final GPointsRenderingTheme rend = (GPointsRenderingTheme) ((IGlobeVectorLayer) layer).getRenderingTheme();
             rend.setAltitudeMethod(iMethod);
             ((IGlobeVectorLayer) layer).redraw();
          }
@@ -356,21 +357,21 @@ public class AddVectorLayer
 
          @Override
          public String get() {
-            final GPointsRenderer rend = (GPointsRenderer) ((IGlobeVectorLayer) layer).getRenderer();
+            final GPointsRenderingTheme rend = (GPointsRenderingTheme) ((IGlobeVectorLayer) layer).getRenderingTheme();
             return altitudeSources[rend.getAltitudeOrigin()];
          }
 
 
          @Override
          public void set(final String value) {
-            int iMethod = GPointsRenderer.TAKE_ALTITUDE_FROM_FIXED;
+            int iMethod = GPointsRenderingTheme.TAKE_ALTITUDE_FROM_FIXED;
             if (value.equals("Fixed value")) {
-               iMethod = GPointsRenderer.TAKE_ALTITUDE_FROM_FIXED;
+               iMethod = GPointsRenderingTheme.TAKE_ALTITUDE_FROM_FIXED;
             }
             else if (value.equals("Field")) {
-               iMethod = GPointsRenderer.TAKE_ALTITUDE_FROM_FIELD;
+               iMethod = GPointsRenderingTheme.TAKE_ALTITUDE_FROM_FIELD;
             }
-            final GPointsRenderer rend = (GPointsRenderer) ((IGlobeVectorLayer) layer).getRenderer();
+            final GPointsRenderingTheme rend = (GPointsRenderingTheme) ((IGlobeVectorLayer) layer).getRenderingTheme();
             rend.setAltitudeOrigin(iMethod);
             ((IGlobeVectorLayer) layer).redraw();
          }
@@ -391,7 +392,7 @@ public class AddVectorLayer
          @Override
          public String get() {
             final GField[] fields = ((IGlobeVectorLayer) layer).getFields();
-            final GPointsRenderer rend = (GPointsRenderer) ((IGlobeVectorLayer) layer).getRenderer();
+            final GPointsRenderingTheme rend = (GPointsRenderingTheme) ((IGlobeVectorLayer) layer).getRenderingTheme();
             return fields[rend.getAltitudeField()].getName();
          }
 
@@ -407,7 +408,7 @@ public class AddVectorLayer
                   iField = i;
                }
             }
-            final GPointsRenderer rend = (GPointsRenderer) ((IGlobeVectorLayer) layer).getRenderer();
+            final GPointsRenderingTheme rend = (GPointsRenderingTheme) ((IGlobeVectorLayer) layer).getRenderingTheme();
             rend.setAltitudeField(iField);
             ((IGlobeVectorLayer) layer).redraw();
          }
@@ -429,14 +430,14 @@ public class AddVectorLayer
 
          @Override
          public Float get() {
-            final GPointsRenderer rend = (GPointsRenderer) ((IGlobeVectorLayer) layer).getRenderer();
+            final GPointsRenderingTheme rend = (GPointsRenderingTheme) ((IGlobeVectorLayer) layer).getRenderingTheme();
             return new Float(rend.getFixedAltitude());
          }
 
 
          @Override
          public void set(final Float value) {
-            final GPointsRenderer rend = (GPointsRenderer) ((IGlobeVectorLayer) layer).getRenderer();
+            final GPointsRenderingTheme rend = (GPointsRenderingTheme) ((IGlobeVectorLayer) layer).getRenderingTheme();
             rend.setFixedAltitude(value.doubleValue());
             ((IGlobeVectorLayer) layer).redraw();
          }
@@ -467,7 +468,7 @@ public class AddVectorLayer
          try {
             final IGlobeVectorLayer vl = ShapefileTools.readFile(new File(sFilename));
             if (vl != null) {
-               vl.setProjection((GProjection) selectedValue);
+               //               vl.setProjection((GProjection) selectedValue);
                vl.redraw();
                application.getModel().getLayers().add(vl);
                vl.setPickEnabled(false);
@@ -497,7 +498,6 @@ public class AddVectorLayer
 
    @Override
    public void initializeTranslations(final IGlobeApplication application) {
-      // TODO Auto-generated method stub
 
    }
 

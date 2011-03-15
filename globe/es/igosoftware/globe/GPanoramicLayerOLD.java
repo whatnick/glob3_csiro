@@ -44,8 +44,8 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
-import es.igosoftware.globe.layers.Feature;
-import es.igosoftware.globe.layers.GVectorRenderer;
+import es.igosoftware.globe.layers.GFeature;
+import es.igosoftware.globe.layers.GVectorRenderingTheme;
 import es.igosoftware.globe.utils.GAreasEventsLayer;
 import es.igosoftware.globe.utils.GAreasEventsLayer.IAreaEventsListener;
 import es.igosoftware.io.GIOUtils;
@@ -679,7 +679,7 @@ public final class GPanoramicLayerOLD
 
 
    @Override
-   public Feature[] getFeatures() {
+   public GFeature[] getFeatures() {
       return null;
    }
 
@@ -691,7 +691,7 @@ public final class GPanoramicLayerOLD
 
 
    @Override
-   public GVectorRenderer getRenderer() {
+   public GVectorRenderingTheme getRenderingTheme() {
       return null;
    }
 
@@ -763,12 +763,6 @@ public final class GPanoramicLayerOLD
    public final void redraw() {
       // fire event to force a redraw
       firePropertyChange(AVKey.LAYER, null, this);
-   }
-
-
-   @Override
-   public void setProjection(final GProjection proj) {
-      throw new RuntimeException("Can't change projection");
    }
 
 

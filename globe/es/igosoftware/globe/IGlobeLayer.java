@@ -65,9 +65,6 @@ public interface IGlobeLayer
    public GProjection getProjection();
 
 
-   public void setProjection(GProjection proj);
-
-
    public void redraw();
 
 

@@ -42,7 +42,7 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeRasterLayer;
 import es.igosoftware.globe.IGlobeVectorLayer;
-import es.igosoftware.globe.layers.RasterGeodata;
+import es.igosoftware.globe.layers.GRasterGeodata;
 import es.igosoftware.util.GPair;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 import gov.nasa.worldwind.geom.Position;
@@ -133,8 +133,8 @@ public class InfoToolListener
             final IGlobeRasterLayer gRasterLayer = (IGlobeRasterLayer) layer;
             final Sector extent = gRasterLayer.getExtent();
             if (extent.contains(currentPosition)) {
-               final RasterGeodata geodata = gRasterLayer.getRasterGeodata();
-               final IVector2<?> transformedPt = GProjection.EPSG_4326.transformPoint(geodata._crs, new GVector2D(
+               final GRasterGeodata geodata = gRasterLayer.getRasterGeodata();
+               final IVector2<?> transformedPt = GProjection.EPSG_4326.transformPoint(geodata._projection, new GVector2D(
                         currentPosition.longitude.degrees, currentPosition.latitude.degrees));
                final double dX = transformedPt.x();
                final double dY = transformedPt.y();

@@ -28,7 +28,7 @@ import es.unex.sextante.wps.SextanteWPSConfig;
 import gov.nasa.worldwind.Model;
 
 
-public class Sextante
+public class GSextanteModule
          extends
             GAbstractGlobeModule {
 

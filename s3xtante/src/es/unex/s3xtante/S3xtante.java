@@ -11,11 +11,11 @@ import es.igosoftware.globe.GGlobeApplication;
 import es.igosoftware.globe.GLayersManagerModule;
 import es.igosoftware.globe.GStatisticsModule;
 import es.igosoftware.globe.IGlobeModule;
-import es.igosoftware.globe.modules.layers.AddRasterLayer;
-import es.igosoftware.globe.modules.layers.AddVectorLayer;
-import es.igosoftware.globe.modules.view.ViewControls;
-import es.unex.s3xtante.modules.sextante.Sextante;
-import es.unex.s3xtante.modules.tables.AddTable;
+import es.igosoftware.globe.modules.layers.GAddRasterLayerModule;
+import es.igosoftware.globe.modules.layers.GAddVectorLayerModule;
+import es.igosoftware.globe.modules.view.GViewControlsModule;
+import es.unex.s3xtante.modules.sextante.GSextanteModule;
+import es.unex.s3xtante.modules.tables.GAddTableModule;
 
 
 public class S3xtante
@@ -44,8 +44,8 @@ public class S3xtante
       //final GPointsCloudModule pointsCloudModule = new GPointsCloudModule(loader);
 
 
-      return new IGlobeModule[] { new GLayersManagerModule(), new GPolygon2DModule(), new GStatisticsModule(), new Sextante(),
-               new AddTable(), new AddRasterLayer(), new AddVectorLayer(), new ViewControls() };
+      return new IGlobeModule[] { new GLayersManagerModule(), new GPolygon2DModule(), new GStatisticsModule(), new GSextanteModule(),
+               new GAddTableModule(), new GAddRasterLayerModule(), new GAddVectorLayerModule(), new GViewControlsModule() };
 
    }
 

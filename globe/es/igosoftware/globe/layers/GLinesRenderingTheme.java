@@ -41,6 +41,7 @@ import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.LatLon;
+import gov.nasa.worldwind.globes.Globe;
 import gov.nasa.worldwind.render.Polyline;
 import gov.nasa.worldwind.render.Renderable;
 
@@ -51,32 +52,31 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 
 
-public class GLinesRenderer
+public class GLinesRenderingTheme
          extends
-            GVectorRenderer {
+            GVectorRenderingTheme {
 
    private int _lineThickness = 1;
 
 
-   public GLinesRenderer() {
-
+   public GLinesRenderingTheme() {
       super();
-      // TODO Auto-generated constructor stub
    }
 
 
    @Override
-   public Renderable[] getRenderables(final Feature feature,
-                                      final GProjection crs) {
+   protected Renderable[] getRenderables(final GFeature feature,
+                                         final GProjection projection,
+                                         final Globe globe) {
 
       try {
          final ArrayList<Polyline> polys = new ArrayList<Polyline>();
-         final Geometry geom = feature._geometry;
+         final Geometry geom = feature.getGeometry();
          for (int i = 0; i < geom.getNumGeometries(); i++) {
             final ArrayList<LatLon> list = new ArrayList<LatLon>();
             for (int j = 0; j < geom.getNumPoints(); j++) {
                final Coordinate coord = geom.getCoordinates()[j];
-               final IVector2<?> transformedPt = crs.transformPoint(GProjection.EPSG_4326, new GVector2D(coord.x, coord.y));
+               final IVector2<?> transformedPt = projection.transformPoint(GProjection.EPSG_4326, new GVector2D(coord.x, coord.y));
                final LatLon latlon = new LatLon(Angle.fromRadians(transformedPt.y()), Angle.fromRadians(transformedPt.x()));
                list.add(latlon);
             }
@@ -84,13 +84,12 @@ public class GLinesRenderer
 
             double dValue = 0d;
             try {
-               dValue = ((Number) feature._attributes[_fieldIndex]).doubleValue();
+               dValue = ((Number) feature.getAttributes()[_fieldIndex]).doubleValue();
             }
-            catch (final Exception e) {
-            }
+            catch (final Exception e) {}
 
             final Color color;
-            if (_coloringMethod == COLORING_METHOD_COLOR_RAMP) {
+            if (_coloringMethod == GVectorRenderingTheme.ColoringMethod.COLOR_RAMP) {
                color = new Color(getColorFromColorRamp(dValue));
             }
             else {

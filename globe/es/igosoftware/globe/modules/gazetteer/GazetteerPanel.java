@@ -90,20 +90,20 @@ public class GazetteerPanel
       super(new BorderLayout());
 
       if (gazetteerClassName != null) {
-         this._gazeteer = this.constructGazetteer(gazetteerClassName);
+         _gazeteer = constructGazetteer(gazetteerClassName);
       }
       else {
-         this._gazeteer = new YahooGazetteer();
+         _gazeteer = new YahooGazetteer();
       }
 
-      this._wwd = wwd;
+      _wwd = wwd;
 
       final TableLayout thisLayout = new TableLayout(new double[][] {
                { 7.0, TableLayoutConstants.FILL, TableLayoutConstants.FILL, TableLayoutConstants.FILL, 7.0 },
                { 7.0, TableLayoutConstants.MINIMUM, TableLayoutConstants.FILL, 6.0 } });
       thisLayout.setHGap(5);
       thisLayout.setVGap(5);
-      this.setLayout(thisLayout);
+      setLayout(thisLayout);
 
       {
          _jButtonSearch = new JButton();
@@ -270,7 +270,7 @@ public class GazetteerPanel
 
 
    private java.util.List<PointOfInterest> queryService(final String queryString) {
-      final java.util.List<PointOfInterest> results = this._gazeteer.findPlaces(queryString);
+      final java.util.List<PointOfInterest> results = _gazeteer.findPlaces(queryString);
       if ((results == null) || (results.size() == 0)) {
          return null;
       }
@@ -309,25 +309,25 @@ public class GazetteerPanel
 
    public void moveToLocation(final PointOfInterest location) {
       // Use a PanToIterator to iterate view to target _position
-      this._wwd.getView().goTo(new Position(location.getLatlon(), 0), 25e3);
+      _wwd.getView().goTo(new Position(location.getLatlon(), 0), 25e3);
    }
 
 
    public void moveToLocation(final Sector sector,
                               Double altitude) {
-      final OrbitView view = (OrbitView) this._wwd.getView();
+      final OrbitView view = (OrbitView) _wwd.getView();
 
-      final Globe globe = this._wwd.getModel().getGlobe();
+      final Globe globe = _wwd.getModel().getGlobe();
 
       if ((altitude == null) || (altitude == 0)) {
          final double t = sector.getDeltaLonRadians() > sector.getDeltaLonRadians() ? sector.getDeltaLonRadians()
                                                                                    : sector.getDeltaLonRadians();
          final double w = 0.5 * t * 6378137.0;
-         altitude = w / this._wwd.getView().getFieldOfView().tanHalfAngle();
+         altitude = w / _wwd.getView().getFieldOfView().tanHalfAngle();
       }
 
       if ((globe != null) && (view != null)) {
-         this._wwd.getView().goTo(new Position(sector.getCentroid(), 0), altitude);
+         _wwd.getView().goTo(new Position(sector.getCentroid(), 0), altitude);
       }
    }
 

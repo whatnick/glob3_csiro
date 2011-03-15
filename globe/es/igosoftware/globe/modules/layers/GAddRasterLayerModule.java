@@ -66,7 +66,7 @@ import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GPair;
 
 
-public class AddRasterLayer
+public class GAddRasterLayerModule
          extends
             GAbstractGlobeModule
          implements
@@ -126,7 +126,8 @@ public class AddRasterLayer
 
 
          @Override
-         public void set(final String value) {}
+         public void set(final String value) {
+         }
 
       };
 
@@ -144,7 +145,8 @@ public class AddRasterLayer
 
 
          @Override
-         public void set(final String value) {}
+         public void set(final String value) {
+         }
 
       };
 
@@ -277,7 +279,6 @@ public class AddRasterLayer
 
    @Override
    public void initializeTranslations(final IGlobeApplication application) {
-   // TODO Auto-generated method stub
 
    }
 

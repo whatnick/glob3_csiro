@@ -36,19 +36,36 @@
 
 package es.igosoftware.globe.layers;
 
+import java.util.Arrays;
+
 import com.vividsolutions.jts.geom.Geometry;
 
-
-public class Feature {
-
-   public final Geometry _geometry;
-   public final Object[] _attributes;
+import es.igosoftware.util.GAssert;
 
 
-   public Feature(final Geometry geometry,
-                  final Object[] attributes) {
+public class GFeature {
+
+   private final Geometry _geometry;
+   private final Object[] _attributes;
+
+
+   public GFeature(final Geometry geometry,
+                   final Object[] attributes) {
+      GAssert.notNull(geometry, "geometry");
+      GAssert.notNull(attributes, "attributes");
+
       _geometry = geometry;
       _attributes = attributes;
+   }
+
+
+   public Geometry getGeometry() {
+      return _geometry;
+   }
+
+
+   public Object[] getAttributes() {
+      return Arrays.copyOf(_attributes, _attributes.length);
    }
 
 

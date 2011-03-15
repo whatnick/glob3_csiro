@@ -34,48 +34,46 @@
 */
 
 
-package es.igosoftware.globe.modules.layers;
+package es.igosoftware.globe.modules.gazetteer;
 
 import java.awt.Component;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.JDialog;
 
 import es.igosoftware.globe.GAbstractGlobeModule;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
-import es.igosoftware.globe.actions.GButtonGenericAction;
 import es.igosoftware.globe.actions.IGenericAction;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.util.GPair;
 
 
-public class CreateNewVectorLayer
+public class GGazetteerModule
          extends
             GAbstractGlobeModule {
 
    @Override
+   public String getName() {
+      return "Gazetteer";
+   }
+
+
+   @Override
    public String getDescription() {
-      return "Create new vector layer";
+      return "Gazetteer";
+   }
+
+
+   @Override
+   public String getVersion() {
+      return null;
    }
 
 
    @Override
    public List<IGenericAction> getGenericActions(final IGlobeApplication application) {
-
-      final IGenericAction action = new GButtonGenericAction("Create new vector layer", ' ', null, IGenericAction.MenuArea.FILE,
-               false) {
-
-         @Override
-         public void execute() {
-            final JDialog newLayerDialog = new NewLayerDialog(application);
-            newLayerDialog.setVisible(true);
-         }
-      };
-
-      return Collections.singletonList(action);
+      return null;
    }
 
 
@@ -87,6 +85,27 @@ public class CreateNewVectorLayer
 
 
    @Override
+   public List<GPair<String, Component>> getPanels(final IGlobeApplication application) {
+      final List<GPair<String, Component>> panels = new ArrayList<GPair<String, Component>>();
+
+      try {
+         panels.add(new GPair<String, Component>("Go to", new GazetteerPanel(application.getWorldWindowGLCanvas(), null)));
+      }
+      catch (final ClassNotFoundException e) {
+         e.printStackTrace();
+      }
+      catch (final IllegalAccessException e) {
+         e.printStackTrace();
+      }
+      catch (final InstantiationException e) {
+         e.printStackTrace();
+      }
+
+      return panels;
+   }
+
+
+   @Override
    public List<ILayerAttribute<?>> getLayerAttributes(final IGlobeApplication application,
                                                       final IGlobeLayer layer) {
       return null;
@@ -94,26 +113,7 @@ public class CreateNewVectorLayer
 
 
    @Override
-   public String getName() {
-      return "Create new vector layer";
-   }
-
-
-   @Override
-   public String getVersion() {
-      return null;
-   }
-
-
-   @Override
-   public List<GPair<String, Component>> getPanels(final IGlobeApplication application) {
-      return null;
-   }
-
-
-   @Override
    public void initializeTranslations(final IGlobeApplication application) {
-      // TODO Auto-generated method stub
 
    }
 

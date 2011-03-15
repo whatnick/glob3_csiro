@@ -37,7 +37,6 @@
 package es.igosoftware.globe.layers;
 
 import es.igosoftware.euclid.projection.GProjection;
-import gov.nasa.worldwind.globes.Earth;
 import gov.nasa.worldwind.globes.Globe;
 import gov.nasa.worldwind.render.Renderable;
 
@@ -45,40 +44,39 @@ import java.awt.Color;
 import java.awt.LinearGradientPaint;
 
 
-public abstract class GVectorRenderer {
+public abstract class GVectorRenderingTheme {
 
-
-   public static final int       COLORING_METHOD_UNIQUE         = 0;
-   public static final int       COLORING_METHOD_COLOR_RAMP     = 1;
-   public static final int       COLORING_METHOD_COLOR_LUT      = 2;
-
-   protected static Globe        _globe                         = new Earth();
-   protected int                 _coloringMethod                = COLORING_METHOD_UNIQUE;
-   protected Color               _color                         = Color.red;
-   protected LinearGradientPaint _gradient;
-   protected int                 _fieldIndex                    = 0;
-
-   private double                _min;
-   private double                _max;
-   private boolean               _hasToRecalculateExtremeValues = true;
-
-
-   public GVectorRenderer() {
-
-      _gradient = new LinearGradientPaint(0f, 0f, 1f, 1f, new float[] { 0f, 1f }, new Color[] { Color.yellow, Color.red });
-      //calculateExtremeValues(features);
-
+   public static enum ColoringMethod {
+      UNIQUE,
+      COLOR_RAMP,
+      COLOR_LUT;
    }
 
 
-   public void calculateExtremeValues(final Feature[] features) {
+   protected ColoringMethod    _coloringMethod                = ColoringMethod.UNIQUE;
+   protected Color             _color                         = Color.red;
+   private LinearGradientPaint _gradient;
+   protected int               _fieldIndex                    = 0;
+
+   private double              _min;
+   private double              _max;
+   private boolean             _hasToRecalculateExtremeValues = true;
+
+
+   public GVectorRenderingTheme() {
+      _gradient = new LinearGradientPaint(0f, 0f, 1f, 1f, new float[] { 0f, 1f }, new Color[] { Color.yellow, Color.red });
+      //calculateExtremeValues(features);
+   }
+
+
+   public void calculateExtremeValues(final GFeature[] features) {
 
       if (_hasToRecalculateExtremeValues) {
          double dMin = Double.POSITIVE_INFINITY;
          double dMax = Double.NEGATIVE_INFINITY;
 
-         for (final Feature element : features) {
-            final String sValue = element._attributes[_fieldIndex].toString();
+         for (final GFeature element : features) {
+            final String sValue = element.getAttributes()[_fieldIndex].toString();
             try {
                final double dValue = Double.parseDouble(sValue);
                dMin = Math.min(dMin, dValue);
@@ -99,11 +97,12 @@ public abstract class GVectorRenderer {
    }
 
 
-   public abstract Renderable[] getRenderables(Feature feature,
-                                               GProjection crs);
+   protected abstract Renderable[] getRenderables(final GFeature feature,
+                                                  final GProjection projection,
+                                                  final Globe globe);
 
 
-   public int getColoringMethod() {
+   public ColoringMethod getColoringMethod() {
       return _coloringMethod;
    }
 
@@ -113,7 +112,7 @@ public abstract class GVectorRenderer {
    }
 
 
-   public void setColoringMethod(final int coloringMethod) {
+   public void setColoringMethod(final ColoringMethod coloringMethod) {
       _coloringMethod = coloringMethod;
    }
 

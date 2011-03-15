@@ -77,30 +77,30 @@ public class GCustomViewInputSupport {
             throw new IllegalArgumentException(message);
          }
 
-         this._center = center;
-         this._heading = heading;
-         this._pitch = pitch;
-         this._zoom = zoom;
+         _center = center;
+         _heading = heading;
+         _pitch = pitch;
+         _zoom = zoom;
       }
 
 
       public Position getCenterPosition() {
-         return this._center;
+         return _center;
       }
 
 
       public Angle getHeading() {
-         return this._heading;
+         return _heading;
       }
 
 
       public Angle getPitch() {
-         return this._pitch;
+         return _pitch;
       }
 
 
       public double getZoom() {
-         return this._zoom;
+         return _zoom;
       }
    }
 

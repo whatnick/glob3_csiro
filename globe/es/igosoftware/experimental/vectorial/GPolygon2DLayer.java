@@ -854,12 +854,6 @@ public class GPolygon2DLayer
 
 
    @Override
-   public void setProjection(final GProjection proj) {
-      throw new RuntimeException("Operation not supported!");
-   }
-
-
-   @Override
    public void redraw() {
       // fire event to force a redraw
       //      firePropertyChange(AVKey.LAYER, null, this);

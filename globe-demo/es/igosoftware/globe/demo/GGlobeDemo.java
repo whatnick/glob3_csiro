@@ -63,7 +63,7 @@ import es.igosoftware.globe.modules.view.GAnaglyphViewerModule;
 import es.igosoftware.globe.modules.view.GFlatWorldModule;
 import es.igosoftware.globe.modules.view.GShowLatLonGraticuleModule;
 import es.igosoftware.globe.modules.view.GShowUTMGraticuleModule;
-import es.igosoftware.globe.modules.view.ShowMeasureTool;
+import es.igosoftware.globe.modules.view.GShowMeasureToolModule;
 import es.igosoftware.globe.view.customView.GCustomView;
 import es.igosoftware.io.GFileLoader;
 import es.igosoftware.io.GFileName;
@@ -264,7 +264,7 @@ public class GGlobeDemo
       return new IGlobeModule[] { homePositionModule, new GLayersManagerModule(), new GPolygon2DModule(),
                new GFullScreenModule(), pointsCloudModule, new GAnaglyphViewerModule(false), new GStatisticsModule(),
                new GFlatWorldModule(), new GShowLatLonGraticuleModule(), new GShowUTMGraticuleModule(),
-               new GMultidimensionalDataModule(_multidimentionaldata), new ShowMeasureTool() };
+               new GMultidimensionalDataModule(_multidimentionaldata), new GShowMeasureToolModule() };
    }
 
 

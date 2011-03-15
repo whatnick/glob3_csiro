@@ -54,22 +54,19 @@ import gov.nasa.worldwind.layers.CompassLayer;
 import gov.nasa.worldwind.layers.Layer;
 
 
-public class CompassNavigation
+public class GCompassNavigationModule
          extends
             GAbstractGlobeModule {
 
    @Override
    public String getDescription() {
-
       return "Compass navigation";
-
    }
 
 
    @Override
    public List<IGenericAction> getGenericActions(final IGlobeApplication application) {
       return null;
-
    }
 
 
@@ -153,7 +150,6 @@ public class CompassNavigation
 
    @Override
    public void initializeTranslations(final IGlobeApplication application) {
-      // TODO Auto-generated method stub
 
    }
 

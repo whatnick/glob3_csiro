@@ -43,8 +43,8 @@ import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
-import es.igosoftware.globe.layers.Feature;
-import es.igosoftware.globe.layers.GVectorRenderer;
+import es.igosoftware.globe.layers.GFeature;
+import es.igosoftware.globe.layers.GVectorRenderingTheme;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.geom.Sector;
 import gov.nasa.worldwind.layers.MarkerLayer;
@@ -66,14 +66,14 @@ public class GSearchResultLayer
          implements
             IGlobeVectorLayer {
 
-   private final Feature[] m_Features;
+   private final GFeature[] m_Features;
 
 
    public GSearchResultLayer(final ArrayList<Marker> list) {
 
       super(list);
 
-      m_Features = new Feature[list.size()];
+      m_Features = new GFeature[list.size()];
 
       final GeometryFactory gf = new GeometryFactory();
 
@@ -83,10 +83,10 @@ public class GSearchResultLayer
                   marker.getPosition().latitude.degrees));
          try {
             final Object[] attribs = new Object[] { marker.getToponym().getName(), marker.getToponym().getPopulation() };
-            m_Features[i] = new Feature(geom, attribs);
+            m_Features[i] = new GFeature(geom, attribs);
          }
          catch (final Exception e) {
-            m_Features[i] = new Feature(geom, new Object[] { "", Long.valueOf(0) });
+            m_Features[i] = new GFeature(geom, new Object[] { "", Long.valueOf(0) });
          }
 
       }
@@ -113,11 +113,6 @@ public class GSearchResultLayer
 
 
    @Override
-   public void setProjection(final GProjection proj) {
-   }
-
-
-   @Override
    public GField[] getFields() {
       return new GField[] { new GField("Name", String.class), new GField("Population", Integer.class) };
    }
@@ -137,7 +132,7 @@ public class GSearchResultLayer
 
 
    @Override
-   public Feature[] getFeatures() {
+   public GFeature[] getFeatures() {
 
       return m_Features;
 
@@ -145,7 +140,7 @@ public class GSearchResultLayer
 
 
    @Override
-   public GVectorRenderer getRenderer() {
+   public GVectorRenderingTheme getRenderingTheme() {
       return null;
    }
 

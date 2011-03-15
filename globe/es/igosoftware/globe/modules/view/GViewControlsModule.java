@@ -43,68 +43,35 @@ import java.util.List;
 import es.igosoftware.globe.GAbstractGlobeModule;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
-import es.igosoftware.globe.actions.GCheckBoxGenericAction;
+import es.igosoftware.globe.actions.GButtonGenericAction;
 import es.igosoftware.globe.actions.IGenericAction;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
-import es.igosoftware.globe.view.customView.GCustomView;
 import es.igosoftware.util.GPair;
-import gov.nasa.worldwind.View;
-import gov.nasa.worldwind.view.firstperson.BasicFlyView;
-import gov.nasa.worldwind.view.orbit.BasicOrbitView;
 
 
-public class UseFlyView
+public class GViewControlsModule
          extends
             GAbstractGlobeModule {
 
-   private boolean _isActive = false;
-   private View    _oldView;
-
-
    @Override
    public String getDescription() {
-      return "Use fly view";
+
+      return "View configuration";
+
    }
 
 
    @Override
    public List<IGenericAction> getGenericActions(final IGlobeApplication application) {
 
-      final IGenericAction action = new GCheckBoxGenericAction("Use fly view", ' ', null, IGenericAction.MenuArea.VIEW, false,
+      final IGenericAction action = new GButtonGenericAction("View configuration...", ' ', null, IGenericAction.MenuArea.VIEW,
                false) {
 
          @Override
          public void execute() {
-
-            _isActive = !_isActive;
-
-            if (_isActive) {
-               final BasicFlyView view = new BasicFlyView();
-               final View currentView = application.getWorldWindowGLCanvas().getView();
-               _oldView = currentView;
-               view.copyViewState(currentView);
-               application.getWorldWindowGLCanvas().setView(view);
-
-            }
-            else {
-
-               final View currentView = application.getWorldWindowGLCanvas().getView();
-               final View view;
-               if (_oldView instanceof GCustomView) {
-                  view = new GCustomView();
-               }
-               else if (_oldView == null) {
-                  view = new BasicOrbitView();
-               }
-               else {
-                  view = new BasicOrbitView();
-               }
-
-               view.copyViewState(currentView);
-               application.getWorldWindowGLCanvas().setView(view);
-            }
-
+            final ViewControlsDialog dialog = new ViewControlsDialog(application.getWorldWindowGLCanvas());
+            dialog.setVisible(true);
          }
 
       };
@@ -131,7 +98,7 @@ public class UseFlyView
 
    @Override
    public String getName() {
-      return "Use fly view";
+      return "View configuration";
    }
 
 

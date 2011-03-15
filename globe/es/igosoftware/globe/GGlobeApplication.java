@@ -926,8 +926,8 @@ public abstract class GGlobeApplication
       }
       else {
          try {
-            if (this.getView() instanceof GCustomView) {
-               final GCustomView view = (GCustomView) this.getView();
+            if (getView() instanceof GCustomView) {
+               final GCustomView view = (GCustomView) getView();
 
                final GCustomViewInputHandler customViewInputHandler = (GCustomViewInputHandler) view.getViewInputHandler();
 
@@ -937,7 +937,7 @@ public abstract class GGlobeApplication
                redraw();
             }
             else {
-               final OrbitView view = (OrbitView) this.getView();
+               final OrbitView view = (OrbitView) getView();
 
                final OrbitViewInputHandler orbitViewInputHandler = (OrbitViewInputHandler) view.getViewInputHandler();
 
@@ -957,12 +957,12 @@ public abstract class GGlobeApplication
 
    public void jumpTo(final Position position,
                       final double elevation) {
-      if (this.getView() instanceof GCustomView) {
-         final GCustomView view = (GCustomView) this.getView();
+      if (getView() instanceof GCustomView) {
+         final GCustomView view = (GCustomView) getView();
          view.jumpTo(position, elevation);
       }
       else {
-         this.getView().goTo(position, elevation);
+         getView().goTo(position, elevation);
       }
    }
 
@@ -976,8 +976,8 @@ public abstract class GGlobeApplication
       }
       else {
          try {
-            if (this.getView() instanceof GCustomView) {
-               final GCustomView view = (GCustomView) this.getView();
+            if (getView() instanceof GCustomView) {
+               final GCustomView view = (GCustomView) getView();
 
                final GCustomViewInputHandler customViewInputHandler = (GCustomViewInputHandler) view.getViewInputHandler();
 
@@ -990,7 +990,7 @@ public abstract class GGlobeApplication
 
             }
             else {
-               final OrbitView view = (OrbitView) this.getView();
+               final OrbitView view = (OrbitView) getView();
 
                final OrbitViewInputHandler orbitViewInputHandler = (OrbitViewInputHandler) view.getViewInputHandler();
 
@@ -1287,7 +1287,7 @@ public abstract class GGlobeApplication
 
 
    public I3DContentCollectionLayer getContentCollectionLayer() {
-      for (final Layer layer : this.getLayerList()) {
+      for (final Layer layer : getLayerList()) {
          if (layer instanceof I3DContentCollectionLayer) {
             return (I3DContentCollectionLayer) layer;
          }

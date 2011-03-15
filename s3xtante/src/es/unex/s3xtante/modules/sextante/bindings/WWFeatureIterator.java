@@ -9,7 +9,7 @@ import java.util.BitSet;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
-import es.igosoftware.globe.layers.Feature;
+import es.igosoftware.globe.layers.GFeature;
 import es.unex.sextante.core.Sextante;
 import es.unex.sextante.dataObjects.FeatureImpl;
 import es.unex.sextante.dataObjects.IFeature;
@@ -22,7 +22,7 @@ public class WWFeatureIterator
          implements
             IFeatureIterator {
 
-   private Feature[]                     m_Features;
+   private GFeature[]                    m_Features;
    private int                           m_iIndex;
    private int                           m_iSelectedIndex;
    private int                           m_iCardinality;
@@ -44,7 +44,7 @@ public class WWFeatureIterator
    }
 
 
-   public WWFeatureIterator(final Feature[] features,
+   public WWFeatureIterator(final GFeature[] features,
                             final ArrayList<IVectorLayerFilter> filters) {
 
       m_iIndex = 0;
@@ -72,8 +72,8 @@ public class WWFeatureIterator
          while (!m_BitSet.get(m_iIndex)) {
             m_iIndex++;
          }
-         final Geometry geom = m_Features[m_iIndex]._geometry;
-         final Object[] record = m_Features[m_iIndex]._attributes;
+         final Geometry geom = m_Features[m_iIndex].getGeometry();
+         final Object[] record = m_Features[m_iIndex].getAttributes();
          final IFeature feature = new FeatureImpl(geom, record);
          m_iIndex++;
          m_iSelectedIndex++;
@@ -111,8 +111,8 @@ public class WWFeatureIterator
          final int iTotalCount = m_Features.length;
          m_BitSet = new BitSet(iTotalCount);
          for (int i = 0; i < iTotalCount; i++) {
-            final Geometry geom = m_Features[i]._geometry;
-            final Object[] record = m_Features[i]._attributes;
+            final Geometry geom = m_Features[i].getGeometry();
+            final Object[] record = m_Features[i].getAttributes();
             final IFeature feature = new FeatureImpl(geom, record);
             boolean bAccept = true;
             for (int j = 0; j < m_Filters.size(); j++) {

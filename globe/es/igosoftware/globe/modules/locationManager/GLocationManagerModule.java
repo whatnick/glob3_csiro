@@ -34,46 +34,72 @@
 */
 
 
-package es.igosoftware.globe.modules.view;
+package es.igosoftware.globe.modules.locationManager;
 
 import java.awt.Component;
+import java.util.Collections;
 import java.util.List;
+
+import javax.swing.JDialog;
 
 import es.igosoftware.globe.GAbstractGlobeModule;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
+import es.igosoftware.globe.actions.GButtonGenericAction;
 import es.igosoftware.globe.actions.IGenericAction;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.util.GPair;
-import gov.nasa.worldwind.View;
-import gov.nasa.worldwind.view.orbit.BasicOrbitView;
-import gov.nasa.worldwind.view.orbit.BasicOrbitViewLimits;
-import gov.nasa.worldwind.view.orbit.OrbitView;
-import gov.nasa.worldwind.view.orbit.OrbitViewLimits;
+import gov.nasa.worldwind.geom.Position;
 
 
-public class ViewLimits
+public class GLocationManagerModule
          extends
             GAbstractGlobeModule {
 
-   private final OrbitViewLimits _limits;
+   public GLocationManagerModule() {
+
+      Locations.setDefaultLocation(new NamedLocation("DEFAULT", Position.ZERO, 50000));
 
 
-   public ViewLimits(final OrbitViewLimits limits) {
-      _limits = limits;
+   }
+
+
+   public GLocationManagerModule(final Position position,
+                          final double elevation) {
+
+      Locations.setDefaultLocation(new NamedLocation("DEFAULT", position, elevation));
+
    }
 
 
    @Override
    public String getDescription() {
-      return "View limits";
+
+      return "Location manager";
+
    }
 
 
    @Override
    public List<IGenericAction> getGenericActions(final IGlobeApplication application) {
-      return null;
+
+      final IGenericAction action = new GButtonGenericAction("Location manager", ' ', null, IGenericAction.MenuArea.NAVIGATION,
+               false) {
+
+         @Override
+         public void execute() {
+
+            final JDialog locationManager = new LocationManagerDialog(application);
+            locationManager.setVisible(true);
+
+         }
+
+      };
+
+      //      return new IGenericAction[] { action };
+      return Collections.singletonList(action);
+
    }
 
 
@@ -93,7 +119,7 @@ public class ViewLimits
 
    @Override
    public String getName() {
-      return "View limits";
+      return "Location manager";
    }
 
 
@@ -104,18 +130,14 @@ public class ViewLimits
 
 
    @Override
-   public void initialize(final IGlobeApplication application) {
-      final View view = application.getView();
-      if (view instanceof BasicOrbitView) {
-         BasicOrbitViewLimits.applyLimits((OrbitView) view, _limits);
-      }
-
+   public List<GPair<String, Component>> getPanels(final IGlobeApplication application) {
+      return null;
    }
 
 
-   @Override
-   public List<GPair<String, Component>> getPanels(final IGlobeApplication application) {
-      return null;
+   public void postInitialize() {
+
+
    }
 
 

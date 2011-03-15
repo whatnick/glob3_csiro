@@ -75,7 +75,7 @@ public class MeasureToolDialog
       m_MeasureTool = new MeasureTool(ww);
       m_MeasureTool.setController(new MeasureToolController());
       final MeasureToolPanel panel = new MeasureToolPanel(ww, m_MeasureTool);
-      this.getContentPane().add(panel);
+      getContentPane().add(panel);
       pack();
 
    }

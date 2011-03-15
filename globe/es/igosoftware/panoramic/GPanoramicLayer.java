@@ -44,8 +44,8 @@ import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
-import es.igosoftware.globe.layers.Feature;
-import es.igosoftware.globe.layers.GVectorRenderer;
+import es.igosoftware.globe.layers.GFeature;
+import es.igosoftware.globe.layers.GVectorRenderingTheme;
 import es.igosoftware.globe.layers.I3DContentCollectionLayer;
 import es.igosoftware.globe.view.GBasicOrbitViewLimits;
 import es.igosoftware.globe.view.GInputState;
@@ -174,13 +174,6 @@ public class GPanoramicLayer
 
 
    @Override
-   public void setProjection(final GProjection proj) {
-      throw new RuntimeException("Can't change projection");
-
-   }
-
-
-   @Override
    public void redraw() {
       firePropertyChange(AVKey.LAYER, null, this);
 
@@ -217,7 +210,7 @@ public class GPanoramicLayer
 
 
    @Override
-   public GVectorRenderer getRenderer() {
+   public GVectorRenderingTheme getRenderingTheme() {
       return null;
    }
 
@@ -229,7 +222,7 @@ public class GPanoramicLayer
 
 
    @Override
-   public Feature[] getFeatures() {
+   public GFeature[] getFeatures() {
       return null;
    }
 

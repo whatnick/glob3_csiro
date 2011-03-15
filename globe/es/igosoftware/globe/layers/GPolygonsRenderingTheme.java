@@ -41,6 +41,7 @@ import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.LatLon;
+import gov.nasa.worldwind.globes.Globe;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Renderable;
 import gov.nasa.worldwind.render.airspaces.AirspaceAttributes;
@@ -53,33 +54,32 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 
 
-public class GPolygonsRenderer
+public class GPolygonsRenderingTheme
          extends
-            GVectorRenderer {
+            GVectorRenderingTheme {
 
    private final Color _borderColor     = Color.black;
    private int         _borderThickness = 1;
 
 
-   public GPolygonsRenderer() {
-
+   public GPolygonsRenderingTheme() {
       super();
-
    }
 
 
    @Override
-   public Renderable[] getRenderables(final Feature feature,
-                                      final GProjection crs) {
+   protected Renderable[] getRenderables(final GFeature feature,
+                                         final GProjection projection,
+                                         final Globe globe) {
 
-      final Geometry geom = feature._geometry;
+      final Geometry geom = feature.getGeometry();
       final ArrayList<Renderable> polygons = new ArrayList<Renderable>();
       for (int iGeom = 0; iGeom < geom.getNumGeometries(); iGeom++) {
          final Geometry subgeom = geom.getGeometryN(iGeom);
          final ArrayList<LatLon> list = new ArrayList<LatLon>();
          for (int i = 0; i < subgeom.getNumPoints(); i++) {
             final Coordinate coord = subgeom.getCoordinates()[i];
-            final IVector2<?> transformedPt = crs.transformPoint(GProjection.EPSG_4326, new GVector2D(coord.x, coord.y));
+            final IVector2<?> transformedPt = projection.transformPoint(GProjection.EPSG_4326, new GVector2D(coord.x, coord.y));
             final LatLon latlon = new LatLon(Angle.fromRadians(transformedPt.y()), Angle.fromRadians(transformedPt.x()));
             //final LatLon latlon = new LatLon(Angle.fromDegrees(coord.y), Angle.fromDegrees(coord.x));
             list.add(latlon);
@@ -91,12 +91,11 @@ public class GPolygonsRenderer
 
          double dValue = 0d;
          try {
-            dValue = ((Number) feature._attributes[_fieldIndex]).doubleValue();
+            dValue = ((Number) feature.getAttributes()[_fieldIndex]).doubleValue();
          }
-         catch (final Exception e) {
-         }
+         catch (final Exception e) {}
          final Color color;
-         if (_coloringMethod == COLORING_METHOD_COLOR_RAMP) {
+         if (_coloringMethod == GVectorRenderingTheme.ColoringMethod.COLOR_RAMP) {
             color = new Color(getColorFromColorRamp(dValue));
          }
          else {

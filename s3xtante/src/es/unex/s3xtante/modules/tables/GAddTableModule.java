@@ -24,15 +24,13 @@ import es.unex.s3xtante.tables.Tables;
 import es.unex.sextante.gui.algorithm.GenericFileFilter;
 
 
-public class AddTable
+public class GAddTableModule
          extends
             GAbstractGlobeModule {
 
    @Override
    public String getDescription() {
-
       return "Add Table";
-
    }
 
 
@@ -105,7 +103,6 @@ public class AddTable
 
    @Override
    public void initializeTranslations(final IGlobeApplication application) {
-      // TODO Auto-generated method stub
 
    }
 

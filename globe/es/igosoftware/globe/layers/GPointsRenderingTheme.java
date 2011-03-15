@@ -42,6 +42,7 @@ import es.igosoftware.euclid.vector.IVector2;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.LatLon;
 import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.globes.Globe;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Renderable;
 import gov.nasa.worldwind.render.markers.BasicMarkerAttributes;
@@ -54,9 +55,9 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
 
 
-public class GPointsRenderer
+public class GPointsRenderingTheme
          extends
-            GVectorRenderer {
+            GVectorRenderingTheme {
 
    public static final int ALTITUDE_METHOD_CLAMPED_TO_GROUND  = 0;
    public static final int ALTITUDE_METHOD_RELATIVE_TO_GROUND = 1;
@@ -72,44 +73,43 @@ public class GPointsRenderer
    private int             _altitudeOrigin                    = TAKE_ALTITUDE_FROM_FIXED;
 
 
-   public GPointsRenderer() {
-
+   public GPointsRenderingTheme() {
       super();
-
    }
 
 
    @Override
-   public Renderable[] getRenderables(final Feature feature,
-                                      final GProjection crs) {
+   protected Renderable[] getRenderables(final GFeature feature,
+                                         final GProjection projection,
+                                         final Globe globe) {
 
-      final Point geom = (Point) feature._geometry;
+      final Point geom = (Point) feature.getGeometry();
       final Coordinate coord = geom.getCoordinate();
 
       LatLon latlon;
-      if (crs.equals(GProjection.EPSG_4326)) {
+      if (projection.equals(GProjection.EPSG_4326)) {
          //if WGS84, we do not transform, but assume that the coordinates are in degrees
          //(as opossed to the coordinates given by proj4, which are radians)
          latlon = new LatLon(Angle.fromDegrees(coord.y), Angle.fromDegrees(coord.x));
       }
       else {
-         final IVector2<?> transformedPt = crs.transformPoint(GProjection.EPSG_4326, new GVector2D(coord.x, coord.y));
+         final IVector2<?> transformedPt = projection.transformPoint(GProjection.EPSG_4326, new GVector2D(coord.x, coord.y));
          latlon = new LatLon(Angle.fromRadians(transformedPt.y()), Angle.fromRadians(transformedPt.x()));
       }
 
-      double dAltitude = _globe.getElevation(latlon.latitude, latlon.longitude) + 1;
+
+      double dAltitude = globe.getElevation(latlon.latitude, latlon.longitude) + 1;
 
       double dValue = 0d;
 
       try {
-         dValue = ((Number) feature._attributes[_fieldIndex]).doubleValue();
+         dValue = ((Number) feature.getAttributes()[_fieldIndex]).doubleValue();
       }
-      catch (final Exception e) {
-      }
+      catch (final Exception e) {}
 
       final Color color;
 
-      if (_coloringMethod == COLORING_METHOD_COLOR_RAMP) {
+      if (_coloringMethod == GVectorRenderingTheme.ColoringMethod.COLOR_RAMP) {
          color = new Color(getColorFromColorRamp(dValue));
       }
       else {
@@ -123,10 +123,10 @@ public class GPointsRenderer
       else {
          if (_altitudeOrigin == TAKE_ALTITUDE_FROM_FIELD) {
             try {
-               dAltitude = ((Number) feature._attributes[_altitudeField]).doubleValue();
+               dAltitude = ((Number) feature.getAttributes()[_altitudeField]).doubleValue();
             }
             catch (final Exception e) {
-               dAltitude = _globe.getElevation(latlon.latitude, latlon.longitude) + 1;
+               dAltitude = globe.getElevation(latlon.latitude, latlon.longitude) + 1;
             }
 
          }
@@ -136,7 +136,7 @@ public class GPointsRenderer
       }
 
       if (_altitudeOrigin == ALTITUDE_METHOD_RELATIVE_TO_GROUND) {
-         dAltitude += _globe.getElevation(latlon.latitude, latlon.longitude);
+         dAltitude += globe.getElevation(latlon.latitude, latlon.longitude);
       }
 
       final MarkerAttributes markerAttributes = new BasicMarkerAttributes(new Material(color), _shapeType, 1, _size, _size);

@@ -91,7 +91,7 @@ public class ViewControlsDialog
             ww.getModel().getLayers().add(m_ViewControlsLayer);
             ww.addSelectListener(new ViewControlsSelectListener(ww, m_ViewControlsLayer));
          }
-         this.getContentPane().add(makeControlPanel());
+         getContentPane().add(makeControlPanel());
          pack();
       }
       catch (final Exception e) {

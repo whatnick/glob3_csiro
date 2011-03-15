@@ -348,15 +348,7 @@ public class GHttpLoader
    public GHttpLoader(final URL root,
                       final int workersCount,
                       final boolean verbose) {
-      this(root, null, workersCount, verbose, false, false);
-   }
-
-
-   public GHttpLoader(final URL root,
-                      final File cacheRootDirectory,
-                      final int workersCount,
-                      final boolean verbose) {
-      this(root, cacheRootDirectory, workersCount, verbose, false, false);
+      this(root, workersCount, verbose, false, false);
    }
 
 
@@ -364,21 +356,11 @@ public class GHttpLoader
                       final int workersCount,
                       final boolean verbose,
                       final boolean debug) {
-      this(root, DEFAULT_CACHE_DIRECTORY, workersCount, verbose, debug, false);
+      this(root, workersCount, verbose, debug, false);
    }
 
 
    public GHttpLoader(final URL root,
-                      final int workersCount,
-                      final boolean verbose,
-                      final boolean debug,
-                      final boolean simulateSlowConnection) {
-      this(root, DEFAULT_CACHE_DIRECTORY, workersCount, verbose, debug, simulateSlowConnection);
-   }
-
-
-   public GHttpLoader(final URL root,
-                      final File cacheRootDirectory,
                       final int workersCount,
                       final boolean verbose,
                       final boolean debug,
@@ -395,9 +377,7 @@ public class GHttpLoader
       _debug = debug;
       _simulateSlowConnection = simulateSlowConnection;
 
-
-      final File directory = (cacheRootDirectory == null) ? DEFAULT_CACHE_DIRECTORY : cacheRootDirectory;
-      _rootCacheDirectory = new File(directory, getDirectoryName(_rootURL));
+      _rootCacheDirectory = new File(DEFAULT_CACHE_DIRECTORY, getDirectoryName(_rootURL));
 
       if (!_rootCacheDirectory.exists()) {
          if (!_rootCacheDirectory.mkdirs()) {

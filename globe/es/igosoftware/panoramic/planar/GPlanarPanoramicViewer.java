@@ -75,10 +75,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.WindowConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -477,7 +479,7 @@ public class GPlanarPanoramicViewer {
                               final int height) {
       final JFrame frame = new JFrame(_name);
 
-      frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+      frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
       frame.getRootPane().registerKeyboardAction(new ActionListener() {
          @Override
          public void actionPerformed(final ActionEvent e) {
@@ -705,7 +707,7 @@ public class GPlanarPanoramicViewer {
       setPosition(_zoomInButton, margin + buttonExtent, margin + buttonExtent * 4 + 0);
 
 
-      _zoomSlider = new JSlider(JSlider.VERTICAL, _minLevel, _maxLevel, _currentLevel);
+      _zoomSlider = new JSlider(SwingConstants.VERTICAL, _minLevel, _maxLevel, _currentLevel);
       _zoomSlider.setMajorTickSpacing(0);
       _zoomSlider.setMinorTickSpacing(1);
       _zoomSlider.setSnapToTicks(true);
