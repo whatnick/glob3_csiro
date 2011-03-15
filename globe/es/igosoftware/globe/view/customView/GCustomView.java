@@ -81,10 +81,10 @@ public class GCustomView
     */
    public GCustomView() {
 
-      this.viewInputHandler = new GCustomViewInputHandler();
-      this.viewLimits = new GCustomViewLimits();
+      viewInputHandler = new GCustomViewInputHandler();
+      viewLimits = new GCustomViewLimits();
 
-      this._inputState = GInputState.ORBIT;
+      _inputState = GInputState.ORBIT;
 
       _collisionSupport.setCollisionThreshold(COLLISION_THRESHOLD);
       _collisionSupport.setNumIterations(COLLISION_NUM_ITERATIONS);
@@ -109,16 +109,16 @@ public class GCustomView
    private void loadConfigurationValues() {
       final Double initLat = Configuration.getDoubleValue(AVKey.INITIAL_LATITUDE);
       final Double initLon = Configuration.getDoubleValue(AVKey.INITIAL_LONGITUDE);
-      final double initElev = this._center.getElevation();
+      final double initElev = _center.getElevation();
       // Set center latitude and longitude. Do not change center elevation.
       if ((initLat != null) && (initLon != null)) {
          setCenterPosition(Position.fromDegrees(initLat, initLon, initElev));
       }
       else if (initLat != null) {
-         setCenterPosition(Position.fromDegrees(initLat, this._center.getLongitude().degrees, initElev));
+         setCenterPosition(Position.fromDegrees(initLat, _center.getLongitude().degrees, initElev));
       }
       else if (initLon != null) {
-         setCenterPosition(Position.fromDegrees(this._center.getLatitude().degrees, initLon, initElev));
+         setCenterPosition(Position.fromDegrees(_center.getLatitude().degrees, initLon, initElev));
       }
 
       final Double initHeading = Configuration.getDoubleValue(AVKey.INITIAL_HEADING);
@@ -141,16 +141,16 @@ public class GCustomView
          setFieldOfView(Angle.fromDegrees(initFov));
       }
 
-      this.setViewOutOfFocus(true);
+      setViewOutOfFocus(true);
    }
 
 
    protected void flagHadCollisions() {
       if (_inputState.isDetectCollisions()) {
-         this.hadCollisions = false;
+         hadCollisions = false;
       }
 
-      this.hadCollisions = true;
+      hadCollisions = true;
    }
 
 
@@ -161,7 +161,7 @@ public class GCustomView
     *           true if the point of rotation needs recalculation, false if it does not.
     */
    public void setViewOutOfFocus(final boolean b) {
-      this._viewOutOfFocus = b;
+      _viewOutOfFocus = b;
    }
 
 
@@ -170,7 +170,7 @@ public class GCustomView
     */
    @Override
    public void copyViewState(final View view) {
-      this.globe = view.getGlobe();
+      globe = view.getGlobe();
       final Vec4 center = view.getCenterPoint();
       if (center == null) {
          final String message = Logging.getMessage("nullValue.PositionIsNull");
@@ -204,23 +204,22 @@ public class GCustomView
     */
    @Override
    public Position getEyePosition() {
-      if (this.lastEyePosition == null) {
-         this.lastEyePosition = computeEyePositionFromModelview();
+      if (lastEyePosition == null) {
+         lastEyePosition = computeEyePositionFromModelview();
       }
-      return this.lastEyePosition;
+      return lastEyePosition;
    }
 
 
    @Override
    public Position getCurrentEyePosition() {
-      if (this.globe != null) {
-         final Matrix _modelview = GCustomViewInputSupport.computeTransformMatrix(this.globe, _center, this.heading, this.pitch,
-                  _zoom);
+      if (globe != null) {
+         final Matrix _modelview = GCustomViewInputSupport.computeTransformMatrix(globe, _center, heading, pitch, _zoom);
          if (_modelview != null) {
             final Matrix _modelviewInv = _modelview.getInverse();
             if (_modelviewInv != null) {
                final Vec4 eyePoint = Vec4.UNIT_W.transformBy4(_modelviewInv);
-               return this.globe.computePositionFromPoint(eyePoint);
+               return globe.computePositionFromPoint(eyePoint);
             }
          }
       }
@@ -231,9 +230,8 @@ public class GCustomView
 
    @Override
    public Vec4 getCurrentEyePoint() {
-      if (this.globe != null) {
-         final Matrix _modelview = GCustomViewInputSupport.computeTransformMatrix(this.globe, _center, this.heading, this.pitch,
-                  _zoom);
+      if (globe != null) {
+         final Matrix _modelview = GCustomViewInputSupport.computeTransformMatrix(globe, _center, heading, pitch, _zoom);
          if (_modelview != null) {
             final Matrix _modelviewInv = _modelview.getInverse();
             if (_modelviewInv != null) {
@@ -258,11 +256,11 @@ public class GCustomView
 
       // Set the center lat/lon to the eye lat/lon. Set the center elevation to zero if the eye elevation is >= 0.
       // Set the center elevation to the eye elevation if the eye elevation is < 0.
-      this._center = new Position(eyePos, elevation >= 0 ? 0 : elevation);
-      this.heading = Angle.ZERO;
-      this.pitch = Angle.ZERO;
+      _center = new Position(eyePos, elevation >= 0 ? 0 : elevation);
+      heading = Angle.ZERO;
+      pitch = Angle.ZERO;
       // If the eye elevation is >= 0, zoom gets the eye elevation. If the eye elevation < 0, zoom gets 0.
-      this._zoom = elevation >= 0 ? elevation : 0;
+      _zoom = elevation >= 0 ? elevation : 0;
 
       //resolveCollisionsWithCenterPosition();
    }
@@ -276,15 +274,15 @@ public class GCustomView
          Logging.logger().severe(message);
          throw new IllegalArgumentException(message);
       }
-      if (this.globe == null) {
+      if (globe == null) {
 
          final String message = Logging.getMessage("nullValue.DrawingContextGlobeIsNull");
          Logging.logger().severe(message);
          throw new IllegalStateException(message);
       }
 
-      final Vec4 newEyePoint = this.globe.computePointFromPosition(eyePos);
-      final Vec4 newCenterPoint = this.globe.computePointFromPosition(centerPosition);
+      final Vec4 newEyePoint = globe.computePointFromPosition(eyePos);
+      final Vec4 newCenterPoint = globe.computePointFromPosition(centerPosition);
       if ((newEyePoint == null) || (newCenterPoint == null)) {
          final String message = Logging.getMessage("View.ErrorSettingOrientation", eyePos, centerPosition);
          Logging.logger().severe(message);
@@ -293,12 +291,11 @@ public class GCustomView
 
       // If eye lat/lon != center lat/lon, then the surface normal at the center point will be a good value
       // for the up direction.
-      Vec4 up = this.globe.computeSurfaceNormalAtPoint(newCenterPoint);
+      Vec4 up = globe.computeSurfaceNormalAtPoint(newCenterPoint);
       // Otherwise, estimate the up direction by using the *current* heading with the new center position.
       final Vec4 forward = newCenterPoint.subtract3(newEyePoint).normalize3();
       if (forward.cross3(up).getLength3() < 0.001) {
-         final Matrix modelviewMat = GCustomViewInputSupport.computeTransformMatrix(this.globe, centerPosition, this.heading,
-                  Angle.ZERO, 1);
+         final Matrix modelviewMat = GCustomViewInputSupport.computeTransformMatrix(globe, centerPosition, heading, Angle.ZERO, 1);
          if (modelviewMat != null) {
             final Matrix modelviewInvMat = modelviewMat.getInverse();
             if (modelviewInvMat != null) {
@@ -313,7 +310,7 @@ public class GCustomView
          throw new IllegalArgumentException(message);
       }
 
-      final GCustomViewInputSupport.CustomViewState modelCoords = GCustomViewInputSupport.computeCustomViewState(this.globe,
+      final GCustomViewInputSupport.CustomViewState modelCoords = GCustomViewInputSupport.computeCustomViewState(globe,
                newEyePoint, newCenterPoint, up);
       if (!validateModelCoordinates(modelCoords)) {
          final String message = Logging.getMessage("View.ErrorSettingOrientation", eyePos, centerPosition);
@@ -334,7 +331,7 @@ public class GCustomView
     **/
    @Override
    public boolean canFocusOnViewportCenter() {
-      return (this.dc != null) && (this.dc.getViewportCenterPosition() != null) && (this.globe != null);
+      return (dc != null) && (dc.getViewportCenterPosition() != null) && (globe != null);
    }
 
 
@@ -343,21 +340,21 @@ public class GCustomView
     **/
    @Override
    public void focusOnViewportCenter() {
-      if (this.isAnimating()) {
+      if (isAnimating()) {
          return;
       }
-      if (this.dc == null) {
+      if (dc == null) {
          final String message = Logging.getMessage("nullValue.DrawContextIsNull");
          Logging.logger().severe(message);
          throw new IllegalStateException(message);
       }
-      if (this.globe == null) {
+      if (globe == null) {
          final String message = Logging.getMessage("nullValue.DrawingContextGlobeIsNull");
          Logging.logger().severe(message);
          throw new IllegalStateException(message);
       }
 
-      final Position viewportCenterPos = this.dc.getViewportCenterPosition();
+      final Position viewportCenterPos = dc.getViewportCenterPosition();
       if (viewportCenterPos == null) {
          final String message = Logging.getMessage("nullValue.DrawingContextViewportCenterIsNull");
          Logging.logger().severe(message);
@@ -365,15 +362,14 @@ public class GCustomView
       }
 
       // We want the actual "geometric point" here, which must be adjusted for vertical exaggeration.
-      final Vec4 viewportCenterPoint = this.globe.computePointFromPosition(
+      final Vec4 viewportCenterPoint = globe.computePointFromPosition(
                viewportCenterPos.getLatitude(),
                viewportCenterPos.getLongitude(),
-               this.globe.getElevation(viewportCenterPos.getLatitude(), viewportCenterPos.getLongitude())
+               globe.getElevation(viewportCenterPos.getLatitude(), viewportCenterPos.getLongitude())
                         * dc.getVerticalExaggeration());
 
       if (viewportCenterPoint != null) {
-         final Matrix modelviewMat = GCustomViewInputSupport.computeTransformMatrix(this.globe, this._center, this.heading,
-                  this.pitch, this._zoom);
+         final Matrix modelviewMat = GCustomViewInputSupport.computeTransformMatrix(globe, _center, heading, pitch, _zoom);
          if (modelviewMat != null) {
             final Matrix modelviewInvMat = modelviewMat.getInverse();
             if (modelviewInvMat != null) {
@@ -386,8 +382,8 @@ public class GCustomView
                final double distance = eyePoint.distanceTo3(viewportCenterPoint);
                final Vec4 newCenterPoint = Vec4.fromLine3(eyePoint, distance, forward);
 
-               final GCustomViewInputSupport.CustomViewState modelCoords = GCustomViewInputSupport.computeCustomViewState(
-                        this.globe, modelviewMat, newCenterPoint);
+               final GCustomViewInputSupport.CustomViewState modelCoords = GCustomViewInputSupport.computeCustomViewState(globe,
+                        modelviewMat, newCenterPoint);
                if (validateModelCoordinates(modelCoords)) {
                   setModelCoordinates(modelCoords);
                }
@@ -399,31 +395,30 @@ public class GCustomView
 
 
    public boolean canFocusOnTerrainCenter() {
-      return (this.dc != null) && (this.dc.getSurfaceGeometry() != null) && (this.globe != null);
+      return (dc != null) && (dc.getSurfaceGeometry() != null) && (globe != null);
    }
 
 
    public void focusOnTerrainCenter() {
-      if (this.dc == null) {
+      if (dc == null) {
          final String message = Logging.getMessage("nullValue.DrawContextIsNull");
          Logging.logger().severe(message);
          throw new IllegalStateException(message);
       }
-      if (this.globe == null) {
+      if (globe == null) {
          final String message = Logging.getMessage("nullValue.DrawingContextGlobeIsNull");
          Logging.logger().severe(message);
          throw new IllegalStateException(message);
       }
 
-      if (this.dc.getSurfaceGeometry() == null) {
+      if (dc.getSurfaceGeometry() == null) {
          return;
       }
       if (isAnimating()) {
          return;
       }
 
-      final Matrix modelviewMat = GCustomViewInputSupport.computeTransformMatrix(this.globe, this._center, this.heading,
-               this.pitch, this._zoom);
+      final Matrix modelviewMat = GCustomViewInputSupport.computeTransformMatrix(globe, _center, heading, pitch, _zoom);
       if (modelviewMat != null) {
          final Matrix modelviewInvMat = modelviewMat.getInverse();
          if (modelviewInvMat != null) {
@@ -432,11 +427,11 @@ public class GCustomView
 
             final Vec4 eyePoint = Vec4.UNIT_W.transformBy4(modelviewInvMat);
             final Vec4 forward = Vec4.UNIT_NEGATIVE_Z.transformBy4(modelviewInvMat);
-            final Intersection[] intersections = this.dc.getSurfaceGeometry().intersect(new Line(eyePoint, forward));
+            final Intersection[] intersections = dc.getSurfaceGeometry().intersect(new Line(eyePoint, forward));
             if ((intersections != null) && (intersections.length > 0)) {
                final Vec4 viewportCenterPoint = intersections[0].getIntersectionPoint();
-               final GCustomViewInputSupport.CustomViewState modelCoords = GCustomViewInputSupport.computeCustomViewState(
-                        this.globe, modelviewMat, viewportCenterPoint);
+               final GCustomViewInputSupport.CustomViewState modelCoords = GCustomViewInputSupport.computeCustomViewState(globe,
+                        modelviewMat, viewportCenterPoint);
                if (validateModelCoordinates(modelCoords)) {
                   setModelCoordinates(modelCoords);
                }
@@ -465,8 +460,8 @@ public class GCustomView
          throw new IllegalArgumentException(message);
       }
 
-      this._center = normalizedCenterPosition(center);
-      this._center = GCustomViewLimits.limitCenterPosition(this._center, this.getOrbitViewLimits());
+      _center = normalizedCenterPosition(center);
+      _center = GCustomViewLimits.limitCenterPosition(_center, getOrbitViewLimits());
 
       if (_inputState.isDetectCollisions()) {
          resolveCollisionsWithCenterPosition();
@@ -483,8 +478,8 @@ public class GCustomView
          throw new IllegalArgumentException(message);
       }
 
-      this.heading = normalizedHeading(newHeading);
-      this.heading = BasicViewPropertyLimits.limitHeading(this.heading, this.getOrbitViewLimits());
+      heading = normalizedHeading(newHeading);
+      heading = BasicViewPropertyLimits.limitHeading(heading, getOrbitViewLimits());
       if (_inputState.isDetectCollisions()) {
          resolveCollisionsWithPitch();
       }
@@ -499,8 +494,8 @@ public class GCustomView
          throw new IllegalArgumentException(message);
       }
 
-      this.pitch = normalizedPitch(newPitch);
-      this.pitch = BasicViewPropertyLimits.limitPitch(this.pitch, this.getOrbitViewLimits());
+      pitch = normalizedPitch(newPitch);
+      pitch = BasicViewPropertyLimits.limitPitch(pitch, getOrbitViewLimits());
       if (_inputState.isDetectCollisions()) {
          resolveCollisionsWithPitch();
       }
@@ -515,8 +510,8 @@ public class GCustomView
          throw new IllegalArgumentException(message);
       }
 
-      this._zoom = newZoom;
-      this._zoom = GCustomViewLimits.limitZoom(this._zoom, this.getOrbitViewLimits());
+      _zoom = newZoom;
+      _zoom = GCustomViewLimits.limitZoom(_zoom, getOrbitViewLimits());
       if (_inputState.isDetectCollisions()) {
          resolveCollisionsWithCenterPosition();
       }
@@ -547,7 +542,7 @@ public class GCustomView
          throw new IllegalArgumentException(message);
       }
 
-      this.viewLimits = newViewLimits;
+      viewLimits = newViewLimits;
 
    }
 
@@ -642,7 +637,7 @@ public class GCustomView
     * computes and sets the center of rotation for heading and pitch changes, if it is needed.
     */
    public void computeAndSetViewCenterIfNeeded() {
-      if (this._viewOutOfFocus) {
+      if (_viewOutOfFocus) {
          computeAndSetViewCenter();
       }
    }
@@ -654,16 +649,16 @@ public class GCustomView
    public void computeAndSetViewCenter() {
       try {
          // Update the View's focus.
-         if (this.canFocusOnViewportCenter()) {
-            this.focusOnViewportCenter();
-            this.setViewOutOfFocus(false);
+         if (canFocusOnViewportCenter()) {
+            focusOnViewportCenter();
+            setViewOutOfFocus(false);
          }
       }
       catch (final Exception e) {
          final String message = Logging.getMessage("generic.ExceptionWhileChangingView");
          Logging.logger().log(java.util.logging.Level.SEVERE, message, e);
          // If updating the View's focus failed, raise the flag again.
-         this.setViewOutOfFocus(true);
+         setViewOutOfFocus(true);
       }
    }
 
@@ -687,42 +682,39 @@ public class GCustomView
       }
 
       // Update DrawContext and Globe references.
-      this.dc = drawContext;
-      this.globe = this.dc.getGlobe();
+      dc = drawContext;
+      globe = dc.getGlobe();
       //========== modelview matrix state ==========//
       // Compute the current modelview matrix.
-      this.modelview = GCustomViewInputSupport.computeTransformMatrix(this.globe, this._center, this.heading, this.pitch,
-               this._zoom);
-      if (this.modelview == null) {
-         this.modelview = Matrix.IDENTITY;
+      modelview = GCustomViewInputSupport.computeTransformMatrix(globe, _center, heading, pitch, _zoom);
+      if (modelview == null) {
+         modelview = Matrix.IDENTITY;
       }
       // Compute the current inverse-modelview matrix.
-      this.modelviewInv = this.modelview.getInverse();
-      if (this.modelviewInv == null) {
-         this.modelviewInv = Matrix.IDENTITY;
+      modelviewInv = modelview.getInverse();
+      if (modelviewInv == null) {
+         modelviewInv = Matrix.IDENTITY;
       }
 
       //========== projection matrix state ==========//
       // Get the current OpenGL viewport state.
       final int[] viewportArray = new int[4];
-      this.dc.getGL().glGetIntegerv(GL.GL_VIEWPORT, viewportArray, 0);
-      this.viewport = new java.awt.Rectangle(viewportArray[0], viewportArray[1], viewportArray[2], viewportArray[3]);
+      dc.getGL().glGetIntegerv(GL.GL_VIEWPORT, viewportArray, 0);
+      viewport = new java.awt.Rectangle(viewportArray[0], viewportArray[1], viewportArray[2], viewportArray[3]);
       // Compute the current clip plane distances.
 
-      this.nearClipDistance = computeNearClipDistance();
-      this.farClipDistance = computeFarClipDistance();
+      nearClipDistance = computeNearClipDistance();
+      farClipDistance = computeFarClipDistance();
       // Compute the current viewport dimensions.
-      final double viewportWidth = this.viewport.getWidth() <= 0.0 ? 1.0 : this.viewport.getWidth();
-      final double viewportHeight = this.viewport.getHeight() <= 0.0 ? 1.0 : this.viewport.getHeight();
+      final double viewportWidth = viewport.getWidth() <= 0.0 ? 1.0 : viewport.getWidth();
+      final double viewportHeight = viewport.getHeight() <= 0.0 ? 1.0 : viewport.getHeight();
       // Compute the current projection matrix.
-      this.projection = Matrix.fromPerspective(this.fieldOfView, viewportWidth, viewportHeight, this.nearClipDistance,
-               this.farClipDistance);
+      projection = Matrix.fromPerspective(fieldOfView, viewportWidth, viewportHeight, nearClipDistance, farClipDistance);
       // Compute the current frustum.
-      this.frustum = Frustum.fromPerspective(this.fieldOfView, (int) viewportWidth, (int) viewportHeight, this.nearClipDistance,
-               this.farClipDistance);
+      frustum = Frustum.fromPerspective(fieldOfView, (int) viewportWidth, (int) viewportHeight, nearClipDistance, farClipDistance);
 
       //========== load GL matrix state ==========//
-      loadGLViewState(drawContext, this.modelview, this.projection);
+      loadGLViewState(drawContext, modelview, projection);
 
       //========== after apply (GL matrix state) ==========//
       afterDoApply();
@@ -731,11 +723,11 @@ public class GCustomView
 
    protected void afterDoApply() {
       // Clear cached computations.
-      this.lastEyePosition = null;
-      this.lastEyePoint = null;
-      this.lastUpVector = null;
-      this.lastForwardVector = null;
-      this.lastFrustumInModelCoords = null;
+      lastEyePosition = null;
+      lastEyePoint = null;
+      lastUpVector = null;
+      lastForwardVector = null;
+      lastFrustumInModelCoords = null;
    }
 
 
@@ -747,7 +739,7 @@ public class GCustomView
          throw new IllegalArgumentException(message);
       }
 
-      return project(modelPoint, this.modelview, this.projection, this.viewport);
+      return project(modelPoint, modelview, projection, viewport);
    }
 
 
@@ -759,24 +751,24 @@ public class GCustomView
          throw new IllegalArgumentException(message);
       }
 
-      return unProject(windowPoint, this.modelview, this.projection, this.viewport);
+      return unProject(windowPoint, modelview, projection, viewport);
    }
 
 
    @Override
    public Line computeRayFromScreenPoint(final double x,
                                          final double y) {
-      return ViewUtil.computeRayFromScreenPoint(this, x, y, this.modelview, this.projection, this.viewport);
+      return ViewUtil.computeRayFromScreenPoint(this, x, y, modelview, projection, viewport);
    }
 
 
    @Override
    public Position computePositionFromScreenPoint(final double x,
                                                   final double y) {
-      if (this.globe != null) {
+      if (globe != null) {
          final Line ray = computeRayFromScreenPoint(x, y);
          if (ray != null) {
-            return this.globe.getIntersectionPosition(ray);
+            return globe.getIntersectionPosition(ray);
          }
       }
 
@@ -798,10 +790,10 @@ public class GCustomView
 
    @Override
    protected double computeHorizonDistance(final Position eyePos) {
-      if ((this.globe != null) && (eyePos != null)) {
+      if ((globe != null) && (eyePos != null)) {
          final double elevation = eyePos.getElevation();
-         final double elevationAboveSurface = ViewUtil.computeElevationAboveSurface(this.dc, eyePos);
-         return ViewUtil.computeHorizonDistance(this.globe, Math.max(elevation, elevationAboveSurface));
+         final double elevationAboveSurface = ViewUtil.computeElevationAboveSurface(dc, eyePos);
+         return ViewUtil.computeHorizonDistance(globe, Math.max(elevation, elevationAboveSurface));
       }
 
       return 0;
@@ -810,9 +802,9 @@ public class GCustomView
 
    @Override
    protected Position computeEyePositionFromModelview() {
-      if (this.globe != null) {
-         final Vec4 eyePoint = Vec4.UNIT_W.transformBy4(this.modelviewInv);
-         return this.globe.computePositionFromPoint(eyePoint);
+      if (globe != null) {
+         final Vec4 eyePoint = Vec4.UNIT_W.transformBy4(modelviewInv);
+         return globe.computePositionFromPoint(eyePoint);
       }
 
       return Position.ZERO;
@@ -821,7 +813,7 @@ public class GCustomView
 
    @Override
    public double computePixelSizeAtDistance(final double distance) {
-      return ViewUtil.computePixelSizeAtDistance(distance, this.fieldOfView, this.viewport);
+      return ViewUtil.computePixelSizeAtDistance(distance, fieldOfView, viewport);
    }
 
 
@@ -842,20 +834,20 @@ public class GCustomView
    protected void setModelCoordinates(final GCustomViewInputSupport.CustomViewState modelCoords) {
       if (modelCoords != null) {
          if (modelCoords.getCenterPosition() != null) {
-            this._center = normalizedCenterPosition(modelCoords.getCenterPosition());
-            this._center = GCustomViewLimits.limitCenterPosition(this._center, this.getOrbitViewLimits());
+            _center = normalizedCenterPosition(modelCoords.getCenterPosition());
+            _center = GCustomViewLimits.limitCenterPosition(_center, getOrbitViewLimits());
          }
          if (modelCoords.getHeading() != null) {
-            this.heading = normalizedHeading(modelCoords.getHeading());
-            this.heading = BasicViewPropertyLimits.limitHeading(this.heading, this.getOrbitViewLimits());
+            heading = normalizedHeading(modelCoords.getHeading());
+            heading = BasicViewPropertyLimits.limitHeading(heading, getOrbitViewLimits());
          }
          if (modelCoords.getPitch() != null) {
-            this.pitch = normalizedPitch(modelCoords.getPitch());
-            this.pitch = BasicViewPropertyLimits.limitPitch(this.pitch, this.getOrbitViewLimits());
+            pitch = normalizedPitch(modelCoords.getPitch());
+            pitch = BasicViewPropertyLimits.limitPitch(pitch, getOrbitViewLimits());
          }
 
-         this._zoom = modelCoords.getZoom();
-         this._zoom = GCustomViewLimits.limitZoom(this._zoom, this.getOrbitViewLimits());
+         _zoom = modelCoords.getZoom();
+         _zoom = GCustomViewLimits.limitZoom(_zoom, getOrbitViewLimits());
       }
    }
 
@@ -878,16 +870,16 @@ public class GCustomView
                                        final RestorableSupport.StateObject context) {
       super.doGetRestorableState(rs, context);
 
-      if (this.getCenterPosition() != null) {
+      if (getCenterPosition() != null) {
          final RestorableSupport.StateObject so = rs.addStateObject(context, "center");
          if (so != null) {
-            rs.addStateValueAsDouble(so, "latitude", this.getCenterPosition().getLatitude().degrees);
-            rs.addStateValueAsDouble(so, "longitude", this.getCenterPosition().getLongitude().degrees);
-            rs.addStateValueAsDouble(so, "elevation", this.getCenterPosition().getElevation());
+            rs.addStateValueAsDouble(so, "latitude", getCenterPosition().getLatitude().degrees);
+            rs.addStateValueAsDouble(so, "longitude", getCenterPosition().getLongitude().degrees);
+            rs.addStateValueAsDouble(so, "elevation", getCenterPosition().getElevation());
          }
       }
 
-      rs.addStateValueAsDouble(context, "zoom", this.getZoom());
+      rs.addStateValueAsDouble(context, "zoom", getZoom());
    }
 
 
@@ -896,7 +888,7 @@ public class GCustomView
                                  final RestorableSupport.StateObject context) {
       // Invoke the legacy restore functionality. This will enable the shape to recognize state XML elements
       // from previous versions of BasicOrbitView.
-      this.legacyRestoreState(rs, context);
+      legacyRestoreState(rs, context);
 
       super.doRestoreState(rs, context);
 
@@ -908,13 +900,13 @@ public class GCustomView
          final Double lon = rs.getStateValueAsDouble(so, "longitude");
          final Double ele = rs.getStateValueAsDouble(so, "elevation");
          if ((lat != null) && (lon != null)) {
-            this.setCenterPosition(Position.fromDegrees(lat, lon, (ele != null ? ele : 0)));
+            setCenterPosition(Position.fromDegrees(lat, lon, (ele != null ? ele : 0)));
          }
       }
 
       final Double d = rs.getStateValueAsDouble(context, "zoom");
       if (d != null) {
-         this.setZoom(d);
+         setZoom(d);
       }
    }
 
@@ -933,7 +925,7 @@ public class GCustomView
                                      final RestorableSupport.StateObject context) {
       final RestorableSupport.StateObject so = rs.getStateObject(context, "orbitViewLimits");
       if (so != null) {
-         this.getOrbitViewLimits().restoreState(rs, so);
+         getOrbitViewLimits().restoreState(rs, so);
       }
    }
 
@@ -994,7 +986,7 @@ public class GCustomView
     */
    public void jumpTo(final Position position,
                       final double distance) {
-      ((GCustomViewInputHandler) this.viewInputHandler).jumpTo(position, distance);
+      ((GCustomViewInputHandler) viewInputHandler).jumpTo(position, distance);
    }
 
 
@@ -1008,7 +1000,7 @@ public class GCustomView
                                 final double endZoom,
                                 final long timeToMove,
                                 final boolean endCenterOnSurface) {
-      ((GCustomViewInputHandler) this.viewInputHandler).addPanToAnimator(beginCenterPos, endCenterPos, beginHeading, endHeading,
+      ((GCustomViewInputHandler) viewInputHandler).addPanToAnimator(beginCenterPos, endCenterPos, beginHeading, endHeading,
                beginPitch, endPitch, beginZoom, endZoom, timeToMove, endCenterOnSurface);
    }
 
@@ -1023,7 +1015,7 @@ public class GCustomView
                                 final double endZoom,
                                 final boolean endCenterOnSurface) {
 
-      ((GCustomViewInputHandler) this.viewInputHandler).addPanToAnimator(beginCenterPos, endCenterPos, beginHeading, endHeading,
+      ((GCustomViewInputHandler) viewInputHandler).addPanToAnimator(beginCenterPos, endCenterPos, beginHeading, endHeading,
                beginPitch, endPitch, beginZoom, endZoom, endCenterOnSurface);
    }
 
@@ -1034,7 +1026,7 @@ public class GCustomView
                                 final double newZoom,
                                 final long timeToMove,
                                 final boolean endCenterOnSurface) {
-      ((GCustomViewInputHandler) this.viewInputHandler).addPanToAnimator(centerPos, newHeading, newPitch, newZoom, timeToMove,
+      ((GCustomViewInputHandler) viewInputHandler).addPanToAnimator(centerPos, newHeading, newPitch, newZoom, timeToMove,
                endCenterOnSurface);
    }
 
@@ -1044,8 +1036,7 @@ public class GCustomView
                                 final Angle newPitch,
                                 final double newZoom,
                                 final boolean endCenterOnSurface) {
-      ((GCustomViewInputHandler) this.viewInputHandler).addPanToAnimator(centerPos, newHeading, newPitch, newZoom,
-               endCenterOnSurface);
+      ((GCustomViewInputHandler) viewInputHandler).addPanToAnimator(centerPos, newHeading, newPitch, newZoom, endCenterOnSurface);
    }
 
 
@@ -1053,26 +1044,26 @@ public class GCustomView
                                 final Angle newHeading,
                                 final Angle newPitch,
                                 final double zoom) {
-      ((GCustomViewInputHandler) this.viewInputHandler).addPanToAnimator(centerPos, newHeading, newPitch, zoom);
+      ((GCustomViewInputHandler) viewInputHandler).addPanToAnimator(centerPos, newHeading, newPitch, zoom);
    }
 
 
    public void addEyePositionAnimator(final long timeToIterate,
                                       final Position beginPosition,
                                       final Position endPosition) {
-      ((GCustomViewInputHandler) this.viewInputHandler).addEyePositionAnimator(timeToIterate, beginPosition, endPosition);
+      ((GCustomViewInputHandler) viewInputHandler).addEyePositionAnimator(timeToIterate, beginPosition, endPosition);
    }
 
 
    public void addHeadingAnimator(final Angle begin,
                                   final Angle end) {
-      ((GCustomViewInputHandler) this.viewInputHandler).addHeadingAnimator(begin, end);
+      ((GCustomViewInputHandler) viewInputHandler).addHeadingAnimator(begin, end);
    }
 
 
    public void addPitchAnimator(final Angle begin,
                                 final Angle end) {
-      ((GCustomViewInputHandler) this.viewInputHandler).addPitchAnimator(begin, end);
+      ((GCustomViewInputHandler) viewInputHandler).addPitchAnimator(begin, end);
    }
 
 
@@ -1080,27 +1071,27 @@ public class GCustomView
                                        final Angle endHeading,
                                        final Angle beginPitch,
                                        final Angle endPitch) {
-      ((GCustomViewInputHandler) this.viewInputHandler).addHeadingPitchAnimator(beginHeading, endHeading, beginPitch, endPitch);
+      ((GCustomViewInputHandler) viewInputHandler).addHeadingPitchAnimator(beginHeading, endHeading, beginPitch, endPitch);
    }
 
 
    public void addZoomAnimator(final double zoomStart,
                                final double zoomEnd) {
-      ((GCustomViewInputHandler) this.viewInputHandler).addZoomAnimator(zoomStart, zoomEnd);
+      ((GCustomViewInputHandler) viewInputHandler).addZoomAnimator(zoomStart, zoomEnd);
    }
 
 
    public void addFlyToZoomAnimator(final Angle newHeading,
                                     final Angle newPitch,
                                     final double zoomAmount) {
-      ((GCustomViewInputHandler) this.viewInputHandler).addFlyToZoomAnimator(newHeading, newPitch, zoomAmount);
+      ((GCustomViewInputHandler) viewInputHandler).addFlyToZoomAnimator(newHeading, newPitch, zoomAmount);
    }
 
 
    public void addCenterAnimator(final Position begin,
                                  final Position end,
                                  final boolean smoothed) {
-      ((GCustomViewInputHandler) this.viewInputHandler).addCenterAnimator(begin, end, smoothed);
+      ((GCustomViewInputHandler) viewInputHandler).addCenterAnimator(begin, end, smoothed);
    }
 
 
@@ -1108,12 +1099,12 @@ public class GCustomView
                                  final Position end,
                                  final long lengthMillis,
                                  final boolean smoothed) {
-      ((GCustomViewInputHandler) this.viewInputHandler).addCenterAnimator(begin, end, lengthMillis, smoothed);
+      ((GCustomViewInputHandler) viewInputHandler).addCenterAnimator(begin, end, lengthMillis, smoothed);
    }
 
 
    private void resolveCollisionsWithCenterPosition() {
-      if (this.dc == null) {
+      if (dc == null) {
          return;
       }
 
@@ -1124,8 +1115,8 @@ public class GCustomView
 
       // If there is no collision, 'newCenterPosition' will be null. Otherwise it will contain a value
       // that will resolve the collision.
-      final double nearDistance = computeNearDistance(this.getCurrentEyePosition());
-      final Position newCenter = _collisionSupport.computeCenterPositionToResolveCollision(this, nearDistance, this.dc);
+      final double nearDistance = computeNearDistance(getCurrentEyePosition());
+      final Position newCenter = _collisionSupport.computeCenterPositionToResolveCollision(this, nearDistance, dc);
       if ((newCenter != null) && (newCenter.getLatitude().degrees >= -90) && (newCenter.getLongitude().degrees <= 90)) {
          _center = newCenter;
          flagHadCollisions();
@@ -1134,7 +1125,7 @@ public class GCustomView
 
 
    protected void resolveCollisionsWithPitch() {
-      if (this.dc == null) {
+      if (dc == null) {
          return;
       }
 
@@ -1146,9 +1137,9 @@ public class GCustomView
       // If there is no collision, 'newPitch' will be null. Otherwise it will contain a value
       // that will resolve the collision.
       final double nearDistance = computeNearDistance(getCurrentEyePosition());
-      final Angle newPitch = _collisionSupport.computePitchToResolveCollision(this, nearDistance, this.dc);
+      final Angle newPitch = _collisionSupport.computePitchToResolveCollision(this, nearDistance, dc);
       if ((newPitch != null) && (newPitch.degrees <= 90) && (newPitch.degrees >= 0)) {
-         this.pitch = newPitch;
+         pitch = newPitch;
          flagHadCollisions();
       }
    }
@@ -1156,7 +1147,7 @@ public class GCustomView
 
    @Override
    public void setNearClipDistance(final double clipDistance) {
-      this.nearClipDistance = clipDistance;
+      nearClipDistance = clipDistance;
    }
 
 }

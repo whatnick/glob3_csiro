@@ -54,19 +54,17 @@ public abstract class GVectorFieldLayerAttribute
          extends
             GAbstractLayerAttribute<String> {
 
+
    public GVectorFieldLayerAttribute(final String label,
                                      final String propertyName) {
       super(label, propertyName);
-
    }
 
 
    public GVectorFieldLayerAttribute(final String label,
                                      final String propertyName,
                                      final boolean readOnly) {
-
       super(label, propertyName, readOnly);
-
    }
 
 
@@ -100,12 +98,6 @@ public abstract class GVectorFieldLayerAttribute
          });
       }
 
-      setListener(new IChangeListener() {
-         @Override
-         public void changed() {
-         }
-      });
-
       final EventListener listener = subscribeToEvents(layer);
 
       return new GPair<Component, EventListener>(widget, listener);
@@ -115,8 +107,6 @@ public abstract class GVectorFieldLayerAttribute
    @Override
    public void cleanupWidget(final IGlobeLayer layer,
                              final GPair<Component, EventListener> widget) {
-      setListener(null);
-
       unsubscribeFromEvents(layer, widget._second);
    }
 }

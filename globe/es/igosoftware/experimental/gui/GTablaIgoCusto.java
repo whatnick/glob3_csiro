@@ -65,7 +65,7 @@ public class GTablaIgoCusto
 
 
    private void initialize() {
-      this.setLayout(new MigLayout("wrap 1", "[grow]", "[grow]"));
+      setLayout(new MigLayout("wrap 1", "[grow]", "[grow]"));
       model = new WMSTableModel(_datos.getColeccion(), _datos.getNomColumnas());
       table = new JTable(model);
 
@@ -265,7 +265,7 @@ public class GTablaIgoCusto
 
    public void setDatosForTabla(final GDatosForTabla datos) {
       if ((datos != null) && datos.isOk()) {
-         this._datos = datos;
+         _datos = datos;
          updateModel();
       }
       else {

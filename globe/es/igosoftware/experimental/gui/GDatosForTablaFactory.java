@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import es.igosoftware.experimental.wms.GWMSLayerData;
@@ -119,7 +119,7 @@ public class GDatosForTablaFactory {
 
 
       public CenterTableCellRenderer() {
-         setHorizontalAlignment(JLabel.CENTER);
+         setHorizontalAlignment(SwingConstants.CENTER);
       }
    }
 
@@ -133,7 +133,7 @@ public class GDatosForTablaFactory {
 
 
       public RightTableCellRenderer() {
-         setHorizontalAlignment(JLabel.RIGHT);
+         setHorizontalAlignment(SwingConstants.RIGHT);
       }
    }
 

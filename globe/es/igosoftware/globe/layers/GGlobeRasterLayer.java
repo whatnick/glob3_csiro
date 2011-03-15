@@ -61,13 +61,13 @@ public class GGlobeRasterLayer
    final private SurfaceImage   _surfaceImage;
    final private RasterRenderer _renderer;
    final private WritableRaster _raster;
-   final private RasterGeodata  _extent;
+   final private GRasterGeodata _extent;
 
    private double               _noDataValue = -99999d;
 
 
    public GGlobeRasterLayer(final Object imageSource,
-                            final RasterGeodata extent) {
+                            final GRasterGeodata extent) {
 
       super();
 
@@ -133,7 +133,7 @@ public class GGlobeRasterLayer
 
 
    @Override
-   public RasterGeodata getRasterGeodata() {
+   public GRasterGeodata getRasterGeodata() {
       return _extent;
    }
 
@@ -146,13 +146,7 @@ public class GGlobeRasterLayer
 
    @Override
    public GProjection getProjection() {
-      return _extent._crs;
-   }
-
-
-   @Override
-   public void setProjection(final GProjection proj) {
-      _extent._crs = proj;
+      return _extent._projection;
    }
 
 

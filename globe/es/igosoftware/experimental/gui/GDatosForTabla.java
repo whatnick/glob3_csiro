@@ -28,7 +28,7 @@ public class GDatosForTabla {
 
 
    public void setFormatColmunas(final Vector<DefaultTableCellRenderer> formatColmunas) {
-      this._formatColmunas = formatColmunas;
+      _formatColmunas = formatColmunas;
    }
 
 
@@ -40,10 +40,10 @@ public class GDatosForTabla {
                          final Vector<Vector<?>> coleccion,
                          final Vector<String> nomColumnas,
                          final int[] tamColumnas) {
-      this._listElements = listElements;
-      this._coleccion = coleccion;
-      this._nomColumnas = nomColumnas;
-      this._tamColumnas = tamColumnas;
+      _listElements = listElements;
+      _coleccion = coleccion;
+      _nomColumnas = nomColumnas;
+      _tamColumnas = tamColumnas;
    }
 
 
@@ -123,7 +123,7 @@ public class GDatosForTabla {
 
 
    public void setListElements(final List listElements) {
-      this._listElements = listElements;
+      _listElements = listElements;
    }
 
 
@@ -201,7 +201,7 @@ public class GDatosForTabla {
 
 
    public void setColeccion(final Vector<Vector<?>> coleccion) {
-      this._coleccion = coleccion;
+      _coleccion = coleccion;
    }
 
 
@@ -211,7 +211,7 @@ public class GDatosForTabla {
 
 
    public void setNomColumnas(final Vector<String> nomColumnas) {
-      this._nomColumnas = nomColumnas;
+      _nomColumnas = nomColumnas;
    }
 
 
@@ -221,7 +221,7 @@ public class GDatosForTabla {
 
 
    public void setTamColumnas(final int[] tamColumnas) {
-      this._tamColumnas = tamColumnas;
+      _tamColumnas = tamColumnas;
    }
 
 

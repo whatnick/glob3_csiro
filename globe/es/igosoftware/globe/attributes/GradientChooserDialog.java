@@ -175,7 +175,7 @@ public class GradientChooserDialog
       }
 
       //reflectedRadio.setSelected()
-      final MultipleGradientPaint old = this.getGradient();
+      final MultipleGradientPaint old = getGradient();
       gradient = mgrad;
       firePropertyChange("gradient", old, getGradient());
       repaint();
@@ -403,7 +403,7 @@ public class GradientChooserDialog
 
 
    private void initComponents2() {
-      this.initComponents();
+      initComponents();
       setLayout(new BorderLayout());
       add(topPanel, BorderLayout.NORTH);
 

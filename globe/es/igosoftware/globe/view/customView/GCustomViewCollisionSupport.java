@@ -24,7 +24,7 @@ public class GCustomViewCollisionSupport {
 
 
    public double getCollisionThreshold() {
-      return this._collisionThreshold;
+      return _collisionThreshold;
    }
 
 
@@ -35,12 +35,12 @@ public class GCustomViewCollisionSupport {
          throw new IllegalArgumentException(message);
       }
 
-      this._collisionThreshold = collisionThreshold;
+      _collisionThreshold = collisionThreshold;
    }
 
 
    public int getNumIterations() {
-      return this._numIterations;
+      return _numIterations;
    }
 
 
@@ -51,7 +51,7 @@ public class GCustomViewCollisionSupport {
          throw new IllegalArgumentException(message);
       }
 
-      this._numIterations = numIterations;
+      _numIterations = numIterations;
    }
 
 
@@ -86,7 +86,7 @@ public class GCustomViewCollisionSupport {
          // OrbitView is colliding when its eye point is below the collision threshold.
          final double heightAboveSurface = computeViewHeightAboveSurface(dc, modelviewInv, orbitView.getFieldOfView(),
                   orbitView.getViewport(), nearDistance);
-         return heightAboveSurface < this._collisionThreshold;
+         return heightAboveSurface < _collisionThreshold;
       }
 
       return false;
@@ -120,13 +120,13 @@ public class GCustomViewCollisionSupport {
 
       Position newCenter = null;
 
-      for (int i = 0; i < this._numIterations; i++) {
+      for (int i = 0; i < _numIterations; i++) {
          final Matrix modelviewInv = getModelviewInverse(globe, newCenter != null ? newCenter : customView.getCenterPosition(),
                   customView.getHeading(), customView.getPitch(), customView.getZoom());
          if (modelviewInv != null) {
             final double heightAboveSurface = computeViewHeightAboveSurface(dc, modelviewInv, customView.getFieldOfView(),
                      customView.getViewport(), nearDistance);
-            final double adjustedHeight = heightAboveSurface - this._collisionThreshold;
+            final double adjustedHeight = heightAboveSurface - _collisionThreshold;
             if (adjustedHeight < 0) {
                newCenter = new Position(newCenter != null ? newCenter : customView.getCenterPosition(),
                         (newCenter != null ? newCenter.getElevation() : customView.getCenterPosition().getElevation())
@@ -166,13 +166,13 @@ public class GCustomViewCollisionSupport {
 
       Angle newPitch = null;
 
-      for (int i = 0; i < this._numIterations; i++) {
+      for (int i = 0; i < _numIterations; i++) {
          final Matrix modelviewInv = getModelviewInverse(globe, customView.getCenterPosition(), customView.getHeading(),
                   newPitch != null ? newPitch : customView.getPitch(), customView.getZoom());
          if (modelviewInv != null) {
             final double heightAboveSurface = computeViewHeightAboveSurface(dc, modelviewInv, customView.getFieldOfView(),
                      customView.getViewport(), nearDistance);
-            final double adjustedHeight = heightAboveSurface - this._collisionThreshold;
+            final double adjustedHeight = heightAboveSurface - _collisionThreshold;
             if (adjustedHeight < 0) {
                final Vec4 eyePoint = getEyePoint(modelviewInv);
                final Vec4 centerPoint = globe.computePointFromPosition(customView.getCenterPosition());

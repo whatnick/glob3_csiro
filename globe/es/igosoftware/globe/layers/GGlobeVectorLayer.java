@@ -42,12 +42,17 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.globe.GField;
 import es.igosoftware.globe.GVectorLayerType;
 import es.igosoftware.globe.IGlobeApplication;
+import es.igosoftware.globe.IGlobeFeatureCollection;
 import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
+import es.igosoftware.util.GAssert;
+import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Sector;
+import gov.nasa.worldwind.globes.Globe;
 import gov.nasa.worldwind.layers.RenderableLayer;
+import gov.nasa.worldwind.render.DrawContext;
 import gov.nasa.worldwind.render.Renderable;
 
 import java.util.ArrayList;
@@ -71,38 +76,25 @@ public class GGlobeVectorLayer
          implements
             IGlobeVectorLayer {
 
-   private final GVectorRenderer m_Renderer;
+   private final GVectorRenderingTheme   _renderer;
+   private final IGlobeFeatureCollection _features;
+   private final GField[]                _fields;
 
-   private final Feature[]       m_Features;
-
-   private GProjection           m_CRS = GProjection.EPSG_4326;
-
-
-   private final GField[]        _fields;
+   private boolean                       _isInitialized = false;
 
 
-   public GGlobeVectorLayer(final String sName,
-                            final Feature[] features,
-                            final GField[] fields,
-                            final GProjection crs) {
+   private static GVectorRenderingTheme getDefaultRenderer(final IGlobeFeatureCollection features) {
 
-      this(sName, features, fields, crs, getDefaultRenderer(features));
-
-   }
-
-
-   private static GVectorRenderer getDefaultRenderer(final Feature[] features) {
-
-      final Object geom = features[0]._geometry;
+      final Geometry geom = features.get(0).getGeometry();
       if (geom instanceof com.vividsolutions.jts.geom.Point) {
-         return new GPointsRenderer();
+         return new GPointsRenderingTheme();
       }
       else if ((geom instanceof LineString) || (geom instanceof MultiLineString)) {
-         return new GLinesRenderer();
+         return new GLinesRenderingTheme();
       }
       else if ((geom instanceof com.vividsolutions.jts.geom.Polygon)
                || (geom instanceof com.vividsolutions.jts.geom.MultiPolygon)) {
-         return new GPolygonsRenderer();
+         return new GPolygonsRenderingTheme();
       }
       else {
          return null;
@@ -112,115 +104,98 @@ public class GGlobeVectorLayer
 
 
    public GGlobeVectorLayer(final String sName,
-                            final Feature[] features,
-                            final GField[] fields,
-                            final GProjection crs,
-                            final GVectorRenderer vrenderer) {
+                            final IGlobeFeatureCollection features,
+                            final GField[] fields) {
+      this(sName, features, fields, getDefaultRenderer(features));
+   }
 
-      super();
+
+   public GGlobeVectorLayer(final String sName,
+                            final IGlobeFeatureCollection features,
+                            final GField[] fields,
+                            final GVectorRenderingTheme vrenderer) {
+      GAssert.notNull(features, "features");
 
       setName(sName);
       setMaxActiveAltitude(1000000000);
       setMinActiveAltitude(0);
-      m_Features = features;
-      m_Renderer = vrenderer;
+      _features = features;
+      _renderer = vrenderer;
       _fields = fields;
-      m_CRS = crs;
 
       //addRenderableObjects();
-
    }
 
 
-   private void addRenderableObjects() {
+   private void addRenderableObjects(final Globe globe) {
+      removeAllRenderables();
 
-      this.removeAllRenderables();
+      _renderer.calculateExtremeValues(_features);
 
-      m_Renderer.calculateExtremeValues(m_Features);
+      final GProjection projection = _features.getProjection();
 
-      try {
-         for (final Feature element2 : m_Features) {
-            final Renderable[] ren = m_Renderer.getRenderables(element2, m_CRS);
-            for (final Renderable element : ren) {
-               this.addRenderable(element);
-            }
+      for (final IGlobeFeature element2 : _features) {
+         final Renderable[] ren = _renderer.getRenderables(element2, projection, globe);
+         for (final Renderable element : ren) {
+            addRenderable(element);
          }
       }
-      catch (final Exception e) {
-         e.printStackTrace();
-      }
-
    }
 
 
    @Override
-   public Feature[] getFeatures() {
-
-      return m_Features;
-
+   public IGlobeFeatureCollection getFeaturesCollection() {
+      return _features;
    }
 
 
    @Override
    public Sector getExtent() {
-
       final ArrayList<Geometry> geoms = new ArrayList<Geometry>();
 
-      try {
-         for (final Feature element : m_Features) {
-            final Geometry geom = element._geometry;
-            geoms.add(geom);
-         }
-
-         final GeometryCollection extentGeom = new GeometryFactory().createGeometryCollection(geoms.toArray(new Geometry[0]));
-
-         final Envelope extent = extentGeom.getEnvelopeInternal();
-
-         final IVector2<?> min = m_CRS.transformPoint(GProjection.EPSG_4326, new GVector2D(extent.getMinX(), extent.getMinY()));
-         final IVector2<?> max = m_CRS.transformPoint(GProjection.EPSG_4326, new GVector2D(extent.getMaxX(), extent.getMaxY()));
-
-         final Sector sector = new Sector(Angle.fromRadians(min.y()), Angle.fromRadians(max.y()), Angle.fromRadians(min.x()),
-                  Angle.fromRadians(max.x()));
-
-         return sector;
-
+      for (final IGlobeFeature element : _features) {
+         final Geometry geom = element.getGeometry();
+         geoms.add(geom);
       }
-      catch (final Exception e) {
-         return null;
-      }
+
+      final GeometryCollection extentGeom = new GeometryFactory().createGeometryCollection(geoms.toArray(new Geometry[0]));
+
+      final Envelope extent = extentGeom.getEnvelopeInternal();
+
+      final GProjection projection = _features.getProjection();
+      final IVector2<?> min = projection.transformPoint(GProjection.EPSG_4326, new GVector2D(extent.getMinX(), extent.getMinY()));
+      final IVector2<?> max = projection.transformPoint(GProjection.EPSG_4326, new GVector2D(extent.getMaxX(), extent.getMaxY()));
+
+      final Sector sector = new Sector(Angle.fromRadians(min.y()), Angle.fromRadians(max.y()), Angle.fromRadians(min.x()),
+               Angle.fromRadians(max.x()));
+
+      return sector;
 
    }
 
 
    @Override
-   public GVectorRenderer getRenderer() {
-
-      return m_Renderer;
-
+   public GVectorRenderingTheme getRenderingTheme() {
+      return _renderer;
    }
 
 
    @Override
    public void redraw() {
-
-      addRenderableObjects();
-
+      // fire event to force a redraw
+      firePropertyChange(AVKey.LAYER, null, this);
    }
 
 
    @Override
    public Icon getIcon(final IGlobeApplication application) {
-
-      return null;
-
+      return application.getIcon("vectorial.png");
    }
 
 
    @Override
    public GProjection getProjection() {
-
-      return m_CRS;
-
+      return _features.getProjection();
    }
 
 
@@ -232,21 +207,12 @@ public class GGlobeVectorLayer
 
 
    @Override
-   public void setProjection(final GProjection proj) {
-
-      m_CRS = proj;
-
-   }
-
-
-   @Override
    public GVectorLayerType getShapeType() {
-
-      if ((m_Features == null) || (m_Features.length == 0)) {
+      if ((_features == null) || (_features.isEmpty())) {
          return GVectorLayerType.POLYGON;
       }
-      return getShapeType(m_Features[0]._geometry);
 
+      return getShapeType(_features.get(0).getGeometry());
    }
 
 
@@ -262,6 +228,31 @@ public class GGlobeVectorLayer
          return GVectorLayerType.POINT;
       }
 
+   }
+
+
+   @Override
+   protected void doRender(final DrawContext dc) {
+      checkInitialization(dc);
+
+      super.doRender(dc);
+   }
+
+
+   @Override
+   protected void doRender(final DrawContext dc,
+                           final Iterable<? extends Renderable> renderables) {
+      checkInitialization(dc);
+
+      super.doRender(dc, renderables);
+   }
+
+
+   private void checkInitialization(final DrawContext dc) {
+      if (!_isInitialized) {
+         _isInitialized = true;
+         addRenderableObjects(dc.getGlobe());
+      }
    }
 
 

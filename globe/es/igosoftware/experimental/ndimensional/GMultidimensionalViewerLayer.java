@@ -41,6 +41,7 @@ import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.globe.GField;
 import es.igosoftware.globe.GGlobeApplication;
 import es.igosoftware.globe.GVectorLayerType;
+import es.igosoftware.globe.IGlobeFeatureCollection;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
@@ -50,8 +51,7 @@ import es.igosoftware.globe.attributes.GRangeLayerAttribute;
 import es.igosoftware.globe.attributes.GSelectionLayerAttribute;
 import es.igosoftware.globe.attributes.GSeparatorAttribute;
 import es.igosoftware.globe.attributes.ILayerAttribute;
-import es.igosoftware.globe.layers.Feature;
-import es.igosoftware.globe.layers.GVectorRenderer;
+import es.igosoftware.globe.layers.GVectorRenderingTheme;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GRange;
 import es.igosoftware.util.LRUCache;
@@ -408,12 +408,6 @@ public class GMultidimensionalViewerLayer
    @Override
    public GProjection getProjection() {
       return GProjection.EPSG_4326;
-   }
-
-
-   @Override
-   public void setProjection(final GProjection proj) {
-      throw new RuntimeException("Can't change projection");
    }
 
 
@@ -812,7 +806,7 @@ public class GMultidimensionalViewerLayer
 
 
    @Override
-   public GVectorRenderer getRenderer() {
+   public GVectorRenderingTheme getRenderingTheme() {
       return null;
    }
 
@@ -824,7 +818,7 @@ public class GMultidimensionalViewerLayer
 
 
    @Override
-   public Feature[] getFeatures() {
+   public IGlobeFeatureCollection getFeaturesCollection() {
       return null;
    }
 

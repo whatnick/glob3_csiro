@@ -36,8 +36,7 @@
 
 package es.igosoftware.globe;
 
-import es.igosoftware.globe.layers.Feature;
-import es.igosoftware.globe.layers.GVectorRenderer;
+import es.igosoftware.globe.layers.GVectorRenderingTheme;
 
 
 public interface IGlobeVectorLayer
@@ -45,15 +44,16 @@ public interface IGlobeVectorLayer
             IGlobeLayer {
 
 
-   public GField[] getFields();
-
-
-   public GVectorRenderer getRenderer();
+   public GVectorRenderingTheme getRenderingTheme();
 
 
    public GVectorLayerType getShapeType();
 
 
-   public Feature[] getFeatures();
+   public GField[] getFields();
+
+
+   public IGlobeFeatureCollection getFeaturesCollection();
+
 
 }

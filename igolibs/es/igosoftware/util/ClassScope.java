@@ -248,8 +248,7 @@ public class ClassScope {
                      result = new URL(result, clsAsResource);
                   }
                }
-               catch (final MalformedURLException ignore) {
-               }
+               catch (final MalformedURLException ignore) {}
             }
          }
       }

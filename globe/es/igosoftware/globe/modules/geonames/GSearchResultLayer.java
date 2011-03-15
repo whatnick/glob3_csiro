@@ -38,22 +38,30 @@ package es.igosoftware.globe.modules.geonames;
 
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.globe.GField;
+import es.igosoftware.globe.GListFeatureCollection;
 import es.igosoftware.globe.GVectorLayerType;
 import es.igosoftware.globe.IGlobeApplication;
+import es.igosoftware.globe.IGlobeFeatureCollection;
 import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
-import es.igosoftware.globe.layers.Feature;
-import es.igosoftware.globe.layers.GVectorRenderer;
+import es.igosoftware.globe.layers.GGlobeFeature;
+import es.igosoftware.globe.layers.GVectorRenderingTheme;
+import es.igosoftware.globe.layers.IGlobeFeature;
 import gov.nasa.worldwind.avlist.AVKey;
+import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Sector;
 import gov.nasa.worldwind.layers.MarkerLayer;
 import gov.nasa.worldwind.render.markers.Marker;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.Icon;
+
+import org.geonames.InsufficientStyleException;
+import org.geonames.Toponym;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -66,37 +74,64 @@ public class GSearchResultLayer
          implements
             IGlobeVectorLayer {
 
-   private final Feature[] m_Features;
+
+   private final Sector                  _extent;
+   private final IGlobeFeatureCollection _features;
 
 
-   public GSearchResultLayer(final ArrayList<Marker> list) {
+   public GSearchResultLayer(final List<Marker> markersList) {
+      super(markersList);
 
-      super(list);
+      final List<IGlobeFeature> features = new ArrayList<IGlobeFeature>(markersList.size());
 
-      m_Features = new Feature[list.size()];
+      final GeometryFactory geomFactory = new GeometryFactory();
 
-      final GeometryFactory gf = new GeometryFactory();
+      double minLongitude = Double.POSITIVE_INFINITY;
+      double maxLongitude = Double.NEGATIVE_INFINITY;
+      double minLatitude = Double.POSITIVE_INFINITY;
+      double maxLatitude = Double.NEGATIVE_INFINITY;
 
-      for (int i = 0; i < m_Features.length; i++) {
-         final SearchResultMarker marker = (SearchResultMarker) list.get(i);
-         final Point geom = gf.createPoint(new Coordinate(marker.getPosition().longitude.degrees,
-                  marker.getPosition().latitude.degrees));
-         try {
-            final Object[] attribs = new Object[] { marker.getToponym().getName(), marker.getToponym().getPopulation() };
-            m_Features[i] = new Feature(geom, attribs);
+      for (final Marker marker : markersList) {
+         final Position position = marker.getPosition();
+         final double longitude = position.longitude.degrees;
+         final double latitude = position.latitude.degrees;
+
+         minLatitude = Math.min(minLatitude, longitude);
+         maxLatitude = Math.max(maxLatitude, longitude);
+
+         minLongitude = Math.min(minLongitude, latitude);
+         maxLongitude = Math.max(maxLongitude, latitude);
+
+         final Point point = geomFactory.createPoint(new Coordinate(longitude, latitude));
+
+         boolean added = false;
+
+         if (marker instanceof GSearchResultMarker) {
+            final Toponym toponym = ((GSearchResultMarker) marker).getToponym();
+            try {
+               final List<Object> attribs = Arrays.asList(new Object[] { toponym.getName(), toponym.getPopulation() });
+               features.add(new GGlobeFeature(point, attribs));
+               added = true;
+            }
+            catch (final InsufficientStyleException e) {
+               // just ignore, the feature will be added later
+            }
          }
-         catch (final Exception e) {
-            m_Features[i] = new Feature(geom, new Object[] { "", Long.valueOf(0) });
-         }
 
+         if (!added) {
+            features.add(new GGlobeFeature(point, Arrays.asList(new Object[] { "", Long.valueOf(0) })));
+         }
       }
 
+
+      _extent = Sector.fromDegrees(minLatitude, maxLatitude, minLongitude, maxLongitude);
+      _features = new GListFeatureCollection(GProjection.EPSG_4326, features);
    }
 
 
    @Override
    public Sector getExtent() {
-      return Sector.FULL_SPHERE;
+      return _extent;
    }
 
 
@@ -108,12 +143,7 @@ public class GSearchResultLayer
 
    @Override
    public GProjection getProjection() {
-      return GProjection.EPSG_4326;
-   }
-
-
-   @Override
-   public void setProjection(final GProjection proj) {
+      return _features.getProjection();
    }
 
 
@@ -137,15 +167,13 @@ public class GSearchResultLayer
 
 
    @Override
-   public Feature[] getFeatures() {
-
-      return m_Features;
-
+   public IGlobeFeatureCollection getFeaturesCollection() {
+      return _features;
    }
 
 
    @Override
-   public GVectorRenderer getRenderer() {
+   public GVectorRenderingTheme getRenderingTheme() {
       return null;
    }
 

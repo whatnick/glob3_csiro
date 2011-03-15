@@ -58,31 +58,31 @@ public class GCustomViewCenterAnimator
                                     final PropertyAccessor.PositionAccessor propertyAcc,
                                     final boolean endCenterOnSurface) {
       super(startPosition, endPosition, smoothingAmount, propertyAcc);
-      this._endCenterOnSurface = endCenterOnSurface;
-      this._customView = customView;
+      _endCenterOnSurface = endCenterOnSurface;
+      _customView = customView;
    }
 
 
    @Override
    public Position nextPosition(double interpolant) {
-      Position nextPosition = this.end;
-      final Position curCenter = this.propertyAccessor.getPosition();
+      Position nextPosition = end;
+      final Position curCenter = propertyAccessor.getPosition();
 
       final double latlonDifference = LatLon.greatCircleDistance(nextPosition, curCenter).degrees;
       final double elevDifference = Math.abs(nextPosition.getElevation() - curCenter.getElevation());
-      final boolean stopMoving = Math.max(latlonDifference, elevDifference) < this.positionMinEpsilon;
+      final boolean stopMoving = Math.max(latlonDifference, elevDifference) < positionMinEpsilon;
       if (!stopMoving) {
-         interpolant = 1 - this.smoothing;
-         nextPosition = new Position(Angle.mix(interpolant, curCenter.getLatitude(), this.end.getLatitude()), Angle.mix(
-                  interpolant, curCenter.getLongitude(), this.end.getLongitude()), (1 - interpolant) * curCenter.getElevation()
-                                                                                   + interpolant * this.end.getElevation());
+         interpolant = 1 - smoothing;
+         nextPosition = new Position(Angle.mix(interpolant, curCenter.getLatitude(), end.getLatitude()), Angle.mix(interpolant,
+                  curCenter.getLongitude(), end.getLongitude()), (1 - interpolant) * curCenter.getElevation() + interpolant
+                                                                 * end.getElevation());
       }
       // If target is close, cancel future value changes.
       if (stopMoving) {
-         this.stop();
-         this.propertyAccessor.setPosition(nextPosition);
+         stop();
+         propertyAccessor.setPosition(nextPosition);
          if (_endCenterOnSurface) {
-            this._customView.setViewOutOfFocus(true);
+            _customView.setViewOutOfFocus(true);
          }
          return (null);
       }
@@ -92,13 +92,13 @@ public class GCustomViewCenterAnimator
 
    @Override
    protected void setImpl(final double interpolant) {
-      final Position newValue = this.nextPosition(interpolant);
+      final Position newValue = nextPosition(interpolant);
       if (newValue == null) {
          return;
       }
 
-      this.propertyAccessor.setPosition(newValue);
-      this._customView.setViewOutOfFocus(true);
+      propertyAccessor.setPosition(newValue);
+      _customView.setViewOutOfFocus(true);
    }
 
 
