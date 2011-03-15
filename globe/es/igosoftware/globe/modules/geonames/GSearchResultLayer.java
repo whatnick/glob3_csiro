@@ -78,7 +78,7 @@ public class GSearchResultLayer
       final GeometryFactory gf = new GeometryFactory();
 
       for (int i = 0; i < m_Features.length; i++) {
-         final SearchResultMarker marker = (SearchResultMarker) list.get(i);
+         final GSearchResultMarker marker = (GSearchResultMarker) list.get(i);
          final Point geom = gf.createPoint(new Coordinate(marker.getPosition().longitude.degrees,
                   marker.getPosition().latitude.degrees));
          try {

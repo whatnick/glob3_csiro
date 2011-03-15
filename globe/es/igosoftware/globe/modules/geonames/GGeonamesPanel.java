@@ -75,7 +75,7 @@ import org.geonames.WebService;
 import es.igosoftware.globe.IGlobeApplication;
 
 
-public class GeonamesPanel
+public class GGeonamesPanel
          extends
             JPanel {
    private static final long       serialVersionUID  = 1L;
@@ -91,7 +91,7 @@ public class GeonamesPanel
    private final IGlobeApplication m_Application;
 
 
-   public GeonamesPanel(final IGlobeApplication app,
+   public GGeonamesPanel(final IGlobeApplication app,
                         final Dimension d) {
 
       super();
@@ -189,7 +189,7 @@ public class GeonamesPanel
                jListModel.addElement(new MyToponym(toponym));
                final LatLon latlon = new LatLon(Angle.fromDegrees(toponym.getLatitude()),
                         Angle.fromDegrees(toponym.getLongitude()));
-               final SearchResultMarker marker = new SearchResultMarker(new Position(latlon, 0d), markerAttributes, toponym);
+               final GSearchResultMarker marker = new GSearchResultMarker(new Position(latlon, 0d), markerAttributes, toponym);
                marker.setHeading(Angle.fromDegrees(toponym.getLatitude() * 5));
                list.add(marker);
 

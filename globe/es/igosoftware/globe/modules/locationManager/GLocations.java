@@ -34,36 +34,48 @@
 */
 
 
-package es.igosoftware.globe.modules.geonames;
+package es.igosoftware.globe.modules.locationManager;
 
-import org.geonames.Toponym;
-
-import es.igosoftware.globe.layers.RenderableMarker;
-import gov.nasa.worldwind.geom.Position;
-import gov.nasa.worldwind.render.markers.MarkerAttributes;
+import java.util.ArrayList;
 
 
-public class SearchResultMarker
-         extends
-            RenderableMarker {
+public class GLocations {
 
-   private final Toponym m_Toponym;
+   private static final ArrayList<GNamedLocation> m_Locations = new ArrayList<GNamedLocation>();
+   private static GNamedLocation                  m_Default;
 
 
-   public SearchResultMarker(final Position position,
-                             final MarkerAttributes attrs,
-                             final Toponym toponym) {
+   public static GNamedLocation[] getLocations() {
 
-      super(position, attrs);
-
-      m_Toponym = toponym;
+      return m_Locations.toArray(new GNamedLocation[0]);
 
    }
 
 
-   public Toponym getToponym() {
+   public static void addLocation(final GNamedLocation namedLocation) {
 
-      return m_Toponym;
+      m_Locations.add(namedLocation);
+
+   }
+
+
+   public static void removeLocation(final GNamedLocation namedLocation) {
+
+      m_Locations.remove(namedLocation);
+
+   }
+
+
+   public static void setDefaultLocation(final GNamedLocation namedLocation) {
+
+      m_Default = namedLocation;
+
+   }
+
+
+   public static GNamedLocation getDefaultLocation() {
+
+      return m_Default;
 
    }
 

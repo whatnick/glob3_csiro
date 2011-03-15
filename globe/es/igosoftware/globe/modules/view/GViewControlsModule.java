@@ -70,7 +70,7 @@ public class GViewControlsModule
 
          @Override
          public void execute() {
-            final ViewControlsDialog dialog = new ViewControlsDialog(application.getWorldWindowGLCanvas());
+            final GViewControlsDialog dialog = new GViewControlsDialog(application.getWorldWindowGLCanvas());
             dialog.setVisible(true);
          }
 

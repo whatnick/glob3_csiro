@@ -57,7 +57,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.LineBorder;
 
 
-public class LocationManagerDialog
+public class GLocationManagerDialog
          extends
             JDialog {
 
@@ -75,7 +75,7 @@ public class LocationManagerDialog
    //private JButton           jButtonSetAsDefault;
 
 
-   public LocationManagerDialog(final IGlobeApplication app) {
+   public GLocationManagerDialog(final IGlobeApplication app) {
 
       super(app.getFrame(), "Location manager", true);
 
@@ -120,10 +120,10 @@ public class LocationManagerDialog
          });
       }
       {
-         final NamedLocation[] locations = Locations.getLocations();
-         final NamedLocation[] allLocations = new NamedLocation[locations.length + 1];
+         final GNamedLocation[] locations = GLocations.getLocations();
+         final GNamedLocation[] allLocations = new GNamedLocation[locations.length + 1];
          System.arraycopy(locations, 0, allLocations, 0, locations.length);
-         allLocations[allLocations.length - 1] = Locations.getDefaultLocation();
+         allLocations[allLocations.length - 1] = GLocations.getDefaultLocation();
          final ListModel model = new DefaultComboBoxModel(allLocations);
          jList = new JList();
          getContentPane().add(jList, "1, 1, 6, 1");
@@ -136,7 +136,7 @@ public class LocationManagerDialog
                if (e.getClickCount() == 2) {
                   final int index = jList.locationToIndex(e.getPoint());
                   final ListModel dlm = jList.getModel();
-                  final NamedLocation location = (NamedLocation) dlm.getElementAt(index);
+                  final GNamedLocation location = (GNamedLocation) dlm.getElementAt(index);
                   m_View.goTo(location._position, location._elevation);
                }
             }
@@ -173,8 +173,8 @@ public class LocationManagerDialog
 
       final DefaultComboBoxModel model = ((DefaultComboBoxModel) jList.getModel());
       final Object sel = jList.getSelectedValue();
-      if ((sel != null) && !sel.equals(Locations.getDefaultLocation())) {
-         Locations.removeLocation((NamedLocation) sel);
+      if ((sel != null) && !sel.equals(GLocations.getDefaultLocation())) {
+         GLocations.removeLocation((GNamedLocation) sel);
          model.removeElement(sel);
       }
 
@@ -189,8 +189,8 @@ public class LocationManagerDialog
                JOptionPane.INFORMATION_MESSAGE);
 
       if (sName != null) {
-         final NamedLocation location = new NamedLocation(sName, position, elevation);
-         Locations.addLocation(location);
+         final GNamedLocation location = new GNamedLocation(sName, position, elevation);
+         GLocations.addLocation(location);
          ((DefaultComboBoxModel) jList.getModel()).addElement(location);
       }
 

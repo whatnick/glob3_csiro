@@ -70,7 +70,7 @@ public class GSearchGeonamesModule
 
 
    public static final String    SEARCH_ANNOTATION_LAYER_NAME = "SEARCH_ANNOTATION_LAYER_NAME";
-   private SearchResultMarker    lastHighlit;
+   private GSearchResultMarker    lastHighlit;
    private BasicMarkerAttributes lastAttrs;
 
 
@@ -109,7 +109,7 @@ public class GSearchGeonamesModule
    public List<GPair<String, Component>> getPanels(final IGlobeApplication application) {
       final ArrayList<GPair<String, Component>> panels = new ArrayList<GPair<String, Component>>();
 
-      panels.add(new GPair<String, Component>("Search", new GeonamesPanel(application, new Dimension(250, 500))));
+      panels.add(new GPair<String, Component>("Search", new GGeonamesPanel(application, new Dimension(250, 500))));
 
       return panels;
    }
@@ -156,8 +156,8 @@ public class GSearchGeonamesModule
                return;
             }
 
-            if ((lastHighlit == null) && (event.getTopObject() instanceof SearchResultMarker)) {
-               lastHighlit = (SearchResultMarker) event.getTopObject();
+            if ((lastHighlit == null) && (event.getTopObject() instanceof GSearchResultMarker)) {
+               lastHighlit = (GSearchResultMarker) event.getTopObject();
                lastAttrs = (BasicMarkerAttributes) lastHighlit.getAttributes();
                final MarkerAttributes highliteAttrs = new BasicMarkerAttributes(lastAttrs);
                highliteAttrs.setMaterial(Material.WHITE);

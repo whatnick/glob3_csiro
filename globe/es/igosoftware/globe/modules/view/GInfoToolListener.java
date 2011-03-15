@@ -56,7 +56,7 @@ import java.awt.image.WritableRaster;
 import java.util.ArrayList;
 
 
-public class InfoToolListener
+public class GInfoToolListener
          implements
             MouseListener {
 
@@ -64,7 +64,7 @@ public class InfoToolListener
    private final IGlobeApplication   _app;
 
 
-   public InfoToolListener(final IGlobeApplication application) {
+   public GInfoToolListener(final IGlobeApplication application) {
       _app = application;
       _ww = application.getWorldWindowGLCanvas();
    }
@@ -73,7 +73,7 @@ public class InfoToolListener
    @Override
    public void mouseClicked(final MouseEvent e) {
       if (e.getClickCount() == 1) {
-         final PointInfo[] info = getInfo(_ww.getCurrentPosition());
+         final GPointInfo[] info = getInfo(_ww.getCurrentPosition());
          if (info.length != 0) {
             showInfo(info);
          }
@@ -106,10 +106,10 @@ public class InfoToolListener
    }
 
 
-   private void showInfo(final PointInfo[] info) {
-      InfoToolDialog dialog = InfoToolDialog.getCurrentInfoDialog();
+   private void showInfo(final GPointInfo[] info) {
+      GInfoToolDialog dialog = GInfoToolDialog.getCurrentInfoDialog();
       if (dialog == null) {
-         dialog = new InfoToolDialog(_app.getFrame(), info);
+         dialog = new GInfoToolDialog(_app.getFrame(), info);
          dialog.setVisible(true);
       }
       else {
@@ -119,11 +119,11 @@ public class InfoToolListener
 
 
    @SuppressWarnings("unchecked")
-   private PointInfo[] getInfo(final Position currentPosition) {
+   private GPointInfo[] getInfo(final Position currentPosition) {
 
-      final ArrayList<PointInfo> info = new ArrayList<PointInfo>();
+      final ArrayList<GPointInfo> info = new ArrayList<GPointInfo>();
       final double elevation = _ww.getModel().getGlobe().getElevation(currentPosition.latitude, currentPosition.longitude);
-      PointInfo pinfo = new PointInfo("Terrain model", new GPair[] { new GPair<String, Object>("Elevation",
+      GPointInfo pinfo = new GPointInfo("Terrain model", new GPair[] { new GPair<String, Object>("Elevation",
                Double.valueOf(elevation)) });
       info.add(pinfo);
       final LayerList layers = _app.getLayerList();
@@ -146,7 +146,7 @@ public class InfoToolListener
                   final Double value = new Double(raster.getSampleDouble(iCol, iRow, iBand));
                   values[iBand] = new GPair<String, Object>("Band " + Integer.toString(iBand + 1), value);
                }
-               pinfo = new PointInfo(gRasterLayer.getName(), values);
+               pinfo = new GPointInfo(gRasterLayer.getName(), values);
                info.add(pinfo);
             }
          }
@@ -155,6 +155,6 @@ public class InfoToolListener
          }
 
       }
-      return info.toArray(new PointInfo[0]);
+      return info.toArray(new GPointInfo[0]);
    }
 }

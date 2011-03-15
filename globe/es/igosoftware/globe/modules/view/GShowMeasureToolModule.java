@@ -69,7 +69,7 @@ public class GShowMeasureToolModule
 
          @Override
          public void execute() {
-            final MeasureToolDialog dialog = new MeasureToolDialog(application.getFrame(), application.getWorldWindowGLCanvas());
+            final GMeasureToolDialog dialog = new GMeasureToolDialog(application.getFrame(), application.getWorldWindowGLCanvas());
             dialog.setVisible(true);
          }
       };

@@ -34,30 +34,88 @@
 */
 
 
-package es.igosoftware.globe.modules.locationManager;
+package es.igosoftware.globe.modules.view;
 
-import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.WorldWindow;
+import gov.nasa.worldwind.examples.MeasureToolPanel;
+import gov.nasa.worldwind.util.measure.MeasureTool;
+import gov.nasa.worldwind.util.measure.MeasureToolController;
+
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 
 
-public class NamedLocation {
+public class GMeasureToolDialog
+         extends
+            JDialog
+         implements
+            WindowListener {
 
-   public final String _name;
-   public Position     _position;
-   public double       _elevation;
+   /**
+    * 
+    */
+   private static final long serialVersionUID = 1L;
+   private final MeasureTool m_MeasureTool;
 
 
-   public NamedLocation(final String name,
-                        final Position position,
-                        final double elevation) {
-      _name = name;
-      _position = position;
-      _elevation = elevation;
+   public GMeasureToolDialog(final JFrame parent,
+                            final WorldWindow ww) {
+
+      super(parent, "Measure tool", false);
+
+      setAlwaysOnTop(true);
+
+      setLocationRelativeTo(null);
+
+      addWindowListener(this);
+
+      m_MeasureTool = new MeasureTool(ww);
+      m_MeasureTool.setController(new MeasureToolController());
+      final MeasureToolPanel panel = new MeasureToolPanel(ww, m_MeasureTool);
+      getContentPane().add(panel);
+      pack();
+
    }
 
 
    @Override
-   public String toString() {
-      return _name;
+   public void windowActivated(final WindowEvent e) {
+   }
+
+
+   @Override
+   public void windowClosed(final WindowEvent e) {
+
+      m_MeasureTool.dispose();
+
+   }
+
+
+   @Override
+   public void windowClosing(final WindowEvent e) {
+   }
+
+
+   @Override
+   public void windowDeactivated(final WindowEvent e) {
+   }
+
+
+   @Override
+   public void windowDeiconified(final WindowEvent e) {
+   }
+
+
+   @Override
+   public void windowIconified(final WindowEvent e) {
+   }
+
+
+   @Override
+   public void windowOpened(final WindowEvent e) {
    }
 
 }

@@ -89,7 +89,7 @@ public class GGazetteerModule
       final List<GPair<String, Component>> panels = new ArrayList<GPair<String, Component>>();
 
       try {
-         panels.add(new GPair<String, Component>("Go to", new GazetteerPanel(application.getWorldWindowGLCanvas(), null)));
+         panels.add(new GPair<String, Component>("Go to", new GGazetteerPanel(application.getWorldWindowGLCanvas(), null)));
       }
       catch (final ClassNotFoundException e) {
          e.printStackTrace();

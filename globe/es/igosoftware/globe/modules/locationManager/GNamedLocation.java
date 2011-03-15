@@ -36,47 +36,28 @@
 
 package es.igosoftware.globe.modules.locationManager;
 
-import java.util.ArrayList;
+import gov.nasa.worldwind.geom.Position;
 
 
-public class Locations {
+public class GNamedLocation {
 
-   private static final ArrayList<NamedLocation> m_Locations = new ArrayList<NamedLocation>();
-   private static NamedLocation                  m_Default;
+   public final String _name;
+   public Position     _position;
+   public double       _elevation;
 
 
-   public static NamedLocation[] getLocations() {
-
-      return m_Locations.toArray(new NamedLocation[0]);
-
+   public GNamedLocation(final String name,
+                        final Position position,
+                        final double elevation) {
+      _name = name;
+      _position = position;
+      _elevation = elevation;
    }
 
 
-   public static void addLocation(final NamedLocation namedLocation) {
-
-      m_Locations.add(namedLocation);
-
-   }
-
-
-   public static void removeLocation(final NamedLocation namedLocation) {
-
-      m_Locations.remove(namedLocation);
-
-   }
-
-
-   public static void setDefaultLocation(final NamedLocation namedLocation) {
-
-      m_Default = namedLocation;
-
-   }
-
-
-   public static NamedLocation getDefaultLocation() {
-
-      return m_Default;
-
+   @Override
+   public String toString() {
+      return _name;
    }
 
 }

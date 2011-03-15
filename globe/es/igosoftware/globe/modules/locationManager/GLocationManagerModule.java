@@ -59,7 +59,7 @@ public class GLocationManagerModule
 
    public GLocationManagerModule() {
 
-      Locations.setDefaultLocation(new NamedLocation("DEFAULT", Position.ZERO, 50000));
+      GLocations.setDefaultLocation(new GNamedLocation("DEFAULT", Position.ZERO, 50000));
 
 
    }
@@ -68,7 +68,7 @@ public class GLocationManagerModule
    public GLocationManagerModule(final Position position,
                           final double elevation) {
 
-      Locations.setDefaultLocation(new NamedLocation("DEFAULT", position, elevation));
+      GLocations.setDefaultLocation(new GNamedLocation("DEFAULT", position, elevation));
 
    }
 
@@ -90,7 +90,7 @@ public class GLocationManagerModule
          @Override
          public void execute() {
 
-            final JDialog locationManager = new LocationManagerDialog(application);
+            final JDialog locationManager = new GLocationManagerDialog(application);
             locationManager.setVisible(true);
 
          }

@@ -34,28 +34,37 @@
 */
 
 
-package es.igosoftware.globe.modules.view;
+package es.igosoftware.globe.modules.geonames;
 
-import es.igosoftware.util.GPair;
+import org.geonames.Toponym;
 
-
-public class PointInfo {
-
-   public GPair<String, Object>[] _info;
-   public String                  _layer;
+import es.igosoftware.globe.layers.RenderableMarker;
+import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.render.markers.MarkerAttributes;
 
 
-   public PointInfo(final String layer,
-                    final GPair<String, Object>[] info) {
+public class GSearchResultMarker
+         extends
+            RenderableMarker {
 
-      _info = info;
-      _layer = layer;
+   private final Toponym m_Toponym;
+
+
+   public GSearchResultMarker(final Position position,
+                             final MarkerAttributes attrs,
+                             final Toponym toponym) {
+
+      super(position, attrs);
+
+      m_Toponym = toponym;
+
    }
 
 
-   @Override
-   public String toString() {
-      return _layer;
+   public Toponym getToponym() {
+
+      return m_Toponym;
+
    }
 
 }

@@ -62,7 +62,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 
-public class ViewControlsDialog
+public class GViewControlsDialog
          extends
             JDialog {
 
@@ -74,7 +74,7 @@ public class ViewControlsDialog
    private final WorldWindow m_WW;
 
 
-   public ViewControlsDialog(final WorldWindow ww) {
+   public GViewControlsDialog(final WorldWindow ww) {
 
       super((JDialog) null, true);
 

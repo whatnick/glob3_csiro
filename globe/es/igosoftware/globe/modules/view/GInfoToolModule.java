@@ -57,7 +57,7 @@ public class GInfoToolModule
             GAbstractGlobeModule {
 
    private boolean          _isActive = false;
-   private InfoToolListener _listener;
+   private GInfoToolListener _listener;
 
 
    @Override
@@ -117,7 +117,7 @@ public class GInfoToolModule
 
    @Override
    public void initialize(final IGlobeApplication application) {
-      _listener = new InfoToolListener(application);
+      _listener = new GInfoToolListener(application);
    }
 
 

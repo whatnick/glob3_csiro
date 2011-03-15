@@ -56,14 +56,14 @@ import javax.swing.table.DefaultTableModel;
 import es.igosoftware.util.GPair;
 
 
-public class InfoToolDialog
+public class GInfoToolDialog
          extends
             JDialog
          implements
             WindowListener {
    private static final long     serialVersionUID = 1L;
 
-   private static InfoToolDialog _dialog;
+   private static GInfoToolDialog _dialog;
 
    private JScrollPane           jScrollPaneList;
    private JScrollPane           jScrollPaneTable;
@@ -71,8 +71,8 @@ public class InfoToolDialog
    private JList                 jList;
 
 
-   public InfoToolDialog(final JFrame parent,
-                         final PointInfo[] info) {
+   public GInfoToolDialog(final JFrame parent,
+                         final GPointInfo[] info) {
 
       super(parent, "Info", false);
 
@@ -84,7 +84,7 @@ public class InfoToolDialog
    }
 
 
-   private void initGUI(final PointInfo[] info) {
+   private void initGUI(final GPointInfo[] info) {
 
       final TableLayout thisLayout = new TableLayout(new double[][] {
                { 3.0, TableLayoutConstants.FILL, TableLayoutConstants.FILL, 7.0, TableLayoutConstants.FILL,
@@ -108,7 +108,7 @@ public class InfoToolDialog
                      final int iIndex = jList.locationToIndex(e.getPoint());
                      final ListModel dlm = jList.getModel();
                      final Object item = dlm.getElementAt(iIndex);
-                     updateTable((PointInfo) item);
+                     updateTable((GPointInfo) item);
                      jList.ensureIndexIsVisible(iIndex);
                   }
                }
@@ -135,7 +135,7 @@ public class InfoToolDialog
    }
 
 
-   public void updateInfo(final PointInfo[] info) {
+   public void updateInfo(final GPointInfo[] info) {
 
       if (info.length != 0) {
          final ListModel jListModel = new DefaultComboBoxModel(info);
@@ -146,7 +146,7 @@ public class InfoToolDialog
    }
 
 
-   protected void updateTable(final PointInfo info) {
+   protected void updateTable(final GPointInfo info) {
 
       final DefaultTableModel model = new DefaultTableModel();
       model.setColumnIdentifiers(new String[] { "Parameter", "Value" });
@@ -158,7 +158,7 @@ public class InfoToolDialog
    }
 
 
-   public static InfoToolDialog getCurrentInfoDialog() {
+   public static GInfoToolDialog getCurrentInfoDialog() {
 
       return _dialog;
 

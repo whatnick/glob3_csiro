@@ -71,7 +71,7 @@ import javax.swing.JTextField;
 import javax.swing.ListModel;
 
 
-public class GazetteerPanel
+public class GGazetteerPanel
          extends
             JPanel {
    private static final long serialVersionUID = 1L;
@@ -84,7 +84,7 @@ public class GazetteerPanel
    private JScrollPane       _jScrollPane;
 
 
-   public GazetteerPanel(final WorldWindow wwd,
+   public GGazetteerPanel(final WorldWindow wwd,
                          final String gazetteerClassName) throws IllegalAccessException, InstantiationException,
             ClassNotFoundException {
       super(new BorderLayout());
@@ -159,20 +159,20 @@ public class GazetteerPanel
                handleEntryAction();
             }
             catch (final NoItemException e) {
-               JOptionPane.showMessageDialog(GazetteerPanel.this, "Location not available \""
+               JOptionPane.showMessageDialog(GGazetteerPanel.this, "Location not available \""
                                                                   + (_jField.getText() != null ? _jField.getText() : "") + "\"\n"
                                                                   + "(" + e.getMessage() + ")", "Location Not Available",
                         JOptionPane.ERROR_MESSAGE);
             }
             catch (final IllegalArgumentException e) {
                JOptionPane.showMessageDialog(
-                        GazetteerPanel.this,
+                        GGazetteerPanel.this,
                         "Error parsing input \"" + (_jField.getText() != null ? _jField.getText() : "") + "\"\n" + e.getMessage(),
                         "Lookup Failure", JOptionPane.ERROR_MESSAGE);
             }
             catch (final Exception e) {
                e.printStackTrace();
-               JOptionPane.showMessageDialog(GazetteerPanel.this,
+               JOptionPane.showMessageDialog(GGazetteerPanel.this,
                         "Error looking up \"" + (_jField.getText() != null ? _jField.getText() : "") + "\"\n" + e.getMessage(),
                         "Lookup Failure", JOptionPane.ERROR_MESSAGE);
             }

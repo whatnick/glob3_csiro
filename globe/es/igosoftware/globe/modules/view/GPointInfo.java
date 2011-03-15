@@ -36,86 +36,26 @@
 
 package es.igosoftware.globe.modules.view;
 
-import gov.nasa.worldwind.WorldWindow;
-import gov.nasa.worldwind.examples.MeasureToolPanel;
-import gov.nasa.worldwind.util.measure.MeasureTool;
-import gov.nasa.worldwind.util.measure.MeasureToolController;
-
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-
-import javax.swing.JDialog;
-import javax.swing.JFrame;
+import es.igosoftware.util.GPair;
 
 
-public class MeasureToolDialog
-         extends
-            JDialog
-         implements
-            WindowListener {
+public class GPointInfo {
 
-   /**
-    * 
-    */
-   private static final long serialVersionUID = 1L;
-   private final MeasureTool m_MeasureTool;
+   public GPair<String, Object>[] _info;
+   public String                  _layer;
 
 
-   public MeasureToolDialog(final JFrame parent,
-                            final WorldWindow ww) {
+   public GPointInfo(final String layer,
+                    final GPair<String, Object>[] info) {
 
-      super(parent, "Measure tool", false);
-
-      setAlwaysOnTop(true);
-
-      setLocationRelativeTo(null);
-
-      addWindowListener(this);
-
-      m_MeasureTool = new MeasureTool(ww);
-      m_MeasureTool.setController(new MeasureToolController());
-      final MeasureToolPanel panel = new MeasureToolPanel(ww, m_MeasureTool);
-      getContentPane().add(panel);
-      pack();
-
+      _info = info;
+      _layer = layer;
    }
 
 
    @Override
-   public void windowActivated(final WindowEvent e) {
-   }
-
-
-   @Override
-   public void windowClosed(final WindowEvent e) {
-
-      m_MeasureTool.dispose();
-
-   }
-
-
-   @Override
-   public void windowClosing(final WindowEvent e) {
-   }
-
-
-   @Override
-   public void windowDeactivated(final WindowEvent e) {
-   }
-
-
-   @Override
-   public void windowDeiconified(final WindowEvent e) {
-   }
-
-
-   @Override
-   public void windowIconified(final WindowEvent e) {
-   }
-
-
-   @Override
-   public void windowOpened(final WindowEvent e) {
+   public String toString() {
+      return _layer;
    }
 
 }
