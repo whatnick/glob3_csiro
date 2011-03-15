@@ -473,8 +473,8 @@ public class G3DModel {
          }
       }
 
-
       final GFileName textureFullFileName = GFileName.fromParts(mesh.getModel().getFileName().getParent(), textureFileName);
+
 
       final File textureFullFile = textureFullFileName.asFile();
       if (textureFullFile.exists()) {
