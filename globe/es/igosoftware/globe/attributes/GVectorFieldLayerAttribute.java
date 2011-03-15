@@ -100,12 +100,6 @@ public abstract class GVectorFieldLayerAttribute
          });
       }
 
-      setListener(new IChangeListener() {
-         @Override
-         public void changed() {
-         }
-      });
-
       final EventListener listener = subscribeToEvents(layer);
 
       return new GPair<Component, EventListener>(widget, listener);
@@ -115,8 +109,6 @@ public abstract class GVectorFieldLayerAttribute
    @Override
    public void cleanupWidget(final IGlobeLayer layer,
                              final GPair<Component, EventListener> widget) {
-      setListener(null);
-
       unsubscribeFromEvents(layer, widget._second);
    }
 }
