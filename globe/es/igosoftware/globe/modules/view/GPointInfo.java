@@ -46,7 +46,7 @@ public class GPointInfo {
 
 
    public GPointInfo(final String layer,
-                    final GPair<String, Object>[] info) {
+                     final GPair<String, Object>[] info) {
 
       _info = info;
       _layer = layer;

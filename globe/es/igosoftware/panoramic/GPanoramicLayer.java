@@ -222,7 +222,7 @@ public class GPanoramicLayer
 
 
    @Override
-   public GFeature[] getFeatures() {
+   public List<GFeature> getFeatures() {
       return null;
    }
 

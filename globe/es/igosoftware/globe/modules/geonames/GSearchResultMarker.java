@@ -51,8 +51,8 @@ public class GSearchResultMarker
 
 
    public GSearchResultMarker(final Position position,
-                             final MarkerAttributes attrs,
-                             final Toponym toponym) {
+                              final MarkerAttributes attrs,
+                              final Toponym toponym) {
 
       super(position, attrs);
 

@@ -91,7 +91,7 @@ public class GPolygonsRenderingTheme
 
          double dValue = 0d;
          try {
-            dValue = ((Number) feature.getAttributes()[_fieldIndex]).doubleValue();
+            dValue = ((Number) feature.getAttribute(_fieldIndex)).doubleValue();
          }
          catch (final Exception e) {}
          final Color color;

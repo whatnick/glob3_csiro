@@ -92,7 +92,7 @@ public class GGeonamesPanel
 
 
    public GGeonamesPanel(final IGlobeApplication app,
-                        final Dimension d) {
+                         final Dimension d) {
 
       super();
 

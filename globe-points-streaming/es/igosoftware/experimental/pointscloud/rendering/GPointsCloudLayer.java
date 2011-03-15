@@ -635,8 +635,8 @@ public final class GPointsCloudLayer
 
 
    @Override
-   public GFeature[] getFeatures() {
-      return new GFeature[0];
+   public List<GFeature> getFeatures() {
+      return null;
    }
 
 

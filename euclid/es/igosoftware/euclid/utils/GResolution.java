@@ -166,7 +166,7 @@ public final class GResolution
       if (logVerbose()) {
          logInfo("-----------------------------------------------------------------------------------------");
          logInfo("RESOLUTION STATISTICS:");
-         logInfo(this.toString());
+         logInfo(toString());
          final long elapsed = System.currentTimeMillis() - start;
          logInfo("Processed in " + GMath.roundTo(elapsed / 1000f, 1) + " secs");
          logInfo("-----------------------------------------------------------------------------------------");

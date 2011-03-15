@@ -70,7 +70,7 @@ public class GSearchGeonamesModule
 
 
    public static final String    SEARCH_ANNOTATION_LAYER_NAME = "SEARCH_ANNOTATION_LAYER_NAME";
-   private GSearchResultMarker    lastHighlit;
+   private GSearchResultMarker   lastHighlit;
    private BasicMarkerAttributes lastAttrs;
 
 

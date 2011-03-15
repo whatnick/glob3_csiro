@@ -637,7 +637,7 @@ public class GPositionRenderableLayer
 
 
    @Override
-   public GFeature[] getFeatures() {
+   public List<GFeature> getFeatures() {
       return null;
    }
 

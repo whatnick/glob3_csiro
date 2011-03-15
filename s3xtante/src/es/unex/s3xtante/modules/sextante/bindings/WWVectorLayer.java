@@ -57,21 +57,21 @@ public class WWVectorLayer
          extends
             AbstractVectorLayer {
 
-   private String                              m_sFilename;
-   private String                              m_sName;
-   private GProjection                         m_CRS;
+   private String                         _filename;
+   private String                         _name;
+   private GProjection                    _projection;
 
-   private GField[]                            _fields;
+   private GField[]                       _fields;
 
-   private WWFeatureIterator                   m_Iter;
-   private final ArrayList<IVectorLayerFilter> m_Filters = new ArrayList<IVectorLayerFilter>();
+   private WWFeatureIterator              _iterator;
+   private final List<IVectorLayerFilter> _filters = new ArrayList<IVectorLayerFilter>();
 
 
    public void create(final IGlobeVectorLayer layer) {
 
       m_BaseDataObject = layer;
-      m_sName = layer.getName();
-      m_CRS = layer.getProjection();
+      _name = layer.getName();
+      _projection = layer.getProjection();
       _fields = layer.getFields();
    }
 
@@ -81,20 +81,18 @@ public class WWVectorLayer
                       final String filename,
                       final Object crs) {
 
-      m_sFilename = filename;
-      m_sName = sName;
+      _filename = filename;
+      _name = sName;
       _fields = fields;
 
       if (!(crs instanceof GProjection)) {
-         m_CRS = ProjectionUtils.getDefaultProjection();
+         _projection = ProjectionUtils.getDefaultProjection();
       }
       else {
-         m_CRS = (GProjection) crs;
+         _projection = (GProjection) crs;
       }
 
       m_BaseDataObject = new ArrayList<GFeature>();
-
-
    }
 
 
@@ -113,9 +111,9 @@ public class WWVectorLayer
    public void addFeature(final Geometry g,
                           final Object[] values) {
 
-      if (m_BaseDataObject instanceof ArrayList) {
-         final ArrayList<GFeature> list = (ArrayList<GFeature>) m_BaseDataObject;
-         list.add(new GFeature(g, values));
+      if (m_BaseDataObject instanceof List) {
+         final List<GFeature> list = (List<GFeature>) m_BaseDataObject;
+         list.add(new GFeature(g, Arrays.asList(values)));
       }
 
    }
@@ -143,8 +141,8 @@ public class WWVectorLayer
    //   @SuppressWarnings("unchecked")
    //   public int getShapesCount() {
    //
-   //      if (m_BaseDataObject instanceof ArrayList) {
-   //         final ArrayList<Feature> list = (ArrayList<Feature>) m_BaseDataObject;
+   //      if (m_BaseDataObject instanceof List) {
+   //         final List<Feature> list = (List<Feature>) m_BaseDataObject;
    //         return list.size();
    //      }
    //      else if (m_BaseDataObject instanceof IGlobeVectorLayer) {
@@ -176,7 +174,7 @@ public class WWVectorLayer
    @Override
    public String getName() {
 
-      return m_sName;
+      return _name;
 
    }
 
@@ -186,9 +184,9 @@ public class WWVectorLayer
 
       saveShapefile();
       try {
-         final IGlobeVectorLayer layer = ShapefileTools.readFile(new File(m_sFilename));
+         final IGlobeVectorLayer layer = ShapefileTools.readFile(new File(_filename));
          if (layer != null) {
-            layer.setName(m_sName);
+            layer.setName(_name);
             create(layer);
             layer.redraw();
          }
@@ -203,14 +201,14 @@ public class WWVectorLayer
    @SuppressWarnings("unchecked")
    public void saveShapefile() {
 
-      if (m_BaseDataObject instanceof ArrayList) {
+      if (m_BaseDataObject instanceof List) {
          final GeometryFactory gf = new GeometryFactory();
-         final ArrayList<GFeature> list = (ArrayList<GFeature>) m_BaseDataObject;
+         final List<GFeature> list = (List<GFeature>) m_BaseDataObject;
          try {
-            final SimpleFeatureType featureType = buildFeatureType(m_sName, getShapeType(), _fields, DefaultGeographicCRS.WGS84);
-            final DataStore mds = createDatastore(m_sFilename, featureType);
+            final SimpleFeatureType featureType = buildFeatureType(_name, getShapeType(), _fields, DefaultGeographicCRS.WGS84);
+            final DataStore mds = createDatastore(_filename, featureType);
             mds.createSchema(featureType);
-            final Query query = new Query(m_sName, Filter.INCLUDE);
+            final Query query = new Query(_name, Filter.INCLUDE);
             final FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = mds.getFeatureSource(query.getTypeName());
             final SimpleFeatureType ft = featureSource.getSchema();
             final FeatureWriter<SimpleFeatureType, SimpleFeature> featWriter = mds.getFeatureWriterAppend(ft.getTypeName(),
@@ -306,8 +304,8 @@ public class WWVectorLayer
       double dYMin = Double.MAX_VALUE;
       double dYMax = Double.NEGATIVE_INFINITY;
 
-      if (m_BaseDataObject instanceof ArrayList) {
-         final ArrayList<GFeature> list = (ArrayList<GFeature>) m_BaseDataObject;
+      if (m_BaseDataObject instanceof List) {
+         final List<GFeature> list = (List<GFeature>) m_BaseDataObject;
          for (int i = 0; i < list.size(); i++) {
             final GFeature feature = list.get(i);
             final Envelope envelope = feature.getGeometry().getEnvelopeInternal();
@@ -339,24 +337,20 @@ public class WWVectorLayer
    @Override
    public String getFilename() {
 
-      return m_sFilename;
+      return _filename;
 
    }
 
 
    @Override
    public Object getCRS() {
-
-      return m_CRS;
-
+      return _projection;
    }
 
 
    @Override
    public void setName(final String name) {
-
-      m_sName = name;
-
+      _name = name;
    }
 
 
@@ -368,13 +362,13 @@ public class WWVectorLayer
          return IVectorLayer.SHAPE_TYPE_POLYGON;
       }
 
-      if (m_BaseDataObject instanceof ArrayList) {
-         final ArrayList<GFeature> list = (ArrayList<GFeature>) m_BaseDataObject;
+      if (m_BaseDataObject instanceof List) {
+         final List<GFeature> list = (List<GFeature>) m_BaseDataObject;
          return getShapeType(list.get(0).getGeometry());
       }
       else if (m_BaseDataObject instanceof IGlobeVectorLayer) {
-         final GFeature[] features = ((IGlobeVectorLayer) m_BaseDataObject).getFeatures();
-         return getShapeType(features[0].getGeometry());
+         final List<GFeature> features = ((IGlobeVectorLayer) m_BaseDataObject).getFeatures();
+         return getShapeType(features.get(0).getGeometry());
       }
       else {
          return IVectorLayer.SHAPE_TYPE_POLYGON;
@@ -387,17 +381,17 @@ public class WWVectorLayer
    @Override
    protected IFeatureIterator createIterator() {
 
-      if (m_Iter == null) {
+      if (_iterator == null) {
          if (m_BaseDataObject instanceof IGlobeVectorLayer) {
             final IGlobeVectorLayer layer = (IGlobeVectorLayer) m_BaseDataObject;
-            m_Iter = new WWFeatureIterator(layer.getFeatures(), m_Filters);
+            _iterator = new WWFeatureIterator(layer.getFeatures(), _filters);
          }
          else {
-            m_Iter = new WWFeatureIterator();
+            _iterator = new WWFeatureIterator();
          }
       }
 
-      return m_Iter.getNewInstance();
+      return _iterator.getNewInstance();
 
 
    }
@@ -406,8 +400,8 @@ public class WWVectorLayer
    @Override
    public void addFilter(final IVectorLayerFilter filter) {
 
-      m_Filters.add(filter);
-      m_Iter = null;
+      _filters.add(filter);
+      _iterator = null;
 
    }
 
@@ -415,8 +409,8 @@ public class WWVectorLayer
    @Override
    public void removeFilters() {
 
-      m_Filters.clear();
-      m_Iter = null;
+      _filters.clear();
+      _iterator = null;
 
    }
 

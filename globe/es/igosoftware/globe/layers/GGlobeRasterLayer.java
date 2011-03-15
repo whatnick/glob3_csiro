@@ -61,7 +61,7 @@ public class GGlobeRasterLayer
    final private SurfaceImage   _surfaceImage;
    final private RasterRenderer _renderer;
    final private WritableRaster _raster;
-   final private GRasterGeodata  _extent;
+   final private GRasterGeodata _extent;
 
    private double               _noDataValue = -99999d;
 

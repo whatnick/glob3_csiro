@@ -61,18 +61,18 @@ public class GInfoToolDialog
             JDialog
          implements
             WindowListener {
-   private static final long     serialVersionUID = 1L;
+   private static final long      serialVersionUID = 1L;
 
    private static GInfoToolDialog _dialog;
 
-   private JScrollPane           jScrollPaneList;
-   private JScrollPane           jScrollPaneTable;
-   private JTable                jTable;
-   private JList                 jList;
+   private JScrollPane            jScrollPaneList;
+   private JScrollPane            jScrollPaneTable;
+   private JTable                 jTable;
+   private JList                  jList;
 
 
    public GInfoToolDialog(final JFrame parent,
-                         final GPointInfo[] info) {
+                          final GPointInfo[] info) {
 
       super(parent, "Info", false);
 

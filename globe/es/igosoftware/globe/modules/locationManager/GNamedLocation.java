@@ -47,8 +47,8 @@ public class GNamedLocation {
 
 
    public GNamedLocation(final String name,
-                        final Position position,
-                        final double elevation) {
+                         final Position position,
+                         final double elevation) {
       _name = name;
       _position = position;
       _elevation = elevation;

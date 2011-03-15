@@ -36,7 +36,9 @@
 
 package es.igosoftware.globe.layers;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -45,17 +47,17 @@ import es.igosoftware.util.GAssert;
 
 public class GFeature {
 
-   private final Geometry _geometry;
-   private final Object[] _attributes;
+   private final Geometry     _geometry;
+   private final List<Object> _attributes;
 
 
    public GFeature(final Geometry geometry,
-                   final Object[] attributes) {
+                   final List<Object> attributes) {
       GAssert.notNull(geometry, "geometry");
       GAssert.notNull(attributes, "attributes");
 
       _geometry = geometry;
-      _attributes = attributes;
+      _attributes = new ArrayList<Object>(attributes);
    }
 
 
@@ -64,9 +66,13 @@ public class GFeature {
    }
 
 
-   public Object[] getAttributes() {
-      return Arrays.copyOf(_attributes, _attributes.length);
+   public List<Object> getAttributes() {
+      return Collections.unmodifiableList(_attributes);
    }
 
+
+   public Object getAttribute(final int index) {
+      return _attributes.get(index);
+   }
 
 }

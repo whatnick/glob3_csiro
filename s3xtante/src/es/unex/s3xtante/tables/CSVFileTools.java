@@ -38,8 +38,7 @@ public class CSVFileTools {
          try {
             fin.close();
          }
-         catch (final IOException e) {
-         }
+         catch (final IOException e) {}
       }
 
       return model;

@@ -66,7 +66,7 @@ public class GLocationManagerModule
 
 
    public GLocationManagerModule(final Position position,
-                          final double elevation) {
+                                 final double elevation) {
 
       GLocations.setDefaultLocation(new GNamedLocation("DEFAULT", position, elevation));
 

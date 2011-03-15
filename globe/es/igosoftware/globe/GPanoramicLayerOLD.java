@@ -679,7 +679,7 @@ public final class GPanoramicLayerOLD
 
 
    @Override
-   public GFeature[] getFeatures() {
+   public List<GFeature> getFeatures() {
       return null;
    }
 

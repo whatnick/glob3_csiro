@@ -42,6 +42,7 @@ import gov.nasa.worldwind.render.Renderable;
 
 import java.awt.Color;
 import java.awt.LinearGradientPaint;
+import java.util.List;
 
 
 public abstract class GVectorRenderingTheme {
@@ -69,14 +70,14 @@ public abstract class GVectorRenderingTheme {
    }
 
 
-   public void calculateExtremeValues(final GFeature[] features) {
+   public void calculateExtremeValues(final List<GFeature> features) {
 
       if (_hasToRecalculateExtremeValues) {
          double dMin = Double.POSITIVE_INFINITY;
          double dMax = Double.NEGATIVE_INFINITY;
 
          for (final GFeature element : features) {
-            final String sValue = element.getAttributes()[_fieldIndex].toString();
+            final String sValue = element.getAttribute(_fieldIndex).toString();
             try {
                final double dValue = Double.parseDouble(sValue);
                dMin = Math.min(dMin, dValue);

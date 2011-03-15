@@ -85,7 +85,7 @@ public class GGazetteerPanel
 
 
    public GGazetteerPanel(final WorldWindow wwd,
-                         final String gazetteerClassName) throws IllegalAccessException, InstantiationException,
+                          final String gazetteerClassName) throws IllegalAccessException, InstantiationException,
             ClassNotFoundException {
       super(new BorderLayout());
 
@@ -160,15 +160,15 @@ public class GGazetteerPanel
             }
             catch (final NoItemException e) {
                JOptionPane.showMessageDialog(GGazetteerPanel.this, "Location not available \""
-                                                                  + (_jField.getText() != null ? _jField.getText() : "") + "\"\n"
-                                                                  + "(" + e.getMessage() + ")", "Location Not Available",
-                        JOptionPane.ERROR_MESSAGE);
+                                                                   + (_jField.getText() != null ? _jField.getText() : "")
+                                                                   + "\"\n" + "(" + e.getMessage() + ")",
+                        "Location Not Available", JOptionPane.ERROR_MESSAGE);
             }
             catch (final IllegalArgumentException e) {
-               JOptionPane.showMessageDialog(
-                        GGazetteerPanel.this,
-                        "Error parsing input \"" + (_jField.getText() != null ? _jField.getText() : "") + "\"\n" + e.getMessage(),
-                        "Lookup Failure", JOptionPane.ERROR_MESSAGE);
+               JOptionPane.showMessageDialog(GGazetteerPanel.this, "Error parsing input \""
+                                                                   + (_jField.getText() != null ? _jField.getText() : "")
+                                                                   + "\"\n" + e.getMessage(), "Lookup Failure",
+                        JOptionPane.ERROR_MESSAGE);
             }
             catch (final Exception e) {
                e.printStackTrace();

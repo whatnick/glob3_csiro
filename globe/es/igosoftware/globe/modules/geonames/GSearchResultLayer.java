@@ -51,6 +51,8 @@ import gov.nasa.worldwind.layers.MarkerLayer;
 import gov.nasa.worldwind.render.markers.Marker;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.Icon;
@@ -66,27 +68,28 @@ public class GSearchResultLayer
          implements
             IGlobeVectorLayer {
 
-   private final GFeature[] m_Features;
+   private final List<GFeature> _features;
 
 
-   public GSearchResultLayer(final ArrayList<Marker> list) {
+   public GSearchResultLayer(final List<Marker> list) {
 
       super(list);
 
-      m_Features = new GFeature[list.size()];
+      _features = new ArrayList<GFeature>(list.size());
 
       final GeometryFactory gf = new GeometryFactory();
 
-      for (int i = 0; i < m_Features.length; i++) {
+      for (int i = 0; i < _features.size(); i++) {
          final GSearchResultMarker marker = (GSearchResultMarker) list.get(i);
          final Point geom = gf.createPoint(new Coordinate(marker.getPosition().longitude.degrees,
                   marker.getPosition().latitude.degrees));
          try {
-            final Object[] attribs = new Object[] { marker.getToponym().getName(), marker.getToponym().getPopulation() };
-            m_Features[i] = new GFeature(geom, attribs);
+            final List<Object> attribs = Arrays.asList(new Object[] { marker.getToponym().getName(),
+                     marker.getToponym().getPopulation() });
+            _features.add(new GFeature(geom, attribs));
          }
          catch (final Exception e) {
-            m_Features[i] = new GFeature(geom, new Object[] { "", Long.valueOf(0) });
+            _features.add(new GFeature(geom, Arrays.asList(new Object[] { "", Long.valueOf(0) })));
          }
 
       }
@@ -132,10 +135,8 @@ public class GSearchResultLayer
 
 
    @Override
-   public GFeature[] getFeatures() {
-
-      return m_Features;
-
+   public List<GFeature> getFeatures() {
+      return Collections.unmodifiableList(_features);
    }
 
 

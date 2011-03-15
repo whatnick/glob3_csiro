@@ -5,6 +5,7 @@ package es.unex.s3xtante.modules.sextante.bindings;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.List;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -22,45 +23,43 @@ public class WWFeatureIterator
          implements
             IFeatureIterator {
 
-   private GFeature[]                    m_Features;
-   private int                           m_iIndex;
-   private int                           m_iSelectedIndex;
-   private int                           m_iCardinality;
-   private ArrayList<IVectorLayerFilter> m_Filters;
-   private BitSet                        m_BitSet;
-   private Rectangle2D                   m_Extent;
+   private List<GFeature>           _features;
+   private int                      _index;
+   private int                      _selectedIndex;
+   private int                      _cardinality;
+   private List<IVectorLayerFilter> _filters;
+   private BitSet                   _bitSet;
+   private Rectangle2D              _extent;
 
 
    public WWFeatureIterator() {
-
       //this creates a dummy iterator
-      m_iCardinality = 0;
-      m_iSelectedIndex = 0;
-      m_iIndex = 0;
-      m_Features = null;
-      m_Filters = null;
-      m_Extent = new Rectangle2D.Double();
-
+      _cardinality = 0;
+      _selectedIndex = 0;
+      _index = 0;
+      _features = null;
+      _filters = null;
+      _extent = new Rectangle2D.Double();
    }
 
 
-   public WWFeatureIterator(final GFeature[] features,
-                            final ArrayList<IVectorLayerFilter> filters) {
+   public WWFeatureIterator(final List<GFeature> features,
+                            final List<IVectorLayerFilter> filters) {
 
-      m_iIndex = 0;
-      m_iSelectedIndex = 0;
-      m_Features = features;
+      _index = 0;
+      _selectedIndex = 0;
+      _features = new ArrayList<GFeature>(features);
 
-      m_Filters = filters;
+      _filters = new ArrayList<IVectorLayerFilter>(filters);
+
       calculate();
-
    }
 
 
    @Override
    public boolean hasNext() {
 
-      return m_iCardinality > m_iSelectedIndex;
+      return _cardinality > _selectedIndex;
 
    }
 
@@ -69,20 +68,20 @@ public class WWFeatureIterator
    public IFeature next() throws IteratorException {
 
       try {
-         while (!m_BitSet.get(m_iIndex)) {
-            m_iIndex++;
+         while (!_bitSet.get(_index)) {
+            _index++;
          }
-         final Geometry geom = m_Features[m_iIndex].getGeometry();
-         final Object[] record = m_Features[m_iIndex].getAttributes();
-         final IFeature feature = new FeatureImpl(geom, record);
-         m_iIndex++;
-         m_iSelectedIndex++;
+         final Geometry geom = _features.get(_index).getGeometry();
+         final List<Object> record = _features.get(_index).getAttributes();
+         final IFeature feature = new FeatureImpl(geom, record.toArray());
+         _index++;
+         _selectedIndex++;
          return feature;
       }
       catch (final Exception e) {
          Sextante.addErrorToLog(e);
-         m_iIndex++;
-         m_iSelectedIndex++;
+         _index++;
+         _selectedIndex++;
          throw new IteratorException();
       }
 
@@ -97,7 +96,7 @@ public class WWFeatureIterator
    @Override
    public int getFeatureCount() {
 
-      return m_iCardinality;
+      return _cardinality;
 
    }
 
@@ -105,41 +104,41 @@ public class WWFeatureIterator
    @SuppressWarnings("null")
    private void calculate() {
 
-      m_iCardinality = 0;
+      _cardinality = 0;
       Envelope envelope = null;
       try {
-         final int iTotalCount = m_Features.length;
-         m_BitSet = new BitSet(iTotalCount);
+         final int iTotalCount = _features.size();
+         _bitSet = new BitSet(iTotalCount);
          for (int i = 0; i < iTotalCount; i++) {
-            final Geometry geom = m_Features[i].getGeometry();
-            final Object[] record = m_Features[i].getAttributes();
-            final IFeature feature = new FeatureImpl(geom, record);
+            final Geometry geom = _features.get(i).getGeometry();
+            final List<Object> record = _features.get(i).getAttributes();
+            final IFeature feature = new FeatureImpl(geom, record.toArray());
             boolean bAccept = true;
-            for (int j = 0; j < m_Filters.size(); j++) {
-               bAccept = bAccept && m_Filters.get(j).accept(feature, i);
+            for (int j = 0; j < _filters.size(); j++) {
+               bAccept = bAccept && _filters.get(j).accept(feature, i);
             }
             if (bAccept) {
-               if (m_iCardinality == 0) {
+               if (_cardinality == 0) {
                   envelope = geom.getEnvelopeInternal();
                }
                else {
                   envelope.expandToInclude(geom.getEnvelopeInternal());
                }
-               m_iCardinality++;
-               m_BitSet.set(i);
+               _cardinality++;
+               _bitSet.set(i);
             }
          }
       }
       catch (final Exception e) {
-         m_iCardinality = 0;
-         m_BitSet.clear();
+         _cardinality = 0;
+         _bitSet.clear();
       }
 
-      if (m_iCardinality == 0) {
-         m_Extent = new Rectangle2D.Double();
+      if (_cardinality == 0) {
+         _extent = new Rectangle2D.Double();
       }
       else {
-         m_Extent = new Rectangle2D.Double(envelope.getMinX(), envelope.getMinY(), envelope.getWidth(), envelope.getHeight());
+         _extent = new Rectangle2D.Double(envelope.getMinX(), envelope.getMinY(), envelope.getWidth(), envelope.getHeight());
       }
 
 
@@ -149,7 +148,7 @@ public class WWFeatureIterator
    @Override
    public Rectangle2D getExtent() {
 
-      return m_Extent;
+      return _extent;
 
    }
 
@@ -157,13 +156,13 @@ public class WWFeatureIterator
    public WWFeatureIterator getNewInstance() {
 
       final WWFeatureIterator iter = new WWFeatureIterator();
-      iter.m_Features = this.m_Features;
-      iter.m_Filters = this.m_Filters;
-      iter.m_BitSet = this.m_BitSet;
-      iter.m_iCardinality = this.m_iCardinality;
-      iter.m_iIndex = 0;
-      iter.m_iSelectedIndex = 0;
-      iter.m_Extent = this.m_Extent;
+      iter._features = _features;
+      iter._filters = _filters;
+      iter._bitSet = _bitSet;
+      iter._cardinality = _cardinality;
+      iter._index = 0;
+      iter._selectedIndex = 0;
+      iter._extent = _extent;
 
       return iter;
 

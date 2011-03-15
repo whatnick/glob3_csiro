@@ -54,6 +54,7 @@ import gov.nasa.worldwind.render.DrawContext;
 import gov.nasa.worldwind.render.Renderable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.Icon;
@@ -75,7 +76,7 @@ public class GGlobeVectorLayer
             IGlobeVectorLayer {
 
    private final GVectorRenderingTheme _renderer;
-   private final GFeature[]            _features;
+   private final List<GFeature>        _features;
    private GProjection                 _projection    = GProjection.EPSG_4326;
    private final GField[]              _fields;
 
@@ -83,16 +84,16 @@ public class GGlobeVectorLayer
 
 
    public GGlobeVectorLayer(final String sName,
-                            final GFeature[] features,
+                            final List<GFeature> features,
                             final GField[] fields,
                             final GProjection projection) {
       this(sName, features, fields, projection, getDefaultRenderer(features));
    }
 
 
-   private static GVectorRenderingTheme getDefaultRenderer(final GFeature[] features) {
+   private static GVectorRenderingTheme getDefaultRenderer(final List<GFeature> features) {
 
-      final Object geom = features[0].getGeometry();
+      final Geometry geom = features.get(0).getGeometry();
       if (geom instanceof com.vividsolutions.jts.geom.Point) {
          return new GPointsRenderingTheme();
       }
@@ -111,7 +112,7 @@ public class GGlobeVectorLayer
 
 
    public GGlobeVectorLayer(final String sName,
-                            final GFeature[] features,
+                            final List<GFeature> features,
                             final GField[] fields,
                             final GProjection projection,
                             final GVectorRenderingTheme vrenderer) {
@@ -120,7 +121,7 @@ public class GGlobeVectorLayer
       setName(sName);
       setMaxActiveAltitude(1000000000);
       setMinActiveAltitude(0);
-      _features = features;
+      _features = new ArrayList<GFeature>(features);
       _renderer = vrenderer;
       _fields = fields;
       _projection = projection;
@@ -144,8 +145,8 @@ public class GGlobeVectorLayer
 
 
    @Override
-   public GFeature[] getFeatures() {
-      return _features;
+   public List<GFeature> getFeatures() {
+      return Collections.unmodifiableList(_features);
    }
 
 
@@ -211,12 +212,11 @@ public class GGlobeVectorLayer
 
    @Override
    public GVectorLayerType getShapeType() {
-
-      if ((_features == null) || (_features.length == 0)) {
+      if ((_features == null) || (_features.isEmpty())) {
          return GVectorLayerType.POLYGON;
       }
-      return getShapeType(_features[0].getGeometry());
 
+      return getShapeType(_features.get(0).getGeometry());
    }
 
 

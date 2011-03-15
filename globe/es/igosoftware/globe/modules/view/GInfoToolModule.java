@@ -56,7 +56,7 @@ public class GInfoToolModule
          extends
             GAbstractGlobeModule {
 
-   private boolean          _isActive = false;
+   private boolean           _isActive = false;
    private GInfoToolListener _listener;
 
 

@@ -36,6 +36,8 @@
 
 package es.igosoftware.globe;
 
+import java.util.List;
+
 import es.igosoftware.globe.layers.GFeature;
 import es.igosoftware.globe.layers.GVectorRenderingTheme;
 
@@ -54,7 +56,7 @@ public interface IGlobeVectorLayer
    public GVectorLayerType getShapeType();
 
 
-   public GFeature[] getFeatures();
+   public List<GFeature> getFeatures();
 
 
 }

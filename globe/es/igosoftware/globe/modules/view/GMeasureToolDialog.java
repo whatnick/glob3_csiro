@@ -62,7 +62,7 @@ public class GMeasureToolDialog
 
 
    public GMeasureToolDialog(final JFrame parent,
-                            final WorldWindow ww) {
+                             final WorldWindow ww) {
 
       super(parent, "Measure tool", false);
 

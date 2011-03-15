@@ -818,7 +818,7 @@ public class GMultidimensionalViewerLayer
 
 
    @Override
-   public GFeature[] getFeatures() {
+   public List<GFeature> getFeatures() {
       return null;
    }
 

@@ -103,7 +103,7 @@ public class GPointsRenderingTheme
       double dValue = 0d;
 
       try {
-         dValue = ((Number) feature.getAttributes()[_fieldIndex]).doubleValue();
+         dValue = ((Number) feature.getAttribute(_fieldIndex)).doubleValue();
       }
       catch (final Exception e) {}
 
@@ -123,7 +123,7 @@ public class GPointsRenderingTheme
       else {
          if (_altitudeOrigin == TAKE_ALTITUDE_FROM_FIELD) {
             try {
-               dAltitude = ((Number) feature.getAttributes()[_altitudeField]).doubleValue();
+               dAltitude = ((Number) feature.getAttribute(_altitudeField)).doubleValue();
             }
             catch (final Exception e) {
                dAltitude = globe.getElevation(latlon.latitude, latlon.longitude) + 1;

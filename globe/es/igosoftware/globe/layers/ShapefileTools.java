@@ -39,7 +39,9 @@ package es.igosoftware.globe.layers;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
@@ -70,10 +72,11 @@ public class ShapefileTools {
          final FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = dataStore.getFeatureSource(query.getTypeName());
          final FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = featureSource.getFeatures(query);
          final FeatureIterator<SimpleFeature> iterator = featureCollection.features();
-         final GFeature[] features = new GFeature[featureCollection.size()];
-         for (int i = 0; iterator.hasNext(); i++) {
+         final List<GFeature> features = new ArrayList<GFeature>(featureCollection.size());
+
+         while (iterator.hasNext()) {
             final SimpleFeature feature = iterator.next();
-            features[i] = new GFeature((Geometry) feature.getDefaultGeometry(), feature.getAttributes().toArray(new Object[0]));
+            features.add(new GFeature((Geometry) feature.getDefaultGeometry(), feature.getAttributes()));
          }
 
          final int iFields = featureSource.getSchema().getAttributeCount() - 1;
