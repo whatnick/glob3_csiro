@@ -40,11 +40,11 @@ import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.globe.GField;
 import es.igosoftware.globe.GGlobeApplication;
 import es.igosoftware.globe.GVectorLayerType;
+import es.igosoftware.globe.IGlobeFeatureCollection;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
-import es.igosoftware.globe.layers.GFeature;
 import es.igosoftware.globe.layers.GVectorRenderingTheme;
 import es.igosoftware.globe.layers.I3DContentCollectionLayer;
 import es.igosoftware.globe.view.GBasicOrbitViewLimits;
@@ -222,7 +222,7 @@ public class GPanoramicLayer
 
 
    @Override
-   public List<GFeature> getFeatures() {
+   public IGlobeFeatureCollection getFeaturesCollection() {
       return null;
    }
 

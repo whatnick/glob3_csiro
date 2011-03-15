@@ -36,13 +36,13 @@
 
 package es.igosoftware.globe.layers;
 
-import es.igosoftware.euclid.projection.GProjection;
-import gov.nasa.worldwind.globes.Globe;
-import gov.nasa.worldwind.render.Renderable;
-
 import java.awt.Color;
 import java.awt.LinearGradientPaint;
-import java.util.List;
+
+import es.igosoftware.euclid.projection.GProjection;
+import es.igosoftware.globe.IGlobeFeatureCollection;
+import gov.nasa.worldwind.globes.Globe;
+import gov.nasa.worldwind.render.Renderable;
 
 
 public abstract class GVectorRenderingTheme {
@@ -70,13 +70,13 @@ public abstract class GVectorRenderingTheme {
    }
 
 
-   public void calculateExtremeValues(final List<GFeature> features) {
+   public void calculateExtremeValues(final IGlobeFeatureCollection features) {
 
       if (_hasToRecalculateExtremeValues) {
          double dMin = Double.POSITIVE_INFINITY;
          double dMax = Double.NEGATIVE_INFINITY;
 
-         for (final GFeature element : features) {
+         for (final IGlobeFeature element : features) {
             final String sValue = element.getAttribute(_fieldIndex).toString();
             try {
                final double dValue = Double.parseDouble(sValue);
@@ -98,7 +98,7 @@ public abstract class GVectorRenderingTheme {
    }
 
 
-   protected abstract Renderable[] getRenderables(final GFeature feature,
+   protected abstract Renderable[] getRenderables(final IGlobeFeature feature,
                                                   final GProjection projection,
                                                   final Globe globe);
 

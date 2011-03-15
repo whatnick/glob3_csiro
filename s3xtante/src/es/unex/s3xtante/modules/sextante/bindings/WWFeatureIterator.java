@@ -10,7 +10,7 @@ import java.util.List;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
-import es.igosoftware.globe.layers.GFeature;
+import es.igosoftware.globe.layers.IGlobeFeature;
 import es.unex.sextante.core.Sextante;
 import es.unex.sextante.dataObjects.FeatureImpl;
 import es.unex.sextante.dataObjects.IFeature;
@@ -23,7 +23,7 @@ public class WWFeatureIterator
          implements
             IFeatureIterator {
 
-   private List<GFeature>           _features;
+   private List<IGlobeFeature>      _features;
    private int                      _index;
    private int                      _selectedIndex;
    private int                      _cardinality;
@@ -43,12 +43,12 @@ public class WWFeatureIterator
    }
 
 
-   public WWFeatureIterator(final List<GFeature> features,
+   public WWFeatureIterator(final List<IGlobeFeature> features,
                             final List<IVectorLayerFilter> filters) {
 
       _index = 0;
       _selectedIndex = 0;
-      _features = new ArrayList<GFeature>(features);
+      _features = new ArrayList<IGlobeFeature>(features);
 
       _filters = new ArrayList<IVectorLayerFilter>(filters);
 

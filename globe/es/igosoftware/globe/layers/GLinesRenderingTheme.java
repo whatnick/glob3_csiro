@@ -65,7 +65,7 @@ public class GLinesRenderingTheme
 
 
    @Override
-   protected Renderable[] getRenderables(final GFeature feature,
+   protected Renderable[] getRenderables(final IGlobeFeature feature,
                                          final GProjection projection,
                                          final Globe globe) {
 

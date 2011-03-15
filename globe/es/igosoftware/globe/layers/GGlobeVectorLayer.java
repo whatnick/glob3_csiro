@@ -42,9 +42,11 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.globe.GField;
 import es.igosoftware.globe.GVectorLayerType;
 import es.igosoftware.globe.IGlobeApplication;
+import es.igosoftware.globe.IGlobeFeatureCollection;
 import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
+import es.igosoftware.util.GAssert;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Sector;
@@ -54,7 +56,6 @@ import gov.nasa.worldwind.render.DrawContext;
 import gov.nasa.worldwind.render.Renderable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.swing.Icon;
@@ -75,23 +76,14 @@ public class GGlobeVectorLayer
          implements
             IGlobeVectorLayer {
 
-   private final GVectorRenderingTheme _renderer;
-   private final List<GFeature>        _features;
-   private GProjection                 _projection    = GProjection.EPSG_4326;
-   private final GField[]              _fields;
+   private final GVectorRenderingTheme   _renderer;
+   private final IGlobeFeatureCollection _features;
+   private final GField[]                _fields;
 
-   private boolean                     _isInitialized = false;
-
-
-   public GGlobeVectorLayer(final String sName,
-                            final List<GFeature> features,
-                            final GField[] fields,
-                            final GProjection projection) {
-      this(sName, features, fields, projection, getDefaultRenderer(features));
-   }
+   private boolean                       _isInitialized = false;
 
 
-   private static GVectorRenderingTheme getDefaultRenderer(final List<GFeature> features) {
+   private static GVectorRenderingTheme getDefaultRenderer(final IGlobeFeatureCollection features) {
 
       final Geometry geom = features.get(0).getGeometry();
       if (geom instanceof com.vividsolutions.jts.geom.Point) {
@@ -112,19 +104,24 @@ public class GGlobeVectorLayer
 
 
    public GGlobeVectorLayer(final String sName,
-                            final List<GFeature> features,
+                            final IGlobeFeatureCollection features,
+                            final GField[] fields) {
+      this(sName, features, fields, getDefaultRenderer(features));
+   }
+
+
+   public GGlobeVectorLayer(final String sName,
+                            final IGlobeFeatureCollection features,
                             final GField[] fields,
-                            final GProjection projection,
                             final GVectorRenderingTheme vrenderer) {
-      super();
+      GAssert.notNull(features, "features");
 
       setName(sName);
       setMaxActiveAltitude(1000000000);
       setMinActiveAltitude(0);
-      _features = new ArrayList<GFeature>(features);
+      _features = features;
       _renderer = vrenderer;
       _fields = fields;
-      _projection = projection;
 
       //addRenderableObjects();
    }
@@ -135,8 +132,10 @@ public class GGlobeVectorLayer
 
       _renderer.calculateExtremeValues(_features);
 
-      for (final GFeature element2 : _features) {
-         final Renderable[] ren = _renderer.getRenderables(element2, _projection, globe);
+      final GProjection projection = _features.getProjection();
+
+      for (final IGlobeFeature element2 : _features) {
+         final Renderable[] ren = _renderer.getRenderables(element2, projection, globe);
          for (final Renderable element : ren) {
             addRenderable(element);
          }
@@ -145,8 +144,8 @@ public class GGlobeVectorLayer
 
 
    @Override
-   public List<GFeature> getFeatures() {
-      return Collections.unmodifiableList(_features);
+   public IGlobeFeatureCollection getFeaturesCollection() {
+      return _features;
    }
 
 
@@ -154,7 +153,7 @@ public class GGlobeVectorLayer
    public Sector getExtent() {
       final ArrayList<Geometry> geoms = new ArrayList<Geometry>();
 
-      for (final GFeature element : _features) {
+      for (final IGlobeFeature element : _features) {
          final Geometry geom = element.getGeometry();
          geoms.add(geom);
       }
@@ -163,8 +162,9 @@ public class GGlobeVectorLayer
 
       final Envelope extent = extentGeom.getEnvelopeInternal();
 
-      final IVector2<?> min = _projection.transformPoint(GProjection.EPSG_4326, new GVector2D(extent.getMinX(), extent.getMinY()));
-      final IVector2<?> max = _projection.transformPoint(GProjection.EPSG_4326, new GVector2D(extent.getMaxX(), extent.getMaxY()));
+      final GProjection projection = _features.getProjection();
+      final IVector2<?> min = projection.transformPoint(GProjection.EPSG_4326, new GVector2D(extent.getMinX(), extent.getMinY()));
+      final IVector2<?> max = projection.transformPoint(GProjection.EPSG_4326, new GVector2D(extent.getMaxX(), extent.getMaxY()));
 
       final Sector sector = new Sector(Angle.fromRadians(min.y()), Angle.fromRadians(max.y()), Angle.fromRadians(min.x()),
                Angle.fromRadians(max.x()));
@@ -189,17 +189,13 @@ public class GGlobeVectorLayer
 
    @Override
    public Icon getIcon(final IGlobeApplication application) {
-
-      return null;
-
+      return application.getIcon("vectorial.png");
    }
 
 
    @Override
    public GProjection getProjection() {
-
-      return _projection;
-
+      return _features.getProjection();
    }
 
 

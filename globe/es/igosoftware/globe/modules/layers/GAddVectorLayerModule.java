@@ -67,7 +67,7 @@ import es.igosoftware.globe.layers.GLinesRenderingTheme;
 import es.igosoftware.globe.layers.GPointsRenderingTheme;
 import es.igosoftware.globe.layers.GPolygonsRenderingTheme;
 import es.igosoftware.globe.layers.GVectorRenderingTheme;
-import es.igosoftware.globe.layers.ShapefileTools;
+import es.igosoftware.globe.layers.GShapefileTools;
 import es.igosoftware.io.GGenericFileFilter;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GPair;
@@ -478,7 +478,7 @@ public class GAddVectorLayerModule
          }
          final String sFilename = fc.getSelectedFile().getAbsolutePath();
          try {
-            final IGlobeVectorLayer vl = ShapefileTools.readFile(new File(sFilename));
+            final IGlobeVectorLayer vl = GShapefileTools.readFile(new File(sFilename));
             if (vl != null) {
                //               vl.setProjection((GProjection) selectedValue);
                vl.redraw();

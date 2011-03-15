@@ -44,8 +44,9 @@ import com.vividsolutions.jts.geom.Polygon;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.globe.GField;
 import es.igosoftware.globe.IGlobeVectorLayer;
-import es.igosoftware.globe.layers.GFeature;
-import es.igosoftware.globe.layers.ShapefileTools;
+import es.igosoftware.globe.layers.GGlobeFeature;
+import es.igosoftware.globe.layers.IGlobeFeature;
+import es.igosoftware.globe.layers.GShapefileTools;
 import es.unex.s3xtante.utils.ProjectionUtils;
 import es.unex.sextante.dataObjects.AbstractVectorLayer;
 import es.unex.sextante.dataObjects.IFeatureIterator;
@@ -92,7 +93,7 @@ public class WWVectorLayer
          _projection = (GProjection) crs;
       }
 
-      m_BaseDataObject = new ArrayList<GFeature>();
+      m_BaseDataObject = new ArrayList<IGlobeFeature>();
    }
 
 
@@ -112,8 +113,8 @@ public class WWVectorLayer
                           final Object[] values) {
 
       if (m_BaseDataObject instanceof List) {
-         final List<GFeature> list = (List<GFeature>) m_BaseDataObject;
-         list.add(new GFeature(g, Arrays.asList(values)));
+         final List<IGlobeFeature> list = (List<IGlobeFeature>) m_BaseDataObject;
+         list.add(new GGlobeFeature(g, Arrays.asList(values)));
       }
 
    }
@@ -184,7 +185,7 @@ public class WWVectorLayer
 
       saveShapefile();
       try {
-         final IGlobeVectorLayer layer = ShapefileTools.readFile(new File(_filename));
+         final IGlobeVectorLayer layer = GShapefileTools.readFile(new File(_filename));
          if (layer != null) {
             layer.setName(_name);
             create(layer);
@@ -203,7 +204,7 @@ public class WWVectorLayer
 
       if (m_BaseDataObject instanceof List) {
          final GeometryFactory gf = new GeometryFactory();
-         final List<GFeature> list = (List<GFeature>) m_BaseDataObject;
+         final List<IGlobeFeature> list = (List<IGlobeFeature>) m_BaseDataObject;
          try {
             final SimpleFeatureType featureType = buildFeatureType(_name, getShapeType(), _fields, DefaultGeographicCRS.WGS84);
             final DataStore mds = createDatastore(_filename, featureType);
@@ -214,7 +215,7 @@ public class WWVectorLayer
             final FeatureWriter<SimpleFeatureType, SimpleFeature> featWriter = mds.getFeatureWriterAppend(ft.getTypeName(),
                      Transaction.AUTO_COMMIT);
             for (int i = 0; i < list.size(); i++) {
-               final GFeature feature = list.get(i);
+               final IGlobeFeature feature = list.get(i);
                Geometry geom;
                if (feature.getGeometry() instanceof Polygon) {
                   geom = gf.createMultiPolygon(new Polygon[] { (Polygon) feature.getGeometry() });
@@ -305,9 +306,9 @@ public class WWVectorLayer
       double dYMax = Double.NEGATIVE_INFINITY;
 
       if (m_BaseDataObject instanceof List) {
-         final List<GFeature> list = (List<GFeature>) m_BaseDataObject;
+         final List<IGlobeFeature> list = (List<IGlobeFeature>) m_BaseDataObject;
          for (int i = 0; i < list.size(); i++) {
-            final GFeature feature = list.get(i);
+            final IGlobeFeature feature = list.get(i);
             final Envelope envelope = feature.getGeometry().getEnvelopeInternal();
             dXMin = Math.min(dXMin, envelope.getMinX());
             dYMin = Math.min(dYMin, envelope.getMinY());
@@ -316,9 +317,9 @@ public class WWVectorLayer
          }
          return new Rectangle2D.Double(dXMin, dYMin, dXMax - dXMin, dYMax - dYMin);
       }
-      else if (m_BaseDataObject instanceof GFeature[]) {
-         final GFeature[] features = (GFeature[]) m_BaseDataObject;
-         for (final GFeature element : features) {
+      else if (m_BaseDataObject instanceof IGlobeFeature[]) {
+         final IGlobeFeature[] features = (IGlobeFeature[]) m_BaseDataObject;
+         for (final IGlobeFeature element : features) {
             final Envelope envelope = element.getGeometry().getEnvelopeInternal();
             dXMin = Math.min(dXMin, envelope.getMinX());
             dYMin = Math.min(dYMin, envelope.getMinY());
@@ -363,11 +364,11 @@ public class WWVectorLayer
       }
 
       if (m_BaseDataObject instanceof List) {
-         final List<GFeature> list = (List<GFeature>) m_BaseDataObject;
+         final List<IGlobeFeature> list = (List<IGlobeFeature>) m_BaseDataObject;
          return getShapeType(list.get(0).getGeometry());
       }
       else if (m_BaseDataObject instanceof IGlobeVectorLayer) {
-         final List<GFeature> features = ((IGlobeVectorLayer) m_BaseDataObject).getFeatures();
+         final List<IGlobeFeature> features = ((IGlobeVectorLayer) m_BaseDataObject).getFeaturesCollection().getFeatures();
          return getShapeType(features.get(0).getGeometry());
       }
       else {
@@ -384,7 +385,7 @@ public class WWVectorLayer
       if (_iterator == null) {
          if (m_BaseDataObject instanceof IGlobeVectorLayer) {
             final IGlobeVectorLayer layer = (IGlobeVectorLayer) m_BaseDataObject;
-            _iterator = new WWFeatureIterator(layer.getFeatures(), _filters);
+            _iterator = new WWFeatureIterator(layer.getFeaturesCollection().getFeatures(), _filters);
          }
          else {
             _iterator = new WWFeatureIterator();

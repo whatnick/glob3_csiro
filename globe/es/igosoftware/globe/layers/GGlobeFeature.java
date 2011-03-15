@@ -45,14 +45,16 @@ import com.vividsolutions.jts.geom.Geometry;
 import es.igosoftware.util.GAssert;
 
 
-public class GFeature {
+public class GGlobeFeature
+         implements
+            IGlobeFeature {
 
    private final Geometry     _geometry;
    private final List<Object> _attributes;
 
 
-   public GFeature(final Geometry geometry,
-                   final List<Object> attributes) {
+   public GGlobeFeature(final Geometry geometry,
+                        final List<Object> attributes) {
       GAssert.notNull(geometry, "geometry");
       GAssert.notNull(attributes, "attributes");
 
@@ -61,16 +63,19 @@ public class GFeature {
    }
 
 
+   @Override
    public Geometry getGeometry() {
       return _geometry;
    }
 
 
+   @Override
    public List<Object> getAttributes() {
       return Collections.unmodifiableList(_attributes);
    }
 
 
+   @Override
    public Object getAttribute(final int index) {
       return _attributes.get(index);
    }
