@@ -326,21 +326,21 @@ public class GAddVectorLayerModule
          @Override
          public String get() {
             final GPointsRenderingTheme rend = (GPointsRenderingTheme) ((IGlobeVectorLayer) layer).getRenderingTheme();
-            return altitudeMethods[rend.getAltitudeMethod()];
+            return altitudeMethods[rend.getAltitudeMethod().ordinal()];
          }
 
 
          @Override
          public void set(final String value) {
-            int iMethod = GPointsRenderingTheme.ALTITUDE_METHOD_CLAMPED_TO_GROUND;
+            GPointsRenderingTheme.AltitudeMethod iMethod = GPointsRenderingTheme.AltitudeMethod.CLAMPED_TO_GROUND;
             if (value.equals("Clamped to the ground")) {
-               iMethod = GPointsRenderingTheme.ALTITUDE_METHOD_CLAMPED_TO_GROUND;
+               iMethod = GPointsRenderingTheme.AltitudeMethod.CLAMPED_TO_GROUND;
             }
             else if (value.equals("Relative")) {
-               iMethod = GPointsRenderingTheme.ALTITUDE_METHOD_RELATIVE_TO_GROUND;
+               iMethod = GPointsRenderingTheme.AltitudeMethod.RELATIVE_TO_GROUND;
             }
             else if (value.equals("Absolute")) {
-               iMethod = GPointsRenderingTheme.ALTITUDE_METHOD_ABSOLUTE;
+               iMethod = GPointsRenderingTheme.AltitudeMethod.ABSOLUTE;
             }
             final IGlobeVectorLayer vectorLayer = (IGlobeVectorLayer) layer;
             final GPointsRenderingTheme rend = (GPointsRenderingTheme) vectorLayer.getRenderingTheme();
@@ -366,18 +366,18 @@ public class GAddVectorLayerModule
          @Override
          public String get() {
             final GPointsRenderingTheme rend = (GPointsRenderingTheme) ((IGlobeVectorLayer) layer).getRenderingTheme();
-            return altitudeSources[rend.getAltitudeOrigin()];
+            return altitudeSources[rend.getAltitudeOrigin().ordinal()];
          }
 
 
          @Override
          public void set(final String value) {
-            int iMethod = GPointsRenderingTheme.TAKE_ALTITUDE_FROM_FIXED;
+            GPointsRenderingTheme.TakeAltitude iMethod = GPointsRenderingTheme.TakeAltitude.FROM_FIXED;
             if (value.equals("Fixed value")) {
-               iMethod = GPointsRenderingTheme.TAKE_ALTITUDE_FROM_FIXED;
+               iMethod = GPointsRenderingTheme.TakeAltitude.FROM_FIXED;
             }
             else if (value.equals("Field")) {
-               iMethod = GPointsRenderingTheme.TAKE_ALTITUDE_FROM_FIELD;
+               iMethod = GPointsRenderingTheme.TakeAltitude.FROM_FIELD;
             }
             final IGlobeVectorLayer vectorLayer = (IGlobeVectorLayer) layer;
             final GPointsRenderingTheme rend = (GPointsRenderingTheme) vectorLayer.getRenderingTheme();

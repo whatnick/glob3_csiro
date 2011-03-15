@@ -59,7 +59,7 @@ public class GPolygonsRenderingTheme
             GVectorRenderingTheme {
 
    private final Color _borderColor     = Color.black;
-   private int         _borderThickness = 1;
+   private float       _borderThickness = 1;
 
 
    public GPolygonsRenderingTheme() {
@@ -114,12 +114,12 @@ public class GPolygonsRenderingTheme
    }
 
 
-   public int getBorderThickness() {
+   public float getBorderThickness() {
       return _borderThickness;
    }
 
 
-   public void setBorderThickness(final int borderThickness) {
+   public void setBorderThickness(final float borderThickness) {
       _borderThickness = borderThickness;
    }
 

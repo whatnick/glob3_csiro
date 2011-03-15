@@ -59,18 +59,26 @@ public class GPointsRenderingTheme
          extends
             GVectorRenderingTheme {
 
-   public static final int ALTITUDE_METHOD_CLAMPED_TO_GROUND  = 0;
-   public static final int ALTITUDE_METHOD_RELATIVE_TO_GROUND = 1;
-   public static final int ALTITUDE_METHOD_ABSOLUTE           = 2;
-   public static final int TAKE_ALTITUDE_FROM_FIXED           = 0;
-   public static final int TAKE_ALTITUDE_FROM_FIELD           = 1;
 
-   private double          _size                              = 10;
-   private String          _shapeType                         = BasicMarkerShape.SPHERE;
-   private double          _fixedAltitude                     = 0;
-   private int             _altitudeField                     = 0;
-   private int             _altitudeMethod                    = ALTITUDE_METHOD_CLAMPED_TO_GROUND;
-   private int             _altitudeOrigin                    = TAKE_ALTITUDE_FROM_FIXED;
+   public static enum AltitudeMethod {
+      CLAMPED_TO_GROUND,
+      RELATIVE_TO_GROUND,
+      ABSOLUTE;
+   }
+
+
+   public static enum TakeAltitude {
+      FROM_FIXED,
+      FROM_FIELD;
+   }
+
+
+   private double                               _size           = 10;
+   private String                               _shapeType      = BasicMarkerShape.SPHERE;
+   private double                               _fixedAltitude  = 0;
+   private int                                  _altitudeField  = 0;
+   private GPointsRenderingTheme.AltitudeMethod _altitudeMethod = GPointsRenderingTheme.AltitudeMethod.CLAMPED_TO_GROUND;
+   private GPointsRenderingTheme.TakeAltitude   _altitudeOrigin = GPointsRenderingTheme.TakeAltitude.FROM_FIXED;
 
 
    public GPointsRenderingTheme() {
@@ -117,11 +125,11 @@ public class GPointsRenderingTheme
       }
 
 
-      if (_altitudeMethod == ALTITUDE_METHOD_CLAMPED_TO_GROUND) {
+      if (_altitudeMethod == AltitudeMethod.CLAMPED_TO_GROUND) {
 
       }
       else {
-         if (_altitudeOrigin == TAKE_ALTITUDE_FROM_FIELD) {
+         if (_altitudeOrigin == TakeAltitude.FROM_FIELD) {
             try {
                dAltitude = ((Number) feature.getAttribute(_altitudeField)).doubleValue();
             }
@@ -130,12 +138,12 @@ public class GPointsRenderingTheme
             }
 
          }
-         else if (_altitudeOrigin == TAKE_ALTITUDE_FROM_FIXED) {
+         else if (_altitudeOrigin == TakeAltitude.FROM_FIXED) {
             dAltitude = _fixedAltitude;
          }
       }
 
-      if (_altitudeOrigin == ALTITUDE_METHOD_RELATIVE_TO_GROUND) {
+      if (_altitudeOrigin == TakeAltitude.FROM_FIELD) {
          dAltitude += globe.getElevation(latlon.latitude, latlon.longitude);
       }
 
@@ -186,22 +194,22 @@ public class GPointsRenderingTheme
    }
 
 
-   public int getAltitudeMethod() {
+   public AltitudeMethod getAltitudeMethod() {
       return _altitudeMethod;
    }
 
 
-   public void setAltitudeMethod(final int altitudeMethod) {
+   public void setAltitudeMethod(final AltitudeMethod altitudeMethod) {
       _altitudeMethod = altitudeMethod;
    }
 
 
-   public int getAltitudeOrigin() {
+   public TakeAltitude getAltitudeOrigin() {
       return _altitudeOrigin;
    }
 
 
-   public void setAltitudeOrigin(final int altitudeOrigin) {
+   public void setAltitudeOrigin(final TakeAltitude altitudeOrigin) {
       _altitudeOrigin = altitudeOrigin;
    }
 

@@ -54,19 +54,17 @@ public abstract class GVectorFieldLayerAttribute
          extends
             GAbstractLayerAttribute<String> {
 
+
    public GVectorFieldLayerAttribute(final String label,
                                      final String propertyName) {
       super(label, propertyName);
-
    }
 
 
    public GVectorFieldLayerAttribute(final String label,
                                      final String propertyName,
                                      final boolean readOnly) {
-
       super(label, propertyName, readOnly);
-
    }
 
 

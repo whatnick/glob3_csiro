@@ -47,13 +47,13 @@ public interface IGlobeVectorLayer
             IGlobeLayer {
 
 
-   public GField[] getFields();
-
-
    public GVectorRenderingTheme getRenderingTheme();
 
 
    public GVectorLayerType getShapeType();
+
+
+   public GField[] getFields();
 
 
    public List<GFeature> getFeatures();

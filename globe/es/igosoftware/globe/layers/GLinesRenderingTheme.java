@@ -56,7 +56,7 @@ public class GLinesRenderingTheme
          extends
             GVectorRenderingTheme {
 
-   private int _lineThickness = 1;
+   private float _lineThickness = 1;
 
 
    public GLinesRenderingTheme() {
@@ -111,12 +111,12 @@ public class GLinesRenderingTheme
    }
 
 
-   public int getLineThickness() {
+   public float getLineThickness() {
       return _lineThickness;
    }
 
 
-   public void setLineThickness(final int lineThickness) {
+   public void setLineThickness(final float lineThickness) {
       _lineThickness = lineThickness;
    }
 
