@@ -24,7 +24,7 @@ import es.igosoftware.util.GStringUtils;
 
 public abstract class GGeometryNTree<
 
-VectorT extends IVector<VectorT, ?>,
+VectorT extends IVector<VectorT, ?, ?>,
 
 BoundsT extends GAxisAlignedOrthotope<VectorT, ?>,
 
@@ -168,8 +168,8 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
 
 
    @SuppressWarnings("unchecked")
-   private static <VectorT extends IVector<VectorT, ?>> VectorT smallestBiggerMultipleOf(final VectorT lower,
-                                                                                         final double smallestExtension) {
+   private static <VectorT extends IVector<VectorT, ?, ?>> VectorT smallestBiggerMultipleOf(final VectorT lower,
+                                                                                            final double smallestExtension) {
 
       final byte dimensionsCount = lower.dimensions();
 

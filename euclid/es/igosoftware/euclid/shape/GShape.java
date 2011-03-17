@@ -57,11 +57,6 @@ public final class GShape {
    }
 
 
-   //   private static int trianglesCounter = 0;
-   //   private static int quadsCounter     = 0;
-   //   private static int polygonsCounter  = 0;
-
-
    public static IPolygon3D<?> createPolygon(final boolean validate,
                                              final IVector3<?>... points) {
       final int pointsCount = points.length;
@@ -71,16 +66,13 @@ public final class GShape {
       }
 
       if (pointsCount == 3) {
-         //         trianglesCounter++;
          return new GTriangle3D(points[0], points[1], points[2]);
       }
 
       if (pointsCount == 4) {
-         //         quadsCounter++;
          return new GQuad3D(points[0], points[1], points[2], points[3]);
       }
 
-      //      polygonsCounter++;
       return new GSimplePolygon3D(validate, points);
    }
 
@@ -94,16 +86,13 @@ public final class GShape {
       }
 
       if (pointsCount == 3) {
-         //         trianglesCounter++;
          return new GTriangle2D(points[0], points[1], points[2]);
       }
 
       if (pointsCount == 4) {
-         //         quadsCounter++;
          return new GQuad2D(points[0], points[1], points[2], points[3]);
       }
 
-      //      polygonsCounter++;
       return new GSimplePolygon2D(validate, points);
    }
 
@@ -124,6 +113,22 @@ public final class GShape {
    }
 
 
+   public static IPolygon2D<?> createLine2(final boolean validate,
+                                           final IVector2<?>... points) {
+      final int pointsCount = points.length;
+
+      if (pointsCount < 2) {
+         throw new IllegalArgumentException("Can't create lines with less than 2 points");
+      }
+
+      if (pointsCount == 2) {
+         return new GSegment2D(points[0], points[1]);
+      }
+
+      return new GLinesStrip2D(validate, points);
+   }
+
+
    public static IPolygon2D<?> createPolygon2(final boolean validate,
                                               final List<IVector2<?>> points) {
       final int pointsCount = points.size();
@@ -133,16 +138,33 @@ public final class GShape {
       }
 
       if (pointsCount == 3) {
-         //         trianglesCounter++;
          return new GTriangle2D(points.get(0), points.get(1), points.get(2));
       }
 
       if (pointsCount == 4) {
-         //         quadsCounter++;
          return new GQuad2D(points.get(0), points.get(1), points.get(2), points.get(3));
       }
 
-      //      polygonsCounter++;
+      return new GSimplePolygon2D(validate, points);
+   }
+
+
+   public static IPolygon2D<?> createPolygon2(final boolean validate,
+                                              final IVector2<?>... points) {
+      final int pointsCount = points.length;
+
+      if (pointsCount < 3) {
+         throw new IllegalArgumentException("Can't create polygons with less than 3 points");
+      }
+
+      if (pointsCount == 3) {
+         return new GTriangle2D(points[0], points[1], points[2]);
+      }
+
+      if (pointsCount == 4) {
+         return new GQuad2D(points[0], points[1], points[2], points[3]);
+      }
+
       return new GSimplePolygon2D(validate, points);
    }
 
@@ -156,35 +178,15 @@ public final class GShape {
       }
 
       if (pointsCount == 3) {
-         //         trianglesCounter++;
-         //System.out.println("Creating triangle");
          return new GTriangle3D(points.get(0), points.get(1), points.get(2));
       }
 
       if (pointsCount == 4) {
-         //         quadsCounter++;
-         //System.out.println("Creating quad");
          return new GQuad3D(points.get(0), points.get(1), points.get(2), points.get(3));
       }
 
-      //      polygonsCounter++;
       return new GSimplePolygon3D(validate, points);
    }
-
-
-   //   public static void showStatistics() {
-   //      final int total = trianglesCounter + quadsCounter + polygonsCounter;
-   //      System.out.println("total shapes: " + total);
-   //      System.out.println("triangles: " + format(trianglesCounter, total));
-   //      System.out.println("quads: " + format(quadsCounter, total));
-   //      System.out.println("polygons: " + format(polygonsCounter, total));
-   //   }
-
-
-   //   private static String format(final double value,
-   //                                final double total) {
-   //      return value + " (" + GMath.roundTo(100 * value / total, 2) + "%)";
-   //   }
 
 
    public static boolean isConvexQuad(final IVector3<?> a,
@@ -211,7 +213,7 @@ public final class GShape {
    }
 
 
-   //   public static <VectorT extends IVector<VectorT, ?>, BoundsT extends IFiniteBounds<VectorT, BoundsT>, GeometryT extends IBoundedGeometry<VectorT, GeometryT, BoundsT>> BoundsT getBounds(final Collection<GeometryT> geometries) {
+   //   public static <VectorT extends IVector<VectorT, ?, ?>, BoundsT extends IFiniteBounds<VectorT, BoundsT>, GeometryT extends IBoundedGeometry<VectorT, GeometryT, BoundsT>> BoundsT getBounds(final Collection<GeometryT> geometries) {
    //
    //      if ((geometries == null) || geometries.isEmpty()) {
    //         return null;
@@ -232,7 +234,7 @@ public final class GShape {
 
    public static <
 
-   VectorT extends IVector<VectorT, ?>,
+   VectorT extends IVector<VectorT, ?, ?>,
 
    GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>> GAxisAlignedOrthotope<VectorT, ?
 

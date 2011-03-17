@@ -4,12 +4,20 @@ package es.igosoftware.globe.layers;
 
 import java.util.List;
 
-import com.vividsolutions.jts.geom.Geometry;
+import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.vector.IVector;
 
 
-public interface IGlobeFeature {
+public interface IGlobeFeature<
 
-   public Geometry getGeometry();
+VectorT extends IVector<VectorT, ?, ?>,
+
+BoundsT extends IFiniteBounds<VectorT, BoundsT>
+
+> {
+
+   public IBoundedGeometry<VectorT, ?, BoundsT> getGeometry();
 
 
    public List<Object> getAttributes();

@@ -2,15 +2,21 @@
 
 package es.igosoftware.globe;
 
-import java.util.List;
-
+import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.projection.GProjection;
+import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.globe.layers.IGlobeFeature;
 
 
-public interface IGlobeFeatureCollection
+public interface IGlobeFeatureCollection<
+
+VectorT extends IVector<VectorT, ?, ?>,
+
+BoundsT extends IFiniteBounds<VectorT, BoundsT>
+
+>
          extends
-            Iterable<IGlobeFeature> {
+            Iterable<IGlobeFeature<VectorT, BoundsT>> {
 
 
    public static class AbortVisiting
@@ -21,21 +27,18 @@ public interface IGlobeFeatureCollection
    }
 
 
-   public static interface IFeatureVisitor {
-      public void visit(final IGlobeFeature feature) throws IGlobeFeatureCollection.AbortVisiting;
+   public static interface IFeatureVisitor<VectorT extends IVector<VectorT, ?, ?>, BoundsT extends IFiniteBounds<VectorT, BoundsT>> {
+      public void visit(final IGlobeFeature<VectorT, BoundsT> feature) throws IGlobeFeatureCollection.AbortVisiting;
    }
 
 
    public GProjection getProjection();
 
 
-   public List<IGlobeFeature> getFeatures();
+   public void acceptVisitor(final IGlobeFeatureCollection.IFeatureVisitor<VectorT, BoundsT> visitor);
 
 
-   public void acceptVisitor(final IGlobeFeatureCollection.IFeatureVisitor visitor);
-
-
-   public IGlobeFeature get(final long index);
+   public IGlobeFeature<VectorT, BoundsT> get(final long index);
 
 
    public boolean isEmpty();

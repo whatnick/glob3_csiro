@@ -10,7 +10,13 @@ import java.util.List;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
+import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.globe.IGlobeFeatureCollection;
 import es.igosoftware.globe.layers.IGlobeFeature;
+import es.igosoftware.util.GMath;
+import es.igosoftware.utils.GJTSUtils;
 import es.unex.sextante.core.Sextante;
 import es.unex.sextante.dataObjects.FeatureImpl;
 import es.unex.sextante.dataObjects.IFeature;
@@ -23,13 +29,13 @@ public class WWFeatureIterator
          implements
             IFeatureIterator {
 
-   private List<IGlobeFeature>      _features;
-   private int                      _index;
-   private int                      _selectedIndex;
-   private int                      _cardinality;
-   private List<IVectorLayerFilter> _filters;
-   private BitSet                   _bitSet;
-   private Rectangle2D              _extent;
+   private IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle> _features;
+   private int                                                         _index;
+   private int                                                         _selectedIndex;
+   private int                                                         _cardinality;
+   private List<IVectorLayerFilter>                                    _filters;
+   private BitSet                                                      _bitSet;
+   private Rectangle2D                                                 _extent;
 
 
    public WWFeatureIterator() {
@@ -43,12 +49,12 @@ public class WWFeatureIterator
    }
 
 
-   public WWFeatureIterator(final List<IGlobeFeature> features,
+   public WWFeatureIterator(final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle> features,
                             final List<IVectorLayerFilter> filters) {
-
       _index = 0;
       _selectedIndex = 0;
-      _features = new ArrayList<IGlobeFeature>(features);
+
+      _features = features;
 
       _filters = new ArrayList<IVectorLayerFilter>(filters);
 
@@ -58,9 +64,7 @@ public class WWFeatureIterator
 
    @Override
    public boolean hasNext() {
-
-      return _cardinality > _selectedIndex;
-
+      return (_cardinality > _selectedIndex);
    }
 
 
@@ -71,12 +75,14 @@ public class WWFeatureIterator
          while (!_bitSet.get(_index)) {
             _index++;
          }
-         final Geometry geom = _features.get(_index).getGeometry();
-         final List<Object> record = _features.get(_index).getAttributes();
-         final IFeature feature = new FeatureImpl(geom, record.toArray());
+         final IGlobeFeature<IVector2<?>, GAxisAlignedRectangle> globeFeature = _features.get(_index);
+         final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> euclidGeom = globeFeature.getGeometry();
+         final List<Object> record = globeFeature.getAttributes();
+         final Geometry jtsGeom = GJTSUtils.toJTS(euclidGeom);
+         final IFeature sextanteFeature = new FeatureImpl(jtsGeom, record.toArray());
          _index++;
          _selectedIndex++;
-         return feature;
+         return sextanteFeature;
       }
       catch (final Exception e) {
          Sextante.addErrorToLog(e);
@@ -95,34 +101,33 @@ public class WWFeatureIterator
 
    @Override
    public int getFeatureCount() {
-
       return _cardinality;
-
    }
 
 
    @SuppressWarnings("null")
    private void calculate() {
-
       _cardinality = 0;
       Envelope envelope = null;
       try {
-         final int iTotalCount = _features.size();
+         final int iTotalCount = GMath.toInt(_features.size());
          _bitSet = new BitSet(iTotalCount);
          for (int i = 0; i < iTotalCount; i++) {
-            final Geometry geom = _features.get(i).getGeometry();
-            final List<Object> record = _features.get(i).getAttributes();
-            final IFeature feature = new FeatureImpl(geom, record.toArray());
+            final IGlobeFeature<IVector2<?>, GAxisAlignedRectangle> globeFeature = _features.get(i);
+            final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> euclidGeom = globeFeature.getGeometry();
+            final List<Object> record = globeFeature.getAttributes();
+            final Geometry jtsGeom = GJTSUtils.toJTS(euclidGeom);
+            final IFeature sextanteFeature = new FeatureImpl(jtsGeom, record.toArray());
             boolean bAccept = true;
             for (int j = 0; j < _filters.size(); j++) {
-               bAccept = bAccept && _filters.get(j).accept(feature, i);
+               bAccept = bAccept && _filters.get(j).accept(sextanteFeature, i);
             }
             if (bAccept) {
                if (_cardinality == 0) {
-                  envelope = geom.getEnvelopeInternal();
+                  envelope = jtsGeom.getEnvelopeInternal();
                }
                else {
-                  envelope.expandToInclude(geom.getEnvelopeInternal());
+                  envelope.expandToInclude(jtsGeom.getEnvelopeInternal());
                }
                _cardinality++;
                _bitSet.set(i);
@@ -140,21 +145,16 @@ public class WWFeatureIterator
       else {
          _extent = new Rectangle2D.Double(envelope.getMinX(), envelope.getMinY(), envelope.getWidth(), envelope.getHeight());
       }
-
-
    }
 
 
    @Override
    public Rectangle2D getExtent() {
-
       return _extent;
-
    }
 
 
    public WWFeatureIterator getNewInstance() {
-
       final WWFeatureIterator iter = new WWFeatureIterator();
       iter._features = _features;
       iter._filters = _filters;
@@ -165,7 +165,6 @@ public class WWFeatureIterator
       iter._extent = _extent;
 
       return iter;
-
    }
 
 

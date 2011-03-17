@@ -41,8 +41,8 @@ import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.globe.GField;
 import es.igosoftware.globe.GGlobeApplication;
 import es.igosoftware.globe.GVectorLayerType;
-import es.igosoftware.globe.IGlobeFeatureCollection;
 import es.igosoftware.globe.IGlobeApplication;
+import es.igosoftware.globe.IGlobeFeatureCollection;
 import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.GBooleanLayerAttribute;
@@ -51,7 +51,7 @@ import es.igosoftware.globe.attributes.GRangeLayerAttribute;
 import es.igosoftware.globe.attributes.GSelectionLayerAttribute;
 import es.igosoftware.globe.attributes.GSeparatorAttribute;
 import es.igosoftware.globe.attributes.ILayerAttribute;
-import es.igosoftware.globe.layers.GVectorRenderingTheme;
+import es.igosoftware.globe.layers.GVector2RenderingTheme;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GRange;
 import es.igosoftware.util.LRUCache;
@@ -806,7 +806,7 @@ public class GMultidimensionalViewerLayer
 
 
    @Override
-   public GVectorRenderingTheme getRenderingTheme() {
+   public GVector2RenderingTheme getRenderingTheme() {
       return null;
    }
 

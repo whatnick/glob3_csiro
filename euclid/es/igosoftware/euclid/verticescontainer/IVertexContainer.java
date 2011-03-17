@@ -57,7 +57,7 @@ import es.igosoftware.util.ITransformer;
 
 public interface IVertexContainer<
 
-VectorT extends IVector<VectorT, ?>,
+VectorT extends IVector<VectorT, ?, ?>,
 
 VertexT extends IVertexContainer.Vertex<VectorT>,
 
@@ -73,7 +73,7 @@ MutableT extends IMutable<MutableT>
     * 
     * @param <VectorT>
     */
-   public static class Vertex<VectorT extends IVector<VectorT, ?>> {
+   public static class Vertex<VectorT extends IVector<VectorT, ?, ?>> {
       public final VectorT _point;
       public final float   _intensity;
       public final VectorT _normal;
@@ -106,7 +106,7 @@ MutableT extends IMutable<MutableT>
    ///////////////////////////////////////////////////////////////////////////////
    public static interface VertexEvaluator<
 
-   VectorT extends IVector<VectorT, ?>,
+   VectorT extends IVector<VectorT, ?, ?>,
 
    VertexT extends IVertexContainer.Vertex<VectorT>
 
@@ -117,7 +117,7 @@ MutableT extends IMutable<MutableT>
 
 
    ///////////////////////////////////////////////////////////////////////////////
-   public static class WeightedVertex<VectorT extends IVector<VectorT, ?>>
+   public static class WeightedVertex<VectorT extends IVector<VectorT, ?, ?>>
             extends
                Vertex<VectorT> {
       private static IColor asColor(final IVector3<?> vector) {
@@ -130,7 +130,7 @@ MutableT extends IMutable<MutableT>
       }
 
 
-      public static <VectorT extends IVector<VectorT, ?>> WeightedVertex<VectorT> getAverage(final WeightedVertex<VectorT>... values) {
+      public static <VectorT extends IVector<VectorT, ?, ?>> WeightedVertex<VectorT> getAverage(final WeightedVertex<VectorT>... values) {
          if ((values == null) || (values.length == 0)) {
             return null;
          }
@@ -179,7 +179,7 @@ MutableT extends IMutable<MutableT>
       }
 
 
-      public static <VectorT extends IVector<VectorT, ?>> WeightedVertex<VectorT> getAverage(final Collection<WeightedVertex<VectorT>> values) {
+      public static <VectorT extends IVector<VectorT, ?, ?>> WeightedVertex<VectorT> getAverage(final Collection<WeightedVertex<VectorT>> values) {
          if ((values == null) || values.isEmpty()) {
             return null;
          }

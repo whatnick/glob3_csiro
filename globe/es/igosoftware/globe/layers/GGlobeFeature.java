@@ -40,20 +40,27 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.vividsolutions.jts.geom.Geometry;
-
+import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GAssert;
 
 
-public class GGlobeFeature
+public class GGlobeFeature<
+
+VectorT extends IVector<VectorT, ?, ?>,
+
+BoundsT extends IFiniteBounds<VectorT, BoundsT>
+
+>
          implements
-            IGlobeFeature {
+            IGlobeFeature<VectorT, BoundsT> {
 
-   private final Geometry     _geometry;
-   private final List<Object> _attributes;
+   private final IBoundedGeometry<VectorT, ?, BoundsT> _geometry;
+   private final List<Object>                          _attributes;
 
 
-   public GGlobeFeature(final Geometry geometry,
+   public GGlobeFeature(final IBoundedGeometry<VectorT, ?, BoundsT> geometry,
                         final List<Object> attributes) {
       GAssert.notNull(geometry, "geometry");
       GAssert.notNull(attributes, "attributes");
@@ -64,7 +71,7 @@ public class GGlobeFeature
 
 
    @Override
-   public Geometry getGeometry() {
+   public IBoundedGeometry<VectorT, ?, BoundsT> getGeometry() {
       return _geometry;
    }
 

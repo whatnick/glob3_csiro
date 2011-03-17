@@ -144,8 +144,8 @@ public final class GVectorUtils {
    }
 
 
-   private static <T extends IVector<T, ?>> double getAverageDimension(final byte dimension,
-                                                                       final Iterable<T> vectors) {
+   private static <T extends IVector<T, ?, ?>> double getAverageDimension(final byte dimension,
+                                                                          final Iterable<T> vectors) {
       final Iterator<T> iterator = vectors.iterator();
 
       if (!iterator.hasNext()) {
@@ -177,8 +177,8 @@ public final class GVectorUtils {
    }
 
 
-   private static <T extends IVector<T, ?>> double getAverageDimension(final byte dimension,
-                                                                       final IVertexContainer<T, IVertexContainer.Vertex<T>, ?> vectors) {
+   private static <T extends IVector<T, ?, ?>> double getAverageDimension(final byte dimension,
+                                                                          final IVertexContainer<T, IVertexContainer.Vertex<T>, ?> vectors) {
       final Iterator<T> iterator = vectors.pointsIterator();
 
       if (!iterator.hasNext()) {
@@ -296,8 +296,8 @@ public final class GVectorUtils {
    }
 
 
-   private static <T extends IVector<T, ?>> T kahanSum(final T zero,
-                                                       final Iterable<T> vectors) {
+   private static <T extends IVector<T, ?, ?>> T kahanSum(final T zero,
+                                                          final Iterable<T> vectors) {
       // from http://en.wikipedia.org/wiki/Kahan_summation_algorithm
 
       final Iterator<T> iterator = vectors.iterator();
@@ -322,9 +322,9 @@ public final class GVectorUtils {
    }
 
 
-   private static <T extends IVector<T, ?>> T kahanSum(final T zero,
-                                                       final IVertexContainer<T, IVertexContainer.Vertex<T>, ?> vertices,
-                                                       final int[] verticesIndexes) {
+   private static <T extends IVector<T, ?, ?>> T kahanSum(final T zero,
+                                                          final IVertexContainer<T, IVertexContainer.Vertex<T>, ?> vertices,
+                                                          final int[] verticesIndexes) {
       // from http://en.wikipedia.org/wiki/Kahan_summation_algorithm
 
       final int verticesCount = verticesIndexes.length;
@@ -348,8 +348,8 @@ public final class GVectorUtils {
    }
 
 
-   private static <T extends IVector<T, ?>> T kahanSum(final T zero,
-                                                       final T... vectors) {
+   private static <T extends IVector<T, ?, ?>> T kahanSum(final T zero,
+                                                          final T... vectors) {
       // from http://en.wikipedia.org/wiki/Kahan_summation_algorithm
 
       if (vectors.length == 0) {
@@ -454,7 +454,7 @@ public final class GVectorUtils {
    }
 
 
-   public static IVector<?, ?> newMutableVector(final double[] coordinates) {
+   public static IVector<?, ?, ?> newMutableVector(final double[] coordinates) {
       final int dimensions = coordinates.length;
       if (dimensions == 2) {
          return new GMutableVector2<IVector2<?>>(GVector2D.ZERO);
@@ -468,7 +468,7 @@ public final class GVectorUtils {
    }
 
 
-   public static IVector<?, ?> newVector(final double[] coordinates) {
+   public static IVector<?, ?, ?> newVector(final double[] coordinates) {
       final int dimensions = coordinates.length;
       if (dimensions == 2) {
          return new GVector2D(coordinates[0], coordinates[1]);
@@ -492,8 +492,8 @@ public final class GVectorUtils {
    }
 
 
-   private static <T extends IVector<T, ?>> T plainSum(final T zero,
-                                                       final Iterable<T> vectors) {
+   private static <T extends IVector<T, ?, ?>> T plainSum(final T zero,
+                                                          final Iterable<T> vectors) {
       T sum = zero;
       for (final T vector : vectors) {
          sum = sum.add(vector);
@@ -605,7 +605,7 @@ public final class GVectorUtils {
    }
 
 
-   public static IVector<?, ?> createD(final double[] dimensionsValues) {
+   public static IVector<?, ?, ?> createD(final double[] dimensionsValues) {
       final int dimensions = dimensionsValues.length;
 
       if (dimensions == 2) {
@@ -615,12 +615,12 @@ public final class GVectorUtils {
          return new GVector3D(dimensionsValues[0], dimensionsValues[1], dimensionsValues[2]);
       }
       else {
-         throw new IllegalArgumentException("dimentions " + dimensions + " not yet supported");
+         throw new IllegalArgumentException("dimensions " + dimensions + " not yet supported");
       }
    }
 
 
-   public static IVector<?, ?> createF(final double[] dimensionsValues) {
+   public static IVector<?, ?, ?> createF(final double[] dimensionsValues) {
       final int dimensions = dimensionsValues.length;
 
       if (dimensions == 2) {
@@ -630,12 +630,12 @@ public final class GVectorUtils {
          return new GVector3F((float) dimensionsValues[0], (float) dimensionsValues[1], (float) dimensionsValues[2]);
       }
       else {
-         throw new IllegalArgumentException("dimentions " + dimensions + " not yet supported");
+         throw new IllegalArgumentException("dimensions " + dimensions + " not yet supported");
       }
    }
 
 
-   public static IVector<?, ?> createF(final float[] dimensionsValues) {
+   public static IVector<?, ?, ?> createF(final float[] dimensionsValues) {
       final int dimensions = dimensionsValues.length;
 
       if (dimensions == 2) {
@@ -645,8 +645,42 @@ public final class GVectorUtils {
          return new GVector3F(dimensionsValues[0], dimensionsValues[1], dimensionsValues[2]);
       }
       else {
-         throw new IllegalArgumentException("dimentions " + dimensions + " not yet supported");
+         throw new IllegalArgumentException("dimensions " + dimensions + " not yet supported");
       }
    }
+
+
+   public static <VectorT extends IVector<VectorT, ?, ?>> VectorT getAverage(final Iterable<VectorT> vectors) {
+      final Iterator<VectorT> iterator = vectors.iterator();
+
+      if (!iterator.hasNext()) {
+         return null;
+      }
+
+      int count = 1;
+      VectorT sum = iterator.next().asDouble(); // as double to give accurate averages
+      while (iterator.hasNext()) {
+         count++;
+         sum = sum.add(iterator.next());
+      }
+
+      return sum.div(count);
+   }
+
+
+   public static <VectorT extends IVector<VectorT, ?, ?>> VectorT getAverage(final VectorT... vectors) {
+      final int count = vectors.length;
+      if (count == 0) {
+         return null;
+      }
+
+      VectorT sum = vectors[0].asDouble(); // as double to give accurate averages
+      for (int i = 1; i < count; i++) {
+         sum = sum.add(vectors[i]);
+      }
+
+      return sum.div(count);
+   }
+
 
 }

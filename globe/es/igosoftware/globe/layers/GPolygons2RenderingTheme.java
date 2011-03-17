@@ -36,8 +36,10 @@
 
 package es.igosoftware.globe.layers;
 
+import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.projection.GProjection;
-import es.igosoftware.euclid.vector.GVector2D;
+import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector2;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.LatLon;
@@ -49,68 +51,62 @@ import gov.nasa.worldwind.render.airspaces.Polygon;
 
 import java.awt.Color;
 import java.util.ArrayList;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
+import java.util.List;
 
 
-public class GPolygonsRenderingTheme
+public class GPolygons2RenderingTheme
          extends
-            GVectorRenderingTheme {
+            GVector2RenderingTheme {
 
    private final Color _borderColor     = Color.black;
    private float       _borderThickness = 1;
 
 
-   public GPolygonsRenderingTheme() {
+   public GPolygons2RenderingTheme() {
       super();
    }
 
 
    @Override
-   protected Renderable[] getRenderables(final IGlobeFeature feature,
+   protected Renderable[] getRenderables(final IGlobeFeature<IVector2<?>, GAxisAlignedRectangle> feature,
                                          final GProjection projection,
                                          final Globe globe) {
 
-      final Geometry geom = feature.getGeometry();
-      final ArrayList<Renderable> polygons = new ArrayList<Renderable>();
-      for (int iGeom = 0; iGeom < geom.getNumGeometries(); iGeom++) {
-         final Geometry subgeom = geom.getGeometryN(iGeom);
-         final ArrayList<LatLon> list = new ArrayList<LatLon>();
-         for (int i = 0; i < subgeom.getNumPoints(); i++) {
-            final Coordinate coord = subgeom.getCoordinates()[i];
-            final IVector2<?> transformedPt = projection.transformPoint(GProjection.EPSG_4326, new GVector2D(coord.x, coord.y));
-            final LatLon latlon = new LatLon(Angle.fromRadians(transformedPt.y()), Angle.fromRadians(transformedPt.x()));
-            //final LatLon latlon = new LatLon(Angle.fromDegrees(coord.y), Angle.fromDegrees(coord.x));
-            list.add(latlon);
-         }
-         final Polygon poly = new Polygon(list);
-         final AirspaceAttributes attrs = poly.getAttributes();
-         // TODO:Fix this
-         poly.setAltitude(200d);
+      final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> geom = feature.getGeometry();
 
-         double dValue = 0d;
-         try {
-            dValue = ((Number) feature.getAttribute(_fieldIndex)).doubleValue();
-         }
-         catch (final Exception e) {}
-         final Color color;
-         if (_coloringMethod == GVectorRenderingTheme.ColoringMethod.COLOR_RAMP) {
-            color = new Color(getColorFromColorRamp(dValue));
-         }
-         else {
-            color = _color;
-         }
-         attrs.setMaterial(new Material(color));
-         attrs.setOutlineMaterial(new Material(_borderColor));
-         attrs.setOutlineWidth(_borderThickness);
-         attrs.setDrawOutline(true);
-         attrs.setDrawInterior(true);
-         polygons.add(poly);
+      @SuppressWarnings("unchecked")
+      final IPointsContainer<IVector2<?>, ?> points = (IPointsContainer<IVector2<?>, ?>) geom;
+
+      final List<LatLon> list = new ArrayList<LatLon>(points.getPointsCount());
+      for (final IVector2<?> point : points) {
+         final IVector2<?> transformedPt = projection.transformPoint(GProjection.EPSG_4326, point);
+         final LatLon latlon = new LatLon(Angle.fromRadians(transformedPt.y()), Angle.fromRadians(transformedPt.x()));
+         list.add(latlon);
       }
 
-      return polygons.toArray(new Renderable[0]);
 
+      final Polygon poly = new Polygon(list);
+      final AirspaceAttributes attrs = poly.getAttributes();
+      // TODO:Fix this
+      poly.setAltitude(200d);
+
+
+      final Color color;
+      if (_coloringMethod == GVector2RenderingTheme.ColoringMethod.COLOR_RAMP) {
+         final double value = ((Number) feature.getAttribute(_fieldIndex)).doubleValue();
+         color = new Color(getColorFromColorRamp(value));
+      }
+      else {
+         color = _color;
+      }
+
+      attrs.setMaterial(new Material(color));
+      attrs.setOutlineMaterial(new Material(_borderColor));
+      attrs.setOutlineWidth(_borderThickness);
+      attrs.setDrawOutline(true);
+      attrs.setDrawInterior(true);
+
+      return new Renderable[] { poly };
    }
 
 

@@ -40,6 +40,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 import es.igosoftware.euclid.matrix.GMatrix44D;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.util.GAssert;
@@ -48,13 +49,8 @@ import es.igosoftware.util.XStringTokenizer;
 
 
 public class GVector3D
-         //         extends
-         //            GVectorAbstract<IVector3<?>, GVector3D>
-         //         implements
-         //            IVector3<?> {
-         //   
          extends
-            GVectorAbstract<IVector3<?>, GVector3D>
+            GVectorAbstract<IVector3<?>, GVector3D, GAxisAlignedBox>
          implements
             IVector3<GVector3D> {
 
@@ -575,5 +571,12 @@ public class GVector3D
    public boolean closeTo(final GVector3D that) {
       return closeTo((IVector3<?>) that);
    }
+
+
+   @Override
+   public GAxisAlignedBox getBounds() {
+      return new GAxisAlignedBox(this, this);
+   }
+
 
 }

@@ -36,7 +36,10 @@
 
 package es.igosoftware.globe.modules.geonames;
 
+import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.projection.GProjection;
+import es.igosoftware.euclid.vector.GVector2D;
+import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.globe.GField;
 import es.igosoftware.globe.GListFeatureCollection;
 import es.igosoftware.globe.GVectorLayerType;
@@ -46,7 +49,7 @@ import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.globe.layers.GGlobeFeature;
-import es.igosoftware.globe.layers.GVectorRenderingTheme;
+import es.igosoftware.globe.layers.GVector2RenderingTheme;
 import es.igosoftware.globe.layers.IGlobeFeature;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.geom.Position;
@@ -63,28 +66,23 @@ import javax.swing.Icon;
 import org.geonames.InsufficientStyleException;
 import org.geonames.Toponym;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Point;
-
 
 public class GSearchResultLayer
          extends
             MarkerLayer
          implements
-            IGlobeVectorLayer {
+            IGlobeVectorLayer<IVector2<?>, GAxisAlignedRectangle> {
 
 
-   private final Sector                  _extent;
-   private final IGlobeFeatureCollection _features;
+   private final Sector                                                      _extent;
+   private final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle> _features;
 
 
    public GSearchResultLayer(final List<Marker> markersList) {
       super(markersList);
 
-      final List<IGlobeFeature> features = new ArrayList<IGlobeFeature>(markersList.size());
-
-      final GeometryFactory geomFactory = new GeometryFactory();
+      final List<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>> features = new ArrayList<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>>(
+               markersList.size());
 
       double minLongitude = Double.POSITIVE_INFINITY;
       double maxLongitude = Double.NEGATIVE_INFINITY;
@@ -102,7 +100,8 @@ public class GSearchResultLayer
          minLongitude = Math.min(minLongitude, latitude);
          maxLongitude = Math.max(maxLongitude, latitude);
 
-         final Point point = geomFactory.createPoint(new Coordinate(longitude, latitude));
+         //         final Point point = geomFactory.createPoint(new Coordinate(longitude, latitude));
+         final GVector2D point = new GVector2D(latitude, longitude);
 
          boolean added = false;
 
@@ -110,7 +109,7 @@ public class GSearchResultLayer
             final Toponym toponym = ((GSearchResultMarker) marker).getToponym();
             try {
                final List<Object> attribs = Arrays.asList(new Object[] { toponym.getName(), toponym.getPopulation() });
-               features.add(new GGlobeFeature(point, attribs));
+               features.add(new GGlobeFeature<IVector2<?>, GAxisAlignedRectangle>(point, attribs));
                added = true;
             }
             catch (final InsufficientStyleException e) {
@@ -119,13 +118,14 @@ public class GSearchResultLayer
          }
 
          if (!added) {
-            features.add(new GGlobeFeature(point, Arrays.asList(new Object[] { "", Long.valueOf(0) })));
+            features.add(new GGlobeFeature<IVector2<?>, GAxisAlignedRectangle>(point, Arrays.asList(new Object[] { "",
+                     Long.valueOf(0) })));
          }
       }
 
 
       _extent = Sector.fromDegrees(minLatitude, maxLatitude, minLongitude, maxLongitude);
-      _features = new GListFeatureCollection(GProjection.EPSG_4326, features);
+      _features = new GListFeatureCollection<IVector2<?>, GAxisAlignedRectangle>(GProjection.EPSG_4326, features);
    }
 
 
@@ -167,13 +167,13 @@ public class GSearchResultLayer
 
 
    @Override
-   public IGlobeFeatureCollection getFeaturesCollection() {
+   public IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle> getFeaturesCollection() {
       return _features;
    }
 
 
    @Override
-   public GVectorRenderingTheme getRenderingTheme() {
+   public GVector2RenderingTheme getRenderingTheme() {
       return null;
    }
 

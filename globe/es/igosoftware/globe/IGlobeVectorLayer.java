@@ -36,15 +36,23 @@
 
 package es.igosoftware.globe;
 
-import es.igosoftware.globe.layers.GVectorRenderingTheme;
+import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.vector.IVector;
+import es.igosoftware.globe.layers.GVector2RenderingTheme;
 
 
-public interface IGlobeVectorLayer
+public interface IGlobeVectorLayer<
+
+VectorT extends IVector<VectorT, ?, ?>,
+
+BoundsT extends IFiniteBounds<VectorT, BoundsT>
+
+>
          extends
             IGlobeLayer {
 
 
-   public GVectorRenderingTheme getRenderingTheme();
+   public GVector2RenderingTheme getRenderingTheme();
 
 
    public GVectorLayerType getShapeType();
@@ -53,7 +61,7 @@ public interface IGlobeVectorLayer
    public GField[] getFields();
 
 
-   public IGlobeFeatureCollection getFeaturesCollection();
+   public IGlobeFeatureCollection<VectorT, BoundsT> getFeaturesCollection();
 
 
 }

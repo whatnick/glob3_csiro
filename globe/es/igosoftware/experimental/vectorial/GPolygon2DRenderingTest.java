@@ -89,14 +89,14 @@ public class GPolygon2DRenderingTest {
    }
 
 
-   private static <VectorT extends IVector<VectorT, ?>> GAxisAlignedOrthotope<VectorT, ?> centerBounds(final GAxisAlignedOrthotope<VectorT, ?> bounds,
-                                                                                                       final VectorT center) {
+   private static <VectorT extends IVector<VectorT, ?, ?>> GAxisAlignedOrthotope<VectorT, ?> centerBounds(final GAxisAlignedOrthotope<VectorT, ?> bounds,
+                                                                                                          final VectorT center) {
       final VectorT delta = bounds.getCenter().sub(center);
       return bounds.translatedBy(delta.negated());
    }
 
 
-   private static <VectorT extends IVector<VectorT, ?>> GAxisAlignedOrthotope<VectorT, ?> multipleOfSmallestDimention(final GAxisAlignedOrthotope<VectorT, ?> bounds) {
+   private static <VectorT extends IVector<VectorT, ?, ?>> GAxisAlignedOrthotope<VectorT, ?> multipleOfSmallestDimention(final GAxisAlignedOrthotope<VectorT, ?> bounds) {
       final VectorT extent = bounds.getCenter();
 
       double smallestExtension = Double.POSITIVE_INFINITY;
@@ -114,8 +114,8 @@ public class GPolygon2DRenderingTest {
 
 
    @SuppressWarnings("unchecked")
-   private static <VectorT extends IVector<VectorT, ?>> VectorT smallestBiggerMultipleOf(final VectorT lower,
-                                                                                         final double smallestExtension) {
+   private static <VectorT extends IVector<VectorT, ?, ?>> VectorT smallestBiggerMultipleOf(final VectorT lower,
+                                                                                            final double smallestExtension) {
 
       final byte dimensionsCount = lower.dimensions();
 

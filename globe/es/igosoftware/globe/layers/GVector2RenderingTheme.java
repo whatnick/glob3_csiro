@@ -39,13 +39,15 @@ package es.igosoftware.globe.layers;
 import java.awt.Color;
 import java.awt.LinearGradientPaint;
 
+import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.projection.GProjection;
+import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.globe.IGlobeFeatureCollection;
 import gov.nasa.worldwind.globes.Globe;
 import gov.nasa.worldwind.render.Renderable;
 
 
-public abstract class GVectorRenderingTheme {
+public abstract class GVector2RenderingTheme {
 
    public static enum ColoringMethod {
       UNIQUE,
@@ -64,41 +66,32 @@ public abstract class GVectorRenderingTheme {
    private boolean             _hasToRecalculateExtremeValues = true;
 
 
-   public GVectorRenderingTheme() {
+   public GVector2RenderingTheme() {
       _gradient = new LinearGradientPaint(0f, 0f, 1f, 1f, new float[] { 0f, 1f }, new Color[] { Color.yellow, Color.red });
       //calculateExtremeValues(features);
    }
 
 
-   public void calculateExtremeValues(final IGlobeFeatureCollection features) {
+   public void calculateExtremeValues(final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle> features) {
 
       if (_hasToRecalculateExtremeValues) {
          double dMin = Double.POSITIVE_INFINITY;
          double dMax = Double.NEGATIVE_INFINITY;
 
-         for (final IGlobeFeature element : features) {
+         for (final IGlobeFeature<IVector2<?>, GAxisAlignedRectangle> element : features) {
             final String sValue = element.getAttribute(_fieldIndex).toString();
-            try {
-               final double dValue = Double.parseDouble(sValue);
-               dMin = Math.min(dMin, dValue);
-               dMax = Math.max(dMax, dValue);
-            }
-            catch (final Exception e) {
-               //ignore wrong field values
-            }
+            final double dValue = Double.parseDouble(sValue);
+            dMin = Math.min(dMin, dValue);
+            dMax = Math.max(dMax, dValue);
+
          }
 
-         //         if (dMin == Double.POSITIVE_INFINITY) {
-         //            dMin = 0;
-         //            dMax = 0;
-         //         }
          _hasToRecalculateExtremeValues = false;
       }
-
    }
 
 
-   protected abstract Renderable[] getRenderables(final IGlobeFeature feature,
+   protected abstract Renderable[] getRenderables(final IGlobeFeature<IVector2<?>, GAxisAlignedRectangle> feature,
                                                   final GProjection projection,
                                                   final Globe globe);
 

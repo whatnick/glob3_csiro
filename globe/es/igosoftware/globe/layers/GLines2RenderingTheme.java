@@ -36,8 +36,10 @@
 
 package es.igosoftware.globe.layers;
 
+import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.projection.GProjection;
-import es.igosoftware.euclid.vector.GVector2D;
+import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector2;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.LatLon;
@@ -47,67 +49,63 @@ import gov.nasa.worldwind.render.Renderable;
 
 import java.awt.Color;
 import java.util.ArrayList;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
+import java.util.List;
 
 
-public class GLinesRenderingTheme
+public class GLines2RenderingTheme
          extends
-            GVectorRenderingTheme {
+            GVector2RenderingTheme {
 
    private float _lineThickness = 1;
 
 
-   public GLinesRenderingTheme() {
+   public GLines2RenderingTheme() {
       super();
    }
 
 
    @Override
-   protected Renderable[] getRenderables(final IGlobeFeature feature,
+   protected Renderable[] getRenderables(final IGlobeFeature<IVector2<?>, GAxisAlignedRectangle> feature,
                                          final GProjection projection,
                                          final Globe globe) {
 
-      try {
-         final ArrayList<Polyline> polys = new ArrayList<Polyline>();
-         final Geometry geom = feature.getGeometry();
-         for (int i = 0; i < geom.getNumGeometries(); i++) {
-            final ArrayList<LatLon> list = new ArrayList<LatLon>();
-            for (int j = 0; j < geom.getNumPoints(); j++) {
-               final Coordinate coord = geom.getCoordinates()[j];
-               final IVector2<?> transformedPt = projection.transformPoint(GProjection.EPSG_4326, new GVector2D(coord.x, coord.y));
-               final LatLon latlon = new LatLon(Angle.fromRadians(transformedPt.y()), Angle.fromRadians(transformedPt.x()));
-               list.add(latlon);
-            }
-            final Polyline poly = new Polyline(list, 0);
 
-            double dValue = 0d;
-            try {
-               dValue = ((Number) feature.getAttribute(_fieldIndex)).doubleValue();
-            }
-            catch (final Exception e) {}
+      final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> geom = feature.getGeometry();
 
-            final Color color;
-            if (_coloringMethod == GVectorRenderingTheme.ColoringMethod.COLOR_RAMP) {
-               color = new Color(getColorFromColorRamp(dValue));
-            }
-            else {
-               color = _color;
-            }
 
-            poly.setColor(color);
-
-            poly.setLineWidth(_lineThickness);
-            poly.setFollowTerrain(true);
-            polys.add(poly);
-         }
-         return polys.toArray(new Polyline[0]);
-      }
-      catch (final Exception e) {
-         return new Renderable[0];
+      if (!(geom instanceof IPointsContainer)) {
+         throw new RuntimeException("geometry type (" + geom.getClass() + ") not supported");
       }
 
+      @SuppressWarnings("unchecked")
+      final IPointsContainer<IVector2<?>, ?> points = (IPointsContainer<IVector2<?>, ?>) geom;
+
+      final List<LatLon> list = new ArrayList<LatLon>(points.getPointsCount());
+
+      for (final IVector2<?> point : points) {
+         final IVector2<?> transformedPt = projection.transformPoint(GProjection.EPSG_4326, point);
+         final LatLon latlon = new LatLon(Angle.fromRadians(transformedPt.y()), Angle.fromRadians(transformedPt.x()));
+         list.add(latlon);
+      }
+
+
+      final Polyline poly = new Polyline(list, 0);
+
+
+      final Color color;
+      if (_coloringMethod == GVector2RenderingTheme.ColoringMethod.COLOR_RAMP) {
+         final double value = ((Number) feature.getAttribute(_fieldIndex)).doubleValue();
+         color = new Color(getColorFromColorRamp(value));
+      }
+      else {
+         color = _color;
+      }
+
+      poly.setColor(color);
+      poly.setLineWidth(_lineThickness);
+      poly.setFollowTerrain(true);
+
+      return new Renderable[] { poly };
    }
 
 

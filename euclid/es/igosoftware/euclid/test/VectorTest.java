@@ -128,14 +128,14 @@ public class VectorTest {
    }
 
 
-   private static interface PairEvaluation<VectorT extends IVector<VectorT, ?>> {
+   private static interface PairEvaluation<VectorT extends IVector<VectorT, ?, ?>> {
       void evaluate(final VectorT vector1,
                     final VectorT vector2);
    }
 
 
-   private <VectorT extends IVector<VectorT, ?>> void combinationsDo(final VectorT[] vectors,
-                                                                     final PairEvaluation<VectorT> evaluation) {
+   private <VectorT extends IVector<VectorT, ?, ?>> void combinationsDo(final VectorT[] vectors,
+                                                                        final PairEvaluation<VectorT> evaluation) {
       for (int i = 0; i < vectors.length; i++) {
          for (int j = i; j < vectors.length; j++) {
             evaluation.evaluate(vectors[i], vectors[j]);
@@ -144,8 +144,8 @@ public class VectorTest {
    }
 
 
-   private List<IVector<?, ?>> getVectorsWithOneDimension(final int... dimension) {
-      final List<IVector<?, ?>> result = new ArrayList<IVector<?, ?>>();
+   private List<IVector<?, ?, ?>> getVectorsWithOneDimension(final int... dimension) {
+      final List<IVector<?, ?, ?>> result = new ArrayList<IVector<?, ?, ?>>();
       for (final int element : dimension) {
          result.add(new GVector3D(element, 0, 0));
          result.add(new GVector3D(0, element, 0));
@@ -163,12 +163,13 @@ public class VectorTest {
       }
 
 
-      final List<IVector<?, ?>> mutables = GCollections.collect(result, new ITransformer<IVector<?, ?>, IVector<?, ?>>() {
-         @Override
-         public IVector<?, ?> transform(final IVector<?, ?> element) {
-            return element.asMutable();
-         }
-      });
+      final List<IVector<?, ?, ?>> mutables = GCollections.collect(result,
+               new ITransformer<IVector<?, ?, ?>, IVector<?, ?, ?>>() {
+                  @Override
+                  public IVector<?, ?, ?> transform(final IVector<?, ?, ?> element) {
+                     return element.asMutable();
+                  }
+               });
 
       result.addAll(mutables);
 
@@ -176,8 +177,8 @@ public class VectorTest {
    }
 
 
-   private Iterable<IVector<?, ?>> getVectorsWithTwoDimensions(final int... dimension) {
-      final List<IVector<?, ?>> result = new ArrayList<IVector<?, ?>>();
+   private Iterable<IVector<?, ?, ?>> getVectorsWithTwoDimensions(final int... dimension) {
+      final List<IVector<?, ?, ?>> result = new ArrayList<IVector<?, ?, ?>>();
       for (final int element : dimension) {
          result.add(new GVector3D(element, element, 0));
          result.add(new GVector3D(0, element, element));
@@ -191,12 +192,13 @@ public class VectorTest {
          result.add(new GVector2F(element, element));
       }
 
-      final List<IVector<?, ?>> mutables = GCollections.collect(result, new ITransformer<IVector<?, ?>, IVector<?, ?>>() {
-         @Override
-         public IVector<?, ?> transform(final IVector<?, ?> element) {
-            return element.asMutable();
-         }
-      });
+      final List<IVector<?, ?, ?>> mutables = GCollections.collect(result,
+               new ITransformer<IVector<?, ?, ?>, IVector<?, ?, ?>>() {
+                  @Override
+                  public IVector<?, ?, ?> transform(final IVector<?, ?, ?> element) {
+                     return element.asMutable();
+                  }
+               });
 
       result.addAll(mutables);
 
@@ -248,35 +250,35 @@ public class VectorTest {
    public void testLength() {
 
 
-      for (final IVector<?, ?> vector : getVectorsWithOneDimension(1, -1)) {
+      for (final IVector<?, ?, ?> vector : getVectorsWithOneDimension(1, -1)) {
          Assert.assertEquals(vector + " length", 1.0, vector.length());
          Assert.assertEquals(vector + " length", 1.0, vector.squaredLength());
       }
 
 
-      for (final IVector<?, ?> vector : getVectorsWithOneDimension(2, -2)) {
+      for (final IVector<?, ?, ?> vector : getVectorsWithOneDimension(2, -2)) {
          Assert.assertEquals(vector + " length", 2.0, vector.length());
          Assert.assertEquals(vector + " length", 4.0, vector.squaredLength());
       }
 
 
-      for (final IVector<?, ?> vector : getVectorsWithTwoDimensions(1, -1)) {
+      for (final IVector<?, ?, ?> vector : getVectorsWithTwoDimensions(1, -1)) {
          Assert.assertEquals(vector + " length", Math.sqrt(2), vector.length());
          Assert.assertEquals(vector + " length", 2.0, vector.squaredLength());
       }
 
-      for (final IVector<?, ?> vector : getVectorsWithTwoDimensions(2, -2)) {
+      for (final IVector<?, ?, ?> vector : getVectorsWithTwoDimensions(2, -2)) {
          Assert.assertEquals(vector + " length", Math.sqrt(8), vector.length());
          Assert.assertEquals(vector + " length", 8.0, vector.squaredLength());
       }
 
 
-      for (final IVector3<?> vector : getVectorsWithThreeDimensions(1, -1)) {
+      for (final IVector<?, ?, ?> vector : getVectorsWithThreeDimensions(1, -1)) {
          Assert.assertEquals(vector + " length", Math.sqrt(3), vector.length());
          Assert.assertEquals(vector + " length", 3.0, vector.squaredLength());
       }
 
-      for (final IVector3<?> vector : getVectorsWithThreeDimensions(2, -2)) {
+      for (final IVector<?, ?, ?> vector : getVectorsWithThreeDimensions(2, -2)) {
          Assert.assertEquals(vector + " length", Math.sqrt(12), vector.length());
          Assert.assertEquals(vector + " length", 12.0, vector.squaredLength());
 
@@ -289,46 +291,46 @@ public class VectorTest {
    public void testNormalization() {
 
 
-      for (final IVector<?, ?> vector : getVectorsWithOneDimension(1, -1)) {
+      for (final IVector<?, ?, ?> vector : getVectorsWithOneDimension(1, -1)) {
          Assert.assertEquals(vector + "normalized", 1.0, (vector.normalized()).length());
          Assert.assertEquals(vector + "normalized", 1.0, (vector.normalized()).squaredLength());
          Assert.assertTrue(vector + "isNormalized", (vector.normalized()).isNormalized());
 
       }
-      for (final IVector<?, ?> vector : getVectorsWithOneDimension(2, -2)) {
+      for (final IVector<?, ?, ?> vector : getVectorsWithOneDimension(2, -2)) {
          Assert.assertEquals(vector + "isNormalized", false, vector.isNormalized());
          Assert.assertEquals(vector + "normalized", 1.0, (vector.normalized()).length());
          Assert.assertEquals(vector + "normalized", 1.0, (vector.normalized()).squaredLength());
          Assert.assertTrue(vector + "isNormalized", (vector.normalized()).isNormalized());
       }
-      for (final IVector<?, ?> vector : getVectorsWithTwoDimensions(1, -1)) {
+      for (final IVector<?, ?, ?> vector : getVectorsWithTwoDimensions(1, -1)) {
          Assert.assertEquals(vector + "isNormalized", false, vector.isNormalized());
          Assert.assertEquals(vector + "normalized", 1.0, (vector.normalized()).length());
          Assert.assertEquals(vector + "normalized", 1.0, (vector.normalized()).squaredLength());
          Assert.assertTrue(vector + "isNormalized", (vector.normalized()).isNormalized());
       }
-      for (final IVector<?, ?> vector : getVectorsWithTwoDimensions(2, -2)) {
+      for (final IVector<?, ?, ?> vector : getVectorsWithTwoDimensions(2, -2)) {
          Assert.assertEquals(vector + "isNormalized", false, vector.isNormalized());
          Assert.assertEquals(vector + "normalized", 1.0, (vector.normalized()).length());
          Assert.assertEquals(vector + "normalized", 1.0, (vector.normalized()).squaredLength());
          Assert.assertTrue(vector + "isNormalized", (vector.normalized()).isNormalized());
       }
-      for (final IVector<?, ?> vector : getVectorsWithThreeDimensions(1, -1)) {
+      for (final IVector<?, ?, ?> vector : getVectorsWithThreeDimensions(1, -1)) {
          Assert.assertEquals(vector + "isNormalized", false, vector.isNormalized());
          Assert.assertEquals(vector + "normalized", 1.0, (vector.normalized()).length());
          Assert.assertEquals(vector + "normalized", 1.0, (vector.normalized()).squaredLength());
          Assert.assertTrue(vector + "isNormalized", (vector.normalized()).isNormalized());
       }
-      for (final IVector<?, ?> vector : getVectorsWithThreeDimensions(2, -2)) {
+      for (final IVector<?, ?, ?> vector : getVectorsWithThreeDimensions(2, -2)) {
          Assert.assertEquals(vector + "isNormalized", false, vector.isNormalized());
          Assert.assertEquals(vector + "normalized", 1.0, (vector.normalized()).length());
          Assert.assertEquals(vector + "normalized", 1.0, (vector.normalized()).squaredLength());
          Assert.assertTrue(vector + "isNormalized", (vector.normalized()).isNormalized());
       }
-      for (final IVector2<?> element : VectorTest.zeros2) {
+      for (final IVector<?, ?, ?> element : VectorTest.zeros2) {
          Assert.assertSame("normalize Zero-Vec2", element, element.normalized());
       }
-      for (final IVector3<?> element : VectorTest.zeros3) {
+      for (final IVector<?, ?, ?> element : VectorTest.zeros3) {
          Assert.assertSame("normalize Zero-Vec3", element, element.normalized());
       }
 
@@ -989,7 +991,7 @@ public class VectorTest {
    }
 
 
-   private void testIndexOutOfBoundsException(final IVector<?, ?> vector) {
+   private void testIndexOutOfBoundsException(final IVector<?, ?, ?> vector) {
       boolean thrown = false;
       try {
          vector.get((byte) -1);

@@ -47,7 +47,7 @@ import es.igosoftware.util.GMath;
 
 public abstract class GNBall<
 
-VectorT extends IVector<VectorT, ?>,
+VectorT extends IVector<VectorT, ?, ?>,
 
 GeometryT extends GNBall<VectorT, GeometryT>
 
@@ -178,4 +178,12 @@ GeometryT extends GNBall<VectorT, GeometryT>
 
       return lower.greaterOrEquals(orthotope._lower) && upper.lessOrEquals(orthotope._upper);
    }
+
+
+   @Override
+   public VectorT getCentroid() {
+      return _center;
+   }
+
+
 }

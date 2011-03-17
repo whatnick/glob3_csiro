@@ -55,10 +55,14 @@ import org.opengis.filter.Filter;
 
 import com.vividsolutions.jts.geom.Geometry;
 
+import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.projection.GProjection;
+import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.globe.GField;
 import es.igosoftware.globe.GListFeatureCollection;
 import es.igosoftware.globe.IGlobeVectorLayer;
+import es.igosoftware.utils.GJTSUtils;
 
 
 public class GShapefileTools {
@@ -67,7 +71,7 @@ public class GShapefileTools {
    }
 
 
-   public static IGlobeVectorLayer readFile(final File file) throws IOException {
+   public static IGlobeVectorLayer<IVector2<?>, GAxisAlignedRectangle> readFile(final File file) throws IOException {
 
       final HashMap<String, URL> connect = new HashMap<String, URL>();
       connect.put("url", file.toURI().toURL());
@@ -78,11 +82,15 @@ public class GShapefileTools {
       final FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = dataStore.getFeatureSource(query.getTypeName());
       final FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = featureSource.getFeatures(query);
       final FeatureIterator<SimpleFeature> iterator = featureCollection.features();
-      final List<IGlobeFeature> features = new ArrayList<IGlobeFeature>(featureCollection.size());
+      final List<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>> features = new ArrayList<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>>(
+               featureCollection.size());
 
       while (iterator.hasNext()) {
          final SimpleFeature feature = iterator.next();
-         features.add(new GGlobeFeature((Geometry) feature.getDefaultGeometry(), feature.getAttributes()));
+         final Geometry jtsGeometry = (Geometry) feature.getDefaultGeometry();
+         for (final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> euclidGeometry : GJTSUtils.toEuclid(jtsGeometry)) {
+            features.add(new GGlobeFeature<IVector2<?>, GAxisAlignedRectangle>(euclidGeometry, feature.getAttributes()));
+         }
       }
 
       final SimpleFeatureType schema = featureSource.getSchema();
@@ -97,6 +105,8 @@ public class GShapefileTools {
 
       final int TODO_read_projection_or_ask_user;
       final GProjection projection = GProjection.EPSG_4326;
-      return new GGlobeVectorLayer(file.getName(), new GListFeatureCollection(projection, features), fields, null);
+
+      return new GGlobeVector2Layer(file.getName(), new GListFeatureCollection<IVector2<?>, GAxisAlignedRectangle>(projection,
+               features), fields, null);
    }
 }

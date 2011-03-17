@@ -44,13 +44,14 @@ import java.util.Iterator;
 import java.util.List;
 
 import es.igosoftware.euclid.bounding.IBounds;
+import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GAssert;
 
 
 public abstract class GTriangle<
 
-VectorT extends IVector<VectorT, ?>,
+VectorT extends IVector<VectorT, ?, ?>,
 
 SegmentT extends GSegment<VectorT, SegmentT, BoundsT>,
 
@@ -236,6 +237,13 @@ BoundsT extends IBounds<VectorT, BoundsT>
    @Override
    public boolean isConvex() {
       return true;
+   }
+
+
+   @SuppressWarnings("unchecked")
+   @Override
+   public VectorT getCentroid() {
+      return GVectorUtils.getAverage(_v0, _v1, _v2);
    }
 
 

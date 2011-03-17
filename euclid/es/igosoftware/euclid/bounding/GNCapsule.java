@@ -47,7 +47,7 @@ import es.igosoftware.util.GMath;
 
 public abstract class GNCapsule<
 
-VectorT extends IVector<VectorT, ?>,
+VectorT extends IVector<VectorT, ?, ?>,
 
 SegmentT extends GSegment<VectorT, SegmentT, ?>,
 
@@ -194,6 +194,12 @@ GeometryT extends GNCapsule<VectorT, SegmentT, GeometryT>
 
    public double getRadius() {
       return _radius;
+   }
+
+
+   @Override
+   public VectorT getCentroid() {
+      return _segment.getCentroid();
    }
 
 

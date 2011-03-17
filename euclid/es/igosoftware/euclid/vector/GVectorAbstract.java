@@ -37,20 +37,23 @@
 package es.igosoftware.euclid.vector;
 
 import es.igosoftware.euclid.GGeometryAbstract;
+import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.util.GMath;
 
 
 public abstract class GVectorAbstract<
 
-VectorT extends IVector<VectorT, ?>,
+VectorT extends IVector<VectorT, ?, BoundsT>,
 
-GeometryT extends GVectorAbstract<VectorT, GeometryT>
+GeometryT extends GVectorAbstract<VectorT, GeometryT, BoundsT>,
+
+BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
 
 >
          extends
             GGeometryAbstract<VectorT, GeometryT>
          implements
-            IVector<VectorT, GeometryT> {
+            IVector<VectorT, GeometryT, BoundsT> {
 
    private static final long serialVersionUID = 1L;
 
@@ -102,9 +105,12 @@ GeometryT extends GVectorAbstract<VectorT, GeometryT>
    @Override
    public abstract boolean equals(final Object that);
 
-   //   @Override
-   //   public boolean isZero() {
-   //      return closeToZero();
-   //   }
+
+   @SuppressWarnings("unchecked")
+   @Override
+   public VectorT getCentroid() {
+      return (VectorT) this;
+   }
+
 
 }

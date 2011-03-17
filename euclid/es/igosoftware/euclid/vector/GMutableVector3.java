@@ -40,6 +40,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import es.igosoftware.euclid.GGeometryAbstract;
+import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 import es.igosoftware.euclid.matrix.GMatrix44D;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.util.GAssert;
@@ -433,9 +434,17 @@ public final class GMutableVector3<T extends IVector3<?>>
       return closeTo((IVector3<?>) that);
    }
 
-   //   @Override
-   //   public boolean isZero() {
-   //      return _value.isZero();
-   //   }
+
+   @Override
+   public IVector3<?> getCentroid() {
+      return _value.getCentroid();
+   }
+
+
+   @Override
+   public GAxisAlignedBox getBounds() {
+      return _value.getBounds();
+   }
+
 
 }

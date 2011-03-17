@@ -44,7 +44,7 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
-import es.igosoftware.globe.layers.GVectorRenderingTheme;
+import es.igosoftware.globe.layers.GVector2RenderingTheme;
 import es.igosoftware.globe.utils.GAreasEventsLayer;
 import es.igosoftware.globe.utils.GAreasEventsLayer.IAreaEventsListener;
 import es.igosoftware.io.GIOUtils;
@@ -690,7 +690,7 @@ public final class GPanoramicLayerOLD
 
 
    @Override
-   public GVectorRenderingTheme getRenderingTheme() {
+   public GVector2RenderingTheme getRenderingTheme() {
       return null;
    }
 

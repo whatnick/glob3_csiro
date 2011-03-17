@@ -6,6 +6,7 @@ import javax.swing.JDialog;
 
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.globe.GField;
+import es.igosoftware.io.GFileName;
 import es.unex.sextante.core.AnalysisExtent;
 import es.unex.sextante.core.OutputFactory;
 import es.unex.sextante.dataObjects.IRasterLayer;
@@ -35,9 +36,8 @@ public class WWOutputFactory
       }
 
       if (channel instanceof FileOutputChannel) {
-         final String sFilename = ((FileOutputChannel) channel).getFilename();
-         final WWVectorLayer vectorLayer = new WWVectorLayer();
-         vectorLayer.create(sName, fields, sFilename, crs);
+         final GFileName filename = GFileName.relativeFromParts(((FileOutputChannel) channel).getFilename().split("[/\\\\]"));
+         final WWVectorLayer vectorLayer = new WWVectorLayer(sName, fields, filename, (GProjection) crs);
          return vectorLayer;
       }
       throw new UnsupportedOutputChannelException();

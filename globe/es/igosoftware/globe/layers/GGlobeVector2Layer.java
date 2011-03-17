@@ -36,8 +36,14 @@
 
 package es.igosoftware.globe.layers;
 
+import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.IGeometry;
+import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.projection.GProjection;
-import es.igosoftware.euclid.vector.GVector2D;
+import es.igosoftware.euclid.shape.GLinesStrip;
+import es.igosoftware.euclid.shape.GSegment;
+import es.igosoftware.euclid.shape.IPolygon;
+import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.globe.GField;
 import es.igosoftware.globe.GVectorLayerType;
@@ -47,80 +53,74 @@ import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.util.GAssert;
+import es.igosoftware.utils.GWWUtils;
 import gov.nasa.worldwind.avlist.AVKey;
-import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Sector;
 import gov.nasa.worldwind.globes.Globe;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.DrawContext;
 import gov.nasa.worldwind.render.Renderable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Icon;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Polygon;
 
-
-public class GGlobeVectorLayer
+public class GGlobeVector2Layer
          extends
             RenderableLayer
          implements
-            IGlobeVectorLayer {
+            IGlobeVectorLayer<IVector2<?>, GAxisAlignedRectangle> {
 
-   private final GVectorRenderingTheme   _renderer;
-   private final IGlobeFeatureCollection _features;
-   private final GField[]                _fields;
+   private final GVector2RenderingTheme                                      _renderingTheme;
+   private final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle> _features;
+   private final GField[]                                                    _fields;
 
-   private boolean                       _isInitialized = false;
+   private boolean                                                           _isInitialized = false;
+   private Sector                                                            _extent;
 
 
-   private static GVectorRenderingTheme getDefaultRenderer(final IGlobeFeatureCollection features) {
+   private static GVector2RenderingTheme getDefaultRenderer(final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle> features) {
 
-      final Geometry geom = features.get(0).getGeometry();
-      if (geom instanceof com.vividsolutions.jts.geom.Point) {
-         return new GPointsRenderingTheme();
+      if (features.isEmpty()) {
+         return null;
       }
-      else if ((geom instanceof LineString) || (geom instanceof MultiLineString)) {
-         return new GLinesRenderingTheme();
+
+      final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> geometry = features.get(0).getGeometry();
+
+      if (geometry instanceof IVector) {
+         return new GPoints2RenderingTheme();
       }
-      else if ((geom instanceof com.vividsolutions.jts.geom.Polygon)
-               || (geom instanceof com.vividsolutions.jts.geom.MultiPolygon)) {
-         return new GPolygonsRenderingTheme();
+      else if ((geometry instanceof GSegment) || (geometry instanceof GLinesStrip)) {
+         return new GLines2RenderingTheme();
+      }
+      else if (geometry instanceof IPolygon) {
+         return new GPolygons2RenderingTheme();
       }
       else {
          return null;
       }
-
    }
 
 
-   public GGlobeVectorLayer(final String sName,
-                            final IGlobeFeatureCollection features,
-                            final GField[] fields) {
-      this(sName, features, fields, getDefaultRenderer(features));
+   public GGlobeVector2Layer(final String name,
+                             final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle> features,
+                             final GField[] fields) {
+      this(name, features, fields, getDefaultRenderer(features));
    }
 
 
-   public GGlobeVectorLayer(final String sName,
-                            final IGlobeFeatureCollection features,
-                            final GField[] fields,
-                            final GVectorRenderingTheme vrenderer) {
+   public GGlobeVector2Layer(final String name,
+                             final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle> features,
+                             final GField[] fields,
+                             final GVector2RenderingTheme rendereringTheme) {
       GAssert.notNull(features, "features");
 
-      setName(sName);
+      setName(name);
       setMaxActiveAltitude(1000000000);
       setMinActiveAltitude(0);
       _features = features;
-      _renderer = vrenderer;
+      _renderingTheme = rendereringTheme;
       _fields = fields;
 
       //addRenderableObjects();
@@ -130,13 +130,12 @@ public class GGlobeVectorLayer
    private void addRenderableObjects(final Globe globe) {
       removeAllRenderables();
 
-      _renderer.calculateExtremeValues(_features);
+      _renderingTheme.calculateExtremeValues(_features);
 
       final GProjection projection = _features.getProjection();
 
-      for (final IGlobeFeature element2 : _features) {
-         final Renderable[] ren = _renderer.getRenderables(element2, projection, globe);
-         for (final Renderable element : ren) {
+      for (final IGlobeFeature<IVector2<?>, GAxisAlignedRectangle> feature : _features) {
+         for (final Renderable element : _renderingTheme.getRenderables(feature, projection, globe)) {
             addRenderable(element);
          }
       }
@@ -144,39 +143,47 @@ public class GGlobeVectorLayer
 
 
    @Override
-   public IGlobeFeatureCollection getFeaturesCollection() {
+   public IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle> getFeaturesCollection() {
       return _features;
    }
 
 
    @Override
    public Sector getExtent() {
-      final ArrayList<Geometry> geoms = new ArrayList<Geometry>();
-
-      for (final IGlobeFeature element : _features) {
-         final Geometry geom = element.getGeometry();
-         geoms.add(geom);
+      if (_extent == null) {
+         _extent = calculateExtent();
       }
 
-      final GeometryCollection extentGeom = new GeometryFactory().createGeometryCollection(geoms.toArray(new Geometry[0]));
+      return _extent;
+   }
 
-      final Envelope extent = extentGeom.getEnvelopeInternal();
 
-      final GProjection projection = _features.getProjection();
-      final IVector2<?> min = projection.transformPoint(GProjection.EPSG_4326, new GVector2D(extent.getMinX(), extent.getMinY()));
-      final IVector2<?> max = projection.transformPoint(GProjection.EPSG_4326, new GVector2D(extent.getMaxX(), extent.getMaxY()));
+   private Sector calculateExtent() {
+      GAxisAlignedRectangle mergedExtent = null;
 
-      final Sector sector = new Sector(Angle.fromRadians(min.y()), Angle.fromRadians(max.y()), Angle.fromRadians(min.x()),
-               Angle.fromRadians(max.x()));
+      for (final IGlobeFeature<IVector2<?>, GAxisAlignedRectangle> feature : _features) {
+         final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> geom = feature.getGeometry();
+         final GAxisAlignedRectangle bounds = geom.getBounds();
 
-      return sector;
+         if (mergedExtent == null) {
+            mergedExtent = bounds;
+         }
+         else {
+            mergedExtent = mergedExtent.mergedWith(bounds);
+         }
+      }
 
+      if (mergedExtent == null) {
+         return null;
+      }
+
+      return GWWUtils.toSector(mergedExtent, _features.getProjection());
    }
 
 
    @Override
-   public GVectorRenderingTheme getRenderingTheme() {
-      return _renderer;
+   public GVector2RenderingTheme getRenderingTheme() {
+      return _renderingTheme;
    }
 
 
@@ -216,18 +223,19 @@ public class GGlobeVectorLayer
    }
 
 
-   private GVectorLayerType getShapeType(final Geometry geom) {
-
-      if ((geom instanceof Polygon) || (geom instanceof MultiPolygon)) {
-         return GVectorLayerType.POLYGON;
-      }
-      else if ((geom instanceof LineString) || (geom instanceof MultiLineString)) {
-         return GVectorLayerType.LINE;
-      }
-      else {
+   private static <VectorT extends IVector<VectorT, ?, ?>> GVectorLayerType getShapeType(final IGeometry<VectorT, ?> geometry) {
+      if (geometry instanceof IVector) {
          return GVectorLayerType.POINT;
       }
-
+      else if ((geometry instanceof GSegment) || (geometry instanceof GLinesStrip)) {
+         return GVectorLayerType.LINE;
+      }
+      else if (geometry instanceof IPolygon) {
+         return GVectorLayerType.POLYGON;
+      }
+      else {
+         return null;
+      }
    }
 
 

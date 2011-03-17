@@ -25,7 +25,7 @@ import es.igosoftware.util.GProgress;
 
 public class GGTInnerNode<
 
-VectorT extends IVector<VectorT, ?>,
+VectorT extends IVector<VectorT, ?, ?>,
 
 BoundsT extends GAxisAlignedOrthotope<VectorT, ?>,
 
@@ -39,7 +39,7 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
    private final GGTNode<VectorT, BoundsT, GeometryT>[] _children;
 
 
-   static class GeometriesDistribution<VectorT extends IVector<VectorT, ?>, GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>>
+   static class GeometriesDistribution<VectorT extends IVector<VectorT, ?, ?>, GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>>
             extends
                GPair<Collection<GeometryT>, Collection<GeometryT>> {
 
@@ -65,7 +65,7 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
 
    static final <
 
-   VectorT extends IVector<VectorT, ?>,
+   VectorT extends IVector<VectorT, ?, ?>,
 
    BoundsT extends GAxisAlignedOrthotope<VectorT, ?>,
 

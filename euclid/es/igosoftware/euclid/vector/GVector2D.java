@@ -40,6 +40,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.matrix.GMatrix44D;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.util.GAssert;
@@ -48,7 +49,7 @@ import es.igosoftware.util.GMath;
 
 public class GVector2D
          extends
-            GVectorAbstract<IVector2<?>, GVector2D>
+            GVectorAbstract<IVector2<?>, GVector2D, GAxisAlignedRectangle>
          implements
             IVector2<GVector2D> {
 
@@ -503,6 +504,12 @@ public class GVector2D
    @Override
    public boolean closeTo(final GVector2D that) {
       return closeTo((IVector2<?>) that);
+   }
+
+
+   @Override
+   public GAxisAlignedRectangle getBounds() {
+      return new GAxisAlignedRectangle(this, this);
    }
 
 

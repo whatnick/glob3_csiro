@@ -45,7 +45,7 @@ import es.igosoftware.util.GStringUtils;
 import es.igosoftware.util.GUtils;
 
 
-public abstract class GPointsLoader<VectorT extends IVector<VectorT, ?>, VertexT extends IVertexContainer.Vertex<VectorT>>
+public abstract class GPointsLoader<VectorT extends IVector<VectorT, ?, ?>, VertexT extends IVertexContainer.Vertex<VectorT>>
          extends
             GLoggerObject {
 

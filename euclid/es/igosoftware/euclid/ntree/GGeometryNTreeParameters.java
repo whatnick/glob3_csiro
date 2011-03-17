@@ -29,7 +29,7 @@ public class GGeometryNTreeParameters {
 
    public static interface AcceptLeafNodeCreationPolicy<
 
-   VectorT extends IVector<VectorT, ?>,
+   VectorT extends IVector<VectorT, ?, ?>,
 
    GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>
 
@@ -65,7 +65,7 @@ public class GGeometryNTreeParameters {
 
    private static class DefaultAcceptLeafNodeCreationPolicy<
 
-   VectorT extends IVector<VectorT, ?>,
+   VectorT extends IVector<VectorT, ?, ?>,
 
    GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>
 

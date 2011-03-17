@@ -813,4 +813,10 @@ public final class GPlane
       return touches((IBounds3D<?>) that);
    }
 
+
+   @Override
+   public IVector3<?> getCentroid() {
+      throw new RuntimeException("The plane has not a centroid");
+   }
+
 }

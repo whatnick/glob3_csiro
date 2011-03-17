@@ -51,7 +51,7 @@ public class GColinearException
    private static final long serialVersionUID = 1L;
 
 
-   public GColinearException(final IVector<?, ?>... vectors) {
+   public GColinearException(final IVector<?, ?, ?>... vectors) {
       super("GColinearException, vectors=" + Arrays.toString(vectors));
    }
 

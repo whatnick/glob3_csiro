@@ -355,7 +355,7 @@ public final class GBufferUtils {
    }
 
 
-   //   public static <VectorT extends IVector<VectorT, ?>> void putVector(final DoubleBuffer buffer,
+   //   public static <VectorT extends IVector<VectorT, ?, ?>> void putVector(final DoubleBuffer buffer,
    //                                                                      final int index,
    //                                                                      final VectorT vector) {
    //      final byte dimensions = vector.dimensions();
@@ -367,9 +367,9 @@ public final class GBufferUtils {
    //   }
 
 
-   public static <VectorT extends IVector<VectorT, ?>> void putVector(final FloatBuffer buffer,
-                                                                      final int index,
-                                                                      final VectorT vector) {
+   public static <VectorT extends IVector<VectorT, ?, ?>> void putVector(final FloatBuffer buffer,
+                                                                         final int index,
+                                                                         final VectorT vector) {
       final byte dimensions = vector.dimensions();
       final int indexD = index * dimensions;
 

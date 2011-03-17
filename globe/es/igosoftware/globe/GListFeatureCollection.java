@@ -3,31 +3,38 @@
 package es.igosoftware.globe;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.projection.GProjection;
+import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.globe.layers.IGlobeFeature;
 import es.igosoftware.util.GAssert;
 
 
-public class GListFeatureCollection
+public class GListFeatureCollection<
+
+VectorT extends IVector<VectorT, ?, ?>,
+
+BoundsT extends IFiniteBounds<VectorT, BoundsT>
+
+>
          implements
-            IGlobeFeatureCollection {
+            IGlobeFeatureCollection<VectorT, BoundsT> {
 
 
-   private final GProjection         _projection;
-   private final List<IGlobeFeature> _features;
+   private final GProjection                           _projection;
+   private final List<IGlobeFeature<VectorT, BoundsT>> _features;
 
 
    public GListFeatureCollection(final GProjection projection,
-                                 final List<IGlobeFeature> features) {
+                                 final List<IGlobeFeature<VectorT, BoundsT>> features) {
       GAssert.notNull(projection, "projection");
       GAssert.notEmpty(features, "features");
 
       _projection = projection;
-      _features = new ArrayList<IGlobeFeature>(features); // creates a copy of the list to protect the modifications from outside
+      _features = new ArrayList<IGlobeFeature<VectorT, BoundsT>>(features); // creates a copy of the list to protect the modifications from outside
    }
 
 
@@ -38,15 +45,9 @@ public class GListFeatureCollection
 
 
    @Override
-   public List<IGlobeFeature> getFeatures() {
-      return Collections.unmodifiableList(_features);
-   }
-
-
-   @Override
-   public void acceptVisitor(final IGlobeFeatureCollection.IFeatureVisitor visitor) {
+   public void acceptVisitor(final IGlobeFeatureCollection.IFeatureVisitor<VectorT, BoundsT> visitor) {
       try {
-         for (final IGlobeFeature feature : _features) {
+         for (final IGlobeFeature<VectorT, BoundsT> feature : _features) {
             visitor.visit(feature);
          }
       }
@@ -63,13 +64,13 @@ public class GListFeatureCollection
 
 
    @Override
-   public Iterator<IGlobeFeature> iterator() {
+   public Iterator<IGlobeFeature<VectorT, BoundsT>> iterator() {
       return _features.iterator();
    }
 
 
    @Override
-   public IGlobeFeature get(final long index) {
+   public IGlobeFeature<VectorT, BoundsT> get(final long index) {
       if (index < 0) {
          throw new IndexOutOfBoundsException("index #" + index + " is begative");
       }
@@ -94,4 +95,9 @@ public class GListFeatureCollection
       return _features.size();
    }
 
+
+   //   public static void main(final String[] args) {
+   //      final GAxisAlignedRectangle bounds = new GAxisAlignedRectangle(new GVector2F(0, 1), new GVector2F(0, 1));
+   //      System.out.println(bounds.getCenter());
+   //   }
 }

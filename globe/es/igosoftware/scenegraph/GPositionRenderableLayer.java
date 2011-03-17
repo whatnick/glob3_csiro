@@ -40,12 +40,12 @@ import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.globe.GField;
 import es.igosoftware.globe.GGlobeApplication;
 import es.igosoftware.globe.GVectorLayerType;
-import es.igosoftware.globe.IGlobeFeatureCollection;
 import es.igosoftware.globe.IGlobeApplication;
+import es.igosoftware.globe.IGlobeFeatureCollection;
 import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
-import es.igosoftware.globe.layers.GVectorRenderingTheme;
+import es.igosoftware.globe.layers.GVector2RenderingTheme;
 import es.igosoftware.io.GFileLoader;
 import es.igosoftware.io.GFileName;
 import es.igosoftware.loading.G3DModel;
@@ -649,7 +649,7 @@ public class GPositionRenderableLayer
 
 
    @Override
-   public GVectorRenderingTheme getRenderingTheme() {
+   public GVector2RenderingTheme getRenderingTheme() {
       return null;
    }
 

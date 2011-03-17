@@ -63,11 +63,11 @@ import es.igosoftware.globe.attributes.GFloatLayerAttribute;
 import es.igosoftware.globe.attributes.GSelectionLayerAttribute;
 import es.igosoftware.globe.attributes.GVectorFieldLayerAttribute;
 import es.igosoftware.globe.attributes.ILayerAttribute;
-import es.igosoftware.globe.layers.GLinesRenderingTheme;
-import es.igosoftware.globe.layers.GPointsRenderingTheme;
-import es.igosoftware.globe.layers.GPolygonsRenderingTheme;
-import es.igosoftware.globe.layers.GVectorRenderingTheme;
+import es.igosoftware.globe.layers.GLines2RenderingTheme;
+import es.igosoftware.globe.layers.GPoints2RenderingTheme;
+import es.igosoftware.globe.layers.GPolygons2RenderingTheme;
 import es.igosoftware.globe.layers.GShapefileTools;
+import es.igosoftware.globe.layers.GVector2RenderingTheme;
 import es.igosoftware.io.GGenericFileFilter;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GPair;
@@ -143,15 +143,15 @@ public class GAddVectorLayerModule
          public void set(final String value) {
 
 
-            GVectorRenderingTheme.ColoringMethod iMethod = GVectorRenderingTheme.ColoringMethod.COLOR_RAMP;
+            GVector2RenderingTheme.ColoringMethod iMethod = GVector2RenderingTheme.ColoringMethod.COLOR_RAMP;
             if (value.equals("Unique color")) {
-               iMethod = GVectorRenderingTheme.ColoringMethod.UNIQUE;
+               iMethod = GVector2RenderingTheme.ColoringMethod.UNIQUE;
             }
             else if (value.equals("Color ramp")) {
-               iMethod = GVectorRenderingTheme.ColoringMethod.COLOR_RAMP;
+               iMethod = GVector2RenderingTheme.ColoringMethod.COLOR_RAMP;
             }
             else if (value.equals("Lookup table")) {
-               iMethod = GVectorRenderingTheme.ColoringMethod.COLOR_LUT;
+               iMethod = GVector2RenderingTheme.ColoringMethod.COLOR_LUT;
             }
             final IGlobeVectorLayer vectorLayer = (IGlobeVectorLayer) layer;
             vectorLayer.getRenderingTheme().setColoringMethod(iMethod);
@@ -243,7 +243,7 @@ public class GAddVectorLayerModule
          public String get() {
             final IGlobeVectorLayer vectorLayer = (IGlobeVectorLayer) layer;
             final GField[] fields = vectorLayer.getFields();
-            final GPointsRenderingTheme rend = (GPointsRenderingTheme) vectorLayer.getRenderingTheme();
+            final GPoints2RenderingTheme rend = (GPoints2RenderingTheme) vectorLayer.getRenderingTheme();
             return fields[rend.getFieldIndex()].getName();
          }
 
@@ -259,7 +259,7 @@ public class GAddVectorLayerModule
                   iField = i;
                }
             }
-            final GPointsRenderingTheme rend = (GPointsRenderingTheme) vectorLayer.getRenderingTheme();
+            final GPoints2RenderingTheme rend = (GPoints2RenderingTheme) vectorLayer.getRenderingTheme();
             rend.setFieldIndex(iField);
             vectorLayer.redraw();
          }
@@ -285,10 +285,10 @@ public class GAddVectorLayerModule
             final IGlobeVectorLayer vectorLayer = (IGlobeVectorLayer) layer;
             final GVectorLayerType iShapeType = vectorLayer.getShapeType();
             if (iShapeType == GVectorLayerType.LINE) {
-               return (float) ((GLinesRenderingTheme) vectorLayer.getRenderingTheme()).getLineThickness();
+               return (float) ((GLines2RenderingTheme) vectorLayer.getRenderingTheme()).getLineThickness();
             }
             else if (iShapeType == GVectorLayerType.POLYGON) {
-               return (float) ((GPolygonsRenderingTheme) vectorLayer.getRenderingTheme()).getBorderThickness();
+               return (float) ((GPolygons2RenderingTheme) vectorLayer.getRenderingTheme()).getBorderThickness();
             }
             else {
                return 1f;
@@ -301,10 +301,10 @@ public class GAddVectorLayerModule
             final IGlobeVectorLayer vectorLayer = (IGlobeVectorLayer) layer;
             final GVectorLayerType iShapeType = vectorLayer.getShapeType();
             if (iShapeType == GVectorLayerType.LINE) {
-               ((GLinesRenderingTheme) vectorLayer.getRenderingTheme()).setLineThickness(value.intValue());
+               ((GLines2RenderingTheme) vectorLayer.getRenderingTheme()).setLineThickness(value.intValue());
             }
             else if (iShapeType == GVectorLayerType.POLYGON) {
-               ((GPolygonsRenderingTheme) vectorLayer.getRenderingTheme()).setBorderThickness(value.intValue());
+               ((GPolygons2RenderingTheme) vectorLayer.getRenderingTheme()).setBorderThickness(value.intValue());
             }
             vectorLayer.redraw();
          }
@@ -325,25 +325,25 @@ public class GAddVectorLayerModule
 
          @Override
          public String get() {
-            final GPointsRenderingTheme rend = (GPointsRenderingTheme) ((IGlobeVectorLayer) layer).getRenderingTheme();
+            final GPoints2RenderingTheme rend = (GPoints2RenderingTheme) ((IGlobeVectorLayer) layer).getRenderingTheme();
             return altitudeMethods[rend.getAltitudeMethod().ordinal()];
          }
 
 
          @Override
          public void set(final String value) {
-            GPointsRenderingTheme.AltitudeMethod iMethod = GPointsRenderingTheme.AltitudeMethod.CLAMPED_TO_GROUND;
+            GPoints2RenderingTheme.AltitudeMethod iMethod = GPoints2RenderingTheme.AltitudeMethod.CLAMPED_TO_GROUND;
             if (value.equals("Clamped to the ground")) {
-               iMethod = GPointsRenderingTheme.AltitudeMethod.CLAMPED_TO_GROUND;
+               iMethod = GPoints2RenderingTheme.AltitudeMethod.CLAMPED_TO_GROUND;
             }
             else if (value.equals("Relative")) {
-               iMethod = GPointsRenderingTheme.AltitudeMethod.RELATIVE_TO_GROUND;
+               iMethod = GPoints2RenderingTheme.AltitudeMethod.RELATIVE_TO_GROUND;
             }
             else if (value.equals("Absolute")) {
-               iMethod = GPointsRenderingTheme.AltitudeMethod.ABSOLUTE;
+               iMethod = GPoints2RenderingTheme.AltitudeMethod.ABSOLUTE;
             }
             final IGlobeVectorLayer vectorLayer = (IGlobeVectorLayer) layer;
-            final GPointsRenderingTheme rend = (GPointsRenderingTheme) vectorLayer.getRenderingTheme();
+            final GPoints2RenderingTheme rend = (GPoints2RenderingTheme) vectorLayer.getRenderingTheme();
             rend.setAltitudeMethod(iMethod);
             vectorLayer.redraw();
          }
@@ -365,22 +365,22 @@ public class GAddVectorLayerModule
 
          @Override
          public String get() {
-            final GPointsRenderingTheme rend = (GPointsRenderingTheme) ((IGlobeVectorLayer) layer).getRenderingTheme();
+            final GPoints2RenderingTheme rend = (GPoints2RenderingTheme) ((IGlobeVectorLayer) layer).getRenderingTheme();
             return altitudeSources[rend.getAltitudeOrigin().ordinal()];
          }
 
 
          @Override
          public void set(final String value) {
-            GPointsRenderingTheme.TakeAltitude iMethod = GPointsRenderingTheme.TakeAltitude.FROM_FIXED;
+            GPoints2RenderingTheme.TakeAltitude iMethod = GPoints2RenderingTheme.TakeAltitude.FROM_FIXED;
             if (value.equals("Fixed value")) {
-               iMethod = GPointsRenderingTheme.TakeAltitude.FROM_FIXED;
+               iMethod = GPoints2RenderingTheme.TakeAltitude.FROM_FIXED;
             }
             else if (value.equals("Field")) {
-               iMethod = GPointsRenderingTheme.TakeAltitude.FROM_FIELD;
+               iMethod = GPoints2RenderingTheme.TakeAltitude.FROM_FIELD;
             }
             final IGlobeVectorLayer vectorLayer = (IGlobeVectorLayer) layer;
-            final GPointsRenderingTheme rend = (GPointsRenderingTheme) vectorLayer.getRenderingTheme();
+            final GPoints2RenderingTheme rend = (GPoints2RenderingTheme) vectorLayer.getRenderingTheme();
             rend.setAltitudeOrigin(iMethod);
             vectorLayer.redraw();
          }
@@ -402,7 +402,7 @@ public class GAddVectorLayerModule
          public String get() {
             final IGlobeVectorLayer vectorLayer = (IGlobeVectorLayer) layer;
             final GField[] fields = vectorLayer.getFields();
-            final GPointsRenderingTheme rend = (GPointsRenderingTheme) vectorLayer.getRenderingTheme();
+            final GPoints2RenderingTheme rend = (GPoints2RenderingTheme) vectorLayer.getRenderingTheme();
             return fields[rend.getAltitudeField()].getName();
          }
 
@@ -419,7 +419,7 @@ public class GAddVectorLayerModule
                   iField = i;
                }
             }
-            final GPointsRenderingTheme rend = (GPointsRenderingTheme) vectorLayer.getRenderingTheme();
+            final GPoints2RenderingTheme rend = (GPoints2RenderingTheme) vectorLayer.getRenderingTheme();
             rend.setAltitudeField(iField);
             vectorLayer.redraw();
          }
@@ -441,7 +441,7 @@ public class GAddVectorLayerModule
 
          @Override
          public Float get() {
-            final GPointsRenderingTheme rend = (GPointsRenderingTheme) ((IGlobeVectorLayer) layer).getRenderingTheme();
+            final GPoints2RenderingTheme rend = (GPoints2RenderingTheme) ((IGlobeVectorLayer) layer).getRenderingTheme();
             return new Float(rend.getFixedAltitude());
          }
 
@@ -449,7 +449,7 @@ public class GAddVectorLayerModule
          @Override
          public void set(final Float value) {
             final IGlobeVectorLayer vectorLayer = (IGlobeVectorLayer) layer;
-            final GPointsRenderingTheme rend = (GPointsRenderingTheme) vectorLayer.getRenderingTheme();
+            final GPoints2RenderingTheme rend = (GPoints2RenderingTheme) vectorLayer.getRenderingTheme();
             rend.setFixedAltitude(value.doubleValue());
             vectorLayer.redraw();
          }

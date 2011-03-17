@@ -36,6 +36,8 @@
 
 package es.igosoftware.globe.layers;
 
+import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
@@ -51,13 +53,10 @@ import gov.nasa.worldwind.render.markers.MarkerAttributes;
 
 import java.awt.Color;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Point;
 
-
-public class GPointsRenderingTheme
+public class GPoints2RenderingTheme
          extends
-            GVectorRenderingTheme {
+            GVector2RenderingTheme {
 
 
    public static enum AltitudeMethod {
@@ -73,52 +72,46 @@ public class GPointsRenderingTheme
    }
 
 
-   private double                               _size           = 10;
-   private String                               _shapeType      = BasicMarkerShape.SPHERE;
-   private double                               _fixedAltitude  = 0;
-   private int                                  _altitudeField  = 0;
-   private GPointsRenderingTheme.AltitudeMethod _altitudeMethod = GPointsRenderingTheme.AltitudeMethod.CLAMPED_TO_GROUND;
-   private GPointsRenderingTheme.TakeAltitude   _altitudeOrigin = GPointsRenderingTheme.TakeAltitude.FROM_FIXED;
+   private double                                _size           = 10;
+   private String                                _shapeType      = BasicMarkerShape.SPHERE;
+   private double                                _fixedAltitude  = 0;
+   private int                                   _altitudeField  = 0;
+   private GPoints2RenderingTheme.AltitudeMethod _altitudeMethod = GPoints2RenderingTheme.AltitudeMethod.CLAMPED_TO_GROUND;
+   private GPoints2RenderingTheme.TakeAltitude   _altitudeOrigin = GPoints2RenderingTheme.TakeAltitude.FROM_FIXED;
 
 
-   public GPointsRenderingTheme() {
+   public GPoints2RenderingTheme() {
       super();
    }
 
 
    @Override
-   protected Renderable[] getRenderables(final IGlobeFeature feature,
+   protected Renderable[] getRenderables(final IGlobeFeature<IVector2<?>, GAxisAlignedRectangle> feature,
                                          final GProjection projection,
                                          final Globe globe) {
 
-      final Point geom = (Point) feature.getGeometry();
-      final Coordinate coord = geom.getCoordinate();
+      final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> geom = feature.getGeometry();
+      final IVector2<?> coord = geom.getBounds()._center;
 
       LatLon latlon;
       if (projection.equals(GProjection.EPSG_4326)) {
          //if WGS84, we do not transform, but assume that the coordinates are in degrees
-         //(as opossed to the coordinates given by proj4, which are radians)
-         latlon = new LatLon(Angle.fromDegrees(coord.y), Angle.fromDegrees(coord.x));
+         //(as opposed to the coordinates given by proj4, which are radians)
+         latlon = new LatLon(Angle.fromDegrees(coord.y()), Angle.fromDegrees(coord.x()));
       }
       else {
-         final IVector2<?> transformedPt = projection.transformPoint(GProjection.EPSG_4326, new GVector2D(coord.x, coord.y));
+         final IVector2<?> transformedPt = projection.transformPoint(GProjection.EPSG_4326, new GVector2D(coord.x(), coord.y()));
          latlon = new LatLon(Angle.fromRadians(transformedPt.y()), Angle.fromRadians(transformedPt.x()));
       }
 
 
-      double dAltitude = globe.getElevation(latlon.latitude, latlon.longitude) + 1;
+      double altitude = globe.getElevation(latlon.latitude, latlon.longitude) + 1;
 
-      double dValue = 0d;
-
-      try {
-         dValue = ((Number) feature.getAttribute(_fieldIndex)).doubleValue();
-      }
-      catch (final Exception e) {}
 
       final Color color;
-
-      if (_coloringMethod == GVectorRenderingTheme.ColoringMethod.COLOR_RAMP) {
-         color = new Color(getColorFromColorRamp(dValue));
+      if (_coloringMethod == GVector2RenderingTheme.ColoringMethod.COLOR_RAMP) {
+         final double value = ((Number) feature.getAttribute(_fieldIndex)).doubleValue();
+         color = new Color(getColorFromColorRamp(value));
       }
       else {
          color = _color;
@@ -131,25 +124,24 @@ public class GPointsRenderingTheme
       else {
          if (_altitudeOrigin == TakeAltitude.FROM_FIELD) {
             try {
-               dAltitude = ((Number) feature.getAttribute(_altitudeField)).doubleValue();
+               altitude = ((Number) feature.getAttribute(_altitudeField)).doubleValue();
             }
             catch (final Exception e) {
-               dAltitude = globe.getElevation(latlon.latitude, latlon.longitude) + 1;
+               altitude = globe.getElevation(latlon.latitude, latlon.longitude) + 1;
             }
-
          }
          else if (_altitudeOrigin == TakeAltitude.FROM_FIXED) {
-            dAltitude = _fixedAltitude;
+            altitude = _fixedAltitude;
          }
       }
 
       if (_altitudeOrigin == TakeAltitude.FROM_FIELD) {
-         dAltitude += globe.getElevation(latlon.latitude, latlon.longitude);
+         altitude += globe.getElevation(latlon.latitude, latlon.longitude);
       }
 
       final MarkerAttributes markerAttributes = new BasicMarkerAttributes(new Material(color), _shapeType, 1, _size, _size);
 
-      return new RenderableMarker[] { new RenderableMarker(new Position(latlon, dAltitude), markerAttributes) };
+      return new Renderable[] { new RenderableMarker(new Position(latlon, altitude), markerAttributes) };
 
    }
 

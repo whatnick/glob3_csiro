@@ -53,7 +53,7 @@ import es.igosoftware.util.ITransformer;
 
 public abstract class GAxisAlignedOrthotope<
 
-VectorT extends IVector<VectorT, ?>,
+VectorT extends IVector<VectorT, ?, ?>,
 
 GeometryT extends GAxisAlignedOrthotope<VectorT, GeometryT>
 
@@ -67,7 +67,7 @@ GeometryT extends GAxisAlignedOrthotope<VectorT, GeometryT>
 
 
    @SuppressWarnings("unchecked")
-   public static <VectorT extends IVector<VectorT, ?>> GAxisAlignedOrthotope<VectorT, ?> merge(final Iterable<GAxisAlignedOrthotope<VectorT, ?>> orthotopes) {
+   public static <VectorT extends IVector<VectorT, ?, ?>> GAxisAlignedOrthotope<VectorT, ?> merge(final Iterable<GAxisAlignedOrthotope<VectorT, ?>> orthotopes) {
       final Iterator<GAxisAlignedOrthotope<VectorT, ?>> iterator = orthotopes.iterator();
       if (!iterator.hasNext()) {
          return null;
@@ -104,7 +104,7 @@ GeometryT extends GAxisAlignedOrthotope<VectorT, GeometryT>
 
 
    //   @SuppressWarnings("unchecked")
-   //   public static <VectorT extends IVector<VectorT, ?>> GAxisAlignedOrthotope<VectorT, ?> minimumOrthotope(final IVertexContainer<VectorT, ?> vertices) {
+   //   public static <VectorT extends IVector<VectorT, ?, ?>> GAxisAlignedOrthotope<VectorT, ?> minimumOrthotope(final IVertexContainer<VectorT, ?> vertices) {
    //      if (vertices.dimensions() == 2) {
    //         final IVertexContainer<IVector2<?>, ?> vertices2 = (IVertexContainer<IVector2<?>, ?>) vertices;
    //         return (GAxisAlignedOrthotope<VectorT, ?>) GAxisAlignedRectangle.minimumBoundingRectangle(vertices2.pointsIterator());
@@ -120,7 +120,7 @@ GeometryT extends GAxisAlignedOrthotope<VectorT, GeometryT>
 
 
    @SuppressWarnings("unchecked")
-   public static <VectorT extends IVector<VectorT, ?>> GAxisAlignedOrthotope<VectorT, ?> minimumOrthotope(final VectorT... points) {
+   public static <VectorT extends IVector<VectorT, ?, ?>> GAxisAlignedOrthotope<VectorT, ?> minimumOrthotope(final VectorT... points) {
       if (points.length == 0) {
          throw new IllegalArgumentException("Empty points");
       }
@@ -147,8 +147,8 @@ GeometryT extends GAxisAlignedOrthotope<VectorT, GeometryT>
 
 
    @SuppressWarnings("unchecked")
-   public static <VectorT extends IVector<VectorT, ?>> GAxisAlignedOrthotope<VectorT, ?> create(final VectorT lower,
-                                                                                                final VectorT upper) {
+   public static <VectorT extends IVector<VectorT, ?, ?>> GAxisAlignedOrthotope<VectorT, ?> create(final VectorT lower,
+                                                                                                   final VectorT upper) {
       GAssert.notNull(lower, "lower");
       GAssert.notNull(upper, "upper");
 
@@ -165,7 +165,7 @@ GeometryT extends GAxisAlignedOrthotope<VectorT, GeometryT>
 
 
    @SuppressWarnings("unchecked")
-   public static <VectorT extends IVector<VectorT, ?>> GAxisAlignedOrthotope<VectorT, ?> minimumOrthotope(final Iterable<VectorT> points) {
+   public static <VectorT extends IVector<VectorT, ?, ?>> GAxisAlignedOrthotope<VectorT, ?> minimumOrthotope(final Iterable<VectorT> points) {
       final Iterator<? extends VectorT> iterator = points.iterator();
       if (!iterator.hasNext()) {
          throw new IllegalArgumentException("Empty points");
@@ -376,5 +376,15 @@ GeometryT extends GAxisAlignedOrthotope<VectorT, GeometryT>
 
 
    public abstract boolean touches(final GAxisAlignedOrthotope<VectorT, ?> that);
+
+
+   @Override
+   public VectorT getCentroid() {
+      return _center;
+   }
+
+
+   public abstract GeometryT mergedWith(final GAxisAlignedOrthotope<VectorT, ?> that);
+
 
 }

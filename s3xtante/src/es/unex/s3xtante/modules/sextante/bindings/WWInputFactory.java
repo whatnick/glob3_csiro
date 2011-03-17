@@ -4,6 +4,8 @@ package es.unex.s3xtante.modules.sextante.bindings;
 
 import java.util.ArrayList;
 
+import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.globe.IGlobeRasterLayer;
 import es.igosoftware.globe.IGlobeVectorLayer;
 import es.unex.s3xtante.tables.Tables;
@@ -47,8 +49,9 @@ public class WWInputFactory
       for (int i = 0; i < layerList.size(); i++) {
          final Layer layer = layerList.get(i);
          if (layer instanceof IGlobeVectorLayer) {
-            obj = new WWVectorLayer();
-            ((WWVectorLayer) obj).create((IGlobeVectorLayer) layer);
+            @SuppressWarnings("unchecked")
+            final IGlobeVectorLayer<IVector2<?>, GAxisAlignedRectangle> globeVector2Layer = (IGlobeVectorLayer<IVector2<?>, GAxisAlignedRectangle>) layer;
+            obj = new WWVectorLayer(globeVector2Layer);
             layers.add(obj);
          }
          else if (layer instanceof IGlobeRasterLayer) {

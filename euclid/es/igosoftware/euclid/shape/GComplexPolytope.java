@@ -50,7 +50,7 @@ import es.igosoftware.util.GAssert;
 
 public abstract class GComplexPolytope<
 
-VectorT extends IVector<VectorT, ?>,
+VectorT extends IVector<VectorT, ?, ?>,
 
 SegmentT extends GSegment<VectorT, SegmentT, BoundsT>,
 
@@ -245,5 +245,10 @@ PolytopeT extends IPolytope<VectorT, SegmentT, ?, BoundsT>
       return true;
    }
 
+
+   @Override
+   public VectorT getCentroid() {
+      return _hull.getCentroid();
+   }
 
 }
