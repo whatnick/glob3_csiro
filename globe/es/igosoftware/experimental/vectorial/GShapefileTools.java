@@ -109,8 +109,7 @@ public class GShapefileTools {
       final GProjection projection = GProjection.EPSG_4326;
 
       final String uniqueID = GIOUtils.getUniqueID(file);
-      return new GListFeatureCollection<IVector2<?>, GAxisAlignedRectangle>(file.getName(), projection, fields, features,
-               uniqueID);
+      return new GListFeatureCollection<IVector2<?>, GAxisAlignedRectangle>(projection, fields, features, uniqueID);
    }
 
 

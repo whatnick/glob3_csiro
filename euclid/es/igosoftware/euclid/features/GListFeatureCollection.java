@@ -11,7 +11,6 @@ import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.IGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
-import es.igosoftware.euclid.mutability.GMutableAbstract;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.shape.GLinesStrip;
 import es.igosoftware.euclid.shape.GSegment;
@@ -19,7 +18,6 @@ import es.igosoftware.euclid.shape.IPolygon;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GCollections;
-import es.igosoftware.util.GUtils;
 import es.igosoftware.util.ITransformer;
 
 
@@ -30,8 +28,7 @@ VectorT extends IVector<VectorT, ?, ?>,
 FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
 
 >
-         extends
-            GMutableAbstract<GListFeatureCollection<VectorT, FeatureBoundsT>>
+
          implements
             IGlobeFeatureCollection<VectorT, FeatureBoundsT, GListFeatureCollection<VectorT, FeatureBoundsT>> {
 
@@ -44,8 +41,7 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
 
    GeometryT extends IBoundedGeometry<VectorT, ?, FeatureBoundsT>
 
-   > GListFeatureCollection<VectorT, FeatureBoundsT> fromGeometryList(final String name,
-                                                                      final GProjection projection,
+   > GListFeatureCollection<VectorT, FeatureBoundsT> fromGeometryList(final GProjection projection,
                                                                       final List<GeometryT> geometries,
                                                                       final String uniqueID) {
 
@@ -60,11 +56,10 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
                });
 
 
-      return new GListFeatureCollection<VectorT, FeatureBoundsT>(name, projection, fields, features, uniqueID);
+      return new GListFeatureCollection<VectorT, FeatureBoundsT>(projection, fields, features, uniqueID);
    }
 
 
-   private String                                             _name;
    private final GProjection                                  _projection;
    private final List<GField>                                 _fields;
    private final List<IGlobeFeature<VectorT, FeatureBoundsT>> _features;
@@ -73,20 +68,19 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
    private GAxisAlignedOrthotope<VectorT, ?>                  _bounds;
 
 
-   public GListFeatureCollection(final String name,
-                                 final GProjection projection,
+   public GListFeatureCollection(final GProjection projection,
                                  final List<GField> fields,
                                  final List<IGlobeFeature<VectorT, FeatureBoundsT>> features,
                                  final String uniqueID) {
-      GAssert.notNull(name, "name");
       GAssert.notNull(projection, "projection");
       GAssert.notNull(fields, "fields");
       GAssert.notEmpty(features, "features");
 
-      _name = name;
       _projection = projection;
-      _fields = new ArrayList<GField>(fields); // creates a copy of the list to protect the modifications from outside
-      _features = new ArrayList<IGlobeFeature<VectorT, FeatureBoundsT>>(features); // creates a copy of the list to protect the modifications from outside
+
+      // creates copies of the lists to protect the modifications from outside
+      _fields = new ArrayList<GField>(fields);
+      _features = new ArrayList<IGlobeFeature<VectorT, FeatureBoundsT>>(features);
 
       _uniqueID = uniqueID; // can be null, it means no disk-cache is possible
    }
@@ -113,8 +107,8 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
 
    @Override
    public String toString() {
-      return "GListFeatureCollection [name=" + _name + ", projection=" + _projection + ", fields=" + _fields.size()
-             + ", features=" + _features.size() + ", uniqueID=" + _uniqueID + "]";
+      return "GListFeatureCollection [projection=" + _projection + ", fields=" + _fields.size() + ", features="
+             + _features.size() + ", uniqueID=" + _uniqueID + "]";
    }
 
 
@@ -180,23 +174,6 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
    @Override
    public List<GField> getFields() {
       return Collections.unmodifiableList(_fields);
-   }
-
-
-   @Override
-   public String getName() {
-      return _name;
-   }
-
-
-   @Override
-   public void setName(final String name) {
-      if (GUtils.equals(_name, name)) {
-         return;
-      }
-
-      _name = name;
-      changed();
    }
 
 

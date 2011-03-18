@@ -72,14 +72,15 @@ public class WWVectorLayer
    private final List<IVectorLayerFilter> _filters = new ArrayList<IVectorLayerFilter>();
 
 
-   public WWVectorLayer(final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features) {
+   public WWVectorLayer(final String name,
+                        final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features) {
+      _name = name;
       initializeFromFeatures(features);
    }
 
 
    private void initializeFromFeatures(final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features) {
       m_BaseDataObject = features;
-      _name = features.getName();
       _projection = features.getProjection();
       _fields = features.getFields();
    }
@@ -173,11 +174,7 @@ public class WWVectorLayer
       saveShapefile();
 
       try {
-         final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features = GShapefileTools.readFile(_filename.asFile());
-         if (features != null) {
-            features.setName(_name);
-            initializeFromFeatures(features);
-         }
+         initializeFromFeatures(GShapefileTools.readFile(_filename.asFile()));
       }
       catch (final IOException e) {
          e.printStackTrace();

@@ -18,6 +18,7 @@ import es.igosoftware.globe.attributes.GColorLayerAttribute;
 import es.igosoftware.globe.attributes.GFloatLayerAttribute;
 import es.igosoftware.globe.attributes.GGroupAttribute;
 import es.igosoftware.globe.attributes.ILayerAttribute;
+import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GPair;
 import es.igosoftware.util.GUtils;
@@ -729,13 +730,15 @@ public class GPolygon2DLayer
 
 
    private final GPolygon2DRenderer                                                     _renderer;
+   private final String                                                                 _name;
+   private final GAxisAlignedOrthotope<IVector2<?>, ?>                                  _polygonsBounds;
+   private final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?>         _features;
+
    private GRenderingAttributes                                                         _attributes;
 
-   //   private Globe                                         _lastGlobe;
    private List<Tile>                                                                   _topTiles;
    private final List<Tile>                                                             _currentTiles               = new ArrayList<Tile>();
 
-   //   private boolean                                                      _showExtents                = false;
 
    private int                                                                          _fillColorAlpha             = 127;
    private int                                                                          _borderColorAlpha           = 255;
@@ -747,12 +750,13 @@ public class GPolygon2DLayer
 
    private boolean                                                                      _debugRendering             = false;
 
-   private final GAxisAlignedOrthotope<IVector2<?>, ?>                                  _polygonsBounds;
 
-   private final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?>         _features;
+   public GPolygon2DLayer(final String name,
+                          final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features) {
+      GAssert.notNull(name, "name");
+      GAssert.notNull(features, "features");
 
-
-   public GPolygon2DLayer(final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features) {
+      _name = name;
       _polygonsBounds = features.getBounds();
 
       _polygonsSector = GWWUtils.toSector(_polygonsBounds, GProjection.EPSG_4326);
@@ -766,8 +770,7 @@ public class GPolygon2DLayer
 
    @Override
    public String getName() {
-      //      return "Vectorial: " + _resourceName;
-      return _features.getName();
+      return _name;
    }
 
 

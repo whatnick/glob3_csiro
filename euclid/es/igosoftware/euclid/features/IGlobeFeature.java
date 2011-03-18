@@ -13,11 +13,11 @@ public interface IGlobeFeature<
 
 VectorT extends IVector<VectorT, ?, ?>,
 
-BoundsT extends IFiniteBounds<VectorT, BoundsT>
+FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
 
 > {
 
-   public IBoundedGeometry<VectorT, ?, BoundsT> getDefaultGeometry();
+   public IBoundedGeometry<VectorT, ?, FeatureBoundsT> getDefaultGeometry();
 
 
    public List<Object> getAttributes();

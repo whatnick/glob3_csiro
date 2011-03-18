@@ -126,8 +126,9 @@ public class GSearchResultLayer
       _extent = Sector.fromDegrees(minLatitude, maxLatitude, minLongitude, maxLongitude);
       final List<GField> fields = Arrays.asList(new GField("Name", String.class), new GField("Population", Integer.class));
       final String uniqueID = null;
-      _features = new GListFeatureCollection<IVector2<?>, GAxisAlignedRectangle>("Search result: " + searchText,
-               GProjection.EPSG_4326, fields, features, uniqueID);
+      setName("Search result: " + searchText);
+      _features = new GListFeatureCollection<IVector2<?>, GAxisAlignedRectangle>(GProjection.EPSG_4326, fields, features,
+               uniqueID);
    }
 
 

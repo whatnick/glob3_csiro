@@ -84,7 +84,6 @@ public abstract class GVector2RenderingTheme {
             final double dValue = Double.parseDouble(sValue);
             dMin = Math.min(dMin, dValue);
             dMax = Math.max(dMax, dValue);
-
          }
 
          _hasToRecalculateExtremeValues = false;

@@ -260,8 +260,8 @@ public class GShapeLoader {
          fields.add(new GField(fieldName, fieldType));
       }
 
-      return new GListFeatureCollection<IVector2<?>, GAxisAlignedRectangle>(file.getName(), GProjection.EPSG_4326, fields,
-               euclidFeatures, GIOUtils.getUniqueID(file));
+      return new GListFeatureCollection<IVector2<?>, GAxisAlignedRectangle>(GProjection.EPSG_4326, fields, euclidFeatures,
+               GIOUtils.getUniqueID(file));
    }
 
 

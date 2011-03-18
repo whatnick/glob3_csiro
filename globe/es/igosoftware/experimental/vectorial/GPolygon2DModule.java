@@ -123,7 +123,7 @@ public class GPolygon2DModule
                final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features = GShapeLoader.readFeatures(file,
                         projection);
 
-               final GPolygon2DLayer layer = new GPolygon2DLayer(features);
+               final GPolygon2DLayer layer = new GPolygon2DLayer(file.getName(), features);
                //               layer.setShowExtents(true);
                application.getLayerList().add(layer);
 

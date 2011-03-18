@@ -40,6 +40,7 @@ import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
+import es.igosoftware.euclid.features.IGlobeMutableFeatureCollection;
 import es.igosoftware.euclid.mutability.IMutable;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.shape.GLinesStrip;
@@ -101,27 +102,34 @@ public class GGlobeVector2Layer
    }
 
 
-   public GGlobeVector2Layer(final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features) {
-      this(features, getDefaultRenderer(features));
+   public GGlobeVector2Layer(final String name,
+                             final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features) {
+      this(name, features, getDefaultRenderer(features));
    }
 
 
-   public GGlobeVector2Layer(final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features,
+   public GGlobeVector2Layer(final String name,
+                             final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features,
                              final GVector2RenderingTheme rendereringTheme) {
+      GAssert.notNull(name, "name");
       GAssert.notNull(features, "features");
 
-      setName(features.getName());
+      setName(name);
       setMaxActiveAltitude(1000000000);
       setMinActiveAltitude(0);
       _features = features;
       _renderingTheme = rendereringTheme;
 
-      _features.addChangeListener(new IMutable.ChangeListener() {
-         @Override
-         public void mutableChanged() {
-            redraw();
-         }
-      });
+      if (_features instanceof IGlobeMutableFeatureCollection) {
+         final IGlobeMutableFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> mutableFeatures;
+         mutableFeatures = (IGlobeMutableFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?>) _features;
+         mutableFeatures.addChangeListener(new IMutable.ChangeListener() {
+            @Override
+            public void mutableChanged() {
+               redraw();
+            }
+         });
+      }
 
       //addRenderableObjects();
    }

@@ -484,11 +484,11 @@ public class GAddVectorLayerModule
          final String sFilename = fc.getSelectedFile().getAbsolutePath();
 
          try {
-            final GListFeatureCollection<IVector2<?>, GAxisAlignedRectangle> features = GShapefileTools.readFile(new File(
-                     sFilename));
+            final File file = new File(sFilename);
+            final GListFeatureCollection<IVector2<?>, GAxisAlignedRectangle> features = GShapefileTools.readFile(file);
             if (features != null) {
 
-               final GGlobeVector2Layer layer = new GGlobeVector2Layer(features);
+               final GGlobeVector2Layer layer = new GGlobeVector2Layer(file.getName(), features);
 
                layer.redraw();
                application.getLayerList().add(layer);

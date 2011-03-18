@@ -6,7 +6,6 @@ import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
-import es.igosoftware.euclid.mutability.IMutable;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.IVector;
 
@@ -21,8 +20,7 @@ TypeT extends IGlobeFeatureCollection<VectorT, FeatureBoundsT, TypeT>
 
 >
          extends
-            Iterable<IGlobeFeature<VectorT, FeatureBoundsT>>,
-            IMutable<TypeT> {
+            Iterable<IGlobeFeature<VectorT, FeatureBoundsT>> {
 
 
    public static class AbortVisiting
@@ -33,8 +31,16 @@ TypeT extends IGlobeFeatureCollection<VectorT, FeatureBoundsT, TypeT>
    }
 
 
-   public static interface IFeatureVisitor<VectorT extends IVector<VectorT, ?, ?>, BoundsT extends IFiniteBounds<VectorT, BoundsT>> {
-      public void visit(final IGlobeFeature<VectorT, BoundsT> feature) throws IGlobeFeatureCollection.AbortVisiting;
+   public static interface IFeatureVisitor<
+
+   VectorT extends IVector<VectorT, ?, ?>,
+
+   FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
+
+   > {
+
+      public void visit(final IGlobeFeature<VectorT, FeatureBoundsT> feature) throws IGlobeFeatureCollection.AbortVisiting;
+
    }
 
 
@@ -57,12 +63,6 @@ TypeT extends IGlobeFeatureCollection<VectorT, FeatureBoundsT, TypeT>
 
 
    public long size();
-
-
-   public void setName(final String name);
-
-
-   public String getName();
 
 
    public String getUniqueID();
