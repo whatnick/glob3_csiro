@@ -34,4 +34,7 @@ TypeT extends IGlobeMutableFeatureCollection<VectorT, FeatureBoundsT, TypeT>
    public boolean remove(final IGlobeFeature<VectorT, FeatureBoundsT> value);
 
 
+   public void clear();
+
+
 }

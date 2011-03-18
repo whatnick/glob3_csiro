@@ -39,7 +39,8 @@ TypeT extends IGlobeFeatureCollection<VectorT, FeatureBoundsT, TypeT>
 
    > {
 
-      public void visit(final IGlobeFeature<VectorT, FeatureBoundsT> feature) throws IGlobeFeatureCollection.AbortVisiting;
+      public void visit(final IGlobeFeature<VectorT, FeatureBoundsT> feature,
+                        final long index) throws IGlobeFeatureCollection.AbortVisiting;
 
    }
 

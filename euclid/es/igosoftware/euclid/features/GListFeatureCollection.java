@@ -95,8 +95,8 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
    @Override
    public void acceptVisitor(final IGlobeFeatureCollection.IFeatureVisitor<VectorT, FeatureBoundsT> visitor) {
       try {
-         for (final IGlobeFeature<VectorT, FeatureBoundsT> feature : _features) {
-            visitor.visit(feature);
+         for (int i = 0; i < _features.size(); i++) {
+            visitor.visit(_features.get(i), i);
          }
       }
       catch (final IGlobeFeatureCollection.AbortVisiting e) {
@@ -114,12 +114,17 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
 
    @Override
    public Iterator<IGlobeFeature<VectorT, FeatureBoundsT>> iterator() {
-      return _features.iterator();
+      return Collections.unmodifiableList(_features).iterator();
    }
 
 
    @Override
    public IGlobeFeature<VectorT, FeatureBoundsT> get(final long index) {
+      return _features.get(toInt(index));
+   }
+
+
+   private int toInt(final long index) {
       if (index < 0) {
          throw new IndexOutOfBoundsException("index #" + index + " is negative");
       }
@@ -127,9 +132,7 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
          throw new IndexOutOfBoundsException("index #" + index + " is bigger that Integer.MAX_VALUE");
       }
 
-
-      final int intIndex = (int) index; // safe to cast here as the bounds was just checked
-      return _features.get(intIndex);
+      return (int) index; // safe to cast here as the bounds was just checked
    }
 
 
