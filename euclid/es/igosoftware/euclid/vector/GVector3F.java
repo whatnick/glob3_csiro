@@ -597,7 +597,7 @@ public class GVector3F
 
    @Override
    public GAxisAlignedBox getBounds() {
-      return new GAxisAlignedBox(this, this);
+      return new GAxisAlignedBox(this, nextUp());
    }
 
 }

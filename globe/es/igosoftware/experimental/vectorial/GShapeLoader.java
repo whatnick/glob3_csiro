@@ -7,143 +7,39 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.geotools.data.FeatureSource;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
-import org.geotools.feature.FeatureCollection;
-import org.opengis.feature.Feature;
-import org.opengis.feature.FeatureVisitor;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.feature.FeatureIterator;
 import org.opengis.feature.GeometryAttribute;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.GeometryType;
-import org.opengis.util.InternationalString;
-import org.opengis.util.ProgressListener;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineString;
 
+import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.features.GField;
+import es.igosoftware.euclid.features.GGlobeFeature;
+import es.igosoftware.euclid.features.GListFeatureCollection;
+import es.igosoftware.euclid.features.IGlobeFeature;
+import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.shape.GComplexPolygon2D;
 import es.igosoftware.euclid.shape.GShape;
 import es.igosoftware.euclid.shape.IPolygon2D;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.io.GFileName;
+import es.igosoftware.io.GIOUtils;
 import es.igosoftware.util.GIntHolder;
-import es.igosoftware.util.GPair;
 import es.igosoftware.util.GProgress;
 
 
 public class GShapeLoader {
-
-
-   private static final class GProgressListenerAdapter
-            extends
-               GProgress
-            implements
-               ProgressListener {
-
-
-      private static final int FACTOR = 10000;
-
-      private final String     _taskName;
-      private int              _currentSteps;
-
-
-      private GProgressListenerAdapter(final String taskName) {
-         super(100 * FACTOR);
-         _taskName = taskName;
-      }
-
-
-      @Override
-      public InternationalString getTask() {
-         return null;
-      }
-
-
-      @Override
-      public String getDescription() {
-         return null;
-      }
-
-
-      @Override
-      public void setTask(final InternationalString task) {
-      }
-
-
-      @Override
-      public void setDescription(final String description) {
-      }
-
-
-      @Override
-      public void started() {
-         //System.out.println("started");
-         _currentSteps = 0;
-      }
-
-
-      @Override
-      public void progress(final float percent) {
-         //System.out.println("  percent: " + GMath.roundTo(Math.round(10000f * percent) / 100f, 2) + "%");
-         final int currentTotalSteps = Math.round(percent * FACTOR);
-         stepsDone(currentTotalSteps - _currentSteps);
-         _currentSteps = currentTotalSteps;
-      }
-
-
-      @Override
-      public float getProgress() {
-         return 0;
-      }
-
-
-      @Override
-      public void complete() {
-         final int currentTotalSteps = (100 * FACTOR);
-         stepsDone(currentTotalSteps - _currentSteps);
-         _currentSteps = currentTotalSteps;
-      }
-
-
-      @Override
-      public void dispose() {
-         System.out.println("dispose");
-      }
-
-
-      @Override
-      public boolean isCanceled() {
-         return false;
-      }
-
-
-      @Override
-      public void setCanceled(final boolean cancel) {
-      }
-
-
-      @Override
-      public void warningOccurred(final String source,
-                                  final String location,
-                                  final String warning) {
-         System.out.println("WARNING: source=" + source + ", location=" + location + ", warning=" + warning);
-      }
-
-
-      @Override
-      public void exceptionOccurred(final Throwable exception) {
-         exception.printStackTrace();
-      }
-
-
-      @Override
-      public void informProgress(final double percent,
-                                 final long elapsed,
-                                 final long estimatedMsToFinish) {
-         System.out.println(_taskName + ": " + progressString(percent, elapsed, estimatedMsToFinish));
-      }
-   }
 
 
    private static List<IVector2<?>> convert(final Coordinate[] coordinates,
@@ -196,120 +92,152 @@ public class GShapeLoader {
    }
 
 
-   public static GPair<String, List<IPolygon2D<?>>> readPolygons(final String fileName,
-                                                                 final GProjection projection) throws IOException {
-      final File file = new File(fileName);
+   public static IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> readFeatures(final File file,
+                                                                                             final GProjection projection)
+                                                                                                                          throws IOException {
+      return readFeatures(GFileName.fromFile(file), projection);
+   }
+
+
+   public static IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> readFeatures(final GFileName fileName,
+                                                                                             final GProjection projection)
+                                                                                                                          throws IOException {
+      final File file = fileName.asFile();
       if (!file.exists()) {
          throw new IOException("File not found!");
       }
 
-
       final FileDataStore store = FileDataStoreFinder.getDataStore(file);
 
       // final FeatureSource featureSource = new CachingFeatureSource(store.getFeatureSource());
-      final FeatureSource featureSource = store.getFeatureSource();
+      final SimpleFeatureSource featureSource = store.getFeatureSource();
 
-      final FeatureCollection features = featureSource.getFeatures();
+      final SimpleFeatureCollection featuresCollection = featureSource.getFeatures();
 
       final GIntHolder validCounter = new GIntHolder(0);
       final GIntHolder polygonsWithHolesCounter = new GIntHolder(0);
       final GIntHolder invalidCounter = new GIntHolder(0);
       //      final GIntHolder validVerticesCounter = new GIntHolder(0);
 
-      final ArrayList<IPolygon2D<?>> euclidPolygons = new ArrayList<IPolygon2D<?>>(features.size());
+      final int featuresCount = featuresCollection.size();
+      final ArrayList<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>> euclidFeatures = new ArrayList<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>>(
+               featuresCount);
 
-      features.accepts(new FeatureVisitor() {
+
+      final GProgress progress = new GProgress(featuresCount) {
          @Override
-         public void visit(final Feature feature) {
-            final GeometryAttribute geometryAttribute = feature.getDefaultGeometryProperty();
+         public void informProgress(final double percent,
+                                    final long elapsed,
+                                    final long estimatedMsToFinish) {
+            System.out.println("Loading \"" + fileName.buildPath() + "\" "
+                               + progressString(percent, elapsed, estimatedMsToFinish));
+         }
+      };
 
-            final GeometryType type = geometryAttribute.getType();
+      final FeatureIterator<SimpleFeature> iterator = featuresCollection.features();
 
-            if (type.getBinding() == com.vividsolutions.jts.geom.MultiPolygon.class) {
+      while (iterator.hasNext()) {
+         final SimpleFeature feature = iterator.next();
 
-               final com.vividsolutions.jts.geom.MultiPolygon multipolygon = (com.vividsolutions.jts.geom.MultiPolygon) geometryAttribute.getValue();
-               final int geometriesCount = multipolygon.getNumGeometries();
+         final GeometryAttribute geometryAttribute = feature.getDefaultGeometryProperty();
 
-               for (int i = 0; i < geometriesCount; i++) {
-                  final com.vividsolutions.jts.geom.Polygon jtsPolygon = (com.vividsolutions.jts.geom.Polygon) multipolygon.getGeometryN(i);
+         final GeometryType type = geometryAttribute.getType();
 
-                  try {
-                     final IPolygon2D<?> outerEuclidPolygon = createPolygon(jtsPolygon.getCoordinates(), projection);
+         if (type.getBinding() == com.vividsolutions.jts.geom.MultiPolygon.class) {
 
-                     final int holesCount = jtsPolygon.getNumInteriorRing();
-                     if (holesCount == 0) {
-                        euclidPolygons.add(outerEuclidPolygon);
+            final com.vividsolutions.jts.geom.MultiPolygon multipolygon = (com.vividsolutions.jts.geom.MultiPolygon) geometryAttribute.getValue();
+            final int geometriesCount = multipolygon.getNumGeometries();
+
+            for (int i = 0; i < geometriesCount; i++) {
+               final com.vividsolutions.jts.geom.Polygon jtsPolygon = (com.vividsolutions.jts.geom.Polygon) multipolygon.getGeometryN(i);
+
+               try {
+                  final IPolygon2D<?> outerEuclidPolygon = createPolygon(jtsPolygon.getCoordinates(), projection);
+
+                  final int holesCount = jtsPolygon.getNumInteriorRing();
+                  if (holesCount == 0) {
+                     euclidFeatures.add(createFeature(outerEuclidPolygon, feature));
+                  }
+                  else {
+
+                     final List<IPolygon2D<?>> euclidHoles = new ArrayList<IPolygon2D<?>>(holesCount);
+                     for (int j = 0; j < holesCount; j++) {
+                        final LineString jtsHole = jtsPolygon.getInteriorRingN(j);
+
+                        try {
+                           final IPolygon2D<?> euclidHole = createPolygon(jtsHole.getCoordinates(), projection);
+                           euclidHoles.add(euclidHole);
+                        }
+                        catch (final IllegalArgumentException e) {
+                           //                              System.err.println(e.getMessage());
+                        }
+                     }
+
+                     final IPolygon2D<?> euclidPolygon;
+                     if (euclidHoles.isEmpty()) {
+                        euclidPolygon = outerEuclidPolygon;
                      }
                      else {
-
-                        final List<IPolygon2D<?>> euclidHoles = new ArrayList<IPolygon2D<?>>(holesCount);
-                        for (int j = 0; j < holesCount; j++) {
-                           final LineString jtsHole = jtsPolygon.getInteriorRingN(j);
-
-                           try {
-                              final IPolygon2D<?> euclidHole = createPolygon(jtsHole.getCoordinates(), projection);
-                              euclidHoles.add(euclidHole);
-                           }
-                           catch (final IllegalArgumentException e) {
-                              //                              System.err.println(e.getMessage());
-                           }
-                        }
-
-                        final IPolygon2D<?> euclidPolygon;
-                        if (euclidHoles.isEmpty()) {
-                           euclidPolygon = outerEuclidPolygon;
-                        }
-                        else {
-                           euclidPolygon = new GComplexPolygon2D(outerEuclidPolygon, euclidHoles);
-                        }
-                        euclidPolygons.add(euclidPolygon);
-
-                        polygonsWithHolesCounter.increment();
-                        // System.out.println("Found polygon with " + holesCount + " holes");
+                        euclidPolygon = new GComplexPolygon2D(outerEuclidPolygon, euclidHoles);
                      }
-                  }
-                  catch (final IllegalArgumentException e) {
-                     //                     System.err.println(e.getMessage());
-                  }
-               }
+                     euclidFeatures.add(createFeature(euclidPolygon, feature));
 
-               validCounter.increment();
-            }
-            else if (type.getBinding() == com.vividsolutions.jts.geom.MultiLineString.class) {
-
-               final com.vividsolutions.jts.geom.MultiLineString multiline = (com.vividsolutions.jts.geom.MultiLineString) geometryAttribute.getValue();
-               final int geometriesCount = multiline.getNumGeometries();
-
-               for (int i = 0; i < geometriesCount; i++) {
-                  final com.vividsolutions.jts.geom.LineString jtsPolygon = (com.vividsolutions.jts.geom.LineString) multiline.getGeometryN(i);
-
-                  try {
-                     final IPolygon2D<?> euclidLines = createLine(jtsPolygon.getCoordinates(), projection);
-
-                     euclidPolygons.add(euclidLines);
-                  }
-                  catch (final IllegalArgumentException e) {
-                     //                     System.err.println(e.getMessage());
+                     polygonsWithHolesCounter.increment();
+                     // System.out.println("Found polygon with " + holesCount + " holes");
                   }
                }
+               catch (final IllegalArgumentException e) {
+                  //                     System.err.println(e.getMessage());
+               }
+            }
 
-               validCounter.increment();
+            validCounter.increment();
+         }
+         else if (type.getBinding() == com.vividsolutions.jts.geom.MultiLineString.class) {
+
+            final com.vividsolutions.jts.geom.MultiLineString multiline = (com.vividsolutions.jts.geom.MultiLineString) geometryAttribute.getValue();
+            final int geometriesCount = multiline.getNumGeometries();
+
+            for (int i = 0; i < geometriesCount; i++) {
+               final com.vividsolutions.jts.geom.LineString jtsPolygon = (com.vividsolutions.jts.geom.LineString) multiline.getGeometryN(i);
+
+               try {
+                  final IPolygon2D<?> euclidLines = createLine(jtsPolygon.getCoordinates(), projection);
+
+                  euclidFeatures.add(createFeature(euclidLines, feature));
+               }
+               catch (final IllegalArgumentException e) {
+                  //                     System.err.println(e.getMessage());
+               }
             }
-            else {
-               invalidCounter.increment();
-               System.out.println("invalid type: " + type);
-            }
+
+            validCounter.increment();
+         }
+         else if (type.getBinding() == com.vividsolutions.jts.geom.Point.class) {
+            final com.vividsolutions.jts.geom.Point point = (com.vividsolutions.jts.geom.Point) geometryAttribute.getValue();
+
+            final IVector2<?> euclidPoint = createPoint(point.getCoordinate(), projection);
+
+            euclidFeatures.add(createFeature(euclidPoint, feature));
+
+            validCounter.increment();
+         }
+         else {
+            invalidCounter.increment();
+            System.out.println("invalid type: " + type);
          }
 
 
-      }, new GProgressListenerAdapter("Loading \"" + fileName + "\""));
+         progress.stepDone();
+      }
+
 
       store.dispose();
 
-      euclidPolygons.trimToSize();
+      euclidFeatures.trimToSize();
 
       System.out.println();
-      System.out.println("Features: " + features.size());
+      System.out.println("Features: " + featuresCount);
 
 
       System.out.println();
@@ -322,12 +250,24 @@ public class GShapeLoader {
 
       System.out.println();
 
-      return new GPair<String, List<IPolygon2D<?>>>(getUniqueID(file), euclidPolygons);
+      final SimpleFeatureType schema = featureSource.getSchema();
+      final int fieldsCount = schema.getAttributeCount() - 1;
+      final List<GField> fields = new ArrayList<GField>(fieldsCount);
+      for (int i = 0; i < fieldsCount; i++) {
+         final String fieldName = schema.getType(i + 1).getName().getLocalPart();
+         final Class<?> fieldType = schema.getType(i + 1).getBinding();
+
+         fields.add(new GField(fieldName, fieldType));
+      }
+
+      return new GListFeatureCollection<IVector2<?>, GAxisAlignedRectangle>(file.getName(), GProjection.EPSG_4326, fields,
+               euclidFeatures, GIOUtils.getUniqueID(file));
    }
 
 
-   private static String getUniqueID(final File file) {
-      return file.getName() + Long.toHexString(file.lastModified()) + Long.toHexString(file.length());
+   private static IGlobeFeature<IVector2<?>, GAxisAlignedRectangle> createFeature(final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> geometry,
+                                                                                  final SimpleFeature feature) {
+      return new GGlobeFeature<IVector2<?>, GAxisAlignedRectangle>(geometry, feature.getAttributes());
    }
 
 
@@ -348,5 +288,27 @@ public class GShapeLoader {
       return GShape.createLine2(false, points);
    }
 
+
+   private static IVector2<?> createPoint(final Coordinate coordinate,
+                                          final GProjection projection) {
+
+      if (projection.isLatLong()) {
+         return new GVector2D(Math.toRadians(coordinate.x), Math.toRadians(coordinate.y));
+      }
+
+      return new GVector2D(coordinate.x, coordinate.y).reproject(projection, GProjection.EPSG_4326);
+   }
+
+
+   public static void main(final String[] args) throws IOException {
+      System.out.println("GShapeLoader 0.1");
+      System.out.println("----------------\n");
+
+      final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features = GShapeLoader.readFeatures(
+               GFileName.absoluteFromParts("home", "dgd", "Desktop", "sample-shp", "shp", "great_britain.shp", "roads.shp"),
+               GProjection.EPSG_4326);
+
+      System.out.println(features);
+   }
 
 }

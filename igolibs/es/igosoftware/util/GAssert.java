@@ -136,6 +136,15 @@ public final class GAssert {
    }
 
 
+   public static void isPositiveOrZero(final float value,
+                                       final String description) {
+      if (value >= 0) {
+         return;
+      }
+      throwError(description + " must be positive or zero (" + value + ")");
+   }
+
+
    public static void isPositive(final int value,
                                  final String description) {
       if (value > 0) {

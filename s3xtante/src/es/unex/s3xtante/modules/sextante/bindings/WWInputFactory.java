@@ -51,7 +51,7 @@ public class WWInputFactory
          if (layer instanceof IGlobeVectorLayer) {
             @SuppressWarnings("unchecked")
             final IGlobeVectorLayer<IVector2<?>, GAxisAlignedRectangle> globeVector2Layer = (IGlobeVectorLayer<IVector2<?>, GAxisAlignedRectangle>) layer;
-            obj = new WWVectorLayer(globeVector2Layer);
+            obj = new WWVectorLayer(globeVector2Layer.getFeaturesCollection());
             layers.add(obj);
          }
          else if (layer instanceof IGlobeRasterLayer) {

@@ -40,6 +40,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import es.igosoftware.euclid.GGeometryAbstract;
+import es.igosoftware.euclid.shape.GRenderType;
 import es.igosoftware.euclid.shape.GSegment;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GMath;
@@ -200,6 +201,12 @@ GeometryT extends GNCapsule<VectorT, SegmentT, GeometryT>
    @Override
    public VectorT getCentroid() {
       return _segment.getCentroid();
+   }
+
+
+   @Override
+   public GRenderType getRenderType() {
+      return GRenderType.DO_NOT_RENDER;
    }
 
 

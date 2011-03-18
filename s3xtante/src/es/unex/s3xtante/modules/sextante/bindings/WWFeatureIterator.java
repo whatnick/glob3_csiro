@@ -12,9 +12,9 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.features.IGlobeFeature;
+import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.vector.IVector2;
-import es.igosoftware.globe.IGlobeFeatureCollection;
-import es.igosoftware.globe.layers.IGlobeFeature;
 import es.igosoftware.util.GMath;
 import es.igosoftware.utils.GJTSUtils;
 import es.unex.sextante.core.Sextante;
@@ -29,13 +29,13 @@ public class WWFeatureIterator
          implements
             IFeatureIterator {
 
-   private IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle> _features;
-   private int                                                         _index;
-   private int                                                         _selectedIndex;
-   private int                                                         _cardinality;
-   private List<IVectorLayerFilter>                                    _filters;
-   private BitSet                                                      _bitSet;
-   private Rectangle2D                                                 _extent;
+   private IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> _features;
+   private int                                                            _index;
+   private int                                                            _selectedIndex;
+   private int                                                            _cardinality;
+   private List<IVectorLayerFilter>                                       _filters;
+   private BitSet                                                         _bitSet;
+   private Rectangle2D                                                    _extent;
 
 
    public WWFeatureIterator() {
@@ -49,7 +49,7 @@ public class WWFeatureIterator
    }
 
 
-   public WWFeatureIterator(final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle> features,
+   public WWFeatureIterator(final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features,
                             final List<IVectorLayerFilter> filters) {
       _index = 0;
       _selectedIndex = 0;
@@ -76,7 +76,7 @@ public class WWFeatureIterator
             _index++;
          }
          final IGlobeFeature<IVector2<?>, GAxisAlignedRectangle> globeFeature = _features.get(_index);
-         final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> euclidGeom = globeFeature.getGeometry();
+         final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> euclidGeom = globeFeature.getDefaultGeometry();
          final List<Object> record = globeFeature.getAttributes();
          final Geometry jtsGeom = GJTSUtils.toJTS(euclidGeom);
          final IFeature sextanteFeature = new FeatureImpl(jtsGeom, record.toArray());
@@ -114,7 +114,7 @@ public class WWFeatureIterator
          _bitSet = new BitSet(iTotalCount);
          for (int i = 0; i < iTotalCount; i++) {
             final IGlobeFeature<IVector2<?>, GAxisAlignedRectangle> globeFeature = _features.get(i);
-            final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> euclidGeom = globeFeature.getGeometry();
+            final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> euclidGeom = globeFeature.getDefaultGeometry();
             final List<Object> record = globeFeature.getAttributes();
             final Geometry jtsGeom = GJTSUtils.toJTS(euclidGeom);
             final IFeature sextanteFeature = new FeatureImpl(jtsGeom, record.toArray());

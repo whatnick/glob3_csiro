@@ -37,6 +37,7 @@
 package es.igosoftware.euclid.shape;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import es.igosoftware.euclid.IBoundedGeometry;
@@ -253,6 +254,42 @@ public final class GShape {
                });
 
       return GAxisAlignedOrthotope.merge(bounds);
+   }
+
+
+   public static <
+
+   VectorT extends IVector<VectorT, ?, ?>,
+
+   ElementT,
+
+   GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>> GAxisAlignedOrthotope<VectorT, ?
+
+   > getBounds(final Iterable<ElementT> elements,
+               final ITransformer<ElementT, GeometryT> transformer) {
+
+      if (elements == null) {
+         return null;
+      }
+
+      final Iterator<ElementT> iterator = elements.iterator();
+      if (!iterator.hasNext()) {
+         return null;
+      }
+
+      VectorT lower = null;
+      VectorT upper = null;
+      while (iterator.hasNext()) {
+         final ElementT element = iterator.next();
+         final GeometryT geometry = transformer.transform(element);
+
+         final GAxisAlignedOrthotope<VectorT, ?> bounds = geometry.getBounds().asAxisAlignedOrthotope();
+
+         lower = (lower == null) ? bounds._lower : lower.min(bounds._lower);
+         upper = (upper == null) ? bounds._upper : upper.max(bounds._upper);
+      }
+
+      return GAxisAlignedOrthotope.create(lower, upper);
    }
 
 

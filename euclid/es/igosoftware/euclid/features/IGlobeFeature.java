@@ -1,6 +1,6 @@
 
 
-package es.igosoftware.globe.layers;
+package es.igosoftware.euclid.features;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ BoundsT extends IFiniteBounds<VectorT, BoundsT>
 
 > {
 
-   public IBoundedGeometry<VectorT, ?, BoundsT> getGeometry();
+   public IBoundedGeometry<VectorT, ?, BoundsT> getDefaultGeometry();
 
 
    public List<Object> getAttributes();

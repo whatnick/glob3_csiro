@@ -37,12 +37,10 @@
 package es.igosoftware.experimental.ndimensional;
 
 
+import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
-import es.igosoftware.globe.GField;
 import es.igosoftware.globe.GGlobeApplication;
-import es.igosoftware.globe.GVectorLayerType;
 import es.igosoftware.globe.IGlobeApplication;
-import es.igosoftware.globe.IGlobeFeatureCollection;
 import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.GBooleanLayerAttribute;
@@ -800,25 +798,7 @@ public class GMultidimensionalViewerLayer
 
 
    @Override
-   public GField[] getFields() {
-      return null;
-   }
-
-
-   @Override
    public GVector2RenderingTheme getRenderingTheme() {
-      return null;
-   }
-
-
-   @Override
-   public GVectorLayerType getShapeType() {
-      return GVectorLayerType.POINT;
-   }
-
-
-   @Override
-   public IGlobeFeatureCollection getFeaturesCollection() {
       return null;
    }
 
@@ -1195,53 +1175,10 @@ public class GMultidimensionalViewerLayer
    }
 
 
-   //   private int getDimensionFrom(final String dimensionName) {
-   //      return _dimensionsRanges.get(dimensionName)._lower;
-   //   }
-   //
-   //
-   //   private void setDimensionFrom(final String dimensionName,
-   //                                 final int value) {
-   //      final GRange<Integer> oldRange = _dimensionsRanges.get(dimensionName);
-   //      final int lower = value;
-   //      int upper = oldRange._upper;
-   //      if (lower > upper) {
-   //         upper = lower;
-   //      }
-   //
-   //      final GRange<Integer> newRange = new GRange<Integer>(lower, upper);
-   //      setDimensionRange(dimensionName, oldRange, newRange);
-   //   }
-   //
-   //
-   //   private int getDimensionTo(final String dimensionName) {
-   //      return _dimensionsRanges.get(dimensionName)._upper;
-   //   }
-   //
-   //
-   //   private void setDimensionTo(final String dimensionName,
-   //                               final int value) {
-   //
-   //      final GRange<Integer> oldRange = _dimensionsRanges.get(dimensionName);
-   //      final int upper = value;
-   //      int lower = oldRange._lower;
-   //      if (upper < lower) {
-   //         lower = upper;
-   //      }
-   //
-   //      final GRange<Integer> newRange = new GRange<Integer>(lower, upper);
-   //      setDimensionRange(dimensionName, oldRange, newRange);
-   //   }
-   //
-   //
-   //   private void setDimensionRange(final String dimensionName,
-   //                                  final GRange<Integer> oldRange,
-   //                                  final GRange<Integer> newRange) {
-   //      _dimensionsRanges.put(dimensionName, newRange);
-   //
-   //      firePropertyChange(dimensionName + "_from", oldRange._lower, newRange._lower);
-   //      firePropertyChange(dimensionName + "_to", oldRange._upper, newRange._upper);
-   //   }
+   @Override
+   public IGlobeFeatureCollection getFeaturesCollection() {
+      return null;
+   }
 
 
 }

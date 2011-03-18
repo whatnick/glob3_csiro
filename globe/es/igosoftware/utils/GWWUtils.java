@@ -43,6 +43,7 @@ import java.util.List;
 import javax.media.opengl.GL;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
+import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.GVector2D;
@@ -332,7 +333,7 @@ public final class GWWUtils {
    }
 
 
-   public static Sector toSector(final GAxisAlignedRectangle boundingRectangle,
+   public static Sector toSector(final GAxisAlignedOrthotope<IVector2<?>, ?> boundingRectangle,
                                  final GProjection projection) {
       if (boundingRectangle == null) {
          return null;

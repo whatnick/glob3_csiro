@@ -37,20 +37,19 @@
 package es.igosoftware.globe.modules.geonames;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.features.GField;
+import es.igosoftware.euclid.features.GGlobeFeature;
+import es.igosoftware.euclid.features.GListFeatureCollection;
+import es.igosoftware.euclid.features.IGlobeFeature;
+import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
-import es.igosoftware.globe.GField;
-import es.igosoftware.globe.GListFeatureCollection;
-import es.igosoftware.globe.GVectorLayerType;
 import es.igosoftware.globe.IGlobeApplication;
-import es.igosoftware.globe.IGlobeFeatureCollection;
 import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
-import es.igosoftware.globe.layers.GGlobeFeature;
 import es.igosoftware.globe.layers.GVector2RenderingTheme;
-import es.igosoftware.globe.layers.IGlobeFeature;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Sector;
@@ -74,11 +73,12 @@ public class GSearchResultLayer
             IGlobeVectorLayer<IVector2<?>, GAxisAlignedRectangle> {
 
 
-   private final Sector                                                      _extent;
-   private final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle> _features;
+   private final Sector                                                         _extent;
+   private final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> _features;
 
 
-   public GSearchResultLayer(final List<Marker> markersList) {
+   public GSearchResultLayer(final String searchText,
+                             final List<Marker> markersList) {
       super(markersList);
 
       final List<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>> features = new ArrayList<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>>(
@@ -123,9 +123,11 @@ public class GSearchResultLayer
          }
       }
 
-
       _extent = Sector.fromDegrees(minLatitude, maxLatitude, minLongitude, maxLongitude);
-      _features = new GListFeatureCollection<IVector2<?>, GAxisAlignedRectangle>(GProjection.EPSG_4326, features);
+      final List<GField> fields = Arrays.asList(new GField("Name", String.class), new GField("Population", Integer.class));
+      final String uniqueID = null;
+      _features = new GListFeatureCollection<IVector2<?>, GAxisAlignedRectangle>("Search result: " + searchText,
+               GProjection.EPSG_4326, fields, features, uniqueID);
    }
 
 
@@ -148,18 +150,6 @@ public class GSearchResultLayer
 
 
    @Override
-   public GField[] getFields() {
-      return new GField[] { new GField("Name", String.class), new GField("Population", Integer.class) };
-   }
-
-
-   @Override
-   public GVectorLayerType getShapeType() {
-      return GVectorLayerType.POINT;
-   }
-
-
-   @Override
    public final void redraw() {
       // fire event to force a redraw
       firePropertyChange(AVKey.LAYER, null, this);
@@ -167,7 +157,7 @@ public class GSearchResultLayer
 
 
    @Override
-   public IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle> getFeaturesCollection() {
+   public IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> getFeaturesCollection() {
       return _features;
    }
 

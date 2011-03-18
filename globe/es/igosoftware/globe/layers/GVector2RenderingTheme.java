@@ -40,9 +40,10 @@ import java.awt.Color;
 import java.awt.LinearGradientPaint;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.features.IGlobeFeature;
+import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.IVector2;
-import es.igosoftware.globe.IGlobeFeatureCollection;
 import gov.nasa.worldwind.globes.Globe;
 import gov.nasa.worldwind.render.Renderable;
 
@@ -72,7 +73,7 @@ public abstract class GVector2RenderingTheme {
    }
 
 
-   public void calculateExtremeValues(final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle> features) {
+   public void calculateExtremeValues(final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features) {
 
       if (_hasToRecalculateExtremeValues) {
          double dMin = Double.POSITIVE_INFINITY;

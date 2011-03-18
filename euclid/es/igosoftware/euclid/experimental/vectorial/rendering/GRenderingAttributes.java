@@ -5,6 +5,7 @@ package es.igosoftware.euclid.experimental.vectorial.rendering;
 import java.awt.Color;
 
 import es.igosoftware.euclid.utils.GColorUtil;
+import es.igosoftware.util.GAssert;
 
 
 public class GRenderingAttributes {
@@ -32,6 +33,10 @@ public class GRenderingAttributes {
                                final int textureWidth,
                                final int textureHeight,
                                final boolean renderBounds) {
+      GAssert.isPositiveOrZero(borderWidth, "borderWidth");
+      GAssert.isPositive(textureWidth, "textureWidth");
+      GAssert.isPositive(textureHeight, "textureHeight");
+
       _renderLODIgnores = renderLODIgnores;
       _borderWidth = borderWidth;
       _fillColor = fillColor;

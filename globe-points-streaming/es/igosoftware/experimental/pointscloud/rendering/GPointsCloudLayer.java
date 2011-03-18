@@ -36,14 +36,12 @@
 
 package es.igosoftware.experimental.pointscloud.rendering;
 
+import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.pointscloud.octree.GPCPointsCloud;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.experimental.pointscloud.rendering.scenegraph.GSGGroupNode;
 import es.igosoftware.experimental.pointscloud.rendering.scenegraph.GSGPointsNode;
-import es.igosoftware.globe.GField;
 import es.igosoftware.globe.GGlobeApplication;
-import es.igosoftware.globe.GVectorLayerType;
-import es.igosoftware.globe.IGlobeFeatureCollection;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
@@ -629,20 +627,8 @@ public final class GPointsCloudLayer
 
 
    @Override
-   public GField[] getFields() {
-      return new GField[0];
-   }
-
-
-   @Override
    public IGlobeFeatureCollection getFeaturesCollection() {
       return null;
-   }
-
-
-   @Override
-   public GVectorLayerType getShapeType() {
-      return GVectorLayerType.POINT;
    }
 
 
