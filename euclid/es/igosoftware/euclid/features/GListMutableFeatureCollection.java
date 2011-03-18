@@ -91,8 +91,9 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
 
    @Override
    public void changed() {
-      super.changed();
       _bounds = null;
+
+      super.changed();
    }
 
 
