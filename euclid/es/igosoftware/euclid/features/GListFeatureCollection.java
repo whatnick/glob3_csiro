@@ -197,6 +197,11 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
 
 
    private GAxisAlignedOrthotope<VectorT, ?> calculateBounds() {
+
+      if (_features.isEmpty()) {
+         return null;
+      }
+
       final GAxisAlignedOrthotope<VectorT, ?> firstBounds = _features.get(0).getDefaultGeometry().getBounds().asAxisAlignedOrthotope();
       VectorT minLower = firstBounds._lower.asDouble();
       VectorT maxUpper = firstBounds._upper.asDouble();

@@ -64,7 +64,6 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
          return null;
       }
 
-
       final GAxisAlignedOrthotope<VectorT, ?> firstBounds = _features.get(0).getDefaultGeometry().getBounds().asAxisAlignedOrthotope();
       VectorT minLower = firstBounds._lower.asDouble();
       VectorT maxUpper = firstBounds._upper.asDouble();
@@ -83,13 +82,24 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
    @Override
    public void set(final long index,
                    final IGlobeFeature<VectorT, FeatureBoundsT> value) {
+      checkMutable();
+
       _features.set(toInt(index), value);
       changed();
    }
 
 
    @Override
+   public void changed() {
+      super.changed();
+      _bounds = null;
+   }
+
+
+   @Override
    public void add(final IGlobeFeature<VectorT, FeatureBoundsT> value) {
+      checkMutable();
+
       _features.add(value);
       changed();
    }
@@ -97,6 +107,8 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
 
    @Override
    public IGlobeFeature<VectorT, FeatureBoundsT> remove(final long index) {
+      checkMutable();
+
       final IGlobeFeature<VectorT, FeatureBoundsT> result = _features.remove(toInt(index));
       if (result != null) {
          changed();
@@ -107,6 +119,8 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
 
    @Override
    public boolean remove(final IGlobeFeature<VectorT, FeatureBoundsT> value) {
+      checkMutable();
+
       final boolean removed = _features.remove(value);
       if (removed) {
          changed();
@@ -117,7 +131,9 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
 
    @Override
    public void clear() {
-      if (isEmpty()) {
+      checkMutable();
+
+      if (_features.isEmpty()) {
          return;
       }
 
