@@ -103,6 +103,21 @@ public enum GProjection {
    }
 
 
+   //-- metodo seguramente  provisional
+   public static String[] getProjectionsDescription() {
+
+      final GProjection[] projs = values();
+      final ArrayList<String> list = new ArrayList<String>();
+      for (final GProjection proj : projs) {
+         final String description = proj.name() + " / " + proj._proj4Definition;
+         list.add(description);
+      }
+
+      return list.toArray(new String[0]);
+
+   }
+
+
    private boolean isEPSG() {
 
       return _epsgCode != NO_EPSG_CODE;

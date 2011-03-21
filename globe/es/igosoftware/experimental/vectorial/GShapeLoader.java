@@ -203,14 +203,14 @@ public class GShapeLoader {
          throw new IOException("File not found!");
       }
 
-
+      //FileDataStoreFinder.
       final FileDataStore store = FileDataStoreFinder.getDataStore(file);
-
+      //store.getFeatureSource().
       // final FeatureSource featureSource = new CachingFeatureSource(store.getFeatureSource());
       final FeatureSource featureSource = store.getFeatureSource();
-
+      //featureSource.
       final FeatureCollection features = featureSource.getFeatures();
-
+      //final features.
       final GIntHolder validCounter = new GIntHolder(0);
       final GIntHolder polygonsWithHolesCounter = new GIntHolder(0);
       final GIntHolder invalidCounter = new GIntHolder(0);
@@ -222,7 +222,7 @@ public class GShapeLoader {
          @Override
          public void visit(final Feature feature) {
             final GeometryAttribute geometryAttribute = feature.getDefaultGeometryProperty();
-
+            //final feature.
             final GeometryType type = geometryAttribute.getType();
 
             if (type.getBinding() == com.vividsolutions.jts.geom.MultiPolygon.class) {

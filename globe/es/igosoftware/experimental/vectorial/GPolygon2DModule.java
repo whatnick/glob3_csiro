@@ -111,37 +111,51 @@ public class GPolygon2DModule
 
    private void openFile(final File file,
                          final IGlobeApplication application) {
-      final Thread worker = new Thread("Vectorial layer loader") {
-         @Override
-         public void run() {
-            final int TODO_read_projection_or_ask_user;
-            final GProjection projection = GProjection.EPSG_4326;
 
-            try {
-               final GPair<String, List<IPolygon2D<?>>> polygons = GShapeLoader.readPolygons(file.getAbsolutePath(), projection);
+      final int TODO_read_projection_or_ask_user;
+      //final GProjection projection = GProjection.EPSG_4326;
+      final GProjection projection = GPrjLoader.readProjection(application, file);
 
-               final GPolygon2DLayer layer = new GPolygon2DLayer(file.getName(), polygons._first, polygons._second);
-               //               layer.setShowExtents(true);
-               application.getLayerList().add(layer);
+      if (projection == null) {
+         //final int TODO_show_ERROR_dialog;
+         JOptionPane.showMessageDialog(application.getFrame(), "Invalid shape file !. CRS Projection not available",
+                  "Openning shp file", JOptionPane.ERROR_MESSAGE);
+      }
+      else {
+         final Thread worker = new Thread("Vectorial layer loader") {
+            @Override
+            public void run() {
+               //final int TODO_read_projection_or_ask_user;
+               //final GProjection projection = GProjection.EPSG_4326;
+               //final GProjection projection = GPrjLoader.readProjection(application, file);
 
-               layer.doDefaultAction(application);
+               try {
+                  final GPair<String, List<IPolygon2D<?>>> polygons = GShapeLoader.readPolygons(file.getAbsolutePath(),
+                           projection);
+
+                  final GPolygon2DLayer layer = new GPolygon2DLayer(file.getName(), polygons._first, polygons._second);
+                  //               layer.setShowExtents(true);
+                  application.getLayerList().add(layer);
+
+                  layer.doDefaultAction(application);
+               }
+               catch (final IOException e) {
+                  SwingUtilities.invokeLater(new Runnable() {
+                     @Override
+                     public void run() {
+                        JOptionPane.showMessageDialog(application.getFrame(), "Error opening " + file.getAbsolutePath() + "\n\n "
+                                                                              + e.getLocalizedMessage(), "Error",
+                                 JOptionPane.ERROR_MESSAGE);
+                     }
+                  });
+               }
             }
-            catch (final IOException e) {
-               SwingUtilities.invokeLater(new Runnable() {
-                  @Override
-                  public void run() {
-                     JOptionPane.showMessageDialog(application.getFrame(), "Error opening " + file.getAbsolutePath() + "\n\n "
-                                                                           + e.getLocalizedMessage(), "Error",
-                              JOptionPane.ERROR_MESSAGE);
-                  }
-               });
-            }
-         }
-      };
+         };
 
-      worker.setDaemon(true);
-      worker.setPriority(Thread.MIN_PRIORITY);
-      worker.start();
+         worker.setDaemon(true);
+         worker.setPriority(Thread.MIN_PRIORITY);
+         worker.start();
+      }
    }
 
 
