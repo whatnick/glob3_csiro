@@ -42,7 +42,7 @@ import es.igosoftware.euclid.vector.IVector;
 
 public interface IPolygon<
 
-VectorT extends IVector<VectorT, ?>,
+VectorT extends IVector<VectorT, ?, ?>,
 
 SegmentT extends GSegment<VectorT, SegmentT, BoundsT>,
 

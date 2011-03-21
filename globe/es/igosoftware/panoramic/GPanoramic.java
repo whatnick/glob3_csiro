@@ -42,6 +42,7 @@ import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.globe.GGlobeApplication;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.io.ILoader;
 import es.igosoftware.loading.GDisplayListCache;
@@ -144,7 +145,7 @@ public class GPanoramic
 
    private final String                                                      _name;
    private final ILoader                                                     _loader;
-   private final String                                                      _panoramicName;
+   private final GFileName                                                   _panoramicFileName;
    private final double                                                      _radius;
    private final Position                                                    _position;
    private final double                                                      _headingInDegrees;
@@ -180,9 +181,9 @@ public class GPanoramic
    public GPanoramic(final Layer layer,
                      final String name,
                      final ILoader loader,
-                     final String panoramicName,
+                     final GFileName panoramicName,
                      final double radius,
-                     final Position position) {
+                     final Position position) throws IOException {
       this(layer, name, loader, panoramicName, radius, position, 0, GElevationAnchor.SURFACE);
    }
 
@@ -190,11 +191,11 @@ public class GPanoramic
    public GPanoramic(final Layer layer,
                      final String name,
                      final ILoader loader,
-                     final String panoramicName,
+                     final GFileName panoramicFileName,
                      final double radius,
                      final Position position,
                      final double headingInDegrees,
-                     final GElevationAnchor anchor) {
+                     final GElevationAnchor anchor) throws IOException {
       GAssert.notNull(name, "name");
       GAssert.notNull(loader, "loader");
       GAssert.isPositive(radius, "radius");
@@ -205,7 +206,7 @@ public class GPanoramic
 
       _name = name;
       _loader = loader;
-      _panoramicName = panoramicName;
+      _panoramicFileName = panoramicFileName;
       _radius = radius;
       _position = position;
       _headingInDegrees = headingInDegrees;
@@ -216,8 +217,6 @@ public class GPanoramic
       _zoomLevels = readZoomLevels();
 
       _maxResolutionInPanoramic = _zoomLevels.getLevels().size() - 1;
-
-      //setOpacity(DEFAULT_OPACITY);
    }
 
 
@@ -295,15 +294,15 @@ public class GPanoramic
    }
 
 
-   private GPanoramicCompiler.ZoomLevels readZoomLevels() {
+   private GPanoramicCompiler.ZoomLevels readZoomLevels() throws IOException {
 
-      final String fileName = _panoramicName + "/" + GPanoramicCompiler.LEVELS_FILE_NAME;
+      final GFileName fileName = GFileName.fromParentAndParts(_panoramicFileName, GPanoramicCompiler.LEVELS_FILE_NAME);
 
       final GHolder<GPanoramicCompiler.ZoomLevels> result = new GHolder<GPanoramicCompiler.ZoomLevels>(null);
-      final GHolder<RuntimeException> exception = new GHolder<RuntimeException>(null);
+      final GHolder<IOException> exception = new GHolder<IOException>(null);
       final GHolder<Boolean> done = new GHolder<Boolean>(false);
 
-      _loader.load(fileName, -1, Integer.MAX_VALUE, new ILoader.IHandler() {
+      _loader.load(fileName, -1, false, Integer.MAX_VALUE, new ILoader.IHandler() {
          @Override
          public void loaded(final File file,
                             final long bytesLoaded,
@@ -323,13 +322,13 @@ public class GPanoramic
                result.set(zoomLevels);
             }
             catch (final IOException e) {
-               exception.set(new RuntimeException(e));
+               exception.set(e);
             }
             catch (final ClassNotFoundException e) {
-               exception.set(new RuntimeException(e));
+               exception.set(new IOException(e));
             }
             catch (final ClassCastException e) {
-               exception.set(new RuntimeException(e));
+               exception.set(new IOException(e));
             }
             finally {
                GIOUtils.gentlyClose(is);
@@ -340,9 +339,8 @@ public class GPanoramic
 
 
          @Override
-         public void loadError(final ILoader.ErrorType error,
-                               final Throwable e) {
-            exception.set(new RuntimeException(e));
+         public void loadError(final IOException e) {
+            exception.set(e);
             done.set(true);
          }
       });
@@ -378,7 +376,6 @@ public class GPanoramic
                                                    final boolean terrainChanged) {
       if (terrainChanged || (_modelCoordinateOriginTransform == null)) {
          Position position = null;
-         //GElevationAnchor anchor = _layer.getElevationAnchor()
 
          switch (getElevationAnchor()) {
             case SEA_LEVEL:
@@ -386,7 +383,6 @@ public class GPanoramic
                break;
             case SURFACE:
                final double surfaceElevation = computeSurfaceElevation(dc, _position);
-               // final double surfaceElevation = dc.getGlobe().getElevation(_position.latitude, _position.longitude);
                position = new Position(_position.latitude, _position.longitude, surfaceElevation + _position.elevation);
                break;
          }
@@ -425,15 +421,6 @@ public class GPanoramic
    private Sphere getBoundsInModelCoordinates(final boolean matrixChanged) {
       if (matrixChanged || (_boundsInGlobalCoordinates == null)) {
          _boundsInGlobalCoordinates = calculateBoundsInModelCoordinates();
-
-
-         //         if (!_areasEventsLayerInitialized) {
-         //            _areasEventsLayerInitialized = true;
-         //            _areasEventsLayer.addArea(getAreaName(), _boundsInGlobalCoordinates, createListener());
-         //         }
-         //         else {
-         //            _areasEventsLayer.changeBounds(getAreaName(), _boundsInGlobalCoordinates);
-         //         }
       }
 
       return _boundsInGlobalCoordinates;
@@ -462,12 +449,8 @@ public class GPanoramic
 
       final boolean checkViewport = (_anchor == GElevationAnchor.SURFACE);
       if (checkViewport) {
-         //         final Rectangle currentViewport = dc.getView().getViewport();
-
          final Frustum currentFustum = dc.getView().getFrustumInModelCoordinates();
 
-         //         terrainChanged = ((globe != _lastGlobe) || (verticalExaggeration != _lastVerticalExaggeration) || (!currentViewport.equals(_lastViewport)));
-         //         terrainChanged = ((globe != _lastGlobe) || (verticalExaggeration != _lastVerticalExaggeration) || (currentFustum != _lastFrustum));
          terrainChanged = ((globe != _lastGlobe) || (verticalExaggeration != _lastVerticalExaggeration) || (!currentFustum.equals(_lastFrustum)));
 
          if (terrainChanged) {
@@ -490,7 +473,9 @@ public class GPanoramic
 
 
    public void doRender(final DrawContext dc) {
+
       if (dc.isPickingMode()) {
+         System.out.println("--not rendering because in pickingMode---");
          return;
       }
 
@@ -515,11 +500,10 @@ public class GPanoramic
          selectVisibleTiles(dc, frustum, terrainChanged, tile, modelViewMatrix);
       }
 
-      //initializeEvents();
-
       if (!_visibleTiles.isEmpty()) {
          dc.addOrderedRenderable(this);
       }
+
    }
 
 
@@ -614,8 +598,6 @@ public class GPanoramic
 
    @Override
    public double getDistanceFromEye() {
-
-      // return 0.1; // just a litle bit far away from the eye
       return _currentDistanceFromEye;
    }
 
@@ -690,9 +672,6 @@ public class GPanoramic
          gl.glPopMatrix();
       }
    }
-
-
-   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
    private class PanoramicTile {
@@ -839,14 +818,16 @@ public class GPanoramic
 
 
                @Override
-               public void loadError(final ILoader.ErrorType error,
-                                     final Throwable e) {
-                  System.err.println("error=" + error + ", exception=" + e);
+               public void loadError(final IOException e) {
+                  System.err.println("error=" + e);
                   _handler = null;
                }
             };
-            final String path = _panoramicName + "/" + _level + "/" + _row + "-" + _column + ".jpg";
-            _loader.load(path, -1, _level, _handler);
+
+            final String tileName = _row + "-" + _column + ".jpg";
+            final GFileName tilePath = GFileName.fromParentAndParts(_panoramicFileName, Integer.toString(_level), tileName);
+
+            _loader.load(tilePath, -1, false, _level, _handler);
          }
 
          final Texture texture = (_url == null) ? null : GTexturesCache.getTexture(_url, true);

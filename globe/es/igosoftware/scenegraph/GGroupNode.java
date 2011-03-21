@@ -304,14 +304,4 @@ public final class GGroupNode
    }
 
 
-   @Override
-   public void preFetchContents(final DrawContext dc) {
-      synchronized (_children) {
-         for (final INode child : _children) {
-            child.preFetchContents(dc);
-         }
-      }
-   }
-
-
 }

@@ -53,7 +53,7 @@ import es.igosoftware.util.IRangeEvaluator;
 
 public abstract class GVertexContainerAbstract<
 
-VectorT extends IVector<VectorT, ?>,
+VectorT extends IVector<VectorT, ?, ?>,
 
 VertexT extends IVertexContainer.Vertex<VectorT>,
 

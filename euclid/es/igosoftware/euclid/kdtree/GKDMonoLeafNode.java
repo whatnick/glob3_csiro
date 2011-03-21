@@ -41,7 +41,7 @@ import es.igosoftware.euclid.verticescontainer.IVertexContainer;
 import es.igosoftware.util.GProgress;
 
 
-public class GKDMonoLeafNode<VectorT extends IVector<VectorT, ?>, VertexT extends IVertexContainer.Vertex<VectorT>>
+public class GKDMonoLeafNode<VectorT extends IVector<VectorT, ?, ?>, VertexT extends IVertexContainer.Vertex<VectorT>>
          extends
             GKDLeafNode<VectorT, VertexT> {
 

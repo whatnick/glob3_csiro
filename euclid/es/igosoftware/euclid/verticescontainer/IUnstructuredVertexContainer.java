@@ -43,7 +43,7 @@ import es.igosoftware.util.IPredicate;
 
 public interface IUnstructuredVertexContainer<
 
-VectorT extends IVector<VectorT, ?>,
+VectorT extends IVector<VectorT, ?, ?>,
 
 VertexT extends IVertexContainer.Vertex<VectorT>,
 

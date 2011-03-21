@@ -51,7 +51,7 @@ import es.igosoftware.util.IListInt;
 
 public abstract class GCommonSubVertexContainer<
 
-VectorT extends IVector<VectorT, ?>,
+VectorT extends IVector<VectorT, ?, ?>,
 
 VertexT extends IVertexContainer.Vertex<VectorT>,
 

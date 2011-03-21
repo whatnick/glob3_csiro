@@ -4,6 +4,7 @@ package es.igosoftware.dmvc.transferring;
 
 import java.io.File;
 
+import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GProcessor;
 
 
@@ -17,7 +18,7 @@ public interface IDFileClient {
     * @param fileName
     * @return
     */
-   public File getFile(final String fileName);
+   public File getFile(final GFileName fileName);
 
 
    /**
@@ -28,7 +29,7 @@ public interface IDFileClient {
     * @param fileName
     * @param processor
     */
-   public void getFile(final String fileName,
+   public void getFile(final GFileName fileName,
                        final GProcessor<File> processor);
 
 

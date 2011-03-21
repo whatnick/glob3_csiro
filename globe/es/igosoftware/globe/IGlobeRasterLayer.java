@@ -38,7 +38,7 @@ package es.igosoftware.globe;
 
 import java.awt.image.WritableRaster;
 
-import es.igosoftware.globe.layers.RasterGeodata;
+import es.igosoftware.globe.layers.GRasterGeodata;
 
 
 public interface IGlobeRasterLayer
@@ -48,7 +48,7 @@ public interface IGlobeRasterLayer
    public WritableRaster getRaster();
 
 
-   public RasterGeodata getRasterGeodata();
+   public GRasterGeodata getRasterGeodata();
 
 
    public double getNoDataValue();

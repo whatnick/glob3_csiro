@@ -188,7 +188,7 @@ public final class GBinaryPoints3Loader
    private static void saveVector(final DataOutputStream output,
                                   final byte dimensions,
                                   final GVectorPrecision precision,
-                                  final IVector<?, ?> vector) throws IOException {
+                                  final IVector<?, ?, ?> vector) throws IOException {
       switch (precision) {
          case FLOAT:
             for (byte i = 0; i < dimensions; i++) {

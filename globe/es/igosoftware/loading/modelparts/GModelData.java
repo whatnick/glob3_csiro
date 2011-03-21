@@ -44,6 +44,7 @@ import java.util.List;
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GLogger;
 
 
@@ -64,7 +65,7 @@ public class GModelData
 
    private static final long       serialVersionUID   = 1L;
 
-   private final String            _name;
+   private final GFileName         _fileName;
 
    private final List<IVector3<?>> _vertices          = new ArrayList<IVector3<?>>();
    private final List<IVector3<?>> _normals           = new ArrayList<IVector3<?>>();
@@ -87,8 +88,8 @@ public class GModelData
 
 
    // Constructor
-   public GModelData(final String name) {
-      _name = name;
+   public GModelData(final GFileName fileName) {
+      _fileName = fileName;
    }
 
 
@@ -162,8 +163,8 @@ public class GModelData
    }
 
 
-   public String getName() {
-      return _name;
+   public GFileName getFileName() {
+      return _fileName;
    }
 
 
@@ -237,7 +238,7 @@ public class GModelData
 
    @Override
    public String toString() {
-      return "GModelData [name=" + _name + "]";
+      return "GModelData [name=" + _fileName + "]";
    }
 
 
@@ -254,7 +255,7 @@ public class GModelData
    public void showStatistics() {
       logger.increaseIdentationLevel();
 
-      logger.info("Name: " + _name);
+      logger.info("Name: " + _fileName);
 
       logger.info("Vertices: " + _vertices.size());
       logger.info("Normals: " + _normals.size());

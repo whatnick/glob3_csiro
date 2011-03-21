@@ -54,7 +54,7 @@ import es.igosoftware.util.GMath;
 
 public abstract class GSegment<
 
-VectorT extends IVector<VectorT, ?>,
+VectorT extends IVector<VectorT, ?, ?>,
 
 GeometryT extends GSegment<VectorT, GeometryT, BoundsT>,
 
@@ -303,5 +303,10 @@ BoundsT extends IBounds<VectorT, BoundsT>
       return _from.closeTo(that._from) && _to.closeTo(that._to);
    }
 
+
+   @Override
+   public VectorT getCentroid() {
+      return _from.add(_to).div(2);
+   }
 
 }

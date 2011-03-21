@@ -38,10 +38,7 @@ package es.igosoftware.experimental.ndimensional;
 
 
 import java.awt.Component;
-import java.util.Collections;
 import java.util.List;
-
-import javax.swing.Icon;
 
 import es.igosoftware.globe.GAbstractGlobeModule;
 import es.igosoftware.globe.GLayerInfo;
@@ -49,7 +46,6 @@ import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
 import es.igosoftware.globe.ILayerFactoryModule;
 import es.igosoftware.globe.ILayerInfo;
-import es.igosoftware.globe.actions.GCheckBoxGenericAction;
 import es.igosoftware.globe.actions.IGenericAction;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
@@ -64,7 +60,9 @@ public class GMultidimensionalDataModule
             ILayerFactoryModule {
 
    private final IMultidimensionalData[] _multidimentionalDatas;
-   private boolean                       _isVerticalExagerated = true;
+
+
+   //   private boolean                       _isVerticalExagerated = true;
 
 
    public GMultidimensionalDataModule(final IMultidimensionalData... multidimentionalData) {
@@ -94,21 +92,22 @@ public class GMultidimensionalDataModule
    @Override
    public List<IGenericAction> getGenericActions(final IGlobeApplication application) {
 
-      //      final Icon icon = application.getIcon("anaglyph.png");
-      final Icon icon = null;
-      final IGenericAction action = new GCheckBoxGenericAction("Vertical Exageration", ' ', icon, IGenericAction.MenuArea.VIEW,
-               true, _isVerticalExagerated) {
 
-         @Override
-         public void execute() {
-            _isVerticalExagerated = !_isVerticalExagerated;
-
-            application.getWorldWindowGLCanvas().getSceneController().setVerticalExaggeration(_isVerticalExagerated ? 16 : 1);
-            application.redraw();
-         }
-      };
-
-      return Collections.singletonList(action);
+      //      final Icon icon = null;
+      //      final IGenericAction action = new GCheckBoxGenericAction("Vertical Exageration", ' ', icon, IGenericAction.MenuArea.VIEW,
+      //               true, _isVerticalExagerated) {
+      //
+      //         @Override
+      //         public void execute() {
+      //            _isVerticalExagerated = !_isVerticalExagerated;
+      //
+      //            application.getWorldWindowGLCanvas().getSceneController().setVerticalExaggeration(_isVerticalExagerated ? 16 : 1);
+      //            application.redraw();
+      //         }
+      //      };
+      //
+      //      return Collections.singletonList(action);
+      return null;
    }
 
 

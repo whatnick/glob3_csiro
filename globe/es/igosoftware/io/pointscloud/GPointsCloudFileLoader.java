@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import es.igosoftware.io.GFileLoader;
+import es.igosoftware.io.GFileName;
 
 
 public final class GPointsCloudFileLoader
@@ -49,12 +50,8 @@ public final class GPointsCloudFileLoader
          implements
             IPointsCloudLoader {
 
-   public GPointsCloudFileLoader(final File rootDirectory) {
-      super(rootDirectory);
-   }
 
-
-   public GPointsCloudFileLoader(final String rootDirectoryName) {
+   public GPointsCloudFileLoader(final GFileName rootDirectoryName) {
       super(rootDirectoryName);
    }
 

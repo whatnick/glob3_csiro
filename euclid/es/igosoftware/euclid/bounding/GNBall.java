@@ -40,6 +40,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import es.igosoftware.euclid.GGeometryAbstract;
+import es.igosoftware.euclid.shape.GRenderType;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GMath;
@@ -47,7 +48,7 @@ import es.igosoftware.util.GMath;
 
 public abstract class GNBall<
 
-VectorT extends IVector<VectorT, ?>,
+VectorT extends IVector<VectorT, ?, ?>,
 
 GeometryT extends GNBall<VectorT, GeometryT>
 
@@ -178,4 +179,18 @@ GeometryT extends GNBall<VectorT, GeometryT>
 
       return lower.greaterOrEquals(orthotope._lower) && upper.lessOrEquals(orthotope._upper);
    }
+
+
+   @Override
+   public VectorT getCentroid() {
+      return _center;
+   }
+
+
+   @Override
+   public GRenderType getRenderType() {
+      return GRenderType.DO_NOT_RENDER;
+   }
+
+
 }

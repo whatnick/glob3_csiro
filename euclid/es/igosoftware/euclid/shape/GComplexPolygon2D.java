@@ -58,7 +58,7 @@ public final class GComplexPolygon2D
 
             GAxisAlignedRectangle,
 
-            IPolytope<IVector2<?>, GSegment2D, ?, GAxisAlignedRectangle>
+            IPolygon2D<?>
 
             >
          implements
@@ -67,8 +67,8 @@ public final class GComplexPolygon2D
    private static final long serialVersionUID = 1L;
 
 
-   public GComplexPolygon2D(final IPolytope<IVector2<?>, GSegment2D, ?, GAxisAlignedRectangle> hull,
-                            final List<? extends IPolytope<IVector2<?>, GSegment2D, ?, GAxisAlignedRectangle>> holes) {
+   public GComplexPolygon2D(final IPolygon2D<?> hull,
+                            final List<IPolygon2D<?>> holes) {
       super(hull, holes);
    }
 
@@ -79,7 +79,7 @@ public final class GComplexPolygon2D
          return false;
       }
 
-      for (final IPolytope<IVector2<?>, GSegment2D, ?, GAxisAlignedRectangle> hole : _holes) {
+      for (final IPolygon2D<?> hole : _holes) {
          if (hole.contains(point)) {
             return false;
          }
@@ -95,7 +95,7 @@ public final class GComplexPolygon2D
          return true;
       }
 
-      for (final IPolytope<IVector2<?>, GSegment2D, ?, GAxisAlignedRectangle> hole : _holes) {
+      for (final IPolygon2D<?> hole : _holes) {
          if (hole.isSelfIntersected()) {
             return true;
          }
@@ -107,12 +107,11 @@ public final class GComplexPolygon2D
 
    @Override
    public GComplexPolygon2D createSimplified(final double capsRadiansTolerance) {
-      final IPolytope<IVector2<?>, GSegment2D, ?, GAxisAlignedRectangle> simplifiedShell = _hull.createSimplified(capsRadiansTolerance);
+      final IPolygon2D<?> simplifiedShell = _hull.createSimplified(capsRadiansTolerance);
 
-      final List<IPolytope<IVector2<?>, GSegment2D, ?, GAxisAlignedRectangle>> simplifiedHoles = new ArrayList<IPolytope<IVector2<?>, GSegment2D, ?, GAxisAlignedRectangle>>(
-               _holes.size());
+      final List<IPolygon2D<?>> simplifiedHoles = new ArrayList<IPolygon2D<?>>(_holes.size());
 
-      for (final IPolytope<IVector2<?>, GSegment2D, ?, GAxisAlignedRectangle> hole : _holes) {
+      for (final IPolygon2D<?> hole : _holes) {
          simplifiedHoles.add(hole.createSimplified(capsRadiansTolerance));
       }
 
@@ -142,7 +141,7 @@ public final class GComplexPolygon2D
    public double squaredDistance(final IVector2<?> point) {
       double min = _hull.squaredDistance(point);
 
-      for (final IPolytope<IVector2<?>, GSegment2D, ?, GAxisAlignedRectangle> hole : _holes) {
+      for (final IPolygon2D<?> hole : _holes) {
          final double current = hole.squaredDistance(point);
          if (current < min) {
             min = current;
@@ -157,7 +156,7 @@ public final class GComplexPolygon2D
    protected List<GSegment2D> initializeEdges() {
       final List<GSegment2D> result = new ArrayList<GSegment2D>();
       result.addAll(_hull.getEdges());
-      for (final IPolytope<IVector2<?>, GSegment2D, ?, GAxisAlignedRectangle> hole : _holes) {
+      for (final IPolygon2D<?> hole : _holes) {
          result.addAll(hole.getEdges());
       }
       return result;
@@ -166,16 +165,14 @@ public final class GComplexPolygon2D
 
    @Override
    public GComplexPolygon2D transformedBy(final IVectorTransformer<IVector2<?>> transformer) {
-      final List<IPolytope<IVector2<?>, GSegment2D, ?, GAxisAlignedRectangle>> transformedHoles = GCollections.collect(
-               _holes,
-               new ITransformer<IPolytope<IVector2<?>, GSegment2D, ?, GAxisAlignedRectangle>, IPolytope<IVector2<?>, GSegment2D, ?, GAxisAlignedRectangle>>() {
-                  @Override
-                  public IPolytope<IVector2<?>, GSegment2D, ?, GAxisAlignedRectangle> transform(final IPolytope<IVector2<?>, GSegment2D, ?, GAxisAlignedRectangle> element) {
-                     return element.transformedBy(transformer);
-                  }
-               });
+      final List<IPolygon2D<?>> transformedHoles = GCollections.collect(_holes, new ITransformer<IPolygon2D<?>, IPolygon2D<?>>() {
+         @Override
+         public IPolygon2D<?> transform(final IPolygon2D<?> element) {
+            return (IPolygon2D<?>) element.transformedBy(transformer);
+         }
+      });
 
-      return new GComplexPolygon2D(_hull.transformedBy(transformer), transformedHoles);
+      return new GComplexPolygon2D((IPolygon2D<?>) _hull.transformedBy(transformer), transformedHoles);
    }
 
 
@@ -195,5 +192,6 @@ public final class GComplexPolygon2D
    public GRenderType getRenderType() {
       return GRenderType.POLYGON;
    }
+
 
 }

@@ -68,13 +68,13 @@ public class RenderableMarker
    @Override
    public void render(final DrawContext dc) {
 
-      if (this.markerList == null) {
+      if (markerList == null) {
 
-         this.markerList = new ArrayList<Marker>();
-         this.markerList.add(this);
+         markerList = new ArrayList<Marker>();
+         markerList.add(this);
 
       }
-      markerRenderer.render(dc, this.markerList);
+      markerRenderer.render(dc, markerList);
 
    }
 

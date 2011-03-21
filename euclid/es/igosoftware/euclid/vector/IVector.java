@@ -36,20 +36,23 @@
 
 package es.igosoftware.euclid.vector;
 
-import es.igosoftware.euclid.IGeometry;
+import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.matrix.GMatrix44D;
 import es.igosoftware.euclid.projection.GProjection;
 
 
 public interface IVector<
 
-VectorT extends IVector<VectorT, ?>,
+VectorT extends IVector<VectorT, ?, BoundsT>,
 
-GeometryT extends IVector<VectorT, GeometryT>
+GeometryT extends IVector<VectorT, GeometryT, BoundsT>,
+
+BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
 
 >
          extends
-            IGeometry<VectorT, GeometryT>
+            IBoundedGeometry<VectorT, GeometryT, BoundsT>
 
 {
 

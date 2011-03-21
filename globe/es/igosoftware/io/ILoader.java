@@ -37,6 +37,7 @@
 package es.igosoftware.io;
 
 import java.io.File;
+import java.io.IOException;
 
 
 public interface ILoader {
@@ -51,15 +52,14 @@ public interface ILoader {
 
 
    public static interface IHandler {
-      public void loadError(final ILoader.ErrorType error,
-                            final Throwable e);
+      public void loadError(final IOException e);
 
 
       public void loaded(final File file,
                          final long bytesLoaded,
                          final boolean completeLoaded) throws ILoader.AbortLoading;
-
    }
+
 
    public static class LoadID {
       private final int _id;
@@ -106,14 +106,9 @@ public interface ILoader {
    }
 
 
-   public static enum ErrorType {
-      NOT_FOUND,
-      CANT_READ
-   }
-
-
-   public ILoader.LoadID load(final String fileName,
+   public ILoader.LoadID load(final GFileName fileName,
                               final long bytesToLoad,
+                              final boolean reportIncompleteLoads,
                               final int priority,
                               final ILoader.IHandler handler);
 
@@ -121,7 +116,7 @@ public interface ILoader {
    public void cancelLoad(final ILoader.LoadID id);
 
 
-   public void cancelAllLoads(final String fileName);
+   public void cancelAllLoads(final GFileName fileName);
 
 
    //   public void cancelLoad(final String fileName);

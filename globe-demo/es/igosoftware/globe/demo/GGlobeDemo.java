@@ -41,6 +41,8 @@ import java.awt.Color;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -60,16 +62,17 @@ import es.igosoftware.globe.modules.GFullScreenModule;
 import es.igosoftware.globe.modules.view.GAnaglyphViewerModule;
 import es.igosoftware.globe.modules.view.GFlatWorldModule;
 import es.igosoftware.globe.modules.view.GShowLatLonGraticuleModule;
+import es.igosoftware.globe.modules.view.GShowMeasureToolModule;
 import es.igosoftware.globe.modules.view.GShowUTMGraticuleModule;
-import es.igosoftware.globe.modules.view.ShowMeasureTool;
 import es.igosoftware.globe.view.customView.GCustomView;
 import es.igosoftware.io.GFileLoader;
+import es.igosoftware.io.GFileName;
+import es.igosoftware.io.GHttpLoader;
 import es.igosoftware.io.ILoader;
 import es.igosoftware.io.pointscloud.GPointsCloudFileLoader;
 import es.igosoftware.io.pointscloud.IPointsCloudLoader;
 import es.igosoftware.loading.G3DModel;
-import es.igosoftware.loading.GModelLoadException;
-import es.igosoftware.loading.GObjLoader;
+import es.igosoftware.loading.GAsyncObjLoader;
 import es.igosoftware.loading.modelparts.GMaterial;
 import es.igosoftware.loading.modelparts.GModelData;
 import es.igosoftware.loading.modelparts.GModelMesh;
@@ -189,23 +192,29 @@ public class GGlobeDemo
       //      panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", "PANOS/Badajoz", 500, new Position(
       //               Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0)));
 
-      final ILoader loader = new GFileLoader("PANOS");
-      panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", loader, "Barrancos", 500, new Position(
-               Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0)));
+      try {
+         final ILoader loader = new GFileLoader(GFileName.relativeFromParts("PANOS"));
+         panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", loader,
+                  GFileName.relativeFromParts("Barrancos"), 500, new Position(Angle.fromDegrees(39.4737),
+                           Angle.fromDegrees(-6.3910), 0)));
 
-      //panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", "data/panoramics/barruecos", 500,
-      //         new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0)));
+         //panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", "data/panoramics/barruecos", 500,
+         //         new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0)));
 
-      // panoramicLayer.setEnabled(false);
+         // panoramicLayer.setEnabled(false);
 
-      panoramicLayer.addPickListener(new GPanoramicLayer.PickListener() {
-         @Override
-         public void picked(final GPanoramic pickedPanoramic) {
-            if (pickedPanoramic != null) {
-               panoramicLayer.enterPanoramic(pickedPanoramic, (GCustomView) getView());
+         panoramicLayer.addPickListener(new GPanoramicLayer.PickListener() {
+            @Override
+            public void picked(final GPanoramic pickedPanoramic) {
+               if (pickedPanoramic != null) {
+                  panoramicLayer.enterPanoramic(pickedPanoramic, (GCustomView) getView());
+               }
             }
-         }
-      });
+         });
+      }
+      catch (final IOException e) {
+         logSevere(e);
+      }
       return panoramicLayer;
    }
 
@@ -221,7 +230,7 @@ public class GGlobeDemo
             mesh.setMaterial(material);
          }
          else {
-            if (material.getTextureFileName() != null) {
+            if (material.hasTexture()) {
                material._diffuseColor = Color.WHITE;
             }
          }
@@ -239,6 +248,7 @@ public class GGlobeDemo
       final double homeElevation = 2000;
       final GHomePositionModule homePositionModule = new GHomePositionModule(homePosition, heading, pitch, homeElevation, true);
 
+<<<<<<< HEAD
       //      final IPointsCloudLoader loader = new GPointsCloudFileLoader("data/pointsclouds");
       //      final GPointsCloudModule pointsCloudModule = new GPointsCloudModule(loader);
 
@@ -250,6 +260,17 @@ public class GGlobeDemo
       final IPointsCloudLoader loader = new GPointsCloudFileLoader("data/pointsclouds");
       pointsCloudModule = new GPointsCloudModule(loader);
       //     }
+=======
+      final IPointsCloudLoader loader = new GPointsCloudFileLoader(GFileName.relativeFromParts("data", "pointsclouds"));
+      final GPointsCloudModule pointsCloudModule = new GPointsCloudModule(loader);
+
+      //      GPointsCloudModule pointsCloudModule = null;
+      //      try {
+      //         final IPointsCloudLoader loader = new GPointsCloudStreamingLoader("127.0.0.1", 8000);
+      //
+      //         pointsCloudModule = new GPointsCloudModule(loader);
+      //      }
+>>>>>>> b62602747a654153aa5b5e154a5ac84e1a77d35e
       //      catch (final IOException e) {
       //         e.printStackTrace();
       //      }
@@ -257,32 +278,58 @@ public class GGlobeDemo
       return new IGlobeModule[] { homePositionModule, new GLayersManagerModule(), new GPolygon2DModule(),
                new GFullScreenModule(), pointsCloudModule, new GAnaglyphViewerModule(false), new GStatisticsModule(),
                new GFlatWorldModule(), new GShowLatLonGraticuleModule(), new GShowUTMGraticuleModule(),
-               new GMultidimensionalDataModule(_multidimentionaldata), new ShowMeasureTool() };
+               new GMultidimensionalDataModule(_multidimentionaldata), new GShowMeasureToolModule() };
    }
 
 
    private void loadCaceres3DModel(final GPositionRenderableLayer layer) {
+
+      ILoader loader = null;
+      //      loader = new GFileLoader(GFileName.CURRENT_DIRECTORY);
+
+      final boolean verbose = true;
       try {
-
-         final GModelData modelData = new GObjLoader().load("data/models/caceres3d.obj", true);
-         hackCaceres3DModel(modelData);
-
-         final G3DModel model = new G3DModel(modelData, true);
-         final G3DModelNode caceres3DModelNode = new G3DModelNode("Caceres3D", GTransformationOrder.ROTATION_SCALE_TRANSLATION,
-                  model);
-
-
-         final GGroupNode caceres3DRootNode = new GGroupNode("Caceres3D root", GTransformationOrder.ROTATION_SCALE_TRANSLATION);
-         caceres3DRootNode.setHeading(-90);
-         //caceres3DRootNode.setScale(10);
-         caceres3DRootNode.addChild(caceres3DModelNode);
-
-         layer.addNode(caceres3DRootNode, new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710), 24.7),
-                  GElevationAnchor.SEA_LEVEL);
-
+         final boolean debug = false;
+         final boolean simulateSlowConnection = false;
+         //         loader = new GHttpLoader(new URL("http://localhost/globe-demo/"), GConcurrent.AVAILABLE_PROCESSORS, verbose, debug,
+         //                  simulateSlowConnection);
+         loader = new GHttpLoader(new URL("http://213.165.81.201:8080/"), GConcurrent.AVAILABLE_PROCESSORS, verbose, debug,
+                  simulateSlowConnection);
       }
-      catch (final GModelLoadException e) {
-         e.printStackTrace();
+      catch (final MalformedURLException e1) {
+         e1.printStackTrace();
+      }
+
+      if (loader != null) {
+         final GAsyncObjLoader objLoader = new GAsyncObjLoader(loader);
+
+         objLoader.load(GFileName.relativeFromParts("globe-demo-data", "models", "caceres3d.obj"),
+                  new GAsyncObjLoader.IHandler() {
+                     @Override
+                     public void loadError(final IOException e) {
+                        logSevere(e);
+                     }
+
+
+                     @Override
+                     public void loaded(final GModelData modelData) {
+                        hackCaceres3DModel(modelData);
+
+                        final G3DModel model = new G3DModel(modelData);
+                        final G3DModelNode caceres3DModelNode = new G3DModelNode("Caceres3D",
+                                 GTransformationOrder.ROTATION_SCALE_TRANSLATION, model);
+
+
+                        final GGroupNode caceres3DRootNode = new GGroupNode("Caceres3D root",
+                                 GTransformationOrder.ROTATION_SCALE_TRANSLATION);
+                        caceres3DRootNode.setHeading(-90);
+                        //caceres3DRootNode.setScale(10);
+                        caceres3DRootNode.addChild(caceres3DModelNode);
+
+                        layer.addNode(caceres3DRootNode, new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710),
+                                 24.7), GElevationAnchor.SEA_LEVEL);
+                     }
+                  }, verbose);
       }
    }
 

@@ -59,7 +59,7 @@ import es.igosoftware.util.GProgress;
 import es.igosoftware.util.GStringUtils;
 
 
-public final class GKDTree<VectorT extends IVector<VectorT, ?>, VertexT extends IVertexContainer.Vertex<VectorT>>
+public final class GKDTree<VectorT extends IVector<VectorT, ?, ?>, VertexT extends IVertexContainer.Vertex<VectorT>>
          extends
             GLoggerObject {
 

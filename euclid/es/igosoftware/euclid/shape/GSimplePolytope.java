@@ -44,13 +44,14 @@ import java.util.Iterator;
 import java.util.List;
 
 import es.igosoftware.euclid.bounding.IBounds;
+import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GAssert;
 
 
 public abstract class GSimplePolytope<
 
-VectorT extends IVector<VectorT, ?>,
+VectorT extends IVector<VectorT, ?, ?>,
 
 SegmentT extends GSegment<VectorT, SegmentT, BoundsT>,
 
@@ -228,5 +229,12 @@ BoundsT extends IBounds<VectorT, BoundsT>
 
       return true;
    }
+
+
+   @Override
+   public VectorT getCentroid() {
+      return GVectorUtils.getAverage(_points);
+   }
+
 
 }

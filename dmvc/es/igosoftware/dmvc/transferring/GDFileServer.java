@@ -69,7 +69,7 @@ public class GDFileServer
 
 
    private GDFileResponse createResponse(final GDFileRequest request) {
-      final File file = new File(_rootDirectory, request.getFileName());
+      final File file = new File(_rootDirectory, request.getFileName().buildPath());
 
       if (!file.exists() || !file.canRead()) {
          return new GDFileResponse(GDFileResponse.Status.FILE_NOT_FOUND);

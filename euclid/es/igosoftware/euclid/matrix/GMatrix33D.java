@@ -637,13 +637,13 @@ public abstract class GMatrix33D
    @Override
    public final GMatrix33D inverted() {
 
-      final double determinant = this.determinant();
+      final double determinant = determinant();
 
       if (GMath.closeToZero(determinant)) {
          return null;
       }
 
-      return this.adjoint().mul(1d / determinant);
+      return adjoint().mul(1d / determinant);
 
    }
 

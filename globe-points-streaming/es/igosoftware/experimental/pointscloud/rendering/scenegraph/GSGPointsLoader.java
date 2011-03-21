@@ -50,9 +50,9 @@ import es.igosoftware.euclid.colors.GColorF;
 import es.igosoftware.euclid.colors.GColorI;
 import es.igosoftware.euclid.vector.GVector3F;
 import es.igosoftware.experimental.pointscloud.rendering.GPointsCloudLayer;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.io.ILoader;
-import es.igosoftware.io.ILoader.ErrorType;
 import es.igosoftware.io.ILoader.IHandler;
 import es.igosoftware.util.GMath;
 import es.igosoftware.utils.GWWUtils;
@@ -182,8 +182,8 @@ final class GSGPointsLoader {
 
       synchronized (this) {
          final int bytesToLoad = _wantedPoints * _bytesPerPoint;
-         _layer.getLoader().load(_node.getPointsFileName(), bytesToLoad, Math.round(_priority),
-                  createHandler(_node.getPointsFileName()));
+         final GFileName pointsFileName = _node.getPointsFileName();
+         _layer.getLoader().load(pointsFileName, bytesToLoad, true, Math.round(_priority), createHandler(pointsFileName));
       }
    }
 
@@ -193,15 +193,14 @@ final class GSGPointsLoader {
    }
 
 
-   private IHandler createHandler(final String fileName) {
+   private IHandler createHandler(final GFileName pointsFileName) {
       return new ILoader.IHandler() {
          private final boolean _stop = false;
 
 
          @Override
-         public void loadError(final ErrorType error,
-                               final Throwable e) {
-            System.err.println("Error=" + error + ", exception=" + e + " trying to load " + fileName);
+         public void loadError(final IOException e) {
+            System.err.println("Error=" + e + " trying to load " + pointsFileName);
             synchronized (GSGPointsLoader.this) {
                _errorLoading = true;
                _loading = false;

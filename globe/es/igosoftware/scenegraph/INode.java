@@ -117,7 +117,4 @@ public interface INode
    public int getDepth();
 
 
-   public void preFetchContents(final DrawContext dc);
-
-
 }

@@ -26,11 +26,11 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="libs/jogl/jogl.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/worldwind.jar" sourcepath="/home/oliver/Desktop/IGO-Repository/ww"/>
+	<classpathentry exported="true" kind="lib" path="libs/worldwind.jar" sourcepath="/home/dgd/Escritorio/worldwind-0.6.651.14101"/>
 	<classpathentry kind="lib" path="libs/netcdf/netcdf-4.2.jar"/>
 	<classpathentry kind="lib" path="libs/netcdf/slf4j-api-1.5.6.jar"/>
 	<classpathentry kind="lib" path="libs/netcdf/slf4j-jdk14-1.5.6.jar"/>
-	<classpathentry kind="lib" path="libs/gt/gt-api-2.7-M3.jar"/>
+	<classpathentry kind="lib" path="libs/gt/gt-api-2.7-M3.jar" sourcepath="/home/dgd/Escritorio/geotools/geotools-2.7-M3-SOURCES"/>
 	<classpathentry kind="lib" path="libs/gt/gt-epsg-hsql-2.7-M3.jar"/>
 	<classpathentry kind="lib" path="libs/gt/gt-main-2.7-M3.jar" sourcepath="/home/dgd/Escritorio/geotools/geotools-2.7-M3-project.zip"/>
 	<classpathentry kind="lib" path="libs/gt/gt-metadata-2.7-M3.jar"/>

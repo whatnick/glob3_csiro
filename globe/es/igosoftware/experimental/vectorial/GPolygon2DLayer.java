@@ -2,11 +2,12 @@
 
 package es.igosoftware.experimental.vectorial;
 
+import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GPolygon2DRenderer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GRenderingAttributes;
+import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
-import es.igosoftware.euclid.shape.IPolygon2D;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.globe.IGlobeApplication;
@@ -17,6 +18,7 @@ import es.igosoftware.globe.attributes.GColorLayerAttribute;
 import es.igosoftware.globe.attributes.GFloatLayerAttribute;
 import es.igosoftware.globe.attributes.GGroupAttribute;
 import es.igosoftware.globe.attributes.ILayerAttribute;
+import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GPair;
 import es.igosoftware.util.GUtils;
@@ -64,7 +66,7 @@ public class GPolygon2DLayer
 
    private static final int    TIMEOUT_FOR_CACHED_RESULTS     = 200;
 
-   private static final String RENDERING_CACHE_DIRECTORY_NAME = "rendering-cache";
+   private static final String RENDERING_CACHE_DIRECTORY_NAME = ".rendering-cache";
    private static final File   RENDERING_CACHE_DIRECTORY      = new File(RENDERING_CACHE_DIRECTORY_NAME);
 
 
@@ -152,7 +154,12 @@ public class GPolygon2DLayer
 
 
       private String uniqueName() {
-         return _layer.uniqueName() + _id + _renderingAttributes.uniqueName();
+         final String featuresUniqueID = _layer._features.getUniqueID();
+         if (featuresUniqueID == null) {
+            // it means no disk cache
+            return null;
+         }
+         return featuresUniqueID + _id + _renderingAttributes.uniqueName();
       }
    }
 
@@ -164,9 +171,7 @@ public class GPolygon2DLayer
 
    private static class RendererFutureTask
             extends
-               FutureTask<BufferedImage>
-            implements
-               Comparable<RendererFutureTask> {
+               FutureTask<BufferedImage> {
 
       private final double          _priority;
       //      private final Sector    _tileSector;
@@ -179,7 +184,13 @@ public class GPolygon2DLayer
          super(new Callable<BufferedImage>() {
 
             private BufferedImage getImageFromDiskCache() {
-               final File file = new File(RENDERING_CACHE_DIRECTORY, key.uniqueName() + ".png");
+               final String uniqueName = key.uniqueName();
+               if (uniqueName == null) {
+                  // no uniqueName -> no cache
+                  return null;
+               }
+
+               final File file = new File(RENDERING_CACHE_DIRECTORY, uniqueName + ".png");
 
                if (!file.exists()) {
                   return null;
@@ -188,8 +199,7 @@ public class GPolygon2DLayer
                try {
                   return ImageIO.read(file);
                }
-               catch (final IOException e) {
-               }
+               catch (final IOException e) {}
 
                return null;
             }
@@ -234,12 +244,6 @@ public class GPolygon2DLayer
          //         _tileSector = key._tileSector;
          _tileBounds = key._tileBounds;
          _layer = key._layer;
-      }
-
-
-      @Override
-      public int compareTo(final RendererFutureTask that) {
-         return Double.compare(that._priority, _priority);
       }
 
    }
@@ -336,26 +340,25 @@ public class GPolygon2DLayer
    }
 
 
-   private String uniqueName() {
-      return _uniqueName;
-   }
-
-
    private static void saveImageIntoDiskCache(final RenderingKey key,
                                               final BufferedImage image) {
       try {
          if (image != null) {
-            final String fileName = key.uniqueName() + ".png";
-            //            final File tempFile = new File(RENDERING_CACHE_DIRECTORY, fileName + ".PART");
-            //            final File tempFile = new File(RENDERING_CACHE_DIRECTORY, fileName + ".PART");
+            final String uniqueName = key.uniqueName();
+            // no uniqueName -> no cache
+            if (uniqueName != null) {
+               final String fileName = uniqueName + ".png";
 
-            final File tempFile = File.createTempFile("temp", "png", RENDERING_CACHE_DIRECTORY);
+               final File tempFile = File.createTempFile("temp", "png", RENDERING_CACHE_DIRECTORY);
 
-            ImageIO.write(image, "png", tempFile);
-            //            final ByteBuffer buffer = DDSCompressor.compressImage(image);
-            //            WWIO.saveBuffer(buffer, tempFile);
+               ImageIO.write(image, "png", tempFile);
+               //            final ByteBuffer buffer = DDSCompressor.compressImage(image);
+               //            WWIO.saveBuffer(buffer, tempFile);
 
-            tempFile.renameTo(new File(RENDERING_CACHE_DIRECTORY, fileName));
+               if (!tempFile.renameTo(new File(RENDERING_CACHE_DIRECTORY, fileName))) {
+                  throw new RuntimeException("Can't rename " + tempFile + " to " + fileName);
+               }
+            }
          }
       }
       catch (final IOException e) {
@@ -372,7 +375,9 @@ public class GPolygon2DLayer
       //         e.printStackTrace();
       //      }
       if (!RENDERING_CACHE_DIRECTORY.exists()) {
-         RENDERING_CACHE_DIRECTORY.mkdirs();
+         if (!RENDERING_CACHE_DIRECTORY.mkdirs()) {
+            throw new RuntimeException("Can't create cache directory: " + RENDERING_CACHE_DIRECTORY_NAME);
+         }
       }
 
 
@@ -547,10 +552,8 @@ public class GPolygon2DLayer
                   setImageToSurfaceImage(renderedImageFuture.get());
                   _ancestorContribution = null;
                }
-               catch (final InterruptedException e) {
-               }
-               catch (final ExecutionException e) {
-               }
+               catch (final InterruptedException e) {}
+               catch (final ExecutionException e) {}
             }
          }
 
@@ -616,8 +619,7 @@ public class GPolygon2DLayer
             final BufferedImage subimage = ancestorImage.getSubimage(x, y, width, height);
             return markImageAsWorkInProgress(subimage);
          }
-         catch (final RasterFormatException e) {
-         }
+         catch (final RasterFormatException e) {}
 
 
          return null;
@@ -672,10 +674,8 @@ public class GPolygon2DLayer
                try {
                   return new GPair<Tile, BufferedImage>(ancestor, futureImage.get());
                }
-               catch (final InterruptedException e) {
-               }
-               catch (final ExecutionException e) {
-               }
+               catch (final InterruptedException e) {}
+               catch (final ExecutionException e) {}
             }
 
             ancestor = ancestor._parent;
@@ -704,14 +704,14 @@ public class GPolygon2DLayer
    }
 
 
-   private static final GGlobeStateKeyCache<GAxisAlignedRectangle, Box> BOX_CACHE;
+   private static final GGlobeStateKeyCache<GAxisAlignedOrthotope<IVector2<?>, ?>, Box> BOX_CACHE;
 
    static {
-      BOX_CACHE = new GGlobeStateKeyCache<GAxisAlignedRectangle, Box>(
-               new GGlobeStateKeyCache.Factory<GAxisAlignedRectangle, Box>() {
+      BOX_CACHE = new GGlobeStateKeyCache<GAxisAlignedOrthotope<IVector2<?>, ?>, Box>(
+               new GGlobeStateKeyCache.Factory<GAxisAlignedOrthotope<IVector2<?>, ?>, Box>() {
                   @Override
                   public Box create(final DrawContext dc,
-                                    final GAxisAlignedRectangle bounds) {
+                                    final GAxisAlignedOrthotope<IVector2<?>, ?> bounds) {
                      final Globe globe = dc.getView().getGlobe();
                      final double verticalExaggeration = dc.getVerticalExaggeration();
 
@@ -725,52 +725,44 @@ public class GPolygon2DLayer
 
    //   private final GProjection                             _projection;
 
-   private final Sector                                                 _polygonsSector;
+   private final Sector                                                                 _polygonsSector;
    //   private final LatLon[]                                _sectorCorners;
 
 
-   private final GPolygon2DRenderer                                     _renderer;
-   private GRenderingAttributes                                         _attributes;
+   private final GPolygon2DRenderer                                                     _renderer;
+   private final String                                                                 _name;
+   private final GAxisAlignedOrthotope<IVector2<?>, ?>                                  _polygonsBounds;
+   private final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?>         _features;
 
-   //   private Globe                                         _lastGlobe;
-   private List<Tile>                                                   _topTiles;
-   private final List<Tile>                                             _currentTiles               = new ArrayList<Tile>();
+   private GRenderingAttributes                                                         _attributes;
 
-   //   private boolean                                                      _showExtents                = false;
-
-   private int                                                          _fillColorAlpha             = 127;
-   private int                                                          _borderColorAlpha           = 255;
-
-   private View                                                         _lastView;
+   private List<Tile>                                                                   _topTiles;
+   private final List<Tile>                                                             _currentTiles               = new ArrayList<Tile>();
 
 
-   //   private Sector                                        _lastVisibleSector;
+   private int                                                                          _fillColorAlpha             = 127;
+   private int                                                                          _borderColorAlpha           = 255;
+
+   private View                                                                         _lastView;
 
 
-   private final String                                                 _resourceName;
-   //   private final long                                    _lastComputedProjectedPixelsTime = -1;
-   //   private float                                         _lastComputedProjectedPixels;
-   private long                                                         _lastCurrentTilesCalculated = -1;
+   private long                                                                         _lastCurrentTilesCalculated = -1;
 
-   private boolean                                                      _debugRendering             = false;
-
-   private final String                                                 _uniqueName;
-
-   private final GAxisAlignedRectangle                                  _polygonsBounds;
+   private boolean                                                                      _debugRendering             = false;
 
 
-   public GPolygon2DLayer(final String resourceName,
-                          final String uniqueName,
-                          final List<IPolygon2D<?>> polygons) {
-      _resourceName = resourceName;
-      _uniqueName = uniqueName;
+   public GPolygon2DLayer(final String name,
+                          final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features) {
+      GAssert.notNull(name, "name");
+      GAssert.notNull(features, "features");
 
-      _polygonsBounds = GAxisAlignedRectangle.minimumBoundingRectangle(polygons);
+      _name = name;
+      _polygonsBounds = features.getBounds();
 
       _polygonsSector = GWWUtils.toSector(_polygonsBounds, GProjection.EPSG_4326);
-      //      _sectorCorners = _sector.getCorners();
 
-      _renderer = new GPolygon2DRenderer(polygons);
+      _features = features;
+      _renderer = new GPolygon2DRenderer(features);
 
       _attributes = createRenderingAttributes();
    }
@@ -778,8 +770,7 @@ public class GPolygon2DLayer
 
    @Override
    public String getName() {
-      //      return "Vectorial: " + _resourceName;
-      return _resourceName;
+      return _name;
    }
 
 
@@ -799,7 +790,7 @@ public class GPolygon2DLayer
    }
 
 
-   private static List<GAxisAlignedRectangle> createTopLevelSectors(final GAxisAlignedRectangle polygonsSector) {
+   private static List<GAxisAlignedRectangle> createTopLevelSectors(final GAxisAlignedOrthotope<IVector2<?>, ?> polygonsSector) {
 
       //      final int latitudeSubdivisions = 2;
       //      final int longitudeSubdivisions = 4;
@@ -860,12 +851,6 @@ public class GPolygon2DLayer
    @Override
    public GProjection getProjection() {
       return GProjection.EPSG_4326;
-   }
-
-
-   @Override
-   public void setProjection(final GProjection proj) {
-      throw new RuntimeException("Operation not supported!");
    }
 
 

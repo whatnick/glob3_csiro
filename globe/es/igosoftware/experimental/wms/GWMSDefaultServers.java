@@ -97,7 +97,7 @@ public enum GWMSDefaultServers {
     */
    public static GWMSServerData getServer(final String name) {
       for (final GWMSDefaultServers server : GWMSDefaultServers.values()) {
-         if (server._serverData.getName() == name) {
+         if (server._serverData.getName().equals(name)) {
             return server._serverData;
          }
       }
@@ -146,7 +146,7 @@ public enum GWMSDefaultServers {
       final GWMSDefaultServers[] serverList = GWMSDefaultServers.values();
       final ArrayList<GWMSServerData> serverDatalist = new ArrayList<GWMSServerData>();
       for (final GWMSDefaultServers server : serverList) {
-         if (server.getUser() == "") {
+         if (server.getUser().equals("")) {
             serverDatalist.add(server.getServer());
          }
       }
@@ -194,7 +194,7 @@ public enum GWMSDefaultServers {
     */
    public static String getURL(final String name) {
       for (final GWMSDefaultServers server : GWMSDefaultServers.values()) {
-         if (server._serverData.getName() == name) {
+         if (server._serverData.getName().equals(name)) {
             return server._serverData.getURL();
          }
       }
@@ -208,7 +208,7 @@ public enum GWMSDefaultServers {
     */
    public static String getName(final String uRL) {
       for (final GWMSDefaultServers server : GWMSDefaultServers.values()) {
-         if (server._serverData.getURL() == uRL) {
+         if (server._serverData.getURL().equals(uRL)) {
             return server._serverData.getName();
          }
       }

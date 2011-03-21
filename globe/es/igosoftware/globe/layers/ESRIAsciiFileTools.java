@@ -64,7 +64,7 @@ public class ESRIAsciiFileTools {
       double dResolution;
       double dNoData;
       double dX, dY;
-      String sToken = new String();
+      String sToken = "";
       final BufferedReader fin = new BufferedReader(new FileReader(file));
 
       s = fin.readLine();
@@ -114,7 +114,7 @@ public class ESRIAsciiFileTools {
       }
       fin.close();
 
-      final RasterGeodata extent = new RasterGeodata(dX, dY, dResolution, iRows, iCols, proj);
+      final GRasterGeodata extent = new GRasterGeodata(dX, dY, dResolution, iRows, iCols, proj);
       final GGlobeRasterLayer layer = new GGlobeRasterLayer(raster, extent);
       layer.setName(file.getName());
       layer.setNoDataValue(dNoData);
@@ -131,7 +131,7 @@ public class ESRIAsciiFileTools {
          final WritableRaster raster = layer.getRaster();
          final FileWriter writer = new FileWriter(file);
          final BufferedWriter out = new BufferedWriter(writer);
-         final RasterGeodata geodata = layer.getRasterGeodata();
+         final GRasterGeodata geodata = layer.getRasterGeodata();
          out.write("NCOLS " + Integer.toString(geodata._cols) + "\n");
          out.write("NROWS " + Integer.toString(geodata._rows) + "\n");
          out.write("XLLCORNER " + Double.toString(geodata._xllcorner) + "\n");

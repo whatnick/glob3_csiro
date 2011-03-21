@@ -54,7 +54,7 @@ import es.igosoftware.util.ITransformer;
 
 public class GMesh<
 
-VertexT extends IVector<VertexT, ?>,
+VertexT extends IVector<VertexT, ?, ?>,
 
 FaceT extends IPolygon<VertexT, EdgeT, ?, ?>,
 

@@ -29,6 +29,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -116,7 +117,7 @@ public class GWMSDialog
 
    public int showWMSDialog() {
 
-      this.setVisible(true);
+      setVisible(true);
 
       return _returnValue;
    }
@@ -251,8 +252,8 @@ public class GWMSDialog
       final JPanel p3 = new JPanel();
       p3.setLayout(new BorderLayout());
 
-      _infoArea = new JLabel("WMS Information area", JLabel.LEADING);
-      _infoArea.setHorizontalTextPosition(JLabel.LEFT);
+      _infoArea = new JLabel("WMS Information area", SwingConstants.LEADING);
+      _infoArea.setHorizontalTextPosition(SwingConstants.LEFT);
       p3.add(_infoArea, BorderLayout.WEST);
 
 
@@ -261,17 +262,17 @@ public class GWMSDialog
       p.add(p2);
       p.add(p3);
 
-      this.addWindowListener(new WindowAdapter() {
+      addWindowListener(new WindowAdapter() {
          @Override
          public void windowClosing(final WindowEvent e) {
             GWMSServersManager.saveWMSServers(_serverMap);
          }
       });
 
-      this.setIconImage(GUtils.getImage("icons/earth.png"));
+      setIconImage(GUtils.getImage("icons/earth.png"));
       this.setSize(800, 500);
-      this.setMaximumSize(new Dimension(900, 500));
-      this.setLocationRelativeTo(_application.getFrame());
+      setMaximumSize(new Dimension(900, 500));
+      setLocationRelativeTo(_application.getFrame());
       //this.setVisible(true);
    }
 
@@ -331,7 +332,7 @@ public class GWMSDialog
 
 
    private void executeDeleteServerCommand() {
-      final int option = JOptionPane.showConfirmDialog(this.getContentPane(), "Are you sure you want to delete this server?",
+      final int option = JOptionPane.showConfirmDialog(getContentPane(), "Are you sure you want to delete this server?",
                "Delete server", JOptionPane.YES_NO_OPTION);
       //System.out.println("OPTION: " + option);
       if (option == 0) {

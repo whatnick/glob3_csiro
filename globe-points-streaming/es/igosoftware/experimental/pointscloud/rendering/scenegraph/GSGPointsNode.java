@@ -42,6 +42,7 @@ import es.igosoftware.euclid.pointscloud.octree.GPCLeafNode;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.experimental.pointscloud.rendering.GPointsCloudLayer;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.utils.GPositionBox;
 import es.igosoftware.utils.GWWUtils;
@@ -131,8 +132,8 @@ public final class GSGPointsNode
    }
 
 
-   String getPointsFileName() {
-      return _layer.getPointsCloudName() + "/tile-" + _id + ".points";
+   GFileName getPointsFileName() {
+      return GFileName.fromParentAndParts(_layer.getPointsCloudName(), "tile-" + _id + ".points");
    }
 
 

@@ -49,7 +49,7 @@ import es.igosoftware.util.GHolder;
 import es.igosoftware.util.GProgress;
 
 
-public class GKDInnerNode<VectorT extends IVector<VectorT, ?>, VertexT extends IVertexContainer.Vertex<VectorT>>
+public class GKDInnerNode<VectorT extends IVector<VectorT, ?, ?>, VertexT extends IVertexContainer.Vertex<VectorT>>
          extends
             GKDNode<VectorT, VertexT> {
 

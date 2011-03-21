@@ -110,7 +110,6 @@ public class GAnaglyphViewerModule
          }
       };
 
-      //      return new IGenericAction[] { action };
       return Collections.singletonList(action);
    }
 
@@ -161,7 +160,6 @@ public class GAnaglyphViewerModule
          }
       }
 
-
       application.redraw();
    }
 
@@ -170,7 +168,6 @@ public class GAnaglyphViewerModule
    public void initializeTranslations(final IGlobeApplication application) {
       application.addTranslation("es", DEFAULT_LABEL, "Ver Anaglifo");
       application.addTranslation("de", DEFAULT_LABEL, "3D-Anaglyph-Sicht");
-
    }
 
 

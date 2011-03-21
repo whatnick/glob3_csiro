@@ -75,8 +75,8 @@ public class GBasicOrbitView
          throw new IllegalArgumentException(message);
       }
 
-      this.center = normalizedCenterPosition(center1);
-      this.center = BasicOrbitViewLimits.limitCenterPosition(this.center, this.getOrbitViewLimits());
+      center = normalizedCenterPosition(center1);
+      center = BasicOrbitViewLimits.limitCenterPosition(center, getOrbitViewLimits());
 
    }
 

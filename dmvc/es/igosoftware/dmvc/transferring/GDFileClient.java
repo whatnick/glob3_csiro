@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import es.igosoftware.dmvc.model.IDAsynchronousExecutionListener;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GLogger;
@@ -28,11 +29,11 @@ public class GDFileClient
             implements
                IDAsynchronousExecutionListener<GDFileResponse, RuntimeException> {
 
-      private final String           _fileName;
+      private final GFileName        _fileName;
       private final GProcessor<File> _processor;
 
 
-      private ResponseHandler(final String fileName,
+      private ResponseHandler(final GFileName fileName,
                               final GProcessor<File> processor) {
          _fileName = fileName;
          _processor = processor;
@@ -48,7 +49,7 @@ public class GDFileClient
             try {
                saveResponse(response);
 
-               fileToProcess = new File(_cacheDirectory, _fileName);
+               fileToProcess = new File(_cacheDirectory, _fileName.buildPath());
             }
             catch (final IOException e) {
                LOGGER.severe(e);
@@ -69,7 +70,7 @@ public class GDFileClient
 
 
       private void saveResponse(final GDFileResponse response) throws IOException {
-         final File file = new File(_cacheDirectory, _fileName);
+         final File file = new File(_cacheDirectory, _fileName.buildPath());
          final File parentFile = file.getParentFile();
          if (!parentFile.exists()) {
             if (!parentFile.mkdirs()) {
@@ -96,14 +97,14 @@ public class GDFileClient
    }
 
 
-   private static final GLogger                      LOGGER                     = GLogger.instance();
+   private static final GLogger                         LOGGER                     = GLogger.instance();
 
 
-   private final IDFileServer                        _fileServer;
-   private final File                                _cacheDirectory;
+   private final IDFileServer                           _fileServer;
+   private final File                                   _cacheDirectory;
 
-   private final Set<String>                         _downloading               = new HashSet<String>();
-   private final Map<String, List<GProcessor<File>>> _extraDownloadedProcessors = new HashMap<String, List<GProcessor<File>>>();
+   private final Set<GFileName>                         _downloading               = new HashSet<GFileName>();
+   private final Map<GFileName, List<GProcessor<File>>> _extraDownloadedProcessors = new HashMap<GFileName, List<GProcessor<File>>>();
 
 
    public GDFileClient(final IDFileServer fileServer,
@@ -130,7 +131,7 @@ public class GDFileClient
 
 
    @Override
-   public File getFile(final String fileName) {
+   public File getFile(final GFileName fileName) {
 
       synchronized (_downloading) {
          final boolean isDownloading = _downloading.contains(fileName);
@@ -139,7 +140,7 @@ public class GDFileClient
             return null;
          }
 
-         final File file = new File(_cacheDirectory, fileName);
+         final File file = new File(_cacheDirectory, fileName.buildPath());
          if (file.exists()) {
             return file;
          }
@@ -155,7 +156,7 @@ public class GDFileClient
 
 
    @Override
-   public void getFile(final String fileName,
+   public void getFile(final GFileName fileName,
                        final GProcessor<File> processor) {
 
       synchronized (_downloading) {
@@ -168,7 +169,7 @@ public class GDFileClient
             return;
          }
 
-         final File file = new File(_cacheDirectory, fileName);
+         final File file = new File(_cacheDirectory, fileName.buildPath());
          if (file.exists()) {
             if (processor != null) {
                processor.process(file);
@@ -185,7 +186,7 @@ public class GDFileClient
    }
 
 
-   private void addExtraDownloadedProcessor(final String fileName,
+   private void addExtraDownloadedProcessor(final GFileName fileName,
                                             final GProcessor<File> processor) {
       synchronized (_extraDownloadedProcessors) {
          List<GProcessor<File>> currentProcessors = _extraDownloadedProcessors.get(fileName);
@@ -200,7 +201,7 @@ public class GDFileClient
    }
 
 
-   private void processDownloadedFile(final String fileName,
+   private void processDownloadedFile(final GFileName fileName,
                                       final File fileOrNull,
                                       final GProcessor<File> firstProcessor) {
 

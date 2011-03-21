@@ -49,7 +49,7 @@ import es.igosoftware.util.IPredicate;
 
 public interface IStructuredVertexContainer<
 
-VectorT extends IVector<VectorT, ?>,
+VectorT extends IVector<VectorT, ?, ?>,
 
 VertexT extends IStructuredVertexContainer.StructuredVertex<VectorT, GroupT>,
 
@@ -67,7 +67,7 @@ MutableT extends IStructuredVertexContainer<VectorT, VertexT, GroupT, MutableT>
    //////////////////////////////////////////////////////////////////////////
    public static interface IVertexGroup<
 
-   VectorT extends IVector<VectorT, ?>,
+   VectorT extends IVector<VectorT, ?, ?>,
 
    VertexT extends IVertexContainer.Vertex<VectorT>,
 
@@ -111,7 +111,7 @@ MutableT extends IStructuredVertexContainer<VectorT, VertexT, GroupT, MutableT>
    //////////////////////////////////////////////////////////////////////////
    public static class StructuredVertex<
 
-   VectorT extends IVector<VectorT, ?>,
+   VectorT extends IVector<VectorT, ?, ?>,
 
    GroupT extends IStructuredVertexContainer.IVertexGroup<VectorT, IVertexContainer.Vertex<VectorT>, GroupT>
    //GroupT extends IStructuredVertexContainer.IVertexGroup<VectorT, ?, GroupT>

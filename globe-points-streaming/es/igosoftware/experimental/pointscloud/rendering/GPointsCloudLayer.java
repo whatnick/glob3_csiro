@@ -36,19 +36,18 @@
 
 package es.igosoftware.experimental.pointscloud.rendering;
 
+import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.pointscloud.octree.GPCPointsCloud;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.experimental.pointscloud.rendering.scenegraph.GSGGroupNode;
 import es.igosoftware.experimental.pointscloud.rendering.scenegraph.GSGPointsNode;
-import es.igosoftware.globe.GField;
 import es.igosoftware.globe.GGlobeApplication;
-import es.igosoftware.globe.GVectorLayerType;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
-import es.igosoftware.globe.layers.Feature;
-import es.igosoftware.globe.layers.GVectorRenderer;
+import es.igosoftware.globe.layers.GVector2RenderingTheme;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.io.ILoader;
 import es.igosoftware.io.pointscloud.IPointsCloudLoader;
 import es.igosoftware.util.GAssert;
@@ -90,7 +89,7 @@ public final class GPointsCloudLayer
    public static final float           STEP_POINT_SIZE    = 1;
 
 
-   private final String                _pointsCloudName;
+   private final GFileName             _pointsCloudName;
    private final IPointsCloudLoader    _loader;
 
    private final GHolder<GSGGroupNode> _rootNode          = new GHolder<GSGGroupNode>(null);
@@ -125,7 +124,7 @@ public final class GPointsCloudLayer
    private Color                       _pointsColor       = null;
 
 
-   public GPointsCloudLayer(final String pointsCloudName,
+   public GPointsCloudLayer(final GFileName pointsCloudName,
                             final IPointsCloudLoader loader) {
       GAssert.notNull(pointsCloudName, "pointsCloudName");
       GAssert.notNull(loader, "loader");
@@ -140,67 +139,68 @@ public final class GPointsCloudLayer
    private void loadPointsCloud() {
       final long started = System.currentTimeMillis();
 
-      _loader.load(_pointsCloudName + "/tree.object.gz", -1, Integer.MIN_VALUE, new ILoader.IHandler() {
+      _loader.load(GFileName.fromParentAndParts(_pointsCloudName, "tree.object.gz"), -1, false, Integer.MIN_VALUE,
+               new ILoader.IHandler() {
 
-         @Override
-         public void loadError(final ILoader.ErrorType error,
-                               final Throwable e) {
-            System.err.println("Error=" + error + ", exception=" + e + " while loading " + _pointsCloudName + "/tree.object.gz");
-         }
-
-
-         @Override
-         public void loaded(final File file,
-                            final long bytesLoaded,
-                            final boolean completeLoaded) {
-            if (!completeLoaded) {
-               return;
-            }
-
-            try {
-               //               if (_verbose) {
-               final long now = System.currentTimeMillis();
-               final long elapsed = now - started;
-               System.out.println(getName() + ": Loaded points cloud structure data in " + elapsed + "ms");
-               //               }
-
-               final ObjectInputStream input = new ObjectInputStream(new GZIPInputStream(new FileInputStream(file), 2048));
-
-               final GPCPointsCloud pointsCloud = (GPCPointsCloud) input.readObject();
-               _hasIntensities = pointsCloud.hasIntensities();
-               _hasNormals = pointsCloud.hasNormals();
-               _hasColors = pointsCloud.hasColors();
-               _minIntensity = pointsCloud.getMinIntensity();
-               _maxIntensity = pointsCloud.getMaxIntensity();
-               _minElevation = pointsCloud.getMinElevation();
-               _maxElevation = pointsCloud.getMaxElevation();
-
-               _projection = pointsCloud.getProjection();
-               _rootNode.set(new GSGGroupNode(pointsCloud.getRoot(), _projection, GPointsCloudLayer.this));
-               _pointsCount.set(pointsCloud.getVerticesCount());
-
-               if (_colorFromElevation) {
-                  _rootNode.get().setColorFromElevation(true);
-               }
-
-               //               System.out.println(root);
-            }
-            catch (final IOException e) {
-               e.printStackTrace(System.err);
-            }
-            catch (final ClassNotFoundException e) {
-               e.printStackTrace(System.err);
-            }
-            catch (final Throwable e) {
-               e.printStackTrace(System.err);
-            }
+                  @Override
+                  public void loadError(final IOException e) {
+                     System.err.println("Error=" + e + " while loading " + _pointsCloudName + "/tree.object.gz");
+                  }
 
 
-            doDefaultAction(GGlobeApplication.instance());
-         }
+                  @Override
+                  public void loaded(final File file,
+                                     final long bytesLoaded,
+                                     final boolean completeLoaded) {
+                     if (!completeLoaded) {
+                        return;
+                     }
+
+                     try {
+                        //               if (_verbose) {
+                        final long now = System.currentTimeMillis();
+                        final long elapsed = now - started;
+                        System.out.println(getName() + ": Loaded points cloud structure data in " + elapsed + "ms");
+                        //               }
+
+                        final ObjectInputStream input = new ObjectInputStream(
+                                 new GZIPInputStream(new FileInputStream(file), 2048));
+
+                        final GPCPointsCloud pointsCloud = (GPCPointsCloud) input.readObject();
+                        _hasIntensities = pointsCloud.hasIntensities();
+                        _hasNormals = pointsCloud.hasNormals();
+                        _hasColors = pointsCloud.hasColors();
+                        _minIntensity = pointsCloud.getMinIntensity();
+                        _maxIntensity = pointsCloud.getMaxIntensity();
+                        _minElevation = pointsCloud.getMinElevation();
+                        _maxElevation = pointsCloud.getMaxElevation();
+
+                        _projection = pointsCloud.getProjection();
+                        _rootNode.set(new GSGGroupNode(pointsCloud.getRoot(), _projection, GPointsCloudLayer.this));
+                        _pointsCount.set(pointsCloud.getVerticesCount());
+
+                        if (_colorFromElevation) {
+                           _rootNode.get().setColorFromElevation(true);
+                        }
+
+                        //               System.out.println(root);
+                     }
+                     catch (final IOException e) {
+                        e.printStackTrace(System.err);
+                     }
+                     catch (final ClassNotFoundException e) {
+                        e.printStackTrace(System.err);
+                     }
+                     catch (final Throwable e) {
+                        e.printStackTrace(System.err);
+                     }
 
 
-      });
+                     doDefaultAction(GGlobeApplication.instance());
+                  }
+
+
+               });
    }
 
 
@@ -364,7 +364,7 @@ public final class GPointsCloudLayer
    }
 
 
-   public String getPointsCloudName() {
+   public GFileName getPointsCloudName() {
       return _pointsCloudName;
    }
 
@@ -372,12 +372,6 @@ public final class GPointsCloudLayer
    @Override
    public GProjection getProjection() {
       return _projection;
-   }
-
-
-   @Override
-   public void setProjection(final GProjection proj) {
-      _projection = proj;
    }
 
 
@@ -611,7 +605,7 @@ public final class GPointsCloudLayer
 
    @Override
    public String getName() {
-      return _pointsCloudName;
+      return _pointsCloudName.buildPath('/');
    }
 
 
@@ -633,20 +627,8 @@ public final class GPointsCloudLayer
 
 
    @Override
-   public GField[] getFields() {
-      return new GField[0];
-   }
-
-
-   @Override
-   public Feature[] getFeatures() {
-      return new Feature[0];
-   }
-
-
-   @Override
-   public GVectorLayerType getShapeType() {
-      return GVectorLayerType.POINT;
+   public IGlobeFeatureCollection getFeaturesCollection() {
+      return null;
    }
 
 
@@ -658,7 +640,7 @@ public final class GPointsCloudLayer
 
 
    @Override
-   public GVectorRenderer getRenderer() {
+   public GVector2RenderingTheme getRenderingTheme() {
       return null;
    }
 

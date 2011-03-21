@@ -55,6 +55,7 @@ import es.igosoftware.globe.attributes.GBooleanLayerAttribute;
 import es.igosoftware.globe.attributes.GColorLayerAttribute;
 import es.igosoftware.globe.attributes.GFloatLayerAttribute;
 import es.igosoftware.globe.attributes.ILayerAttribute;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.io.pointscloud.IPointsCloudLoader;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GPair;
@@ -429,7 +430,7 @@ public class GPointsCloudModule
    @Override
    public final IGlobeLayer addNewLayer(final IGlobeApplication application,
                                         final ILayerInfo layerInfo) {
-      final GPointsCloudLayer layer = new GPointsCloudLayer(layerInfo.getName(), _pointsCloudLoader);
+      final GPointsCloudLayer layer = new GPointsCloudLayer(GFileName.relativeFromParts(layerInfo.getName()), _pointsCloudLoader);
       //      _layer.setShowExtents(true);
       layer.setVerbose(true);
       //      _layer.setColorFromState(false);
