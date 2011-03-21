@@ -8,6 +8,7 @@ import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.globe.IGlobeRasterLayer;
 import es.igosoftware.globe.IGlobeVectorLayer;
+import es.igosoftware.util.GAssert;
 import es.unex.s3xtante.tables.Tables;
 import es.unex.sextante.core.AbstractInputFactory;
 import es.unex.sextante.core.NamedExtent;
@@ -29,13 +30,13 @@ public class WWInputFactory
          extends
             AbstractInputFactory {
 
-   Model m_Model = null;
+   private final Model _model;
 
 
    public WWInputFactory(final Model model) {
+      GAssert.notNull(model, "model");
 
-      m_Model = model;
-
+      _model = model;
    }
 
 
@@ -44,14 +45,14 @@ public class WWInputFactory
 
       IDataObject obj;
       final ArrayList<IDataObject> layers = new ArrayList<IDataObject>();
-      final LayerList layerList = m_Model.getLayers();
+      final LayerList layerList = _model.getLayers();
 
       for (int i = 0; i < layerList.size(); i++) {
          final Layer layer = layerList.get(i);
          if (layer instanceof IGlobeVectorLayer) {
             @SuppressWarnings("unchecked")
             final IGlobeVectorLayer<IVector2<?>, GAxisAlignedRectangle> globeVector2Layer = (IGlobeVectorLayer<IVector2<?>, GAxisAlignedRectangle>) layer;
-            obj = new WWVectorLayer(globeVector2Layer);
+            obj = new WWVectorLayer(globeVector2Layer.getName(), globeVector2Layer.getFeaturesCollection());
             layers.add(obj);
          }
          else if (layer instanceof IGlobeRasterLayer) {
@@ -78,57 +79,51 @@ public class WWInputFactory
 
    @Override
    public NamedExtent[] getPredefinedExtents() {
-
       return new NamedExtent[0];
-
    }
 
 
    @Override
    public String[] getRasterLayerInputExtensions() {
-
       return new String[] { "tif", "asc" };
-
    }
 
 
    @Override
    public String[] getTableInputExtensions() {
-
       return new String[] { "csv" };
-
    }
 
 
    @Override
    public String[] getVectorLayerInputExtensions() {
-
       return new String[] { "shp" };
-
    }
 
 
    @Override
    public void close(final String sName) {
-
-      // ///TODO
-
+      // TODO
    }
 
 
    @Override
    public IDataObject openDataObjectFromFile(final String sFilename) {
-
       return null;
-      //return (IDataObject) FileTools.openFile(sFilename);
-
+      // return (IDataObject) FileTools.openFile(sFilename);
    }
 
 
    @Override
    public I3DRasterLayer[] get3DRasterLayers() {
+      return new I3DRasterLayer[0];
+   }
+
+
+   @Override
+   public String[] get3DRasterLayerInputExtensions() {
       // TODO Auto-generated method stub
-      return null;
+      return new String[] { "asc3D" };
    }
 
 }

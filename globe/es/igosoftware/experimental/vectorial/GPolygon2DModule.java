@@ -12,8 +12,10 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
-import es.igosoftware.euclid.shape.IPolygon2D;
+import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.globe.GAbstractGlobeModule;
 import es.igosoftware.globe.GLayerInfo;
 import es.igosoftware.globe.IGlobeApplication;
@@ -130,10 +132,10 @@ public class GPolygon2DModule
                //final GProjection projection = GPrjLoader.readProjection(application, file);
 
                try {
-                  final GPair<String, List<IPolygon2D<?>>> polygons = GShapeLoader.readPolygons(file.getAbsolutePath(),
+                  final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features = GShapeLoader.readFeatures(file,
                            projection);
 
-                  final GPolygon2DLayer layer = new GPolygon2DLayer(file.getName(), polygons._first, polygons._second);
+                  final GPolygon2DLayer layer = new GPolygon2DLayer(file.getName(), features);
                   //               layer.setShowExtents(true);
                   application.getLayerList().add(layer);
 
@@ -160,6 +162,7 @@ public class GPolygon2DModule
 
 
    private JFileChooser createSqueakProjectSaveFileChooser(final IGlobeApplication application) {
+
       final JFileChooser fileChooser = new JFileChooser(System.getProperty("user.home")) {
          private static final long serialVersionUID = 1L;
 

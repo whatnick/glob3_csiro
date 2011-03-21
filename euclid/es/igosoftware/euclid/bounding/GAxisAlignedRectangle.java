@@ -571,4 +571,6 @@ public final class GAxisAlignedRectangle
    public GAxisAlignedRectangle mergedWith(final GAxisAlignedOrthotope<IVector2<?>, ?> that) {
       return new GAxisAlignedRectangle(_lower.min(that._lower), _upper.max(that._upper));
    }
+
+
 }

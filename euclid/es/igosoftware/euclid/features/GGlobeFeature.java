@@ -34,7 +34,7 @@
 */
 
 
-package es.igosoftware.globe.layers;
+package es.igosoftware.euclid.features;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,17 +50,17 @@ public class GGlobeFeature<
 
 VectorT extends IVector<VectorT, ?, ?>,
 
-BoundsT extends IFiniteBounds<VectorT, BoundsT>
+FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
 
 >
          implements
-            IGlobeFeature<VectorT, BoundsT> {
+            IGlobeFeature<VectorT, FeatureBoundsT> {
 
-   private final IBoundedGeometry<VectorT, ?, BoundsT> _geometry;
-   private final List<Object>                          _attributes;
+   private final IBoundedGeometry<VectorT, ?, FeatureBoundsT> _geometry;
+   private final List<Object>                                 _attributes;
 
 
-   public GGlobeFeature(final IBoundedGeometry<VectorT, ?, BoundsT> geometry,
+   public GGlobeFeature(final IBoundedGeometry<VectorT, ?, FeatureBoundsT> geometry,
                         final List<Object> attributes) {
       GAssert.notNull(geometry, "geometry");
       GAssert.notNull(attributes, "attributes");
@@ -71,7 +71,7 @@ BoundsT extends IFiniteBounds<VectorT, BoundsT>
 
 
    @Override
-   public IBoundedGeometry<VectorT, ?, BoundsT> getGeometry() {
+   public IBoundedGeometry<VectorT, ?, FeatureBoundsT> getDefaultGeometry() {
       return _geometry;
    }
 
@@ -85,6 +85,12 @@ BoundsT extends IFiniteBounds<VectorT, BoundsT>
    @Override
    public Object getAttribute(final int index) {
       return _attributes.get(index);
+   }
+
+
+   @Override
+   public String toString() {
+      return "GGlobeFeature [geometry=" + _geometry + ", attributes=" + _attributes + "]";
    }
 
 }

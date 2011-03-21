@@ -170,7 +170,8 @@ public class GGeonamesPanel
 
       final DefaultListModel jListModel = new DefaultListModel();
       final ToponymSearchCriteria searchCriteria = new ToponymSearchCriteria();
-      searchCriteria.setQ(jTextField.getText());
+      final String searchText = jTextField.getText();
+      searchCriteria.setQ(searchText);
       searchCriteria.setStyle(Style.LONG);
       Sector totalSector = null;
       final MarkerAttributes markerAttributes = new BasicMarkerAttributes(Material.RED, BasicMarkerShape.SPHERE, 1d, 10, 5);
@@ -185,7 +186,7 @@ public class GGeonamesPanel
          MarkerLayer layer = null;
          final ArrayList<Marker> list = new ArrayList<Marker>();
          for (final Toponym toponym : searchResult.getToponyms()) {
-            if (toponym.getName().toLowerCase().indexOf(jTextField.getText().toLowerCase()) != -1) {
+            if (toponym.getName().toLowerCase().indexOf(searchText.toLowerCase()) != -1) {
                jListModel.addElement(new MyToponym(toponym));
                final LatLon latlon = new LatLon(Angle.fromDegrees(toponym.getLatitude()),
                         Angle.fromDegrees(toponym.getLongitude()));
@@ -206,7 +207,7 @@ public class GGeonamesPanel
             }
          }
          if (list.size() != 0) {
-            layer = new GSearchResultLayer(list);
+            layer = new GSearchResultLayer(searchText, list);
             layer.setOverrideMarkerElevation(true);
             layer.setKeepSeparated(false);
             layer.setName(SEARCH_LAYER_NAME);

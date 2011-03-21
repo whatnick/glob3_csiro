@@ -179,6 +179,11 @@ public class GFileName
    }
 
 
+   public String getName() {
+      return _parts[_parts.length - 1];
+   }
+
+
    public static void main(final String[] args) {
       System.out.println("GFileName 0.1");
       System.out.println("-------------\n");

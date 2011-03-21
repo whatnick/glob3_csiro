@@ -525,7 +525,7 @@ public class GVector2F
 
    @Override
    public GAxisAlignedRectangle getBounds() {
-      return new GAxisAlignedRectangle(this, this);
+      return new GAxisAlignedRectangle(this, nextUp());
    }
 
 

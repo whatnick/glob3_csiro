@@ -36,12 +36,10 @@
 
 package es.igosoftware.scenegraph;
 
+import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
-import es.igosoftware.globe.GField;
 import es.igosoftware.globe.GGlobeApplication;
-import es.igosoftware.globe.GVectorLayerType;
 import es.igosoftware.globe.IGlobeApplication;
-import es.igosoftware.globe.IGlobeFeatureCollection;
 import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
@@ -631,19 +629,7 @@ public class GPositionRenderableLayer
 
 
    @Override
-   public GVectorLayerType getShapeType() {
-      return GVectorLayerType.POINT;
-   }
-
-
-   @Override
    public IGlobeFeatureCollection getFeaturesCollection() {
-      return null;
-   }
-
-
-   @Override
-   public GField[] getFields() {
       return null;
    }
 

@@ -16,23 +16,25 @@ VectorT extends IVector<VectorT, ?, ?>,
 
 BoundsT extends GAxisAlignedOrthotope<VectorT, ?>,
 
+ElementT,
+
 GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>
 
 >
          extends
-            GGTNode<VectorT, BoundsT, GeometryT> {
+            GGTNode<VectorT, BoundsT, ElementT, GeometryT> {
 
 
-   GGTLeafNode(final GGTInnerNode<VectorT, BoundsT, GeometryT> parent,
+   GGTLeafNode(final GGTInnerNode<VectorT, BoundsT, ElementT, GeometryT> parent,
                final BoundsT bounds,
-               final Collection<GeometryT> geometries) {
-      super(parent, bounds, geometries);
+               final Collection<ElementT> elements) {
+      super(parent, bounds, elements);
    }
 
 
    @Override
-   public void depthFirstAcceptVisitor(final IGTDepthFirstVisitor<VectorT, BoundsT, GeometryT> visitor)
-                                                                                                       throws IGTBreadFirstVisitor.AbortVisiting {
+   public void depthFirstAcceptVisitor(final IGTDepthFirstVisitor<VectorT, BoundsT, ElementT, GeometryT> visitor)
+                                                                                                                 throws IGTBreadFirstVisitor.AbortVisiting {
       visitor.visitLeafNode(this);
    }
 
@@ -50,14 +52,14 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
 
 
    @Override
-   public final Collection<? extends GeometryT> getAllGeometries() {
-      return getGeometries();
+   public final Collection<ElementT> getAllElements() {
+      return getElements();
    }
 
 
    @Override
-   public final int getAllGeometriesCount() {
-      return getGeometriesCount();
+   public final int getAllElementsCount() {
+      return getElementsCount();
    }
 
 

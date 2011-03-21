@@ -961,7 +961,7 @@ public class GPlanarPanoramicViewer {
       //       final ILoader loader = new GFileLoader("/home/dgd/Desktop/PruebaPanoramicas/PLANAR/PANOS/cantabria1.jpg/");
 
 
-      //      final URL url = new URL("file:///home/dgd/Escritorio/PruebaPanoramicas/PLANAR/PANOS/cantabria1.jpg/");
+      //      final URL url = new URL("file:///home/dgd/Desktop/PruebaPanoramicas/PLANAR/PANOS/cantabria1.jpg/");
 
       //      final URL url = new URL("http://localhost/PANOS/cantabria1.jpg/");
       //      final URL url = new URL("http://localhost/PANOS/LosBarruecos/");

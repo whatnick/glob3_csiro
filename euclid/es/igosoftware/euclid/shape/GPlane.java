@@ -819,4 +819,10 @@ public final class GPlane
       throw new RuntimeException("The plane has not a centroid");
    }
 
+
+   @Override
+   public GRenderType getRenderType() {
+      return GRenderType.DO_NOT_RENDER;
+   }
+
 }

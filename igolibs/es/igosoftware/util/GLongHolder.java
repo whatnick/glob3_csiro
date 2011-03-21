@@ -34,10 +34,89 @@
 */
 
 
-package es.igosoftware.globe;
+package es.igosoftware.util;
 
-public enum GVectorLayerType {
-   POINT,
-   LINE,
-   POLYGON;
+
+public final class GLongHolder {
+   private long _value;
+
+
+   public GLongHolder(final long value) {
+      _value = value;
+   }
+
+
+   public void clear() {
+      set(0);
+   }
+
+
+   @Override
+   public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + (int) (_value ^ (_value >>> 32));
+      return result;
+   }
+
+
+   @Override
+   public boolean equals(final Object obj) {
+      if (this == obj) {
+         return true;
+      }
+      if (obj == null) {
+         return false;
+      }
+      if (getClass() != obj.getClass()) {
+         return false;
+      }
+      final GLongHolder other = (GLongHolder) obj;
+      if (_value != other._value) {
+         return false;
+      }
+      return true;
+   }
+
+
+   public long get() {
+      return _value;
+   }
+
+
+   public long getAndIncrement() {
+      return _value++;
+   }
+
+
+   public void increment() {
+      _value++;
+   }
+
+
+   public void increment(final long delta) {
+      _value += delta;
+   }
+
+
+   public long incrementAndGet() {
+      return ++_value;
+   }
+
+
+   public void set(final long value) {
+      _value = value;
+   }
+
+
+   @Override
+   public String toString() {
+      return "GLongHolder [" + valueToString() + "]";
+   }
+
+
+   public String valueToString() {
+      return Long.toString(_value);
+   }
+
 }
