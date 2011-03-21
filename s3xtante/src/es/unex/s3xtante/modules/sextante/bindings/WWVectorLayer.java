@@ -41,35 +41,36 @@ import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.features.GField;
 import es.igosoftware.euclid.features.GGlobeFeature;
+import es.igosoftware.euclid.features.GListMutableFeatureCollection;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
+import es.igosoftware.euclid.features.IGlobeMutableFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.shape.GLinesStrip2D;
 import es.igosoftware.euclid.shape.GSegment2D;
 import es.igosoftware.euclid.shape.IPolygon;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.experimental.vectorial.GShapefileTools;
-import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.io.GFileName;
+import es.igosoftware.io.GIOUtils;
 import es.igosoftware.utils.GJTSUtils;
 import es.unex.sextante.dataObjects.AbstractVectorLayer;
 import es.unex.sextante.dataObjects.IFeatureIterator;
 import es.unex.sextante.dataObjects.IVectorLayer;
-import es.unex.sextante.dataObjects.vectorFilters.IVectorLayerFilter;
 
 
 public class WWVectorLayer
          extends
             AbstractVectorLayer {
 
-   private GFileName                      _filename;
-   private String                         _name;
-   private GProjection                    _projection;
+   private GFileName                                                      _filename;
+   private String                                                         _name;
+   private GProjection                                                    _projection;
+   private List<GField>                                                   _fields;
+   private IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> _features;
 
-   private List<GField>                   _fields;
 
-   private WWFeatureIterator              _iterator;
-   private final List<IVectorLayerFilter> _filters = new ArrayList<IVectorLayerFilter>();
+   //   private ArrayList<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>> m_FeatureList;
 
 
    public WWVectorLayer(final String name,
@@ -80,7 +81,7 @@ public class WWVectorLayer
 
 
    private void initializeFromFeatures(final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features) {
-      m_BaseDataObject = features;
+      _features = features;
       _projection = features.getProjection();
       _fields = features.getFields();
    }
@@ -97,7 +98,9 @@ public class WWVectorLayer
 
       _projection = projection;
 
-      m_BaseDataObject = new ArrayList<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>>();
+      //Le estoy pasando un null porque no se como hacer esto...
+      _features = new GListMutableFeatureCollection<IVector2<?>, GAxisAlignedRectangle>(projection, fields, null,
+               GIOUtils.getUniqueID(filename.asFile()));
    }
 
 
@@ -115,15 +118,11 @@ public class WWVectorLayer
    @SuppressWarnings("unchecked")
    public void addFeature(final Geometry jtsGeometry,
                           final Object[] values) {
-
-      if (m_BaseDataObject instanceof List) {
-         final List<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>> list = (List<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>>) m_BaseDataObject;
+      if (_features instanceof IGlobeMutableFeatureCollection) {
+         final GListMutableFeatureCollection<IVector2<?>, GAxisAlignedRectangle> mutable = (GListMutableFeatureCollection<IVector2<?>, GAxisAlignedRectangle>) _features;
          for (final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> euclidGeometry : GJTSUtils.toEuclid(jtsGeometry)) {
-            list.add(new GGlobeFeature<IVector2<?>, GAxisAlignedRectangle>(euclidGeometry, Arrays.asList(values)));
+            mutable.add(new GGlobeFeature<IVector2<?>, GAxisAlignedRectangle>(euclidGeometry, Arrays.asList(values)));
          }
-      }
-      else {
-         throw new RuntimeException("m_BaseDataObject type not supported " + m_BaseDataObject.getClass());
       }
 
    }
@@ -186,23 +185,20 @@ public class WWVectorLayer
    @SuppressWarnings("unchecked")
    public void saveShapefile() {
 
-      if (m_BaseDataObject instanceof Iterable) {
-         try {
-            saveFeatures((Iterable<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>>) m_BaseDataObject);
-         }
-         catch (final IOException e) {
-            e.printStackTrace();
-         }
+      try {
+         saveFeatures(_features);
       }
-      else {
-         throw new RuntimeException("m_BaseDataObject has an unsupported type (" + m_BaseDataObject.getClass() + ")");
+      catch (final IOException e) {
+         e.printStackTrace();
       }
+
 
    }
 
 
    @SuppressWarnings("unchecked")
    private void saveFeatures(final Iterable<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>> features) throws IOException {
+
       final SimpleFeatureType featureType = buildFeatureType(_name, getShapeType(), _fields, DefaultGeographicCRS.WGS84);
       final DataStore dataStore = createDatastore(_filename, featureType);
       dataStore.createSchema(featureType);
@@ -277,13 +273,7 @@ public class WWVectorLayer
    @Override
    public Rectangle2D getFullExtent() {
 
-      if (m_BaseDataObject instanceof Iterable) {
-         @SuppressWarnings("unchecked")
-         final Iterable<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>> features = (Iterable<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>>) m_BaseDataObject;
-         return getRectangle3DBounds(features);
-      }
-
-      throw new RuntimeException("m_BaseDataObject has an unsupported type (" + m_BaseDataObject.getClass() + ")");
+      return getRectangle3DBounds(_features);
 
    }
 
@@ -332,49 +322,26 @@ public class WWVectorLayer
          return IVectorLayer.SHAPE_TYPE_POLYGON;
       }
 
-      if (m_BaseDataObject instanceof List) {
-         final List<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>> features = (List<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>>) m_BaseDataObject;
-         return getShapeType(features.get(0).getDefaultGeometry());
-      }
-      else if (m_BaseDataObject instanceof IGlobeVectorLayer) {
-         final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features = (IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?>) m_BaseDataObject;
-         return getShapeType(features.get(0).getDefaultGeometry());
-      }
-      else {
-         throw new RuntimeException("m_BaseDataObject has an unsupported type (" + m_BaseDataObject.getClass() + ")");
-      }
+      return getShapeType(_features.get(0).getDefaultGeometry());
 
-   }
-
-
-   @SuppressWarnings("unchecked")
-   @Override
-   protected IFeatureIterator createIterator() {
-      if (_iterator == null) {
-         if (m_BaseDataObject instanceof IGlobeFeatureCollection) {
-            _iterator = new WWFeatureIterator((IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?>) m_BaseDataObject,
-                     _filters);
-         }
-         else {
-            _iterator = new WWFeatureIterator();
-         }
-      }
-
-      return _iterator.getNewInstance();
    }
 
 
    @Override
-   public void addFilter(final IVectorLayerFilter filter) {
-      _filters.add(filter);
-      _iterator = null;
+   public Object getBaseDataObject() {
+
+      return _features;
+
    }
 
 
    @Override
-   public void removeFilters() {
-      _filters.clear();
-      _iterator = null;
+   public IFeatureIterator iterator() {
+
+      return new WWFeatureIterator(this._features, getFilters());
+
+
    }
+
 
 }
