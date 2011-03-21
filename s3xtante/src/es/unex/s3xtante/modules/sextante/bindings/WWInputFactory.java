@@ -116,7 +116,14 @@ public class WWInputFactory
 
    @Override
    public I3DRasterLayer[] get3DRasterLayers() {
-      return null;
+      return new I3DRasterLayer[0];
+   }
+
+
+   @Override
+   public String[] get3DRasterLayerInputExtensions() {
+      // TODO Auto-generated method stub
+      return new String[] { "asc3D" };
    }
 
 }
