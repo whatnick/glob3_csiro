@@ -81,9 +81,9 @@ public class GPlanarPanoramicCompiler {
    }
 
 
-   private static void processImage(final String imageFullName,
-                                    final String outputDirectoryName,
-                                    final int maxLevel) throws IOException {
+   public static void processImage(final String imageFullName,
+                                   final String outputDirectoryName,
+                                   final int maxLevel) throws IOException {
       final long started = System.currentTimeMillis();
       System.out.println("Processing " + imageFullName + "...");
 
