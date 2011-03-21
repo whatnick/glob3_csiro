@@ -40,7 +40,7 @@ import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
 
 
-public interface IKDTreeVisitor<VectorT extends IVector<VectorT, ?>, VertexT extends IVertexContainer.Vertex<VectorT>> {
+public interface IKDTreeVisitor<VectorT extends IVector<VectorT, ?, ?>, VertexT extends IVertexContainer.Vertex<VectorT>> {
    public static class AbortVisiting
             extends
                Exception {

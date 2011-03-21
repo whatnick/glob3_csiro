@@ -162,7 +162,8 @@ public class G3DModelNode
 
    @Override
    public String toString() {
-      return "G3DModelNode [name=" + getName() + ", model=" + _model.getModelData().getName() + getTransformationString() + "]";
+      return "G3DModelNode [name=" + getName() + ", model=" + _model.getModelData().getFileName() + getTransformationString()
+             + "]";
    }
 
 
@@ -280,12 +281,6 @@ public class G3DModelNode
       }
 
       throw new RuntimeException("Unsupported Pickable Bounds type " + _pickableBoundsType);
-   }
-
-
-   @Override
-   public void preFetchContents(final DrawContext dc) {
-      _model.preFetchTextures();
    }
 
 

@@ -77,4 +77,10 @@ public final class GSegment3D
       return plane.getIntersection(this);
    }
 
+
+   @Override
+   public GRenderType getRenderType() {
+      return GRenderType.POLYLINE;
+   }
+
 }

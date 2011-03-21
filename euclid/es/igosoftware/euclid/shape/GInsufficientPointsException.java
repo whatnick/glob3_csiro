@@ -51,7 +51,7 @@ public class GInsufficientPointsException
    private static final long serialVersionUID = 1L;
 
 
-   public GInsufficientPointsException(final IVector<?, ?>... vectors) {
+   public GInsufficientPointsException(final IVector<?, ?, ?>... vectors) {
       super("GInsufficientPointsException, vectors=" + Arrays.toString(vectors));
    }
 

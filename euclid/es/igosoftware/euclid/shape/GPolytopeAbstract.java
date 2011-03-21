@@ -47,7 +47,7 @@ import es.igosoftware.util.GAssert;
 
 public abstract class GPolytopeAbstract<
 
-VectorT extends IVector<VectorT, ?>,
+VectorT extends IVector<VectorT, ?, ?>,
 
 SegmentT extends GSegment<VectorT, SegmentT, BoundsT>,
 

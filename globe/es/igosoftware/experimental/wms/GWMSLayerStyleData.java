@@ -23,9 +23,9 @@ public class GWMSLayerStyleData {
                              final String title,
                              final String styleAbstract) {
       //super();
-      this._name = name;
-      this._title = title;
-      this._styleAbstract = styleAbstract;
+      _name = name;
+      _title = title;
+      _styleAbstract = styleAbstract;
    }
 
 

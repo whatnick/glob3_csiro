@@ -46,7 +46,7 @@ import es.igosoftware.euclid.vector.IVectorTransformer;
 
 public interface IGeometry<
 
-VectorT extends IVector<VectorT, ?>,
+VectorT extends IVector<VectorT, ?, ?>,
 
 GeometryT extends IGeometry<VectorT, GeometryT>
 
@@ -86,5 +86,8 @@ GeometryT extends IGeometry<VectorT, GeometryT>
 
 
    public boolean closeTo(final GeometryT that);
+
+
+   public VectorT getCentroid();
 
 }

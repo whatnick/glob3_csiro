@@ -735,4 +735,10 @@ public final class GAxisAlignedBox
    }
 
 
+   @Override
+   public GAxisAlignedBox mergedWith(final GAxisAlignedOrthotope<IVector3<?>, ?> that) {
+      return new GAxisAlignedBox(_lower.min(that._lower), _upper.max(that._upper));
+   }
+
+
 }

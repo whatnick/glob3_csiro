@@ -10,13 +10,14 @@ import java.util.Iterator;
 import java.util.List;
 
 import es.igosoftware.euclid.bounding.IBounds;
+import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GAssert;
 
 
 public abstract class GLinesStrip<
 
-VectorT extends IVector<VectorT, ?>,
+VectorT extends IVector<VectorT, ?, ?>,
 
 SegmentT extends GSegment<VectorT, SegmentT, BoundsT>,
 
@@ -93,7 +94,7 @@ BoundsT extends IBounds<VectorT, BoundsT>
 
 
    @Override
-   public List<VectorT> getPoints() {
+   public final List<VectorT> getPoints() {
       return Collections.unmodifiableList(_points);
    }
 
@@ -207,6 +208,12 @@ BoundsT extends IBounds<VectorT, BoundsT>
    @Override
    public GeometryT getHull() {
       return (GeometryT) this;
+   }
+
+
+   @Override
+   public VectorT getCentroid() {
+      return GVectorUtils.getAverage(_points);
    }
 
 }

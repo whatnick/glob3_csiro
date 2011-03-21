@@ -7,7 +7,7 @@ import es.igosoftware.euclid.vector.IVector;
 
 public interface IInfiniteBounds<
 
-VectorT extends IVector<VectorT, ?>,
+VectorT extends IVector<VectorT, ?, ?>,
 
 GeometryT extends IBounds<VectorT, GeometryT>
 

@@ -54,7 +54,7 @@ import es.igosoftware.util.GAssert;
 
 public abstract class GCommonVertexContainerAbstract<
 
-VectorT extends IVector<VectorT, ?>,
+VectorT extends IVector<VectorT, ?, ?>,
 
 VertexT extends IVertexContainer.Vertex<VectorT>,
 
@@ -163,7 +163,7 @@ MutableT extends GCommonVertexContainerAbstract<VectorT, VertexT, MutableT>
 
    //----------------------------------------------------------------------------
    // Strategy-pattern classes to handle 2d/3d float/double vectors
-   protected static interface VectorHandler<VectorT extends IVector<VectorT, ?>> {
+   protected static interface VectorHandler<VectorT extends IVector<VectorT, ?, ?>> {
       public VectorT getVector(final int index);
 
 

@@ -40,8 +40,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import es.igosoftware.euclid.GGeometryAbstract;
+import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.matrix.GMatrix44D;
 import es.igosoftware.euclid.projection.GProjection;
+import es.igosoftware.euclid.shape.GRenderType;
 import es.igosoftware.util.GAssert;
 
 
@@ -421,10 +423,22 @@ public final class GMutableVector2<T extends IVector2<?>>
    }
 
 
-   //   @Override
-   //   public boolean isZero() {
-   //      return _value.isZero();
-   //   }
+   @Override
+   public IVector2<?> getCentroid() {
+      return _value.getCentroid();
+   }
+
+
+   @Override
+   public GAxisAlignedRectangle getBounds() {
+      return _value.getBounds();
+   }
+
+
+   @Override
+   public GRenderType getRenderType() {
+      return _value.getRenderType();
+   }
 
 
 }

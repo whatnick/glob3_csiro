@@ -44,13 +44,14 @@ import java.util.Iterator;
 import java.util.List;
 
 import es.igosoftware.euclid.bounding.IBounds;
+import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GAssert;
 
 
 public abstract class GQuad<
 
-VectorT extends IVector<VectorT, ?>,
+VectorT extends IVector<VectorT, ?, ?>,
 
 SegmentT extends GSegment<VectorT, SegmentT, BoundsT>,
 
@@ -239,6 +240,13 @@ BoundsT extends IBounds<VectorT, BoundsT>
    @Override
    public boolean closeTo(final GeometryT that) {
       return _v0.closeTo(that._v0) && _v1.closeTo(that._v1) && _v2.closeTo(that._v2) && _v3.closeTo(that._v3);
+   }
+
+
+   @SuppressWarnings("unchecked")
+   @Override
+   public VectorT getCentroid() {
+      return GVectorUtils.getAverage(_v0, _v1, _v2, _v3);
    }
 
 

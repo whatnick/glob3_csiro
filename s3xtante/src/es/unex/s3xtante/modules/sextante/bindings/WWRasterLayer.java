@@ -1,3 +1,5 @@
+
+
 package es.unex.s3xtante.modules.sextante.bindings;
 
 import java.awt.geom.Rectangle2D;
@@ -12,7 +14,7 @@ import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.globe.IGlobeRasterLayer;
 import es.igosoftware.globe.layers.ESRIAsciiFileTools;
 import es.igosoftware.globe.layers.GGlobeRasterLayer;
-import es.igosoftware.globe.layers.RasterGeodata;
+import es.igosoftware.globe.layers.GRasterGeodata;
 import es.unex.s3xtante.utils.ProjectionUtils;
 import es.unex.sextante.core.AnalysisExtent;
 import es.unex.sextante.dataObjects.AbstractRasterLayer;
@@ -24,14 +26,14 @@ public class WWRasterLayer
 
    private static final double DEFAULT_NO_DATA_VALUE = -99999.;
 
-   private GProjection         m_CRS;
-   private String              m_sFilename;
-   private Raster              m_Raster;
+   private GProjection         _projection;
+   private String              _filename;
+   private Raster              _raster;
 
-   private AnalysisExtent      m_LayerExtent;
+   private AnalysisExtent      _layerExtent;
 
-   private double              m_dNoDataValue;
-   private String              m_sName;
+   private double              _noDataValue;
+   private String              _name;
 
 
    public void create(final String name,
@@ -39,13 +41,13 @@ public class WWRasterLayer
                       final AnalysisExtent ae,
                       int dataType,
                       final int numBands,
-                      final GProjection crs) {
+                      final GProjection projection) {
 
-      if (crs == null) {
-         m_CRS = ProjectionUtils.getDefaultProjection();
+      if (projection == null) {
+         _projection = ProjectionUtils.getDefaultProjection();
       }
       else {
-         m_CRS = crs;
+         _projection = projection;
       }
 
       if (dataType == DataBuffer.TYPE_DOUBLE) {
@@ -54,12 +56,12 @@ public class WWRasterLayer
 
       System.out.println(ae.getNX());
       System.out.println(ae.getNY());
-      m_Raster = RasterFactory.createBandedRaster(dataType, ae.getNX(), ae.getNY(), numBands, null);
+      _raster = RasterFactory.createBandedRaster(dataType, ae.getNX(), ae.getNY(), numBands, null);
 
-      m_sFilename = filename;
-      m_sName = name;
-      m_LayerExtent = ae;
-      m_dNoDataValue = DEFAULT_NO_DATA_VALUE;
+      _filename = filename;
+      _name = name;
+      _layerExtent = ae;
+      _noDataValue = DEFAULT_NO_DATA_VALUE;
 
    }
 
@@ -67,19 +69,19 @@ public class WWRasterLayer
    public void create(final IGlobeRasterLayer layer) {
 
       m_BaseDataObject = layer;
-      m_CRS = layer.getRasterGeodata()._crs;
-      m_Raster = layer.getRaster();
-      final RasterGeodata extent = layer.getRasterGeodata();
-      m_LayerExtent = new AnalysisExtent();
+      _projection = layer.getRasterGeodata()._projection;
+      _raster = layer.getRaster();
+      final GRasterGeodata extent = layer.getRasterGeodata();
+      _layerExtent = new AnalysisExtent();
 
-      m_LayerExtent.setCellSize(extent._cellsize);
-      m_LayerExtent.setXRange(extent._xllcorner, extent._xllcorner + extent._cols * extent._cellsize, true);
-      m_LayerExtent.setYRange(extent._yllcorner, extent._yllcorner + extent._rows * extent._cellsize, true);
+      _layerExtent.setCellSize(extent._cellsize);
+      _layerExtent.setXRange(extent._xllcorner, extent._xllcorner + extent._cols * extent._cellsize, true);
+      _layerExtent.setYRange(extent._yllcorner, extent._yllcorner + extent._rows * extent._cellsize, true);
 
 
-      m_sName = layer.getName();
+      _name = layer.getName();
 
-      m_dNoDataValue = layer.getNoDataValue();
+      _noDataValue = layer.getNoDataValue();
 
    }
 
@@ -87,7 +89,7 @@ public class WWRasterLayer
    @Override
    public int getBandsCount() {
 
-      return m_Raster.getNumBands();
+      return _raster.getNumBands();
 
    }
 
@@ -97,8 +99,8 @@ public class WWRasterLayer
                                            final int y,
                                            final int band) {
 
-      if (m_Raster != null) {
-         return m_Raster.getSampleDouble(x, y, band);
+      if (_raster != null) {
+         return _raster.getSampleDouble(x, y, band);
       }
       return getNoDataValue();
 
@@ -108,8 +110,8 @@ public class WWRasterLayer
    @Override
    public int getDataType() {
 
-      if (m_Raster != null) {
-         return m_Raster.getDataBuffer().getDataType();
+      if (_raster != null) {
+         return _raster.getDataBuffer().getDataType();
       }
       return DataBuffer.TYPE_DOUBLE;
 
@@ -119,8 +121,8 @@ public class WWRasterLayer
    @Override
    public double getLayerCellSize() {
 
-      if (m_LayerExtent != null) {
-         return m_LayerExtent.getCellSize();
+      if (_layerExtent != null) {
+         return _layerExtent.getCellSize();
       }
       return 0;
 
@@ -130,7 +132,7 @@ public class WWRasterLayer
    @Override
    public AnalysisExtent getLayerGridExtent() {
 
-      return m_LayerExtent;
+      return _layerExtent;
 
    }
 
@@ -138,7 +140,7 @@ public class WWRasterLayer
    @Override
    public double getNoDataValue() {
 
-      return m_dNoDataValue;
+      return _noDataValue;
 
    }
 
@@ -150,7 +152,7 @@ public class WWRasterLayer
                             final double value) {
 
       if (isInWindow(x, y)) {
-         ((WritableRaster) m_Raster).setSample(x, y, band, value);
+         ((WritableRaster) _raster).setSample(x, y, band, value);
       }
 
    }
@@ -159,7 +161,7 @@ public class WWRasterLayer
    @Override
    public void setNoDataValue(final double noDataValue) {
 
-      m_dNoDataValue = noDataValue;
+      _noDataValue = noDataValue;
 
    }
 
@@ -167,7 +169,7 @@ public class WWRasterLayer
    @Override
    public Object getCRS() {
 
-      return m_CRS;
+      return _projection;
 
    }
 
@@ -175,7 +177,7 @@ public class WWRasterLayer
    @Override
    public Rectangle2D getFullExtent() {
 
-      return m_LayerExtent.getAsRectangle2D();
+      return _layerExtent.getAsRectangle2D();
 
    }
 
@@ -209,17 +211,17 @@ public class WWRasterLayer
          // writer = new GeotiffWriter(file);
          // writer.write(bi);
          // TODO:Sector???????????
-         final File file = new File(m_sFilename);
-         final RasterGeodata geodata = new RasterGeodata(m_LayerExtent.getXMin(), m_LayerExtent.getYMin(),
-                  m_LayerExtent.getCellSize(), m_LayerExtent.getNY(), m_LayerExtent.getNX(), m_CRS);
+         final File file = new File(_filename);
+         final GRasterGeodata geodata = new GRasterGeodata(_layerExtent.getXMin(), _layerExtent.getYMin(),
+                  _layerExtent.getCellSize(), _layerExtent.getNY(), _layerExtent.getNX(), _projection);
          /*  final RasterGeodata geodata = new RasterGeodata(Math.toRadians(m_LayerExtent.getXMin()),
                     Math.toRadians(m_LayerExtent.getYMin()), Math.toRadians(m_LayerExtent.getCellSize()), m_LayerExtent.getNY(),
                     m_LayerExtent.getNX(), ProjectionUtils.getDefaultProjection());*/
-         final GGlobeRasterLayer layer = new GGlobeRasterLayer(m_Raster, geodata);
-         layer.setNoDataValue(m_dNoDataValue);
-         layer.setName(m_sName);
+         final GGlobeRasterLayer layer = new GGlobeRasterLayer(_raster, geodata);
+         layer.setNoDataValue(_noDataValue);
+         layer.setName(_name);
          ESRIAsciiFileTools.writeFile(layer, file);
-         this.create(layer);
+         create(layer);
 
          //GGlobeRasterLayer.getRasterLayerFromFile(file));
       }
@@ -233,7 +235,7 @@ public class WWRasterLayer
    @Override
    public String getFilename() {
 
-      return m_sFilename;
+      return _filename;
 
    }
 
@@ -241,7 +243,7 @@ public class WWRasterLayer
    @Override
    public String getName() {
 
-      return m_sName;
+      return _name;
 
    }
 
@@ -249,7 +251,7 @@ public class WWRasterLayer
    @Override
    public void setName(final String sName) {
 
-      m_sName = sName;
+      _name = sName;
       if (m_BaseDataObject != null) {
          ((GGlobeRasterLayer) m_BaseDataObject).setName(sName);
       }

@@ -46,7 +46,7 @@ import es.igosoftware.euclid.vector.IVector;
 
 public abstract class GGeometryAbstract<
 
-VectorT extends IVector<VectorT, ?>,
+VectorT extends IVector<VectorT, ?, ?>,
 
 GeometryT extends GGeometryAbstract<VectorT, GeometryT>
 

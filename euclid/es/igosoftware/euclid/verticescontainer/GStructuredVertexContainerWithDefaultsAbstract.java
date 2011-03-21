@@ -58,7 +58,7 @@ import es.igosoftware.util.ITransformer;
 
 public abstract class GStructuredVertexContainerWithDefaultsAbstract<
 
-VectorT extends IVector<VectorT, ?>,
+VectorT extends IVector<VectorT, ?, ?>,
 
 GroupT extends IStructuredVertexContainer.IVertexGroup<VectorT, IVertexContainer.Vertex<VectorT>, GroupT>,
 

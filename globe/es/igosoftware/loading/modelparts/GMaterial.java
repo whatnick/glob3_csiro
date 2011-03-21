@@ -40,6 +40,7 @@ import java.awt.Color;
 import java.io.Serializable;
 
 import es.igosoftware.euclid.mutability.GMutableAbstract;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GUtils;
 
 
@@ -55,7 +56,7 @@ public class GMaterial
 
    public final String       _name;
 
-   private String            _textureFileName;
+   private GFileName         _textureFileName;
 
    public Color              _diffuseColor    = new Color(0.8f, 0.8f, 0.8f);
    public Color              _ambientColor    = Color.BLACK;
@@ -67,27 +68,34 @@ public class GMaterial
    public boolean            _mipmap          = true;
 
 
+   private boolean           _hasTexture      = false;
+
+
    public GMaterial(final String name) {
       _name = name;
    }
 
 
    public GMaterial(final String name,
-                    final String textureName) {
+                    final GFileName textureName) {
 
       _name = name;
       _textureFileName = textureName;
    }
 
 
-   public String getTextureFileName() {
+   public GFileName getTextureFileName() {
       return _textureFileName;
    }
 
 
-   public void setTextureFileName(final String textureFileName) {
+   public void setTextureFileName(final GFileName textureFileName) {
       if (GUtils.equals(_textureFileName, textureFileName)) {
          return;
+      }
+
+      if (textureFileName != null) {
+         setHasTexture(true);
       }
       //      System.out.println("\n======> changed texture from " + _textureFileName + " to " + textureFileName + " (" + this + ")");
       _textureFileName = textureFileName;
@@ -177,6 +185,21 @@ public class GMaterial
          return false;
       }
       return true;
+   }
+
+
+   public boolean hasTexture() {
+      return _hasTexture;
+   }
+
+
+   public void setHasTexture(final boolean hasTexture) {
+      if (hasTexture == _hasTexture) {
+         return;
+      }
+
+      _hasTexture = hasTexture;
+      changed();
    }
 
 

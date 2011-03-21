@@ -43,7 +43,7 @@ import es.igosoftware.euclid.verticescontainer.IVertexContainer;
 import es.igosoftware.util.XStringTokenizer;
 
 
-public abstract class GFilePointsLoader<VectorT extends IVector<VectorT, ?>, VertexT extends IVertexContainer.Vertex<VectorT>>
+public abstract class GFilePointsLoader<VectorT extends IVector<VectorT, ?, ?>, VertexT extends IVertexContainer.Vertex<VectorT>>
          extends
             GPointsLoader<VectorT, VertexT> {
 

@@ -42,7 +42,7 @@ import es.igosoftware.euclid.vector.IVector;
 
 public interface IBounds<
 
-VectorT extends IVector<VectorT, ?>,
+VectorT extends IVector<VectorT, ?, ?>,
 
 GeometryT extends IBounds<VectorT, GeometryT>
 
@@ -57,8 +57,6 @@ GeometryT extends IBounds<VectorT, GeometryT>
    public boolean touchesBounds(final IBounds<VectorT, ?> that);
 
 
-   //   public boolean closeTo(final GeometryT that);
-
    public boolean containsOnBoundary(final VectorT point);
 
 
@@ -69,5 +67,6 @@ GeometryT extends IBounds<VectorT, GeometryT>
 
 
    public VectorT closestPointOnBoundary(final VectorT point);
+
 
 }

@@ -7,21 +7,23 @@ package es.igosoftware.dmvc.transferring;
 
 import java.io.Serializable;
 
+import es.igosoftware.io.GFileName;
+
 
 public class GDFileRequest
          implements
             Serializable {
    private static final long serialVersionUID = 1L;
 
-   private final String      _fileName;
+   private final GFileName   _fileName;
 
 
-   public GDFileRequest(final String fileName) {
+   public GDFileRequest(final GFileName fileName) {
       _fileName = fileName;
    }
 
 
-   public String getFileName() {
+   public GFileName getFileName() {
       return _fileName;
    }
 

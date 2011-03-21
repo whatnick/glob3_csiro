@@ -6,21 +6,19 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import javax.imageio.ImageIO;
-
-import org.geotools.factory.GeoTools;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GPolygon2DRenderer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GRenderingAttributes;
+import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
-import es.igosoftware.euclid.shape.IPolygon2D;
 import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.GStringUtils;
@@ -31,27 +29,34 @@ public class GPolygon2DRenderingTest {
       System.out.println("Shape Loader 0.1");
       System.out.println("----------------\n");
 
-      System.out.println("GeoTools version: " + GeoTools.getVersion() + "\n");
+      //      System.out.println("GeoTools version: " + GeoTools.getVersion() + "\n");
 
 
-      final String fileName = "/home/dgd/Escritorio/trastero/cartobrutal/world-modified/world.shp";
+      //      final GFileName fileName = GFileName.absoluteFromParts("home", "dgd", "Escritorio", "sample-shp", "cartobrutal",
+      //               "world-modified", "world.shp");
+      //      final GFileName fileName = GFileName.absoluteFromParts("home", "dgd", "Escritorio", "sample-shp", "shp", "argentina.shp",
+      //      "roads.shp");
+      final GFileName fileName = GFileName.absoluteFromParts("home", "dgd", "Escritorio", "sample-shp", "shp", "argentina.shp",
+               "places.shp");
+
       final GProjection projection = GProjection.EPSG_4326;
 
 
-      final List<IPolygon2D<?>> polygons = GShapeLoader.readPolygons(fileName, projection)._second;
+      final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features = GShapeLoader.readFeatures(fileName,
+               projection);
 
       //      System.out.println(">>>>>>>>>> CONNECT PROFILER");
-      //      GUtils.delay(20 * 1000);
+      //      GUtils.delay(20 * 1000); 
 
 
-      final GAxisAlignedRectangle polygonsBounds = GAxisAlignedRectangle.minimumBoundingRectangle(polygons);
+      final GAxisAlignedOrthotope<IVector2<?>, ?> featuresBounds = features.getBounds();
 
 
-      final GPolygon2DRenderer renderer = new GPolygon2DRenderer(polygons);
+      final GPolygon2DRenderer renderer = new GPolygon2DRenderer(features);
 
 
-      final GAxisAlignedRectangle region = ((GAxisAlignedRectangle) centerBounds(multipleOfSmallestDimention(polygonsBounds),
-               polygonsBounds.getCenter()));
+      final GAxisAlignedRectangle region = ((GAxisAlignedRectangle) centerBounds(multipleOfSmallestDimention(featuresBounds),
+               featuresBounds.getCenter()));
       final String directoryName = "render";
       final boolean renderLODIgnores = true;
       final float borderWidth = 0.0001f;
@@ -89,14 +94,14 @@ public class GPolygon2DRenderingTest {
    }
 
 
-   private static <VectorT extends IVector<VectorT, ?>> GAxisAlignedOrthotope<VectorT, ?> centerBounds(final GAxisAlignedOrthotope<VectorT, ?> bounds,
-                                                                                                       final VectorT center) {
+   private static <VectorT extends IVector<VectorT, ?, ?>> GAxisAlignedOrthotope<VectorT, ?> centerBounds(final GAxisAlignedOrthotope<VectorT, ?> bounds,
+                                                                                                          final VectorT center) {
       final VectorT delta = bounds.getCenter().sub(center);
       return bounds.translatedBy(delta.negated());
    }
 
 
-   private static <VectorT extends IVector<VectorT, ?>> GAxisAlignedOrthotope<VectorT, ?> multipleOfSmallestDimention(final GAxisAlignedOrthotope<VectorT, ?> bounds) {
+   private static <VectorT extends IVector<VectorT, ?, ?>> GAxisAlignedOrthotope<VectorT, ?> multipleOfSmallestDimention(final GAxisAlignedOrthotope<VectorT, ?> bounds) {
       final VectorT extent = bounds.getCenter();
 
       double smallestExtension = Double.POSITIVE_INFINITY;
@@ -114,8 +119,8 @@ public class GPolygon2DRenderingTest {
 
 
    @SuppressWarnings("unchecked")
-   private static <VectorT extends IVector<VectorT, ?>> VectorT smallestBiggerMultipleOf(final VectorT lower,
-                                                                                         final double smallestExtension) {
+   private static <VectorT extends IVector<VectorT, ?, ?>> VectorT smallestBiggerMultipleOf(final VectorT lower,
+                                                                                            final double smallestExtension) {
 
       final byte dimensionsCount = lower.dimensions();
 

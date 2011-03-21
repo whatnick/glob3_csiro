@@ -72,15 +72,15 @@ public class GFlyToCustomViewAnimator
                                    final AngleAnimator headingAnimator,
                                    final AngleAnimator pitchAnimator) {
       super(interpol, centerAnimator, zoomAnimator, headingAnimator, pitchAnimator);
-      this._customView = (GCustomView) orbitView;
-      this._centerAnimator = centerAnimator;
-      this._zoomAnimator = zoomAnimator;
-      this._headingAnimator = headingAnimator;
-      this._pitchAnimator = pitchAnimator;
+      _customView = (GCustomView) orbitView;
+      _centerAnimator = centerAnimator;
+      _zoomAnimator = zoomAnimator;
+      _headingAnimator = headingAnimator;
+      _pitchAnimator = pitchAnimator;
       if (interpol == null) {
-         this.interpolator = new ScheduledInterpolator(10000);
+         interpolator = new ScheduledInterpolator(10000);
       }
-      this._endCenterOnSurface = endCenterOnSurface;
+      _endCenterOnSurface = endCenterOnSurface;
    }
 
 
@@ -133,8 +133,8 @@ public class GFlyToCustomViewAnimator
                                        final PropertyAccessor.PositionAccessor propertyAcc,
                                        final boolean isEndCenterOnSurface) {
          super(interpol, beginPos, endPos, propertyAcc);
-         this.globe = globus;
-         this.endCenterOnSurface = isEndCenterOnSurface;
+         globe = globus;
+         endCenterOnSurface = isEndCenterOnSurface;
       }
 
 
@@ -143,7 +143,7 @@ public class GFlyToCustomViewAnimator
 
          final int MAX_SMOOTHING = 1;
 
-         final double CENTER_START = this.useMidZoom ? 0.2 : 0.0;
+         final double CENTER_START = useMidZoom ? 0.2 : 0.0;
          // final double CENTER_STOP = this.useMidZoom ? 0.8 : 0.8;
          final double CENTER_STOP = 0.8;
          final double latLonInterpolant = AnimationSupport.basicInterpolant(interpolant, CENTER_START, CENTER_STOP, MAX_SMOOTHING);

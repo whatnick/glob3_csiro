@@ -75,10 +75,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.WindowConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -95,6 +97,7 @@ import es.igosoftware.io.GHttpLoader;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.io.ILoader;
 import es.igosoftware.io.ILoader.IHandler;
+import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GHolder;
 import es.igosoftware.util.GLogger;
 import es.igosoftware.util.GUtils;
@@ -129,7 +132,7 @@ public class GPlanarPanoramicViewer {
       private final int                       _y;
 
       private Image                           _image;
-      private IHandler                        _handler;
+      private transient IHandler              _handler;
 
       private float                           _alpha           = 0.1f;
       private Timer                           _timer;
@@ -257,7 +260,7 @@ public class GPlanarPanoramicViewer {
 
 
       private GFileName getTileFileName() {
-         return new GFileName(Integer.toString(_zoomLevel.getLevel()), "tile-" + _x + "-" + _y + ".jpg");
+         return GFileName.fromParentAndParts(_path, Integer.toString(_zoomLevel.getLevel()), "tile-" + _x + "-" + _y + ".jpg");
       }
 
 
@@ -279,9 +282,9 @@ public class GPlanarPanoramicViewer {
 
    }
 
-
-   private final String                          _name;
    private final ILoader                         _loader;
+   private final GFileName                       _path;
+   private final String                          _name;
    private final boolean                         _debug;
 
 
@@ -303,17 +306,24 @@ public class GPlanarPanoramicViewer {
    private ILoader.LoadID                        _loadID;
 
 
-   public GPlanarPanoramicViewer(final String name,
-                                 final ILoader loader) throws IOException {
-      this(name, loader, false);
+   public GPlanarPanoramicViewer(final ILoader loader,
+                                 final GFileName path,
+                                 final String name) throws IOException {
+      this(loader, path, name, false);
    }
 
 
-   public GPlanarPanoramicViewer(final String name,
-                                 final ILoader loader,
+   public GPlanarPanoramicViewer(final ILoader loader,
+                                 final GFileName path,
+                                 final String name,
                                  final boolean debug) throws IOException {
-      _name = name;
+      GAssert.notNull(loader, "loader");
+      GAssert.notNull(path, "path");
+      GAssert.notNull(name, "name");
+
       _loader = loader;
+      _path = path;
+      _name = name;
       _debug = debug;
 
       _zoomLevels = readZoomLevels();
@@ -358,39 +368,40 @@ public class GPlanarPanoramicViewer {
       final GHolder<List<GPlanarPanoramicZoomLevel>> resultHolder = new GHolder<List<GPlanarPanoramicZoomLevel>>(null);
 
 
-      _loadID = _loader.load(new GFileName("info.txt"), -1, false, Integer.MAX_VALUE, new ILoader.IHandler() {
-         @Override
-         public void loaded(final File file,
-                            final long bytesLoaded,
-                            final boolean completeLoaded) {
-            if (!completeLoaded) {
-               return;
-            }
+      _loadID = _loader.load(GFileName.fromParentAndParts(_path, "info.txt"), -1, false, Integer.MAX_VALUE,
+               new ILoader.IHandler() {
+                  @Override
+                  public void loaded(final File file,
+                                     final long bytesLoaded,
+                                     final boolean completeLoaded) {
+                     if (!completeLoaded) {
+                        return;
+                     }
 
-            try {
-               final String infoString = GIOUtils.getContents(file);
+                     try {
+                        final String infoString = GIOUtils.getContents(file);
 
-               final Gson gson = new Gson();
+                        final Gson gson = new Gson();
 
-               final Type type = new TypeToken<List<GPlanarPanoramicZoomLevel>>() {
-               }.getType();
+                        final Type type = new TypeToken<List<GPlanarPanoramicZoomLevel>>() {
+                        }.getType();
 
-               final List<GPlanarPanoramicZoomLevel> result = gson.fromJson(infoString, type);
-               resultHolder.set(result);
-               completed.set(true);
-            }
-            catch (final IOException e) {
-               LOGGER.severe("error loading " + file, e);
-            }
-         }
+                        final List<GPlanarPanoramicZoomLevel> result = gson.fromJson(infoString, type);
+                        resultHolder.set(result);
+                        completed.set(true);
+                     }
+                     catch (final IOException e) {
+                        LOGGER.severe("error loading " + file, e);
+                     }
+                  }
 
 
-         @Override
-         public void loadError(final IOException e) {
-            LOGGER.severe("Error loading 'info.txt'", e);
-            completed.set(true);
-         }
-      });
+                  @Override
+                  public void loadError(final IOException e) {
+                     LOGGER.severe("Error loading 'info.txt'", e);
+                     completed.set(true);
+                  }
+               });
 
       while (!completed.get()) {
          GUtils.delay(10);
@@ -468,7 +479,7 @@ public class GPlanarPanoramicViewer {
                               final int height) {
       final JFrame frame = new JFrame(_name);
 
-      frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+      frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
       frame.getRootPane().registerKeyboardAction(new ActionListener() {
          @Override
          public void actionPerformed(final ActionEvent e) {
@@ -696,7 +707,7 @@ public class GPlanarPanoramicViewer {
       setPosition(_zoomInButton, margin + buttonExtent, margin + buttonExtent * 4 + 0);
 
 
-      _zoomSlider = new JSlider(JSlider.VERTICAL, _minLevel, _maxLevel, _currentLevel);
+      _zoomSlider = new JSlider(SwingConstants.VERTICAL, _minLevel, _maxLevel, _currentLevel);
       _zoomSlider.setMajorTickSpacing(0);
       _zoomSlider.setMinorTickSpacing(1);
       _zoomSlider.setSnapToTicks(true);
@@ -950,7 +961,7 @@ public class GPlanarPanoramicViewer {
       //       final ILoader loader = new GFileLoader("/home/dgd/Desktop/PruebaPanoramicas/PLANAR/PANOS/cantabria1.jpg/");
 
 
-      //      final URL url = new URL("file:///home/dgd/Escritorio/PruebaPanoramicas/PLANAR/PANOS/cantabria1.jpg/");
+      //      final URL url = new URL("file:///home/dgd/Desktop/PruebaPanoramicas/PLANAR/PANOS/cantabria1.jpg/");
 
       //      final URL url = new URL("http://localhost/PANOS/cantabria1.jpg/");
       //      final URL url = new URL("http://localhost/PANOS/LosBarruecos/");
@@ -960,14 +971,15 @@ public class GPlanarPanoramicViewer {
       //      final URL url = new URL("file:///home/dgd/Desktop/PruebaPanoramicas/PLANAR/PANOS/cantabria1.jpg/");
 
       //      final URL url = new URL("http://213.165.81.201:8080/gigapixel/Cantabria1/");
-      final URL url = new URL("http://213.165.81.201:8080/gigapixel/PlazaSanJorge-Caceres-Espana/");
+      final URL url = new URL("http://213.165.81.201:8080/");
 
 
-      final int workersCount = GConcurrent.AVAILABLE_PROCESSORS * 2;
-      final ILoader loader = new GHttpLoader(url, workersCount, true, false);
+      final int workersCount = GConcurrent.AVAILABLE_PROCESSORS;
+      final ILoader loader = new GHttpLoader(url, workersCount, true, false, false);
 
+      final GFileName path = GFileName.relativeFromParts("gigapixel", "PlazaSanJorge-Caceres-Espana");
 
-      final GPlanarPanoramicViewer viewer = new GPlanarPanoramicViewer("Sample Gigapixel Picture", loader, false);
+      final GPlanarPanoramicViewer viewer = new GPlanarPanoramicViewer(loader, path, "Sample Gigapixel Picture", false);
 
       SwingUtilities.invokeLater(new Runnable() {
          @Override

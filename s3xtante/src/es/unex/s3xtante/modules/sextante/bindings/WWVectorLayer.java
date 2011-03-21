@@ -1,3 +1,5 @@
+
+
 package es.unex.s3xtante.modules.sextante.bindings;
 
 import java.awt.geom.Rectangle2D;
@@ -30,88 +32,97 @@ import org.opengis.feature.type.GeometryType;
 import org.opengis.filter.Filter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
 
+import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.features.GField;
+import es.igosoftware.euclid.features.GGlobeFeature;
+import es.igosoftware.euclid.features.GListMutableFeatureCollection;
+import es.igosoftware.euclid.features.IGlobeFeature;
+import es.igosoftware.euclid.features.IGlobeFeatureCollection;
+import es.igosoftware.euclid.features.IGlobeMutableFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
-import es.igosoftware.globe.GField;
-import es.igosoftware.globe.IGlobeVectorLayer;
-import es.igosoftware.globe.layers.Feature;
-import es.igosoftware.globe.layers.ShapefileTools;
-import es.unex.s3xtante.utils.ProjectionUtils;
+import es.igosoftware.euclid.shape.GLinesStrip2D;
+import es.igosoftware.euclid.shape.GSegment2D;
+import es.igosoftware.euclid.shape.IPolygon;
+import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.experimental.vectorial.GShapefileTools;
+import es.igosoftware.io.GFileName;
+import es.igosoftware.io.GIOUtils;
+import es.igosoftware.utils.GJTSUtils;
 import es.unex.sextante.dataObjects.AbstractVectorLayer;
 import es.unex.sextante.dataObjects.IFeatureIterator;
 import es.unex.sextante.dataObjects.IVectorLayer;
-import es.unex.sextante.dataObjects.vectorFilters.IVectorLayerFilter;
 
 
 public class WWVectorLayer
          extends
             AbstractVectorLayer {
 
-   private String                              m_sFilename;
-   private String                              m_sName;
-   private GProjection                         m_CRS;
-
-   private GField[]                            _fields;
-
-   private WWFeatureIterator                   m_Iter;
-   private final ArrayList<IVectorLayerFilter> m_Filters = new ArrayList<IVectorLayerFilter>();
+   private GFileName                                                      _filename;
+   private String                                                         _name;
+   private GProjection                                                    _projection;
+   private List<GField>                                                   _fields;
+   private IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> _features;
 
 
-   public void create(final IGlobeVectorLayer layer) {
+   //   private ArrayList<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>> m_FeatureList;
 
-      m_BaseDataObject = layer;
-      m_sName = layer.getName();
-      m_CRS = layer.getProjection();
-      _fields = layer.getFields();
+
+   public WWVectorLayer(final String name,
+                        final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features) {
+      _name = name;
+      initializeFromFeatures(features);
    }
 
 
-   public void create(final String sName,
-                      final GField[] fields,
-                      final String filename,
-                      final Object crs) {
+   private void initializeFromFeatures(final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features) {
+      _features = features;
+      _projection = features.getProjection();
+      _fields = features.getFields();
+   }
 
-      m_sFilename = filename;
-      m_sName = sName;
+
+   public WWVectorLayer(final String name,
+                        final List<GField> fields,
+                        final GFileName filename,
+                        final GProjection projection) {
+
+      _filename = filename;
+      _name = name;
       _fields = fields;
 
-      if (!(crs instanceof GProjection)) {
-         m_CRS = ProjectionUtils.getDefaultProjection();
-      }
-      else {
-         m_CRS = (GProjection) crs;
-      }
+      _projection = projection;
 
-      m_BaseDataObject = new ArrayList<Feature>();
-
-
+      //Le estoy pasando un null porque no se como hacer esto...
+      _features = new GListMutableFeatureCollection<IVector2<?>, GAxisAlignedRectangle>(projection, fields, null,
+               GIOUtils.getUniqueID(filename.asFile()));
    }
 
 
    @Override
-   public void open() {}
+   public void open() {
+   }
 
 
    @Override
-   public void close() {}
+   public void close() {
+   }
 
 
    @Override
    @SuppressWarnings("unchecked")
-   public void addFeature(final Geometry g,
+   public void addFeature(final Geometry jtsGeometry,
                           final Object[] values) {
-
-      if (m_BaseDataObject instanceof ArrayList) {
-         final ArrayList<Feature> list = (ArrayList<Feature>) m_BaseDataObject;
-         list.add(new Feature(g, values));
+      if (_features instanceof IGlobeMutableFeatureCollection) {
+         final GListMutableFeatureCollection<IVector2<?>, GAxisAlignedRectangle> mutable = (GListMutableFeatureCollection<IVector2<?>, GAxisAlignedRectangle>) _features;
+         for (final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> euclidGeometry : GJTSUtils.toEuclid(jtsGeometry)) {
+            mutable.add(new GGlobeFeature<IVector2<?>, GAxisAlignedRectangle>(euclidGeometry, Arrays.asList(values)));
+         }
       }
 
    }
@@ -119,78 +130,52 @@ public class WWVectorLayer
 
    @Override
    public String getFieldName(final int i) {
-      return _fields[i].getName();
+      return _fields.get(i).getName();
    }
 
 
    @Override
    public Class<?> getFieldType(final int i) {
-      return _fields[i].getType();
+      return _fields.get(i).getType();
    }
 
 
    @Override
    public int getFieldCount() {
-      return _fields.length;
+      return _fields.size();
    }
 
 
-   //   @Override
-   //   @SuppressWarnings("unchecked")
-   //   public int getShapesCount() {
-   //
-   //      if (m_BaseDataObject instanceof ArrayList) {
-   //         final ArrayList<Feature> list = (ArrayList<Feature>) m_BaseDataObject;
-   //         return list.size();
-   //      }
-   //      else if (m_BaseDataObject instanceof IGlobeVectorLayer) {
-   //         final Feature[] features = ((IGlobeVectorLayer) m_BaseDataObject).getFeatures();
-   //         return features.length;
-   //      }
-   //      else {
-   //         return 0;
-   //      }
-   //
-   //   }
-
-
-   public int getShapeType(final Geometry geom) {
-
-      if ((geom instanceof Polygon) || (geom instanceof MultiPolygon)) {
+   private static int getShapeType(final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> geom) {
+      if (geom instanceof IPolygon) {
          return IVectorLayer.SHAPE_TYPE_POLYGON;
       }
-      else if ((geom instanceof LineString) || (geom instanceof MultiLineString)) {
+      else if ((geom instanceof GSegment2D) || (geom instanceof GLinesStrip2D)) {
          return IVectorLayer.SHAPE_TYPE_LINE;
       }
-      else {
+      else if (geom instanceof IVector2) {
          return IVectorLayer.SHAPE_TYPE_POINT;
       }
-
+      else {
+         throw new RuntimeException("Unsuported geometry type (" + geom + ")");
+      }
    }
 
 
    @Override
    public String getName() {
-
-      return m_sName;
-
+      return _name;
    }
 
 
    @Override
    public void postProcess() {
-
       saveShapefile();
+
       try {
-         final IGlobeVectorLayer layer = ShapefileTools.readFile(new File(m_sFilename));
-         if (layer != null) {
-            layer.setName(m_sName);
-            layer.setProjection(m_CRS);
-            create(layer);
-            layer.redraw();
-         }
+         initializeFromFeatures(GShapefileTools.readFile(_filename.asFile()));
       }
-      catch (final Exception e) {
+      catch (final IOException e) {
          e.printStackTrace();
       }
 
@@ -200,57 +185,48 @@ public class WWVectorLayer
    @SuppressWarnings("unchecked")
    public void saveShapefile() {
 
-      if (m_BaseDataObject instanceof ArrayList) {
-         final GeometryFactory gf = new GeometryFactory();
-         final ArrayList<Feature> list = (ArrayList<Feature>) m_BaseDataObject;
-         try {
-            final SimpleFeatureType featureType = buildFeatureType(m_sName, getShapeType(), _fields, DefaultGeographicCRS.WGS84);
-            final DataStore mds = createDatastore(m_sFilename, featureType);
-            mds.createSchema(featureType);
-            final Query query = new Query(m_sName, Filter.INCLUDE);
-            final FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = mds.getFeatureSource(query.getTypeName());
-            final SimpleFeatureType ft = featureSource.getSchema();
-            final FeatureWriter<SimpleFeatureType, SimpleFeature> featWriter = mds.getFeatureWriterAppend(ft.getTypeName(),
-                     Transaction.AUTO_COMMIT);
-            for (int i = 0; i < list.size(); i++) {
-               final Feature feature = list.get(i);
-               Geometry geom;
-               if (feature._geometry instanceof Polygon) {
-                  geom = gf.createMultiPolygon(new Polygon[] { (Polygon) feature._geometry });
-               }
-               else if (feature._geometry instanceof LineString) {
-                  geom = gf.createMultiLineString(new LineString[] { (LineString) feature._geometry });
-               }
-               else {
-                  geom = feature._geometry;
-               }
-
-               try {
-                  final List<Object> attributes = new ArrayList<Object>();
-                  attributes.addAll(Arrays.asList(feature._attributes));
-                  final SimpleFeature sf = featWriter.next();
-                  sf.setAttributes(attributes);
-                  sf.setDefaultGeometry(geom);
-                  featWriter.write();
-               }
-               catch (final Exception e) {
-                  e.printStackTrace();
-               }
-            }
-            featWriter.close();
-         }
-         catch (final Exception e) {
-            e.printStackTrace();
-         }
+      try {
+         saveFeatures(_features);
       }
+      catch (final IOException e) {
+         e.printStackTrace();
+      }
+
 
    }
 
 
-   private DataStore createDatastore(final String sFilename,
+   @SuppressWarnings("unchecked")
+   private void saveFeatures(final Iterable<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>> features) throws IOException {
+
+      final SimpleFeatureType featureType = buildFeatureType(_name, getShapeType(), _fields, DefaultGeographicCRS.WGS84);
+      final DataStore dataStore = createDatastore(_filename, featureType);
+      dataStore.createSchema(featureType);
+      final Query query = new Query(_name, Filter.INCLUDE);
+      final FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = dataStore.getFeatureSource(query.getTypeName());
+      final SimpleFeatureType ft = featureSource.getSchema();
+      final FeatureWriter<SimpleFeatureType, SimpleFeature> featWriter = dataStore.getFeatureWriterAppend(ft.getTypeName(),
+               Transaction.AUTO_COMMIT);
+
+      for (final IGlobeFeature<IVector2<?>, GAxisAlignedRectangle> feature : features) {
+         final Geometry gtsGeometry = GJTSUtils.toJTS(feature.getDefaultGeometry());
+
+         final List<Object> attributes = new ArrayList<Object>();
+         attributes.addAll(Arrays.asList(feature.getAttributes()));
+         final SimpleFeature sf = featWriter.next();
+         sf.setAttributes(attributes);
+         sf.setDefaultGeometry(gtsGeometry);
+         featWriter.write();
+
+      }
+      featWriter.close();
+   }
+
+
+   private DataStore createDatastore(final GFileName filename,
                                      final SimpleFeatureType m_FeatureType) throws IOException {
 
-      final File file = new File(sFilename);
+      final File file = filename.asFile();
       final Map<String, Serializable> params = new HashMap<String, Serializable>();
       params.put(ShapefileDataStoreFactory.URLP.key, file.toURI().toURL());
       params.put(ShapefileDataStoreFactory.CREATE_SPATIAL_INDEX.key, false);
@@ -263,10 +239,10 @@ public class WWVectorLayer
    }
 
 
-   private SimpleFeatureType buildFeatureType(final String sName,
-                                              final int iShapeType,
-                                              final GField[] fields,
-                                              final CoordinateReferenceSystem crs) {
+   private static SimpleFeatureType buildFeatureType(final String sName,
+                                                     final int iShapeType,
+                                                     final List<GField> fields,
+                                                     final CoordinateReferenceSystem crs) {
       final SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
       builder.setName(sName);
 
@@ -283,9 +259,9 @@ public class WWVectorLayer
    }
 
 
-   private GeometryDescriptor toGeometryAttribute(final int shapeType,
-                                                  final CoordinateReferenceSystem crs,
-                                                  final AttributeTypeBuilder builder) {
+   private static GeometryDescriptor toGeometryAttribute(final int shapeType,
+                                                         final CoordinateReferenceSystem crs,
+                                                         final AttributeTypeBuilder builder) {
 
       final Class<?> s[] = { Point.class, MultiLineString.class, MultiPolygon.class };
       final GeometryType buildGeometryType = builder.crs(crs).binding(s[shapeType]).buildGeometryType();
@@ -295,65 +271,46 @@ public class WWVectorLayer
 
 
    @Override
-   @SuppressWarnings("unchecked")
    public Rectangle2D getFullExtent() {
 
-      double dXMin = Double.MAX_VALUE;
-      double dXMax = Double.NEGATIVE_INFINITY;
-      double dYMin = Double.MAX_VALUE;
-      double dYMax = Double.NEGATIVE_INFINITY;
+      return getRectangle3DBounds(_features);
 
-      if (m_BaseDataObject instanceof ArrayList) {
-         final ArrayList<Feature> list = (ArrayList<Feature>) m_BaseDataObject;
-         for (int i = 0; i < list.size(); i++) {
-            final Feature feature = list.get(i);
-            final Envelope envelope = feature._geometry.getEnvelopeInternal();
-            dXMin = Math.min(dXMin, envelope.getMinX());
-            dYMin = Math.min(dYMin, envelope.getMinY());
-            dXMax = Math.max(dXMax, envelope.getMaxX());
-            dYMax = Math.max(dYMax, envelope.getMaxY());
-         }
-         return new Rectangle2D.Double(dXMin, dYMin, dXMax - dXMin, dYMax - dYMin);
-      }
-      else if (m_BaseDataObject instanceof Feature[]) {
-         final Feature[] features = (Feature[]) m_BaseDataObject;
-         for (final Feature element : features) {
-            final Envelope envelope = element._geometry.getEnvelopeInternal();
-            dXMin = Math.min(dXMin, envelope.getMinX());
-            dYMin = Math.min(dYMin, envelope.getMinY());
-            dXMax = Math.max(dXMax, envelope.getMaxX());
-            dYMax = Math.max(dYMax, envelope.getMaxY());
-         }
-         return new Rectangle2D.Double(dXMin, dYMin, dXMax - dXMin, dYMax - dYMin);
-      }
-      else {
-         return new Rectangle2D.Double();
+   }
+
+
+   private Rectangle2D getRectangle3DBounds(final Iterable<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>> features) {
+      double xMin = Double.POSITIVE_INFINITY;
+      double xMax = Double.NEGATIVE_INFINITY;
+      double yMin = Double.POSITIVE_INFINITY;
+      double yMax = Double.NEGATIVE_INFINITY;
+
+      for (final IGlobeFeature<IVector2<?>, GAxisAlignedRectangle> feature : features) {
+         final GAxisAlignedRectangle envelope = feature.getDefaultGeometry().getBounds();
+         xMin = Math.min(xMin, envelope._lower.x());
+         yMin = Math.min(yMin, envelope._lower.y());
+         xMax = Math.max(xMax, envelope._upper.x());
+         yMax = Math.max(yMax, envelope._upper.y());
       }
 
+      return new Rectangle2D.Double(xMin, yMin, xMax - xMin, yMax - yMin);
    }
 
 
    @Override
    public String getFilename() {
-
-      return m_sFilename;
-
+      return _filename.buildPath();
    }
 
 
    @Override
    public Object getCRS() {
-
-      return m_CRS;
-
+      return _projection;
    }
 
 
    @Override
    public void setName(final String name) {
-
-      m_sName = name;
-
+      _name = name;
    }
 
 
@@ -365,56 +322,26 @@ public class WWVectorLayer
          return IVectorLayer.SHAPE_TYPE_POLYGON;
       }
 
-      if (m_BaseDataObject instanceof ArrayList) {
-         final ArrayList<Feature> list = (ArrayList<Feature>) m_BaseDataObject;
-         return getShapeType(list.get(0)._geometry);
-      }
-      else if (m_BaseDataObject instanceof IGlobeVectorLayer) {
-         final Feature[] features = ((IGlobeVectorLayer) m_BaseDataObject).getFeatures();
-         return getShapeType(features[0]._geometry);
-      }
-      else {
-         return IVectorLayer.SHAPE_TYPE_POLYGON;
-      }
-
+      return getShapeType(_features.get(0).getDefaultGeometry());
 
    }
 
 
    @Override
-   protected IFeatureIterator createIterator() {
+   public Object getBaseDataObject() {
 
-      if (m_Iter == null) {
-         if (m_BaseDataObject instanceof IGlobeVectorLayer) {
-            final IGlobeVectorLayer layer = (IGlobeVectorLayer) m_BaseDataObject;
-            m_Iter = new WWFeatureIterator(layer.getFeatures(), m_Filters);
-         }
-         else {
-            m_Iter = new WWFeatureIterator();
-         }
-      }
-
-      return m_Iter.getNewInstance();
-
+      return _features;
 
    }
 
 
    @Override
-   public void addFilter(final IVectorLayerFilter filter) {
+   public IFeatureIterator iterator() {
 
-      m_Filters.add(filter);
-      m_Iter = null;
+      return new WWFeatureIterator(this._features, getFilters());
+
 
    }
 
-
-   @Override
-   public void removeFilters() {
-
-      m_Filters.clear();
-      m_Iter = null;
-
-   }
 
 }

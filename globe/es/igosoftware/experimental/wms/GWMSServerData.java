@@ -41,7 +41,7 @@ public final class GWMSServerData
                          final String user,
                          final String password) {
       super();
-      if ((user == null) || (user == "")) {
+      if ((user == null) || (user.equals(""))) {
          _name = name;
          _URL = uRL;
          _user = "";

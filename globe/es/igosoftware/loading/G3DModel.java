@@ -57,6 +57,7 @@ import es.igosoftware.euclid.mutability.GMutableAbstract;
 import es.igosoftware.euclid.mutability.IMutable;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.loading.modelparts.GFace;
 import es.igosoftware.loading.modelparts.GMaterial;
 import es.igosoftware.loading.modelparts.GModelData;
@@ -312,32 +313,6 @@ public class G3DModel {
          gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 
          try {
-            //            final List<GModelMesh> meshes = new ArrayList<GModelMesh>();
-            //            meshes.add(_mesh);
-            //
-            //            // Draw as many as we can in a batch to save ogl state switching.
-            //            final Queue<OrderedRenderable> queue = dc.getOrderedRenderables();
-            //            while (true) {
-            //               final OrderedRenderable peeked = queue.peek();
-            //               final boolean isSameType = (peeked != null) && (peeked instanceof MeshOrderedRenderable)
-            //                                          && (((MeshOrderedRenderable) peeked)._modelViewMatrixArray == _modelViewMatrixArray);
-            //               if (isSameType) {
-            //                  meshes.add(((MeshOrderedRenderable) peeked)._mesh);
-            //                  queue.poll();
-            //               }
-            //               else {
-            //                  break;
-            //               }
-            //            }
-            //
-            //            final List<RenderUnit> renderUnits = getRenderingUnits("ALPHA PASS", meshes);
-            //            final boolean forceRedraw = renderRenderingUnits(dc, renderUnits);
-            //
-            //            if (forceRedraw) {
-            //               _modelNode.redraw();
-            //            }
-
-
             boolean redraw = false;
             int displayList = _meshListCache.getDisplayList(_mesh, dc, false);
             if (displayList >= 0) {
@@ -428,10 +403,6 @@ public class G3DModel {
       if (texture.getMustFlipVertically()) {
          gl.glMatrixMode(GL.GL_TEXTURE);
          gl.glPushMatrix();
-         //         gl.glLoadIdentity();
-
-         //         gl.glScalef(1, -1, 1);
-         //         gl.glTranslatef(0, -1, 0);
          gl.glLoadMatrixf(FLIP_VERTICALLY_TRANSFORMATION, 0);
       }
 
@@ -487,12 +458,14 @@ public class G3DModel {
          return null;
       }
 
-      final String textureFileName = material.getTextureFileName();
+      final GFileName textureFileName = material.getTextureFileName();
       if (textureFileName == null) {
          return null;
       }
 
-      final File textureFile = new File(textureFileName);
+
+      // try textureFileName as Absolute
+      final File textureFile = textureFileName.asFile();
       if (textureFile.exists()) {
          try {
             return textureFile.toURI().toURL();
@@ -500,36 +473,40 @@ public class G3DModel {
          catch (final MalformedURLException e) {
             e.printStackTrace();
          }
-      }
 
-
-      final String modelName = mesh.getModel().getName();
-
-      final String subFileName;
-      final int slashIndex = modelName.lastIndexOf('/');
-      if (slashIndex == -1) {
-         final int backSlashIndex = modelName.lastIndexOf('\\');
-         if (backSlashIndex == -1) {
-            subFileName = "";
+         try {
+            return GResourceRetriever.getResourceAsUrl(textureFileName);
          }
-         else {
-            subFileName = modelName.substring(0, backSlashIndex + 1);
+         catch (final IOException e) {
+            logger.severe("Load of texture " + textureFileName + " failed", e);
          }
       }
-      else {
-         subFileName = modelName.substring(0, slashIndex + 1);
-      }
 
 
-      final String filename = subFileName + textureFileName;
-      try {
-         //  return GResourceRetriever.getResourceAsUrl(filename);
-         return GResourceRetriever.getResourceAsUrl(filename);
+      // try textureFileName as relative to the directory containing the .obj file
+      if (!textureFileName.isAbsolute()) {
+         final GFileName textureFullFileName = GFileName.fromParts(mesh.getModel().getFileName().getParent(), textureFileName);
 
+         final File textureFullFile = textureFullFileName.asFile();
+         if (textureFullFile.exists()) {
+            try {
+               return textureFullFile.toURI().toURL();
+            }
+            catch (final MalformedURLException e) {
+               e.printStackTrace();
+            }
+         }
+
+         try {
+            return GResourceRetriever.getResourceAsUrl(textureFullFileName);
+         }
+         catch (final IOException e) {
+            logger.severe("Load of texture " + textureFullFileName + " failed", e);
+         }
       }
-      catch (final IOException e) {
-         logger.severe("Load of texture " + filename + " failed", e);
-      }
+
+      // oops, I can't find the texture
+      logger.severe("Load of texture " + textureFileName + " failed");
 
       return null;
    }
@@ -571,6 +548,7 @@ public class G3DModel {
    private static final GDisplayListCache<GModelMesh>           _meshListCache;
    private static final GDisplayListCache<RenderUnit>           _renderUnitListCache;
 
+
    static {
       _meshListCache = new GDisplayListCache<GModelMesh>(false) {
          @Override
@@ -606,25 +584,13 @@ public class G3DModel {
 
 
    private final GModelData                                     _modelData;
-   private final boolean                                        _preFetchTextures;
 
    private ArrayList<GModelMesh>                                _opaqueMeshes;
    private ArrayList<GModelMesh>                                _transparentMeshes;
 
 
-   public G3DModel(final GModelData modelData,
-                   final boolean preFetchTextures) {
+   public G3DModel(final GModelData modelData) {
       _modelData = modelData;
-
-      _preFetchTextures = preFetchTextures;
-
-   }
-
-
-   public G3DModel(final String path,
-                   final boolean verbose,
-                   final boolean preFetchTextures) throws GModelLoadException {
-      this(new GObjLoader().load(path, verbose), preFetchTextures);
    }
 
 
@@ -684,7 +650,6 @@ public class G3DModel {
          else {
             renderUnits.add(new TextureRenderUnit(entry.getKey(), unitMeshes));
          }
-         //         singleMeshes.addAll(unitMeshes);
       }
 
       if (!singleMeshes.isEmpty()) {
@@ -693,32 +658,9 @@ public class G3DModel {
          for (final List<GModelMesh> group : GCollections.split(singleMeshes, 25)) {
             renderUnits.add(new SlowRenderUnit(group));
          }
-
-         //         renderUnits.add(new SlowRenderUnit(singleMeshes));
       }
 
       renderUnits.trimToSize();
-
-      //      Collections.sort(renderUnits, new Comparator<RenderUnit>() {
-      //         @Override
-      //         public int compare(final RenderUnit o1,
-      //                            final RenderUnit o2) {
-      //            final int size1 = o1._meshes.size();
-      //            final int size2 = o2._meshes.size();
-      //
-      //            if (size1 > size2) {
-      //               return -1;
-      //            }
-      //            if (size1 < size2) {
-      //               return 1;
-      //            }
-      //            return 0;
-      //         }
-      //      });
-
-      //      for (final RenderUnit renderUnit : renderUnits) {
-      //         System.out.println(prefixMessage + ": " + renderUnit);
-      //      }
 
       return renderUnits;
    }
@@ -795,7 +737,11 @@ public class G3DModel {
          return false;
       }
 
-      final String textureName = material.getTextureFileName();
+      if (!material.hasTexture()) {
+         return false;
+      }
+
+      final GFileName textureName = material.getTextureFileName();
       if (textureName == null) {
          return false;
       }
@@ -813,11 +759,7 @@ public class G3DModel {
       gl.glPushMatrix();
       gl.glLoadMatrixf(modelViewMatrixArray, 0);
 
-      // gl.glPushAttrib(GL.GL_TEXTURE_BIT | GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT | GL.GL_HINT_BIT | GL.GL_POLYGON_BIT
-      //                 | GL.GL_ENABLE_BIT | GL.GL_CURRENT_BIT | GL.GL_LIGHTING_BIT | GL.GL_TRANSFORM_BIT);
-
-      gl.glPushAttrib(GL.GL_TEXTURE_BIT | GL.GL_LIGHTING_BIT | GL.GL_DEPTH_BUFFER_BIT /*| GL.GL_HINT_BIT*/);
-
+      gl.glPushAttrib(GL.GL_TEXTURE_BIT | GL.GL_LIGHTING_BIT | GL.GL_DEPTH_BUFFER_BIT);
 
       //      gl.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_FASTEST);
 
@@ -839,7 +781,6 @@ public class G3DModel {
 
       if (_modelData.isUsingTexture()) {
          gl.glEnable(GL.GL_TEXTURE_2D);
-         //gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_REPLACE);
       }
       else {
          gl.glDisable(GL.GL_TEXTURE_2D);
@@ -875,7 +816,6 @@ public class G3DModel {
 
    public void render(final DrawContext dc,
                       final Matrix modelMatrix,
-                      //                      final Matrix modelViewMatrix,
                       final float[] modelViewMatrixArray,
                       final boolean hasScaleTransformation,
                       final G3DModelNode modelNode) {
@@ -1145,24 +1085,6 @@ public class G3DModel {
       gl.glPopMatrix();
 
       gl.glPopAttrib();
-   }
-
-
-   public void preFetchTextures() {
-      if (!_preFetchTextures) {
-         return;
-      }
-
-      //      final ExecutorService executor = GConcurrent.getDefaultExecutor();
-      //
-      //      executor.submit(new Runnable() {
-      //         @Override
-      //         public void run() {
-      //            for (final GModelMesh mesh : _modelData.getMeshes()) {
-      //               forceLoadTextures(mesh);
-      //            }
-      //         }
-      //      });
    }
 
 

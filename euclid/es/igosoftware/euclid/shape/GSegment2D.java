@@ -107,7 +107,7 @@ public final class GSegment2D
 
       if (GMath.closeToZero(denominator)) {
          if (GMath.closeToZero(numeratorA) && GMath.closeToZero(numeratorB)) {
-            if (this.contains(that._from) || (this.contains(that._to))) {
+            if (contains(that._from) || (contains(that._to))) {
                return IntersectionResult.COINCIDENT;
             }
          }
@@ -210,10 +210,10 @@ public final class GSegment2D
    public boolean neighborWithSegment(final GSegment2D that,
                                       final double epsilon) {
 
-      final GVector2D thisMinX = new GVector2D(this._from.x(), this._from.y() - epsilon);
-      final GVector2D thisMaxX = new GVector2D(this._to.x(), this._to.y() + epsilon);
-      final GVector2D thisMinY = new GVector2D(this._from.x() - epsilon, this._from.y());
-      final GVector2D thisMaxY = new GVector2D(this._to.x() + epsilon, this._to.y());
+      final GVector2D thisMinX = new GVector2D(_from.x(), _from.y() - epsilon);
+      final GVector2D thisMaxX = new GVector2D(_to.x(), _to.y() + epsilon);
+      final GVector2D thisMinY = new GVector2D(_from.x() - epsilon, _from.y());
+      final GVector2D thisMaxY = new GVector2D(_to.x() + epsilon, _to.y());
 
       final GVector2D thatMinX = new GVector2D(that._from.x(), that._from.y() - epsilon);
       final GVector2D thatMaxX = new GVector2D(that._to.x(), that._to.y() + epsilon);
@@ -226,19 +226,19 @@ public final class GSegment2D
 
          boolean condition1 = false;
          boolean condition2 = false;
-         if (GMath.closeTo(this._from.y(), this._to.y())) { // parallel to x axis
+         if (GMath.closeTo(_from.y(), _to.y())) { // parallel to x axis
             condition1 = that._from.between(thisMinX, thisMaxX) || that._to.between(thisMinX, thisMaxX);
-            condition2 = this._from.between(thatMinX, thatMaxX) || this._to.between(thatMinX, thatMaxX);
+            condition2 = _from.between(thatMinX, thatMaxX) || _to.between(thatMinX, thatMaxX);
          }
-         else if (GMath.closeTo(this._from.x(), this._to.x())) { // parallel to y axis
+         else if (GMath.closeTo(_from.x(), _to.x())) { // parallel to y axis
             condition1 = that._from.between(thisMinY, thisMaxY) || that._to.between(thisMinY, thisMaxY);
-            condition2 = this._from.between(thatMinY, thatMaxY) || this._to.between(thatMinY, thatMaxY);
+            condition2 = _from.between(thatMinY, thatMaxY) || _to.between(thatMinY, thatMaxY);
          }
          else {
             condition1 = (that._from.between(thisMinX, thisMaxX) && that._from.between(thisMinY, thisMaxY))
                          || (that._to.between(thisMinX, thisMaxX) && that._to.between(thisMinY, thisMaxY));
-            condition2 = (this._from.between(thatMinX, thatMaxX) && this._from.between(thatMinY, thatMaxY))
-                         || (this._to.between(thatMinX, thatMaxX) && this._to.between(thatMinY, thatMaxY));
+            condition2 = (_from.between(thatMinX, thatMaxX) && _from.between(thatMinY, thatMaxY))
+                         || (_to.between(thatMinX, thatMaxX) && _to.between(thatMinY, thatMaxY));
          }
 
          return condition1 || condition2;

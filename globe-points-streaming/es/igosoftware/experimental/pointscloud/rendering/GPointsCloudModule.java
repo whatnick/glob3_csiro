@@ -430,7 +430,7 @@ public class GPointsCloudModule
    @Override
    public final IGlobeLayer addNewLayer(final IGlobeApplication application,
                                         final ILayerInfo layerInfo) {
-      final GPointsCloudLayer layer = new GPointsCloudLayer(new GFileName(layerInfo.getName()), _pointsCloudLoader);
+      final GPointsCloudLayer layer = new GPointsCloudLayer(GFileName.relativeFromParts(layerInfo.getName()), _pointsCloudLoader);
       //      _layer.setShowExtents(true);
       layer.setVerbose(true);
       //      _layer.setColorFromState(false);

@@ -13,6 +13,7 @@ GeometryT extends IBounds<IVector2<?>, GeometryT>
          extends
             IBounds<IVector2<?>, GeometryT> {
 
+
    public boolean touches(final IBounds2D<?> that);
 
 
@@ -23,5 +24,6 @@ GeometryT extends IBounds<IVector2<?>, GeometryT>
 
 
    public boolean touchesWithCapsule2D(final GCapsule2D capsule);
+
 
 }

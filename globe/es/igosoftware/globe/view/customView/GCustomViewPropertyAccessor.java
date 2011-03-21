@@ -66,13 +66,13 @@ public class GCustomViewPropertyAccessor
 
 
       public CenterPositionAccessor(final OrbitView view) {
-         this._customView = view;
+         _customView = view;
       }
 
 
       @Override
       public Position getPosition() {
-         if (this._customView == null) {
+         if (_customView == null) {
             return null;
          }
 
@@ -84,14 +84,14 @@ public class GCustomViewPropertyAccessor
       @Override
       public boolean setPosition(final Position value) {
          //noinspection SimplifiableIfStatement
-         if ((this._customView == null) || (value == null)) {
+         if ((_customView == null) || (value == null)) {
             return false;
          }
 
 
          try {
 
-            this._customView.setCenterPosition(value);
+            _customView.setCenterPosition(value);
             return true;
          }
          catch (final Exception e) {
@@ -107,17 +107,17 @@ public class GCustomViewPropertyAccessor
 
 
       public ZoomAccessor(final OrbitView customView) {
-         this._customView = customView;
+         _customView = customView;
       }
 
 
       @Override
       public final Double getDouble() {
-         if (this._customView == null) {
+         if (_customView == null) {
             return null;
          }
 
-         return this._customView.getZoom();
+         return _customView.getZoom();
 
       }
 
@@ -125,12 +125,12 @@ public class GCustomViewPropertyAccessor
       @Override
       public final boolean setDouble(final Double value) {
          //noinspection SimplifiableIfStatement
-         if ((this._customView == null) || (value == null)) {
+         if ((_customView == null) || (value == null)) {
             return false;
          }
 
          try {
-            this._customView.setZoom(value);
+            _customView.setZoom(value);
             return true;
 
          }

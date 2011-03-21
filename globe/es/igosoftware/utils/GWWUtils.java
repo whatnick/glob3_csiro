@@ -43,6 +43,7 @@ import java.util.List;
 import javax.media.opengl.GL;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
+import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.GVector2D;
@@ -332,8 +333,12 @@ public final class GWWUtils {
    }
 
 
-   public static Sector toSector(final GAxisAlignedRectangle boundingRectangle,
+   public static Sector toSector(final GAxisAlignedOrthotope<IVector2<?>, ?> boundingRectangle,
                                  final GProjection projection) {
+      if (boundingRectangle == null) {
+         return null;
+      }
+
       final IVector2<?> lower = boundingRectangle._lower.reproject(projection, GProjection.EPSG_4326);
       final IVector2<?> upper = boundingRectangle._upper.reproject(projection, GProjection.EPSG_4326);
 
@@ -343,18 +348,16 @@ public final class GWWUtils {
       final Angle minLongitude = Angle.fromRadiansLongitude(lower.x());
       final Angle maxLongitude = Angle.fromRadiansLongitude(upper.x());
 
-      //      final Angle minLatitude = Angle.fromRadians(lower.y());
-      //      final Angle maxLatitude = Angle.fromRadians(upper.y());
-      //
-      //      final Angle minLongitude = Angle.fromRadians(lower.x());
-      //      final Angle maxLongitude = Angle.fromRadians(upper.x());
-
       return new Sector(minLatitude, maxLatitude, minLongitude, maxLongitude);
    }
 
 
    public static GAxisAlignedRectangle toAxisAlignedRectangle(final Sector sector,
                                                               final GProjection projection) {
+      if (sector == null) {
+         return null;
+      }
+
       final GVector2D lower = new GVector2D(sector.getMinLongitude().radians, sector.getMinLatitude().radians);
       final GVector2D upper = new GVector2D(sector.getMaxLongitude().radians, sector.getMaxLatitude().radians);
 
@@ -380,6 +383,9 @@ public final class GWWUtils {
 
 
    public static Box toBox(final GAxisAlignedBox aaBox) {
+      if (aaBox == null) {
+         return null;
+      }
 
       final List<Vec4> points = GCollections.collect(aaBox.getVertices(), new ITransformer<IVector3<?>, Vec4>() {
          @Override

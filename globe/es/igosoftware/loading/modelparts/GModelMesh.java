@@ -46,6 +46,7 @@ import es.igosoftware.euclid.mutability.GMutableAbstract;
 import es.igosoftware.euclid.mutability.IMutable;
 import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.IVector3;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.utils.GWWUtils;
 import gov.nasa.worldwind.geom.Matrix;
 import gov.nasa.worldwind.geom.Vec4;
@@ -137,10 +138,9 @@ public class GModelMesh
             }
          }
 
-         final String textureFileName = _material.getTextureFileName();
-         if ((textureFileName != null) && !textureFileName.trim().isEmpty()) {
-
-            final String textureFileNameLowerCase = textureFileName.trim().toLowerCase();
+         final GFileName textureFileName = _material.getTextureFileName();
+         if (textureFileName != null) {
+            final String textureFileNameLowerCase = textureFileName.buildPath().toLowerCase();
 
             if (textureFileNameLowerCase.endsWith(".png")) {
                return false;
@@ -148,7 +148,6 @@ public class GModelMesh
             if (textureFileNameLowerCase.endsWith(".tga")) {
                return false;
             }
-
          }
       }
 
@@ -198,7 +197,7 @@ public class GModelMesh
 
    @Override
    public String toString() {
-      return "GModelMesh [name=" + _name + ", model=" + _model.getName() + ", faces=" + _faces.size() + "]";
+      return "GModelMesh [name=" + _name + ", model=" + _model.getFileName() + ", faces=" + _faces.size() + "]";
    }
 
 

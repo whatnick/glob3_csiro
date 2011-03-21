@@ -81,9 +81,9 @@ public class GPlanarPanoramicCompiler {
    }
 
 
-   private static void processImage(final String imageFullName,
-                                    final String outputDirectoryName,
-                                    final int maxLevel) throws IOException {
+   public static void processImage(final String imageFullName,
+                                   final String outputDirectoryName,
+                                   final int maxLevel) throws IOException {
       final long started = System.currentTimeMillis();
       System.out.println("Processing " + imageFullName + "...");
 
@@ -110,7 +110,9 @@ public class GPlanarPanoramicCompiler {
 
             final String levelDirectory = outputDirectory + zoomLevel.getLevel() + "/";
             System.out.println("    Zoom Level Directory: " + levelDirectory);
-            new File(levelDirectory).mkdirs();
+            if (!new File(levelDirectory).mkdirs()) {
+               throw new IOException("Can't create directory: " + new File(levelDirectory));
+            }
 
             final Image scaledImage;
             if ((zoomLevel.getWidth() == bi.getWidth()) && (zoomLevel.getHeight() == bi.getHeight())) {

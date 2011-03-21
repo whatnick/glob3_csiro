@@ -145,7 +145,7 @@ public class GPanoramic
 
    private final String                                                      _name;
    private final ILoader                                                     _loader;
-   private final GFileName                                                   _panoramicFile;
+   private final GFileName                                                   _panoramicFileName;
    private final double                                                      _radius;
    private final Position                                                    _position;
    private final double                                                      _headingInDegrees;
@@ -191,7 +191,7 @@ public class GPanoramic
    public GPanoramic(final Layer layer,
                      final String name,
                      final ILoader loader,
-                     final GFileName panoramicName,
+                     final GFileName panoramicFileName,
                      final double radius,
                      final Position position,
                      final double headingInDegrees,
@@ -206,7 +206,7 @@ public class GPanoramic
 
       _name = name;
       _loader = loader;
-      _panoramicFile = panoramicName;
+      _panoramicFileName = panoramicFileName;
       _radius = radius;
       _position = position;
       _headingInDegrees = headingInDegrees;
@@ -296,7 +296,7 @@ public class GPanoramic
 
    private GPanoramicCompiler.ZoomLevels readZoomLevels() throws IOException {
 
-      final GFileName fileName = new GFileName(_panoramicFile, GPanoramicCompiler.LEVELS_FILE_NAME);
+      final GFileName fileName = GFileName.fromParentAndParts(_panoramicFileName, GPanoramicCompiler.LEVELS_FILE_NAME);
 
       final GHolder<GPanoramicCompiler.ZoomLevels> result = new GHolder<GPanoramicCompiler.ZoomLevels>(null);
       final GHolder<IOException> exception = new GHolder<IOException>(null);
@@ -473,7 +473,9 @@ public class GPanoramic
 
 
    public void doRender(final DrawContext dc) {
+
       if (dc.isPickingMode()) {
+         System.out.println("--not rendering because in pickingMode---");
          return;
       }
 
@@ -501,6 +503,7 @@ public class GPanoramic
       if (!_visibleTiles.isEmpty()) {
          dc.addOrderedRenderable(this);
       }
+
    }
 
 
@@ -821,7 +824,8 @@ public class GPanoramic
                }
             };
 
-            final GFileName tilePath = new GFileName(_panoramicFile, Integer.toString(_level), _row + "-" + _column + ".jpg");
+            final String tileName = _row + "-" + _column + ".jpg";
+            final GFileName tilePath = GFileName.fromParentAndParts(_panoramicFileName, Integer.toString(_level), tileName);
 
             _loader.load(tilePath, -1, false, _level, _handler);
          }

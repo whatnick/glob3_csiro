@@ -8,6 +8,7 @@ import java.io.IOException;
 import es.igosoftware.dmvc.client.GDClient;
 import es.igosoftware.dmvc.transferring.GDFileClient;
 import es.igosoftware.dmvc.transferring.IDFileServer;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GProcessor;
 
 
@@ -50,13 +51,13 @@ public class GDFileClientTest {
 
       final GDFileClient fileClient = new GDFileClient(fileServer, cacheDirectoryName);
 
-      final File unexistingFile = fileClient.getFile("unexisting.file");
+      final File unexistingFile = fileClient.getFile(GFileName.relativeFromParts("unexisting.file"));
       System.out.println("unexisting.file: " + unexistingFile);
 
 
       for (int i = 0; i < 5; i++) {
          final int finalI = i;
-         fileClient.getFile("lipsum.txt", new GProcessor<File>() {
+         fileClient.getFile(GFileName.relativeFromParts("lipsum.txt"), new GProcessor<File>() {
             @Override
             public void process(final File element) {
                System.out.println("lipsum.txt #" + finalI + ": " + element.getAbsolutePath());

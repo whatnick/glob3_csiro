@@ -51,7 +51,7 @@ import es.igosoftware.euclid.verticescontainer.IUnstructuredVertexContainer;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
 
 
-public abstract class GUnstructuredFilePointsLoader<VectorT extends IVector<VectorT, ?>>
+public abstract class GUnstructuredFilePointsLoader<VectorT extends IVector<VectorT, ?, ?>>
          extends
             GFilePointsLoader<VectorT, IVertexContainer.Vertex<VectorT>> {
 

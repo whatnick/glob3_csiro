@@ -86,25 +86,39 @@ if [ "$OS" = "Darwin" ]; then
 fi
 
 
-# Test for local libs
-LIBS=../../../GLOB3-Repository/glob3/globe/libs
-IGOLIBS=../../../GLOB3-Repository/igolibs/libs
+if test -x ../../../GLOB3-Repository/glob3 ; then
+    GLOB3_DIRECTORY=../../../GLOB3-Repository/glob3
+fi
+
+if test -x ../../GLOB3-Repository/glob3 ; then
+    GLOB3_DIRECTORY=../../GLOB3-Repository/glob3
+fi
+
+if [ "$GLOB3_DIRECTORY" == "" ] ; then
+    echo ==========================================================
+    echo == Can\'t find GLOB3_DIRECTORY                          ==
+    echo ==========================================================
+    exit 1
+fi
+
+
+LIBS=${GLOB3_DIRECTORY}/globe/libs
+IGOLIBS=${GLOB3_DIRECTORY}/igolibs/libs
 
 # Don't use MToolkit
 export AWT_TOOLKIT=XToolkit
 
 export CLASSPATH=.
 export CLASSPATH=${CLASSPATH}:${IGOLIBS}
-export CLASSPATH=${CLASSPATH}:../../../GLOB3-Repository/glob3/igolibs/
-export CLASSPATH=${CLASSPATH}:../../../GLOB3-Repository/glob3/euclid/
-export CLASSPATH=${CLASSPATH}:../../../GLOB3-Repository/glob3/euclid/libs/jna.jar
-export CLASSPATH=${CLASSPATH}:../../../GLOB3-Repository/glob3/globe/
-export CLASSPATH=${CLASSPATH}:../../../GLOB3-Repository/glob3/globe-points-streaming/
-#export CLASSPATH=${CLASSPATH}:../ww/src/
+export CLASSPATH=${CLASSPATH}:${GLOB3_DIRECTORY}/igolibs/
+export CLASSPATH=${CLASSPATH}:${GLOB3_DIRECTORY}/euclid/
+export CLASSPATH=${CLASSPATH}:${GLOB3_DIRECTORY}/euclid/libs/jna.jar
+export CLASSPATH=${CLASSPATH}:${GLOB3_DIRECTORY}/globe/
+export CLASSPATH=${CLASSPATH}:${GLOB3_DIRECTORY}/globe-points-streaming/
 export CLASSPATH=${CLASSPATH}:${LIBS}/substance6.0/substance.jar
 export CLASSPATH=${CLASSPATH}:${LIBS}/substance6.0/trident.jar
 export CLASSPATH=${CLASSPATH}:${LIBS}/miglayout/miglayout-3.7.3.1-swing.jar
-export CLASSPATH=${CLASSPATH}:../../../GLOB3-Repository/glob3/dmvc/libs/netty-3.1.5.GA/netty-3.1.5.GA.jar
+export CLASSPATH=${CLASSPATH}:${GLOB3_DIRECTORY}/dmvc/libs/netty-3.1.5.GA/netty-3.1.5.GA.jar
 export CLASSPATH=${CLASSPATH}:${LIBS}/jogl/gluegen-rt.jar
 export CLASSPATH=${CLASSPATH}:${LIBS}/jogl/jogl.jar
 export CLASSPATH=${CLASSPATH}:${LIBS}/worldwind.jar
@@ -179,11 +193,11 @@ fi
 # show_message DEVELOPMENT_JAVAVM_ARG=${DEVELOPMENT_JAVAVM_ARG}
 
 if [ "$ARCHITECTURE" = "32" ] || [ "$OS" = "Darwin" ]; then
-    JAVA_LIBRARY_PATH="../globe/libs/jogl/"
-    JNA_LIBRARY_PATH="../globe/libs/proj4/"
+    JAVA_LIBRARY_PATH="${GLOB3_DIRECTORY}/globe/libs/jogl/"
+    JNA_LIBRARY_PATH="${GLOB3_DIRECTORY}/globe/libs/proj4/"
 else
-    JAVA_LIBRARY_PATH="../globe/libs/jogl/linux-amd64/"
-    JNA_LIBRARY_PATH="../globe/libs/proj4/linux-amd64/"
+    JAVA_LIBRARY_PATH="${GLOB3_DIRECTORY}/globe/libs/jogl/linux-amd64/"
+    JNA_LIBRARY_PATH="${GLOB3_DIRECTORY}/globe/libs/proj4/linux-amd64/"
 fi
 
 JAVA_LIBRARY_PATH=${EXTRA_JAVA_LIBRARY_PATH}:${JAVA_LIBRARY_PATH}

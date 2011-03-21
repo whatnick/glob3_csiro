@@ -39,10 +39,12 @@ package es.igosoftware.euclid.vector;
 import java.io.Serializable;
 import java.util.Comparator;
 
+import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+
 
 public interface IVector2<GeometryT extends IVector2<GeometryT>>
          extends
-            IVector<IVector2<?>, GeometryT> {
+            IVector<IVector2<?>, GeometryT, GAxisAlignedRectangle> {
 
    public static class DefaultComparator
             implements
