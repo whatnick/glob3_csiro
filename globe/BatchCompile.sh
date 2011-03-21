@@ -12,4 +12,4 @@ export LOW_END=off
 #export ARCHITECTURE="32"
 
 #export EXTRA_CLASSPATH=libs/jai_core.jar:libs/jai_codec.jar
-../globe/runjava.sh es.igosoftware.panoramic.GMBatchPlanarPanoramicCompiler $*
+../globe/runjava.sh es.igosoftware.panoramic.GBatchPlanarPanoramicCompiler $*
