@@ -860,8 +860,15 @@ public class GNetCDFMultidimentionalData
                final double y = get(_latitudeVariable, dimensions, indices);
                //               final double z = get(_elevationVariable, dimensions, indices);
 
-               final Position positionFrom = new Position(Angle.fromDegrees(y), Angle.fromDegrees(x), z);
-               final Position positionTo = GWWUtils.increment(positionFrom, uValue * factor, vValue * factor, 0);
+               // Draw vectors centred in cell
+
+               final double uValue_half_scaled = uValue * factor / 2.0;
+               final double vValue_half_scaled = vValue * factor / 2.0;
+
+               final Position positionCentre = new Position(Angle.fromDegrees(y), Angle.fromDegrees(x), z);
+
+               final Position positionFrom = GWWUtils.increment(positionCentre, -uValue_half_scaled, -vValue_half_scaled, 0);
+               final Position positionTo = GWWUtils.increment(positionCentre, uValue_half_scaled, vValue_half_scaled, 0);
 
 
                final Vec4 point4From = GWWUtils.toVec4(positionFrom, globe, verticalExaggeration);
