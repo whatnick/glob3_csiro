@@ -60,7 +60,7 @@ public final class GLogger {
 
 
    private String level() {
-      return StringUtils.spaces(_identationLevel * 2);
+      return GStringUtils.spaces(_identationLevel * 2);
    }
 
 

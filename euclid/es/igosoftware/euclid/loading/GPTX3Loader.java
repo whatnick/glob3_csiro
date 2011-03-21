@@ -65,7 +65,7 @@ import es.igosoftware.euclid.verticescontainer.IStructuredVertexContainer.Struct
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.GProgress;
-import es.igosoftware.util.GUtils;
+import es.igosoftware.util.GStringUtils;
 import es.igosoftware.util.XStringTokenizer;
 
 
@@ -634,7 +634,7 @@ public final class GPTX3Loader
          }
 
          final long elapsed = System.currentTimeMillis() - started;
-         System.out.println("NEW in " + elapsed + " ms. ( " + GUtils.getTimeMessage(elapsed) + " )");
+         System.out.println("NEW in " + elapsed + " ms. ( " + GStringUtils.getTimeMessage(elapsed) + " )");
          System.out.println();
 
          System.out.println("--------------------------------------------------------------------------------------------");
@@ -668,7 +668,7 @@ public final class GPTX3Loader
          }
 
          final long elapsed2 = System.currentTimeMillis() - started2;
-         System.out.println("TRANSFORMED in " + elapsed2 + " ms. ( " + GUtils.getTimeMessage(elapsed2) + " )");
+         System.out.println("TRANSFORMED in " + elapsed2 + " ms. ( " + GStringUtils.getTimeMessage(elapsed2) + " )");
          System.out.println();
 
          System.out.println("--------------------------------------------------------------------------------------------");

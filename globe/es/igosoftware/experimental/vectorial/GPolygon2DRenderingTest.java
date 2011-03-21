@@ -23,8 +23,7 @@ import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.util.GMath;
-import es.igosoftware.util.GUtils;
-import es.igosoftware.util.StringUtils;
+import es.igosoftware.util.GStringUtils;
 
 
 public class GPolygon2DRenderingTest {
@@ -167,8 +166,8 @@ public class GPolygon2DRenderingTest {
       final File file = new File(directoryName, imageName + ".png");
       ImageIO.write(renderedImage, "png", file);
 
-      System.out.println(StringUtils.spaces(depth * 2) + "Rendered " + imageName + " in "
-                         + GUtils.getTimeMessage(System.currentTimeMillis() - start));
+      System.out.println(GStringUtils.spaces(depth * 2) + "Rendered " + imageName + " in "
+                         + GStringUtils.getTimeMessage(System.currentTimeMillis() - start));
 
       if (depth < maxDepth) {
          final GAxisAlignedRectangle[] subRegions = region.subdivideAtCenter();

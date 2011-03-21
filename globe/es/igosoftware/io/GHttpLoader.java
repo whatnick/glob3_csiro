@@ -12,16 +12,18 @@ import java.io.OutputStream;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.concurrent.PriorityBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import es.igosoftware.util.GAssert;
-import es.igosoftware.util.GHolder;
 import es.igosoftware.util.GLogger;
+import es.igosoftware.util.GPair;
 import es.igosoftware.util.GStringUtils;
-import es.igosoftware.util.GUtils;
 
 
 public class GHttpLoader
@@ -41,19 +43,22 @@ public class GHttpLoader
 
 
    private class Task {
-      private final String           _fileName;
-      private final int              _priority;
-      private final ILoader.IHandler _handler;
+      private final String                        _fileName;
+      private int                                 _priority;
+      //      private final ILoader.IHandler _handler;
+      private final List<GPair<LoadID, IHandler>> _handlers;
 
-      private boolean                _isCanceled;
+      private boolean                             _isCanceled    = false;
+      private boolean                             _isDownloading = false;
 
 
       private Task(final String fileName,
                    final int priority,
-                   final ILoader.IHandler handler) {
+                   final GPair<LoadID, IHandler> idAndHandler) {
          _fileName = fileName;
          _priority = priority;
-         _handler = handler;
+         _handlers = new ArrayList<GPair<LoadID, IHandler>>(2);
+         _handlers.add(idAndHandler);
       }
 
 
@@ -74,15 +79,13 @@ public class GHttpLoader
             partFile = File.createTempFile(_fileName, ".part", _rootCacheDirectory);
          }
          catch (final IOException e) {
-            _handler.loadError(ILoader.ErrorType.NOT_FOUND, e);
+            notifyErrorToHandlers(ILoader.ErrorType.NOT_FOUND, e);
             return;
          }
 
          partFile.deleteOnExit(); // just in case...
-         //         if (partFile.exists()) {
-         //            LOGGER.severe("partFile is present: " + partFile);
-         //         }
 
+         final long start = System.currentTimeMillis();
 
          InputStream is = null;
          OutputStream out = null;
@@ -100,46 +103,30 @@ public class GHttpLoader
             out.close();
             out = null;
 
+            final long ellapsed = System.currentTimeMillis() - start;
+
             synchronized (_rootCacheDirectory) {
                final File cacheFile = new File(_rootCacheDirectory, _fileName);
 
-               //               if (cacheFile.exists()) {
-               //                  if (cacheFile.length() != partFile.length()) {
-               //                     LOGGER.severe("file " + cacheFile + " (" + cacheFile.length()
-               //                                   + ") already exists and it's size it's different than " + partFile + " (" + partFile.length()
-               //                                   + ")");
-               //                     partFile.delete();
-               //                     _handler.loadError(ILoader.ErrorType.CANT_READ, null);
-               //                     return;
-               //                  }
-               //                  partFile.delete();
-               //               }
-               //               else {
                if (!partFile.renameTo(cacheFile)) {
                   LOGGER.severe("can't rename " + partFile + " to " + cacheFile);
-                  _handler.loadError(ILoader.ErrorType.CANT_READ, null);
+                  notifyErrorToHandlers(ILoader.ErrorType.CANT_READ, null);
                   return;
                }
-               //               }
 
                final long bytesLoaded = cacheFile.length();
-               cacheMiss(bytesLoaded);
+               cacheMiss(bytesLoaded, ellapsed);
 
                if (!_isCanceled) {
-                  try {
-                     _handler.loaded(cacheFile, bytesLoaded, true);
-                  }
-                  catch (final ILoader.AbortLoading e) {
-                     // do nothing, the file is already downloaded
-                  }
+                  notifyLoadToHandlers(cacheFile, bytesLoaded);
                }
             }
          }
          catch (final MalformedURLException e) {
-            _handler.loadError(ILoader.ErrorType.NOT_FOUND, e);
+            notifyErrorToHandlers(ILoader.ErrorType.NOT_FOUND, e);
          }
          catch (final IOException e) {
-            _handler.loadError(ILoader.ErrorType.CANT_READ, e);
+            notifyErrorToHandlers(ILoader.ErrorType.CANT_READ, e);
          }
          finally {
             GIOUtils.gentlyClose(is);
@@ -148,8 +135,48 @@ public class GHttpLoader
       }
 
 
+      private synchronized void notifyLoadToHandlers(final File cacheFile,
+                                                     final long bytesLoaded) {
+
+         synchronized (_tasks) {
+            _tasks.remove(_fileName);
+         }
+
+         try {
+            for (final GPair<LoadID, IHandler> idAndHandler : _handlers) {
+               final ILoader.IHandler handler = idAndHandler._second;
+               handler.loaded(cacheFile, bytesLoaded, true);
+            }
+         }
+         catch (final ILoader.AbortLoading e) {
+            // do nothing, the file is already downloaded
+         }
+      }
+
+
+      private synchronized void notifyErrorToHandlers(final ILoader.ErrorType error,
+                                                      final Throwable exception) {
+         synchronized (_tasks) {
+            _tasks.remove(_fileName);
+         }
+
+         for (final GPair<LoadID, IHandler> idAndHandler : _handlers) {
+            final ILoader.IHandler handler = idAndHandler._second;
+            handler.loadError(error, exception);
+         }
+      }
+
+
       private void cancel() {
          _isCanceled = true;
+      }
+
+
+      private synchronized void addHandler(final int priority,
+                                           final GPair<ILoader.LoadID, ILoader.IHandler> idAndHandler) {
+         _priority = Math.max(priority, _priority);
+         _handlers.add(idAndHandler);
+         _isCanceled = false;
       }
    }
 
@@ -164,10 +191,12 @@ public class GHttpLoader
    }
 
 
-   private void cacheMiss(final long bytesLoaded) {
+   private void cacheMiss(final long bytesLoaded,
+                          final long ellapsedTimeInMS) {
       synchronized (_statisticsMutex) {
          _loadCounter++;
          _bytesDownloaded += bytesLoaded;
+         _downloadEllapsedTime += ellapsedTimeInMS;
 
          tryToShowStatistics();
       }
@@ -193,7 +222,8 @@ public class GHttpLoader
       public void run() {
          try {
             while (true) {
-               final Task task = _tasks.poll(1, TimeUnit.DAYS);
+               //               final Task task = _tasks.poll(1, TimeUnit.DAYS);
+               final Task task = selectTask();
                if (task != null) {
                   if (task._isCanceled) {
                      continue; // ignored the canceled task
@@ -214,25 +244,55 @@ public class GHttpLoader
                                     final Throwable e) {
          LOGGER.severe("Uncaught exception in thread " + thread, e);
       }
+
+
+      private Task selectTask() throws InterruptedException {
+         Task selected = null;
+
+         synchronized (_tasks) {
+            final Set<Entry<String, Task>> entries = _tasks.entrySet();
+            for (final Entry<String, Task> entry : entries) {
+               final Task current = entry.getValue();
+               if (!current._isDownloading && !current._isCanceled) {
+                  if ((selected == null) || (current._priority > selected._priority)) {
+                     selected = current;
+                  }
+               }
+            }
+
+            if (selected != null) {
+               selected._isDownloading = true;
+            }
+         }
+
+         if (selected == null) {
+            Thread.sleep(10);
+         }
+
+         return selected;
+      }
    }
 
 
-   private final URL                         _rootURL;
-   private final File                        _rootCacheDirectory;
-   private final PriorityBlockingQueue<Task> _tasks;
-   private final boolean                     _verbose;
+   private final URL               _rootURL;
+   private final File              _rootCacheDirectory;
+   private final Map<String, Task> _tasks                = new HashMap<String, Task>();
+   private final boolean           _verbose;
+   private final boolean           _debug;
 
+   private final Object            _statisticsMutex      = new Object();
+   private int                     _loadCounter          = 0;
+   private int                     _loadCacheHits        = 0;
+   private long                    _bytesDownloaded      = 0;
+   private long                    _downloadEllapsedTime = 0;
 
-   private final Object                      _statisticsMutex = new Object();
-   private int                               _loadCounter     = 0;
-   private int                               _loadCacheHits   = 0;
-   private long                              _bytesDownloaded = 0;
+   private int                     _loadID               = Integer.MIN_VALUE;
 
 
    public GHttpLoader(final URL root,
                       final int workersCount,
                       final boolean verbose) {
-      this(root, null, workersCount, verbose);
+      this(root, null, workersCount, verbose, false);
    }
 
 
@@ -240,6 +300,23 @@ public class GHttpLoader
                       final File cacheRootDirectory,
                       final int workersCount,
                       final boolean verbose) {
+      this(root, cacheRootDirectory, workersCount, verbose, false);
+   }
+
+
+   public GHttpLoader(final URL root,
+                      final int workersCount,
+                      final boolean verbose,
+                      final boolean debug) {
+      this(root, RENDERING_CACHE_DIRECTORY, workersCount, verbose, debug);
+   }
+
+
+   public GHttpLoader(final URL root,
+                      final File cacheRootDirectory,
+                      final int workersCount,
+                      final boolean verbose,
+                      final boolean debug) {
       GAssert.notNull(root, "root");
 
       if (!root.getProtocol().equals("http")) {
@@ -249,6 +326,7 @@ public class GHttpLoader
 
       _rootURL = root;
       _verbose = verbose;
+      _debug = debug;
 
       if (cacheRootDirectory == null) {
          _rootCacheDirectory = new File(RENDERING_CACHE_DIRECTORY, getDirectoryName(_rootURL));
@@ -263,25 +341,6 @@ public class GHttpLoader
             throw new RuntimeException("Can't create cache directory: " + _rootCacheDirectory.getAbsolutePath());
          }
       }
-
-      _tasks = new PriorityBlockingQueue<Task>(25, new Comparator<Task>() {
-         @Override
-         public int compare(final Task task1,
-                            final Task task2) {
-            final int priority1 = task1._priority;
-            final int priority2 = task2._priority;
-
-            if (priority1 < priority2) {
-               return 1;
-            }
-            else if (priority1 > priority2) {
-               return -1;
-            }
-            else {
-               return 0;
-            }
-         }
-      });
 
       initializeWorkers(workersCount);
    }
@@ -309,12 +368,16 @@ public class GHttpLoader
 
 
    @Override
-   public void load(final String fileName,
-                    final long bytesToLoad,
-                    final int priority,
-                    final ILoader.IHandler handler) {
+   public ILoader.LoadID load(final String fileName,
+                              final long bytesToLoad,
+                              final int priority,
+                              final ILoader.IHandler handler) {
       GAssert.notNull(fileName, "fileName");
       GAssert.notNull(handler, "handler");
+
+      if (_debug) {
+         LOGGER.info("load(" + fileName + ", " + bytesToLoad + ", " + priority + ", " + handler);
+      }
 
       if (bytesToLoad >= 0) {
          throw new RuntimeException("fragment downloading is not supported");
@@ -332,98 +395,91 @@ public class GHttpLoader
             // do nothing, the file is already on the cache and there are no download to cancel
          }
 
-         return;
+         return null;
       }
 
 
       synchronized (_tasks) {
-         for (final Task task : _tasks) {
-            if (task._fileName.equals(fileName)) {
-               throw new RuntimeException("Can't download the very same file at the same time (" + fileName + ")");
-            }
-         }
+         final ILoader.LoadID loadID = new ILoader.LoadID(_loadID++);
+         final GPair<ILoader.LoadID, ILoader.IHandler> idAndHandler = new GPair<ILoader.LoadID, ILoader.IHandler>(loadID, handler);
 
-         _tasks.add(new Task(fileName, priority, handler));
+         final Task existingTask = _tasks.get(fileName);
+         if (existingTask == null) {
+            _tasks.put(fileName, new Task(fileName, priority, idAndHandler));
+         }
+         else {
+            existingTask.addHandler(priority, idAndHandler);
+         }
+         return loadID;
       }
    }
 
 
    private void tryToShowStatistics() {
-      if ((_loadCounter != 0) && ((_loadCounter % 50) == 0)) {
-         //      if (_loadCounter != 0) {
+      if (_verbose && (_loadCounter != 0) && ((_loadCounter % 50) == 0)) {
+         showStatistics();
+      }
+      else if (_debug) {
          showStatistics();
       }
    }
 
 
    private void showStatistics() {
-      if (!_verbose) {
-         return;
-      }
-
       final double hitsPercent = (double) _loadCacheHits / _loadCounter;
-      LOGGER.info("HttpLoader \"" + _rootURL + "\": " + //
-                  "loads=" + _loadCounter + ", " + //
-                  "cache hits=" + _loadCacheHits + " (" + GStringUtils.formatPercent(hitsPercent) + "), " + //
-                  "bytesDownloaded=" + _bytesDownloaded);
+
+      final String msg = "HttpLoader \"" + _rootURL + "\": " + //
+                         "loads=" + _loadCounter + ", " + //
+                         "cache hits=" + _loadCacheHits + " (" + GStringUtils.formatPercent(hitsPercent) + ")";
+
+      if (_bytesDownloaded != 0) {
+         final double throughput = (double) _bytesDownloaded / _downloadEllapsedTime * 1000;
+         LOGGER.info(msg + ", downloaded=" + GStringUtils.getSpaceMessage(_bytesDownloaded) + ", throughput="
+                     + GStringUtils.getSpaceMessage(throughput) + "/s");
+      }
+      else {
+         LOGGER.info(msg);
+      }
    }
 
 
    @Override
-   public void cancelLoading(final String fileName) {
+   public void cancelLoad(final ILoader.LoadID id) {
       synchronized (_tasks) {
-         final Iterator<Task> iterator = _tasks.iterator();
-         while (iterator.hasNext()) {
-            final Task task = iterator.next();
-            if (task._fileName.equals(fileName)) {
-               task.cancel();
-               iterator.remove();
+
+         final Iterator<Entry<String, Task>> tasksIterator = _tasks.entrySet().iterator();
+
+         while (tasksIterator.hasNext()) {
+            final Entry<String, Task> entry = tasksIterator.next();
+            final Task task = entry.getValue();
+
+            final Iterator<GPair<ILoader.LoadID, ILoader.IHandler>> taskHandlersIterator = task._handlers.iterator();
+            while (taskHandlersIterator.hasNext()) {
+               final GPair<ILoader.LoadID, ILoader.IHandler> idAndHandler = taskHandlersIterator.next();
+               if (id.equals(idAndHandler._first)) {
+                  taskHandlersIterator.remove();
+               }
+            }
+
+            if (!task._isDownloading) {
+               if (task._handlers.isEmpty()) {
+                  tasksIterator.remove();
+                  task.cancel();
+               }
             }
          }
       }
    }
 
 
-   public static void main(final String[] args) throws MalformedURLException {
-      final URL url = new URL("http://localhost/PANOS/cantabria1.jpg/");
-
-      final GHttpLoader loader = new GHttpLoader(url, 2, true);
-
-      final GHolder<Boolean> downloaded = new GHolder<Boolean>(false);
-
-      final ILoader.IHandler handler = new ILoader.IHandler() {
-         @Override
-         public void loaded(final File file,
-                            final long bytesLoaded,
-                            final boolean completeLoaded) {
-            //            if (!completeLoaded) {
-            //               return;
-            //            }
-
-            System.out.println("loaded " + file + ", bytesLoaded=" + bytesLoaded + ", completeLoaded=" + completeLoaded);
-            downloaded.set(true);
+   @Override
+   public void cancelAllLoads(final String fileName) {
+      synchronized (_tasks) {
+         final Task task = _tasks.remove(fileName);
+         if (task != null) {
+            task.cancel();
          }
-
-
-         @Override
-         public void loadError(final ILoader.ErrorType error,
-                               final Throwable e) {
-            System.out.println("Error=" + error + ", exception=" + e);
-         }
-      };
-      loader.load("info.txt", -1, 1, handler);
-
-      while (!downloaded.get()) {
-         GUtils.delay(10);
       }
-
-      for (int i = 0; i < 100; i++) {
-         loader.load("info.txt", -1, 1, handler);
-         loader.load("info.txt", -1, 1, handler);
-         loader.load("info.txt", -1, 1, handler);
-      }
-
    }
-
 
 }
