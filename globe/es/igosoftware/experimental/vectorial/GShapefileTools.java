@@ -34,7 +34,7 @@
 */
 
 
-package es.igosoftware.globe.layers;
+package es.igosoftware.experimental.vectorial;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,11 +57,13 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.features.GField;
+import es.igosoftware.euclid.features.GGlobeFeature;
+import es.igosoftware.euclid.features.GListFeatureCollection;
+import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.IVector2;
-import es.igosoftware.globe.GField;
-import es.igosoftware.globe.GListFeatureCollection;
-import es.igosoftware.globe.IGlobeVectorLayer;
+import es.igosoftware.io.GIOUtils;
 import es.igosoftware.utils.GJTSUtils;
 
 
@@ -71,7 +73,7 @@ public class GShapefileTools {
    }
 
 
-   public static IGlobeVectorLayer<IVector2<?>, GAxisAlignedRectangle> readFile(final File file) throws IOException {
+   public static GListFeatureCollection<IVector2<?>, GAxisAlignedRectangle> readFile(final File file) throws IOException {
 
       final HashMap<String, URL> connect = new HashMap<String, URL>();
       connect.put("url", file.toURI().toURL());
@@ -95,18 +97,20 @@ public class GShapefileTools {
 
       final SimpleFeatureType schema = featureSource.getSchema();
       final int fieldsCount = schema.getAttributeCount() - 1;
-      final GField[] fields = new GField[fieldsCount];
+      final List<GField> fields = new ArrayList<GField>(fieldsCount);
       for (int i = 0; i < fieldsCount; i++) {
          final String fieldName = schema.getType(i + 1).getName().getLocalPart();
          final Class<?> fieldType = schema.getType(i + 1).getBinding();
 
-         fields[i] = new GField(fieldName, fieldType);
+         fields.add(new GField(fieldName, fieldType));
       }
 
       final int TODO_read_projection_or_ask_user;
       final GProjection projection = GProjection.EPSG_4326;
 
-      return new GGlobeVector2Layer(file.getName(), new GListFeatureCollection<IVector2<?>, GAxisAlignedRectangle>(projection,
-               features), fields, null);
+      final String uniqueID = GIOUtils.getUniqueID(file);
+      return new GListFeatureCollection<IVector2<?>, GAxisAlignedRectangle>(projection, fields, features, uniqueID);
    }
+
+
 }

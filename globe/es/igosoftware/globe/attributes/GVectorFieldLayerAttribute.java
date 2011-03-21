@@ -40,10 +40,13 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.EventListener;
+import java.util.List;
 
 import javax.swing.JComboBox;
 
-import es.igosoftware.globe.GField;
+import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.features.GField;
+import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
 import es.igosoftware.globe.IGlobeVectorLayer;
@@ -73,12 +76,13 @@ public abstract class GVectorFieldLayerAttribute
                                                        final IGlobeLayer layer) {
       final String options[];
       if (layer instanceof IGlobeVectorLayer) {
-         final IGlobeVectorLayer vlayer = (IGlobeVectorLayer) layer;
+         @SuppressWarnings("unchecked")
+         final IGlobeVectorLayer<IVector2<?>, GAxisAlignedRectangle> vectorLayer = (IGlobeVectorLayer<IVector2<?>, GAxisAlignedRectangle>) layer;
 
-         final GField[] fields = vlayer.getFields();
-         options = new String[fields.length];
-         for (int i = 0; i < fields.length; i++) {
-            options[i] = fields[i].getName();
+         final List<GField> fields = vectorLayer.getFeaturesCollection().getFields();
+         options = new String[fields.size()];
+         for (int i = 0; i < fields.size(); i++) {
+            options[i] = fields.get(i).getName();
          }
       }
       else {

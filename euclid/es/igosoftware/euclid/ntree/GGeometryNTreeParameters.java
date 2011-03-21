@@ -31,22 +31,26 @@ public class GGeometryNTreeParameters {
 
    VectorT extends IVector<VectorT, ?, ?>,
 
+   ElementT,
+
    GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>
 
    > {
       public boolean accept(final int depth,
                             final GAxisAlignedOrthotope<VectorT, ?> bounds,
-                            final Collection<GeometryT> geometries);
+                            final Collection<ElementT> elements);
    }
 
 
    public static interface Accept3DLeafNodeCreationPolicy<
 
+   ElementT,
+
    GeometryT extends IBoundedGeometry<IVector3<?>, ?, ? extends IFiniteBounds<IVector3<?>, ?>>
 
    >
             extends
-               AcceptLeafNodeCreationPolicy<IVector3<?>, GeometryT> {
+               AcceptLeafNodeCreationPolicy<IVector3<?>, ElementT, GeometryT> {
 
 
    }
@@ -54,11 +58,13 @@ public class GGeometryNTreeParameters {
 
    public static interface Accept2DLeafNodeCreationPolicy<
 
+   ElementT,
+
    GeometryT extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>
 
    >
             extends
-               AcceptLeafNodeCreationPolicy<IVector2<?>, GeometryT> {
+               AcceptLeafNodeCreationPolicy<IVector2<?>, ElementT, GeometryT> {
 
    }
 
@@ -67,34 +73,35 @@ public class GGeometryNTreeParameters {
 
    VectorT extends IVector<VectorT, ?, ?>,
 
+   ElementT,
+
    GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>
 
    >
             implements
-               AcceptLeafNodeCreationPolicy<VectorT, GeometryT> {
+               AcceptLeafNodeCreationPolicy<VectorT, ElementT, GeometryT> {
 
       private final int _maxDepth;
-      private final int _maxGeometriesInLeafs;
+      private final int _maxElementsInLeafs;
 
 
       private DefaultAcceptLeafNodeCreationPolicy(final int maxDepth,
-                                                  final int maxGeometriesInLeafs) {
+                                                  final int maxElementsInLeafs) {
          _maxDepth = maxDepth;
-         _maxGeometriesInLeafs = maxGeometriesInLeafs;
+         _maxElementsInLeafs = maxElementsInLeafs;
       }
 
 
       @Override
       public boolean accept(final int depth,
                             final GAxisAlignedOrthotope<VectorT, ?> bounds,
-                            final Collection<GeometryT> geometries) {
-         if ((geometries.size() <= _maxGeometriesInLeafs) || (depth >= _maxDepth + 1)) {
+                            final Collection<ElementT> elements) {
+         if ((elements.size() <= _maxElementsInLeafs) || (depth >= _maxDepth + 1)) {
             return true;
          }
 
          return false;
       }
-
    }
 
 
@@ -120,15 +127,15 @@ public class GGeometryNTreeParameters {
 
    public GGeometryNTreeParameters(final boolean verbose,
                                    final int maxDepth,
-                                   final int maxGeometriesInLeafs,
+                                   final int maxElementsInLeafs,
                                    final BoundsPolicy boundsPolicy,
                                    final boolean multiThread) {
       GAssert.isPositive(maxDepth, "maxDepth");
-      GAssert.isPositive(maxGeometriesInLeafs, "maxGeometriesInLeafs");
+      GAssert.isPositive(maxElementsInLeafs, "maxElementsInLeafs");
       GAssert.notNull(boundsPolicy, "boundsPolicy");
 
       _verbose = verbose;
-      _acceptLeafNodeCreationPolicy = new DefaultAcceptLeafNodeCreationPolicy(maxDepth, maxGeometriesInLeafs);
+      _acceptLeafNodeCreationPolicy = new DefaultAcceptLeafNodeCreationPolicy(maxDepth, maxElementsInLeafs);
       _boundsPolicy = boundsPolicy;
       _multiThread = multiThread;
    }

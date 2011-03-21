@@ -567,4 +567,9 @@ public class GIOUtils {
       return path.replace('\\', '/');
    }
 
+
+   public static String getUniqueID(final File file) {
+      return file.getName() + Long.toHexString(file.lastModified()) + Long.toHexString(file.length());
+   }
+
 }

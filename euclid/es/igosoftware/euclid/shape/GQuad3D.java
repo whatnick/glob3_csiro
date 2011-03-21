@@ -235,4 +235,10 @@ public final class GQuad3D
       return GShape.isConvexQuad(_v0, _v1, _v2, _v3);
    }
 
+
+   @Override
+   public GRenderType getRenderType() {
+      return GRenderType.POLYGON;
+   }
+
 }

@@ -34,29 +34,34 @@
 */
 
 
-package es.igosoftware.globe;
+package es.igosoftware.euclid.features;
 
-import es.igosoftware.euclid.bounding.IFiniteBounds;
-import es.igosoftware.euclid.features.IGlobeFeatureCollection;
-import es.igosoftware.euclid.vector.IVector;
-import es.igosoftware.globe.layers.GVector2RenderingTheme;
+public class GField {
 
-
-public interface IGlobeVectorLayer<
-
-VectorT extends IVector<VectorT, ?, ?>,
-
-BoundsT extends IFiniteBounds<VectorT, BoundsT>
-
->
-         extends
-            IGlobeLayer {
+   private final String   _name;
+   private final Class<?> _type;
 
 
-   public GVector2RenderingTheme getRenderingTheme();
+   public GField(final String name,
+                 final Class<?> type) {
+      _name = name;
+      _type = type;
+   }
 
 
-   public IGlobeFeatureCollection<VectorT, BoundsT, ?> getFeaturesCollection();
+   public String getName() {
+      return _name;
+   }
 
+
+   public Class<?> getType() {
+      return _type;
+   }
+
+
+   @Override
+   public String toString() {
+      return "GField [name=" + _name + ", type=" + _type + "]";
+   }
 
 }

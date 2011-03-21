@@ -38,6 +38,7 @@ package es.igosoftware.globe.layers;
 
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector2;
@@ -72,7 +73,7 @@ public class GPolygons2RenderingTheme
                                          final GProjection projection,
                                          final Globe globe) {
 
-      final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> geom = feature.getGeometry();
+      final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> geom = feature.getDefaultGeometry();
 
       @SuppressWarnings("unchecked")
       final IPointsContainer<IVector2<?>, ?> points = (IPointsContainer<IVector2<?>, ?>) geom;

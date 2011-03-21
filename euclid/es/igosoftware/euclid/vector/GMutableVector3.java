@@ -43,6 +43,7 @@ import es.igosoftware.euclid.GGeometryAbstract;
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 import es.igosoftware.euclid.matrix.GMatrix44D;
 import es.igosoftware.euclid.projection.GProjection;
+import es.igosoftware.euclid.shape.GRenderType;
 import es.igosoftware.util.GAssert;
 
 
@@ -444,6 +445,12 @@ public final class GMutableVector3<T extends IVector3<?>>
    @Override
    public GAxisAlignedBox getBounds() {
       return _value.getBounds();
+   }
+
+
+   @Override
+   public GRenderType getRenderType() {
+      return _value.getRenderType();
    }
 
 

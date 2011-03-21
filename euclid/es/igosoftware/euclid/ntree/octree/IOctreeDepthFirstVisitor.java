@@ -9,8 +9,14 @@ import es.igosoftware.euclid.ntree.IGTDepthFirstVisitor;
 import es.igosoftware.euclid.vector.IVector3;
 
 
-public interface IOctreeDepthFirstVisitor<GeometryT extends IBoundedGeometry<IVector3<?>, ?, ? extends IFiniteBounds<IVector3<?>, ?>>>
+public interface IOctreeDepthFirstVisitor<
+
+ElementT,
+
+GeometryT extends IBoundedGeometry<IVector3<?>, ?, ? extends IFiniteBounds<IVector3<?>, ?>>
+
+>
          extends
-            IGTDepthFirstVisitor<IVector3<?>, GAxisAlignedBox, GeometryT> {
+            IGTDepthFirstVisitor<IVector3<?>, GAxisAlignedBox, ElementT, GeometryT> {
 
 }

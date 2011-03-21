@@ -2,10 +2,13 @@
 
 package es.unex.s3xtante.modules.sextante.bindings;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.JDialog;
 
+import es.igosoftware.euclid.features.GField;
 import es.igosoftware.euclid.projection.GProjection;
-import es.igosoftware.globe.GField;
 import es.igosoftware.io.GFileName;
 import es.unex.sextante.core.AnalysisExtent;
 import es.unex.sextante.core.OutputFactory;
@@ -30,9 +33,9 @@ public class WWOutputFactory
                                          final IOutputChannel channel,
                                          final Object crs) throws UnsupportedOutputChannelException {
 
-      final GField[] fields = new GField[types.length];
-      for (int i = 0; i < fields.length; i++) {
-         fields[i] = new GField(sFields[i], types[i]);
+      final List<GField> fields = new ArrayList<GField>(types.length);
+      for (int i = 0; i < fields.size(); i++) {
+         fields.add(new GField(sFields[i], types[i]));
       }
 
       if (channel instanceof FileOutputChannel) {

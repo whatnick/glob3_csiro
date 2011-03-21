@@ -233,4 +233,9 @@ public final class GTriangle3D
    }
 
 
+   @Override
+   public GRenderType getRenderType() {
+      return GRenderType.POLYGON;
+   }
+
 }

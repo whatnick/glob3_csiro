@@ -37,18 +37,18 @@
 package es.igosoftware.globe.layers;
 
 import es.igosoftware.euclid.IBoundedGeometry;
-import es.igosoftware.euclid.IGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.features.IGlobeFeature;
+import es.igosoftware.euclid.features.IGlobeFeatureCollection;
+import es.igosoftware.euclid.features.IGlobeMutableFeatureCollection;
+import es.igosoftware.euclid.mutability.IMutable;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.shape.GLinesStrip;
 import es.igosoftware.euclid.shape.GSegment;
 import es.igosoftware.euclid.shape.IPolygon;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.vector.IVector2;
-import es.igosoftware.globe.GField;
-import es.igosoftware.globe.GVectorLayerType;
 import es.igosoftware.globe.IGlobeApplication;
-import es.igosoftware.globe.IGlobeFeatureCollection;
 import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
@@ -72,21 +72,20 @@ public class GGlobeVector2Layer
          implements
             IGlobeVectorLayer<IVector2<?>, GAxisAlignedRectangle> {
 
-   private final GVector2RenderingTheme                                      _renderingTheme;
-   private final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle> _features;
-   private final GField[]                                                    _fields;
+   private final GVector2RenderingTheme                                         _renderingTheme;
+   private final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> _features;
 
-   private boolean                                                           _isInitialized = false;
-   private Sector                                                            _extent;
+   private boolean                                                              _isInitialized = false;
+   private Sector                                                               _extent;
 
 
-   private static GVector2RenderingTheme getDefaultRenderer(final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle> features) {
+   private static GVector2RenderingTheme getDefaultRenderer(final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features) {
 
       if (features.isEmpty()) {
          return null;
       }
 
-      final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> geometry = features.get(0).getGeometry();
+      final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> geometry = features.get(0).getDefaultGeometry();
 
       if (geometry instanceof IVector) {
          return new GPoints2RenderingTheme();
@@ -104,16 +103,15 @@ public class GGlobeVector2Layer
 
 
    public GGlobeVector2Layer(final String name,
-                             final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle> features,
-                             final GField[] fields) {
-      this(name, features, fields, getDefaultRenderer(features));
+                             final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features) {
+      this(name, features, getDefaultRenderer(features));
    }
 
 
    public GGlobeVector2Layer(final String name,
-                             final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle> features,
-                             final GField[] fields,
+                             final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features,
                              final GVector2RenderingTheme rendereringTheme) {
+      GAssert.notNull(name, "name");
       GAssert.notNull(features, "features");
 
       setName(name);
@@ -121,7 +119,17 @@ public class GGlobeVector2Layer
       setMinActiveAltitude(0);
       _features = features;
       _renderingTheme = rendereringTheme;
-      _fields = fields;
+
+      if (_features instanceof IGlobeMutableFeatureCollection) {
+         final IGlobeMutableFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> mutableFeatures;
+         mutableFeatures = (IGlobeMutableFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?>) _features;
+         mutableFeatures.addChangeListener(new IMutable.ChangeListener() {
+            @Override
+            public void mutableChanged() {
+               redraw();
+            }
+         });
+      }
 
       //addRenderableObjects();
    }
@@ -143,7 +151,7 @@ public class GGlobeVector2Layer
 
 
    @Override
-   public IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle> getFeaturesCollection() {
+   public IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> getFeaturesCollection() {
       return _features;
    }
 
@@ -162,7 +170,7 @@ public class GGlobeVector2Layer
       GAxisAlignedRectangle mergedExtent = null;
 
       for (final IGlobeFeature<IVector2<?>, GAxisAlignedRectangle> feature : _features) {
-         final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> geom = feature.getGeometry();
+         final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> geom = feature.getDefaultGeometry();
          final GAxisAlignedRectangle bounds = geom.getBounds();
 
          if (mergedExtent == null) {
@@ -203,39 +211,6 @@ public class GGlobeVector2Layer
    @Override
    public GProjection getProjection() {
       return _features.getProjection();
-   }
-
-
-   @Override
-   public GField[] getFields() {
-      return _fields;
-
-   }
-
-
-   @Override
-   public GVectorLayerType getShapeType() {
-      if ((_features == null) || (_features.isEmpty())) {
-         return GVectorLayerType.POLYGON;
-      }
-
-      return getShapeType(_features.get(0).getGeometry());
-   }
-
-
-   private static <VectorT extends IVector<VectorT, ?, ?>> GVectorLayerType getShapeType(final IGeometry<VectorT, ?> geometry) {
-      if (geometry instanceof IVector) {
-         return GVectorLayerType.POINT;
-      }
-      else if ((geometry instanceof GSegment) || (geometry instanceof GLinesStrip)) {
-         return GVectorLayerType.LINE;
-      }
-      else if (geometry instanceof IPolygon) {
-         return GVectorLayerType.POLYGON;
-      }
-      else {
-         return null;
-      }
    }
 
 
