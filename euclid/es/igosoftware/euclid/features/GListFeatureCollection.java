@@ -25,57 +25,53 @@ public class GListFeatureCollection<
 
 VectorT extends IVector<VectorT, ?, ?>,
 
-FeatureGeometryT extends IBoundedGeometry<VectorT, ?, FeatureBoundsT>,
-
-FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
+FeatureGeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>
 
 >
 
          implements
-            IGlobeFeatureCollection<VectorT, FeatureGeometryT, FeatureBoundsT, GListFeatureCollection<VectorT, FeatureGeometryT, FeatureBoundsT>> {
+            IGlobeFeatureCollection<VectorT, FeatureGeometryT, GListFeatureCollection<VectorT, FeatureGeometryT>> {
 
 
    public static <
 
    VectorT extends IVector<VectorT, ?, ?>,
 
-   FeatureGeometryT extends IBoundedGeometry<VectorT, ?, FeatureBoundsT>,
+   FeatureGeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>
 
-   FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
-
-   > GListFeatureCollection<VectorT, IBoundedGeometry<VectorT, ?, FeatureBoundsT>, FeatureBoundsT> fromGeometryList(final GProjection projection,
-                                                                                                                    final List<FeatureGeometryT> geometries,
-                                                                                                                    final String uniqueID) {
+   > GListFeatureCollection<VectorT, IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>> fromGeometryList(final GProjection projection,
+                                                                                                                         final List<FeatureGeometryT> geometries,
+                                                                                                                         final String uniqueID) {
 
       final List<GField> fields = Collections.emptyList();
 
-      final List<IGlobeFeature<VectorT, IBoundedGeometry<VectorT, ?, FeatureBoundsT>, FeatureBoundsT>> features = GCollections.collect(
+      final List<IGlobeFeature<VectorT, IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>>> features = GCollections.collect(
                geometries,
-               new ITransformer<FeatureGeometryT, IGlobeFeature<VectorT, IBoundedGeometry<VectorT, ?, FeatureBoundsT>, FeatureBoundsT>>() {
+               new ITransformer<FeatureGeometryT, IGlobeFeature<VectorT, IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>>>() {
+
                   @Override
-                  public IGlobeFeature<VectorT, IBoundedGeometry<VectorT, ?, FeatureBoundsT>, FeatureBoundsT> transform(final FeatureGeometryT geometry) {
-                     return new GGlobeFeature<VectorT, IBoundedGeometry<VectorT, ?, FeatureBoundsT>, FeatureBoundsT>(geometry,
-                              Collections.emptyList());
+                  public IGlobeFeature<VectorT, IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>> transform(final FeatureGeometryT geometry) {
+                     return new GGlobeFeature<VectorT, IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>>(
+                              geometry, Collections.emptyList());
                   }
                });
 
 
-      return new GListFeatureCollection<VectorT, IBoundedGeometry<VectorT, ?, FeatureBoundsT>, FeatureBoundsT>(projection,
+      return new GListFeatureCollection<VectorT, IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>>(projection,
                fields, features, uniqueID);
    }
 
+   private final GProjection                                    _projection;
+   private final List<GField>                                   _fields;
+   private final List<IGlobeFeature<VectorT, FeatureGeometryT>> _features;
+   private final String                                         _uniqueID;
 
-   private final GProjection                                                    _projection;
-   private final List<GField>                                                   _fields;
-   private final List<IGlobeFeature<VectorT, FeatureGeometryT, FeatureBoundsT>> _features;
-   private final String                                                         _uniqueID;
-
-   private GAxisAlignedOrthotope<VectorT, ?>                                    _bounds;
+   private GAxisAlignedOrthotope<VectorT, ?>                    _bounds;
 
 
    public GListFeatureCollection(final GProjection projection,
                                  final List<GField> fields,
-                                 final List<IGlobeFeature<VectorT, FeatureGeometryT, FeatureBoundsT>> features,
+                                 final List<IGlobeFeature<VectorT, FeatureGeometryT>> features,
                                  final String uniqueID) {
       GAssert.notNull(projection, "projection");
       GAssert.notNull(fields, "fields");
@@ -85,7 +81,7 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
 
       // creates copies of the lists to protect the modifications from outside
       _fields = new ArrayList<GField>(fields);
-      _features = new ArrayList<IGlobeFeature<VectorT, FeatureGeometryT, FeatureBoundsT>>(features);
+      _features = new ArrayList<IGlobeFeature<VectorT, FeatureGeometryT>>(features);
 
       _uniqueID = uniqueID; // can be null, it means no disk-cache is possible
    }
@@ -98,7 +94,7 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
 
 
    @Override
-   public void acceptVisitor(final IGlobeFeatureCollection.IFeatureVisitor<VectorT, FeatureGeometryT, FeatureBoundsT> visitor) {
+   public void acceptVisitor(final IGlobeFeatureCollection.IFeatureVisitor<VectorT, FeatureGeometryT> visitor) {
       try {
          for (int i = 0; i < _features.size(); i++) {
             visitor.visit(_features.get(i), i);
@@ -118,13 +114,13 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
 
 
    @Override
-   public Iterator<IGlobeFeature<VectorT, FeatureGeometryT, FeatureBoundsT>> iterator() {
+   public Iterator<IGlobeFeature<VectorT, FeatureGeometryT>> iterator() {
       return Collections.unmodifiableList(_features).iterator();
    }
 
 
    @Override
-   public IGlobeFeature<VectorT, FeatureGeometryT, FeatureBoundsT> get(final long index) {
+   public IGlobeFeature<VectorT, FeatureGeometryT> get(final long index) {
       return _features.get(toInt(index));
    }
 

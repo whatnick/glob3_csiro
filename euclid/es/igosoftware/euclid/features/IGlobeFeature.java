@@ -13,9 +13,7 @@ public interface IGlobeFeature<
 
 VectorT extends IVector<VectorT, ?, ?>,
 
-GeometryT extends IBoundedGeometry<VectorT, ?, BoundsT>,
-
-BoundsT extends IFiniteBounds<VectorT, BoundsT>
+GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>
 
 > {
 

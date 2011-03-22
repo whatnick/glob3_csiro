@@ -12,6 +12,7 @@ import javax.imageio.ImageIO;
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GPolygon2DRenderer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GRenderingAttributes;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
@@ -43,7 +44,7 @@ public class GPolygon2DRenderingTest {
       final GProjection projection = GProjection.EPSG_4326;
 
 
-      final IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle, ?> features = GShapeLoader.readFeatures(
+      final IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features = GShapeLoader.readFeatures(
                fileName, projection);
 
       //      System.out.println(">>>>>>>>>> CONNECT PROFILER");

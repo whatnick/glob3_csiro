@@ -50,13 +50,11 @@ public class GGlobeFeature<
 
 VectorT extends IVector<VectorT, ?, ?>,
 
-GeometryT extends IBoundedGeometry<VectorT, ?, BoundsT>,
-
-BoundsT extends IFiniteBounds<VectorT, BoundsT>
+GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>
 
 >
          implements
-            IGlobeFeature<VectorT, GeometryT, BoundsT> {
+            IGlobeFeature<VectorT, GeometryT> {
 
    private final GeometryT    _geometry;
    private final List<Object> _attributes;
