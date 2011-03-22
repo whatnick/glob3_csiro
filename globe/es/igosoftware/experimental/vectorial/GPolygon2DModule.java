@@ -12,6 +12,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
@@ -113,56 +114,42 @@ public class GPolygon2DModule
 
    private void openFile(final File file,
                          final IGlobeApplication application) {
+      final Thread worker = new Thread("Vectorial layer loader") {
+         @Override
+         public void run() {
+            final int TODO_read_projection_or_ask_user;
+            final GProjection projection = GProjection.EPSG_4326;
 
-      final int TODO_read_projection_or_ask_user;
-      //final GProjection projection = GProjection.EPSG_4326;
-      final GProjection projection = GPrjLoader.readProjection(application, file);
+            try {
+               final IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle, ?> features = GShapeLoader.readFeatures(
+                        file, projection);
 
-      if (projection == null) {
-         //final int TODO_show_ERROR_dialog;
-         JOptionPane.showMessageDialog(application.getFrame(), "Invalid shape file !. CRS Projection not available",
-                  "Openning shp file", JOptionPane.ERROR_MESSAGE);
-      }
-      else {
-         final Thread worker = new Thread("Vectorial layer loader") {
-            @Override
-            public void run() {
-               //final int TODO_read_projection_or_ask_user;
-               //final GProjection projection = GProjection.EPSG_4326;
-               //final GProjection projection = GPrjLoader.readProjection(application, file);
+               final GPolygon2DLayer layer = new GPolygon2DLayer(file.getName(), features);
+               //               layer.setShowExtents(true);
+               application.getLayerList().add(layer);
 
-               try {
-                  final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features = GShapeLoader.readFeatures(file,
-                           projection);
-
-                  final GPolygon2DLayer layer = new GPolygon2DLayer(file.getName(), features);
-                  //               layer.setShowExtents(true);
-                  application.getLayerList().add(layer);
-
-                  layer.doDefaultAction(application);
-               }
-               catch (final IOException e) {
-                  SwingUtilities.invokeLater(new Runnable() {
-                     @Override
-                     public void run() {
-                        JOptionPane.showMessageDialog(application.getFrame(), "Error opening " + file.getAbsolutePath() + "\n\n "
-                                                                              + e.getLocalizedMessage(), "Error",
-                                 JOptionPane.ERROR_MESSAGE);
-                     }
-                  });
-               }
+               layer.doDefaultAction(application);
             }
-         };
+            catch (final IOException e) {
+               SwingUtilities.invokeLater(new Runnable() {
+                  @Override
+                  public void run() {
+                     JOptionPane.showMessageDialog(application.getFrame(), "Error opening " + file.getAbsolutePath() + "\n\n "
+                                                                           + e.getLocalizedMessage(), "Error",
+                              JOptionPane.ERROR_MESSAGE);
+                  }
+               });
+            }
+         }
+      };
 
-         worker.setDaemon(true);
-         worker.setPriority(Thread.MIN_PRIORITY);
-         worker.start();
-      }
+      worker.setDaemon(true);
+      worker.setPriority(Thread.MIN_PRIORITY);
+      worker.start();
    }
 
 
    private JFileChooser createSqueakProjectSaveFileChooser(final IGlobeApplication application) {
-
       final JFileChooser fileChooser = new JFileChooser(System.getProperty("user.home")) {
          private static final long serialVersionUID = 1L;
 
