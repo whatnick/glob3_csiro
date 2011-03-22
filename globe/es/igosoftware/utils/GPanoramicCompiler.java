@@ -303,9 +303,9 @@ public class GPanoramicCompiler {
    }
 
 
-   private static void process(final File sourceImage,
-                               final String outputDirectoryName,
-                               final boolean debug) throws IOException {
+   public static void process(final File sourceImage,
+                              final String outputDirectoryName,
+                              final boolean debug) throws IOException {
       logInfo("Cleaning directory \"" + outputDirectoryName + "\"");
       GIOUtils.assureEmptyDirectory(outputDirectoryName, false);
 

@@ -61,6 +61,7 @@ import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.LatLon;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Vec4;
+import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.util.Logging;
 import gov.nasa.worldwind.util.PropertyAccessor;
 import gov.nasa.worldwind.view.BasicViewPropertyLimits;
@@ -1160,12 +1161,16 @@ public class GCustomViewInputHandler
    }
 
 
-   private boolean onExitPanoramic(final View view) {
+   public boolean onExitPanoramic(final View view) {
       final GCustomView customView = (GCustomView) view;
       final GGlobeApplication application = GGlobeApplication.instance();
-      final I3DContentCollectionLayer panoramicLayer = application.getContentCollectionLayer();
-      if (panoramicLayer != null) {
-         panoramicLayer.exitContent(customView);
+      //final I3DContentCollectionLayer panoramicLayer = application.getContentCollectionLayer();
+
+      for (final Layer layer : application.getLayerList()) {
+         if ((layer instanceof I3DContentCollectionLayer) && layer.isEnabled()) {
+            final I3DContentCollectionLayer panoramicLayer = (I3DContentCollectionLayer) layer;
+            panoramicLayer.exitContent(customView);
+         }
       }
       application.redraw();
 

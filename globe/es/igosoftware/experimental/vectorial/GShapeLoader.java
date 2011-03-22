@@ -92,16 +92,16 @@ public class GShapeLoader {
    }
 
 
-   public static IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> readFeatures(final File file,
-                                                                                             final GProjection projection)
-                                                                                                                          throws IOException {
+   public static IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle, ?> readFeatures(final File file,
+                                                                                                                                                      final GProjection projection)
+                                                                                                                                                                                   throws IOException {
       return readFeatures(GFileName.fromFile(file), projection);
    }
 
 
-   public static IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> readFeatures(final GFileName fileName,
-                                                                                             final GProjection projection)
-                                                                                                                          throws IOException {
+   public static IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle, ?> readFeatures(final GFileName fileName,
+                                                                                                                                                      final GProjection projection)
+                                                                                                                                                                                   throws IOException {
       final File file = fileName.asFile();
       if (!file.exists()) {
          throw new IOException("File not found!");
@@ -120,7 +120,7 @@ public class GShapeLoader {
       //      final GIntHolder validVerticesCounter = new GIntHolder(0);
 
       final int featuresCount = featuresCollection.size();
-      final ArrayList<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>> euclidFeatures = new ArrayList<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>>(
+      final ArrayList<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>> euclidFeatures = new ArrayList<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>>(
                featuresCount);
 
 
@@ -260,14 +260,15 @@ public class GShapeLoader {
          fields.add(new GField(fieldName, fieldType));
       }
 
-      return new GListFeatureCollection<IVector2<?>, GAxisAlignedRectangle>(GProjection.EPSG_4326, fields, euclidFeatures,
-               GIOUtils.getUniqueID(file));
+      return new GListFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>(
+               GProjection.EPSG_4326, fields, euclidFeatures, GIOUtils.getUniqueID(file));
    }
 
 
-   private static IGlobeFeature<IVector2<?>, GAxisAlignedRectangle> createFeature(final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> geometry,
-                                                                                  final SimpleFeature feature) {
-      return new GGlobeFeature<IVector2<?>, GAxisAlignedRectangle>(geometry, feature.getAttributes());
+   private static IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle> createFeature(final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> geometry,
+                                                                                                                                           final SimpleFeature feature) {
+      return new GGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>(
+               geometry, feature.getAttributes());
    }
 
 
@@ -304,7 +305,7 @@ public class GShapeLoader {
       System.out.println("GShapeLoader 0.1");
       System.out.println("----------------\n");
 
-      final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features = GShapeLoader.readFeatures(
+      final IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle, ?> features = GShapeLoader.readFeatures(
                GFileName.absoluteFromParts("home", "dgd", "Desktop", "sample-shp", "shp", "great_britain.shp", "roads.shp"),
                GProjection.EPSG_4326);
 

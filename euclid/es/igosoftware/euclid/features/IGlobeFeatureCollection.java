@@ -4,6 +4,7 @@ package es.igosoftware.euclid.features;
 
 import java.util.List;
 
+import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.projection.GProjection;
@@ -14,13 +15,15 @@ public interface IGlobeFeatureCollection<
 
 VectorT extends IVector<VectorT, ?, ?>,
 
+FeatureGeometryT extends IBoundedGeometry<VectorT, ?, FeatureBoundsT>,
+
 FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>,
 
-TypeT extends IGlobeFeatureCollection<VectorT, FeatureBoundsT, TypeT>
+TypeT extends IGlobeFeatureCollection<VectorT, FeatureGeometryT, FeatureBoundsT, TypeT>
 
 >
          extends
-            Iterable<IGlobeFeature<VectorT, FeatureBoundsT>> {
+            Iterable<IGlobeFeature<VectorT, FeatureGeometryT, FeatureBoundsT>> {
 
 
    public static class AbortVisiting
@@ -35,11 +38,13 @@ TypeT extends IGlobeFeatureCollection<VectorT, FeatureBoundsT, TypeT>
 
    VectorT extends IVector<VectorT, ?, ?>,
 
+   FeatureGeometryT extends IBoundedGeometry<VectorT, ?, FeatureBoundsT>,
+
    FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
 
    > {
 
-      public void visit(final IGlobeFeature<VectorT, FeatureBoundsT> feature,
+      public void visit(final IGlobeFeature<VectorT, FeatureGeometryT, FeatureBoundsT> feature,
                         final long index) throws IGlobeFeatureCollection.AbortVisiting;
 
    }
@@ -54,10 +59,10 @@ TypeT extends IGlobeFeatureCollection<VectorT, FeatureBoundsT, TypeT>
    public GProjection getProjection();
 
 
-   public void acceptVisitor(final IGlobeFeatureCollection.IFeatureVisitor<VectorT, FeatureBoundsT> visitor);
+   public void acceptVisitor(final IGlobeFeatureCollection.IFeatureVisitor<VectorT, FeatureGeometryT, FeatureBoundsT> visitor);
 
 
-   public IGlobeFeature<VectorT, FeatureBoundsT> get(final long index);
+   public IGlobeFeature<VectorT, FeatureGeometryT, FeatureBoundsT> get(final long index);
 
 
    public boolean isEmpty();

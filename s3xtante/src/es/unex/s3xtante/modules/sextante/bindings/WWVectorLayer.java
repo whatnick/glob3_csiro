@@ -63,24 +63,24 @@ public class WWVectorLayer
          extends
             AbstractVectorLayer {
 
-   private GFileName                                                      _filename;
-   private String                                                         _name;
-   private GProjection                                                    _projection;
-   private List<GField>                                                   _fields;
-   private IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> _features;
+   private GFileName                                                                                                               _filename;
+   private String                                                                                                                  _name;
+   private GProjection                                                                                                             _projection;
+   private List<GField>                                                                                                            _fields;
+   private IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle, ?> _features;
 
 
    //   private ArrayList<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>> m_FeatureList;
 
 
    public WWVectorLayer(final String name,
-                        final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features) {
+                        final IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle, ?> features) {
       _name = name;
       initializeFromFeatures(features);
    }
 
 
-   private void initializeFromFeatures(final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features) {
+   private void initializeFromFeatures(final IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle, ?> features) {
       _features = features;
       _projection = features.getProjection();
       _fields = features.getFields();
@@ -99,8 +99,8 @@ public class WWVectorLayer
       _projection = projection;
 
       //Le estoy pasando un null porque no se como hacer esto...
-      _features = new GListMutableFeatureCollection<IVector2<?>, GAxisAlignedRectangle>(projection, fields, null,
-               GIOUtils.getUniqueID(filename.asFile()));
+      _features = new GListMutableFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>(
+               projection, fields, null, GIOUtils.getUniqueID(filename.asFile()));
    }
 
 
@@ -119,9 +119,10 @@ public class WWVectorLayer
    public void addFeature(final Geometry jtsGeometry,
                           final Object[] values) {
       if (_features instanceof IGlobeMutableFeatureCollection) {
-         final GListMutableFeatureCollection<IVector2<?>, GAxisAlignedRectangle> mutable = (GListMutableFeatureCollection<IVector2<?>, GAxisAlignedRectangle>) _features;
+         final GListMutableFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle> mutable = (GListMutableFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>) _features;
          for (final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> euclidGeometry : GJTSUtils.toEuclid(jtsGeometry)) {
-            mutable.add(new GGlobeFeature<IVector2<?>, GAxisAlignedRectangle>(euclidGeometry, Arrays.asList(values)));
+            mutable.add(new GGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>(
+                     euclidGeometry, Arrays.asList(values)));
          }
       }
 
@@ -182,7 +183,6 @@ public class WWVectorLayer
    }
 
 
-   @SuppressWarnings("unchecked")
    public void saveShapefile() {
 
       try {
@@ -191,13 +191,12 @@ public class WWVectorLayer
       catch (final IOException e) {
          e.printStackTrace();
       }
-
-
    }
 
 
    @SuppressWarnings("unchecked")
-   private void saveFeatures(final Iterable<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>> features) throws IOException {
+   private void saveFeatures(final Iterable<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>> features)
+                                                                                                                                                                 throws IOException {
 
       final SimpleFeatureType featureType = buildFeatureType(_name, getShapeType(), _fields, DefaultGeographicCRS.WGS84);
       final DataStore dataStore = createDatastore(_filename, featureType);
@@ -208,7 +207,7 @@ public class WWVectorLayer
       final FeatureWriter<SimpleFeatureType, SimpleFeature> featWriter = dataStore.getFeatureWriterAppend(ft.getTypeName(),
                Transaction.AUTO_COMMIT);
 
-      for (final IGlobeFeature<IVector2<?>, GAxisAlignedRectangle> feature : features) {
+      for (final IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle> feature : features) {
          final Geometry gtsGeometry = GJTSUtils.toJTS(feature.getDefaultGeometry());
 
          final List<Object> attributes = new ArrayList<Object>();
@@ -278,13 +277,13 @@ public class WWVectorLayer
    }
 
 
-   private Rectangle2D getRectangle3DBounds(final Iterable<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>> features) {
+   private Rectangle2D getRectangle3DBounds(final Iterable<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>> features) {
       double xMin = Double.POSITIVE_INFINITY;
       double xMax = Double.NEGATIVE_INFINITY;
       double yMin = Double.POSITIVE_INFINITY;
       double yMax = Double.NEGATIVE_INFINITY;
 
-      for (final IGlobeFeature<IVector2<?>, GAxisAlignedRectangle> feature : features) {
+      for (final IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle> feature : features) {
          final GAxisAlignedRectangle envelope = feature.getDefaultGeometry().getBounds();
          xMin = Math.min(xMin, envelope._lower.x());
          yMin = Math.min(yMin, envelope._lower.y());
@@ -314,7 +313,6 @@ public class WWVectorLayer
    }
 
 
-   @SuppressWarnings("unchecked")
    @Override
    public int getShapeType() {
 

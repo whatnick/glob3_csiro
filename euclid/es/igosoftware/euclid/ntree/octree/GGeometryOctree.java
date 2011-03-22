@@ -15,7 +15,7 @@ public class GGeometryOctree<
 
 ElementT,
 
-GeometryT extends IBoundedGeometry<IVector3<?>, ?, ? extends IFiniteBounds<IVector3<?>, ?>>
+GeometryT extends IBoundedGeometry<IVector3<?>, GeometryT, ? extends IFiniteBounds<IVector3<?>, ?>>
 
 >
          extends
