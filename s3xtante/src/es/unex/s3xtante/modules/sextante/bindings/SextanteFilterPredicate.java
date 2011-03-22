@@ -19,7 +19,7 @@ import es.unex.sextante.dataObjects.vectorFilters.IVectorLayerFilter;
 
 public class SextanteFilterPredicate
          implements
-            IPredicate<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>> {
+            IPredicate<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>> {
 
    private final IVectorLayerFilter _filter;
 
@@ -32,7 +32,7 @@ public class SextanteFilterPredicate
 
 
    @Override
-   public boolean evaluate(final IGlobeFeature<IVector2<?>, GAxisAlignedRectangle> globeFeature) {
+   public boolean evaluate(final IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle> globeFeature) {
 
       final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> euclidGeom = globeFeature.getDefaultGeometry();
       final List<Object> record = globeFeature.getAttributes();

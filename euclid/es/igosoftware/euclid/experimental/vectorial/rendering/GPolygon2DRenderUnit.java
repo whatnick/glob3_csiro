@@ -28,7 +28,7 @@ class GPolygon2DRenderUnit
 
 
    @Override
-   public BufferedImage render(final GRenderingQuadtree quadtree,
+   public BufferedImage render(final GRenderingQuadtree<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle> quadtree,
                                final GAxisAlignedRectangle region,
                                final GRenderingAttributes attributes) {
 
@@ -64,7 +64,6 @@ class GPolygon2DRenderUnit
       //      g2d.setTransform(transform);
       g2d.setTransform(transformFlipY);
 
-
       processNode(quadtree.getRoot(), quadtree, region, attributes, scale, g2d, renderedImage);
 
 
@@ -72,13 +71,13 @@ class GPolygon2DRenderUnit
    }
 
 
-   private static void processNode(final GGTNode<IVector2<?>, GAxisAlignedRectangle, IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>> node,
-                                   final GRenderingQuadtree quadtree,
-                                   final GAxisAlignedRectangle region,
-                                   final GRenderingAttributes attributes,
-                                   final IVector2<?> scale,
-                                   final Graphics2D g2d,
-                                   final BufferedImage renderedImage) {
+   private void processNode(final GGTNode<IVector2<?>, GAxisAlignedRectangle, IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>> node,
+                            final GRenderingQuadtree<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle> quadtree,
+                            final GAxisAlignedRectangle region,
+                            final GRenderingAttributes attributes,
+                            final IVector2<?> scale,
+                            final Graphics2D g2d,
+                            final BufferedImage renderedImage) {
 
       final GAxisAlignedRectangle nodeBounds = node.getBounds();
 
@@ -102,10 +101,10 @@ class GPolygon2DRenderUnit
 
 
       if (node instanceof GGTInnerNode) {
-         final GGTInnerNode<IVector2<?>, GAxisAlignedRectangle, IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>> inner;
-         inner = (GGTInnerNode<IVector2<?>, GAxisAlignedRectangle, IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>>) node;
+         final GGTInnerNode<IVector2<?>, GAxisAlignedRectangle, IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>> inner;
+         inner = (GGTInnerNode<IVector2<?>, GAxisAlignedRectangle, IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>>) node;
 
-         for (final GGTNode<IVector2<?>, GAxisAlignedRectangle, IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>> child : inner.getChildren()) {
+         for (final GGTNode<IVector2<?>, GAxisAlignedRectangle, IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>> child : inner.getChildren()) {
             processNode(child, quadtree, region, attributes, scale, g2d, renderedImage);
          }
       }
@@ -115,12 +114,12 @@ class GPolygon2DRenderUnit
    }
 
 
-   private static void renderNodeGeometries(final GGTNode<IVector2<?>, GAxisAlignedRectangle, IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>> node,
-                                            final GAxisAlignedRectangle region,
-                                            final GRenderingAttributes attributes,
-                                            final IVector2<?> scale,
-                                            final Graphics2D g2d,
-                                            final BufferedImage renderedImage) {
+   private void renderNodeGeometries(final GGTNode<IVector2<?>, GAxisAlignedRectangle, IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>> node,
+                                     final GAxisAlignedRectangle region,
+                                     final GRenderingAttributes attributes,
+                                     final IVector2<?> scale,
+                                     final Graphics2D g2d,
+                                     final BufferedImage renderedImage) {
 
 
       if (attributes._renderBounds) {
@@ -139,7 +138,7 @@ class GPolygon2DRenderUnit
       }
 
 
-      for (final IGlobeFeature<IVector2<?>, GAxisAlignedRectangle> feature : node.getElements()) {
+      for (final IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle> feature : node.getElements()) {
          final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> geometry = feature.getDefaultGeometry();
          if (geometry.getBounds().touches(region)) {
             renderGeometry(geometry, scale, renderedImage, g2d, region, attributes);
@@ -216,12 +215,12 @@ class GPolygon2DRenderUnit
 
 
    @SuppressWarnings("unchecked")
-   private static void renderGeometry(final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> geometry,
-                                      final IVector2<?> scale,
-                                      final BufferedImage renderedImage,
-                                      final Graphics2D g2d,
-                                      final GAxisAlignedRectangle region,
-                                      final GRenderingAttributes attributes) {
+   private void renderGeometry(final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> geometry,
+                               final IVector2<?> scale,
+                               final BufferedImage renderedImage,
+                               final Graphics2D g2d,
+                               final GAxisAlignedRectangle region,
+                               final GRenderingAttributes attributes) {
 
       final GRenderType renderType = geometry.getRenderType();
 

@@ -69,7 +69,7 @@ public class GPolygons2RenderingTheme
 
 
    @Override
-   protected Renderable[] getRenderables(final IGlobeFeature<IVector2<?>, GAxisAlignedRectangle> feature,
+   protected Renderable[] getRenderables(final IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle> feature,
                                          final GProjection projection,
                                          final Globe globe) {
 

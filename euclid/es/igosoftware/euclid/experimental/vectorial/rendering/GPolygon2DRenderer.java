@@ -18,25 +18,25 @@ import es.igosoftware.util.ITransformer;
 public class GPolygon2DRenderer {
 
 
-   private final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> _features;
-   private final GRenderingQuadtree                                             _quadtree;
+   //   private final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> _features; 
+   private final IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle, ?>                                                                                        _features;
+   private final GRenderingQuadtree<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle> _quadtree;
 
 
-   public GPolygon2DRenderer(final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features) {
+   public GPolygon2DRenderer(final IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle, ?> features) {
       _features = features;
 
       _quadtree = createQuadtree();
    }
 
 
-   private GRenderingQuadtree createQuadtree() {
+   private GRenderingQuadtree<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle> createQuadtree() {
       final GGeometryNTreeParameters.AcceptLeafNodeCreationPolicy acceptLeafNodeCreationPolicy;
-      acceptLeafNodeCreationPolicy = new GGeometryNTreeParameters.Accept2DLeafNodeCreationPolicy<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>>() {
-
+      acceptLeafNodeCreationPolicy = new GGeometryNTreeParameters.Accept2DLeafNodeCreationPolicy<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>>() {
          @Override
          public boolean accept(final int depth,
                                final GAxisAlignedOrthotope<IVector2<?>, ?> bounds,
-                               final Collection<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>> elements) {
+                               final Collection<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>> elements) {
             if (depth >= 10) {
                return true;
             }
@@ -45,18 +45,22 @@ public class GPolygon2DRenderer {
          }
       };
 
+
       final GGeometryNTreeParameters parameters = new GGeometryNTreeParameters(true, acceptLeafNodeCreationPolicy,
                GGeometryNTreeParameters.BoundsPolicy.MINIMUM, true);
 
-      final ITransformer<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>> transformer = new ITransformer<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>>() {
-
+      final ITransformer<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>> transformer;
+      transformer = new ITransformer<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>>() {
          @Override
-         public IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> transform(final IGlobeFeature<IVector2<?>, GAxisAlignedRectangle> element) {
+         public IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> transform(final IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle> element) {
             return element.getDefaultGeometry();
          }
       };
 
-      return new GRenderingQuadtree("Rendering", null, _features, transformer, parameters);
+
+      //      return new GRenderingQuadtree<FeatureT, GeometryT>("Rendering", null, _features, transformer, parameters);
+      return new GRenderingQuadtree<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>(
+               "Rendering", null, _features, transformer, parameters);
    }
 
 

@@ -50,17 +50,19 @@ public class GGlobeFeature<
 
 VectorT extends IVector<VectorT, ?, ?>,
 
-FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
+GeometryT extends IBoundedGeometry<VectorT, ?, BoundsT>,
+
+BoundsT extends IFiniteBounds<VectorT, BoundsT>
 
 >
          implements
-            IGlobeFeature<VectorT, FeatureBoundsT> {
+            IGlobeFeature<VectorT, GeometryT, BoundsT> {
 
-   private final IBoundedGeometry<VectorT, ?, FeatureBoundsT> _geometry;
-   private final List<Object>                                 _attributes;
+   private final GeometryT    _geometry;
+   private final List<Object> _attributes;
 
 
-   public GGlobeFeature(final IBoundedGeometry<VectorT, ?, FeatureBoundsT> geometry,
+   public GGlobeFeature(final GeometryT geometry,
                         final List<Object> attributes) {
       GAssert.notNull(geometry, "geometry");
       GAssert.notNull(attributes, "attributes");
@@ -71,7 +73,7 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
 
 
    @Override
-   public IBoundedGeometry<VectorT, ?, FeatureBoundsT> getDefaultGeometry() {
+   public GeometryT getDefaultGeometry() {
       return _geometry;
    }
 

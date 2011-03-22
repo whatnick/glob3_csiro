@@ -36,6 +36,7 @@
 
 package es.igosoftware.globe.modules.geonames;
 
+import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.features.GField;
 import es.igosoftware.euclid.features.GGlobeFeature;
@@ -70,18 +71,18 @@ public class GSearchResultLayer
          extends
             MarkerLayer
          implements
-            IGlobeVectorLayer<IVector2<?>, GAxisAlignedRectangle> {
+            IGlobeVectorLayer<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle> {
 
 
-   private final Sector                                                         _extent;
-   private final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> _features;
+   private final Sector                                                                                                                  _extent;
+   private final IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle, ?> _features;
 
 
    public GSearchResultLayer(final String searchText,
                              final List<Marker> markersList) {
       super(markersList);
 
-      final List<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>> features = new ArrayList<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>>(
+      final List<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>> features = new ArrayList<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>>(
                markersList.size());
 
       double minLongitude = Double.POSITIVE_INFINITY;
@@ -109,7 +110,8 @@ public class GSearchResultLayer
             final Toponym toponym = ((GSearchResultMarker) marker).getToponym();
             try {
                final List<Object> attribs = Arrays.asList(new Object[] { toponym.getName(), toponym.getPopulation() });
-               features.add(new GGlobeFeature<IVector2<?>, GAxisAlignedRectangle>(point, attribs));
+               features.add(new GGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>(
+                        point, attribs));
                added = true;
             }
             catch (final InsufficientStyleException e) {
@@ -118,8 +120,8 @@ public class GSearchResultLayer
          }
 
          if (!added) {
-            features.add(new GGlobeFeature<IVector2<?>, GAxisAlignedRectangle>(point, Arrays.asList(new Object[] { "",
-                     Long.valueOf(0) })));
+            features.add(new GGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>(
+                     point, Arrays.asList(new Object[] { "", Long.valueOf(0) })));
          }
       }
 
@@ -127,8 +129,8 @@ public class GSearchResultLayer
       final List<GField> fields = Arrays.asList(new GField("Name", String.class), new GField("Population", Integer.class));
       final String uniqueID = null;
       setName("Search result: " + searchText);
-      _features = new GListFeatureCollection<IVector2<?>, GAxisAlignedRectangle>(GProjection.EPSG_4326, fields, features,
-               uniqueID);
+      _features = new GListFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>(
+               GProjection.EPSG_4326, fields, features, uniqueID);
    }
 
 
@@ -158,7 +160,7 @@ public class GSearchResultLayer
 
 
    @Override
-   public IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> getFeaturesCollection() {
+   public IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle, ?> getFeaturesCollection() {
       return _features;
    }
 

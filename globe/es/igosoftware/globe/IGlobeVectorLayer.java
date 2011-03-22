@@ -36,6 +36,7 @@
 
 package es.igosoftware.globe;
 
+import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.vector.IVector;
@@ -45,6 +46,8 @@ import es.igosoftware.globe.layers.GVector2RenderingTheme;
 public interface IGlobeVectorLayer<
 
 VectorT extends IVector<VectorT, ?, ?>,
+
+GeometryT extends IBoundedGeometry<VectorT, ?, BoundsT>,
 
 BoundsT extends IFiniteBounds<VectorT, BoundsT>
 
@@ -56,7 +59,7 @@ BoundsT extends IFiniteBounds<VectorT, BoundsT>
    public GVector2RenderingTheme getRenderingTheme();
 
 
-   public IGlobeFeatureCollection<VectorT, BoundsT, ?> getFeaturesCollection();
+   public IGlobeFeatureCollection<VectorT, GeometryT, BoundsT, ?> getFeaturesCollection();
 
 
 }
