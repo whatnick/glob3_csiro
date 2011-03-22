@@ -70,6 +70,24 @@ public final class FilterIterator<T>
    }
 
 
+   public FilterIterator(final Iterator<T> iterator,
+                         final IPredicate<T>[] predicates) {
+      // iterator = iterator1;
+      for (final IPredicate<T> predicate : predicates) {
+         _predicates.add(predicate);
+      }
+
+      if (iterator instanceof FilterIterator<?>) {
+         final FilterIterator<T> predicateIterator = (FilterIterator<T>) iterator;
+         _iterator = predicateIterator._iterator;
+         _predicates.addAll(predicateIterator._predicates);
+      }
+      else {
+         _iterator = iterator;
+      }
+   }
+
+
    private boolean accept(final T value) {
       for (final IPredicate<T> predicate : _predicates) {
          if (!predicate.evaluate(value)) {
