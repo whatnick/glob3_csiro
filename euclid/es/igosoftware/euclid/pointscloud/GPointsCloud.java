@@ -63,6 +63,7 @@ import es.igosoftware.euclid.verticescontainer.GVertex3Container;
 import es.igosoftware.euclid.verticescontainer.IUnstructuredVertexContainer;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer.WeightedVertex;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GLoggerObject;
 import es.igosoftware.util.GMath;
@@ -123,18 +124,18 @@ public abstract class GPointsCloud
    }
 
 
-   private final String          _sourceDirectoryName;
+   private final GFileName       _sourceDirectoryName;
    private final String          _sourceExtension;
-   private final String          _targetDirectoryName;
+   private final GFileName       _targetDirectoryName;
    private final GProjection     _projection;
    private final GAxisAlignedBox _filterBounds;
 
 
-   public GPointsCloud(final String sourceDirectoryName,
+   public GPointsCloud(final GFileName sourceDirectoryName,
                        final String sourceExtension,
                        final GProjection projection,
                        final GAxisAlignedBox filterBounds,
-                       final String targetDirectoryName) {
+                       final GFileName targetDirectoryName) {
       _sourceDirectoryName = sourceDirectoryName;
       _sourceExtension = sourceExtension;
       _projection = projection;
@@ -150,7 +151,7 @@ public abstract class GPointsCloud
 
 
    public void process(final GVector2D... resolutions) throws IOException {
-      final File sourceDirectory = new File(_sourceDirectoryName);
+      final File sourceDirectory = _sourceDirectoryName.asFile();
 
       final String[] sourceFilesNames = sourceDirectory.list(new FilenameFilter() {
          @Override
@@ -173,7 +174,7 @@ public abstract class GPointsCloud
 
 
    private void ensureTargetDirectory() throws IOException {
-      final File targetDirectory = new File(_targetDirectoryName);
+      final File targetDirectory = _targetDirectoryName.asFile();
       if (!targetDirectory.exists()) {
          if (!targetDirectory.mkdirs()) {
             throw new IOException("can't create target directory: \"" + _targetDirectoryName + "\"");
@@ -184,12 +185,12 @@ public abstract class GPointsCloud
 
    private IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> loadVertices(final String[] sourceFilesNames)
                                                                                                                                throws IOException {
-      final String allFileName = _targetDirectoryName + "/__all__.bp";
+      final GFileName allFileName = GFileName.fromParentAndParts(_targetDirectoryName, "__all__.bp");
 
       ensureAllFile(sourceFilesNames, allFileName);
 
-      final GBinaryPoints3Loader loader = new GBinaryPoints3Loader(allFileName, GPointsLoader.DEFAULT_FLAGS
-                                                                                | GPointsLoader.VERBOSE);
+      final GBinaryPoints3Loader loader = new GBinaryPoints3Loader(GPointsLoader.DEFAULT_FLAGS | GPointsLoader.VERBOSE,
+               allFileName);
 
 
       loader.load();
@@ -213,20 +214,22 @@ public abstract class GPointsCloud
 
 
    private void ensureAllFile(final String[] sourceFilesNames,
-                              final String allFileName) throws IOException {
+                              final GFileName allFileName) throws IOException {
 
-      if (new File(allFileName).exists()) {
+      if (allFileName.asFile().exists()) {
          return;
       }
 
-      String sourceFullFilesNames = "";
-      for (final String sourceFileName : sourceFilesNames) {
-         sourceFullFilesNames += _sourceDirectoryName + "/" + sourceFileName + " ";
+      final GFileName[] sourceFullFilesNames = new GFileName[sourceFilesNames.length];
+
+      for (int i = 0; i < sourceFilesNames.length; i++) {
+         sourceFullFilesNames[i] = GFileName.fromParentAndParts(_sourceDirectoryName, sourceFilesNames[i]);
       }
 
+
       // System.out.println(binaryFilesNames);
-      final GXYZLoader loader = new GXYZLoader(sourceFullFilesNames, GVectorPrecision.FLOAT, GColorPrecision.INT, _projection,
-               GPointsLoader.DEFAULT_FLAGS | GPointsLoader.VERBOSE);
+      final GXYZLoader loader = new GXYZLoader(GVectorPrecision.FLOAT, GColorPrecision.INT, _projection,
+               GPointsLoader.DEFAULT_FLAGS | GPointsLoader.VERBOSE, sourceFullFilesNames);
 
       loader.load();
 
@@ -471,11 +474,11 @@ public abstract class GPointsCloud
       System.out.println("----------------\n");
 
 
-      final String sourceDirectoryName = "/home/dgd/Escritorio/WORKING/globe-caceres-data/mdt";
+      final GFileName sourceDirectoryName = GFileName.absolute("home", "dgd", "Desktop", "WORKING", "globe-caceres-data", "mdt");
       final String sourceExtension = "txt";
       final GProjection projection = GProjection.EPSG_23029;
 
-      final String targetDirectoryName = "/home/dgd/Escritorio/WORKING/mdt-binary";
+      final GFileName targetDirectoryName = GFileName.absolute("home", "dgd", "Desktop", "WORKING", "mdt-binary");
 
       final GPointsCloud instance = new GPointsCloud(sourceDirectoryName, sourceExtension, projection, null, targetDirectoryName) {
 
@@ -517,8 +520,8 @@ public abstract class GPointsCloud
             logInfo("Simplified Vertices:" + _simplifiedVertices);
 
             try {
-               // GBinaryPoints3Loader.save(simplifiedVertices, _projection, "/home/dgd/Desktop/simplifiedVertices.bp");
-               GXYZLoader.save(_simplifiedVertices, "/home/dgd/Desktop/simplified" + resolution._x + "x" + resolution._y + ".xyz");
+               GXYZLoader.save(_simplifiedVertices,
+                        GFileName.absolute("home", "dgd", "Desktop", "simplified" + resolution._x + "x" + resolution._y + ".xyz"));
             }
             catch (final IOException e) {
                e.printStackTrace();

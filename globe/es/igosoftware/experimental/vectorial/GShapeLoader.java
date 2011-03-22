@@ -308,7 +308,7 @@ public class GShapeLoader {
       System.out.println("----------------\n");
 
       final IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features = GShapeLoader.readFeatures(
-               GFileName.absoluteFromParts("home", "dgd", "Desktop", "sample-shp", "shp", "great_britain.shp", "roads.shp"),
+               GFileName.absolute("home", "dgd", "Desktop", "sample-shp", "shp", "great_britain.shp", "roads.shp"),
                GProjection.EPSG_4326);
 
       System.out.println(features);

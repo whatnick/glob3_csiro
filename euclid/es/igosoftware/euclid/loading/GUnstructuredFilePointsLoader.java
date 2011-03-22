@@ -49,6 +49,7 @@ import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.verticescontainer.GCompositeVertexContainer;
 import es.igosoftware.euclid.verticescontainer.IUnstructuredVertexContainer;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
+import es.igosoftware.io.GFileName;
 
 
 public abstract class GUnstructuredFilePointsLoader<VectorT extends IVector<VectorT, ?, ?>>
@@ -59,21 +60,21 @@ public abstract class GUnstructuredFilePointsLoader<VectorT extends IVector<Vect
    private final GCompositeVertexContainer<VectorT> _verticesComposite = new GCompositeVertexContainer<VectorT>();
 
 
-   protected GUnstructuredFilePointsLoader(final String fileNames,
-                                           final int flags) {
-      super(fileNames, flags);
+   protected GUnstructuredFilePointsLoader(final int flags,
+                                           final GFileName... fileNames) {
+      super(flags, fileNames);
    }
 
 
    @Override
    protected final void rawLoad() throws IOException {
-      final String[] fileNames = getFileNames();
-      final int filesCount = fileNames.length;
+      final List<GFileName> fileNames = getFileNames();
+      final int filesCount = fileNames.size();
 
       startLoad(filesCount);
 
       if (filesCount == 1) {
-         final String fileName = fileNames[0];
+         final GFileName fileName = fileNames.get(0);
          logInfo("Reading vertices from \"" + fileName + "\"...");
 
          final IUnstructuredVertexContainer<VectorT, IVertexContainer.Vertex<VectorT>, ?> vertices = loadVerticesFromFile(fileName);
@@ -92,7 +93,7 @@ public abstract class GUnstructuredFilePointsLoader<VectorT extends IVector<Vect
             final Future<IUnstructuredVertexContainer<VectorT, IVertexContainer.Vertex<VectorT>, ?>> futureVertices = executor.submit(new Callable<IUnstructuredVertexContainer<VectorT, IVertexContainer.Vertex<VectorT>, ?>>() {
                @Override
                public IUnstructuredVertexContainer<VectorT, IVertexContainer.Vertex<VectorT>, ?> call() throws IOException {
-                  final String fileName = fileNames[finalI];
+                  final GFileName fileName = fileNames.get(finalI);
                   logInfo("Reading vertices from \"" + fileName + "\" (" + (finalI + 1) + "/" + filesCount + ")...");
 
                   final IUnstructuredVertexContainer<VectorT, IVertexContainer.Vertex<VectorT>, ?> vertices = loadVerticesFromFile(fileName);
@@ -136,8 +137,8 @@ public abstract class GUnstructuredFilePointsLoader<VectorT extends IVector<Vect
 
 
    @Override
-   protected abstract IUnstructuredVertexContainer<VectorT, IVertexContainer.Vertex<VectorT>, ?> loadVerticesFromFile(final String fileName)
-                                                                                                                                            throws IOException;
+   protected abstract IUnstructuredVertexContainer<VectorT, IVertexContainer.Vertex<VectorT>, ?> loadVerticesFromFile(final GFileName fileName)
+                                                                                                                                               throws IOException;
 
 
    @Override

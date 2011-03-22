@@ -193,9 +193,9 @@ public class GGlobeDemo
       //               Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0)));
 
       try {
-         final ILoader loader = new GFileLoader(GFileName.relativeFromParts("PANOS"));
+         final ILoader loader = new GFileLoader(GFileName.relative("PANOS"));
          panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", loader,
-                  GFileName.relativeFromParts("Barrancos"), 500, new Position(Angle.fromDegrees(39.4737),
+                  GFileName.relative("Barrancos"), 500, new Position(Angle.fromDegrees(39.4737),
                            Angle.fromDegrees(-6.3910), 0)));
 
          //panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", "data/panoramics/barruecos", 500,
@@ -248,7 +248,7 @@ public class GGlobeDemo
       final double homeElevation = 2000;
       final GHomePositionModule homePositionModule = new GHomePositionModule(homePosition, heading, pitch, homeElevation, true);
 
-      final IPointsCloudLoader loader = new GPointsCloudFileLoader(GFileName.relativeFromParts("data", "pointsclouds"));
+      final IPointsCloudLoader loader = new GPointsCloudFileLoader(GFileName.relative("data", "pointsclouds"));
       final GPointsCloudModule pointsCloudModule = new GPointsCloudModule(loader);
 
       //      GPointsCloudModule pointsCloudModule = null;
@@ -289,7 +289,7 @@ public class GGlobeDemo
       if (loader != null) {
          final GAsyncObjLoader objLoader = new GAsyncObjLoader(loader);
 
-         objLoader.load(GFileName.relativeFromParts("globe-demo-data", "models", "caceres3d.obj"),
+         objLoader.load(GFileName.relative("globe-demo-data", "models", "caceres3d.obj"),
                   new GAsyncObjLoader.IHandler() {
                      @Override
                      public void loadError(final IOException e) {

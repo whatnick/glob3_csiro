@@ -4,7 +4,6 @@ package es.igosoftware.experimental.vectorial;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -38,7 +37,7 @@ public class GPolygon2DRenderingTest {
       //               "world-modified", "world.shp");
       //      final GFileName fileName = GFileName.absoluteFromParts("home", "dgd", "Escritorio", "sample-shp", "shp", "argentina.shp",
       //      "roads.shp");
-      final GFileName fileName = GFileName.absoluteFromParts("home", "dgd", "Escritorio", "sample-shp", "shp", "argentina.shp",
+      final GFileName fileName = GFileName.absolute("home", "dgd", "Escritorio", "sample-shp", "shp", "argentina.shp",
                "places.shp");
 
       final GProjection projection = GProjection.EPSG_4326;
@@ -59,7 +58,7 @@ public class GPolygon2DRenderingTest {
 
       final GAxisAlignedRectangle region = ((GAxisAlignedRectangle) centerBounds(multipleOfSmallestDimention(featuresBounds),
                featuresBounds.getCenter()));
-      final String directoryName = "render";
+      final GFileName directoryName = GFileName.relative("render");
       final boolean renderLODIgnores = true;
       final float borderWidth = 0.0001f;
       final Color fillColor = new Color(borderWidth, borderWidth, 1, 0.75f);
@@ -161,7 +160,7 @@ public class GPolygon2DRenderingTest {
 
    private static void render(final GPolygon2DRenderer renderer,
                               final GAxisAlignedRectangle region,
-                              final String directoryName,
+                              final GFileName directoryName,
                               final GRenderingAttributes attributes,
                               final int depth,
                               final int maxDepth) throws IOException {
@@ -170,8 +169,8 @@ public class GPolygon2DRenderingTest {
       final BufferedImage renderedImage = renderer.render(region, attributes);
 
       final String imageName = depth + "_" + region.asParseableString();
-      final File file = new File(directoryName, imageName + ".png");
-      ImageIO.write(renderedImage, "png", file);
+      final GFileName fileName = GFileName.fromParentAndParts(directoryName, imageName + ".png");
+      ImageIO.write(renderedImage, "png", fileName.asFile());
 
       System.out.println(GStringUtils.spaces(depth * 2) + "Rendered " + imageName + " in "
                          + GStringUtils.getTimeMessage(System.currentTimeMillis() - start));
@@ -183,5 +182,4 @@ public class GPolygon2DRenderingTest {
          }
       }
    }
-
 }

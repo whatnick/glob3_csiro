@@ -61,6 +61,7 @@ import es.igosoftware.euclid.vector.GVectorPrecision;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.euclid.verticescontainer.GVertex3Container;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GLoggerObject;
 import es.igosoftware.util.GMath;
@@ -78,13 +79,13 @@ public class GProcessingTest
    }
 
 
-   protected static boolean convertFromXYZToBinaryFormat(final String sourceFileName,
-                                                         final String targetFileName,
+   protected static boolean convertFromXYZToBinaryFormat(final GFileName sourceFileName,
+                                                         final GFileName targetFileName,
                                                          final GProjection projection) throws IOException {
 
       // System.out.println(binaryFilesNames);
-      final GXYZLoader loader = new GXYZLoader(sourceFileName, GVectorPrecision.DOUBLE, GColorPrecision.INT, projection,
-               GPointsLoader.DEFAULT_FLAGS | GPointsLoader.VERBOSE);
+      final GXYZLoader loader = new GXYZLoader(GVectorPrecision.DOUBLE, GColorPrecision.INT, projection,
+               GPointsLoader.DEFAULT_FLAGS | GPointsLoader.VERBOSE, sourceFileName);
 
       loader.load();
 
@@ -120,28 +121,28 @@ public class GProcessingTest
    }
 
 
-   protected static void convertFromPTSToXYZFormat(final String sourceFileName,
+   protected static void convertFromPTSToXYZFormat(final GFileName sourceFileName,
                                                    final GProjection projection) throws IOException {
-      String xyzFileName;
+
       // System.out.println(binaryFilesNames);
-      final GXYZLoader loader = new GXYZLoader(sourceFileName, GVectorPrecision.DOUBLE, GColorPrecision.INT, projection,
-               GPointsLoader.DEFAULT_FLAGS | GPointsLoader.VERBOSE);
+      final GXYZLoader loader = new GXYZLoader(GVectorPrecision.DOUBLE, GColorPrecision.INT, projection,
+               GPointsLoader.DEFAULT_FLAGS | GPointsLoader.VERBOSE, sourceFileName);
 
       loader.load();
 
-      xyzFileName = sourceFileName.substring(0, sourceFileName.indexOf('.')) + ".xyz";
+      final String path = sourceFileName.buildPath();
+      final File xyzFileName = new File(path.substring(0, path.indexOf('.')) + ".xyz");
 
-      GXYZLoader.save(loader.getVertices(), xyzFileName);
-
+      GXYZLoader.save(loader.getVertices(), GFileName.fromFile(xyzFileName));
    }
 
 
-   private static IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> loadVertices(final String sourceFileName)
-                                                                                                                                  throws IOException {
+   private static IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> loadVertices(final GFileName sourceFileName)
+                                                                                                                                     throws IOException {
 
 
-      final GBinaryPoints3Loader loader = new GBinaryPoints3Loader(sourceFileName, GPointsLoader.DEFAULT_FLAGS
-                                                                                   | GPointsLoader.VERBOSE);
+      final GBinaryPoints3Loader loader = new GBinaryPoints3Loader(GPointsLoader.DEFAULT_FLAGS | GPointsLoader.VERBOSE,
+               sourceFileName);
 
       loader.load();
 
@@ -400,8 +401,8 @@ public class GProcessingTest
 
       //final String sourceDirectoryName = "/home/fpulido/Escritorio/Los-putos-puntos/";
       //final String targetDirectoryName = "/home/fpulido/Escritorio/Los-putos-puntos/";
-      final String sourceDirectoryName = "/home/fpgalan/Escritorio/Nubes-lidar/";
-      final String targetDirectoryName = "/home/fpgalan/Escritorio/Nubes-lidar/";
+      final GFileName sourceDirectoryName = GFileName.absolute("home", "fpgalan", "Escritorio", "Nubes-lidar");
+      final GFileName targetDirectoryName = GFileName.absolute("home", "fpgalan", "Escritorio", "Nubes-lidar");
 
       //final String fileName = "72-Foro-de-los-Balbos.xyz";
       //final String fileName = "Guadatux2.xyz";
@@ -412,21 +413,22 @@ public class GProcessingTest
       //final String fileName = "LiDAR-FOREST-Zone3.xyz";
       //final String fileName = "MDT-LiDAR-FOREST-Zone1.xyz";
       //final String fileName = "MDT-LiDAR-FOREST-Zone2.xyz";
-      final String fileName = "MDT-LiDAR-FOREST-Zone3.xyz";
+      final GFileName fileName = GFileName.relative("MDT-LiDAR-FOREST-Zone3.xyz");
 
       //final GProjection projection = GProjection.EPSG_23029;
       final GProjection projection = GProjection.EPSG_23030;
 
       String octreeFileName;
-      if (fileName.contains(".")) {
-         octreeFileName = fileName.substring(0, fileName.indexOf('.'));
+      final String fileNamePath = fileName.buildPath();
+      if (fileNamePath.contains(".")) {
+         octreeFileName = fileNamePath.substring(0, fileNamePath.indexOf('.'));
       }
       else {
-         octreeFileName = fileName;
+         octreeFileName = fileNamePath;
       }
-      final String sourceFileName = sourceDirectoryName + fileName;
-      final String targetFileName = targetDirectoryName + octreeFileName + ".bp";
-      System.out.println("Tarjet file name= " + targetFileName);
+      final GFileName sourceFileName = GFileName.fromParts(sourceDirectoryName, fileName);
+      final GFileName targetFileName = GFileName.fromParentAndParts(targetDirectoryName, octreeFileName + ".bp");
+      System.out.println("Target file name= " + targetFileName);
 
 
       System.out.println("Starting points cloud loading test..");
@@ -436,7 +438,7 @@ public class GProcessingTest
       //      convertFromPTSToXYZFormat(sourceDirectoryName + "Alardos1x1.pts", projection);
       //      System.out.println("File conversion finished");
 
-      final File targetFile = new File(targetFileName);
+      final File targetFile = targetFileName.asFile();
       if (!targetFile.exists()) {
          if (convertFromXYZToBinaryFormat(sourceFileName, targetFileName, projection)) {
             System.out.println("Conversión completada correctamente..");

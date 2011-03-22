@@ -61,6 +61,7 @@ import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GLoggerObject;
 import es.igosoftware.util.GMath;
@@ -576,16 +577,12 @@ public class GRelief
       System.out.println("GRelief 0.1");
       System.out.println("-----------\n");
 
-      //final String fileName = "/home/dgd/Escritorio/IGO-Repository/globe-caceres/data/mdt/PNOA_EXT_NW_2006_30K_EL_mdtgint_h10_0678_2-2_huso29.bp";
-      final String fileName = "../globe-caceres/data/mdt/PNOA_EXT_NW_2006_30K_EL_mdtgint_h10_0677_3-4_huso29.bp";
-      //final String fileName = "../globe-caceres/data/mdt/PNOA_EXT_NW_2006_30K_EL_mdtgint_h10_0677_4-2_huso29.bp";
+      final GFileName fileName = GFileName.relative("..", "globe-caceres", "data", "mdt",
+               "PNOA_EXT_NW_2006_30K_EL_mdtgint_h10_0677_3-4_huso29.bp");
       final GVector2D resolution = new GVector2D(5, 5);
 
-      //      // final String fileName = "/home/dgd/Escritorio/IGO-Repository/globe-caceres/data/lidar/dsm_728_4370.bp";
-      //      final String fileName = "/home/dgd/Escritorio/IGO-Repository/globe-caceres/data/lidar/dsm_728_4372.bp";
-      //      final GVector2D resolution = new GVector2D(1, 1);
 
-      final GBinaryPoints3Loader loader = new GBinaryPoints3Loader(fileName, GPointsLoader.DEFAULT_FLAGS | GPointsLoader.VERBOSE);
+      final GBinaryPoints3Loader loader = new GBinaryPoints3Loader(GPointsLoader.DEFAULT_FLAGS | GPointsLoader.VERBOSE, fileName);
 
       loader.load();
       final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> points = loader.getVertices();
