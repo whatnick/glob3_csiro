@@ -15,15 +15,13 @@ public interface IGlobeFeatureCollection<
 
 VectorT extends IVector<VectorT, ?, ?>,
 
-FeatureGeometryT extends IBoundedGeometry<VectorT, ?, FeatureBoundsT>,
+FeatureGeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>,
 
-FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>,
-
-TypeT extends IGlobeFeatureCollection<VectorT, FeatureGeometryT, FeatureBoundsT, TypeT>
+TypeT extends IGlobeFeatureCollection<VectorT, FeatureGeometryT, TypeT>
 
 >
          extends
-            Iterable<IGlobeFeature<VectorT, FeatureGeometryT, FeatureBoundsT>> {
+            Iterable<IGlobeFeature<VectorT, FeatureGeometryT>> {
 
 
    public static class AbortVisiting
@@ -38,13 +36,11 @@ TypeT extends IGlobeFeatureCollection<VectorT, FeatureGeometryT, FeatureBoundsT,
 
    VectorT extends IVector<VectorT, ?, ?>,
 
-   FeatureGeometryT extends IBoundedGeometry<VectorT, ?, FeatureBoundsT>,
-
-   FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
+   FeatureGeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>
 
    > {
 
-      public void visit(final IGlobeFeature<VectorT, FeatureGeometryT, FeatureBoundsT> feature,
+      public void visit(final IGlobeFeature<VectorT, FeatureGeometryT> feature,
                         final long index) throws IGlobeFeatureCollection.AbortVisiting;
 
    }
@@ -59,10 +55,10 @@ TypeT extends IGlobeFeatureCollection<VectorT, FeatureGeometryT, FeatureBoundsT,
    public GProjection getProjection();
 
 
-   public void acceptVisitor(final IGlobeFeatureCollection.IFeatureVisitor<VectorT, FeatureGeometryT, FeatureBoundsT> visitor);
+   public void acceptVisitor(final IGlobeFeatureCollection.IFeatureVisitor<VectorT, FeatureGeometryT> visitor);
 
 
-   public IGlobeFeature<VectorT, FeatureGeometryT, FeatureBoundsT> get(final long index);
+   public IGlobeFeature<VectorT, FeatureGeometryT> get(final long index);
 
 
    public boolean isEmpty();

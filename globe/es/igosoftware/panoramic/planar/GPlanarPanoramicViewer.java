@@ -977,7 +977,7 @@ public class GPlanarPanoramicViewer {
       final int workersCount = GConcurrent.AVAILABLE_PROCESSORS;
       final ILoader loader = new GHttpLoader(url, workersCount, true, false, false);
 
-      final GFileName path = GFileName.relativeFromParts("gigapixel", "PlazaSanJorge-Caceres-Espana");
+      final GFileName path = GFileName.relative("gigapixel", "PlazaSanJorge-Caceres-Espana");
 
       final GPlanarPanoramicViewer viewer = new GPlanarPanoramicViewer(loader, path, "Sample Gigapixel Picture", false);
 

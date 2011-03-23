@@ -24,23 +24,19 @@ public class GListMutableFeatureCollection<
 
 VectorT extends IVector<VectorT, ?, ?>,
 
-FeatureGeometryT extends IBoundedGeometry<VectorT, ?, FeatureBoundsT>,
-
-FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
-
->
+FeatureGeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>>
          extends
-            GMutableAbstract<GListMutableFeatureCollection<VectorT, FeatureGeometryT, FeatureBoundsT>>
+            GMutableAbstract<GListMutableFeatureCollection<VectorT, FeatureGeometryT>>
          implements
-            IGlobeMutableFeatureCollection<VectorT, FeatureGeometryT, FeatureBoundsT, GListMutableFeatureCollection<VectorT, FeatureGeometryT, FeatureBoundsT>> {
+            IGlobeMutableFeatureCollection<VectorT, FeatureGeometryT, GListMutableFeatureCollection<VectorT, FeatureGeometryT>> {
 
 
-   private final GProjection                                                         _projection;
-   private final ArrayList<GField>                                                   _fields;
-   private final ArrayList<IGlobeFeature<VectorT, FeatureGeometryT, FeatureBoundsT>> _features;
-   private final String                                                              _uniqueID;
+   private final GProjection                                         _projection;
+   private final ArrayList<GField>                                   _fields;
+   private final ArrayList<IGlobeFeature<VectorT, FeatureGeometryT>> _features;
+   private final String                                              _uniqueID;
 
-   private GAxisAlignedOrthotope<VectorT, ?>                                         _bounds;
+   private GAxisAlignedOrthotope<VectorT, ?>                         _bounds;
 
 
    public GListMutableFeatureCollection(final GProjection projection,
@@ -52,7 +48,7 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
 
    public GListMutableFeatureCollection(final GProjection projection,
                                         final List<GField> fields,
-                                        final List<IGlobeFeature<VectorT, FeatureGeometryT, FeatureBoundsT>> features,
+                                        final List<IGlobeFeature<VectorT, FeatureGeometryT>> features,
                                         final String uniqueID) {
       GAssert.notNull(projection, "projection");
       GAssert.notNull(fields, "fields");
@@ -61,8 +57,8 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
 
       // creates copies of the lists to protect the modifications from outside
       _fields = new ArrayList<GField>(fields);
-      _features = (features == null) ? new ArrayList<IGlobeFeature<VectorT, FeatureGeometryT, FeatureBoundsT>>(0)
-                                    : new ArrayList<IGlobeFeature<VectorT, FeatureGeometryT, FeatureBoundsT>>(features);
+      _features = (features == null) ? new ArrayList<IGlobeFeature<VectorT, FeatureGeometryT>>(0)
+                                    : new ArrayList<IGlobeFeature<VectorT, FeatureGeometryT>>(features);
 
       _uniqueID = uniqueID; // can be null, it means no disk-cache is possible
    }
@@ -91,7 +87,7 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
 
    @Override
    public void set(final long index,
-                   final IGlobeFeature<VectorT, FeatureGeometryT, FeatureBoundsT> value) {
+                   final IGlobeFeature<VectorT, FeatureGeometryT> value) {
       checkMutable();
 
       _features.set(toInt(index), value);
@@ -108,7 +104,7 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
 
 
    @Override
-   public void add(final IGlobeFeature<VectorT, FeatureGeometryT, FeatureBoundsT> value) {
+   public void add(final IGlobeFeature<VectorT, FeatureGeometryT> value) {
       checkMutable();
 
       _features.add(value);
@@ -117,10 +113,10 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
 
 
    @Override
-   public IGlobeFeature<VectorT, FeatureGeometryT, FeatureBoundsT> remove(final long index) {
+   public IGlobeFeature<VectorT, FeatureGeometryT> remove(final long index) {
       checkMutable();
 
-      final IGlobeFeature<VectorT, FeatureGeometryT, FeatureBoundsT> result = _features.remove(toInt(index));
+      final IGlobeFeature<VectorT, FeatureGeometryT> result = _features.remove(toInt(index));
       if (result != null) {
          changed();
       }
@@ -129,7 +125,7 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
 
 
    @Override
-   public boolean remove(final IGlobeFeature<VectorT, FeatureGeometryT, FeatureBoundsT> value) {
+   public boolean remove(final IGlobeFeature<VectorT, FeatureGeometryT> value) {
       checkMutable();
 
       final boolean removed = _features.remove(value);
@@ -199,7 +195,7 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
 
 
    @Override
-   public void acceptVisitor(final IGlobeFeatureCollection.IFeatureVisitor<VectorT, FeatureGeometryT, FeatureBoundsT> visitor) {
+   public void acceptVisitor(final IGlobeFeatureCollection.IFeatureVisitor<VectorT, FeatureGeometryT> visitor) {
       try {
          for (int i = 0; i < _features.size(); i++) {
             visitor.visit(_features.get(i), i);
@@ -212,7 +208,7 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
 
 
    @Override
-   public IGlobeFeature<VectorT, FeatureGeometryT, FeatureBoundsT> get(final long index) {
+   public IGlobeFeature<VectorT, FeatureGeometryT> get(final long index) {
       return _features.get(toInt(index));
    }
 
@@ -258,7 +254,7 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
 
 
    @Override
-   public Iterator<IGlobeFeature<VectorT, FeatureGeometryT, FeatureBoundsT>> iterator() {
+   public Iterator<IGlobeFeature<VectorT, FeatureGeometryT>> iterator() {
       return Collections.unmodifiableList(_features).iterator();
    }
 

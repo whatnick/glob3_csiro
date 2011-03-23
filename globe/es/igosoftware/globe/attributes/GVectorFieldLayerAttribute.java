@@ -78,7 +78,7 @@ public abstract class GVectorFieldLayerAttribute
       final String options[];
       if (layer instanceof IGlobeVectorLayer) {
          @SuppressWarnings("unchecked")
-         final IGlobeVectorLayer<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle> vectorLayer = (IGlobeVectorLayer<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>) layer;
+         final IGlobeVectorLayer<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>> vectorLayer = (IGlobeVectorLayer<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>>) layer;
 
          final List<GField> fields = vectorLayer.getFeaturesCollection().getFields();
          options = new String[fields.size()];

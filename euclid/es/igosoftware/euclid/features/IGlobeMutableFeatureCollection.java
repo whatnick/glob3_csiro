@@ -12,29 +12,27 @@ public interface IGlobeMutableFeatureCollection<
 
 VectorT extends IVector<VectorT, ?, ?>,
 
-FeatureGeometryT extends IBoundedGeometry<VectorT, ?, FeatureBoundsT>,
+FeatureGeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>,
 
-FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>,
-
-TypeT extends IGlobeMutableFeatureCollection<VectorT, FeatureGeometryT, FeatureBoundsT, TypeT>
+TypeT extends IGlobeMutableFeatureCollection<VectorT, FeatureGeometryT, TypeT>
 
 >
          extends
-            IGlobeFeatureCollection<VectorT, FeatureGeometryT, FeatureBoundsT, TypeT>,
+            IGlobeFeatureCollection<VectorT, FeatureGeometryT, TypeT>,
             IMutable<TypeT> {
 
 
    public void set(final long index,
-                   final IGlobeFeature<VectorT, FeatureGeometryT, FeatureBoundsT> value);
+                   final IGlobeFeature<VectorT, FeatureGeometryT> value);
 
 
-   public void add(final IGlobeFeature<VectorT, FeatureGeometryT, FeatureBoundsT> value);
+   public void add(final IGlobeFeature<VectorT, FeatureGeometryT> value);
 
 
-   public IGlobeFeature<VectorT, FeatureGeometryT, FeatureBoundsT> remove(final long index);
+   public IGlobeFeature<VectorT, FeatureGeometryT> remove(final long index);
 
 
-   public boolean remove(final IGlobeFeature<VectorT, FeatureGeometryT, FeatureBoundsT> value);
+   public boolean remove(final IGlobeFeature<VectorT, FeatureGeometryT> value);
 
 
    public void clear();

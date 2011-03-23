@@ -47,9 +47,7 @@ public interface IGlobeVectorLayer<
 
 VectorT extends IVector<VectorT, ?, ?>,
 
-GeometryT extends IBoundedGeometry<VectorT, ?, BoundsT>,
-
-BoundsT extends IFiniteBounds<VectorT, BoundsT>
+GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>
 
 >
          extends
@@ -59,7 +57,7 @@ BoundsT extends IFiniteBounds<VectorT, BoundsT>
    public GVector2RenderingTheme getRenderingTheme();
 
 
-   public IGlobeFeatureCollection<VectorT, GeometryT, BoundsT, ?> getFeaturesCollection();
+   public IGlobeFeatureCollection<VectorT, GeometryT, ?> getFeaturesCollection();
 
 
 }

@@ -338,9 +338,9 @@ public class GIOUtils {
    }
 
 
-   public static void assureEmptyDirectory(final String directoryName,
+   public static void assureEmptyDirectory(final GFileName directoryName,
                                            final boolean verbose) throws IOException {
-      final File directory = new File(directoryName);
+      final File directory = directoryName.asFile();
 
       if (!directory.exists()) {
          if (verbose) {
@@ -385,9 +385,9 @@ public class GIOUtils {
    }
 
 
-   public static void cleanDirectory(final String directoryName,
+   public static void cleanDirectory(final GFileName directoryName,
                                      final boolean verbose) throws IOException {
-      final File directory = new File(directoryName);
+      final File directory = directoryName.asFile();
       cleanDirectory(directory, verbose);
    }
 
@@ -570,6 +570,12 @@ public class GIOUtils {
 
    public static String getUniqueID(final File file) {
       return file.getName() + Long.toHexString(file.lastModified()) + Long.toHexString(file.length());
+   }
+
+
+   public static boolean hasExtension(final GFileName fileName,
+                                      final String extension) {
+      return fileName.getName().toLowerCase().endsWith("." + extension.toLowerCase());
    }
 
 }

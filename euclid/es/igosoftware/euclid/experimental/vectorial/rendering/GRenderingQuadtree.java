@@ -14,11 +14,9 @@ import es.igosoftware.util.ITransformer;
 
 public class GRenderingQuadtree<
 
-FeatureT extends IGlobeFeature<IVector2<?>, FeatureGeometryT, FeatureBoundsT>,
+FeatureT extends IGlobeFeature<IVector2<?>, FeatureGeometryT>,
 
-FeatureGeometryT extends IBoundedGeometry<IVector2<?>, ?, FeatureBoundsT>,
-
-FeatureBoundsT extends IFiniteBounds<IVector2<?>, FeatureBoundsT>
+FeatureGeometryT extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>
 
 >
 

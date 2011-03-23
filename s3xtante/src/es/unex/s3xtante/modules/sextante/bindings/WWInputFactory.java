@@ -52,7 +52,7 @@ public class WWInputFactory
          final Layer layer = layerList.get(i);
          if (layer instanceof IGlobeVectorLayer) {
             @SuppressWarnings("unchecked")
-            final IGlobeVectorLayer<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle> globeVector2Layer = (IGlobeVectorLayer<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>) layer;
+            final IGlobeVectorLayer<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>> globeVector2Layer = (IGlobeVectorLayer<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>>) layer;
             obj = new WWVectorLayer(globeVector2Layer.getName(), globeVector2Layer.getFeaturesCollection());
             layers.add(obj);
          }

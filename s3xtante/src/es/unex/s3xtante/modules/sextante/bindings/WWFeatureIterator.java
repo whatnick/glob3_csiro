@@ -27,10 +27,10 @@ public class WWFeatureIterator
          implements
             IFeatureIterator {
 
-   private final Iterator<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>> _iterator;
+   private final Iterator<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>>> _iterator;
 
 
-   public WWFeatureIterator(final IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle, ?> features,
+   public WWFeatureIterator(final IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, ?> features,
                             final List<IVectorLayerFilter> filters) {
 
       final List<SextanteFilterPredicate> predicates = new ArrayList<SextanteFilterPredicate>();
@@ -39,7 +39,7 @@ public class WWFeatureIterator
 
       }
 
-      _iterator = new FilterIterator<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle>>(
+      _iterator = new FilterIterator<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>>>(
                features.iterator(), predicates.toArray(new SextanteFilterPredicate[0]));
 
    }
@@ -58,7 +58,7 @@ public class WWFeatureIterator
    public IFeature next() throws IteratorException {
 
       try {
-         final IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, GAxisAlignedRectangle> globeFeature = _iterator.next();
+         final IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>> globeFeature = _iterator.next();
          final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> euclidGeom = globeFeature.getDefaultGeometry();
          final List<Object> record = globeFeature.getAttributes();
          final Geometry jtsGeom = GJTSUtils.toJTS(euclidGeom);

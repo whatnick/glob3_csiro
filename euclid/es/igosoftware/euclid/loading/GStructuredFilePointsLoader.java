@@ -49,6 +49,7 @@ import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.verticescontainer.GStructuredCompositeVertexContainer;
 import es.igosoftware.euclid.verticescontainer.IStructuredVertexContainer;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
+import es.igosoftware.io.GFileName;
 
 
 public abstract class GStructuredFilePointsLoader<VectorT extends IVector<VectorT, ?, ?>,
@@ -61,21 +62,21 @@ GroupT extends IStructuredVertexContainer.IVertexGroup<VectorT, IVertexContainer
    private final GStructuredCompositeVertexContainer<VectorT, GroupT> _verticesComposite = new GStructuredCompositeVertexContainer<VectorT, GroupT>();
 
 
-   protected GStructuredFilePointsLoader(final String fileNames,
-                                         final int flags) {
-      super(fileNames, flags);
+   protected GStructuredFilePointsLoader(final int flags,
+                                         final GFileName... fileNames) {
+      super(flags, fileNames);
    }
 
 
    @Override
    protected final void rawLoad() throws IOException {
-      final String[] fileNames = getFileNames();
-      final int filesCount = fileNames.length;
+      final List<GFileName> fileNames = getFileNames();
+      final int filesCount = fileNames.size();
 
       startLoad(filesCount);
 
       if (filesCount == 1) {
-         final String fileName = fileNames[0];
+         final GFileName fileName = fileNames.get(0);
          logInfo("Reading vertices from \"" + fileName + "\"...");
 
          final IStructuredVertexContainer<VectorT, IStructuredVertexContainer.StructuredVertex<VectorT, GroupT>, GroupT, ?> vertices = loadVerticesFromFile(fileName);
@@ -95,7 +96,7 @@ GroupT extends IStructuredVertexContainer.IVertexGroup<VectorT, IVertexContainer
                @Override
                public IStructuredVertexContainer<VectorT, IStructuredVertexContainer.StructuredVertex<VectorT, GroupT>, GroupT, ?> call()
                                                                                                                                          throws IOException {
-                  final String fileName = fileNames[finalI];
+                  final GFileName fileName = fileNames.get(finalI);
                   logInfo("Reading vertices from \"" + fileName + "\" (" + (finalI + 1) + "/" + filesCount + ")...");
 
                   final IStructuredVertexContainer<VectorT, IStructuredVertexContainer.StructuredVertex<VectorT, GroupT>, GroupT, ?> vertices = loadVerticesFromFile(fileName);
@@ -139,8 +140,8 @@ GroupT extends IStructuredVertexContainer.IVertexGroup<VectorT, IVertexContainer
 
 
    @Override
-   protected abstract IStructuredVertexContainer<VectorT, IStructuredVertexContainer.StructuredVertex<VectorT, GroupT>, GroupT, ?> loadVerticesFromFile(final String fileName)
-                                                                                                                                                                              throws IOException;
+   protected abstract IStructuredVertexContainer<VectorT, IStructuredVertexContainer.StructuredVertex<VectorT, GroupT>, GroupT, ?> loadVerticesFromFile(final GFileName fileName)
+                                                                                                                                                                                 throws IOException;
 
 
    @Override
