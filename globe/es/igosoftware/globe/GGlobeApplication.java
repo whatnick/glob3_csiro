@@ -297,6 +297,7 @@ public abstract class GGlobeApplication
    private JMenu                                  _fileMenu;
    private JMenu                                  _navigationMenu;
    private JMenu                                  _viewMenu;
+   private JMenu                                  _editMenu;
    private JMenu                                  _analysisMenu;
    private JMenu                                  _helpMenu;
 
@@ -625,7 +626,7 @@ public abstract class GGlobeApplication
    public void initModuleGUI(final IGlobeModule module,
                              final IGlobeModule previousModule) {
 
-      final List<IGenericAction> genericActions = module.getGenericActions(GGlobeApplication.this);
+      final List<? extends IGenericAction> genericActions = module.getGenericActions(GGlobeApplication.this);
 
       final Set<IGenericAction.MenuArea> firstUseFlags = new HashSet<IGenericAction.MenuArea>();
 
@@ -674,6 +675,9 @@ public abstract class GGlobeApplication
             break;
          case VIEW:
             menu = _viewMenu;
+            break;
+         case EDIT:
+            menu = _editMenu;
             break;
          default:
             logSevere("Invalid menu bar area: " + area);
@@ -782,6 +786,10 @@ public abstract class GGlobeApplication
          menubar.add(createViewMenu());
       }
 
+      if (neededMenuAreas.contains(IGenericAction.MenuArea.EDIT)) {
+         menubar.add(createEditMenu());
+      }
+
       if (neededMenuAreas.contains(IGenericAction.MenuArea.ANALYSIS)) {
          menubar.add(createAnalysisMenu());
       }
@@ -802,7 +810,7 @@ public abstract class GGlobeApplication
       //      result.add(IGenericAction.MenuArea.HELP);
 
       for (final IGlobeModule module : _modules) {
-         final List<IGenericAction> actions = module.getGenericActions(this);
+         final List<? extends IGenericAction> actions = module.getGenericActions(this);
          if (actions != null) {
             for (final IGenericAction action : actions) {
                if (action.isVisible()) {
@@ -829,6 +837,14 @@ public abstract class GGlobeApplication
       _viewMenu.setMnemonic('V');
 
       return _viewMenu;
+   }
+
+
+   private JMenu createEditMenu() {
+      _editMenu = new JMenu(getTranslation("Edit"));
+      _editMenu.setMnemonic('E');
+
+      return _editMenu;
    }
 
 
@@ -1123,7 +1139,7 @@ public abstract class GGlobeApplication
 
 
    @Override
-   public List<IGlobeLayer> getGlobeLayers() {
+   public List<? extends IGlobeLayer> getGlobeLayers() {
       final List<IGlobeLayer> result = new ArrayList<IGlobeLayer>();
 
       final LayerList layerList = getLayerList();

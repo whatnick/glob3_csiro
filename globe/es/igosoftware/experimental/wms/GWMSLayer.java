@@ -216,7 +216,7 @@ public class GWMSLayer
 
 
    @Override
-   public List<ILayerAction> getLayerActions(final IGlobeApplication application) {
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application) {
       return null;
    }
 

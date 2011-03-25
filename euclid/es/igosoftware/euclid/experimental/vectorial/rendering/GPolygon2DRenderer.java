@@ -13,31 +13,28 @@ import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.ntree.GGeometryNTreeParameters;
 import es.igosoftware.euclid.vector.IVector2;
-import es.igosoftware.util.ITransformer;
 
 
 public class GPolygon2DRenderer {
 
-
-   //   private final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> _features; 
-   private final IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?>                                                                                   _features;
-   private final GRenderingQuadtree<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> _quadtree;
+   private final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?>        _features;
+   private final GRenderingQuadtree<IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>> _quadtree;
 
 
-   public GPolygon2DRenderer(final IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features) {
+   public GPolygon2DRenderer(final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features) {
       _features = features;
 
       _quadtree = createQuadtree();
    }
 
 
-   private GRenderingQuadtree<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> createQuadtree() {
+   private GRenderingQuadtree<IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>> createQuadtree() {
       final GGeometryNTreeParameters.AcceptLeafNodeCreationPolicy acceptLeafNodeCreationPolicy;
-      acceptLeafNodeCreationPolicy = new GGeometryNTreeParameters.Accept2DLeafNodeCreationPolicy<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>>() {
+      acceptLeafNodeCreationPolicy = new GGeometryNTreeParameters.Accept2DLeafNodeCreationPolicy<IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>() {
          @Override
          public boolean accept(final int depth,
                                final GAxisAlignedOrthotope<IVector2<?>, ?> bounds,
-                               final Collection<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>>> elements) {
+                               final Collection<IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>> elements) {
             if (depth >= 10) {
                return true;
             }
@@ -50,18 +47,10 @@ public class GPolygon2DRenderer {
       final GGeometryNTreeParameters parameters = new GGeometryNTreeParameters(true, acceptLeafNodeCreationPolicy,
                GGeometryNTreeParameters.BoundsPolicy.MINIMUM, true);
 
-      final ITransformer<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> transformer;
-      transformer = new ITransformer<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>() {
-         @Override
-         public IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>> transform(final IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> element) {
-            return element.getDefaultGeometry();
-         }
-      };
 
+      return new GRenderingQuadtree<IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>>(
+               "Rendering", _features, parameters);
 
-      //      return new GRenderingQuadtree<FeatureT, GeometryT>("Rendering", null, _features, transformer, parameters);
-      return new GRenderingQuadtree<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>(
-               "Rendering", null, _features, transformer, parameters);
    }
 
 

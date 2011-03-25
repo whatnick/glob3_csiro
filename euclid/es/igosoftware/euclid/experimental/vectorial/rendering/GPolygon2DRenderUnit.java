@@ -30,7 +30,7 @@ class GPolygon2DRenderUnit
 
 
    @Override
-   public BufferedImage render(final GRenderingQuadtree<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> quadtree,
+   public BufferedImage render(final GRenderingQuadtree<IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>> quadtree,
                                final GAxisAlignedRectangle region,
                                final GRenderingAttributes attributes) {
 
@@ -73,8 +73,8 @@ class GPolygon2DRenderUnit
    }
 
 
-   private void processNode(final GGTNode<IVector2<?>, ? extends IFiniteBounds<IVector2<?>, ?>, IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> node,
-                            final GRenderingQuadtree<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> quadtree,
+   private void processNode(final GGTNode<IVector2<?>, GAxisAlignedRectangle, IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>> node,
+                            final GRenderingQuadtree<IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>> quadtree,
                             final GAxisAlignedRectangle region,
                             final GRenderingAttributes attributes,
                             final IVector2<?> scale,
@@ -103,10 +103,10 @@ class GPolygon2DRenderUnit
 
 
       if (node instanceof GGTInnerNode) {
-         final GGTInnerNode<IVector2<?>, ? extends IFiniteBounds<IVector2<?>, ?>, IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> inner;
-         inner = (GGTInnerNode<IVector2<?>, ? extends IFiniteBounds<IVector2<?>, ?>, IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) node;
+         final GGTInnerNode<IVector2<?>, GAxisAlignedRectangle, IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>> inner;
+         inner = (GGTInnerNode<IVector2<?>, GAxisAlignedRectangle, IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>>) node;
 
-         for (final GGTNode<IVector2<?>, ? extends IFiniteBounds<IVector2<?>, ?>, IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> child : inner.getChildren()) {
+         for (final GGTNode<IVector2<?>, GAxisAlignedRectangle, IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>> child : inner.getChildren()) {
             processNode(child, quadtree, region, attributes, scale, g2d, renderedImage);
          }
       }
@@ -116,7 +116,7 @@ class GPolygon2DRenderUnit
    }
 
 
-   private void renderNodeGeometries(final GGTNode<IVector2<?>, ? extends IFiniteBounds<IVector2<?>, ?>, IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> node,
+   private void renderNodeGeometries(final GGTNode<IVector2<?>, ? extends IFiniteBounds<IVector2<?>, ?>, IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>> node,
                                      final GAxisAlignedRectangle region,
                                      final GRenderingAttributes attributes,
                                      final IVector2<?> scale,
@@ -140,7 +140,7 @@ class GPolygon2DRenderUnit
       }
 
 
-      for (final IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> feature : node.getElements()) {
+      for (final IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> feature : node.getElements()) {
          final IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>> geometry = feature.getDefaultGeometry();
          if (geometry.getBounds().asAxisAlignedOrthotope().touches(region)) {
             renderGeometry(geometry, scale, renderedImage, g2d, region, attributes);

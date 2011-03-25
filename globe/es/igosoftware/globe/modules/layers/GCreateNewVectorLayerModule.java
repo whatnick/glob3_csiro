@@ -63,7 +63,7 @@ public class GCreateNewVectorLayerModule
 
 
    @Override
-   public List<IGenericAction> getGenericActions(final IGlobeApplication application) {
+   public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application) {
 
       final IGenericAction action = new GButtonGenericAction("Create new vector layer", ' ', null, IGenericAction.MenuArea.FILE,
                false) {
@@ -80,8 +80,8 @@ public class GCreateNewVectorLayerModule
 
 
    @Override
-   public List<ILayerAction> getLayerActions(final IGlobeApplication application,
-                                             final IGlobeLayer layer) {
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application,
+                                                       final IGlobeLayer layer) {
       return null;
    }
 

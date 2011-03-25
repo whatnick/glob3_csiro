@@ -1,3 +1,37 @@
+/*
+
+ IGO Software SL  -  info@igosoftware.es
+
+ http://www.glob3.org
+
+-------------------------------------------------------------------------------
+ Copyright (c) 2010, IGO Software SL
+ All rights reserved.
+
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+     * Redistributions of source code must retain the above copyright
+       notice, this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright
+       notice, this list of conditions and the following disclaimer in the
+       documentation and/or other materials provided with the distribution.
+     * Neither the name of the IGO Software SL nor the
+       names of its contributors may be used to endorse or promote products
+       derived from this software without specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ DISCLAIMED. IN NO EVENT SHALL IGO Software SL BE LIABLE FOR ANY
+ DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-------------------------------------------------------------------------------
+
+*/
 
 
 package es.igosoftware.experimental.vectorial;
@@ -5,6 +39,7 @@ package es.igosoftware.experimental.vectorial;
 import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.Icon;
@@ -23,6 +58,7 @@ import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
 import es.igosoftware.globe.ILayerFactoryModule;
 import es.igosoftware.globe.ILayerInfo;
+import es.igosoftware.globe.actions.GButtonGenericAction;
 import es.igosoftware.globe.actions.IGenericAction;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
@@ -56,14 +92,35 @@ public class GPolygon2DModule
 
 
    @Override
-   public List<IGenericAction> getGenericActions(final IGlobeApplication application) {
-      return null;
+   public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application) {
+      final GButtonGenericAction creates = new GButtonGenericAction("Creates a New Vectorial Layer",
+               application.getIcon("new-vectorial.png"), IGenericAction.MenuArea.EDIT, true) {
+         @Override
+         public void execute() {
+            final int ______Diego_at_work;
+
+            //            final GProjection projection = GProjection.EPSG_4326;
+            //            final List<GField> fields = Collections.emptyList();
+            //            final List<IGlobeFeature<IVector2<?>, IPolygon2D<?>>> featuresList = Collections.emptyList();
+            //            final String uniqueID = null;
+            //
+            //            final GListMutableFeatureCollection<IVector2<?>, IPolygon2D<?>> features = new GListMutableFeatureCollection<IVector2<?>, IPolygon2D<?>>(
+            //                     projection, fields, featuresList, uniqueID);
+            //
+            //            final String layerName = "NEW LAYER";
+            //            final GPolygon2DLayer layer = new GPolygon2DLayer(layerName, features);
+            //
+            //            application.getLayerList().add(layer);
+         }
+      };
+
+      return Arrays.asList(creates);
    }
 
 
    @Override
-   public List<ILayerAction> getLayerActions(final IGlobeApplication application,
-                                             final IGlobeLayer layer) {
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application,
+                                                       final IGlobeLayer layer) {
       return null;
    }
 
@@ -88,7 +145,7 @@ public class GPolygon2DModule
 
 
    @Override
-   public List<ILayerInfo> getAvailableLayers(final IGlobeApplication application) {
+   public List<? extends ILayerInfo> getAvailableLayers(final IGlobeApplication application) {
       return GLayerInfo.createFromNames("Vectorial file");
    }
 
@@ -97,8 +154,7 @@ public class GPolygon2DModule
    public GPolygon2DLayer addNewLayer(final IGlobeApplication application,
                                       final ILayerInfo layerInfo) {
 
-      final JFileChooser fileChooser = createSqueakProjectSaveFileChooser(application);
-
+      final JFileChooser fileChooser = createFileChooser(application);
 
       final int returnVal = fileChooser.showOpenDialog(application.getFrame());
       if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -149,7 +205,7 @@ public class GPolygon2DModule
    }
 
 
-   private JFileChooser createSqueakProjectSaveFileChooser(final IGlobeApplication application) {
+   private JFileChooser createFileChooser(final IGlobeApplication application) {
       final JFileChooser fileChooser = new JFileChooser(System.getProperty("user.home")) {
          private static final long serialVersionUID = 1L;
 

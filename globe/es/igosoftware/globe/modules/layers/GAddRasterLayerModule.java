@@ -95,14 +95,14 @@ public class GAddRasterLayerModule
 
 
    @Override
-   public List<IGenericAction> getGenericActions(final IGlobeApplication application) {
+   public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application) {
       return null;
    }
 
 
    @Override
-   public List<ILayerAction> getLayerActions(final IGlobeApplication application,
-                                             final IGlobeLayer layer) {
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application,
+                                                       final IGlobeLayer layer) {
       return null;
    }
 
@@ -266,7 +266,7 @@ public class GAddRasterLayerModule
 
 
    @Override
-   public List<ILayerInfo> getAvailableLayers(final IGlobeApplication application) {
+   public List<? extends ILayerInfo> getAvailableLayers(final IGlobeApplication application) {
       return GCollections.createList(new GLayerInfo("ESRI ArcInfo ASCII"));
    }
 

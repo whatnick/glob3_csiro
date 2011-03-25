@@ -154,7 +154,7 @@ public class GHelpModule
 
 
    @Override
-   public List<IGenericAction> getGenericActions(final IGlobeApplication application) {
+   public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application) {
       if (_showInPanel) {
          return Collections.emptyList();
       }
@@ -281,8 +281,8 @@ public class GHelpModule
 
 
    @Override
-   public List<ILayerAction> getLayerActions(final IGlobeApplication application,
-                                             final IGlobeLayer layer) {
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application,
+                                                       final IGlobeLayer layer) {
       return null;
    }
 

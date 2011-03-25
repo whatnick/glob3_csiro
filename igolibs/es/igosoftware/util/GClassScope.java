@@ -57,7 +57,7 @@ import java.util.Vector;
  * 
  * @author (C) <a href="http://www.javaworld.com/columns/jw-qna-index.shtml">Vlad Roubtsov</a>, 2003
  */
-public class ClassScope {
+public class GClassScope {
    private static final List<Class<?>> EMPTY_CLASS_ARRAY = Collections.emptyList();
    private static final Throwable      CVF_FAILURE, CR_FAILURE;                    // set in <clinit>
 
@@ -280,7 +280,7 @@ public class ClassScope {
    } // end of nested class
 
 
-   private ClassScope() {
+   private GClassScope() {
    } // this class is not extendible
 
 

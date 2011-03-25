@@ -39,7 +39,7 @@ public class GWMSModule
 
 
    @Override
-   public List<IGenericAction> getGenericActions(final IGlobeApplication application) {
+   public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application) {
 
       final IGenericAction addWMSLayer = new GButtonGenericAction("Add WMS layer", 'W', application.getIcon("earth-add.png"),
                IGenericAction.MenuArea.FILE, true) {
@@ -83,8 +83,8 @@ public class GWMSModule
 
 
    @Override
-   public List<ILayerAction> getLayerActions(final IGlobeApplication application,
-                                             final IGlobeLayer layer) {
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application,
+                                                       final IGlobeLayer layer) {
       return null;
    }
 

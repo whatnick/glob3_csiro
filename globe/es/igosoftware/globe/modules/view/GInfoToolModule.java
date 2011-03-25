@@ -67,7 +67,7 @@ public class GInfoToolModule
 
 
    @Override
-   public List<IGenericAction> getGenericActions(final IGlobeApplication application) {
+   public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application) {
 
       final IGenericAction action = new GCheckBoxGenericAction("Info tool", ' ', new ImageIcon("images/icon-16-_info.png"),
                IGenericAction.MenuArea.VIEW, true, false) {
@@ -90,8 +90,8 @@ public class GInfoToolModule
 
 
    @Override
-   public List<ILayerAction> getLayerActions(final IGlobeApplication application,
-                                             final IGlobeLayer layer) {
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application,
+                                                       final IGlobeLayer layer) {
       return null;
    }
 

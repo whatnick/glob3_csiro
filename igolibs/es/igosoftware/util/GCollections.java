@@ -244,7 +244,7 @@ public final class GCollections {
                iterators.add(iterable.iterator());
             }
 
-            return new CompositeIterator<T>(iterators);
+            return new GCompositeIterator<T>(iterators);
          }
       };
    }
@@ -408,7 +408,7 @@ public final class GCollections {
       return new Iterable<ResultT>() {
          @Override
          public Iterator<ResultT> iterator() {
-            return new TransformIterator<ElementT, ResultT>(iterable.iterator(), transformer);
+            return new GTransformIterator<ElementT, ResultT>(iterable.iterator(), transformer);
          }
       };
    }

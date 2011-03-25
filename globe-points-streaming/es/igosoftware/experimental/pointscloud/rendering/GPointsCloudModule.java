@@ -94,7 +94,7 @@ public class GPointsCloudModule
 
 
    @Override
-   public List<IGenericAction> getGenericActions(final IGlobeApplication application) {
+   public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application) {
       return null;
    }
 
@@ -133,8 +133,8 @@ public class GPointsCloudModule
 
 
    @Override
-   public List<ILayerAction> getLayerActions(final IGlobeApplication application,
-                                             final IGlobeLayer layer) {
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application,
+                                                       final IGlobeLayer layer) {
 
       final ILayerAction reload = new GLayerAction("Reload", application.getIcon("reload.png"), true) {
          @Override
@@ -414,7 +414,7 @@ public class GPointsCloudModule
 
 
    @Override
-   public List<ILayerInfo> getAvailableLayers(final IGlobeApplication application) {
+   public List<? extends ILayerInfo> getAvailableLayers(final IGlobeApplication application) {
       try {
          final List<String> pointsCloudsNames = _pointsCloudLoader.getPointsCloudsNames();
          Collections.sort(pointsCloudsNames);

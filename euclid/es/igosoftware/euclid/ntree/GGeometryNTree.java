@@ -28,33 +28,31 @@ VectorT extends IVector<VectorT, ?, ?>,
 
 BoundsT extends GAxisAlignedOrthotope<VectorT, ?>,
 
-ElementT,
-
-GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>
+ElementT
 
 >
          extends
             GLoggerObject {
 
 
-   private final String                                        _name;
-   private final Iterable<ElementT>                            _elements;
-   private final long                                          _elementsCount;
+   private final String                             _name;
+   private final Iterable<? extends ElementT>       _elements;
+   private final long                               _elementsCount;
 
-   private final GGeometryNTreeParameters                      _parameters;
+   private final GGeometryNTreeParameters           _parameters;
 
-   private final byte                                          _dimensions;
-   private final BoundsT                                       _geometriesBounds;
-   private final BoundsT                                       _bounds;
+   private final byte                               _dimensions;
+   private final BoundsT                            _geometriesBounds;
+   private final BoundsT                            _bounds;
 
-   private GGTInnerNode<VectorT, BoundsT, ElementT, GeometryT> _root;
+   private GGTInnerNode<VectorT, BoundsT, ElementT> _root;
 
 
    @SuppressWarnings("unchecked")
    protected GGeometryNTree(final String name,
                             final GAxisAlignedOrthotope<VectorT, ?> bounds,
-                            final Iterable<ElementT> elements,
-                            final ITransformer<ElementT, GeometryT> transformer,
+                            final Iterable<? extends ElementT> elements,
+                            final ITransformer<ElementT, ? extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>> transformer,
                             final GGeometryNTreeParameters parameters) {
       _name = name;
       _elements = elements;
@@ -85,10 +83,10 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
       final GeometriesDistribution<VectorT, ElementT> distribution = GGTInnerNode.distributeGeometries(_bounds, elements,
                transformer);
 
-      _root = new GGTInnerNode<VectorT, BoundsT, ElementT, GeometryT>(null, _bounds, distribution.getOwnGeometries(),
+      _root = new GGTInnerNode<VectorT, BoundsT, ElementT>(null, _bounds, distribution.getOwnGeometries(),
                distribution.getGeometriesToDistribute(), transformer, 0, parameters, progress) {
          @Override
-         public GGeometryNTree<VectorT, BoundsT, ElementT, GeometryT> getNTree() {
+         public GGeometryNTree<VectorT, BoundsT, ElementT> getNTree() {
             return GGeometryNTree.this;
          }
       };
@@ -275,15 +273,15 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
 
       final GHolder<VectorT> totalLeafExtentHolder = new GHolder<VectorT>(null);
 
-      breadthFirstAcceptVisitor(new IGTBreadFirstVisitor<VectorT, BoundsT, ElementT, GeometryT>() {
+      breadthFirstAcceptVisitor(new IGTBreadFirstVisitor<VectorT, BoundsT, ElementT>() {
 
          @Override
-         public void visitOctree(final GGeometryNTree<VectorT, BoundsT, ElementT, GeometryT> octree) {
+         public void visitOctree(final GGeometryNTree<VectorT, BoundsT, ElementT> octree) {
          }
 
 
          @Override
-         public void visitInnerNode(final GGTInnerNode<VectorT, BoundsT, ElementT, GeometryT> inner) {
+         public void visitInnerNode(final GGTInnerNode<VectorT, BoundsT, ElementT> inner) {
             innerNodesCounter.increment();
 
             final int elementsCount = inner.getElementsCount();
@@ -299,7 +297,7 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
 
 
          @Override
-         public void visitLeafNode(final GGTLeafNode<VectorT, BoundsT, ElementT, GeometryT> leaf) {
+         public void visitLeafNode(final GGTLeafNode<VectorT, BoundsT, ElementT> leaf) {
             leafNodesCounter.increment();
 
             final int elementsCount = leaf.getElementsCount();
@@ -377,7 +375,7 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
    }
 
 
-   public void breadthFirstAcceptVisitor(final IGTBreadFirstVisitor<VectorT, BoundsT, ElementT, GeometryT> visitor) {
+   public void breadthFirstAcceptVisitor(final IGTBreadFirstVisitor<VectorT, BoundsT, ElementT> visitor) {
       try {
          visitor.visitOctree(this);
 
@@ -390,7 +388,7 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
 
 
    public void breadthFirstAcceptVisitor(final IBounds<VectorT, ?> region,
-                                         final IGTBreadFirstVisitor<VectorT, BoundsT, ElementT, GeometryT> visitor) {
+                                         final IGTBreadFirstVisitor<VectorT, BoundsT, ElementT> visitor) {
       if (!_bounds.touchesBounds(region)) {
          return;
       }
@@ -406,7 +404,7 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
    }
 
 
-   public void depthFirstAcceptVisitor(final IGTDepthFirstVisitor<VectorT, BoundsT, ElementT, GeometryT> visitor) {
+   public void depthFirstAcceptVisitor(final IGTDepthFirstVisitor<VectorT, BoundsT, ElementT> visitor) {
       try {
          visitor.visitOctree(this);
 
@@ -435,12 +433,12 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
    }
 
 
-   public Iterable<ElementT> getElements() {
+   public Iterable<? extends ElementT> getElements() {
       return _elements;
    }
 
 
-   public GGTInnerNode<VectorT, BoundsT, ElementT, GeometryT> getRoot() {
+   public GGTInnerNode<VectorT, BoundsT, ElementT> getRoot() {
       return _root;
    }
 

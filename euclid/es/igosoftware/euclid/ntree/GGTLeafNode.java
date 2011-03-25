@@ -4,9 +4,7 @@ package es.igosoftware.euclid.ntree;
 
 import java.util.Collection;
 
-import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
-import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.vector.IVector;
 
 
@@ -16,16 +14,14 @@ VectorT extends IVector<VectorT, ?, ?>,
 
 BoundsT extends GAxisAlignedOrthotope<VectorT, ?>,
 
-ElementT,
-
-GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>
+ElementT
 
 >
          extends
-            GGTNode<VectorT, BoundsT, ElementT, GeometryT> {
+            GGTNode<VectorT, BoundsT, ElementT> {
 
 
-   GGTLeafNode(final GGTInnerNode<VectorT, BoundsT, ElementT, GeometryT> parent,
+   GGTLeafNode(final GGTInnerNode<VectorT, BoundsT, ElementT> parent,
                final BoundsT bounds,
                final Collection<ElementT> elements) {
       super(parent, bounds, elements);
@@ -33,8 +29,8 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
 
 
    @Override
-   public void depthFirstAcceptVisitor(final IGTDepthFirstVisitor<VectorT, BoundsT, ElementT, GeometryT> visitor)
-                                                                                                                 throws IGTBreadFirstVisitor.AbortVisiting {
+   public void depthFirstAcceptVisitor(final IGTDepthFirstVisitor<VectorT, BoundsT, ElementT> visitor)
+                                                                                                      throws IGTBreadFirstVisitor.AbortVisiting {
       visitor.visitLeafNode(this);
    }
 

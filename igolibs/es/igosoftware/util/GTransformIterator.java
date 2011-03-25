@@ -37,57 +37,38 @@
 package es.igosoftware.util;
 
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 
-public final class CompositeIterator<T>
+public final class GTransformIterator<ElementT, ResultT>
          implements
-            Iterator<T> {
-   final private Iterator<Iterator<T>> childrenIterator;
-   private Iterator<T>                 currentIterator;
+            Iterator<ResultT> {
+
+   final private Iterator<ElementT>              _iterator;
+   final private ITransformer<ElementT, ResultT> _transformer;
 
 
-   public CompositeIterator(final Iterable<Iterator<T>> children) {
-      childrenIterator = children.iterator();
-      advanceIterator();
-   }
-
-
-   private void advanceIterator() {
-      currentIterator = childrenIterator.hasNext() ? childrenIterator.next() : null;
+   public GTransformIterator(final Iterator<ElementT> iterator,
+                             final ITransformer<ElementT, ResultT> transformer) {
+      _iterator = iterator;
+      _transformer = transformer;
    }
 
 
    @Override
    public boolean hasNext() {
-      if (currentIterator == null) {
-         return false;
-      }
-      if (currentIterator.hasNext()) {
-         return true;
-      }
-
-      advanceIterator();
-      return hasNext();
+      return _iterator.hasNext();
    }
 
 
    @Override
-   public T next() {
-      if (currentIterator == null) {
-         throw new NoSuchElementException();
-      }
-      if (currentIterator.hasNext()) {
-         return currentIterator.next();
-      }
-
-      advanceIterator();
-      return next();
+   public ResultT next() {
+      return _transformer.transform(_iterator.next());
    }
 
 
    @Override
    public void remove() {
-      throw new RuntimeException("remove not supported");
+      _iterator.remove();
    }
+
 }
