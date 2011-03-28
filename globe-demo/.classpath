@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry kind="lib" path="/worldwind_collada/extlib/wwmodel.jar"/>
 	<classpathentry kind="src" path=""/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/globe"/>
-	<classpathentry kind="lib" path="/globe/libs/worldwind.jar" sourcepath="/home/oliver/Desktop/IGO-Repository/ww"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/globe-points-streaming"/>
+	<classpathentry kind="lib" path="/worldwind_collada/extlib/ardor3d-animation-0.7.jar"/>
+	<classpathentry kind="lib" path="/worldwind_collada/extlib/ardor3d-awt-0.7.jar"/>
+	<classpathentry kind="lib" path="/worldwind_collada/extlib/ardor3d-collada-0.7.jar"/>
+	<classpathentry kind="lib" path="/worldwind_collada/extlib/ardor3d-core-0.7.jar"/>
+	<classpathentry kind="lib" path="/worldwind_collada/extlib/ardor3d-jogl-0.7.jar"/>
+	<classpathentry kind="lib" path="/worldwind_collada/extlib/commons-logging-api-1.1.1.jar"/>
+	<classpathentry kind="lib" path="/worldwind_collada/extlib/guava-r07.jar"/>
+	<classpathentry kind="lib" path="/worldwind_collada/extlib/jaxen.jar"/>
+	<classpathentry kind="lib" path="/worldwind_collada/extlib/jdom.jar"/>
+	<classpathentry kind="lib" path="/worldwind_collada/extlib/saxpath.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

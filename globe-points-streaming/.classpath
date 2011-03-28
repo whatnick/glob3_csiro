@@ -8,5 +8,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/globe"/>
 	<classpathentry kind="lib" path="/globe/libs/jogl/gluegen-rt.jar"/>
 	<classpathentry kind="lib" path="/globe/libs/jogl/jogl.jar"/>
+	<classpathentry kind="lib" path="/globe/libs/worldwind.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
