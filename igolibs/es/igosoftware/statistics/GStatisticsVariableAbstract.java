@@ -38,6 +38,7 @@ package es.igosoftware.statistics;
 
 import java.util.List;
 
+import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GLogger;
 
@@ -56,7 +57,7 @@ public abstract class GStatisticsVariableAbstract<TypeT extends Number> {
    protected final int     _flags;
    protected long          _counter           = 0;
    protected String        _unitName          = "";
-   protected String        _targetDirectory   = "";
+   protected GFileName     _targetDirectory   = GFileName.CURRENT_DIRECTORY;
 
 
    public GStatisticsVariableAbstract(final String name,
@@ -92,7 +93,7 @@ public abstract class GStatisticsVariableAbstract<TypeT extends Number> {
    }
 
 
-   public synchronized void setTargetDirectory(final String targetDirectory) {
+   public synchronized void setTargetDirectory(final GFileName targetDirectory) {
       _targetDirectory = targetDirectory;
    }
 

@@ -74,6 +74,6 @@ public interface IGlobeLayer
    public void doDefaultAction(final IGlobeApplication application);
 
 
-   public List<ILayerAction> getLayerActions(final IGlobeApplication application);
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application);
 
 }

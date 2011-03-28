@@ -36,7 +36,6 @@
 
 package es.igosoftware.euclid.loading;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -62,6 +61,7 @@ import es.igosoftware.euclid.verticescontainer.GStructuredPtxVertex3Container;
 import es.igosoftware.euclid.verticescontainer.GStructuredSubVertexContainer;
 import es.igosoftware.euclid.verticescontainer.IStructuredVertexContainer;
 import es.igosoftware.euclid.verticescontainer.IStructuredVertexContainer.StructuredVertex;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.GProgress;
@@ -95,25 +95,25 @@ public final class GPTX3Loader
    private GMatrix44D             _transformationMatrix;
 
 
-   public GPTX3Loader(final String fileNames,
-                      final GVectorPrecision vectorPrecision,
+   public GPTX3Loader(final GVectorPrecision vectorPrecision,
                       final GColorPrecision colorPrecision,
                       final GProjection projection,
-                      final int flags) {
-      this(fileNames, vectorPrecision, colorPrecision, projection, false, false, false, flags);
+                      final int flags,
+                      final GFileName... fileNames) {
+      this(vectorPrecision, colorPrecision, projection, false, false, false, flags, fileNames);
    }
 
 
-   public GPTX3Loader(final String fileNames,
-                      final GVectorPrecision vectorPrecision,
+   public GPTX3Loader(final GVectorPrecision vectorPrecision,
                       final GColorPrecision colorPrecision,
                       final GProjection projection,
                       final boolean intensitiesFromColor,
                       final boolean includeEmptyPoints,
                       final boolean includeEmptyButColoredPoints,
-                      final int flags) {
+                      final int flags,
+                      final GFileName... fileNames) {
 
-      super(fileNames, flags);
+      super(flags, fileNames);
 
       _intensitiesFromColor = intensitiesFromColor;
       _includeEmptyPoints = includeEmptyPoints;
@@ -450,14 +450,14 @@ public final class GPTX3Loader
 
 
    @Override
-   protected GStructuredPtxVertex3Container loadVerticesFromFile(final String fileName) throws IOException {
+   protected GStructuredPtxVertex3Container loadVerticesFromFile(final GFileName fileName) throws IOException {
 
 
       LineNumberReader input = null;
       try {
-         input = new LineNumberReader(new InputStreamReader(new FileInputStream(fileName)));
+         input = new LineNumberReader(new InputStreamReader(new FileInputStream(fileName.buildPath())));
 
-         final GProgress progress = new GProgress(new File(fileName).length()) {
+         final GProgress progress = new GProgress(fileName.asFile().length()) {
             @Override
             public void informProgress(final double percent,
                                        final long elapsed,
@@ -539,15 +539,11 @@ public final class GPTX3Loader
 
       //GUtils.delay(30000);
 
-      final String sourceDirectoryName = "/home/fpulido/Escritorio/PTX-files/";
-      //final String sourceDirectoryName = "/home/fpgalan/Escritorio/PTX-files/";
+      final GFileName sourceDirectoryName = GFileName.absolute("home", "dgd", "Escritorio", "SamplePointsClouds");
 
-      //final String fileName = "Guadatux1.ptx";
-      final String fileName = "41-palacioLuisaCarvajal-oeste.ptx";
-      //final String fileName = "50-iglesiaSanMateo.ptx";
-      //final String fileName = "013_3.ptx";
-      //final String fileName = "013_3_two_groups.ptx";
-      final String inputFileName = sourceDirectoryName + fileName;
+      final String fileName = "guadiloba.ptx";
+
+      final GFileName inputFileName = GFileName.fromParentAndParts(sourceDirectoryName, fileName);
 
       final GProjection projection = GProjection.EUCLID;
       //final GProjection projection = GProjection.EPSG_23029;
@@ -557,9 +553,9 @@ public final class GPTX3Loader
 
       System.out.println("Loading ptx files..");
       try {
-         final GPTX3Loader loader = new GPTX3Loader(inputFileName, GVectorPrecision.FLOAT, GColorPrecision.INT, projection,
+         final GPTX3Loader loader = new GPTX3Loader(GVectorPrecision.FLOAT, GColorPrecision.INT, projection,
                   intensitiesFromColor, includeEmptyPoints, includeEmptyButColoredPoints, GPointsLoader.DEFAULT_FLAGS
-                                                                                          | GPointsLoader.VERBOSE);
+                                                                                          | GPointsLoader.VERBOSE, inputFileName);
 
          loader.load();
 

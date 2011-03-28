@@ -72,6 +72,7 @@ import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.euclid.verticescontainer.GVertex3Container;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer.Vertex;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GHolder;
@@ -126,7 +127,7 @@ public class GPointsCloudLODGenerator
 
 
       private void process(final GProgress progress,
-                           final String outputDirectoryName,
+                           final GFileName outputDirectoryName,
                            final Map<String, GPCLeafNode> leafNodes) {
          if (_vertices.size() == 1) {
             // just one vertex, no need to sort
@@ -165,9 +166,9 @@ public class GPointsCloudLODGenerator
       }
 
 
-      private void save(final String outputDirectoryName,
+      private void save(final GFileName outputDirectoryName,
                         final IVector3<?> referencePoint) throws IOException {
-         final File outputFile = new File(new File(outputDirectoryName), "tile-" + _id + ".points");
+         final File outputFile = new File(outputDirectoryName.asFile(), "tile-" + _id + ".points");
 
          final String outputFileName = outputFile.getPath();
 
@@ -361,20 +362,20 @@ public class GPointsCloudLODGenerator
 
    private final double                                                                 _maxLeafSideLength;
    private final int                                                                    _maxLeafVertices;
-   private final String                                                                 _outputDirectoryName;
+   private final GFileName                                                              _outputDirectoryName;
    private final GProjection                                                            _projection;
    private final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> _vertices;
 
 
-   public GPointsCloudLODGenerator(final String fileNames,
+   public GPointsCloudLODGenerator(final GFileName fileNames,
                                    final double maxLeafSideLength,
                                    final int maxLeafVertices,
-                                   final String outputDirectoryName) throws IOException {
+                                   final GFileName outputDirectoryName) throws IOException {
       _maxLeafSideLength = maxLeafSideLength;
       _maxLeafVertices = maxLeafVertices;
       _outputDirectoryName = outputDirectoryName;
 
-      final GBinaryPoints3Loader loader = new GBinaryPoints3Loader(fileNames, GPointsLoader.DEFAULT_FLAGS | GPointsLoader.VERBOSE);
+      final GBinaryPoints3Loader loader = new GBinaryPoints3Loader(GPointsLoader.DEFAULT_FLAGS | GPointsLoader.VERBOSE, fileNames);
 
       loader.load();
 
@@ -387,7 +388,7 @@ public class GPointsCloudLODGenerator
                                    final GProjection projection,
                                    final double maxLeafSideLength,
                                    final int maxLeafVertices,
-                                   final String outputDirectoryName) {
+                                   final GFileName outputDirectoryName) {
       _maxLeafSideLength = maxLeafSideLength;
       _maxLeafVertices = maxLeafVertices;
       _outputDirectoryName = outputDirectoryName;

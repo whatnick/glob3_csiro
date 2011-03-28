@@ -42,43 +42,37 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 
-public final class FilterIterator<T>
+public final class GFilterIterator<T>
          implements
             Iterator<T> {
 
-   final private Iterator<T>         _iterator;
-   final private List<IPredicate<T>> _predicates   = new ArrayList<IPredicate<T>>();
+   final private Iterator<? extends T> _iterator;
+   final private List<IPredicate<T>>   _predicates   = new ArrayList<IPredicate<T>>();
 
-   private T                         _currentValue;
-   private boolean                   _finished     = false;
-   private boolean                   _nextConsumed = true;
+   private T                           _currentValue;
+   private boolean                     _finished     = false;
+   private boolean                     _nextConsumed = true;
 
 
-   public FilterIterator(final Iterator<T> iterator,
-                         final IPredicate<T> predicate) {
-      // iterator = iterator1;
-      _predicates.add(predicate);
-
-      if (iterator instanceof FilterIterator<?>) {
-         final FilterIterator<T> predicateIterator = (FilterIterator<T>) iterator;
-         _iterator = predicateIterator._iterator;
-         _predicates.addAll(predicateIterator._predicates);
-      }
-      else {
-         _iterator = iterator;
-      }
+   @SuppressWarnings("unchecked")
+   public GFilterIterator(final Iterator<? extends T> iterator,
+                          final IPredicate<T> predicate) {
+      this(iterator, (IPredicate<T>[]) new IPredicate<?>[] { predicate });
    }
 
 
-   public FilterIterator(final Iterator<T> iterator,
-                         final IPredicate<T>[] predicates) {
-      // iterator = iterator1;
+   public GFilterIterator(final Iterator<? extends T> iterator,
+                          final IPredicate<T>... predicates) {
+      GAssert.notNull(iterator, "iterator");
+      GAssert.notEmpty(predicates, "predicates");
+
       for (final IPredicate<T> predicate : predicates) {
          _predicates.add(predicate);
       }
 
-      if (iterator instanceof FilterIterator<?>) {
-         final FilterIterator<T> predicateIterator = (FilterIterator<T>) iterator;
+      if (iterator instanceof GFilterIterator<?>) {
+         @SuppressWarnings("unchecked")
+         final GFilterIterator<T> predicateIterator = (GFilterIterator<T>) iterator;
          _iterator = predicateIterator._iterator;
          _predicates.addAll(predicateIterator._predicates);
       }

@@ -55,6 +55,7 @@ import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.euclid.verticescontainer.GVertex3Container;
 import es.igosoftware.euclid.verticescontainer.IUnstructuredVertexContainer;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
+import es.igosoftware.io.GFileName;
 
 
 public class GBinaryPointsFormatTest {
@@ -98,9 +99,9 @@ public class GBinaryPointsFormatTest {
                                                                                                                       throws IOException {
       populateVertices3(vertices);
 
-      final String fileName = saveVertices(vertices);
+      final GFileName fileName = saveVertices(vertices);
 
-      final GBinaryPoints3Loader loader = new GBinaryPoints3Loader(fileName, GPointsLoader.DEFAULT_FLAGS | GPointsLoader.VERBOSE);
+      final GBinaryPoints3Loader loader = new GBinaryPoints3Loader(GPointsLoader.DEFAULT_FLAGS | GPointsLoader.VERBOSE, fileName);
 
       loader.load();
 
@@ -159,12 +160,12 @@ public class GBinaryPointsFormatTest {
    }
 
 
-   private String saveVertices(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices)
-                                                                                                                     throws IOException {
+   private GFileName saveVertices(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices)
+                                                                                                                        throws IOException {
       final File file = File.createTempFile("GBinaryPointsFormatTest-", ".bp");
       file.deleteOnExit();
 
-      final String fileName = file.getAbsolutePath();
+      final GFileName fileName = GFileName.fromFile(file);
 
       GBinaryPoints3Loader.save((IUnstructuredVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?>) vertices,
                fileName);

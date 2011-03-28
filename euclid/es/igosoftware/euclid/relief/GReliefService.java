@@ -56,6 +56,7 @@ import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.euclid.verticescontainer.GCompositeVertexContainer;
 import es.igosoftware.euclid.verticescontainer.IUnstructuredVertexContainer;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GLoggerObject;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.LRUCache;
@@ -69,13 +70,13 @@ public class GReliefService
    private static final int                                           CACHE_SIZE = 90;
 
    private final String                                               _name;
-   private final Map<GAxisAlignedBox, String>                         _tiles     = new HashMap<GAxisAlignedBox, String>();
+   private final Map<GAxisAlignedBox, GFileName>                      _tiles     = new HashMap<GAxisAlignedBox, GFileName>();
    public final GAxisAlignedBox                                       bounds;
    private final LRUCache<GAxisAlignedBox, GOctree, RuntimeException> _cache;
 
 
    public GReliefService(final String name,
-                         final String directoryName) throws IOException {
+                         final GFileName directoryName) throws IOException {
       _name = name;
 
       initializeTiles(directoryName);
@@ -119,19 +120,20 @@ public class GReliefService
          @Override
          public GOctree create(final GAxisAlignedBox box) {
             try {
-               final String fileName = _tiles.get(box);
+               final GFileName fileName = _tiles.get(box);
 
                //final String shortFileName = new File(fileName).getName();
                //logInfo("Loading \"" + shortFileName + "\", box=" + box);
                logInfo("Cache miss, loading " + box);
 
-               final GBinaryPoints3Loader loader = new GBinaryPoints3Loader(fileName, GPointsLoader.DEFAULT_FLAGS
-               /*| GPointsLoader.VERBOSE*/);
+               final GBinaryPoints3Loader loader = new GBinaryPoints3Loader(GPointsLoader.DEFAULT_FLAGS
+               /*| GPointsLoader.VERBOSE*/, fileName);
                loader.load();
 
                final IUnstructuredVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices = loader.getVertices();
 
-               return new GOctree(fileName, vertices, new GOctree.Parameters(2000, 2000, GReliefService.VERBOSE && false));
+               return new GOctree(fileName.buildPath(), vertices, new GOctree.Parameters(2000, 2000,
+                        GReliefService.VERBOSE && false));
             }
             catch (final IOException e) {
                e.printStackTrace();
@@ -145,8 +147,8 @@ public class GReliefService
    }
 
 
-   private void initializeTiles(final String directoryName) throws IOException {
-      final File directory = new File(directoryName);
+   private void initializeTiles(final GFileName directoryName) throws IOException {
+      final File directory = directoryName.asFile();
 
       if (!directory.exists()) {
          throw new IOException("Directory " + directoryName + " doesn't exists");
@@ -180,7 +182,7 @@ public class GReliefService
 
       //      System.out.println(fileName);
       //      System.out.println(box);
-      _tiles.put(box, new File(directory, fileName).getAbsolutePath());
+      _tiles.put(box, GFileName.fromFile(new File(directory, fileName)));
    }
 
 
@@ -261,8 +263,8 @@ public class GReliefService
       System.out.println("----------\n");
 
 
-      final GReliefService lidar = new GReliefService("LIDAR", "../globe-caceres/data/lidar");
-      final GReliefService mdt = new GReliefService("MDT", "../globe-caceres/data/mdt");
+      final GReliefService lidar = new GReliefService("LIDAR", GFileName.relative("..", "globe-caceres", "data", "lidar"));
+      final GReliefService mdt = new GReliefService("MDT", GFileName.relative("..", "globe-caceres", "data", "mdt"));
 
       final GAxisAlignedBox completeBounds = GAxisAlignedBox.merge(lidar.bounds, mdt.bounds);
       System.out.println("Complete Bounds=" + completeBounds);

@@ -39,7 +39,7 @@ public class WWOutputFactory
       }
 
       if (channel instanceof FileOutputChannel) {
-         final GFileName filename = GFileName.relativeFromParts(((FileOutputChannel) channel).getFilename().split("[/\\\\]"));
+         final GFileName filename = GFileName.relative(((FileOutputChannel) channel).getFilename().split("[/\\\\]"));
          final WWVectorLayer vectorLayer = new WWVectorLayer(sName, fields, filename, (GProjection) crs);
          return vectorLayer;
       }

@@ -44,7 +44,7 @@ public interface ILayerFactoryModule
             IGlobeModule {
 
 
-   public List<ILayerInfo> getAvailableLayers(final IGlobeApplication application);
+   public List<? extends ILayerInfo> getAvailableLayers(final IGlobeApplication application);
 
 
    public IGlobeLayer addNewLayer(final IGlobeApplication application,

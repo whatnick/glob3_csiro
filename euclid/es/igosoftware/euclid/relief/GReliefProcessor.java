@@ -60,6 +60,7 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.euclid.verticescontainer.IUnstructuredVertexContainer;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GLoggerObject;
 import es.igosoftware.util.GMath;
 
@@ -71,11 +72,9 @@ public class GReliefProcessor
    private final GColorPrecision        _colorPrecision;
    private final GProjection            _projection;
 
-   private final String                 _sourceDirectoryName;
+   private final GFileName              _sourceDirectoryName;
    private final String                 _extension;
-   private final String                 _targetDirectoryName;
-   private final File                   _sourceDirectory;
-   private final File                   _targetDirectory;
+   private final GFileName              _targetDirectoryName;
 
    private int                          _verticesCounter;
    private GMutableVector2<IVector2<?>> _resolutionAverage;
@@ -87,9 +86,9 @@ public class GReliefProcessor
    public GReliefProcessor(final GVectorPrecision vectorPrecision,
                            final GColorPrecision colorPrecision,
                            final GProjection projection,
-                           final String sourceDirectoryName,
+                           final GFileName sourceDirectoryName,
                            final String extension,
-                           final String targetDirectoryName,
+                           final GFileName targetDirectoryName,
                            final int maxPointsInLeaf,
                            final boolean verbose) {
       _vectorPrecision = vectorPrecision;
@@ -98,9 +97,6 @@ public class GReliefProcessor
       _sourceDirectoryName = sourceDirectoryName;
       _extension = extension;
       _targetDirectoryName = targetDirectoryName;
-
-      _sourceDirectory = new File(_sourceDirectoryName);
-      _targetDirectory = new File(_targetDirectoryName);
 
       _maxPointsInLeaf = maxPointsInLeaf;
       _verbose = verbose;
@@ -117,18 +113,18 @@ public class GReliefProcessor
       final long start = System.currentTimeMillis();
 
 
-      if (!_sourceDirectory.exists()) {
+      if (!_sourceDirectoryName.exists()) {
          throw new IOException("source directory (" + _sourceDirectoryName + ") doesn't exists");
       }
 
 
-      if (!_targetDirectory.exists()) {
+      if (!_targetDirectoryName.exists()) {
          logInfo("Creating target directory (" + _targetDirectoryName + ")...");
-         _targetDirectory.mkdirs();
+         _targetDirectoryName.asFile().mkdirs();
       }
 
 
-      final String[] xyzFilesNames = _sourceDirectory.list(new FilenameFilter() {
+      final String[] xyzFilesNames = _sourceDirectoryName.asFile().list(new FilenameFilter() {
          @Override
          public boolean accept(final File dir,
                                final String name) {
@@ -138,7 +134,7 @@ public class GReliefProcessor
 
       Arrays.sort(xyzFilesNames);
 
-      logInfo("Processing " + _sourceDirectory.getAbsolutePath() + "...");
+      logInfo("Processing " + _sourceDirectoryName + "...");
       logIncreaseIdentationLevel();
       logInfo("Found " + xyzFilesNames.length + " files to process");
 
@@ -149,7 +145,7 @@ public class GReliefProcessor
       for (int i = 0; i < xyzFilesNames.length; i++) {
          final String sourceFileName = xyzFilesNames[i];
 
-         processFile(sourceFileName, i + 1, xyzFilesNames.length);
+         processFile(GFileName.relative(sourceFileName), i + 1, xyzFilesNames.length);
       }
 
 
@@ -164,7 +160,7 @@ public class GReliefProcessor
    }
 
 
-   private void processFile(final String sourceFileName,
+   private void processFile(final GFileName sourceFileName,
                             final int i,
                             final int filesCount) throws IOException {
       logInfo("Processing " + sourceFileName + " (" + i + "/" + filesCount + ")...");
@@ -191,20 +187,20 @@ public class GReliefProcessor
    }
 
 
-   private IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> getVertices(final String sourceFileName)
-                                                                                                                          throws IOException {
-      final String fullSourceFileName = new File(_sourceDirectory, sourceFileName).getAbsolutePath();
+   private IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> getVertices(final GFileName sourceFileName)
+                                                                                                                             throws IOException {
+      final GFileName fullSourceFileName = GFileName.fromParts(_sourceDirectoryName, sourceFileName);
 
       final int flags = GPointsLoader.DEFAULT_FLAGS | GPointsLoader.VERBOSE;
-      final GXYZLoader loader = new GXYZLoader(fullSourceFileName, _vectorPrecision, _colorPrecision, _projection, flags);
+      final GXYZLoader loader = new GXYZLoader(_vectorPrecision, _colorPrecision, _projection, flags, fullSourceFileName);
       loader.load();
 
       return loader.getVertices();
    }
 
 
-   private String targetFullName(final String targetFileName) {
-      return new File(_targetDirectory, targetFileName).getAbsolutePath();
+   private GFileName targetFullName(final String targetFileName) {
+      return GFileName.fromParentAndParts(_targetDirectoryName, targetFileName);
    }
 
 
@@ -257,7 +253,7 @@ public class GReliefProcessor
       logInfo("Bounds: " + bounds);
 
       final String targetFileName = bounds.asParseableString() + ".bp";
-      final String targetFullFileName = targetFullName(targetFileName);
+      final GFileName targetFullFileName = targetFullName(targetFileName);
 
       GBinaryPoints3Loader.save((IUnstructuredVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?>) vertices,
                targetFullFileName);

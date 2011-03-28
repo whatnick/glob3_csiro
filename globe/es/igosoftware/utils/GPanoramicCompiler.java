@@ -53,6 +53,7 @@ import java.util.zip.GZIPOutputStream;
 import javax.imageio.ImageIO;
 import javax.media.jai.JAI;
 
+import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.util.GLogger;
 import es.igosoftware.util.GProgress;
@@ -100,8 +101,8 @@ public class GPanoramicCompiler {
          System.exit(1);
       }
 
-      final String sourceImageFileName = args[0];
-      final String outputDirectoryName = args[1];
+      final GFileName sourceImageFileName = GFileName.fromFile(new File(args[0]));
+      final GFileName outputDirectoryName = GFileName.fromFile(new File(args[1]));
 
       final boolean debug;
       if (args.length == 3) {
@@ -112,14 +113,12 @@ public class GPanoramicCompiler {
          debug = false;
       }
 
-      final File sourceImage = new File(sourceImageFileName);
-      if (!sourceImage.exists()) {
+      if (!sourceImageFileName.exists()) {
          logSevere("\tSourceImageFileName (" + sourceImageFileName + ") doesn't exist");
          System.exit(1);
       }
 
-
-      process(sourceImage, outputDirectoryName, debug);
+      process(sourceImageFileName, outputDirectoryName, debug);
    }
 
 
@@ -282,14 +281,14 @@ public class GPanoramicCompiler {
    }
 
 
-   private static void saveZoomLevels(final String outputDirectoryName,
+   private static void saveZoomLevels(final GFileName outputDirectoryName,
                                       final ZoomLevels zoomLevels) throws IOException {
       logInfo("Generating zoom levels information");
 
 
       ObjectOutputStream os = null;
       try {
-         final File file = new File(outputDirectoryName, LEVELS_FILE_NAME);
+         final File file = GFileName.fromParentAndParts(outputDirectoryName, LEVELS_FILE_NAME).asFile();
          os = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream(file)));
 
          os.writeObject(zoomLevels);
@@ -303,16 +302,16 @@ public class GPanoramicCompiler {
    }
 
 
-   public static void process(final File sourceImage,
-                              final String outputDirectoryName,
+   public static void process(final GFileName sourceImage,
+                              final GFileName outputDirectoryName,
                               final boolean debug) throws IOException {
       logInfo("Cleaning directory \"" + outputDirectoryName + "\"");
       GIOUtils.assureEmptyDirectory(outputDirectoryName, false);
 
-      logInfo("Reading image \"" + sourceImage.getAbsolutePath() + "\"");
+      logInfo("Reading image \"" + sourceImage + "\"");
 
       //      final BufferedImage image = ImageIO.read(sourceImage);
-      final BufferedImage image = JAI.create("fileload", sourceImage.getAbsolutePath()).getAsBufferedImage();
+      final BufferedImage image = JAI.create("fileload", sourceImage.buildPath()).getAsBufferedImage();
 
       final int width = image.getWidth();
       final int height = image.getHeight();
@@ -343,12 +342,12 @@ public class GPanoramicCompiler {
 
    private static void processLevel(final ZoomLevel level,
                                     final BufferedImage image,
-                                    final String outputDirectoryName,
+                                    final GFileName outputDirectoryName,
                                     final boolean debug) throws IOException {
       logInfo("Processing " + level);
       LOGGER.increaseIdentationLevel();
 
-      final File levelDirectory = new File(outputDirectoryName, level._level + "/");
+      final File levelDirectory = new File(outputDirectoryName.buildPath(), level._level + File.separator);
       if (!levelDirectory.mkdirs()) {
          throw new IOException("Can't create directory \"" + levelDirectory.getAbsolutePath() + "\"");
       }

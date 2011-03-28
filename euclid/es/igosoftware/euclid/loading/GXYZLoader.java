@@ -38,7 +38,6 @@ package es.igosoftware.euclid.loading;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -46,18 +45,19 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.util.BitSet;
+import java.util.List;
 
 import es.igosoftware.euclid.colors.GColorF;
 import es.igosoftware.euclid.colors.GColorPrecision;
 import es.igosoftware.euclid.colors.IColor;
 import es.igosoftware.euclid.projection.GProjection;
-import es.igosoftware.euclid.utils.GFileUtils;
 import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.GVector3F;
 import es.igosoftware.euclid.vector.GVectorPrecision;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.euclid.verticescontainer.GVertex3Container;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.util.GLogger;
 import es.igosoftware.util.GProgress;
@@ -70,7 +70,7 @@ public final class GXYZLoader
 
 
    public static void save(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices,
-                           final String fileName) throws IOException {
+                           final GFileName fileName) throws IOException {
 
       final long started = System.currentTimeMillis();
 
@@ -84,7 +84,7 @@ public final class GXYZLoader
       logger.info("Saving " + verticesCount + " vertices (intensities=" + hasIntensities + ", colors=" + hasColors + ") to "
                   + fileName + "...");
 
-      final BufferedWriter output = new BufferedWriter(new FileWriter(fileName));
+      final BufferedWriter output = new BufferedWriter(new FileWriter(fileName.buildPath()));
 
       for (int i = 0; i < verticesCount; i++) {
          final IVector3<?> point = vertices.getPoint(i);
@@ -124,22 +124,22 @@ public final class GXYZLoader
    private boolean                _hasColors;
 
 
-   public GXYZLoader(final String fileNames,
-                     final GVectorPrecision vectorPrecision,
+   public GXYZLoader(final GVectorPrecision vectorPrecision,
                      final GColorPrecision colorPrecision,
                      final GProjection projection,
-                     final int flags) {
-      this(fileNames, vectorPrecision, colorPrecision, projection, false, flags);
+                     final int flags,
+                     final GFileName... fileNames) {
+      this(vectorPrecision, colorPrecision, projection, false, flags, fileNames);
    }
 
 
-   public GXYZLoader(final String fileNames,
-                     final GVectorPrecision vectorPrecision,
+   public GXYZLoader(final GVectorPrecision vectorPrecision,
                      final GColorPrecision colorPrecision,
                      final GProjection projection,
                      final boolean intensitiesFromColor,
-                     final int flags) {
-      super(fileNames, flags);
+                     final int flags,
+                     final GFileName... fileNames) {
+      super(flags, fileNames);
 
       _intensitiesFromColor = intensitiesFromColor;
 
@@ -154,16 +154,16 @@ public final class GXYZLoader
 
 
    private BitSet detectShape() throws IOException {
-      final String[] fileNames = getFileNames();
+      final List<GFileName> fileNames = getFileNames();
 
-      if (fileNames.length == 0) {
+      if (fileNames.size() == 0) {
          return new BitSet();
       }
 
-      final BitSet shape = detectShape(fileNames[0]);
+      final BitSet shape = detectShape(fileNames.get(0));
 
-      for (int i = 1; i < fileNames.length; i++) {
-         final String fileName = fileNames[i];
+      for (int i = 1; i < fileNames.size(); i++) {
+         final GFileName fileName = fileNames.get(i);
          if (!detectShape(fileName).equals(shape)) {
             throw new IOException("File \"" + fileName + "\" has a different shape that the others");
          }
@@ -175,15 +175,15 @@ public final class GXYZLoader
    }
 
 
-   private BitSet detectShape(final String fileName) throws IOException {
+   private BitSet detectShape(final GFileName fileName) throws IOException {
       BufferedReader input = null;
 
       final BitSet result = new BitSet();
 
       try {
-         input = new BufferedReader(new FileReader(fileName));
+         input = new BufferedReader(new FileReader(fileName.buildPath()));
 
-         if (GFileUtils.hasExtension(fileName, "pts")) {
+         if (GIOUtils.hasExtension(fileName, "pts")) {
             @SuppressWarnings("unused")
             final int numberOfVertices = Integer.parseInt(input.readLine()); // ignore the very first line of PTS
          }
@@ -305,7 +305,7 @@ public final class GXYZLoader
 
 
    @Override
-   protected GVertex3Container loadVerticesFromFile(final String fileName) throws IOException {
+   protected GVertex3Container loadVerticesFromFile(final GFileName fileName) throws IOException {
 
       final GVertex3Container vertices = new GVertex3Container(_vectorPrecision, _colorPrecision, _projection,
                _hasIntensities || (_hasColors && _intensitiesFromColor), 0, _hasColors && !_intensitiesFromColor, null, false,
@@ -314,12 +314,12 @@ public final class GXYZLoader
 
       LineNumberReader input = null;
       try {
-         input = new LineNumberReader(new InputStreamReader(new FileInputStream(fileName)));
+         input = new LineNumberReader(new InputStreamReader(new FileInputStream(fileName.buildPath())));
          //         input = new BufferedReader(new InputStreamReader(
          //                  new GBufferedFileInputStream(fileName, 32 * 1024 /* 1Mb buffer size */)));
 
 
-         final GProgress progress = new GProgress(new File(fileName).length()) {
+         final GProgress progress = new GProgress(fileName.asFile().length()) {
             @Override
             public void informProgress(final double percent,
                                        final long elapsed,
@@ -331,7 +331,7 @@ public final class GXYZLoader
          };
 
 
-         final boolean isPTS = GFileUtils.hasExtension(fileName, "pts");
+         final boolean isPTS = GIOUtils.hasExtension(fileName, "pts");
          if (isPTS) {
             final String line = input.readLine();
             final int numberOfVertices = Integer.parseInt(line);

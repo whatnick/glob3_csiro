@@ -1,16 +1,51 @@
+/*
+
+ IGO Software SL  -  info@igosoftware.es
+
+ http://www.glob3.org
+
+-------------------------------------------------------------------------------
+ Copyright (c) 2010, IGO Software SL
+ All rights reserved.
+
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+     * Redistributions of source code must retain the above copyright
+       notice, this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright
+       notice, this list of conditions and the following disclaimer in the
+       documentation and/or other materials provided with the distribution.
+     * Neither the name of the IGO Software SL nor the
+       names of its contributors may be used to endorse or promote products
+       derived from this software without specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ DISCLAIMED. IN NO EVENT SHALL IGO Software SL BE LIABLE FOR ANY
+ DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-------------------------------------------------------------------------------
+
+*/
 
 
 package es.igosoftware.experimental.vectorial;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GPolygon2DRenderer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GRenderingAttributes;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
@@ -36,14 +71,14 @@ public class GPolygon2DRenderingTest {
       //               "world-modified", "world.shp");
       //      final GFileName fileName = GFileName.absoluteFromParts("home", "dgd", "Escritorio", "sample-shp", "shp", "argentina.shp",
       //      "roads.shp");
-      final GFileName fileName = GFileName.absoluteFromParts("home", "dgd", "Escritorio", "sample-shp", "shp", "argentina.shp",
+      final GFileName fileName = GFileName.absolute("home", "dgd", "Escritorio", "sample-shp", "shp", "argentina.shp",
                "places.shp");
 
       final GProjection projection = GProjection.EPSG_4326;
 
 
-      final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features = GShapeLoader.readFeatures(fileName,
-               projection);
+      final IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features = GShapeLoader.readFeatures(
+               fileName, projection);
 
       //      System.out.println(">>>>>>>>>> CONNECT PROFILER");
       //      GUtils.delay(20 * 1000); 
@@ -57,7 +92,7 @@ public class GPolygon2DRenderingTest {
 
       final GAxisAlignedRectangle region = ((GAxisAlignedRectangle) centerBounds(multipleOfSmallestDimention(featuresBounds),
                featuresBounds.getCenter()));
-      final String directoryName = "render";
+      final GFileName directoryName = GFileName.relative("render");
       final boolean renderLODIgnores = true;
       final float borderWidth = 0.0001f;
       final Color fillColor = new Color(borderWidth, borderWidth, 1, 0.75f);
@@ -159,7 +194,7 @@ public class GPolygon2DRenderingTest {
 
    private static void render(final GPolygon2DRenderer renderer,
                               final GAxisAlignedRectangle region,
-                              final String directoryName,
+                              final GFileName directoryName,
                               final GRenderingAttributes attributes,
                               final int depth,
                               final int maxDepth) throws IOException {
@@ -168,8 +203,8 @@ public class GPolygon2DRenderingTest {
       final BufferedImage renderedImage = renderer.render(region, attributes);
 
       final String imageName = depth + "_" + region.asParseableString();
-      final File file = new File(directoryName, imageName + ".png");
-      ImageIO.write(renderedImage, "png", file);
+      final GFileName fileName = GFileName.fromParentAndParts(directoryName, imageName + ".png");
+      ImageIO.write(renderedImage, "png", fileName.asFile());
 
       System.out.println(GStringUtils.spaces(depth * 2) + "Rendered " + imageName + " in "
                          + GStringUtils.getTimeMessage(System.currentTimeMillis() - start));
@@ -181,5 +216,4 @@ public class GPolygon2DRenderingTest {
          }
       }
    }
-
 }

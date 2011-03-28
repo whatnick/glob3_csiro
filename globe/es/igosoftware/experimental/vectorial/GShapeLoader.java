@@ -1,3 +1,37 @@
+/*
+
+ IGO Software SL  -  info@igosoftware.es
+
+ http://www.glob3.org
+
+-------------------------------------------------------------------------------
+ Copyright (c) 2010, IGO Software SL
+ All rights reserved.
+
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+     * Redistributions of source code must retain the above copyright
+       notice, this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright
+       notice, this list of conditions and the following disclaimer in the
+       documentation and/or other materials provided with the distribution.
+     * Neither the name of the IGO Software SL nor the
+       names of its contributors may be used to endorse or promote products
+       derived from this software without specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ DISCLAIMED. IN NO EVENT SHALL IGO Software SL BE LIABLE FOR ANY
+ DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-------------------------------------------------------------------------------
+
+*/
 
 
 package es.igosoftware.experimental.vectorial;
@@ -22,6 +56,7 @@ import com.vividsolutions.jts.geom.LineString;
 
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.features.GField;
 import es.igosoftware.euclid.features.GGlobeFeature;
 import es.igosoftware.euclid.features.GListFeatureCollection;
@@ -92,16 +127,16 @@ public class GShapeLoader {
    }
 
 
-   public static IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> readFeatures(final File file,
-                                                                                             final GProjection projection)
-                                                                                                                          throws IOException {
+   public static IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> readFeatures(final File file,
+                                                                                                                                                 final GProjection projection)
+                                                                                                                                                                              throws IOException {
       return readFeatures(GFileName.fromFile(file), projection);
    }
 
 
-   public static IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> readFeatures(final GFileName fileName,
-                                                                                             final GProjection projection)
-                                                                                                                          throws IOException {
+   public static IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> readFeatures(final GFileName fileName,
+                                                                                                                                                 final GProjection projection)
+                                                                                                                                                                              throws IOException {
       final File file = fileName.asFile();
       if (!file.exists()) {
          throw new IOException("File not found!");
@@ -120,7 +155,7 @@ public class GShapeLoader {
       //      final GIntHolder validVerticesCounter = new GIntHolder(0);
 
       final int featuresCount = featuresCollection.size();
-      final ArrayList<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>> euclidFeatures = new ArrayList<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>>(
+      final ArrayList<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>> euclidFeatures = new ArrayList<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>>(
                featuresCount);
 
 
@@ -260,14 +295,16 @@ public class GShapeLoader {
          fields.add(new GField(fieldName, fieldType));
       }
 
-      return new GListFeatureCollection<IVector2<?>, GAxisAlignedRectangle>(GProjection.EPSG_4326, fields, euclidFeatures,
-               GIOUtils.getUniqueID(file));
+
+      return new GListFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>(
+               GProjection.EPSG_4326, fields, euclidFeatures, GIOUtils.getUniqueID(file));
    }
 
 
-   private static IGlobeFeature<IVector2<?>, GAxisAlignedRectangle> createFeature(final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> geometry,
-                                                                                  final SimpleFeature feature) {
-      return new GGlobeFeature<IVector2<?>, GAxisAlignedRectangle>(geometry, feature.getAttributes());
+   private static IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> createFeature(final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> geometry,
+                                                                                                                                      final SimpleFeature feature) {
+      return new GGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>(geometry,
+               feature.getAttributes());
    }
 
 
@@ -304,8 +341,8 @@ public class GShapeLoader {
       System.out.println("GShapeLoader 0.1");
       System.out.println("----------------\n");
 
-      final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features = GShapeLoader.readFeatures(
-               GFileName.absoluteFromParts("home", "dgd", "Desktop", "sample-shp", "shp", "great_britain.shp", "roads.shp"),
+      final IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features = GShapeLoader.readFeatures(
+               GFileName.absolute("home", "dgd", "Desktop", "sample-shp", "shp", "great_britain.shp", "roads.shp"),
                GProjection.EPSG_4326);
 
       System.out.println(features);

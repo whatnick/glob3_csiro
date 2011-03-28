@@ -1,9 +1,46 @@
+/*
+
+ IGO Software SL  -  info@igosoftware.es
+
+ http://www.glob3.org
+
+-------------------------------------------------------------------------------
+ Copyright (c) 2010, IGO Software SL
+ All rights reserved.
+
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+     * Redistributions of source code must retain the above copyright
+       notice, this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright
+       notice, this list of conditions and the following disclaimer in the
+       documentation and/or other materials provided with the distribution.
+     * Neither the name of the IGO Software SL nor the
+       names of its contributors may be used to endorse or promote products
+       derived from this software without specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ DISCLAIMED. IN NO EVENT SHALL IGO Software SL BE LIABLE FOR ANY
+ DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-------------------------------------------------------------------------------
+
+*/
 
 
 package es.igosoftware.experimental.vectorial;
 
+
+import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GPolygon2DRenderer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GRenderingAttributes;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
@@ -11,13 +48,14 @@ import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.globe.IGlobeApplication;
-import es.igosoftware.globe.IGlobeLayer;
+import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.GBooleanLayerAttribute;
 import es.igosoftware.globe.attributes.GColorLayerAttribute;
 import es.igosoftware.globe.attributes.GFloatLayerAttribute;
 import es.igosoftware.globe.attributes.GGroupAttribute;
 import es.igosoftware.globe.attributes.ILayerAttribute;
+import es.igosoftware.globe.layers.GVector2RenderingTheme;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GPair;
@@ -61,7 +99,7 @@ public class GPolygon2DLayer
          extends
             AbstractLayer
          implements
-            IGlobeLayer {
+            IGlobeVectorLayer<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> {
 
 
    private static final int    TIMEOUT_FOR_CACHED_RESULTS     = 200;
@@ -77,7 +115,6 @@ public class GPolygon2DLayer
    private static final class RenderingKey {
       private final GPolygon2DLayer       _layer;
       private final GAxisAlignedRectangle _tileBounds;
-      //      private final Sector                _tileSector;
       private final GRenderingAttributes  _renderingAttributes;
       private final String                _id;
 
@@ -169,12 +206,12 @@ public class GPolygon2DLayer
 
    private static final LinkedList<RendererFutureTask>                                  RENDERING_TASKS = new LinkedList<RendererFutureTask>();
 
+
    private static class RendererFutureTask
             extends
                FutureTask<BufferedImage> {
 
       private final double          _priority;
-      //      private final Sector    _tileSector;
       private GPolygon2DLayer       _layer;
       private GAxisAlignedRectangle _tileBounds;
 
@@ -289,7 +326,7 @@ public class GPolygon2DLayer
          final RendererFutureTask selectedTask = findBestTaskForCurrentTiles();
          //         if (selectedTask == null) {
          //            selectedTask = findBestTask();
-         //         }
+         //         } 
 
          if (selectedTask != null) {
             RENDERING_TASKS.remove(selectedTask);
@@ -299,22 +336,6 @@ public class GPolygon2DLayer
 
       return null;
    }
-
-
-   //   private static RendererFutureTask findBestTask() {
-   //      double biggestPriority = Double.NEGATIVE_INFINITY;
-   //      RendererFutureTask selectedTask = null;
-   //
-   //      for (final RendererFutureTask task : RENDERING_TASKS) {
-   //         final double currentPriority = task._priority;
-   //         if (currentPriority > biggestPriority) {
-   //            biggestPriority = currentPriority;
-   //            selectedTask = task;
-   //         }
-   //      }
-   //
-   //      return selectedTask;
-   //   }
 
 
    private static RendererFutureTask findBestTaskForCurrentTiles() {
@@ -368,12 +389,7 @@ public class GPolygon2DLayer
 
 
    static {
-      //      try {
-      //         GIOUtils.assureEmptyDirectory(RENDERING_CACHE_DIRECTORY_NAME, false);
-      //      }
-      //      catch (final IOException e) {
-      //         e.printStackTrace();
-      //      }
+
       if (!RENDERING_CACHE_DIRECTORY.exists()) {
          if (!RENDERING_CACHE_DIRECTORY.mkdirs()) {
             throw new RuntimeException("Can't create cache directory: " + RENDERING_CACHE_DIRECTORY_NAME);
@@ -399,6 +415,10 @@ public class GPolygon2DLayer
             for (final Entry<RenderingKey, Future<BufferedImage>, RuntimeException> entry : entries) {
                final GRenderingAttributes renderingAttributes = entry.getKey()._renderingAttributes;
                totalBytes += renderingAttributes._textureWidth * renderingAttributes._textureHeight * BYTES_PER_PIXEL;
+
+               if (totalBytes > _maxImageCacheSizeInBytes) {
+                  return true;
+               }
             }
 
             return (totalBytes > _maxImageCacheSizeInBytes);
@@ -436,36 +456,33 @@ public class GPolygon2DLayer
    }
 
 
-   private final class Tile {
+   private static final class Tile {
 
       private final Tile                  _parent;
-
-      //      private final Sector                _tileSector;
       private final GAxisAlignedRectangle _tileBounds;
       private final IVector2<?>           _tileBoundsExtent;
-
       private final String                _id;
+      private final GPolygon2DLayer       _layer;
 
       private SurfaceImage                _surfaceImage;
-
       private BufferedImage               _ancestorContribution;
 
 
       private Tile(final Tile parent,
                    final int positionInParent,
-                   final GAxisAlignedRectangle tileBounds) {
+                   final GAxisAlignedRectangle tileBounds,
+                   final GPolygon2DLayer layer) {
 
          _parent = parent;
-         //         _level = (parent == null) ? 0 : parent._level + 1;
-         if (parent == null) {
-            _id = Integer.toHexString(positionInParent);
-         }
-         else {
-            _id = parent._id + Integer.toHexString(positionInParent);
-         }
+
+         _id = (parent == null) ? //
+                               Integer.toHexString(positionInParent) : //
+                               parent._id + Integer.toHexString(positionInParent);
 
          _tileBounds = tileBounds;
          _tileBoundsExtent = _tileBounds.getExtent();
+
+         _layer = layer;
 
          //         _tileSector = GWWUtils.toSector(tileBounds, GProjection.EPSG_4326);
       }
@@ -516,28 +533,18 @@ public class GPolygon2DLayer
 
 
       private boolean needToSplit(final DrawContext dc) {
-         return computeProjectedPixels(dc) > (_attributes._textureWidth * _attributes._textureHeight);
+         return computeProjectedPixels(dc) > (_layer._attributes._textureWidth * _layer._attributes._textureHeight);
       }
 
 
       private Tile[] slit() {
-         //         final Globe globe = dc.getGlobe();
-
-         //         final GAxisAlignedRectangle[] sectors = _tileBounds.subdivideAtCenter();
-         //
-         //         final Tile[] subTiles = new Tile[4];
-         //         subTiles[0] = new Tile(this, globe, GWWUtils.toSector(sectors[0], _projection));
-         //         subTiles[1] = new Tile(this, globe, GWWUtils.toSector(sectors[1], _projection));
-         //         subTiles[2] = new Tile(this, globe, GWWUtils.toSector(sectors[2], _projection));
-         //         subTiles[3] = new Tile(this, globe, GWWUtils.toSector(sectors[3], _projection));
-
          final GAxisAlignedRectangle[] sectors = _tileBounds.subdivideAtCenter();
 
-         final Tile[] subTiles = new Tile[4];
-         subTiles[0] = new Tile(this, 0, sectors[0]);
-         subTiles[1] = new Tile(this, 1, sectors[1]);
-         subTiles[2] = new Tile(this, 2, sectors[2]);
-         subTiles[3] = new Tile(this, 3, sectors[3]);
+         final Tile[] subTiles = new GPolygon2DLayer.Tile[4];
+         subTiles[0] = new Tile(this, 0, sectors[0], _layer);
+         subTiles[1] = new Tile(this, 1, sectors[1], _layer);
+         subTiles[2] = new Tile(this, 2, sectors[2], _layer);
+         subTiles[3] = new Tile(this, 3, sectors[3], _layer);
 
          return subTiles;
       }
@@ -603,7 +610,7 @@ public class GPolygon2DLayer
 
          final IVector2<?> scale = _tileBoundsExtent.div(ancestor._tileBoundsExtent);
 
-         final GVector2D textureExtent = new GVector2D(_attributes._textureWidth, _attributes._textureHeight);
+         final GVector2D textureExtent = new GVector2D(_layer._attributes._textureWidth, _layer._attributes._textureHeight);
 
          final IVector2<?> topLeft = _tileBounds._lower.sub(ancestor._tileBounds._lower).scale(scale).div(_tileBoundsExtent).scale(
                   textureExtent);
@@ -613,7 +620,7 @@ public class GPolygon2DLayer
          final int width = (int) widthAndHeight.x();
          final int height = (int) widthAndHeight.y();
          final int x = (int) topLeft.x();
-         final int y = (int) -(topLeft.y() + height - _attributes._textureHeight); // flip y
+         final int y = (int) -(topLeft.y() + height - _layer._attributes._textureHeight); // flip y
 
          try {
             final BufferedImage subimage = ancestorImage.getSubimage(x, y, width, height);
@@ -633,6 +640,7 @@ public class GPolygon2DLayer
          final int TODO_flag_the_image_as_work_in_progress;
 
          return image;
+
          //         if (image == null) {
          //            return null;
          //         }
@@ -661,7 +669,7 @@ public class GPolygon2DLayer
 
 
       private RenderingKey createRenderingKey() {
-         return new RenderingKey(GPolygon2DLayer.this, _tileBounds, _attributes, _id);
+         return new RenderingKey(_layer, _tileBounds, _layer._attributes, _id);
       }
 
 
@@ -692,11 +700,6 @@ public class GPolygon2DLayer
       }
 
 
-      //      private void renderExtent(final DrawContext dc) {
-      //         GWWUtils.renderSector(dc, _tileSector, 1, 1, 0);
-      //      }
-
-
       private void moveUpInCache() {
          IMAGES_CACHE.get(createRenderingKey());
          //         IMAGES_CACHE.moveUp(createRenderingKey());
@@ -704,7 +707,7 @@ public class GPolygon2DLayer
    }
 
 
-   private static final GGlobeStateKeyCache<GAxisAlignedOrthotope<IVector2<?>, ?>, Box> BOX_CACHE;
+   private static final GGlobeStateKeyCache<GAxisAlignedOrthotope<IVector2<?>, ?>, Box>                                                       BOX_CACHE;
 
    static {
       BOX_CACHE = new GGlobeStateKeyCache<GAxisAlignedOrthotope<IVector2<?>, ?>, Box>(
@@ -723,43 +726,40 @@ public class GPolygon2DLayer
    }
 
 
-   //   private final GProjection                             _projection;
-
-   private final Sector                                                                 _polygonsSector;
-   //   private final LatLon[]                                _sectorCorners;
+   private final Sector                                                                                                                       _polygonsSector;
 
 
-   private final GPolygon2DRenderer                                                     _renderer;
-   private final String                                                                 _name;
-   private final GAxisAlignedOrthotope<IVector2<?>, ?>                                  _polygonsBounds;
-   private final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?>         _features;
+   private final GPolygon2DRenderer                                                                                                           _renderer;
+   private final String                                                                                                                       _name;
+   private final GAxisAlignedOrthotope<IVector2<?>, ?>                                                                                        _polygonsBounds;
+   private final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> _features;
 
-   private GRenderingAttributes                                                         _attributes;
+   private GRenderingAttributes                                                                                                               _attributes;
 
-   private List<Tile>                                                                   _topTiles;
-   private final List<Tile>                                                             _currentTiles               = new ArrayList<Tile>();
-
-
-   private int                                                                          _fillColorAlpha             = 127;
-   private int                                                                          _borderColorAlpha           = 255;
-
-   private View                                                                         _lastView;
+   private List<Tile>                                                                                                                         _topTiles;
+   private final List<Tile>                                                                                                                   _currentTiles               = new ArrayList<Tile>();
 
 
-   private long                                                                         _lastCurrentTilesCalculated = -1;
+   private int                                                                                                                                _fillColorAlpha             = 127;
+   private int                                                                                                                                _borderColorAlpha           = 255;
 
-   private boolean                                                                      _debugRendering             = false;
+   private View                                                                                                                               _lastView;
+
+
+   private long                                                                                                                               _lastCurrentTilesCalculated = -1;
+
+   private boolean                                                                                                                            _debugRendering             = false;
 
 
    public GPolygon2DLayer(final String name,
-                          final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features) {
+                          final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features) {
       GAssert.notNull(name, "name");
       GAssert.notNull(features, "features");
 
       _name = name;
       _polygonsBounds = features.getBounds();
 
-      _polygonsSector = GWWUtils.toSector(_polygonsBounds, GProjection.EPSG_4326);
+      _polygonsSector = GWWUtils.toSector(_polygonsBounds, features.getProjection());
 
       _features = features;
       _renderer = new GPolygon2DRenderer(features);
@@ -791,10 +791,6 @@ public class GPolygon2DLayer
 
 
    private static List<GAxisAlignedRectangle> createTopLevelSectors(final GAxisAlignedOrthotope<IVector2<?>, ?> polygonsSector) {
-
-      //      final int latitudeSubdivisions = 2;
-      //      final int longitudeSubdivisions = 4;
-      //      final List<Sector> allTopLevelSectors = GWWUtils.createTopLevelSectors(latitudeSubdivisions, longitudeSubdivisions);
 
       final List<GAxisAlignedRectangle> allTopLevelSectors = createTopLevelSectors();
 
@@ -857,7 +853,6 @@ public class GPolygon2DLayer
    @Override
    public void redraw() {
       // fire event to force a redraw
-      //      firePropertyChange(AVKey.LAYER, null, this);
       if (_lastView != null) {
          _lastView.firePropertyChange(AVKey.VIEW, null, _lastView);
       }
@@ -1168,7 +1163,7 @@ public class GPolygon2DLayer
 
 
    @Override
-   public List<ILayerAction> getLayerActions(final IGlobeApplication application) {
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application) {
       return null;
    }
 
@@ -1267,7 +1262,7 @@ public class GPolygon2DLayer
          _topTiles = new ArrayList<Tile>(topLevelSectors.size());
          for (int i = 0; i < topLevelSectors.size(); i++) {
             final GAxisAlignedRectangle topLevelSector = topLevelSectors.get(i);
-            _topTiles.add(new Tile(null, i, topLevelSector));
+            _topTiles.add(new Tile(null, i, topLevelSector, this));
          }
       }
 
@@ -1415,6 +1410,18 @@ public class GPolygon2DLayer
                northEastDivisions[0], northEastDivisions[1], //
                southWestDivisions[0], southWestDivisions[1], //
                southEastDivisions[0], southEastDivisions[1]);
+   }
+
+
+   @Override
+   public GVector2RenderingTheme getRenderingTheme() {
+      return null;
+   }
+
+
+   @Override
+   public IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> getFeaturesCollection() {
+      return _features;
    }
 
 }

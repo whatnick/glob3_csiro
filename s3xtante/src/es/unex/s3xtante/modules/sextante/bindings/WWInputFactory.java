@@ -4,6 +4,7 @@ package es.unex.s3xtante.modules.sextante.bindings;
 
 import java.util.ArrayList;
 
+import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.globe.IGlobeRasterLayer;
@@ -51,7 +52,7 @@ public class WWInputFactory
          final Layer layer = layerList.get(i);
          if (layer instanceof IGlobeVectorLayer) {
             @SuppressWarnings("unchecked")
-            final IGlobeVectorLayer<IVector2<?>, GAxisAlignedRectangle> globeVector2Layer = (IGlobeVectorLayer<IVector2<?>, GAxisAlignedRectangle>) layer;
+            final IGlobeVectorLayer<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>> globeVector2Layer = (IGlobeVectorLayer<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>>) layer;
             obj = new WWVectorLayer(globeVector2Layer.getName(), globeVector2Layer.getFeaturesCollection());
             layers.add(obj);
          }

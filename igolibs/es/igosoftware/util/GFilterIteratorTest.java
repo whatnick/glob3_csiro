@@ -46,20 +46,20 @@ import java.util.List;
 import org.junit.Test;
 
 
-public class FilterIteratorTest {
+public class GFilterIteratorTest {
 
    @Test
    public void testEmptyIterator() {
       final List<Integer> list = new ArrayList<Integer>();
 
-      final Iterator<Integer> iterator = new FilterIterator<Integer>(list.iterator(), new IPredicate<Integer>() {
+      final Iterator<Integer> iterator = new GFilterIterator<Integer>(list.iterator(), new IPredicate<Integer>() {
          @Override
          public boolean evaluate(final Integer object) {
             return false;
          }
       });
 
-      assertFalse("Exausted Iterator", iterator.hasNext());
+      assertFalse("Exhausted Iterator", iterator.hasNext());
    }
 
 
@@ -70,14 +70,14 @@ public class FilterIteratorTest {
       list.add(2);
       list.add(3);
 
-      final Iterator<Integer> iterator = new FilterIterator<Integer>(list.iterator(), new IPredicate<Integer>() {
+      final Iterator<Integer> iterator = new GFilterIterator<Integer>(list.iterator(), new IPredicate<Integer>() {
          @Override
          public boolean evaluate(final Integer integer) {
             return false;
          }
       });
 
-      assertFalse("Exausted Iterator", iterator.hasNext());
+      assertFalse("Exhausted Iterator", iterator.hasNext());
    }
 
 
@@ -89,7 +89,7 @@ public class FilterIteratorTest {
       list.add(3);
       list.add(4);
 
-      final Iterator<Integer> iterator = new FilterIterator<Integer>(list.iterator(), new IPredicate<Integer>() {
+      final Iterator<Integer> iterator = new GFilterIterator<Integer>(list.iterator(), new IPredicate<Integer>() {
          @Override
          public boolean evaluate(final Integer integer) {
             return (integer % 2) != 0;
@@ -117,7 +117,7 @@ public class FilterIteratorTest {
       list.add(3);
       list.add(4);
 
-      final Iterator<Integer> iterator = new FilterIterator<Integer>(list.iterator(), new IPredicate<Integer>() {
+      final Iterator<Integer> iterator = new GFilterIterator<Integer>(list.iterator(), new IPredicate<Integer>() {
          @Override
          public boolean evaluate(final Integer integer) {
             return (integer % 2) == 0;

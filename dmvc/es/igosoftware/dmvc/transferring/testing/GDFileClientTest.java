@@ -51,13 +51,13 @@ public class GDFileClientTest {
 
       final GDFileClient fileClient = new GDFileClient(fileServer, cacheDirectoryName);
 
-      final File unexistingFile = fileClient.getFile(GFileName.relativeFromParts("unexisting.file"));
+      final File unexistingFile = fileClient.getFile(GFileName.relative("unexisting.file"));
       System.out.println("unexisting.file: " + unexistingFile);
 
 
       for (int i = 0; i < 5; i++) {
          final int finalI = i;
-         fileClient.getFile(GFileName.relativeFromParts("lipsum.txt"), new GProcessor<File>() {
+         fileClient.getFile(GFileName.relative("lipsum.txt"), new GProcessor<File>() {
             @Override
             public void process(final File element) {
                System.out.println("lipsum.txt #" + finalI + ": " + element.getAbsolutePath());

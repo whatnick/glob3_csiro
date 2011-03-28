@@ -59,15 +59,15 @@ public interface IGlobeModule
    public String getDescription();
 
 
-   public List<IGenericAction> getGenericActions(final IGlobeApplication application);
+   public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application);
 
 
-   public List<ILayerAction> getLayerActions(final IGlobeApplication application,
-                                             final IGlobeLayer layer);
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application,
+                                                       final IGlobeLayer layer);
 
 
-   public List<ILayerAttribute<?>> getLayerAttributes(final IGlobeApplication application,
-                                                      final IGlobeLayer layer);
+   public List<? extends ILayerAttribute<?>> getLayerAttributes(final IGlobeApplication application,
+                                                                final IGlobeLayer layer);
 
 
    public List<GPair<String, Component>> getPanels(final IGlobeApplication application);

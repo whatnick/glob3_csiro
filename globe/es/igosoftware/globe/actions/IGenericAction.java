@@ -52,6 +52,7 @@ public interface IGenericAction
       FILE,
       NAVIGATION,
       VIEW,
+      EDIT,
       ANALYSIS,
       HELP;
    }

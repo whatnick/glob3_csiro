@@ -64,7 +64,7 @@ public class GTakeScreenshotModule
 
 
    @Override
-   public List<IGenericAction> getGenericActions(final IGlobeApplication application) {
+   public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application) {
 
       final ScreenShotAction ssaction = new ScreenShotAction(application.getWorldWindowGLCanvas());
       final IGenericAction action = new GButtonGenericAction("Take screenshot...", ' ', null, IGenericAction.MenuArea.VIEW, false) {
@@ -82,8 +82,8 @@ public class GTakeScreenshotModule
 
 
    @Override
-   public List<ILayerAction> getLayerActions(final IGlobeApplication application,
-                                             final IGlobeLayer layer) {
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application,
+                                                       final IGlobeLayer layer) {
       return null;
    }
 

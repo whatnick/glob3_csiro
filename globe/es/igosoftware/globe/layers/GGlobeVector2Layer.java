@@ -70,16 +70,16 @@ public class GGlobeVector2Layer
          extends
             RenderableLayer
          implements
-            IGlobeVectorLayer<IVector2<?>, GAxisAlignedRectangle> {
+            IGlobeVectorLayer<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>> {
 
-   private final GVector2RenderingTheme                                         _renderingTheme;
-   private final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> _features;
+   private final GVector2RenderingTheme                                                                           _renderingTheme;
+   private final IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, ?> _features;
 
-   private boolean                                                              _isInitialized = false;
-   private Sector                                                               _extent;
+   private boolean                                                                                                _isInitialized = false;
+   private Sector                                                                                                 _extent;
 
 
-   private static GVector2RenderingTheme getDefaultRenderer(final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features) {
+   private static GVector2RenderingTheme getDefaultRenderer(final IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, ?> features) {
 
       if (features.isEmpty()) {
          return null;
@@ -103,13 +103,13 @@ public class GGlobeVector2Layer
 
 
    public GGlobeVector2Layer(final String name,
-                             final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features) {
+                             final IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, ?> features) {
       this(name, features, getDefaultRenderer(features));
    }
 
 
    public GGlobeVector2Layer(final String name,
-                             final IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> features,
+                             final IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, ?> features,
                              final GVector2RenderingTheme rendereringTheme) {
       GAssert.notNull(name, "name");
       GAssert.notNull(features, "features");
@@ -121,8 +121,8 @@ public class GGlobeVector2Layer
       _renderingTheme = rendereringTheme;
 
       if (_features instanceof IGlobeMutableFeatureCollection) {
-         final IGlobeMutableFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> mutableFeatures;
-         mutableFeatures = (IGlobeMutableFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?>) _features;
+         final IGlobeMutableFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, ?> mutableFeatures;
+         mutableFeatures = (IGlobeMutableFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, ?>) _features;
          mutableFeatures.addChangeListener(new IMutable.ChangeListener() {
             @Override
             public void mutableChanged() {
@@ -142,7 +142,7 @@ public class GGlobeVector2Layer
 
       final GProjection projection = _features.getProjection();
 
-      for (final IGlobeFeature<IVector2<?>, GAxisAlignedRectangle> feature : _features) {
+      for (final IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>> feature : _features) {
          for (final Renderable element : _renderingTheme.getRenderables(feature, projection, globe)) {
             addRenderable(element);
          }
@@ -151,7 +151,7 @@ public class GGlobeVector2Layer
 
 
    @Override
-   public IGlobeFeatureCollection<IVector2<?>, GAxisAlignedRectangle, ?> getFeaturesCollection() {
+   public IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, ?> getFeaturesCollection() {
       return _features;
    }
 
@@ -169,7 +169,7 @@ public class GGlobeVector2Layer
    private Sector calculateExtent() {
       GAxisAlignedRectangle mergedExtent = null;
 
-      for (final IGlobeFeature<IVector2<?>, GAxisAlignedRectangle> feature : _features) {
+      for (final IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>> feature : _features) {
          final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> geom = feature.getDefaultGeometry();
          final GAxisAlignedRectangle bounds = geom.getBounds();
 
@@ -252,7 +252,7 @@ public class GGlobeVector2Layer
 
 
    @Override
-   public List<ILayerAction> getLayerActions(final IGlobeApplication application) {
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application) {
       return null;
    }
 

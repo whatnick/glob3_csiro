@@ -265,14 +265,14 @@ public final class GShape {
 
    GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>> GAxisAlignedOrthotope<VectorT, ?
 
-   > getBounds(final Iterable<ElementT> elements,
+   > getBounds(final Iterable<? extends ElementT> elements,
                final ITransformer<ElementT, GeometryT> transformer) {
 
       if (elements == null) {
          return null;
       }
 
-      final Iterator<ElementT> iterator = elements.iterator();
+      final Iterator<? extends ElementT> iterator = elements.iterator();
       if (!iterator.hasNext()) {
          return null;
       }
