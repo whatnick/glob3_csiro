@@ -115,12 +115,18 @@ public interface IMultidimensionalData {
 
       public final FloatBuffer _pointsBuffer;
       public final FloatBuffer _colorsBuffer;
+      public final FloatBuffer _arrowsBuffer;
+      public final FloatBuffer _arrowscolorsBuffer;
 
 
       public VectorsCloud(final FloatBuffer pointsBuffer,
-                          final FloatBuffer colorsBuffer) {
+                          final FloatBuffer colorsBuffer,
+                          final FloatBuffer arrowsBuffer,
+                          final FloatBuffer arrowscolorsBuffer) {
          _pointsBuffer = pointsBuffer;
          _colorsBuffer = colorsBuffer;
+         _arrowsBuffer = arrowsBuffer;
+         _arrowscolorsBuffer = arrowscolorsBuffer;
       }
 
 

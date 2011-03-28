@@ -76,6 +76,7 @@ import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Vec4;
 import gov.nasa.worldwind.globes.Globe;
+import gov.nasa.worldwind.render.DrawContext;
 
 
 public class GNetCDFMultidimentionalData
@@ -154,6 +155,22 @@ public class GNetCDFMultidimentionalData
    private final boolean          _dynamicRange;
    private final VectorVariable[] _vectorVariables;
    private final List<Dimension>  _dimensions;
+   /** Default arrow angle. */
+   public static final Angle      DEFAULT_ARROW_ANGLE     = Angle.fromDegrees(45.0);
+   /** Default arrow length, in meters. */
+   public static final double     DEFAULT_ARROW_LENGTH    = 300;
+   /** Default arrow base, in meters. */
+   public static final double     DEFAULT_ARROW_BASE      = 300;
+   /** Default maximum screen size of the arrowheads, in pixels. */
+   public static final double     DEFAULT_MAX_SCREEN_SIZE = 20.0;
+   /** The angle of the arrowhead tip. */
+   protected Angle                arrowAngle              = DEFAULT_ARROW_ANGLE;
+   /** The length, in meters, of the arrowhead, from tip to base. */
+   protected double               arrowLength             = DEFAULT_ARROW_LENGTH;
+   /** The base length, in meters, of the arrowhead, from left to right */
+   protected double               arrowBase               = DEFAULT_ARROW_BASE;
+   /** The maximum screen size, in pixels, of the direction arrowheads. */
+   protected double               maxScreenSize           = DEFAULT_MAX_SCREEN_SIZE;
 
 
    public GNetCDFMultidimentionalData(final String fileName,
@@ -811,6 +828,9 @@ public class GNetCDFMultidimentionalData
       final GVertex3Container vertexContainer = new GVertex3Container(GVectorPrecision.FLOAT, GColorPrecision.INT,
                GProjection.EUCLID, initialCapacity, false, 0, true, GColorI.WHITE, false, null);
 
+      final GVertex3Container arrowVertexContainer = new GVertex3Container(GVectorPrecision.FLOAT, GColorPrecision.INT,
+               GProjection.EUCLID, initialCapacity, false, 0, true, GColorI.WHITE, false, null);
+
 
       @SuppressWarnings("unchecked")
       final List<Integer>[] ranges = (List<Integer>[]) new List<?>[dimensions.size()];
@@ -899,6 +919,18 @@ public class GNetCDFMultidimentionalData
 
                vertexContainer.addPoint(pointFrom, color);
                vertexContainer.addPoint(pointTo, color);
+
+
+               //Geometry of Arrowhead
+
+               final float arrowSize = factor * 0.1f;
+
+               //TODO: Compute arrow-head geometry and add to vertexContainer
+               //arrowVertexContainer.addPoint(pointTo.add(new GVector3D(arrowSize, arrowSize, 0.0)), color);
+               //arrowVertexContainer.addPoint(pointTo.add(new GVector3D(-arrowSize, arrowSize, 0.0)), color);
+
+               computeArrowheadGeometry(pointFrom, pointTo, arrowVertexContainer);
+
             }
             catch (final InvalidRangeException e) {
                e.printStackTrace();
@@ -922,6 +954,12 @@ public class GNetCDFMultidimentionalData
       pointsBuffer.rewind();
       final FloatBuffer colorsBuffer = ByteBuffer.allocateDirect(pointsCount * BYTES_PER_VECTOR3F).order(ByteOrder.nativeOrder()).asFloatBuffer();
       colorsBuffer.rewind();
+      final FloatBuffer arrowsBuffer = ByteBuffer.allocateDirect((pointsCount * 3) / 2 * BYTES_PER_VECTOR3F).order(
+               ByteOrder.nativeOrder()).asFloatBuffer();
+      arrowsBuffer.rewind();
+      final FloatBuffer arrowscolorsBuffer = ByteBuffer.allocateDirect((pointsCount * 3) / 2 * BYTES_PER_VECTOR3F).order(
+               ByteOrder.nativeOrder()).asFloatBuffer();
+      arrowscolorsBuffer.rewind();
 
       for (i = 0; i < pointsCount; i++) {
          final IVector3<?> point = vertexContainer.getPoint(i);
@@ -934,6 +972,28 @@ public class GNetCDFMultidimentionalData
          colorsBuffer.put(color.getGreen());
          colorsBuffer.put(color.getBlue());
          //         colorsBuffer.put(0.25f);
+         if (i % 2 == 1) {
+            final IVector3<?> pointR = arrowVertexContainer.getPoint(i - 1);
+            final IVector3<?> pointL = arrowVertexContainer.getPoint(i);
+
+            arrowsBuffer.put((float) point.x());
+            arrowsBuffer.put((float) point.y());
+            arrowsBuffer.put((float) point.z());
+
+            arrowsBuffer.put((float) pointR.x());
+            arrowsBuffer.put((float) pointR.y());
+            arrowsBuffer.put((float) pointR.z());
+
+            arrowsBuffer.put((float) pointL.x());
+            arrowsBuffer.put((float) pointL.y());
+            arrowsBuffer.put((float) pointL.z());
+
+            for (int triPt = 0; triPt < 3; triPt++) {
+               arrowscolorsBuffer.put(color.getRed());
+               arrowscolorsBuffer.put(color.getGreen());
+               arrowscolorsBuffer.put(color.getBlue());
+            }
+         }
       }
 
       if (_verbose) {
@@ -941,7 +1001,7 @@ public class GNetCDFMultidimentionalData
          System.out.println("Vectors calculated in " + GStringUtils.getTimeMessage(elapsed));
       }
 
-      return new IMultidimensionalData.VectorsCloud(pointsBuffer, colorsBuffer);
+      return new IMultidimensionalData.VectorsCloud(pointsBuffer, colorsBuffer, arrowsBuffer, arrowscolorsBuffer);
 
 
    }
@@ -978,6 +1038,111 @@ public class GNetCDFMultidimentionalData
    @Override
    public int getDimensionLenght(final String dimensionName) {
       return _ncFile.findDimension(dimensionName).getLength();
+   }
+
+
+   /**
+    * Compute the geometry of a direction arrow between two points.
+    * 
+    * @param ptFrom
+    *           Globe vector of the beginning of path
+    * @param ptTo
+    *           Globe vector of end of path
+    * @param container
+    *           Globe vertex container to place computer arrow points
+    */
+   protected void computeArrowheadGeometry(final GVector3D ptFrom,
+                                           final GVector3D ptTo,
+                                           final GVertex3Container container) {
+      // Build a triangle to represent the arrowhead. The triangle is built from two vectors, one parallel to the
+      // segment, and one perpendicular to it. The plane of the arrowhead will be parallel to the surface.
+
+      final Vec4 ptA = new Vec4(ptFrom._x, ptFrom._y, ptFrom._z);
+      final Vec4 ptB = new Vec4(ptTo._x, ptTo._y, ptTo._z);
+      final double poleDistance = ptA.distanceTo3(ptB);
+
+      // Compute parallel component
+      Vec4 parallel = ptA.subtract3(ptB);
+
+      final Vec4 surfaceNormal = new Vec4(1.0, 0.0, 0.0, 0.0);
+
+      // Compute perpendicular component
+      Vec4 perpendicular = surfaceNormal.cross3(parallel);
+
+      // Don't draw an arrowhead if the path segment is smaller than the arrow
+      if (poleDistance <= arrowLength) {
+         container.addPoint(ptTo);
+         container.addPoint(ptTo);
+         return;
+      }
+
+      perpendicular = perpendicular.normalize3().multiply3(arrowBase);
+      parallel = parallel.normalize3().multiply3(arrowLength);
+
+
+      // Compute geometry of direction arrow
+      final Vec4 vertex1 = ptB.add3(parallel).add3(perpendicular);
+      final Vec4 vertex2 = ptB.add3(parallel).add3(perpendicular.multiply3(-1.0));
+
+      // Add geometry to the buffer
+
+      container.addPoint(new GVector3D(vertex1.x, vertex1.y, vertex1.z));
+      container.addPoint(new GVector3D(vertex2.x, vertex2.y, vertex2.z));
+
+   }
+
+
+   /**
+    * Indicates the angle of the direction arrowheads. A larger angle draws a fat arrowhead, and a smaller angle draws a narrow
+    * arrow head.
+    * 
+    * @return The angle of the direction arrowhead tip.
+    */
+   public Angle getArrowAngle() {
+      return this.arrowAngle;
+   }
+
+
+   /**
+    * Indicates the length, in meters, of the direction arrowheads, from base to tip.
+    * 
+    * @return The geographic length of the direction arrowheads.
+    */
+   public double getArrowLength() {
+      return this.arrowLength;
+   }
+
+
+   //
+   //    /** {@inheritDoc} */
+   //    @Override
+   //    protected boolean mustRegenerateGeometry(DrawContext dc)
+   //    {
+   //        // Path never regenerates geometry for absolute altitude mode paths, but the direction arrows in DirectedPath
+   //        // need to be recomputed because the view may have changed and the size of the arrows needs to be recalculated.
+   //        if (this.getCurrentPathData().isExpired(dc))
+   //            return true;
+   //
+   //        return super.mustRegenerateGeometry(dc);
+   //    }
+
+   /**
+    * Determines if an direction arrow drawn a point will be less than a specified number of pixels.
+    * 
+    * @param dc
+    *           current draw context
+    * @param arrowPt
+    *           point at which to draw direction arrow
+    * @param numPixels
+    *           the number of pixels which is considered to be "small"
+    * 
+    * @return {@code true} if an arrow drawn at {@code arrowPt} would occupy less than or equal to {@code numPixels}.
+    */
+   protected boolean isArrowheadSmall(final DrawContext dc,
+                                      final Vec4 arrowPt,
+                                      final int numPixels) {
+      return this.getArrowLength() <= numPixels
+                                      * dc.getView().computePixelSizeAtDistance(dc.getView().getEyePoint().distanceTo3(arrowPt));
    }
 
 

@@ -981,6 +981,8 @@ public class GMultidimensionalViewerLayer
 
       final FloatBuffer pointsBuffer = vectorsCloud._pointsBuffer;
       final FloatBuffer colorsBuffer = vectorsCloud._colorsBuffer;
+      final FloatBuffer arrowsBuffer = vectorsCloud._arrowsBuffer;
+      final FloatBuffer arrowscoFloatBuffer = vectorsCloud._arrowscolorsBuffer;
 
       if (pointsBuffer.capacity() == 0) {
          return;
@@ -1026,8 +1028,16 @@ public class GMultidimensionalViewerLayer
          gl.glColorPointer(3, GL.GL_FLOAT, 0, colorsBuffer.rewind());
       }
 
-      final int count = pointsBuffer.capacity() / 3;
+      final int count = pointsBuffer.limit() / 3;
       gl.glDrawArrays(GL.GL_LINES, 0, count);
+
+      // Render the Triangle heads with draw arrays call
+      if (arrowscoFloatBuffer != null) {
+         gl.glColorPointer(3, GL.GL_FLOAT, 0, arrowscoFloatBuffer.rewind());
+      }
+      gl.glVertexPointer(3, GL.GL_FLOAT, 0, arrowsBuffer.rewind());
+      final int tricount = arrowsBuffer.capacity() / 3;
+      gl.glDrawArrays(GL.GL_TRIANGLES, 0, tricount);
 
       gl.glDisable(GL.GL_COLOR_MATERIAL);
       gl.glDisableClientState(GL.GL_COLOR_ARRAY);

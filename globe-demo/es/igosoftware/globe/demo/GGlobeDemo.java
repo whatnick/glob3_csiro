@@ -43,6 +43,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -90,7 +91,11 @@ import gov.nasa.worldwind.Configuration;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.layers.CompassLayer;
+import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
+import gov.nasa.worldwind.layers.RenderableLayer;
+import gov.nasa.worldwind.render.Ardor3DModel;
 
 
 public class GGlobeDemo
@@ -134,14 +139,22 @@ public class GGlobeDemo
    protected LayerList getDefaultLayers() {
       final LayerList layers = super.getDefaultLayers();
 
-      /*
+
       final List<Layer> compasses = layers.getLayersByClass(CompassLayer.class);
       final CompassLayer compass = (CompassLayer) compasses.get(0);
       GUtils.getImage("value_compass_just.png", getClass().getClassLoader());
       compass.setIconFilePath("./bitmaps/value_compass_just.png");
       compass.setIconScale(1.0);
       compass.setShowTilt(false);
-      */
+
+
+      final RenderableLayer layer = new RenderableLayer();
+      layer.setName("Ship Model");
+      final gov.nasa.worldwind.render.Ardor3DModel ship = new Ardor3DModel("./data/models/ship.dae", new Position(
+               Angle.fromDegrees(-44.0), Angle.fromDegrees(146.6), 1000));
+      layer.addRenderable(ship);
+
+      layers.add(layer);
 
       // layers.getLayerByName("MS Virtual Earth Aerial").setEnabled(true);
 
@@ -157,6 +170,7 @@ public class GGlobeDemo
       layers.add(caceres3DLayer);
 
 
+      /*
       try {
          final GPanoramicLayer panoramicLayer = createPanoramicLayer();
          layers.add(panoramicLayer);
@@ -164,7 +178,7 @@ public class GGlobeDemo
       catch (final RuntimeException e) {
          e.printStackTrace();
       }
-
+      */
 
       //      final IconLayer iconLayer = new IconLayer();
       //      final Position iconPos = new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0.0);
