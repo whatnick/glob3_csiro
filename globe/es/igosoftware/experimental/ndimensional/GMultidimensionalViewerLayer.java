@@ -1093,6 +1093,7 @@ public class GMultidimensionalViewerLayer
       synchronized (_timerMutex) {
          final int oldTime = _time;
          _time = time;
+         //FIXME: Concurrent modification exception
          firePropertyChange("Time", oldTime, _time);
          redraw();
       }
