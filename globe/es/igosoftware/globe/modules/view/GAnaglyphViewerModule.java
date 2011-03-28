@@ -96,7 +96,7 @@ public class GAnaglyphViewerModule
 
 
    @Override
-   public List<IGenericAction> getGenericActions(final IGlobeApplication application) {
+   public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application) {
 
       final IGenericAction action = new GCheckBoxGenericAction(_label, ' ', application.getIcon("anaglyph.png"),
                IGenericAction.MenuArea.VIEW, true, _isActive) {
@@ -115,8 +115,8 @@ public class GAnaglyphViewerModule
 
 
    @Override
-   public List<ILayerAction> getLayerActions(final IGlobeApplication application,
-                                             final IGlobeLayer layer) {
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application,
+                                                       final IGlobeLayer layer) {
       return null;
    }
 

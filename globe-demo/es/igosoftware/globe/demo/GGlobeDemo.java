@@ -194,9 +194,8 @@ public class GGlobeDemo
 
       try {
          final ILoader loader = new GFileLoader(GFileName.relative("PANOS"));
-         panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", loader,
-                  GFileName.relative("Barrancos"), 500, new Position(Angle.fromDegrees(39.4737),
-                           Angle.fromDegrees(-6.3910), 0)));
+         panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", loader, GFileName.relative("Barrancos"),
+                  500, new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0)));
 
          //panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", "data/panoramics/barruecos", 500,
          //         new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0)));
@@ -289,33 +288,32 @@ public class GGlobeDemo
       if (loader != null) {
          final GAsyncObjLoader objLoader = new GAsyncObjLoader(loader);
 
-         objLoader.load(GFileName.relative("globe-demo-data", "models", "caceres3d.obj"),
-                  new GAsyncObjLoader.IHandler() {
-                     @Override
-                     public void loadError(final IOException e) {
-                        logSevere(e);
-                     }
+         objLoader.load(GFileName.relative("globe-demo-data", "models", "caceres3d.obj"), new GAsyncObjLoader.IHandler() {
+            @Override
+            public void loadError(final IOException e) {
+               logSevere(e);
+            }
 
 
-                     @Override
-                     public void loaded(final GModelData modelData) {
-                        hackCaceres3DModel(modelData);
+            @Override
+            public void loaded(final GModelData modelData) {
+               hackCaceres3DModel(modelData);
 
-                        final G3DModel model = new G3DModel(modelData);
-                        final G3DModelNode caceres3DModelNode = new G3DModelNode("Caceres3D",
-                                 GTransformationOrder.ROTATION_SCALE_TRANSLATION, model);
+               final G3DModel model = new G3DModel(modelData);
+               final G3DModelNode caceres3DModelNode = new G3DModelNode("Caceres3D",
+                        GTransformationOrder.ROTATION_SCALE_TRANSLATION, model);
 
 
-                        final GGroupNode caceres3DRootNode = new GGroupNode("Caceres3D root",
-                                 GTransformationOrder.ROTATION_SCALE_TRANSLATION);
-                        caceres3DRootNode.setHeading(-90);
-                        //caceres3DRootNode.setScale(10);
-                        caceres3DRootNode.addChild(caceres3DModelNode);
+               final GGroupNode caceres3DRootNode = new GGroupNode("Caceres3D root",
+                        GTransformationOrder.ROTATION_SCALE_TRANSLATION);
+               caceres3DRootNode.setHeading(-90);
+               //caceres3DRootNode.setScale(10);
+               caceres3DRootNode.addChild(caceres3DModelNode);
 
-                        layer.addNode(caceres3DRootNode, new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710),
-                                 24.7), GElevationAnchor.SEA_LEVEL);
-                     }
-                  }, verbose);
+               layer.addNode(caceres3DRootNode, new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710), 24.7),
+                        GElevationAnchor.SEA_LEVEL);
+            }
+         }, verbose);
       }
    }
 

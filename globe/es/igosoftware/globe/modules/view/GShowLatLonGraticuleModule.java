@@ -66,7 +66,7 @@ public class GShowLatLonGraticuleModule
 
 
    @Override
-   public List<IGenericAction> getGenericActions(final IGlobeApplication application) {
+   public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application) {
 
       final IGenericAction graticule = new GCheckBoxGenericAction("Show Lat-Lon Graticule", ' ', null,
                IGenericAction.MenuArea.VIEW, false, false) {
@@ -94,8 +94,8 @@ public class GShowLatLonGraticuleModule
 
 
    @Override
-   public List<ILayerAction> getLayerActions(final IGlobeApplication application,
-                                             final IGlobeLayer layer) {
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application,
+                                                       final IGlobeLayer layer) {
       return null;
    }
 

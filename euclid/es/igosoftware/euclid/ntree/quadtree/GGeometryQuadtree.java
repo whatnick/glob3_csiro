@@ -11,21 +11,15 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.util.ITransformer;
 
 
-public class GGeometryQuadtree<
-
-ElementT,
-
-GeometryT extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>
-
->
+public class GGeometryQuadtree<ElementT>
          extends
-            GGeometryNTree<IVector2<?>, GAxisAlignedRectangle, ElementT, GeometryT> {
+            GGeometryNTree<IVector2<?>, GAxisAlignedRectangle, ElementT> {
 
 
    public GGeometryQuadtree(final String name,
                             final GAxisAlignedRectangle bounds,
-                            final Iterable<ElementT> elements,
-                            final ITransformer<ElementT, GeometryT> transformer,
+                            final Iterable<? extends ElementT> elements,
+                            final ITransformer<ElementT, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> transformer,
                             final GGeometryNTreeParameters parameters) {
       super(name, bounds, elements, transformer, parameters);
    }

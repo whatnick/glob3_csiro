@@ -135,7 +135,7 @@ public class GHomePositionModule
 
 
    @Override
-   public List<IGenericAction> getGenericActions(final IGlobeApplication application) {
+   public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application) {
       final IGenericAction gotoHome = new GButtonGenericAction(_label, application.getIcon(_iconName),
                IGenericAction.MenuArea.NAVIGATION, true) {
 
@@ -166,8 +166,8 @@ public class GHomePositionModule
 
 
    @Override
-   public List<ILayerAction> getLayerActions(final IGlobeApplication application,
-                                             final IGlobeLayer layer) {
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application,
+                                                       final IGlobeLayer layer) {
       return null;
    }
 

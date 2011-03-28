@@ -46,15 +46,15 @@ import java.util.List;
 import org.junit.Test;
 
 
-public class CompositeIteratorTest {
+public class GCompositeIteratorTest {
 
    @Test
    public void testEmptyIterator() {
       final List<Iterator<Integer>> listsIterator = new ArrayList<Iterator<Integer>>();
 
-      final Iterator<Integer> iterator = new CompositeIterator<Integer>(listsIterator);
+      final Iterator<Integer> iterator = new GCompositeIterator<Integer>(listsIterator);
 
-      assertFalse("Exausted Iterator", iterator.hasNext());
+      assertFalse("Exhausted Iterator", iterator.hasNext());
    }
 
 
@@ -74,13 +74,13 @@ public class CompositeIteratorTest {
       listsIterator.add(list2.iterator());
       listsIterator.add(list3.iterator());
 
-      final Iterator<Integer> iterator = new CompositeIterator<Integer>(listsIterator);
+      final Iterator<Integer> iterator = new GCompositeIterator<Integer>(listsIterator);
 
       for (int i = 1; i <= 5; i++) {
          assertEquals("i " + i, Integer.valueOf(i), iterator.next());
       }
 
-      assertFalse("Exausted Iterator", iterator.hasNext());
+      assertFalse("Exhausted Iterator", iterator.hasNext());
    }
 
 
@@ -100,13 +100,13 @@ public class CompositeIteratorTest {
       listsIterator.add(list2.iterator());
       listsIterator.add(list3.iterator());
 
-      final Iterator<Integer> iterator = new CompositeIterator<Integer>(listsIterator);
+      final Iterator<Integer> iterator = new GCompositeIterator<Integer>(listsIterator);
 
       for (int i = 1; i <= 5; i++) {
          assertEquals("i " + i, Integer.valueOf(i), iterator.next());
       }
 
-      assertFalse("Exausted Iterator", iterator.hasNext());
+      assertFalse("Exhausted Iterator", iterator.hasNext());
    }
 
 
@@ -122,13 +122,13 @@ public class CompositeIteratorTest {
       final List<Iterator<Integer>> listsIterator = new ArrayList<Iterator<Integer>>();
       listsIterator.add(list1.iterator());
 
-      final Iterator<Integer> iterator = new CompositeIterator<Integer>(listsIterator);
+      final Iterator<Integer> iterator = new GCompositeIterator<Integer>(listsIterator);
 
       for (int i = 1; i <= 5; i++) {
          assertEquals("i " + i, Integer.valueOf(i), iterator.next());
       }
 
-      assertFalse("Exausted Iterator", iterator.hasNext());
+      assertFalse("Exhausted Iterator", iterator.hasNext());
    }
 
 
@@ -160,7 +160,7 @@ public class CompositeIteratorTest {
       listsIterator.add(list3.iterator());
       listsIterator.add(list4.iterator());
 
-      final Iterator<Integer> iterator = new CompositeIterator<Integer>(listsIterator);
+      final Iterator<Integer> iterator = new GCompositeIterator<Integer>(listsIterator);
 
       for (int i = 1; i <= 6; i++) {
          assertEquals("i " + i, Integer.valueOf(i), iterator.next());
@@ -198,7 +198,7 @@ public class CompositeIteratorTest {
       listsIterator.add(list3.iterator());
       listsIterator.add(list4.iterator());
 
-      final Iterator<Integer> iterator = new CompositeIterator<Integer>(listsIterator);
+      final Iterator<Integer> iterator = new GCompositeIterator<Integer>(listsIterator);
 
       int i = 0;
       while (iterator.hasNext()) {

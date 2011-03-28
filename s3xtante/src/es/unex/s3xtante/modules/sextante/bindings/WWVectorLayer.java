@@ -38,7 +38,9 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 
 import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.features.GField;
 import es.igosoftware.euclid.features.GGlobeFeature;
 import es.igosoftware.euclid.features.GListMutableFeatureCollection;
@@ -63,24 +65,21 @@ public class WWVectorLayer
          extends
             AbstractVectorLayer {
 
-   private GFileName                                                                                        _filename;
-   private String                                                                                           _name;
-   private GProjection                                                                                      _projection;
-   private List<GField>                                                                                     _fields;
-   private IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, ?> _features;
-
-
-   //   private ArrayList<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>> m_FeatureList;
+   private GFileName                                                                                                                    _filename;
+   private String                                                                                                                       _name;
+   private GProjection                                                                                                                  _projection;
+   private List<GField>                                                                                                                 _fields;
+   private IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> _features;
 
 
    public WWVectorLayer(final String name,
-                        final IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, ?> features) {
+                        final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features) {
       _name = name;
       initializeFromFeatures(features);
    }
 
 
-   private void initializeFromFeatures(final IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, ?> features) {
+   private void initializeFromFeatures(final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features) {
       _features = features;
       _projection = features.getProjection();
       _fields = features.getFields();
@@ -147,18 +146,18 @@ public class WWVectorLayer
    }
 
 
-   private static int getShapeType(final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> geom) {
-      if (geom instanceof IPolygon) {
+   private static int getShapeType(final IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>> geometry) {
+      if (geometry instanceof IPolygon) {
          return IVectorLayer.SHAPE_TYPE_POLYGON;
       }
-      else if ((geom instanceof GSegment2D) || (geom instanceof GLinesStrip2D)) {
+      else if ((geometry instanceof GSegment2D) || (geometry instanceof GLinesStrip2D)) {
          return IVectorLayer.SHAPE_TYPE_LINE;
       }
-      else if (geom instanceof IVector2) {
+      else if (geometry instanceof IVector2) {
          return IVectorLayer.SHAPE_TYPE_POINT;
       }
       else {
-         throw new RuntimeException("Unsuported geometry type (" + geom + ")");
+         throw new RuntimeException("Unsupported geometry type (" + geometry + ")");
       }
    }
 
@@ -195,8 +194,8 @@ public class WWVectorLayer
 
 
    @SuppressWarnings("unchecked")
-   private void saveFeatures(final Iterable<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>>> features)
-                                                                                                                                          throws IOException {
+   private void saveFeatures(final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features)
+                                                                                                                                                                         throws IOException {
 
       final SimpleFeatureType featureType = buildFeatureType(_name, getShapeType(), _fields, DefaultGeographicCRS.WGS84);
       final DataStore dataStore = createDatastore(_filename, featureType);
@@ -207,7 +206,7 @@ public class WWVectorLayer
       final FeatureWriter<SimpleFeatureType, SimpleFeature> featWriter = dataStore.getFeatureWriterAppend(ft.getTypeName(),
                Transaction.AUTO_COMMIT);
 
-      for (final IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>> feature : features) {
+      for (final IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> feature : features) {
          final Geometry gtsGeometry = GJTSUtils.toJTS(feature.getDefaultGeometry());
 
          final List<Object> attributes = new ArrayList<Object>();
@@ -277,14 +276,15 @@ public class WWVectorLayer
    }
 
 
-   private Rectangle2D getRectangle3DBounds(final Iterable<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>>> features) {
+   private Rectangle2D getRectangle3DBounds(final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features) {
+
       double xMin = Double.POSITIVE_INFINITY;
       double xMax = Double.NEGATIVE_INFINITY;
       double yMin = Double.POSITIVE_INFINITY;
       double yMax = Double.NEGATIVE_INFINITY;
 
-      for (final IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>> feature : features) {
-         final GAxisAlignedRectangle envelope = feature.getDefaultGeometry().getBounds();
+      for (final IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> feature : features) {
+         final GAxisAlignedOrthotope<IVector2<?>, ?> envelope = feature.getDefaultGeometry().getBounds().asAxisAlignedOrthotope();
          xMin = Math.min(xMin, envelope._lower.x());
          yMin = Math.min(yMin, envelope._lower.y());
          xMax = Math.max(xMax, envelope._upper.x());
@@ -315,13 +315,11 @@ public class WWVectorLayer
 
    @Override
    public int getShapeType() {
-
       if (getShapesCount() == 0) {
          return IVectorLayer.SHAPE_TYPE_POLYGON;
       }
 
       return getShapeType(_features.get(0).getDefaultGeometry());
-
    }
 
 

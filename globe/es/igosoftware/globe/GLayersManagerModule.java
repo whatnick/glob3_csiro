@@ -132,8 +132,8 @@ public class GLayersManagerModule
 
 
    @Override
-   public List<IGenericAction> getGenericActions(final IGlobeApplication application) {
-      final IGenericAction addLayer = new GButtonGenericAction("Add a new layer", 'A', application.getIcon("add.png"),
+   public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application) {
+      final IGenericAction addLayer = new GButtonGenericAction("Add a layer", 'A', application.getIcon("add.png"),
                IGenericAction.MenuArea.FILE, true) {
 
          @Override
@@ -186,7 +186,7 @@ public class GLayersManagerModule
 
 
       final ModuleAndLayerInfo moduleAndLayerInfo = (ModuleAndLayerInfo) JOptionPane.showInputDialog(application.getFrame(),
-               application.getTranslation("Select a layer"), application.getTranslation("Add a new layer"),
+               application.getTranslation("Select a layer"), application.getTranslation("Add a layer"),
                JOptionPane.PLAIN_MESSAGE, application.getIcon("add.png", 32, 32), allLayerInfos.toArray(), null);
 
       if (moduleAndLayerInfo != null) {
@@ -206,7 +206,7 @@ public class GLayersManagerModule
 
          final ILayerFactoryModule layerFactoryModule = (ILayerFactoryModule) module;
 
-         final List<ILayerInfo> moduleLayerInfos = layerFactoryModule.getAvailableLayers(application);
+         final List<? extends ILayerInfo> moduleLayerInfos = layerFactoryModule.getAvailableLayers(application);
          if (moduleLayerInfos != null) {
             for (final ILayerInfo moduleLayerInfo : moduleLayerInfos) {
                result.add(new ModuleAndLayerInfo(layerFactoryModule, moduleLayerInfo));
@@ -246,10 +246,10 @@ public class GLayersManagerModule
 
 
    @Override
-   public List<ILayerAction> getLayerActions(final IGlobeApplication application,
-                                             final IGlobeLayer layer) {
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application,
+                                                       final IGlobeLayer layer) {
 
-      final ILayerAction addLayer = new GLayerAction("Add a new layer", 'A', application.getIcon("add.png"), false) {
+      final ILayerAction addLayer = new GLayerAction("Add a layer", 'A', application.getIcon("add.png"), false) {
          @Override
          public boolean isVisible() {
             return !getAllLayerInfos(application).isEmpty();
@@ -300,7 +300,7 @@ public class GLayersManagerModule
 
          @Override
          public boolean isEnabled() {
-            final List<IGlobeLayer> layers = application.getGlobeLayers();
+            final List<? extends IGlobeLayer> layers = application.getGlobeLayers();
             final int layerPosition = layers.indexOf(layer);
             return (layerPosition > 0);
          }
@@ -310,7 +310,7 @@ public class GLayersManagerModule
          public void execute() {
             final LayerList wwLayersList = application.getLayerList();
 
-            final List<IGlobeLayer> layers = application.getGlobeLayers();
+            final List<? extends IGlobeLayer> layers = application.getGlobeLayers();
             final int layerPosition = layers.indexOf(layer);
 
             final IGlobeLayer previousLayer = layers.get(layerPosition - 1);
@@ -335,7 +335,7 @@ public class GLayersManagerModule
 
          @Override
          public boolean isEnabled() {
-            final List<IGlobeLayer> layers = application.getGlobeLayers();
+            final List<? extends IGlobeLayer> layers = application.getGlobeLayers();
             final int layerPosition = layers.indexOf(layer);
 
             return (layerPosition < (layers.size() - 1));
@@ -346,7 +346,7 @@ public class GLayersManagerModule
          public void execute() {
             final LayerList wwLayersList = application.getLayerList();
 
-            final List<IGlobeLayer> layers = application.getGlobeLayers();
+            final List<? extends IGlobeLayer> layers = application.getGlobeLayers();
             final int layerPosition = layers.indexOf(layer);
 
             final IGlobeLayer nextLayer = layers.get(layerPosition + 1);
@@ -399,12 +399,12 @@ public class GLayersManagerModule
    private static class GlobeLayersListModel
             extends
                AbstractListModel {
-      private static final long       serialVersionUID = 1L;
+      private static final long                 serialVersionUID = 1L;
 
-      private final List<IGlobeLayer> _globeLayers;
+      private final List<? extends IGlobeLayer> _globeLayers;
 
 
-      private GlobeLayersListModel(final List<IGlobeLayer> globeLayers) {
+      private GlobeLayersListModel(final List<? extends IGlobeLayer> globeLayers) {
          _globeLayers = globeLayers;
       }
 
@@ -478,7 +478,7 @@ public class GLayersManagerModule
          @Override
          public void valueChanged(final ListSelectionEvent e) {
             if (e.getValueIsAdjusting() == false) {
-               final List<IGlobeLayer> layers = ((GlobeLayersListModel) _layersJList.getModel())._globeLayers;
+               final List<? extends IGlobeLayer> layers = ((GlobeLayersListModel) _layersJList.getModel())._globeLayers;
 
                final IGlobeLayer selectedLayer;
                final int layerPosition = _layersJList.getSelectedIndex();
@@ -504,7 +504,7 @@ public class GLayersManagerModule
             if ((button == MouseEvent.BUTTON3) && (clickCount == 1)) {
                final int layerPosition = selectBasedOnMousePosition(mouseEvent);
 
-               final List<IGlobeLayer> layers = ((GlobeLayersListModel) _layersJList.getModel())._globeLayers;
+               final List<? extends IGlobeLayer> layers = ((GlobeLayersListModel) _layersJList.getModel())._globeLayers;
                final IGlobeLayer layer = (layerPosition < 0) ? null : layers.get(layerPosition);
 
                popupContextMenu(application, layer, _layersJList, mouseEvent);
@@ -514,7 +514,7 @@ public class GLayersManagerModule
             if ((button == MouseEvent.BUTTON1) && (clickCount == 2)) {
                final int layerPosition = selectBasedOnMousePosition(mouseEvent);
 
-               final List<IGlobeLayer> layers = ((GlobeLayersListModel) _layersJList.getModel())._globeLayers;
+               final List<? extends IGlobeLayer> layers = ((GlobeLayersListModel) _layersJList.getModel())._globeLayers;
 
                if (layerPosition < 0) {
                   return;
@@ -555,7 +555,7 @@ public class GLayersManagerModule
          }
       }
 
-      final List<ILayerAction> layerActions = (layer == null) ? null : layer.getLayerActions(application);
+      final List<? extends ILayerAction> layerActions = (layer == null) ? null : layer.getLayerActions(application);
       createLayerActionsMenuItems(application, menu, layerActions);
 
 
@@ -566,7 +566,7 @@ public class GLayersManagerModule
 
    private void createLayerActionsMenuItems(final IGlobeApplication application,
                                             final JPopupMenu menu,
-                                            final List<ILayerAction> layersActions) {
+                                            final List<? extends ILayerAction> layersActions) {
       if (layersActions == null) {
          return;
       }
@@ -662,7 +662,7 @@ public class GLayersManagerModule
 
    private void createLayerActionsToolbarItems(final IGlobeApplication application,
                                                final JToolBar toolbar,
-                                               final List<ILayerAction> layersActions) {
+                                               final List<? extends ILayerAction> layersActions) {
       if (layersActions == null) {
          return;
       }
@@ -686,7 +686,7 @@ public class GLayersManagerModule
 
    private void createAttributesWidgets(final IGlobeApplication application,
                                         final IGlobeLayer layer,
-                                        final List<ILayerAttribute<?>> layerAttributes) {
+                                        final List<? extends ILayerAttribute<?>> layerAttributes) {
       if (layerAttributes == null) {
          return;
       }
@@ -778,8 +778,7 @@ public class GLayersManagerModule
    @Override
    public void initializeTranslations(final IGlobeApplication application) {
       application.addTranslation("es", "Layers", "Capas");
-      application.addTranslation("es", "Add a new layer", "Agregar una capa");
-      application.addTranslation("es", "Add a new layer", "Agregar una capa");
+      application.addTranslation("es", "Add a layer", "Agregar una capa");
       application.addTranslation("es", "Zoom to layer", "Zoom a la capa");
       application.addTranslation("es", "Remove layer", "Remover la capa");
       application.addTranslation("es", "Move up", "Mover hacia arriba");

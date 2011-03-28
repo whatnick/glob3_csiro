@@ -19,6 +19,7 @@ import com.vividsolutions.jts.geom.Polygon;
 
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.shape.GComplexPolygon2D;
 import es.igosoftware.euclid.shape.GLinesStrip2D;
 import es.igosoftware.euclid.shape.GQuad2D;
@@ -184,7 +185,9 @@ public class GJTSUtils {
    }
 
 
-   public static Geometry toJTS(final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> geometry) {
+   public static Geometry toJTS(final IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>> geometry) {
+
+
       if (geometry == null) {
          return null;
       }
