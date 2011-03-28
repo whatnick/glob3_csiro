@@ -781,6 +781,7 @@ public class GNetCDFMultidimentionalData
 
       final VectorVariable vectorVariable = findVectorVariable(variableName);
 
+
       return calculateVectorsCloud(vectorVariable, time, globe, verticalExaggeration, referencePoint, factor, colorization,
                dimensionsRanges);
    }
@@ -796,6 +797,8 @@ public class GNetCDFMultidimentionalData
                                                                     final Map<String, GRange<Integer>> dimensionsRanges) {
 
       int initialCapacity = 1;
+
+      final long start = System.currentTimeMillis();
 
       final List<Dimension> dimensions = vectorVariable._uVariable.getDimensions();
       for (final Dimension dimension : dimensions) {
@@ -933,6 +936,10 @@ public class GNetCDFMultidimentionalData
          //         colorsBuffer.put(0.25f);
       }
 
+      if (_verbose) {
+         final long elapsed = System.currentTimeMillis() - start;
+         System.out.println("Vectors calculated in " + GStringUtils.getTimeMessage(elapsed));
+      }
 
       return new IMultidimensionalData.VectorsCloud(pointsBuffer, colorsBuffer);
 
