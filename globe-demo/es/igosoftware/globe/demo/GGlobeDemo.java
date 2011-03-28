@@ -134,6 +134,15 @@ public class GGlobeDemo
    protected LayerList getDefaultLayers() {
       final LayerList layers = super.getDefaultLayers();
 
+      /*
+      final List<Layer> compasses = layers.getLayersByClass(CompassLayer.class);
+      final CompassLayer compass = (CompassLayer) compasses.get(0);
+      GUtils.getImage("value_compass_just.png", getClass().getClassLoader());
+      compass.setIconFilePath("./bitmaps/value_compass_just.png");
+      compass.setIconScale(1.0);
+      compass.setShowTilt(false);
+      */
+
       // layers.getLayerByName("MS Virtual Earth Aerial").setEnabled(true);
 
       //      layers.add(new OSMMapnikLayer());
