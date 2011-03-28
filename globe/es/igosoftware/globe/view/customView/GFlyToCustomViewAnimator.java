@@ -101,7 +101,7 @@ public class GFlyToCustomViewAnimator
                GCustomViewPropertyAccessor.createCenterPositionAccessor(customView), endCenterOnSurface);
 
       final ViewElevationAnimator zoomAnimator = new ViewElevationAnimator(customView.getGlobe(), beginZoom, endZoom,
-               beginCenterPos, endCenterPos, GCustomViewPropertyAccessor.createZoomAccessor(customView));
+               beginCenterPos, endCenterPos, 0, GCustomViewPropertyAccessor.createZoomAccessor(customView));
 
       centerAnimator.useMidZoom = zoomAnimator.getUseMidZoom();
 

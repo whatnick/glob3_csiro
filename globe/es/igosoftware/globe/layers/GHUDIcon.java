@@ -149,10 +149,10 @@ public class GHUDIcon
          attribsPushed = true;
 
          // Initialize texture if not done yet 
-         Texture iconTexture = dc.getTextureCache().get(_iconFileName);
+         Texture iconTexture = (Texture) dc.getTextureCache().get(_iconFileName);
          if (iconTexture == null) {
             initializeTexture(dc);
-            iconTexture = dc.getTextureCache().get(_iconFileName);
+            iconTexture = (Texture) dc.getTextureCache().get(_iconFileName);
             if (iconTexture == null) {
                logger.warning("Can't load icon \"" + _iconFileName + "\"");
                return;
@@ -216,7 +216,7 @@ public class GHUDIcon
 
 
    private void initializeTexture(final DrawContext dc) {
-      Texture iconTexture = dc.getTextureCache().get(_iconFileName);
+      Texture iconTexture = (Texture) dc.getTextureCache().get(_iconFileName);
       if (iconTexture != null) {
          return;
       }

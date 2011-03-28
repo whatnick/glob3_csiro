@@ -14,6 +14,7 @@
 	<classpathentry kind="lib" path="libs/gt/jsr-275-1.0-beta-2.jar"/>
 	<classpathentry kind="lib" path="libs/gt/vecmath-1.3.2.jar"/>
 	<classpathentry kind="lib" path="libs/gt/xercesImpl-2.7.1.jar"/>
+	<classpathentry kind="lib" path="libs/worldwind.jar"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/igolibs"/>
 	<classpathentry exported="true" kind="lib" path="libs/miglayout/miglayout-3.7.3.1-swing.jar" sourcepath="libs/miglayout/miglayout-3.7.3.1-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/substance6.0/substance.jar"/>
@@ -26,7 +27,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="libs/jogl/jogl.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/worldwind.jar" sourcepath="/home/dgd/Escritorio/worldwind-0.6.651.14101"/>
 	<classpathentry kind="lib" path="libs/netcdf/netcdf-4.2.jar"/>
 	<classpathentry kind="lib" path="libs/netcdf/slf4j-api-1.5.6.jar"/>
 	<classpathentry kind="lib" path="libs/netcdf/slf4j-jdk14-1.5.6.jar"/>

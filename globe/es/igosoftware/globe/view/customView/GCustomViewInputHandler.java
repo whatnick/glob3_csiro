@@ -296,7 +296,6 @@ public class GCustomViewInputHandler
    }
 
 
-   @Override
    protected void onResetHeadingAndPitch(final ViewInputAttributes.ActionAttributes actionAttribs) {
       //System.out.println("onResetHeadingAndPitch");
       stopAllAnimators();
@@ -936,8 +935,8 @@ public class GCustomViewInputHandler
                                        final Angle endPitch) {
       _gotoAnimControl.remove(VIEW_ANIM_PITCH);
       _gotoAnimControl.remove(VIEW_ANIM_HEADING);
-      final CompoundAnimator headingPitchAnimator = ViewUtil.createHeadingPitchAnimator(getView(), beginHeading, endHeading,
-               beginPitch, endPitch);
+      final CompoundAnimator headingPitchAnimator = ViewUtil.createHeadingPitchRollAnimator(getView(), beginHeading, endHeading,
+               beginPitch, endPitch, Angle.ZERO, Angle.ZERO);
       _gotoAnimControl.put(VIEW_ANIM_HEADING_PITCH, headingPitchAnimator);
       getView().firePropertyChange(AVKey.VIEW, null, getView());
    }
