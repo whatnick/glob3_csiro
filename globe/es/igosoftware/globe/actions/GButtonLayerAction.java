@@ -41,7 +41,7 @@ import javax.swing.Icon;
 import es.igosoftware.globe.GGlobeComponent;
 
 
-public abstract class GLayerAction
+public abstract class GButtonLayerAction
          extends
             GGlobeComponent
          implements
@@ -54,17 +54,17 @@ public abstract class GLayerAction
    private final boolean _showOnToolBar;
 
 
-   public GLayerAction(final String label,
-                       final Icon icon,
-                       final boolean showOnToolBar) {
+   public GButtonLayerAction(final String label,
+                             final Icon icon,
+                             final boolean showOnToolBar) {
       this(label, ' ', icon, showOnToolBar);
    }
 
 
-   public GLayerAction(final String label,
-                       final char mnemonic,
-                       final Icon icon,
-                       final boolean showOnToolBar) {
+   public GButtonLayerAction(final String label,
+                             final char mnemonic,
+                             final Icon icon,
+                             final boolean showOnToolBar) {
       super();
       _label = label;
       _mnemonic = mnemonic;

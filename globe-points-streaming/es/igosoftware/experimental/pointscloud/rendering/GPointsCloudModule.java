@@ -48,7 +48,7 @@ import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
 import es.igosoftware.globe.ILayerFactoryModule;
 import es.igosoftware.globe.ILayerInfo;
-import es.igosoftware.globe.actions.GLayerAction;
+import es.igosoftware.globe.actions.GButtonLayerAction;
 import es.igosoftware.globe.actions.IGenericAction;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.GBooleanLayerAttribute;
@@ -136,7 +136,7 @@ public class GPointsCloudModule
    public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application,
                                                        final IGlobeLayer layer) {
 
-      final ILayerAction reload = new GLayerAction("Reload", application.getIcon("reload.png"), true) {
+      final ILayerAction reload = new GButtonLayerAction("Reload", application.getIcon("reload.png"), true) {
          @Override
          public void execute() {
             ((GPointsCloudLayer) layer).reload();
