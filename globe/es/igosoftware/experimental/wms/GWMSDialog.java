@@ -40,7 +40,6 @@ import es.igosoftware.experimental.gui.GTablaIgoCusto;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.util.GLogger;
 import es.igosoftware.util.GUtils;
-import gov.nasa.worldwind.layers.LayerList;
 import gov.nasa.worldwind.ogc.wms.WMSCapabilities;
 
 
@@ -413,9 +412,8 @@ public class GWMSDialog
 
          final String globeLayerName = _layerNameText.getText();
          final GWMSLayer newLayer = new GWMSLayer(_caps, layerNames, styleNames, globeLayerName, GImageFormat.PNG);
-         final LayerList layers = _application.getLayerList();
+         _application.addLayer(newLayer);
          newLayer.doDefaultAction(_application);
-         layers.add(newLayer);
          logger.info("Added WMS layer !");
          _infoArea.setText("Added new WMS layer");
       }

@@ -492,7 +492,7 @@ public class GAddVectorLayerModule
                final GGlobeVector2Layer layer = new GGlobeVector2Layer(file.getName(), features);
 
                layer.redraw();
-               application.getLayerList().add(layer);
+               application.addLayer(layer);
                layer.setPickEnabled(false);
                return layer;
             }

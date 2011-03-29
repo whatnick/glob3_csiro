@@ -30,7 +30,9 @@
 	<classpathentry kind="lib" path="libs/netcdf/netcdf-4.2.jar"/>
 	<classpathentry kind="lib" path="libs/netcdf/slf4j-api-1.5.6.jar"/>
 	<classpathentry kind="lib" path="libs/netcdf/slf4j-jdk14-1.5.6.jar"/>
-	<classpathentry kind="lib" path="libs/gt/gt-api-2.7-M3.jar" sourcepath="/home/dgd/Escritorio/geotools/geotools-2.7-M3-SOURCES"/>
+	<classpathentry kind="lib" path="libs/gt/gt-api-2.7-M3.jar" sourcepath="/home/fpulido/Escritorio/Tools/geotools-2.7-M3-project.zip"/>
+	<classpathentry kind="lib" path="libs/gt/gt-jdbc-postgis-2.7-M3.jar" sourcepath="/home/fpulido/Escritorio/Tools/geotools-2.7-M3-project.zip"/>
+	<classpathentry kind="lib" path="libs/gt/gt-swing-2.7-M3.jar"/>
 	<classpathentry kind="lib" path="libs/gt/gt-epsg-hsql-2.7-M3.jar"/>
 	<classpathentry kind="lib" path="libs/gt/gt-main-2.7-M3.jar" sourcepath="/home/dgd/Escritorio/geotools/geotools-2.7-M3-project.zip"/>
 	<classpathentry kind="lib" path="libs/gt/gt-metadata-2.7-M3.jar"/>
@@ -43,5 +45,6 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/globe/libs/gson-1.6/gson-1.6-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="libs/gt/gt-jdbc-2.7-M3.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

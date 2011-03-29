@@ -36,6 +36,8 @@
 
 package es.igosoftware.globe;
 
+import es.igosoftware.globe.actions.ILayerAction;
+import es.igosoftware.globe.attributes.ILayerAttribute;
 import gov.nasa.worldwind.Model;
 import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
@@ -43,6 +45,7 @@ import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Sector;
 import gov.nasa.worldwind.globes.Globe;
+import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
 
 import java.awt.Dimension;
@@ -94,6 +97,12 @@ public interface IGlobeApplication {
 
 
    public LayerList getLayerList();
+
+
+   public boolean addLayer(final Layer layer);
+
+
+   public void removeLayer(final Layer layer);
 
 
    public List<? extends IGlobeLayer> getGlobeLayers();
@@ -150,5 +159,12 @@ public interface IGlobeApplication {
 
 
    public double calculateAltitudeForZooming(final Sector sector);
+
+
+   public List<List<? extends ILayerAction>> getLayerActionsGroups(final IGlobeLayer layer);
+
+
+   public List<List<? extends ILayerAttribute<?>>> getLayerAttributesGroups(final IGlobeLayer layer);
+
 
 }

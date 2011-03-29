@@ -55,19 +55,19 @@ public abstract class GGenericAction
    private final boolean                 _showOnToolBar;
 
 
-   public GGenericAction(final String label,
-                         final Icon icon,
-                         final IGenericAction.MenuArea menuBarArea,
-                         final boolean showOnToolBar) {
+   protected GGenericAction(final String label,
+                            final Icon icon,
+                            final IGenericAction.MenuArea menuBarArea,
+                            final boolean showOnToolBar) {
       this(label, ' ', icon, menuBarArea, showOnToolBar);
    }
 
 
-   public GGenericAction(final String label,
-                         final char mnemonic,
-                         final Icon icon,
-                         final IGenericAction.MenuArea menuBarArea,
-                         final boolean showOnToolBar) {
+   protected GGenericAction(final String label,
+                            final char mnemonic,
+                            final Icon icon,
+                            final IGenericAction.MenuArea menuBarArea,
+                            final boolean showOnToolBar) {
       super();
       if ((label == null) && (icon == null)) {
          throw new IllegalArgumentException("Label and/or icon are needed");

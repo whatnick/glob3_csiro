@@ -137,23 +137,6 @@ public final class GCollections {
 
 
    public static <T> CharSequence toString(final T[] array) {
-      //      final StringBuffer result = new StringBuffer();
-      //
-      //      result.append("{");
-      //      boolean first = true;
-      //      for (final Object each : array) {
-      //         if (first) {
-      //            first = false;
-      //         }
-      //         else {
-      //            result.append(", ");
-      //         }
-      //
-      //         result.append(each.toString());
-      //      }
-      //      result.append("}");
-      //
-      //      return result;
       return toString(array, "{", "}", ", ");
    }
 
@@ -414,53 +397,6 @@ public final class GCollections {
    }
 
 
-   //   public static <ElementT, ResultT> Collection<ResultT> concurrentCollect(final Collection<ElementT> collection,
-   //                                                                           final ITransformer<ElementT, ResultT> transformer) {
-   //      if (collection == null) {
-   //         return null;
-   //      }
-   //
-   //      final int size = collection.size();
-   //      if (size == 0) {
-   //         return Collections.emptyList();
-   //      }
-   //
-   //      if (size == 1) {
-   //         return Collections.singletonList(transformer.transform(collection.iterator().next()));
-   //      }
-   //
-   //
-   //      final ExecutorService executor = GConcurrent.getDefaultExecutor();
-   //
-   //      final List<Future<ResultT>> futuresResult = new ArrayList<Future<ResultT>>(size);
-   //
-   //      for (final ElementT element : collection) {
-   //         final Future<ResultT> future = executor.submit(new Callable<ResultT>() {
-   //            @Override
-   //            public ResultT call() throws Exception {
-   //               return transformer.transform(element);
-   //            }
-   //         });
-   //
-   //         futuresResult.add(future);
-   //      }
-   //
-   //      final List<ResultT> result = new ArrayList<ResultT>(size);
-   //      for (final Future<ResultT> futureResult : futuresResult) {
-   //         try {
-   //            result.add(futureResult.get());
-   //         }
-   //         catch (final InterruptedException e) {
-   //            throw new RuntimeException(e);
-   //         }
-   //         catch (final ExecutionException e) {
-   //            throw new RuntimeException(e);
-   //         }
-   //      }
-   //
-   //      return result;
-   //   }
-
    @SuppressWarnings("unchecked")
    public static <ElementT, ResultT> ResultT[] concurrentCollect(final ElementT[] array,
                                                                  final ITransformer<ElementT, ResultT> transformer) {
@@ -476,31 +412,6 @@ public final class GCollections {
       final List<ElementT> list = Arrays.asList(array);
       final List<ResultT> collected = concurrentCollect(list, transformer);
       return collected.toArray((ResultT[]) new Object[0]);
-
-      //      if (size == 1) {
-      //         return Collections.singletonList(transformer.transform(list.get(0)));
-      //      }
-      //
-      //      final ArrayList<ResultT> result = new ArrayList<ResultT>(size);
-      //      for (int i = 0; i < size; i++) {
-      //         result.add(null);
-      //      }
-      //
-      //      concurrentEvaluate(list, new IRangeEvaluator() {
-      //         @Override
-      //         public void evaluate(final int from,
-      //                              final int to) {
-      //            //System.out.println("collecting " + from + "->" + to);
-      //            for (int i = from; i <= to; i++) {
-      //               final ResultT transformed = transformer.transform(list.get(i));
-      //               synchronized (result) {
-      //                  result.set(i, transformed);
-      //               }
-      //            }
-      //         }
-      //      });
-      //
-      //      return result;
    }
 
 
@@ -571,90 +482,25 @@ public final class GCollections {
       });
 
       return result;
-
-      //         final ExecutorService executor = GConcurrent.getDefaultExecutor();
-      //   
-      //         final List<Future<Byte>> futuresResult = new ArrayList<Future<Byte>>(size);
-      //   
-      //         for (final int element : array) {
-      //            final Future<Byte> future = executor.submit(new Callable<Byte>() {
-      //               @Override
-      //               public Byte call() throws Exception {
-      //                  return transformer.transform(element);
-      //               }
-      //            });
-      //   
-      //            futuresResult.add(future);
-      //         }
-      //   
-      //         final byte[] result = new byte[size];
-      //         for (int i = 0; i < size; i++) {
-      //            try {
-      //               result[i] = futuresResult.get(i).get();
-      //            }
-      //            catch (final InterruptedException e) {
-      //               throw new RuntimeException(e);
-      //            }
-      //            catch (final ExecutionException e) {
-      //               throw new RuntimeException(e);
-      //            }
-      //         }
-      //   
-      //         return result;
    }
-
-
-   //   public static <ElementT, ResultT> Set<ResultT> concurrentCollect(final Set<ElementT> set,
-   //                                                                    final ITransformer<ElementT, ResultT> transformer) {
-   //      if (set == null) {
-   //         return null;
-   //      }
-   //
-   //      final int size = set.size();
-   //      if (size == 0) {
-   //         return Collections.emptySet();
-   //      }
-   //
-   //      if (size == 1) {
-   //         return Collections.singleton(transformer.transform(set.iterator().next()));
-   //      }
-   //
-   //
-   //      final ExecutorService executor = GConcurrent.getDefaultExecutor();
-   //
-   //      final List<Future<ResultT>> futuresResult = new ArrayList<Future<ResultT>>(size);
-   //
-   //      for (final ElementT element : set) {
-   //         final Future<ResultT> future = executor.submit(new Callable<ResultT>() {
-   //            @Override
-   //            public ResultT call() throws Exception {
-   //               return transformer.transform(element);
-   //            }
-   //         });
-   //
-   //         futuresResult.add(future);
-   //      }
-   //
-   //      final Set<ResultT> result = new HashSet<ResultT>(size);
-   //      for (final Future<ResultT> futureResult : futuresResult) {
-   //         try {
-   //            result.add(futureResult.get());
-   //         }
-   //         catch (final InterruptedException e) {
-   //            throw new RuntimeException(e);
-   //         }
-   //         catch (final ExecutionException e) {
-   //            throw new RuntimeException(e);
-   //         }
-   //      }
-   //
-   //      return result;
-   //   }
 
 
    public static <T> T[] select(final T[] array,
                                 final IPredicate<T> predicate) {
       final List<T> selected = select(Arrays.asList(array), predicate);
+
+      final Class<? extends Object[]> newType = array.getClass();
+      @SuppressWarnings("unchecked")
+      final T[] arrayResult = (newType == Object[].class) ? //
+                                                         (T[]) new Object[selected.size()] : //
+                                                         (T[]) Array.newInstance(newType.getComponentType(), selected.size());
+
+      return selected.toArray(arrayResult);
+   }
+
+
+   public static <T> T[] selectNotNull(final T[] array) {
+      final List<T> selected = selectNotNull(Arrays.asList(array));
 
       final Class<? extends Object[]> newType = array.getClass();
       @SuppressWarnings("unchecked")
@@ -685,24 +531,22 @@ public final class GCollections {
    }
 
 
-   //   @SuppressWarnings("unchecked")
-   //   public static <ElementT> ElementT[] select(final ElementT[] list,
-   //                                              final IPredicate<ElementT> predicate) {
-   //      if (list == null) {
-   //         return null;
-   //      }
-   //
-   //      final ArrayList<ElementT> result = new ArrayList<ElementT>(list.length);
-   //
-   //      for (final ElementT element : list) {
-   //         if (predicate.evaluate(element)) {
-   //            result.add(element);
-   //         }
-   //      }
-   //      result.trimToSize();
-   //
-   //      return result.toArray((ElementT[]) new Object[0]);
-   //   }
+   public static <ElementT> List<ElementT> selectNotNull(final List<ElementT> list) {
+      if (list == null) {
+         return null;
+      }
+
+      final ArrayList<ElementT> result = new ArrayList<ElementT>(list.size());
+
+      for (final ElementT element : list) {
+         if (element != null) {
+            result.add(element);
+         }
+      }
+      result.trimToSize();
+
+      return result;
+   }
 
 
    public static <ElementT> Set<ElementT> select(final Set<ElementT> set,
@@ -733,6 +577,24 @@ public final class GCollections {
 
       for (final ElementT element : collection) {
          if (predicate.evaluate(element)) {
+            result.add(element);
+         }
+      }
+      result.trimToSize();
+
+      return result;
+   }
+
+
+   public static <ElementT> Collection<ElementT> selectNotNull(final Collection<ElementT> collection) {
+      if (collection == null) {
+         return null;
+      }
+
+      final ArrayList<ElementT> result = new ArrayList<ElementT>(collection.size());
+
+      for (final ElementT element : collection) {
+         if (element != null) {
             result.add(element);
          }
       }
@@ -1006,7 +868,6 @@ public final class GCollections {
 
    public static <ElementT> void concurrentEvaluate(final List<ElementT> list,
                                                     final IRangeEvaluator rangeEvaluator) {
-      //      concurrentEvaluate(list, rangeEvaluator, GConcurrent.AVAILABLE_PROCESSORS * 3, GConcurrent.DEFAULT_THREAD_PRIORITY, true);
       concurrentEvaluate(list, rangeEvaluator, GConcurrent.AVAILABLE_PROCESSORS * 3);
    }
 
@@ -1263,18 +1124,6 @@ public final class GCollections {
       System.arraycopy(array, i + 1, result, i, result.length - i);
       return result;
    }
-
-
-   //   public static void main(final String[] args) {
-   //      final String[] array = new String[] { "a", "b", "c" };
-   //      final String[] collected = GCollections.collect(array, new ITransformer<String, String>() {
-   //         @Override
-   //         public String transform(final String element) {
-   //            return element.toUpperCase();
-   //         }
-   //      });
-   //      System.out.println(Arrays.toString(collected));
-   //   }
 
 
    private static int partition(final int array[],
@@ -1557,14 +1406,6 @@ public final class GCollections {
          floatList[i] = (float) doubleList[i];
       }
       return floatList;
-   }
-
-
-   public static void main(final String[] args) {
-      System.out.println("GCollections 0.1");
-      System.out.println("----------------\n");
-
-      System.out.println(GCollections.rangeList(48, 49));
    }
 
 

@@ -61,7 +61,7 @@ public class GAnaglyphViewerModule
    private static final String DEFAULT_LABEL = "View anaglyph";
 
    private final String        _label;
-   private boolean             _isActive     = true;
+   private final boolean       _initialState;
 
 
    public GAnaglyphViewerModule(final boolean isActive) {
@@ -72,7 +72,7 @@ public class GAnaglyphViewerModule
    public GAnaglyphViewerModule(final String label,
                                 final boolean isActive) {
       _label = label;
-      _isActive = isActive;
+      _initialState = isActive;
    }
 
 
@@ -91,7 +91,7 @@ public class GAnaglyphViewerModule
    public void initialize(final IGlobeApplication application) {
       super.initialize(application);
 
-      doIt(application);
+      doIt(application, _initialState);
    }
 
 
@@ -99,14 +99,10 @@ public class GAnaglyphViewerModule
    public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application) {
 
       final IGenericAction action = new GCheckBoxGenericAction(_label, ' ', application.getIcon("anaglyph.png"),
-               IGenericAction.MenuArea.VIEW, true, _isActive) {
-
+               IGenericAction.MenuArea.VIEW, true, _initialState) {
          @Override
          public void execute() {
-
-            _isActive = !_isActive;
-
-            doIt(application);
+            doIt(application, isSelected());
          }
       };
 
@@ -146,8 +142,9 @@ public class GAnaglyphViewerModule
    }
 
 
-   private void doIt(final IGlobeApplication application) {
-      if (_isActive) {
+   private void doIt(final IGlobeApplication application,
+                     final boolean selected) {
+      if (selected) {
          final SceneController controller = application.getWorldWindowGLCanvas().getSceneController();
          if (controller instanceof AnaglyphSceneController) {
             ((AnaglyphSceneController) controller).setDisplayMode(AnaglyphSceneController.DISPLAY_MODE_STEREO);

@@ -44,6 +44,8 @@ import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GPolygon2DRenderer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GRenderingAttributes;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
+import es.igosoftware.euclid.features.IGlobeMutableFeatureCollection;
+import es.igosoftware.euclid.mutability.IMutable;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
@@ -265,10 +267,36 @@ public class GPolygon2DLayer
 
 
             private void saveImageIntoDiskoCache(final BufferedImage renderedImage) {
+               if (renderedImage == null) {
+                  return;
+               }
+
+               final String uniqueName = key.uniqueName();
+               if (uniqueName == null) {
+                  // no uniqueName -> no cache
+                  return;
+               }
+
+
                final Thread worker = new Thread() {
                   @Override
                   public void run() {
-                     saveImageIntoDiskCache(key, renderedImage);
+                     try {
+                        final String fileName = uniqueName + ".png";
+
+                        final File tempFile = File.createTempFile("temp", "png", RENDERING_CACHE_DIRECTORY);
+
+                        ImageIO.write(renderedImage, "png", tempFile);
+                        //            final ByteBuffer buffer = DDSCompressor.compressImage(image);
+                        //            WWIO.saveBuffer(buffer, tempFile);
+
+                        if (!tempFile.renameTo(new File(RENDERING_CACHE_DIRECTORY, fileName))) {
+                           throw new RuntimeException("Can't rename " + tempFile + " to " + fileName);
+                        }
+                     }
+                     catch (final IOException e) {
+                        e.printStackTrace();
+                     }
                   }
                };
                worker.setDaemon(true);
@@ -358,33 +386,6 @@ public class GPolygon2DLayer
       }
 
       return selectedTask;
-   }
-
-
-   private static void saveImageIntoDiskCache(final RenderingKey key,
-                                              final BufferedImage image) {
-      try {
-         if (image != null) {
-            final String uniqueName = key.uniqueName();
-            // no uniqueName -> no cache
-            if (uniqueName != null) {
-               final String fileName = uniqueName + ".png";
-
-               final File tempFile = File.createTempFile("temp", "png", RENDERING_CACHE_DIRECTORY);
-
-               ImageIO.write(image, "png", tempFile);
-               //            final ByteBuffer buffer = DDSCompressor.compressImage(image);
-               //            WWIO.saveBuffer(buffer, tempFile);
-
-               if (!tempFile.renameTo(new File(RENDERING_CACHE_DIRECTORY, fileName))) {
-                  throw new RuntimeException("Can't rename " + tempFile + " to " + fileName);
-               }
-            }
-         }
-      }
-      catch (final IOException e) {
-         e.printStackTrace();
-      }
    }
 
 
@@ -726,13 +727,14 @@ public class GPolygon2DLayer
    }
 
 
-   private final Sector                                                                                                                       _polygonsSector;
+   private Sector                                                                                                                             _polygonsSector;
 
 
-   private final GPolygon2DRenderer                                                                                                           _renderer;
+   private GPolygon2DRenderer                                                                                                                 _renderer;
    private final String                                                                                                                       _name;
-   private final GAxisAlignedOrthotope<IVector2<?>, ?>                                                                                        _polygonsBounds;
+   private GAxisAlignedOrthotope<IVector2<?>, ?>                                                                                              _polygonsBounds;
    private final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> _features;
+
 
    private GRenderingAttributes                                                                                                               _attributes;
 
@@ -757,14 +759,40 @@ public class GPolygon2DLayer
       GAssert.notNull(features, "features");
 
       _name = name;
-      _polygonsBounds = features.getBounds();
-
-      _polygonsSector = GWWUtils.toSector(_polygonsBounds, features.getProjection());
-
       _features = features;
-      _renderer = new GPolygon2DRenderer(features);
+
+      if (_features.isEditable()) {
+         if (features instanceof IGlobeMutableFeatureCollection) {
+            final IGlobeMutableFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> editableFeatures;
+            editableFeatures = (IGlobeMutableFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?>) features;
+
+            editableFeatures.addChangeListener(new IMutable.ChangeListener() {
+               @Override
+               public void mutableChanged() {
+                  featuresChanged();
+               }
+            });
+         }
+         else {
+            System.err.println("editable features type not supported (" + features.getClass());
+         }
+      }
+
+      featuresChanged(); // force initial calculation of features related info
 
       _attributes = createRenderingAttributes();
+   }
+
+
+   private void featuresChanged() {
+      _polygonsBounds = _features.getBounds();
+      _polygonsSector = GWWUtils.toSector(_polygonsBounds, _features.getProjection());
+
+      if (_polygonsSector == null) {
+         _polygonsSector = Sector.FULL_SPHERE;
+      }
+
+      _renderer = _features.isEmpty() ? null : new GPolygon2DRenderer(_features);
    }
 
 
@@ -1287,6 +1315,10 @@ public class GPolygon2DLayer
 
    @Override
    public boolean isLayerInView(final DrawContext dc) {
+      if (_features.isEmpty()) {
+         return false;
+      }
+
       final Box extent = getBox(dc);
       final Frustum frustum = dc.getView().getFrustumInModelCoordinates();
       if (!extent.intersects(frustum)) {
@@ -1302,8 +1334,6 @@ public class GPolygon2DLayer
    @Override
    protected final void doPreRender(final DrawContext dc) {
       _lastView = dc.getView();
-
-      //      _lastVisibleSector = dc.getVisibleSector();
 
       calculateCurrentTiles(dc);
 
@@ -1423,5 +1453,12 @@ public class GPolygon2DLayer
    public IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> getFeaturesCollection() {
       return _features;
    }
+
+
+   @Override
+   public String toString() {
+      return "GPolygon2DLayer [name=" + _name + ", features=" + _features + "]";
+   }
+
 
 }

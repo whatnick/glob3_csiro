@@ -73,4 +73,6 @@ TypeT extends IGlobeFeatureCollection<VectorT, FeatureGeometryT, TypeT>
    public GAxisAlignedOrthotope<VectorT, ?> getBounds();
 
 
+   public boolean isEditable();
+
 }
