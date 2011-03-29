@@ -40,7 +40,7 @@ import java.awt.Color;
 import java.awt.LinearGradientPaint;
 
 import es.igosoftware.euclid.IBoundedGeometry;
-import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
@@ -74,13 +74,13 @@ public abstract class GVector2RenderingTheme {
    }
 
 
-   public void calculateExtremeValues(final IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, ?> features) {
+   public void calculateExtremeValues(final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features) {
 
       if (_hasToRecalculateExtremeValues) {
          double dMin = Double.POSITIVE_INFINITY;
          double dMax = Double.NEGATIVE_INFINITY;
 
-         for (final IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>> element : features) {
+         for (final IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> element : features) {
             final String sValue = element.getAttribute(_fieldIndex).toString();
             final double dValue = Double.parseDouble(sValue);
             dMin = Math.min(dMin, dValue);
@@ -92,7 +92,7 @@ public abstract class GVector2RenderingTheme {
    }
 
 
-   protected abstract Renderable[] getRenderables(final IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>> feature,
+   protected abstract Renderable[] getRenderables(final IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> feature,
                                                   final GProjection projection,
                                                   final Globe globe);
 

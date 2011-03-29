@@ -36,23 +36,68 @@
 
 package es.igosoftware.globe.actions;
 
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public interface IGenericAction
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JMenuItem;
+
+import es.igosoftware.globe.IGlobeApplication;
+import es.igosoftware.utils.GSwingUtils;
+
+
+public abstract class GButtonLayerAction
          extends
-            IAction {
+            GLayerAction {
 
 
-   public static enum MenuArea {
-      FILE,
-      NAVIGATION,
-      VIEW,
-      EDIT,
-      ANALYSIS,
-      HELP;
+   protected GButtonLayerAction(final String label,
+                                final char mnemonic,
+                                final Icon icon,
+                                final boolean showOnToolBar) {
+      super(label, mnemonic, icon, showOnToolBar);
    }
 
 
-   public IGenericAction.MenuArea getMenuBarArea();
+   protected GButtonLayerAction(final String label,
+                                final Icon icon,
+                                final boolean showOnToolBar) {
+      super(label, icon, showOnToolBar);
+   }
+
+
+   @Override
+   public Component createToolbarWidget(final IGlobeApplication application) {
+      final JButton button = GSwingUtils.createToolbarButton(getIcon(), application.getTranslation(getLabel()),
+               new ActionListener() {
+                  @Override
+                  public void actionPerformed(final ActionEvent e) {
+                     execute();
+                  }
+               });
+
+      button.setEnabled(isEnabled());
+
+      return button;
+   }
+
+
+   @Override
+   public JMenuItem createMenuWidget(final IGlobeApplication application) {
+      final JMenuItem menuItem = new JMenuItem(application.getTranslation(getLabel()), getIcon());
+
+      menuItem.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(final ActionEvent e) {
+            execute();
+         }
+      });
+      menuItem.setEnabled(isEnabled());
+
+      return menuItem;
+   }
 
 
 }

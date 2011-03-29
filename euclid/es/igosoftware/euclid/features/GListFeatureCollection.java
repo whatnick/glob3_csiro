@@ -218,4 +218,10 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<Ve
    }
 
 
+   @Override
+   public boolean isEditable() {
+      return false;
+   }
+
+
 }

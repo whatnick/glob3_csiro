@@ -181,7 +181,7 @@ public class GPlanarPanoramicCompiler {
    private static void createZoomLevelsInfo(final GFileName outputDirectory,
                                             final GPlanarPanoramicZoomLevel[] zoomLevels) throws IOException {
 
-      //      final BufferedWriter info = new BufferedWriter(new FileWriter(outputDirectory + "info.txt"));
+
       final BufferedWriter info = new BufferedWriter(new FileWriter(
                GFileName.fromParentAndParts(outputDirectory, "info.txt").buildPath()));
       info.write("[");

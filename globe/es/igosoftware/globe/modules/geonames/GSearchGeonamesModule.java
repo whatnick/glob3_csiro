@@ -144,7 +144,7 @@ public class GSearchGeonamesModule
                lastHighlit = null;
                final Layer layer = application.getLayerList().getLayerByName(SEARCH_ANNOTATION_LAYER_NAME);
                if (layer != null) {
-                  application.getLayerList().remove(layer);
+                  application.removeLayer(layer);
                }
             }
 
@@ -193,7 +193,7 @@ public class GSearchGeonamesModule
                annotationsLayer.setName(SEARCH_ANNOTATION_LAYER_NAME);
                //annotationsLayer.setMaxActiveAltitude(30000d);
 
-               application.getLayerList().add(annotationsLayer);
+               application.addLayer(annotationsLayer);
 
             }
          }

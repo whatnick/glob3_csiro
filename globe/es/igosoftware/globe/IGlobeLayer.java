@@ -71,9 +71,10 @@ public interface IGlobeLayer
    public List<ILayerAttribute<?>> getLayerAttributes(final IGlobeApplication application);
 
 
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application);
+
+
    public void doDefaultAction(final IGlobeApplication application);
 
-
-   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application);
 
 }

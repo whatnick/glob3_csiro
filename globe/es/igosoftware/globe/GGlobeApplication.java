@@ -59,6 +59,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -87,9 +88,11 @@ import org.pushingpixels.substance.api.fonts.FontSet;
 import org.pushingpixels.substance.api.skin.SubstanceMistAquaLookAndFeel;
 
 import es.igosoftware.globe.actions.IGenericAction;
-import es.igosoftware.globe.layers.I3DContentCollectionLayer;
+import es.igosoftware.globe.actions.ILayerAction;
+import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.globe.view.customView.GCustomView;
 import es.igosoftware.globe.view.customView.GCustomViewInputHandler;
+import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GHolder;
 import es.igosoftware.util.GLogger;
@@ -286,24 +289,30 @@ public abstract class GGlobeApplication
    }
 
 
-   protected final IGlobeModule[]                 _modules;
-   private final WorldWindowGLCanvas              _wwGLCanvas;
-   private JFrame                                 _frame;
+   protected final IGlobeModule[]                                                   _modules;
+   private final WorldWindowGLCanvas                                                _wwGLCanvas;
+   private JFrame                                                                   _frame;
+
 
    // UI elements, they must be final
-   private JMenuBar                               _menubar;
-   private JToolBar                               _toolbar;
+   private JMenuBar                                                                 _menubar;
+   private JToolBar                                                                 _toolbar;
 
-   private JMenu                                  _fileMenu;
-   private JMenu                                  _navigationMenu;
-   private JMenu                                  _viewMenu;
-   private JMenu                                  _editMenu;
-   private JMenu                                  _analysisMenu;
-   private JMenu                                  _helpMenu;
+   private JMenu                                                                    _fileMenu;
+   private JMenu                                                                    _navigationMenu;
+   private JMenu                                                                    _viewMenu;
+   private JMenu                                                                    _editMenu;
+   private JMenu                                                                    _analysisMenu;
+   private JMenu                                                                    _helpMenu;
 
-   private final Map<String, Map<String, String>> _translationsSets;
+   private final Map<String, Map<String, String>>                                   _translationsSets;
 
-   private String                                 _currentLanguage;
+   private String                                                                   _currentLanguage;
+
+
+   // weak, so when the layer dies also the associated data dies
+   private final WeakHashMap<IGlobeLayer, List<List<? extends ILayerAction>>>       _layerActionsPerLayer    = new WeakHashMap<IGlobeLayer, List<List<? extends ILayerAction>>>();
+   private final WeakHashMap<IGlobeLayer, List<List<? extends ILayerAttribute<?>>>> _layerAttributesPerLayer = new WeakHashMap<IGlobeLayer, List<List<? extends ILayerAttribute<?>>>>();
 
 
    protected GGlobeApplication() {
@@ -430,6 +439,8 @@ public abstract class GGlobeApplication
 
 
    private static void registerInstance(final GGlobeApplication application) {
+      GAssert.notNull(application, "application");
+
       if (_application != null) {
          throw new RuntimeException("Can't register more than one application");
       }
@@ -451,45 +462,44 @@ public abstract class GGlobeApplication
    private IGlobeModule[] initializeModules() {
       final GHolder<IGlobeModule[]> modules = new GHolder<IGlobeModule[]>(null);
 
-      try {
-         invokeInEventThread(new Runnable() {
-            @Override
-            public void run() {
-               //            final IGlobeModule[] modules = getModules();
-               modules.set(getInitialModules());
+      invokeInSwingThread(new Runnable() {
+         @Override
+         public void run() {
+            //            final IGlobeModule[] modules = getModules();
+            modules.set(getInitialModules());
 
-               for (final IGlobeModule module : modules.get()) {
-                  if (module != null) {
-                     module.initialize(GGlobeApplication.this);
-                     module.initializeTranslations(GGlobeApplication.this);
-                  }
+            for (final IGlobeModule module : modules.get()) {
+               if (module != null) {
+                  module.initialize(GGlobeApplication.this);
+                  module.initializeTranslations(GGlobeApplication.this);
                }
             }
-         });
-      }
-      catch (final InterruptedException e) {
-         e.printStackTrace();
-      }
-      catch (final InvocationTargetException e) {
-         e.printStackTrace();
-      }
-
+         }
+      });
 
       return GCollections.select(modules.get(), new IPredicate<IGlobeModule>() {
          @Override
          public boolean evaluate(final IGlobeModule element) {
-            return element != null;
+            return (element != null);
          }
       });
    }
 
 
-   private static void invokeInEventThread(final Runnable runnable) throws InterruptedException, InvocationTargetException {
+   private static void invokeInSwingThread(final Runnable runnable) {
       if (EventQueue.isDispatchThread()) {
          runnable.run();
       }
       else {
-         SwingUtilities.invokeAndWait(runnable);
+         try {
+            SwingUtilities.invokeAndWait(runnable);
+         }
+         catch (final InterruptedException e) {
+            e.printStackTrace();
+         }
+         catch (final InvocationTargetException e) {
+            e.printStackTrace();
+         }
       }
    }
 
@@ -523,16 +533,15 @@ public abstract class GGlobeApplication
    protected LayerList getDefaultLayers() {
       final LayerList layers = new BasicModel().getLayers();
 
+
       final StatusLayer statusLayer = new StatusLayer();
       statusLayer.setEventSource(getWorldWindowGLCanvas());
-      // statusLayer.setCoordDecimalPlaces(2); // default is 4
       layers.add(statusLayer);
 
-      layers.getLayerByName("NASA Blue Marble Image").setEnabled(true);
 
+      layers.getLayerByName("NASA Blue Marble Image").setEnabled(true);
       layers.getLayerByName("Blue Marble (WMS) 2004").setEnabled(true);
       layers.getLayerByName("i-cubed Landsat").setEnabled(true);
-      //      layers.getLayerByName("MS Virtual Earth Aerial").setEnabled(true);
 
 
       final ViewControlsLayer viewControlsLayer = new ViewControlsLayer();
@@ -545,30 +554,22 @@ public abstract class GGlobeApplication
 
    @Override
    public void init() {
-      try {
-         invokeInEventThread(new Runnable() {
-            @Override
-            public void run() {
-               SwingUtilities.updateComponentTreeUI(GGlobeApplication.this);
+      invokeInSwingThread(new Runnable() {
+         @Override
+         public void run() {
+            SwingUtilities.updateComponentTreeUI(GGlobeApplication.this);
 
-               initGUI();
+            initGUI();
 
-               IGlobeModule previousModule = null;
-               for (final IGlobeModule module : _modules) {
-                  initModuleGUI(module, previousModule);
-                  previousModule = module;
-               }
-
-               postInitGUI();
+            IGlobeModule previousModule = null;
+            for (final IGlobeModule module : _modules) {
+               initModuleGUI(module, previousModule);
+               previousModule = module;
             }
-         });
-      }
-      catch (final InterruptedException e) {
-         e.printStackTrace();
-      }
-      catch (final InvocationTargetException e) {
-         e.printStackTrace();
-      }
+
+            postInitGUI();
+         }
+      });
    }
 
 
@@ -1133,12 +1134,6 @@ public abstract class GGlobeApplication
 
 
    @Override
-   public LayerList getLayerList() {
-      return getModel().getLayers();
-   }
-
-
-   @Override
    public List<? extends IGlobeLayer> getGlobeLayers() {
       final List<IGlobeLayer> result = new ArrayList<IGlobeLayer>();
 
@@ -1210,7 +1205,7 @@ public abstract class GGlobeApplication
       german.put("Analysis", "Análise");
       german.put("Navigation", "Navegação");
       german.put("Help", "Ajuda");
-      translations.put("pt", german);
+      translations.put("pt", portugese);
 
 
       return translations;
@@ -1311,17 +1306,6 @@ public abstract class GGlobeApplication
    }
 
 
-   public I3DContentCollectionLayer getContentCollectionLayer() {
-      for (final Layer layer : getLayerList()) {
-         if (layer instanceof I3DContentCollectionLayer) {
-            return (I3DContentCollectionLayer) layer;
-         }
-         continue;
-      }
-      return null;
-   }
-
-
    protected abstract IGlobeModule[] getInitialModules();
 
 
@@ -1329,5 +1313,113 @@ public abstract class GGlobeApplication
    public final IGlobeModule[] getModules() {
       return _modules;
    }
+
+
+   @Override
+   public LayerList getLayerList() {
+      return getModel().getLayers();
+   }
+
+
+   @Override
+   public boolean addLayer(final Layer layer) {
+      GAssert.notNull(layer, "layer");
+
+      return getLayerList().add(layer);
+   }
+
+
+   @Override
+   public void removeLayer(final Layer layer) {
+      GAssert.notNull(layer, "layer");
+
+      getLayerList().remove(layer);
+   }
+
+
+   @Override
+   public List<List<? extends ILayerAction>> getLayerActionsGroups(final IGlobeLayer layer) {
+      if (layer == null) {
+         return Collections.emptyList();
+      }
+
+      List<List<? extends ILayerAction>> actions = _layerActionsPerLayer.get(layer);
+      if (actions == null) {
+         actions = calculateLayerActions(layer);
+         _layerActionsPerLayer.put(layer, actions);
+      }
+
+      return actions;
+   }
+
+
+   private List<List<? extends ILayerAction>> calculateLayerActions(final IGlobeLayer layer) {
+      final ArrayList<List<? extends ILayerAction>> result = new ArrayList<List<? extends ILayerAction>>();
+
+
+      // actions from modules
+      for (final IGlobeModule module : getModules()) {
+         if (module != null) {
+            final List<? extends ILayerAction> moduleActions = GCollections.selectNotNull(module.getLayerActions(this, layer));
+            if ((moduleActions != null) && !moduleActions.isEmpty()) {
+               result.add(moduleActions);
+            }
+         }
+      }
+
+      // actions from the layer itself
+      final List<? extends ILayerAction> layerActions = GCollections.selectNotNull(layer.getLayerActions(this));
+      if ((layerActions != null) && !layerActions.isEmpty()) {
+         result.add(layerActions);
+      }
+
+      result.trimToSize();
+
+      return result;
+   }
+
+
+   @Override
+   public List<List<? extends ILayerAttribute<?>>> getLayerAttributesGroups(final IGlobeLayer layer) {
+      if (layer == null) {
+         return Collections.emptyList();
+      }
+
+      List<List<? extends ILayerAttribute<?>>> attributes = _layerAttributesPerLayer.get(layer);
+      if (attributes == null) {
+         attributes = calculateLayerAttributes(layer);
+         _layerAttributesPerLayer.put(layer, attributes);
+      }
+
+      return attributes;
+   }
+
+
+   private List<List<? extends ILayerAttribute<?>>> calculateLayerAttributes(final IGlobeLayer layer) {
+      final ArrayList<List<? extends ILayerAttribute<?>>> result = new ArrayList<List<? extends ILayerAttribute<?>>>();
+
+
+      // attributes from modules
+      for (final IGlobeModule module : getModules()) {
+         if (module != null) {
+            final List<? extends ILayerAttribute<?>> moduleAttributes = GCollections.selectNotNull(module.getLayerAttributes(
+                     this, layer));
+            if ((moduleAttributes != null) && !moduleAttributes.isEmpty()) {
+               result.add(moduleAttributes);
+            }
+         }
+      }
+
+      // attributes from the layer itself
+      final List<ILayerAttribute<?>> layerAttributes = GCollections.selectNotNull(layer.getLayerAttributes(this));
+      if ((layerAttributes != null) && !layerAttributes.isEmpty()) {
+         result.add(layerAttributes);
+      }
+
+      result.trimToSize();
+
+      return result;
+   }
+
 
 }

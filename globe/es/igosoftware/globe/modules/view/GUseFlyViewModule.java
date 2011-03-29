@@ -58,8 +58,7 @@ public class GUseFlyViewModule
          extends
             GAbstractGlobeModule {
 
-   private boolean _isActive = false;
-   private View    _oldView;
+   private View _oldView;
 
 
    @Override
@@ -76,19 +75,14 @@ public class GUseFlyViewModule
 
          @Override
          public void execute() {
-
-            _isActive = !_isActive;
-
-            if (_isActive) {
+            if (isSelected()) {
                final BasicFlyView view = new BasicFlyView();
                final View currentView = application.getWorldWindowGLCanvas().getView();
                _oldView = currentView;
                view.copyViewState(currentView);
                application.getWorldWindowGLCanvas().setView(view);
-
             }
             else {
-
                final View currentView = application.getWorldWindowGLCanvas().getView();
                final View view;
                if (_oldView instanceof GCustomView) {
@@ -104,14 +98,10 @@ public class GUseFlyViewModule
                view.copyViewState(currentView);
                application.getWorldWindowGLCanvas().setView(view);
             }
-
          }
-
       };
 
-      //      return new IGenericAction[] { action };
       return Collections.singletonList(action);
-
    }
 
 
@@ -149,7 +139,6 @@ public class GUseFlyViewModule
 
    @Override
    public void initializeTranslations(final IGlobeApplication application) {
-      // TODO Auto-generated method stub
 
    }
 

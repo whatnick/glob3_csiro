@@ -40,6 +40,7 @@ import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.Icon;
@@ -49,16 +50,22 @@ import javax.swing.SwingUtilities;
 
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.features.GField;
+import es.igosoftware.euclid.features.GListMutableFeatureCollection;
+import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
+import es.igosoftware.euclid.features.IGlobeMutableFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.globe.GAbstractGlobeModule;
 import es.igosoftware.globe.GLayerInfo;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
+import es.igosoftware.globe.IGlobeVector2Layer;
 import es.igosoftware.globe.ILayerFactoryModule;
 import es.igosoftware.globe.ILayerInfo;
 import es.igosoftware.globe.actions.GButtonGenericAction;
+import es.igosoftware.globe.actions.GCheckBoxLayerAction;
 import es.igosoftware.globe.actions.IGenericAction;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
@@ -72,6 +79,10 @@ public class GPolygon2DModule
             GAbstractGlobeModule
          implements
             ILayerFactoryModule {
+
+
+   private static final String DEFAULT_LAYER_NAME = "Vectorial Layer";
+
 
    @Override
    public String getName() {
@@ -97,20 +108,7 @@ public class GPolygon2DModule
                application.getIcon("new-vectorial.png"), IGenericAction.MenuArea.EDIT, true) {
          @Override
          public void execute() {
-            final int ______Diego_at_work;
-
-            //            final GProjection projection = GProjection.EPSG_4326;
-            //            final List<GField> fields = Collections.emptyList();
-            //            final List<IGlobeFeature<IVector2<?>, IPolygon2D<?>>> featuresList = Collections.emptyList();
-            //            final String uniqueID = null;
-            //
-            //            final GListMutableFeatureCollection<IVector2<?>, IPolygon2D<?>> features = new GListMutableFeatureCollection<IVector2<?>, IPolygon2D<?>>(
-            //                     projection, fields, featuresList, uniqueID);
-            //
-            //            final String layerName = "NEW LAYER";
-            //            final GPolygon2DLayer layer = new GPolygon2DLayer(layerName, features);
-            //
-            //            application.getLayerList().add(layer);
+            createNewLayer(application);
          }
       };
 
@@ -121,6 +119,35 @@ public class GPolygon2DModule
    @Override
    public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application,
                                                        final IGlobeLayer layer) {
+      if (layer instanceof IGlobeVector2Layer) {
+         @SuppressWarnings("unchecked")
+         final IGlobeVector2Layer<? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> vectorLayer = (IGlobeVector2Layer<? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer;
+         final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features = vectorLayer.getFeaturesCollection();
+
+         if ((features != null) && features.isEditable()) {
+            final GCheckBoxLayerAction editAction = new GCheckBoxLayerAction("Edit", application.getIcon("edit.png"), true, false) {
+               @Override
+               public boolean isVisible() {
+                  return (layer instanceof IGlobeVector2Layer)
+                         && ((IGlobeVector2Layer) layer).getFeaturesCollection().isEditable();
+               }
+
+
+               @Override
+               public void execute() {
+                  if (isSelected()) {
+                     startEditionOfLayer(vectorLayer);
+                  }
+                  else {
+                     stopEditionOfLayer(vectorLayer);
+                  }
+               }
+            };
+
+            return Arrays.asList(editAction);
+         }
+      }
+
       return null;
    }
 
@@ -182,7 +209,7 @@ public class GPolygon2DModule
 
                final GPolygon2DLayer layer = new GPolygon2DLayer(file.getName(), features);
                //               layer.setShowExtents(true);
-               application.getLayerList().add(layer);
+               application.addLayer(layer);
 
                layer.doDefaultAction(application);
             }
@@ -244,6 +271,51 @@ public class GPolygon2DModule
       //      fileChooser.setSelectedFile(new File(new File(fileName).getName()));
 
       return fileChooser;
+   }
+
+
+   private void createNewLayer(final IGlobeApplication application) {
+      final GProjection projection = GProjection.EPSG_4326;
+      final List<GField> fields = Collections.emptyList();
+      final List<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>> featuresList = Collections.emptyList();
+      final String uniqueID = null;
+
+      final IGlobeMutableFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features = new GListMutableFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>(
+               projection, fields, featuresList, uniqueID);
+
+      final String layerName = getLayerName(application);
+      final GPolygon2DLayer layer = new GPolygon2DLayer(layerName, features);
+
+      application.addLayer(layer);
+   }
+
+
+   private static String getLayerName(final IGlobeApplication application) {
+
+      final String answer = (String) JOptionPane.showInputDialog(application.getFrame(),
+               application.getTranslation("Enter the name for the new layer"), application.getTranslation("Vectorial Layer"),
+               JOptionPane.PLAIN_MESSAGE, application.getIcon("new-vectorial.png"), null,
+               application.getTranslation(DEFAULT_LAYER_NAME));
+
+      if ((answer != null) && !answer.trim().isEmpty()) {
+         return answer.trim();
+      }
+
+      return application.getTranslation(DEFAULT_LAYER_NAME);
+   }
+
+
+   private void stopEditionOfLayer(final IGlobeVector2Layer<? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> layer) {
+      System.out.println("Stopping edition of: " + layer);
+   }
+
+
+   private void startEditionOfLayer(final IGlobeVector2Layer<? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> layer) {
+      System.out.println("Starting edition of: " + layer);
+
+      //      final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features = layer.getFeaturesCollection();
+
+      final int ______Diego_at_work;
    }
 
 

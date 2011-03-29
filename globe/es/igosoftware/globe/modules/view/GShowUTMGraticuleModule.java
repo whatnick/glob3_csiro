@@ -56,8 +56,6 @@ public class GShowUTMGraticuleModule
          extends
             GAbstractGlobeModule {
 
-   private boolean _isActive = false;
-
 
    @Override
    public String getDescription() {
@@ -70,18 +68,13 @@ public class GShowUTMGraticuleModule
 
       final IGenericAction graticule = new GCheckBoxGenericAction("Show UTM Graticule", ' ', null, IGenericAction.MenuArea.VIEW,
                false, false) {
-
          @Override
          public void execute() {
-
-            _isActive = !_isActive;
             final List<Layer> layers = application.getModel().getLayers().getLayersByClass(UTMGraticuleLayer.class);
             if (layers.size() != 0) {
-               layers.get(0).setEnabled(_isActive);
+               layers.get(0).setEnabled(isSelected());
             }
-
          }
-
       };
 
       //      return new IGenericAction[] { graticule };
