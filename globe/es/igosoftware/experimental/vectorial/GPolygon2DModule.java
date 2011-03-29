@@ -154,15 +154,16 @@ public class GPolygon2DModule
    public GPolygon2DLayer addNewLayer(final IGlobeApplication application,
                                       final ILayerInfo layerInfo) {
 
-      final JFileChooser fileChooser = createFileChooser(application);
-
-      final int returnVal = fileChooser.showOpenDialog(application.getFrame());
-      if (returnVal == JFileChooser.APPROVE_OPTION) {
-         final File selectedFile = fileChooser.getSelectedFile();
-         if (selectedFile != null) {
-            openFile(selectedFile, application);
-         }
-      }
+      //      final JFileChooser fileChooser = createFileChooser(application);
+      //
+      //      final int returnVal = fileChooser.showOpenDialog(application.getFrame());
+      //      if (returnVal == JFileChooser.APPROVE_OPTION) {
+      //         final File selectedFile = fileChooser.getSelectedFile();
+      //         if (selectedFile != null) {
+      //            openFile(selectedFile, application);
+      //         }
+      //      }
+      openFromDataBase(application);
 
       return null;
    }
@@ -246,5 +247,44 @@ public class GPolygon2DModule
       return fileChooser;
    }
 
+
+   private void openFromDataBase(final IGlobeApplication application) {
+
+      final Thread worker = new Thread("Postgis vectorial layer loader") {
+         @Override
+         public void run() {
+            final int TODO_read_projection_or_ask_user;
+            final GProjection projection = GProjection.EPSG_4326;
+
+            try {
+               final IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features = GPostgisLoader.readFeatures(
+                        application, projection);
+
+               final GPolygon2DLayer layer = new GPolygon2DLayer("nombrefichero", features);
+               //               layer.setShowExtents(true);
+               application.getLayerList().add(layer);
+
+               layer.doDefaultAction(application);
+            }
+            catch (final IOException e) {
+               SwingUtilities.invokeLater(new Runnable() {
+                  @Override
+                  public void run() {
+                     JOptionPane.showMessageDialog(application.getFrame(),
+                              "Error opening data base" + "\n\n " + e.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                  }
+               });
+            }
+            catch (final Exception e) {
+               // TODO Auto-generated catch block
+               e.printStackTrace();
+            }
+         }
+      };
+
+      worker.setDaemon(true);
+      worker.setPriority(Thread.MIN_PRIORITY);
+      worker.start();
+   }
 
 }
