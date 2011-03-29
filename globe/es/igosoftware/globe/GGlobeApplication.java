@@ -289,9 +289,10 @@ public abstract class GGlobeApplication
    }
 
 
-   private final IGlobeModule[]                                                     _modules;
+   protected final IGlobeModule[]                                                   _modules;
    private final WorldWindowGLCanvas                                                _wwGLCanvas;
    private JFrame                                                                   _frame;
+
 
    // UI elements, they must be final
    private JMenuBar                                                                 _menubar;
@@ -1196,6 +1197,15 @@ public abstract class GGlobeApplication
       german.put("Navigation", "Navigation");
       german.put("Help", "Hilfe");
       translations.put("de", german);
+
+      final HashMap<String, String> portugese = new HashMap<String, String>();
+      german.put("Exit", "Sair");
+      german.put("File", "Arquivo");
+      german.put("View", "Vista");
+      german.put("Analysis", "Análise");
+      german.put("Navigation", "Navegação");
+      german.put("Help", "Ajuda");
+      translations.put("pt", portugese);
 
 
       return translations;
