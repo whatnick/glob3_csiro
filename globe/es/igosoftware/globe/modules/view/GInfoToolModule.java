@@ -56,7 +56,6 @@ public class GInfoToolModule
          extends
             GAbstractGlobeModule {
 
-   private boolean           _isActive = false;
    private GInfoToolListener _listener;
 
 
@@ -74,8 +73,7 @@ public class GInfoToolModule
 
          @Override
          public void execute() {
-            _isActive = !_isActive;
-            if (!_isActive) {
+            if (isSelected()) {
                application.getWorldWindowGLCanvas().removeMouseListener(_listener);
             }
             else {

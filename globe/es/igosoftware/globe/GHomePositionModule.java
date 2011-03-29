@@ -154,7 +154,7 @@ public class GHomePositionModule
       super.initialize(application);
 
       if (_gotoToHomeOnStartup) {
-         application.getLayerList().add(new GOnFirstRenderLayer() {
+         application.addLayer(new GOnFirstRenderLayer() {
             @Override
             protected void execute(final DrawContext dc) {
                doIt(application);

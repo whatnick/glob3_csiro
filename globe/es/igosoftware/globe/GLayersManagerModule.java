@@ -40,8 +40,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -55,7 +53,6 @@ import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
@@ -82,7 +79,6 @@ import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GPair;
 import es.igosoftware.util.GTriplet;
-import es.igosoftware.utils.GSwingUtils;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.layers.LayerList;
 
@@ -286,7 +282,16 @@ public class GLayersManagerModule
 
          @Override
          public void execute() {
-            application.getLayerList().remove(layer);
+            final String[] options = { application.getTranslation("Yes"), application.getTranslation("No") };
+            final String title = application.getTranslation("Layer: ") + layer.getName();
+            final String message = application.getTranslation("Are you sure to remove the layer?");
+
+            final int answer = JOptionPane.showOptionDialog(application.getFrame(), message, title, JOptionPane.YES_NO_OPTION,
+                     JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+
+            if (answer == 0) {
+               application.removeLayer(layer);
+            }
          }
       };
 
@@ -548,16 +553,8 @@ public class GLayersManagerModule
       final JPopupMenu menu = new JPopupMenu();
       menu.setLightWeightPopupEnabled(false);
 
-
-      for (final IGlobeModule module : application.getModules()) {
-         if (module != null) {
-            createLayerActionsMenuItems(application, menu, module.getLayerActions(application, layer));
-         }
-      }
-
-      final List<? extends ILayerAction> layerActions = (layer == null) ? null : layer.getLayerActions(application);
-      createLayerActionsMenuItems(application, menu, layerActions);
-
+      final List<List<? extends ILayerAction>> layerActionsGroups = application.getLayerActionsGroups(layer);
+      createLayerActionsMenuItems(application, menu, layerActionsGroups);
 
       final Point pt = SwingUtilities.convertPoint(event.getComponent(), event.getPoint(), list);
       menu.show(list, pt.x, pt.y);
@@ -566,32 +563,27 @@ public class GLayersManagerModule
 
    private void createLayerActionsMenuItems(final IGlobeApplication application,
                                             final JPopupMenu menu,
-                                            final List<? extends ILayerAction> layersActions) {
-      if (layersActions == null) {
-         return;
-      }
+                                            final List<List<? extends ILayerAction>> layersActionsGroups) {
 
-      boolean firstActionOnMenu = true;
-      for (final ILayerAction layerAction : layersActions) {
-         if (layerAction.isVisible()) {
-            final JMenuItem menuItem = new JMenuItem(application.getTranslation(layerAction.getLabel()), layerAction.getIcon());
+      for (final List<? extends ILayerAction> layerActions : layersActionsGroups) {
+         if (layerActions == null) {
+            continue;
+         }
 
-            menuItem.addActionListener(new ActionListener() {
-               @Override
-               public void actionPerformed(final ActionEvent e) {
-                  layerAction.execute();
+         boolean firstActionOnMenu = true;
+         for (final ILayerAction layerAction : layerActions) {
+            if (layerAction.isVisible()) {
+               final JMenuItem menuItem = layerAction.createMenuWidget(application);
+
+               if (firstActionOnMenu) {
+                  firstActionOnMenu = false;
+                  if (menu.getComponents().length > 0) {
+                     menu.addSeparator();
+                  }
                }
-            });
-            menuItem.setEnabled(layerAction.isEnabled());
 
-            if (firstActionOnMenu) {
-               firstActionOnMenu = false;
-               if (menu.getComponents().length > 0) {
-                  menu.addSeparator();
-               }
+               menu.add(menuItem);
             }
-
-            menu.add(menuItem);
          }
       }
    }
@@ -636,49 +628,32 @@ public class GLayersManagerModule
       toolbar.setBorder(BorderFactory.createEmptyBorder());
       toolbar.setFloatable(false);
 
-
-      for (final IGlobeModule module : application.getModules()) {
-         if (module != null) {
-            createLayerActionsToolbarItems(application, toolbar, module.getLayerActions(application, layer));
-         }
-      }
-
-      createLayerActionsToolbarItems(application, toolbar, layer.getLayerActions(application));
+      createLayerActionsToolbarItems(application, toolbar, application.getLayerActionsGroups(layer));
 
       if (toolbar.getComponentCount() > 0) {
          _layerPropertiesPanel.add(toolbar, "growx, wrap, span 2");
       }
 
-
-      for (final IGlobeModule module : application.getModules()) {
-         if (module != null) {
-            createAttributesWidgets(application, layer, module.getLayerAttributes(application, layer));
-         }
-      }
-
-      createAttributesWidgets(application, layer, layer.getLayerAttributes(application));
+      createAttributesWidgets(application, layer, application.getLayerAttributesGroups(layer));
    }
 
 
    private void createLayerActionsToolbarItems(final IGlobeApplication application,
                                                final JToolBar toolbar,
-                                               final List<? extends ILayerAction> layersActions) {
-      if (layersActions == null) {
-         return;
-      }
+                                               final List<List<? extends ILayerAction>> layersActionsGroups) {
+      for (final List<? extends ILayerAction> layerActions : layersActionsGroups) {
 
-      for (final ILayerAction layerAction : layersActions) {
-         if (layerAction.isShowOnToolBar() && layerAction.isVisible()) {
-            final JButton button = GSwingUtils.createToolbarButton(layerAction.getIcon(),
-                     application.getTranslation(layerAction.getLabel()), new ActionListener() {
-                        @Override
-                        public void actionPerformed(final ActionEvent e) {
-                           layerAction.execute();
-                        }
-                     });
+         if (layerActions == null) {
+            continue;
+         }
 
-            button.setEnabled(layerAction.isEnabled());
-            toolbar.add(button);
+         for (final ILayerAction layerAction : layerActions) {
+            if (layerAction.isShowOnToolBar() && layerAction.isVisible()) {
+               final Component widget = layerAction.createToolbarWidget(application);
+               if (widget != null) {
+                  toolbar.add(widget);
+               }
+            }
          }
       }
    }
@@ -686,45 +661,47 @@ public class GLayersManagerModule
 
    private void createAttributesWidgets(final IGlobeApplication application,
                                         final IGlobeLayer layer,
-                                        final List<? extends ILayerAttribute<?>> layerAttributes) {
-      if (layerAttributes == null) {
-         return;
-      }
+                                        final List<List<? extends ILayerAttribute<?>>> layerAttributesGroups) {
 
-      boolean firstAttributeOnPanel = true;
-
-      for (final ILayerAttribute<?> attribute : layerAttributes) {
-         if (!attribute.isVisible()) {
+      for (final List<? extends ILayerAttribute<?>> layerAttributes : layerAttributesGroups) {
+         if (layerAttributes == null) {
             continue;
          }
 
-         final GPair<Component, EventListener> widget = attribute.createWidget(application, layer);
-         if (widget == null) {
-            continue;
-         }
+         boolean firstAttributeOnPanel = true;
+
+         for (final ILayerAttribute<?> attribute : layerAttributes) {
+            if (!attribute.isVisible()) {
+               continue;
+            }
+
+            final GPair<Component, EventListener> widget = attribute.createWidget(application, layer);
+            if (widget == null) {
+               continue;
+            }
 
 
-         if (firstAttributeOnPanel) {
-            firstAttributeOnPanel = false;
-            final Component[] components = _layerPropertiesPanel.getComponents();
-            if ((components.length > 0) && (!(components[components.length - 1] instanceof JToolBar))) {
-               _layerPropertiesPanel.add(new JSeparator(SwingConstants.HORIZONTAL), "growx, wrap, span 2");
+            if (firstAttributeOnPanel) {
+               firstAttributeOnPanel = false;
+               final Component[] components = _layerPropertiesPanel.getComponents();
+               if ((components.length > 0) && (!(components[components.length - 1] instanceof JToolBar))) {
+                  _layerPropertiesPanel.add(new JSeparator(SwingConstants.HORIZONTAL), "growx, wrap, span 2");
+               }
+            }
+
+            _widgetsInLayerPropertiesPanel.add(new GTriplet<IGlobeLayer, ILayerAttribute<?>, GPair<Component, EventListener>>(
+                     layer, attribute, widget));
+            final String label = attribute.getLabel();
+            if (label == null) {
+               //            _layerPropertiesPanel.add(widget._first, "wrap, gap 3, span 2");
+               _layerPropertiesPanel.add(widget._first, "growx, wrap, span 2");
+            }
+            else {
+               _layerPropertiesPanel.add(new JLabel(application.getTranslation(label)), "gap 3");
+               _layerPropertiesPanel.add(widget._first, "left, wrap");
             }
          }
-
-         _widgetsInLayerPropertiesPanel.add(new GTriplet<IGlobeLayer, ILayerAttribute<?>, GPair<Component, EventListener>>(layer,
-                  attribute, widget));
-         final String label = attribute.getLabel();
-         if (label == null) {
-            //            _layerPropertiesPanel.add(widget._first, "wrap, gap 3, span 2");
-            _layerPropertiesPanel.add(widget._first, "growx, wrap, span 2");
-         }
-         else {
-            _layerPropertiesPanel.add(new JLabel(application.getTranslation(label)), "gap 3");
-            _layerPropertiesPanel.add(widget._first, "left, wrap");
-         }
       }
-
    }
 
 

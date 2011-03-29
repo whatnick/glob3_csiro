@@ -65,7 +65,7 @@ import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.ILayerFactoryModule;
 import es.igosoftware.globe.ILayerInfo;
 import es.igosoftware.globe.actions.GButtonGenericAction;
-import es.igosoftware.globe.actions.GButtonLayerAction;
+import es.igosoftware.globe.actions.GCheckBoxLayerAction;
 import es.igosoftware.globe.actions.IGenericAction;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
@@ -125,7 +125,7 @@ public class GPolygon2DModule
          final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features = vectorLayer.getFeaturesCollection();
 
          if ((features != null) && features.isEditable()) {
-            final GButtonLayerAction editAction = new GButtonLayerAction("Edit", application.getIcon("edit.png"), true) {
+            final GCheckBoxLayerAction editAction = new GCheckBoxLayerAction("Edit", application.getIcon("edit.png"), true, false) {
                @Override
                public boolean isVisible() {
                   return (layer instanceof IGlobeVectorLayer) && ((IGlobeVectorLayer) layer).getFeaturesCollection().isEditable();
@@ -134,7 +134,12 @@ public class GPolygon2DModule
 
                @Override
                public void execute() {
-                  editLayer(layer);
+                  if (isSelected()) {
+                     startEditionOfLayer(layer);
+                  }
+                  else {
+                     stopEditionOfLayer(layer);
+                  }
                }
             };
 
@@ -203,7 +208,7 @@ public class GPolygon2DModule
 
                final GPolygon2DLayer layer = new GPolygon2DLayer(file.getName(), features);
                //               layer.setShowExtents(true);
-               application.getLayerList().add(layer);
+               application.addLayer(layer);
 
                layer.doDefaultAction(application);
             }
@@ -280,7 +285,7 @@ public class GPolygon2DModule
       final String layerName = getLayerName(application);
       final GPolygon2DLayer layer = new GPolygon2DLayer(layerName, features);
 
-      application.getLayerList().add(layer);
+      application.addLayer(layer);
    }
 
 
@@ -291,7 +296,7 @@ public class GPolygon2DModule
                JOptionPane.PLAIN_MESSAGE, application.getIcon("new-vectorial.png"), null,
                application.getTranslation(DEFAULT_LAYER_NAME));
 
-      if ((answer != null) && (answer.length() > 0)) {
+      if ((answer != null) && !answer.trim().isEmpty()) {
          return answer.trim();
       }
 
@@ -299,16 +304,22 @@ public class GPolygon2DModule
    }
 
 
-   private void editLayer(final IGlobeLayer layer) {
-      if (layer instanceof IGlobeVectorLayer) {
-         @SuppressWarnings("unchecked")
-         final IGlobeVectorLayer<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> vectorLayer = (IGlobeVectorLayer<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer;
+   private void stopEditionOfLayer(final IGlobeLayer layer) {
+      System.out.println("Stopping edition of: " + layer);
+   }
 
-         final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features = vectorLayer.getFeaturesCollection();
 
-         final int ______Diego_at_work;
-         System.out.println("Edit layer! " + layer);
-      }
+   private void startEditionOfLayer(final IGlobeLayer layer) {
+      System.out.println("Starting edition of: " + layer);
+
+      //      if (layer instanceof IGlobeVectorLayer) {
+      //         @SuppressWarnings("unchecked")
+      //         final IGlobeVectorLayer<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> vectorLayer = (IGlobeVectorLayer<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer;
+      //
+      //         final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features = vectorLayer.getFeaturesCollection();
+      //
+      //         final int ______Diego_at_work;
+      //      }
    }
 
 

@@ -437,7 +437,7 @@ public class GPointsCloudModule
       //      _layer.setDynamicPointSize(false);
       //      _layer.setColorFromElevation(true);
 
-      application.getLayerList().add(layer);
+      application.addLayer(layer);
 
       return layer;
    }

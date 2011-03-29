@@ -168,7 +168,7 @@ public class GMultidimensionalDataModule
 
 
       final GMultidimensionalViewerLayer layer = new GMultidimensionalViewerLayer(data);
-      application.getLayerList().add(layer);
+      application.addLayer(layer);
       return layer;
    }
 

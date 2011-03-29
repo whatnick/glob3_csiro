@@ -36,70 +36,68 @@
 
 package es.igosoftware.globe.actions;
 
-import javax.swing.Icon;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-import es.igosoftware.globe.GGlobeComponent;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JMenuItem;
+
+import es.igosoftware.globe.IGlobeApplication;
+import es.igosoftware.utils.GSwingUtils;
 
 
 public abstract class GButtonLayerAction
          extends
-            GGlobeComponent
-         implements
-            ILayerAction {
+            GLayerAction {
 
 
-   private final String  _label;
-   private final char    _mnemonic;
-   private final Icon    _icon;
-   private final boolean _showOnToolBar;
-
-
-   public GButtonLayerAction(final String label,
-                             final Icon icon,
-                             final boolean showOnToolBar) {
-      this(label, ' ', icon, showOnToolBar);
+   protected GButtonLayerAction(final String label,
+                                final char mnemonic,
+                                final Icon icon,
+                                final boolean showOnToolBar) {
+      super(label, mnemonic, icon, showOnToolBar);
    }
 
 
-   public GButtonLayerAction(final String label,
-                             final char mnemonic,
-                             final Icon icon,
-                             final boolean showOnToolBar) {
-      super();
-      _label = label;
-      _mnemonic = mnemonic;
-      _icon = icon;
-      _showOnToolBar = showOnToolBar;
+   protected GButtonLayerAction(final String label,
+                                final Icon icon,
+                                final boolean showOnToolBar) {
+      super(label, icon, showOnToolBar);
    }
 
 
    @Override
-   public Icon getIcon() {
-      return _icon;
+   public Component createToolbarWidget(final IGlobeApplication application) {
+      final JButton button = GSwingUtils.createToolbarButton(getIcon(), application.getTranslation(getLabel()),
+               new ActionListener() {
+                  @Override
+                  public void actionPerformed(final ActionEvent e) {
+                     execute();
+                  }
+               });
+
+      button.setEnabled(isEnabled());
+
+      return button;
    }
 
 
    @Override
-   public String getLabel() {
-      return _label;
+   public JMenuItem createMenuWidget(final IGlobeApplication application) {
+      final JMenuItem menuItem = new JMenuItem(application.getTranslation(getLabel()), getIcon());
+
+      menuItem.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(final ActionEvent e) {
+            execute();
+         }
+      });
+      menuItem.setEnabled(isEnabled());
+
+      return menuItem;
    }
 
-
-   @Override
-   public char getMnemonic() {
-      return _mnemonic;
-   }
-
-
-   @Override
-   public boolean isEnabled() {
-      return true;
-   }
-
-
-   @Override
-   public boolean isShowOnToolBar() {
-      return _showOnToolBar;
-   }
 
 }
