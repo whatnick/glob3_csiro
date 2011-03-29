@@ -79,29 +79,17 @@ public class GPanoramicLayer
 
 
    private final String           _name;
-   private final List<GPanoramic> _panoramics     = new ArrayList<GPanoramic>();
+   private final List<GPanoramic> _panoramics    = new ArrayList<GPanoramic>();
 
-   //private final List<Sphere>     _panoramicsBounds = new ArrayList<Sphere>();
-
-   //private final GElevationAnchor _anchor;
-   //   private Globe                  _lastGlobe;
-   //   private double                 _lastVerticalExaggeration;
-   //   private Frustum                _lastFrustum;
    private List<PickListener>     _pickListeners;
 
-   private final Set<Layer>       _hiddenLayers   = new HashSet<Layer>();
+   private final Set<Layer>       _hiddenLayers  = new HashSet<Layer>();
    private boolean                _hasHiddenLayers;
-   private boolean                _isInitialized  = false;
-
-   private static final double    DEFAULT_OPACITY = 0.75;
+   private boolean                _isInitialized = false;
 
 
    public GPanoramicLayer(final String name) {
-      //      GAssert.notNull(anchor, "anchor");
-
       _name = name;
-      //      _anchor = anchor;
-      setOpacity(DEFAULT_OPACITY);
    }
 
 
@@ -109,16 +97,6 @@ public class GPanoramicLayer
    public String getName() {
       return _name;
    }
-
-
-   //   public GElevationAnchor getElevationAnchor() {
-   //      return _anchor;
-   //   }
-   //
-   //
-   //   public Globe getGlobe() {
-   //      return _lastGlobe;
-   //   }
 
 
    public void addPanoramic(final GPanoramic panoramic) {
@@ -172,7 +150,6 @@ public class GPanoramicLayer
    @Override
    public void redraw() {
       firePropertyChange(AVKey.LAYER, null, this);
-
    }
 
 
