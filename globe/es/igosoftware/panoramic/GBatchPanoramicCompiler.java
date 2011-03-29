@@ -8,16 +8,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import es.igosoftware.io.GFileName;
-import es.igosoftware.panoramic.planar.GPlanarPanoramicCompiler;
+import es.igosoftware.utils.GPanoramicCompiler;
 
 
-public class GBatchPlanarPanoramicCompiler {
-
+public class GBatchPanoramicCompiler {
 
    public static void main(final String[] args) {
 
 
-      System.out.println("Batch Planar Panoramic Compiler 0.1");
+      System.out.println("Batch  Panoramic Compiler 0.1");
       System.out.println("----------------------\n");
       if ((args.length != 2) && (args.length != 3)) {
          //logSevere("\tInvalid arguments: SourceImageDirectorName and OutputDirectoryName are mandatory DEBUGFLAG is optional");
@@ -72,20 +71,22 @@ public class GBatchPlanarPanoramicCompiler {
 
       //call GPlanarPanoramicCompiler
       for (final String fileName : imagesNames) {
+         System.out.println("first file: " + fileName);
 
          if (!isWorking) {
             isWorking = true;
             if (fileName.endsWith(".jpg")) {
 
+
                try {
-                  System.out.println("calling GPlanarPanoramicCompiler.processImage");
-                  GPlanarPanoramicCompiler.processImage(GFileName.fromParentAndParts(inDir, fileName), outputDirectoryName,
-                           Integer.MAX_VALUE);
+                  System.out.println("calling processImage");
+                  GPanoramicCompiler.process(GFileName.fromParentAndParts(inDir, fileName), outputDirectoryName, false);
                }
                catch (final IOException e) {
                   e.printStackTrace();
                }
                finally {
+                  System.out.println("feddich!");
                   isWorking = false;
                }
             }
@@ -94,10 +95,7 @@ public class GBatchPlanarPanoramicCompiler {
                isWorking = false;
             }
          }
-
       }
-
-
    }
 
 }

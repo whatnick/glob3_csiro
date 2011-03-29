@@ -303,10 +303,13 @@ public class GPanoramicCompiler {
 
 
    public static void process(final GFileName sourceImage,
-                              final GFileName outputDirectoryName,
+                              final GFileName outputBaseDirectoryName,
                               final boolean debug) throws IOException {
-      logInfo("Cleaning directory \"" + outputDirectoryName + "\"");
-      GIOUtils.assureEmptyDirectory(outputDirectoryName, false);
+
+      final GFileName outputDirectory = GFileName.fromParentAndParts(outputBaseDirectoryName, sourceImage.asFile().getName());
+
+      logInfo("Cleaning directory \"" + outputDirectory + "\"");
+      GIOUtils.assureEmptyDirectory(outputDirectory, false);
 
       logInfo("Reading image \"" + sourceImage + "\"");
 
@@ -329,10 +332,10 @@ public class GPanoramicCompiler {
       LOGGER.increaseIdentationLevel();
 
 
-      saveZoomLevels(outputDirectoryName, zoomLevels);
+      saveZoomLevels(outputDirectory, zoomLevels);
 
       for (final ZoomLevel level : zoomLevels._levels) {
-         processLevel(level, image, outputDirectoryName, debug);
+         processLevel(level, image, outputDirectory, debug);
       }
       LOGGER.decreaseIdentationLevel();
 
