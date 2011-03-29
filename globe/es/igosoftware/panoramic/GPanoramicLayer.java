@@ -44,7 +44,6 @@ import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.globe.layers.GVector2RenderingTheme;
-import es.igosoftware.globe.layers.I3DContentCollectionLayer;
 import es.igosoftware.globe.view.GBasicOrbitViewLimits;
 import es.igosoftware.globe.view.GInputState;
 import es.igosoftware.globe.view.GPanoramicViewLimits;
@@ -76,8 +75,7 @@ public class GPanoramicLayer
          extends
             AbstractLayer
          implements
-            IGlobeVectorLayer,
-            I3DContentCollectionLayer {
+            IGlobeVectorLayer {
 
 
    private final String           _name;

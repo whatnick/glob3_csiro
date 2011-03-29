@@ -627,8 +627,8 @@ public class GPanoramic
    }
 
 
-   public void enter(final GCustomView view,
-                     final GGlobeApplication application) {
+   public void activate(final GCustomView view,
+                        final GGlobeApplication application) {
 
       if (!view.hasCameraState()) {
          view.saveCameraState();
@@ -638,10 +638,18 @@ public class GPanoramic
       view.setInputState(GInputState.PANORAMICS);
       final GPanoramicViewLimits viewLimits = new GPanoramicViewLimits();
       view.setOrbitViewLimits(viewLimits);
+
+
       hideOtherLayers(application, this._layer);
       hideOtherPanoramics(this);
 
       view.setFieldOfView(Angle.fromDegrees(120));
+
+      if (_activationListeners != null) {
+         for (final GPanoramic.ActivationListener listener : _activationListeners) {
+            listener.activated(this);
+         }
+      }
 
    }
 
@@ -662,8 +670,14 @@ public class GPanoramic
    }
 
 
-   public void exit(final GCustomView view,
-                    final IGlobeApplication application) {
+   public void deactivate(final GCustomView view,
+                          final IGlobeApplication application) {
+
+      if (_activationListeners != null) {
+         for (final GPanoramic.ActivationListener listener : _activationListeners) {
+            listener.deactivated(this);
+         }
+      }
 
    }
 
@@ -896,6 +910,7 @@ public class GPanoramic
          }
 
          final GL gl = dc.getGL();
+         //TODO: transparency or not
          gl.glCallList(_displayList);
 
          if (texture != null) {
