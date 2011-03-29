@@ -289,7 +289,7 @@ public abstract class GGlobeApplication
    }
 
 
-   protected final IGlobeModule[]                                                   _modules;
+   private final IGlobeModule[]                                                     _modules;
    private final WorldWindowGLCanvas                                                _wwGLCanvas;
    private JFrame                                                                   _frame;
 
