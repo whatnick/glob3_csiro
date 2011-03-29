@@ -65,7 +65,7 @@ public abstract class GCheckBoxLayerAction
 
       final char mnemonic = getMnemonic();
       if (mnemonic != ' ') {
-         action.putValue(Action.MNEMONIC_KEY, mnemonic);
+         action.putValue(Action.MNEMONIC_KEY, Integer.valueOf(mnemonic));
       }
 
       action.setEnabled(isEnabled());
@@ -76,7 +76,6 @@ public abstract class GCheckBoxLayerAction
 
    @Override
    public Component createToolbarWidget(final IGlobeApplication application) {
-      //      return new JCheckBox(_action);
       return new JToggleButton(_action);
    }
 
