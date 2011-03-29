@@ -61,6 +61,7 @@ import es.igosoftware.globe.GAbstractGlobeModule;
 import es.igosoftware.globe.GLayerInfo;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
+import es.igosoftware.globe.IGlobeVector2Layer;
 import es.igosoftware.globe.ILayerFactoryModule;
 import es.igosoftware.globe.ILayerInfo;
 import es.igosoftware.globe.actions.GButtonGenericAction;

@@ -39,7 +39,6 @@ import com.vividsolutions.jts.geom.Point;
 
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
-import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.features.GField;
 import es.igosoftware.euclid.features.GGlobeFeature;
@@ -98,7 +97,7 @@ public class WWVectorLayer
       _projection = projection;
 
       //Le estoy pasando un null porque no se como hacer esto...
-      _features = new GListMutableFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>>(
+      _features = new GListMutableFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>(
                projection, fields, null, GIOUtils.getUniqueID(filename.asFile()));
    }
 
@@ -118,10 +117,10 @@ public class WWVectorLayer
    public void addFeature(final Geometry jtsGeometry,
                           final Object[] values) {
       if (_features instanceof IGlobeMutableFeatureCollection) {
-         final GListMutableFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>> mutable = (GListMutableFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>>) _features;
-         for (final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> euclidGeometry : GJTSUtils.toEuclid(jtsGeometry)) {
-            mutable.add(new GGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>>(euclidGeometry,
-                     Arrays.asList(values)));
+         final GListMutableFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> mutable = (GListMutableFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) _features;
+         for (final IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>> euclidGeometry : GJTSUtils.toEuclid(jtsGeometry)) {
+            mutable.add(new GGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>(
+                     euclidGeometry, Arrays.asList(values)));
          }
       }
 

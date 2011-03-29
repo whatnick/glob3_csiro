@@ -260,10 +260,10 @@ public class GGlobeDemo
       //         e.printStackTrace();
       //      }
 
-      return new IGlobeModule[] { homePositionModule, new GLayersManagerModule(), new GPolygon2DModule(),
-               new GFullScreenModule(), pointsCloudModule, new GAnaglyphViewerModule(false), new GStatisticsModule(),
-               new GFlatWorldModule(), new GShowLatLonGraticuleModule(), new GShowUTMGraticuleModule(),
-               new GMultidimensionalDataModule(_multidimentionaldata), new GShowMeasureToolModule() };
+      return new IGlobeModule[] { homePositionModule, new GLayersManagerModule(), new GPolygon2DModule(), pointsCloudModule,
+               new GMultidimensionalDataModule(_multidimentionaldata), new GFlatWorldModule(), new GShowLatLonGraticuleModule(),
+               new GShowUTMGraticuleModule(), new GShowMeasureToolModule(), new GFullScreenModule(),
+               new GAnaglyphViewerModule(false), new GStatisticsModule() };
    }
 
 

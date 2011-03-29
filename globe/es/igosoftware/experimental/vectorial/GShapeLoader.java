@@ -55,7 +55,6 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineString;
 
 import es.igosoftware.euclid.IBoundedGeometry;
-import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.features.GField;
 import es.igosoftware.euclid.features.GGlobeFeature;
@@ -301,7 +300,7 @@ public class GShapeLoader {
    }
 
 
-   private static IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> createFeature(final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> geometry,
+   private static IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> createFeature(final IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>> geometry,
                                                                                                                                       final SimpleFeature feature) {
       return new GGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>(geometry,
                feature.getAttributes());
