@@ -160,7 +160,7 @@ public class GNetCDFMultidimentionalData
    /** Default arrow length, in meters. */
    public static final double     DEFAULT_ARROW_LENGTH    = 300;
    /** Default arrow base, in meters. */
-   public static final double     DEFAULT_ARROW_BASE      = 300;
+   public static final double     DEFAULT_ARROW_BASE      = 150;
    /** Default maximum screen size of the arrowheads, in pixels. */
    public static final double     DEFAULT_MAX_SCREEN_SIZE = 20.0;
    /** The angle of the arrowhead tip. */
