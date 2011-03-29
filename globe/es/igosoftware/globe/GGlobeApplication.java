@@ -1199,12 +1199,12 @@ public abstract class GGlobeApplication
       translations.put("de", german);
 
       final HashMap<String, String> portugese = new HashMap<String, String>();
-      german.put("Exit", "Sair");
-      german.put("File", "Arquivo");
-      german.put("View", "Vista");
-      german.put("Analysis", "Análise");
-      german.put("Navigation", "Navegação");
-      german.put("Help", "Ajuda");
+      portugese.put("Exit", "Sair");
+      portugese.put("File", "Arquivo");
+      portugese.put("View", "Vista");
+      portugese.put("Analysis", "Análise");
+      portugese.put("Navigation", "Navegação");
+      portugese.put("Help", "Ajuda");
       translations.put("pt", portugese);
 
 

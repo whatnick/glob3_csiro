@@ -42,6 +42,10 @@ import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.globe.GGlobeApplication;
+import es.igosoftware.globe.IGlobeApplication;
+import es.igosoftware.globe.view.GInputState;
+import es.igosoftware.globe.view.GPanoramicViewLimits;
+import es.igosoftware.globe.view.customView.GCustomView;
 import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.io.ILoader;
@@ -175,6 +179,7 @@ public class GPanoramic
    private final Layer                                                       _layer;
    private double                                                            _currentDistanceFromEye;
 
+   private final List<Layer>                                                 _hiddenLayers           = new ArrayList<Layer>();
    private boolean                                                           _isHidden;
 
 
@@ -606,6 +611,47 @@ public class GPanoramic
    public void pick(final DrawContext dc,
                     final Point pickPoint) {
       // do nothing on pick
+   }
+
+
+   public void enter(final GCustomView view,
+                     final GGlobeApplication application) {
+
+      if (!view.hasCameraState()) {
+         view.saveCameraState();
+      }
+
+      application.jumpTo(getPosition(), 0);
+      view.setInputState(GInputState.PANORAMICS);
+      final GPanoramicViewLimits viewLimits = new GPanoramicViewLimits();
+      view.setOrbitViewLimits(viewLimits);
+      hideOtherLayers(application, this._layer);
+      hideOtherPanoramics(this);
+
+      view.setFieldOfView(Angle.fromDegrees(120));
+
+   }
+
+
+   private void hideOtherLayers(final GGlobeApplication application,
+                                final Layer visibleLayer) {
+      for (final Layer layer : application.getLayerList()) {
+         if (layer.isEnabled() && (layer != visibleLayer)) {
+            layer.setEnabled(false);
+            _hiddenLayers.add(layer);
+         }
+      }
+   }
+
+
+   private void hideOtherContents(final GPanoramic panoramic) {
+
+   }
+
+
+   public void exit(final GCustomView view,
+                    final IGlobeApplication application) {
+
    }
 
 
