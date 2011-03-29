@@ -5,10 +5,10 @@ package es.unex.s3xtante.modules.sextante.bindings;
 import java.util.ArrayList;
 
 import es.igosoftware.euclid.IBoundedGeometry;
-import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.globe.IGlobeRasterLayer;
-import es.igosoftware.globe.IGlobeVectorLayer;
+import es.igosoftware.globe.IGlobeVector2Layer;
 import es.igosoftware.util.GAssert;
 import es.unex.s3xtante.tables.Tables;
 import es.unex.sextante.core.AbstractInputFactory;
@@ -50,9 +50,9 @@ public class WWInputFactory
 
       for (int i = 0; i < layerList.size(); i++) {
          final Layer layer = layerList.get(i);
-         if (layer instanceof IGlobeVectorLayer) {
+         if (layer instanceof IGlobeVector2Layer) {
             @SuppressWarnings("unchecked")
-            final IGlobeVectorLayer<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>> globeVector2Layer = (IGlobeVectorLayer<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>>) layer;
+            final IGlobeVector2Layer<? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> globeVector2Layer = (IGlobeVector2Layer<? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer;
             obj = new WWVectorLayer(globeVector2Layer.getName(), globeVector2Layer.getFeaturesCollection());
             layers.add(obj);
          }

@@ -61,7 +61,7 @@ import es.igosoftware.globe.GAbstractGlobeModule;
 import es.igosoftware.globe.GLayerInfo;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
-import es.igosoftware.globe.IGlobeVectorLayer;
+import es.igosoftware.globe.IGlobeVector2Layer;
 import es.igosoftware.globe.ILayerFactoryModule;
 import es.igosoftware.globe.ILayerInfo;
 import es.igosoftware.globe.actions.GButtonGenericAction;
@@ -119,26 +119,27 @@ public class GPolygon2DModule
    @Override
    public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application,
                                                        final IGlobeLayer layer) {
-      if (layer instanceof IGlobeVectorLayer) {
+      if (layer instanceof IGlobeVector2Layer) {
          @SuppressWarnings("unchecked")
-         final IGlobeVectorLayer<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> vectorLayer = (IGlobeVectorLayer<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer;
+         final IGlobeVector2Layer<? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> vectorLayer = (IGlobeVector2Layer<? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer;
          final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features = vectorLayer.getFeaturesCollection();
 
          if ((features != null) && features.isEditable()) {
             final GCheckBoxLayerAction editAction = new GCheckBoxLayerAction("Edit", application.getIcon("edit.png"), true, false) {
                @Override
                public boolean isVisible() {
-                  return (layer instanceof IGlobeVectorLayer) && ((IGlobeVectorLayer) layer).getFeaturesCollection().isEditable();
+                  return (layer instanceof IGlobeVector2Layer)
+                         && ((IGlobeVector2Layer) layer).getFeaturesCollection().isEditable();
                }
 
 
                @Override
                public void execute() {
                   if (isSelected()) {
-                     startEditionOfLayer(layer);
+                     startEditionOfLayer(vectorLayer);
                   }
                   else {
-                     stopEditionOfLayer(layer);
+                     stopEditionOfLayer(vectorLayer);
                   }
                }
             };
@@ -304,22 +305,17 @@ public class GPolygon2DModule
    }
 
 
-   private void stopEditionOfLayer(final IGlobeLayer layer) {
+   private void stopEditionOfLayer(final IGlobeVector2Layer<? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> layer) {
       System.out.println("Stopping edition of: " + layer);
    }
 
 
-   private void startEditionOfLayer(final IGlobeLayer layer) {
+   private void startEditionOfLayer(final IGlobeVector2Layer<? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> layer) {
       System.out.println("Starting edition of: " + layer);
 
-      //      if (layer instanceof IGlobeVectorLayer) {
-      //         @SuppressWarnings("unchecked")
-      //         final IGlobeVectorLayer<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> vectorLayer = (IGlobeVectorLayer<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer;
-      //
-      //         final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features = vectorLayer.getFeaturesCollection();
-      //
-      //         final int ______Diego_at_work;
-      //      }
+      //      final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features = layer.getFeaturesCollection();
+
+      final int ______Diego_at_work;
    }
 
 

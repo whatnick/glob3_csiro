@@ -37,7 +37,7 @@
 package es.igosoftware.globe.layers;
 
 import es.igosoftware.euclid.IBoundedGeometry;
-import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.GVector2D;
@@ -87,12 +87,12 @@ public class GPoints2RenderingTheme
 
 
    @Override
-   protected Renderable[] getRenderables(final IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>> feature,
+   protected Renderable[] getRenderables(final IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> feature,
                                          final GProjection projection,
                                          final Globe globe) {
 
-      final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> geom = feature.getDefaultGeometry();
-      final IVector2<?> coord = geom.getBounds()._center;
+      final IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>> geom = feature.getDefaultGeometry();
+      final IVector2<?> coord = geom.getBounds().asAxisAlignedOrthotope()._center;
 
       LatLon latlon;
       if (projection.equals(GProjection.EPSG_4326)) {
