@@ -45,15 +45,13 @@ import es.igosoftware.euclid.projection.GProjection;
 
 public interface IVector<
 
-VectorT extends IVector<VectorT, ?, BoundsT>,
-
-GeometryT extends IVector<VectorT, GeometryT, BoundsT>,
+VectorT extends IVector<VectorT, BoundsT>,
 
 BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
 
 >
          extends
-            IBoundedGeometry<VectorT, GeometryT, BoundsT>
+            IBoundedGeometry<VectorT, BoundsT>
 
 {
 
@@ -161,7 +159,7 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
    public VectorT transformedBy(final GMatrix44D matrix);
 
 
-   public IVector2<?> asVector2();
+   public IVector2 asVector2();
 
 
    public VectorT previousDown();

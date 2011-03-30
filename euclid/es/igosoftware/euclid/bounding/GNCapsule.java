@@ -48,15 +48,15 @@ import es.igosoftware.util.GMath;
 
 public abstract class GNCapsule<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
-SegmentT extends GSegment<VectorT, SegmentT, ?>,
+SegmentT extends GSegment<VectorT, ?>,
 
 GeometryT extends GNCapsule<VectorT, SegmentT, GeometryT>
 
 >
          extends
-            GGeometryAbstract<VectorT, GeometryT>
+            GGeometryAbstract<VectorT>
          implements
             IBounds<VectorT, GeometryT> {
 

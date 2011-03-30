@@ -14,9 +14,9 @@ import es.igosoftware.euclid.vector.IVector2;
 
 public class GLinesStrip2D
          extends
-            GLinesStrip<IVector2<?>, GSegment2D, GLinesStrip2D, GAxisAlignedRectangle>
+            GLinesStrip<IVector2, GSegment2D, GAxisAlignedRectangle>
          implements
-            IPolygon2D<GLinesStrip2D> {
+            IPolygon2D {
 
 
    private static final long     serialVersionUID = 1L;
@@ -25,20 +25,20 @@ public class GLinesStrip2D
 
 
    public GLinesStrip2D(final boolean validate,
-                        final IVector2<?>... points) {
+                        final IVector2... points) {
       super(validate, points);
    }
 
 
    public GLinesStrip2D(final boolean validate,
-                        final List<IVector2<?>> points) {
+                        final List<IVector2> points) {
       super(validate, points);
    }
 
 
    @Override
    public boolean isSelfIntersected() {
-      final List<IVector2<?>> points = getPoints();
+      final List<IVector2> points = getPoints();
       final int pointsCount = points.size();
       for (int i = 0; i < pointsCount; ++i) {
          if (i < pointsCount - 1) {
@@ -51,23 +51,23 @@ public class GLinesStrip2D
          }
 
          final int j = (i + 1) % pointsCount;
-         final IVector2<?> iToj = points.get(j).sub(points.get(i));
-         final IVector2<?> iTojNormal = new GVector2D(iToj.y(), -iToj.x());
+         final IVector2 iToj = points.get(j).sub(points.get(i));
+         final IVector2 iTojNormal = new GVector2D(iToj.y(), -iToj.x());
          // i is the first vertex and j is the second
          final int startK = (j + 1) % pointsCount;
          int endK = (i - 1 + pointsCount) % pointsCount;
          endK += startK < endK ? 0 : startK + 1;
          int k = startK;
-         IVector2<?> iTok = points.get(k).sub(points.get(i));
+         IVector2 iTok = points.get(k).sub(points.get(i));
          boolean onLeftSide = iTok.dot(iTojNormal) >= 0;
-         IVector2<?> prevK = points.get(k);
+         IVector2 prevK = points.get(k);
          ++k;
          for (; k <= endK; ++k) {
             final int modK = k % pointsCount;
             iTok = points.get(modK).sub(points.get(i));
             if (onLeftSide != (iTok.dot(iTojNormal) >= 0)) {
-               final IVector2<?> prevKtoK = points.get(modK).sub(prevK);
-               final IVector2<?> prevKtoKNormal = new GVector2D(prevKtoK.y(), -prevKtoK.x());
+               final IVector2 prevKtoK = points.get(modK).sub(prevK);
+               final IVector2 prevKtoKNormal = new GVector2D(prevKtoK.y(), -prevKtoK.x());
                if (((points.get(i).sub(prevK).dot(prevKtoKNormal)) >= 0) != ((points.get(j).sub(prevK).dot(prevKtoKNormal)) >= 0)) {
                   return true;
                }
@@ -85,7 +85,7 @@ public class GLinesStrip2D
 
    @Override
    protected List<GSegment2D> initializeEdges() {
-      final List<IVector2<?>> points = getPoints();
+      final List<IVector2> points = getPoints();
       final int pointsCount = points.size();
 
       final GSegment2D[] edges = new GSegment2D[pointsCount];
@@ -114,10 +114,10 @@ public class GLinesStrip2D
 
 
    @Override
-   public IPolygon2D<?> createSimplified(final double capsRadiansTolerance) {
-      final LinkedList<IVector2<?>> points = new LinkedList<IVector2<?>>(getPoints());
+   public IPolygon2D createSimplified(final double capsRadiansTolerance) {
+      final LinkedList<IVector2> points = new LinkedList<IVector2>(getPoints());
 
-      List<IVector2<?>> previousPoints = new ArrayList<IVector2<?>>(points);
+      List<IVector2> previousPoints = new ArrayList<IVector2>(points);
 
       boolean changed;
       do {
@@ -135,9 +135,9 @@ public class GLinesStrip2D
 
             final GTriangle2D triangle = new GTriangle2D(points.get(prePreviousI), points.get(previousI), points.get(i));
             if (triangle.isCaps(capsRadiansTolerance)) {
-               previousPoints = new ArrayList<IVector2<?>>(points);
+               previousPoints = new ArrayList<IVector2>(points);
 
-               final IVector2<?> average = points.get(i).add(points.get(previousI)).div(2);
+               final IVector2 average = points.get(i).add(points.get(previousI)).div(2);
                points.set(i, average);
                points.remove(previousI);
 

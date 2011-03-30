@@ -50,19 +50,19 @@ import es.igosoftware.util.GProgress;
 import es.igosoftware.util.IComparatorInt;
 
 
-public abstract class GKDNode<VectorT extends IVector<VectorT, ?, ?>, VertexT extends IVertexContainer.Vertex<VectorT>> {
+public abstract class GKDNode<VectorT extends IVector<VectorT, ?>, VertexT extends IVertexContainer.Vertex<VectorT>> {
 
 
-   static <VectorT extends IVector<VectorT, ?, ?>, VertexT extends IVertexContainer.Vertex<VectorT>> GKDNode<VectorT, VertexT> createNode(final GKDTree<VectorT, VertexT> tree,
-                                                                                                                                          final GKDInnerNode<VectorT, VertexT> parent,
-                                                                                                                                          final IVertexContainer<VectorT, VertexT, ?> vertices,
-                                                                                                                                          final GAxisAlignedOrthotope<VectorT, ?> bounds,
-                                                                                                                                          final GHolder<int[]> verticesIndexes,
-                                                                                                                                          final double[][] axisValues,
-                                                                                                                                          final GProgress progress,
-                                                                                                                                          final ExecutorService executor)
-                                                                                                                                                                         throws InterruptedException,
-                                                                                                                                                                         ExecutionException {
+   static <VectorT extends IVector<VectorT, ?>, VertexT extends IVertexContainer.Vertex<VectorT>> GKDNode<VectorT, VertexT> createNode(final GKDTree<VectorT, VertexT> tree,
+                                                                                                                                       final GKDInnerNode<VectorT, VertexT> parent,
+                                                                                                                                       final IVertexContainer<VectorT, VertexT, ?> vertices,
+                                                                                                                                       final GAxisAlignedOrthotope<VectorT, ?> bounds,
+                                                                                                                                       final GHolder<int[]> verticesIndexes,
+                                                                                                                                       final double[][] axisValues,
+                                                                                                                                       final GProgress progress,
+                                                                                                                                       final ExecutorService executor)
+                                                                                                                                                                      throws InterruptedException,
+                                                                                                                                                                      ExecutionException {
 
       final int verticesIndexesSize = verticesIndexes.get().length;
 
@@ -100,21 +100,21 @@ public abstract class GKDNode<VectorT extends IVector<VectorT, ?, ?>, VertexT ex
    }
 
 
-   private static <VectorT extends IVector<VectorT, ?, ?>, VertexT extends IVertexContainer.Vertex<VectorT>> GKDInnerNode<VectorT, VertexT> creatInnerNode(final GKDTree<VectorT, VertexT> tree,
-                                                                                                                                                           final GKDInnerNode<VectorT, VertexT> parent,
-                                                                                                                                                           final IVertexContainer<VectorT, VertexT, ?> vertices,
-                                                                                                                                                           final int vertexIndex,
-                                                                                                                                                           final GAxisAlignedOrthotope<VectorT, ?> bounds,
-                                                                                                                                                           final double[][] axisValues,
-                                                                                                                                                           final byte currentLastLargestAxis,
-                                                                                                                                                           final int[] leftVerticesIndexes,
-                                                                                                                                                           final GAxisAlignedOrthotope<VectorT, ?> leftBounds,
-                                                                                                                                                           final int[] rightVerticesIndexes,
-                                                                                                                                                           final GAxisAlignedOrthotope<VectorT, ?> rightBounds,
-                                                                                                                                                           final GProgress progress,
-                                                                                                                                                           final ExecutorService executor)
-                                                                                                                                                                                          throws InterruptedException,
-                                                                                                                                                                                          ExecutionException {
+   private static <VectorT extends IVector<VectorT, ?>, VertexT extends IVertexContainer.Vertex<VectorT>> GKDInnerNode<VectorT, VertexT> creatInnerNode(final GKDTree<VectorT, VertexT> tree,
+                                                                                                                                                        final GKDInnerNode<VectorT, VertexT> parent,
+                                                                                                                                                        final IVertexContainer<VectorT, VertexT, ?> vertices,
+                                                                                                                                                        final int vertexIndex,
+                                                                                                                                                        final GAxisAlignedOrthotope<VectorT, ?> bounds,
+                                                                                                                                                        final double[][] axisValues,
+                                                                                                                                                        final byte currentLastLargestAxis,
+                                                                                                                                                        final int[] leftVerticesIndexes,
+                                                                                                                                                        final GAxisAlignedOrthotope<VectorT, ?> leftBounds,
+                                                                                                                                                        final int[] rightVerticesIndexes,
+                                                                                                                                                        final GAxisAlignedOrthotope<VectorT, ?> rightBounds,
+                                                                                                                                                        final GProgress progress,
+                                                                                                                                                        final ExecutorService executor)
+                                                                                                                                                                                       throws InterruptedException,
+                                                                                                                                                                                       ExecutionException {
       if (parent == null) {
          return new GKDInnerNode<VectorT, VertexT>(tree, null, currentLastLargestAxis, vertexIndex, vertices, bounds, leftBounds,
                   new GHolder<int[]>(leftVerticesIndexes), rightBounds, new GHolder<int[]>(rightVerticesIndexes), axisValues,
@@ -133,10 +133,10 @@ public abstract class GKDNode<VectorT extends IVector<VectorT, ?, ?>, VertexT ex
    }
 
 
-   private static <VectorT extends IVector<VectorT, ?, ?>, VertexT extends IVertexContainer.Vertex<VectorT>> GKDMonoLeafNode<VectorT, VertexT> createMonoLeafNode(final GKDTree<VectorT, VertexT> tree,
-                                                                                                                                                                  final GKDInnerNode<VectorT, VertexT> parent,
-                                                                                                                                                                  final int vertexIndex,
-                                                                                                                                                                  final GProgress progress) {
+   private static <VectorT extends IVector<VectorT, ?>, VertexT extends IVertexContainer.Vertex<VectorT>> GKDMonoLeafNode<VectorT, VertexT> createMonoLeafNode(final GKDTree<VectorT, VertexT> tree,
+                                                                                                                                                               final GKDInnerNode<VectorT, VertexT> parent,
+                                                                                                                                                               final int vertexIndex,
+                                                                                                                                                               final GProgress progress) {
       if (parent == null) {
          return new GKDMonoLeafNode<VectorT, VertexT>(null, vertexIndex, progress) {
             @Override
@@ -150,7 +150,7 @@ public abstract class GKDNode<VectorT extends IVector<VectorT, ?, ?>, VertexT ex
    }
 
 
-   //   private static <VectorT extends IVector<VectorT, ?, ?>> GKDMultipleLeafNode<VectorT> createMultipleLeafNode(final GKDTree<VectorT, VertexT> tree,
+   //   private static <VectorT extends IVector<VectorT, ?>> GKDMultipleLeafNode<VectorT> createMultipleLeafNode(final GKDTree<VectorT, VertexT> tree,
    //                                                                                                            final GKDInnerNode<VectorT, VertexT> parent,
    //                                                                                                            final GHolder<int[]> verticesIndexes,
    //                                                                                                            final GProgress progress) {
@@ -167,10 +167,10 @@ public abstract class GKDNode<VectorT extends IVector<VectorT, ?, ?>, VertexT ex
    //   }
 
 
-   private static <VectorT extends IVector<VectorT, ?, ?>, VertexT extends IVertexContainer.Vertex<VectorT>> byte sort(final IVertexContainer<VectorT, VertexT, ?> vertices,
-                                                                                                                       final int[] verticesIndexes,
-                                                                                                                       final double[][] axisValues,
-                                                                                                                       final GAxisAlignedOrthotope<VectorT, ?> bounds) {
+   private static <VectorT extends IVector<VectorT, ?>, VertexT extends IVertexContainer.Vertex<VectorT>> byte sort(final IVertexContainer<VectorT, VertexT, ?> vertices,
+                                                                                                                    final int[] verticesIndexes,
+                                                                                                                    final double[][] axisValues,
+                                                                                                                    final GAxisAlignedOrthotope<VectorT, ?> bounds) {
 
       final byte largestAxis = selectLargestAxis(bounds);
 
@@ -223,7 +223,7 @@ public abstract class GKDNode<VectorT extends IVector<VectorT, ?, ?>, VertexT ex
    }
 
 
-   //   private static <VectorT extends IVector<VectorT, ?, ?>> byte sort(final IVertexContainer<VectorT, VertexT, ?> vertices,
+   //   private static <VectorT extends IVector<VectorT, ?>> byte sort(final IVertexContainer<VectorT, VertexT, ?> vertices,
    //                                                                  final int[] verticesIndexes,
    //                                                                  final double[][] axisValues,
    //                                                                  final byte lastLargestAxis,
@@ -280,14 +280,14 @@ public abstract class GKDNode<VectorT extends IVector<VectorT, ?, ?>, VertexT ex
    //   }
 
 
-   //   private static <VectorT extends IVector<VectorT, ?, ?>> GAxisAlignedOrthotope<VectorT, ?> getBounds(final IVertexContainer<VectorT, VertexT, ?> vertices,
+   //   private static <VectorT extends IVector<VectorT, ?>> GAxisAlignedOrthotope<VectorT, ?> getBounds(final IVertexContainer<VectorT, VertexT, ?> vertices,
    //                                                                                                    final int[] verticesIndexes) {
    //      final IVertexContainer<VectorT, VertexT, ?> subvertices = vertices.createSubContainer(verticesIndexes);
    //      return subvertices.getBounds();
    //   }
 
 
-   private static <VectorT extends IVector<VectorT, ?, ?>> byte selectLargestAxis(final GAxisAlignedOrthotope<VectorT, ?> orthotope) {
+   private static <VectorT extends IVector<VectorT, ?>> byte selectLargestAxis(final GAxisAlignedOrthotope<VectorT, ?> orthotope) {
       byte largestAxis = 0;
       double largestDistance = orthotope._upper.get((byte) 0) - orthotope._lower.get((byte) 0);
 

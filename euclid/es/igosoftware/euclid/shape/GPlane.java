@@ -58,40 +58,40 @@ import es.igosoftware.util.GMath;
 
 public final class GPlane
          extends
-            GGeometryAbstract<IVector3<?>, GPlane>
+            GGeometryAbstract<IVector3>
          implements
             IBounds3D<GPlane>,
-            IInfiniteBounds<IVector3<?>, GPlane> {
+            IInfiniteBounds<IVector3, GPlane> {
 
    private static final long serialVersionUID = 1L;
 
 
-   public static GPlane getBestFitPlane(final IVector3<?>... points) throws GColinearException, GInsufficientPointsException {
+   public static GPlane getBestFitPlane(final IVector3... points) throws GColinearException, GInsufficientPointsException {
       return getBestFitPlane(GVectorUtils.getAverage3(points), points);
    }
 
 
-   public static GPlane getBestFitPlane(final List<IVector3<?>> points) throws GColinearException, GInsufficientPointsException {
+   public static GPlane getBestFitPlane(final List<IVector3> points) throws GColinearException, GInsufficientPointsException {
       return getBestFitPlane(GVectorUtils.getAverage3(points), points);
    }
 
 
-   public static GPlane getBestFitPlane(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices)
-                                                                                                                              throws GColinearException,
-                                                                                                                              GInsufficientPointsException {
+   public static GPlane getBestFitPlane(final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices)
+                                                                                                                        throws GColinearException,
+                                                                                                                        GInsufficientPointsException {
       return getBestFitPlane(null, vertices, null);
    }
 
 
-   public static GPlane getBestFitPlane(final IVector3<?> center,
-                                        final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices)
-                                                                                                                              throws GColinearException,
-                                                                                                                              GInsufficientPointsException {
+   public static GPlane getBestFitPlane(final IVector3 center,
+                                        final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices)
+                                                                                                                        throws GColinearException,
+                                                                                                                        GInsufficientPointsException {
       return getBestFitPlane(center, vertices, null);
    }
 
 
-   public static GPlane getBestFitPlane(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices,
+   public static GPlane getBestFitPlane(final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices,
                                         final int[] verticesIndexes) throws GColinearException, GInsufficientPointsException {
       return getBestFitPlane(null, vertices, verticesIndexes);
    }
@@ -108,11 +108,11 @@ public final class GPlane
     * @throws GColinearException
     * @throws GInsufficientPointsException
     */
-   public static GPlane getBestFitPlane(final IVector3<?> originalCenter,
-                                        final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> originalVertices,
+   public static GPlane getBestFitPlane(final IVector3 originalCenter,
+                                        final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> originalVertices,
                                         final int[] verticesIndexes) throws GColinearException, GInsufficientPointsException {
 
-      IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices;
+      IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices;
       if (verticesIndexes == null) {
          vertices = originalVertices;
       }
@@ -126,7 +126,7 @@ public final class GPlane
          throw new GInsufficientPointsException(vertices);
       }
 
-      final IVector3<?> center;
+      final IVector3 center;
       if (originalCenter != null) {
          center = originalCenter;
       }
@@ -144,14 +144,14 @@ public final class GPlane
       double totalY = 0;
       double totalZ = 0;
 
-      final IVector3<?> lastPoint = vertices.getPoint(pointsCount - 1);
+      final IVector3 lastPoint = vertices.getPoint(pointsCount - 1);
       double previousX = lastPoint.x();
       double previousY = lastPoint.y();
       double previousZ = lastPoint.z();
 
-      //for (final IVector3<?> current : points) {
+      //for (final IVector3 current : points) {
       for (int i = 0; i < pointsCount; i++) {
-         final IVector3<?> current = vertices.getPoint(i);
+         final IVector3 current = vertices.getPoint(i);
          final double currentX = current.x();
          final double currentY = current.y();
          final double currentZ = current.z();
@@ -173,7 +173,7 @@ public final class GPlane
          throw new GColinearException(vertices);
       }
 
-      final IVector3<?> normal = new GVector3D(normalX, normalY, normalZ).normalized();
+      final IVector3 normal = new GVector3D(normalX, normalY, normalZ).normalized();
 
       final double averageX = totalX / pointsCount;
       final double averageY = totalY / pointsCount;
@@ -191,8 +191,8 @@ public final class GPlane
     * Listing 12.2
     * 
     */
-   public static GPlane getBestFitPlane(final IVector3<?> center,
-                                        final IVector3<?>[] points) throws GColinearException, GInsufficientPointsException {
+   public static GPlane getBestFitPlane(final IVector3 center,
+                                        final IVector3[] points) throws GColinearException, GInsufficientPointsException {
       final int pointsCount = points.length;
 
       if (pointsCount < 3) {
@@ -209,12 +209,12 @@ public final class GPlane
       double totalY = 0;
       double totalZ = 0;
 
-      final IVector3<?> lastPoint = points[pointsCount - 1];
+      final IVector3 lastPoint = points[pointsCount - 1];
       double previousX = lastPoint.x();
       double previousY = lastPoint.y();
       double previousZ = lastPoint.z();
 
-      for (final IVector3<?> current : points) {
+      for (final IVector3 current : points) {
          final double currentX = current.x();
          final double currentY = current.y();
          final double currentZ = current.z();
@@ -236,7 +236,7 @@ public final class GPlane
          throw new GColinearException(points);
       }
 
-      final IVector3<?> normal = new GVector3D(normalX, normalY, normalZ).normalized();
+      final IVector3 normal = new GVector3D(normalX, normalY, normalZ).normalized();
 
       final double averageX = totalX / pointsCount;
       final double averageY = totalY / pointsCount;
@@ -254,8 +254,8 @@ public final class GPlane
     * Listing 12.2
     * 
     */
-   public static GPlane getBestFitPlane(final IVector3<?> center,
-                                        final List<IVector3<?>> points) throws GColinearException, GInsufficientPointsException {
+   public static GPlane getBestFitPlane(final IVector3 center,
+                                        final List<IVector3> points) throws GColinearException, GInsufficientPointsException {
       final int pointsCount = points.size();
 
       if (pointsCount < 3) {
@@ -272,12 +272,12 @@ public final class GPlane
       double totalY = 0;
       double totalZ = 0;
 
-      final IVector3<?> lastPoint = points.get(pointsCount - 1);
+      final IVector3 lastPoint = points.get(pointsCount - 1);
       double previousX = lastPoint.x();
       double previousY = lastPoint.y();
       double previousZ = lastPoint.z();
 
-      for (final IVector3<?> current : points) {
+      for (final IVector3 current : points) {
          final double currentX = current.x();
          final double currentY = current.y();
          final double currentZ = current.z();
@@ -299,7 +299,7 @@ public final class GPlane
          throw new GColinearException(points);
       }
 
-      final IVector3<?> normal = new GVector3D(normalX, normalY, normalZ).normalized();
+      final IVector3 normal = new GVector3D(normalX, normalY, normalZ).normalized();
 
       final double averageX = totalX / pointsCount;
       final double averageY = totalY / pointsCount;
@@ -312,19 +312,19 @@ public final class GPlane
    }
 
 
-   public final IVector3<?> _normal;
-   public final double      _d;
+   public final IVector3 _normal;
+   public final double   _d;
 
 
-   public GPlane(final IVector3<?> point0,
-                 final IVector3<?> point1,
-                 final IVector3<?> point2) throws GColinearException {
+   public GPlane(final IVector3 point0,
+                 final IVector3 point1,
+                 final IVector3 point2) throws GColinearException {
       GAssert.notNull(point0, "p0");
       GAssert.notNull(point1, "p1");
       GAssert.notNull(point2, "p2");
 
-      final IVector3<?> p1p0 = point1.sub(point0);
-      final IVector3<?> p2p0 = point2.sub(point0);
+      final IVector3 p1p0 = point1.sub(point0);
+      final IVector3 p2p0 = point2.sub(point0);
       _normal = p1p0.cross(p2p0).normalized();
       _d = -_normal.dot(point0);
 
@@ -334,7 +334,7 @@ public final class GPlane
    }
 
 
-   public GPlane(final IVector3<?> normal,
+   public GPlane(final IVector3 normal,
                  final double d) {
       GAssert.notNull(normal, "normal");
 
@@ -343,7 +343,7 @@ public final class GPlane
    }
 
 
-   public IVector3<?> getNormal() {
+   public IVector3 getNormal() {
       return _normal;
    }
 
@@ -405,13 +405,13 @@ public final class GPlane
 
 
    @Override
-   public IVector3<?> closestPoint(final IVector3<?> point) {
+   public IVector3 closestPoint(final IVector3 point) {
       return closestPointOnBoundary(point);
    }
 
 
    @Override
-   public IVector3<?> closestPointOnBoundary(final IVector3<?> point) {
+   public IVector3 closestPointOnBoundary(final IVector3 point) {
       // from Real-Time Collision Detection (Christer Ericson)
       //    page 127
 
@@ -423,7 +423,7 @@ public final class GPlane
    /**
     * Implementation note: From 3D math primer for graphics and game development (Fletcher Dunn and Ian Parberry) Page 256, 12.5.4
     */
-   public double signedDistance(final IVector3<?> point) {
+   public double signedDistance(final IVector3 point) {
       // from Real-Time Collision Detection (Christer Ericson)
       //    page 127
 
@@ -433,7 +433,7 @@ public final class GPlane
 
 
    @Override
-   public double distance(final IVector3<?> point) {
+   public double distance(final IVector3 point) {
       final double signedDistance = signedDistance(point);
       if (GMath.positiveOrZero(signedDistance)) {
          return 0;
@@ -443,20 +443,20 @@ public final class GPlane
 
 
    @Override
-   public double distanceToBoundary(final IVector3<?> point) {
+   public double distanceToBoundary(final IVector3 point) {
       return Math.abs(signedDistance(point));
    }
 
 
    @Override
-   public double squaredDistance(final IVector3<?> point) {
+   public double squaredDistance(final IVector3 point) {
       final double distance = distance(point);
       return distance * distance;
    }
 
 
    @Override
-   public double squaredDistanceToBoundary(final IVector3<?> point) {
+   public double squaredDistanceToBoundary(final IVector3 point) {
       final double distance = distanceToBoundary(point);
       return distance * distance;
    }
@@ -482,8 +482,8 @@ public final class GPlane
 
    @Override
    public boolean touchesWithBox(final GAxisAlignedBox box) {
-      final IVector3<?> boxCenter = box._center;
-      final IVector3<?> halfExtent = box._upper.sub(boxCenter); // Compute positive extents
+      final IVector3 boxCenter = box._center;
+      final IVector3 halfExtent = box._upper.sub(boxCenter); // Compute positive extents
 
       // Compute the projection interval radius of b onto L(t) = b.c + t * normal
       final double r = (halfExtent.x() * Math.abs(_normal.x())) + (halfExtent.y() * Math.abs(_normal.y()))
@@ -511,7 +511,7 @@ public final class GPlane
       //   page 209
 
       // Compute direction of intersection line
-      final IVector3<?> direction = _normal.cross(plane._normal);
+      final IVector3 direction = _normal.cross(plane._normal);
 
       // If distance is zero, the planes are parallel (and separated) or coincident
       if (GMath.closeToZero(direction.dot(direction))) {
@@ -536,12 +536,12 @@ public final class GPlane
 
    //   private static class Lin {
    //
-   //      private final IVector3<?> _point;
-   //      private final IVector3<?> _direction;
+   //      private final IVector3 _point;
+   //      private final IVector3 _direction;
    //
    //
-   //      private Lin(final IVector3<?> point,
-   //                  final IVector3<?> direction) {
+   //      private Lin(final IVector3 point,
+   //                  final IVector3 direction) {
    //         _point = point;
    //         _direction = direction;
    //      }
@@ -549,10 +549,10 @@ public final class GPlane
    //
    //      private boolean touchesWithDisk(final GDisk disk) {
    //
-   //         final IVector2<?> C = disk.center;
+   //         final IVector2 C = disk.center;
    //         final double r = disk.radius;
    //
-   //         IVector2<?> d = L - E;
+   //         IVector2 d = L - E;
    //
    //         float a = d.Dot(d);
    //         float b = 2 * f.Dot(d);
@@ -596,7 +596,7 @@ public final class GPlane
    //   private Lin getIntersectionLine(final GPlane that) {
    //
    //      // Compute direction of intersection line
-   //      final IVector3<?> direction = normal.cross(that.normal);
+   //      final IVector3 direction = normal.cross(that.normal);
    //
    //      // If d is (near) zero, the planes are parallel (and separated)
    //      // or coincident, so they’re not considered intersecting
@@ -606,7 +606,7 @@ public final class GPlane
    //      }
    //
    //      // Compute point on intersection line
-   //      final IVector3<?> point = that.normal.scale(d).sub(normal.scale(that.d)).cross(direction).div(denom);
+   //      final IVector3 point = that.normal.scale(d).sub(normal.scale(that.d)).cross(direction).div(denom);
    //
    //      return new Lin(point, direction);
    //   }
@@ -630,13 +630,13 @@ public final class GPlane
 
 
    @Override
-   public boolean contains(final IVector3<?> point) {
+   public boolean contains(final IVector3 point) {
       return GMath.positiveOrZero(signedDistance(point));
    }
 
 
    @Override
-   public boolean containsOnBoundary(final IVector3<?> point) {
+   public boolean containsOnBoundary(final IVector3 point) {
       return GMath.closeToZero(signedDistance(point));
    }
 
@@ -707,20 +707,20 @@ public final class GPlane
    }
 
 
-   public IVector3<?> getIntersection(final GSegment3D segment) {
+   public IVector3 getIntersection(final GSegment3D segment) {
       // from: http://local.wasp.uwa.edu.au/~pbourke/geometry/planeline/
 
-      final IVector3<?> p1 = segment._from;
+      final IVector3 p1 = segment._from;
       //      final double x1 = p1.x();
       //      final double y1 = p1.y();
       //      final double z1 = p1.z();
 
-      final IVector3<?> p2 = segment._to;
+      final IVector3 p2 = segment._to;
       //      final double x2 = p2.x();
       //      final double y2 = p2.y();
       //      final double z2 = p2.z();
 
-      //final IVector3<?> p0 = _normal.scale(_d);
+      //final IVector3 p0 = _normal.scale(_d);
 
       // plane definition: Ax + By + Cz + D = 0
       // plane normal = A, B, C
@@ -745,7 +745,7 @@ public final class GPlane
 
       // P = P1 + u (P2 - P1)
 
-      final IVector3<?> temp = p2.sub(p1).scale(u);
+      final IVector3 temp = p2.sub(p1).scale(u);
 
       return p1.add(temp);
 
@@ -753,7 +753,7 @@ public final class GPlane
    }
 
 
-   public double getZCoordenate(final IVector2<?> vectorXY) {
+   public double getZCoordenate(final IVector2 vectorXY) {
 
       return getZCoordenate(vectorXY.x(), vectorXY.y());
 
@@ -773,15 +773,15 @@ public final class GPlane
    }
 
 
-   public IVector3<?> getPointForXYCordenates(final IVector2<?> vectorXY) {
+   public IVector3 getPointForXYCordenates(final IVector2 vectorXY) {
 
       return getPointForXYCordenates(vectorXY.x(), vectorXY.y());
 
    }
 
 
-   public IVector3<?> getPointForXYCordenates(final double x,
-                                              final double y) {
+   public IVector3 getPointForXYCordenates(final double x,
+                                           final double y) {
 
       return new GVector3D(x, y, getZCoordenate(x, y));
 
@@ -795,13 +795,13 @@ public final class GPlane
 
 
    @Override
-   public boolean touchesBounds(final IBounds<IVector3<?>, ?> that) {
+   public boolean touchesBounds(final IBounds<IVector3, ?> that) {
       return touches((IBounds3D<?>) that);
    }
 
 
    @Override
-   public IVector3<?> getCentroid() {
+   public IVector3 getCentroid() {
       throw new RuntimeException("The plane has not a centroid");
    }
 

@@ -50,14 +50,14 @@ import es.igosoftware.util.IListInt;
 
 public final class GPtx3Group
          extends
-            GVertexContainerWithDefaultsAbstract<IVector3<?>, GPtx3Group>
+            GVertexContainerWithDefaultsAbstract<IVector3, GPtx3Group>
          implements
-            IStructuredVertexContainer.IVertexGroup<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, GPtx3Group> {
+            IStructuredVertexContainer.IVertexGroup<IVector3, IVertexContainer.Vertex<IVector3>, GPtx3Group> {
 
 
    private final int           _rowCount;
    private final int           _columnsCount;
-   private final IVector3<?>   _translationVector;
+   private final IVector3      _translationVector;
    private final GMatrix33D    _rotationMatrix;
    private final GMatrix33D    _inverseRotationMatrix;
    private final GMatrix44D    _transformationMatrix;
@@ -68,7 +68,7 @@ public final class GPtx3Group
    public GPtx3Group(final GVectorPrecision vectorPrecision,
                      final GColorPrecision colorPrecision,
                      final GProjection projection,
-                     final IVector3<?> referencePoint,
+                     final IVector3 referencePoint,
                      final int initialCapacity,
                      final boolean withIntensities,
                      final boolean withColors,
@@ -76,7 +76,7 @@ public final class GPtx3Group
                      final boolean withUserData,
                      final int rowCount,
                      final int columnCount,
-                     final IVector3<?> translationVector,
+                     final IVector3 translationVector,
                      final GMatrix33D rotationMatrix,
                      final GMatrix44D transformationMatrix) {
       this(vectorPrecision, colorPrecision, projection, referencePoint, initialCapacity, withIntensities, 0, withColors, null,
@@ -94,7 +94,7 @@ public final class GPtx3Group
                      final boolean withUserData,
                      final int rowCount,
                      final int columnCount,
-                     final IVector3<?> translationVector,
+                     final IVector3 translationVector,
                      final GMatrix33D rotationMatrix,
                      final GMatrix44D transformationMatrix) {
       this(vectorPrecision, colorPrecision, projection, GVector3D.ZERO, initialCapacity, withIntensities, 0, withColors, null,
@@ -111,7 +111,7 @@ public final class GPtx3Group
                      final boolean withUserData,
                      final int rowCount,
                      final int columnCount,
-                     final IVector3<?> translationVector,
+                     final IVector3 translationVector,
                      final GMatrix33D rotationMatrix,
                      final GMatrix44D transformationMatrix) {
       this(vectorPrecision, colorPrecision, projection, GVector3D.ZERO, 3, withIntensities, 0, withColors, null, withNormals,
@@ -122,19 +122,19 @@ public final class GPtx3Group
    public GPtx3Group(final GVectorPrecision vectorPrecision,
                      final GColorPrecision colorPrecision,
                      final GProjection projection,
-                     final IVector3<?> referencePoint,
+                     final IVector3 referencePoint,
                      final int initialCapacity,
                      final boolean withIntensities,
                      final float defaultIntensity,
                      final boolean withColors,
                      final IColor defaultColor,
                      final boolean withNormals,
-                     final IVector3<?> defaultNormal,
+                     final IVector3 defaultNormal,
                      final boolean withUserData,
                      final long defaultUserData,
                      final int rowCount,
                      final int columnCount,
-                     final IVector3<?> translationVector,
+                     final IVector3 translationVector,
                      final GMatrix33D rotationMatrix,
                      final GMatrix44D transformationMatrix) {
       super(vectorPrecision, colorPrecision, projection, referencePoint, initialCapacity, withIntensities, defaultIntensity,
@@ -151,7 +151,7 @@ public final class GPtx3Group
 
 
    @Override
-   protected GVertexContainerWithDefaultsAbstract.VectorHandler<IVector3<?>> initializePointsHandler() {
+   protected GVertexContainerWithDefaultsAbstract.VectorHandler<IVector3> initializePointsHandler() {
       switch (_vectorPrecision) {
          case FLOAT:
             return new Vector3HandlerF(_capacity);
@@ -164,7 +164,7 @@ public final class GPtx3Group
 
 
    @Override
-   protected GVertexContainerWithDefaultsAbstract.VectorHandler<IVector3<?>> initializeNormalsHandler() {
+   protected GVertexContainerWithDefaultsAbstract.VectorHandler<IVector3> initializeNormalsHandler() {
       switch (_vectorPrecision) {
          case FLOAT:
             return new Vector3HandlerF(_capacity);
@@ -190,7 +190,7 @@ public final class GPtx3Group
 
    @Override
    public GPtx3Group newEmptyContainer(final int initialCapacity,
-                                       final IVector3<?> referencePoint) {
+                                       final IVector3 referencePoint) {
       return newEmptyContainer(initialCapacity, _projection, referencePoint);
    }
 
@@ -205,7 +205,7 @@ public final class GPtx3Group
    @Override
    public GPtx3Group newEmptyContainer(final int initialCapacity,
                                        final GProjection projection,
-                                       final IVector3<?> referencePoint) {
+                                       final IVector3 referencePoint) {
       return new GPtx3Group(_vectorPrecision, _colorPrecision, projection, referencePoint, initialCapacity, hasIntensities(),
                _defaultIntensity, hasColors(), _defaultColor, hasNormals(), _defaultNormal, hasUserData(), _defaultUserData,
                _rowCount, _columnsCount, _translationVector, _rotationMatrix, _transformationMatrix);
@@ -220,7 +220,7 @@ public final class GPtx3Group
 
 
    @Override
-   public IVector3<?> translate(final IVector3<?> point) {
+   public IVector3 translate(final IVector3 point) {
 
       if (_translationVector == null) {
          return point;
@@ -232,7 +232,7 @@ public final class GPtx3Group
 
 
    @Override
-   public IVector3<?> inverseTranslate(final IVector3<?> point) {
+   public IVector3 inverseTranslate(final IVector3 point) {
 
       if (_translationVector == null) {
          return point;
@@ -244,7 +244,7 @@ public final class GPtx3Group
 
 
    @Override
-   public IVector3<?> rotate(final IVector3<?> point) {
+   public IVector3 rotate(final IVector3 point) {
 
       if (_rotationMatrix == null) {
          return point;
@@ -259,7 +259,7 @@ public final class GPtx3Group
 
 
    @Override
-   public IVector3<?> inverseRotate(final IVector3<?> point) {
+   public IVector3 inverseRotate(final IVector3 point) {
 
       if (_inverseRotationMatrix == null) {
          return point;
@@ -277,7 +277,7 @@ public final class GPtx3Group
 
 
    @Override
-   public IVector3<?> transform(final IVector3<?> point) {
+   public IVector3 transform(final IVector3 point) {
 
       if (_transformationMatrix == null) {
          return point;
@@ -295,7 +295,7 @@ public final class GPtx3Group
 
 
    @Override
-   public IVector3<?> inverseTransform(final IVector3<?> point) {
+   public IVector3 inverseTransform(final IVector3 point) {
 
       if (_inverseTransformationMatrix == null) {
          return point;
@@ -322,7 +322,7 @@ public final class GPtx3Group
    }
 
 
-   public IVector3<?> getTranslationVector() {
+   public IVector3 getTranslationVector() {
       return _translationVector;
    }
 

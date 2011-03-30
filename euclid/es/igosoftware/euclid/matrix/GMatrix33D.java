@@ -45,7 +45,7 @@ import es.igosoftware.util.GMath;
 
 public abstract class GMatrix33D
          implements
-            ISquareMatrix<GMatrix33D, IVector3<?>>,
+            ISquareMatrix<GMatrix33D, IVector3>,
             Cloneable {
 
 
@@ -291,9 +291,9 @@ public abstract class GMatrix33D
    }
 
 
-   public static GMatrix33D createRotationMatrix(final IVector2<?> axis,
+   public static GMatrix33D createRotationMatrix(final IVector2 axis,
                                                  final double angleRadians) {
-      final IVector2<?> normalizedAxis = axis.normalized();
+      final IVector2 normalizedAxis = axis.normalized();
 
       final double cos = GMath.cos(angleRadians);
       final double sin = GMath.sin(angleRadians);
@@ -330,9 +330,9 @@ public abstract class GMatrix33D
    }
 
 
-   public static GMatrix33D createRotationMatrix(final IVector3<?> axis,
+   public static GMatrix33D createRotationMatrix(final IVector3 axis,
                                                  final double angleRadians) {
-      final IVector3<?> normalizedAxis = axis.normalized();
+      final IVector3 normalizedAxis = axis.normalized();
 
       final double cos = GMath.cos(angleRadians);
       final double sin = GMath.sin(angleRadians);
@@ -373,14 +373,14 @@ public abstract class GMatrix33D
    }
 
 
-   public static GMatrix33D createRotationMatrix(final IVector3<?> start,
-                                                 final IVector3<?> end) {
+   public static GMatrix33D createRotationMatrix(final IVector3 start,
+                                                 final IVector3 end) {
 
-      final IVector3<?> normStart = start.normalized();
-      final IVector3<?> normEnd = end.normalized();
+      final IVector3 normStart = start.normalized();
+      final IVector3 normEnd = end.normalized();
 
 
-      final IVector3<?> v = normStart.cross(normEnd);
+      final IVector3 v = normStart.cross(normEnd);
 
       final double e = normStart.dot(normEnd);
       final double f = Math.abs(e);
@@ -444,7 +444,7 @@ public abstract class GMatrix33D
    }
 
 
-   public static GMatrix33D createScaleMatrix(final IVector2<?> scale) {
+   public static GMatrix33D createScaleMatrix(final IVector2 scale) {
       final double m00 = scale.x();
       final double m01 = 0;
       final double m02 = 0;
@@ -465,7 +465,7 @@ public abstract class GMatrix33D
    }
 
 
-   public static GMatrix33D createScaleMatrix(final IVector3<?> scale) {
+   public static GMatrix33D createScaleMatrix(final IVector3 scale) {
       final double m00 = scale.x();
       final double m01 = 0;
       final double m02 = 0;
@@ -486,7 +486,7 @@ public abstract class GMatrix33D
    }
 
 
-   //   public static GMatrix33D createTranslationMatrix(final IVector2<?> translation) {
+   //   public static GMatrix33D createTranslationMatrix(final IVector2 translation) {
    //      return createMatrix( //
    //               1, 0, translation.x(), //
    //               0, 1, translation.y(), //
@@ -494,7 +494,7 @@ public abstract class GMatrix33D
    //   }
    //
    //
-   //   public static GMatrix33D createTranslationMatrix(final IVector3<?> translation) {
+   //   public static GMatrix33D createTranslationMatrix(final IVector3 translation) {
    //      return createMatrix(//
    //               1, 0, translation.x(), //
    //               0, 1, translation.y(), //
@@ -702,7 +702,7 @@ public abstract class GMatrix33D
 
 
    @Override
-   public final IVector3<?> transform(final IVector3<?> vec) {
+   public final IVector3 transform(final IVector3 vec) {
       return vec.transformedBy(this);
    }
 

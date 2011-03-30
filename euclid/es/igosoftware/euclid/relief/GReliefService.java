@@ -130,7 +130,7 @@ public class GReliefService
                /*| GPointsLoader.VERBOSE*/, fileName);
                loader.load();
 
-               final IUnstructuredVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices = loader.getVertices();
+               final IUnstructuredVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices = loader.getVertices();
 
                return new GOctree(fileName.buildPath(), vertices, new GOctree.Parameters(2000, 2000,
                         GReliefService.VERBOSE && false));
@@ -186,20 +186,20 @@ public class GReliefService
    }
 
 
-   public IUnstructuredVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> getVertices(final IBounds3D<?> area) {
+   public IUnstructuredVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> getVertices(final IBounds3D<?> area) {
       final List<GAxisAlignedBox> touchedTiles = getTouchedTiles(area);
 
       if (touchedTiles.isEmpty()) {
-         return new GCompositeVertexContainer<IVector3<?>>();
+         return new GCompositeVertexContainer<IVector3>();
       }
 
-      IUnstructuredVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> allPoints = (IUnstructuredVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?>) _cache.get(
+      IUnstructuredVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> allPoints = (IUnstructuredVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?>) _cache.get(
                touchedTiles.get(0)).getVerticesInRegion(area);
 
 
       for (int i = 1; i < touchedTiles.size(); i++) {
          final GAxisAlignedBox touchedTile = touchedTiles.get(i);
-         allPoints = allPoints.composedWith((IUnstructuredVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?>) _cache.get(
+         allPoints = allPoints.composedWith((IUnstructuredVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?>) _cache.get(
                   touchedTile).getVerticesInRegion(area));
       }
 
@@ -217,24 +217,24 @@ public class GReliefService
    }
 
 
-   //   public double getAverageZ(final IBoundedGeometry<IVector2<?>, ?, ?> geometry) {
+   //   public double getAverageZ(final IBoundedGeometry<IVector2, ?, ?> geometry) {
    //      return GVectorUtils.getAverageZ(getVertices(geometry));
    //   }
    //
    //
-   //   public double getMaxZ(final IBoundedGeometry<IVector2<?>, ?, ?> geometry) {
+   //   public double getMaxZ(final IBoundedGeometry<IVector2, ?, ?> geometry) {
    //      return GVectorUtils.getMaxZ(getVertices(geometry));
    //   }
 
 
-   //   public IVertexContainer<IVector3<?>,?> getVertices(final IBoundedGeometry<IVector2<?>, ?, ?> geometry) {
-   //      final IBounds<IVector2<?>, ?> geometryBounds = geometry.getBounds();
+   //   public IVertexContainer<IVector3,?> getVertices(final IBoundedGeometry<IVector2, ?, ?> geometry) {
+   //      final IBounds<IVector2, ?> geometryBounds = geometry.getBounds();
    //
-   //      final IVertexContainer<IVector3<?>,?> verticesInBounds = getVertices(geometryBounds.asBox());
+   //      final IVertexContainer<IVector3,?> verticesInBounds = getVertices(geometryBounds.asBox());
    //
-   //      final IVertexContainer<IVector3<?>,?> verticesInGeometry = verticesInBounds.selectByPoints(new IPredicate<IVector3<?>>() {
+   //      final IVertexContainer<IVector3,?> verticesInGeometry = verticesInBounds.selectByPoints(new IPredicate<IVector3>() {
    //         @Override
-   //         public boolean evaluate(final IVector3<?> element) {
+   //         public boolean evaluate(final IVector3 element) {
    //            return geometry.contains(element.asVector2());
    //         }
    //      });

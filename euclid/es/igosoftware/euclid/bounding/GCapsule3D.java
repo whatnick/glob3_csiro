@@ -44,10 +44,10 @@ import es.igosoftware.util.GMath;
 
 public class GCapsule3D
          extends
-            GNCapsule<IVector3<?>, GSegment3D, GCapsule3D>
+            GNCapsule<IVector3, GSegment3D, GCapsule3D>
          implements
             IBounds3D<GCapsule3D>,
-            IFiniteBounds<IVector3<?>, GCapsule3D> {
+            IFiniteBounds<IVector3, GCapsule3D> {
 
    /**
     * 
@@ -85,7 +85,7 @@ public class GCapsule3D
       //      final double squareDistanceTo = _segment._to.squaredDistance(ball._center);
       //      final double squareDistance = GMath.minD(squareDistanceFrom, squareDistanceTo);
 
-      final IVector3<?> closestPoint = _segment.closestPoint(ball._center);
+      final IVector3 closestPoint = _segment.closestPoint(ball._center);
       final double squareDistance = closestPoint.squaredDistance(ball._center);
 
       final double radius = _radius + ball._radius;
@@ -117,8 +117,8 @@ public class GCapsule3D
 
    @Override
    public boolean touchesWithCapsule3D(final GCapsule3D capsule) {
-      final IVector3<?> closestFrom = _segment.closestPoint(capsule._segment._from);
-      final IVector3<?> closestTo = _segment.closestPoint(capsule._segment._to);
+      final IVector3 closestFrom = _segment.closestPoint(capsule._segment._from);
+      final IVector3 closestTo = _segment.closestPoint(capsule._segment._to);
 
       final double squareDistanceFrom = capsule._segment.squaredDistance(closestFrom);
       final double squareDistanceTo = capsule._segment.squaredDistance(closestTo);
@@ -143,7 +143,7 @@ public class GCapsule3D
 
 
    @Override
-   public boolean touchesBounds(final IBounds<IVector3<?>, ?> that) {
+   public boolean touchesBounds(final IBounds<IVector3, ?> that) {
       return touches((IBounds3D<?>) that);
    }
 

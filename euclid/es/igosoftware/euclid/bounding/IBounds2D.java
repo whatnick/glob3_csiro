@@ -7,11 +7,11 @@ import es.igosoftware.euclid.vector.IVector2;
 
 public interface IBounds2D<
 
-GeometryT extends IBounds<IVector2<?>, GeometryT>
+GeometryT extends IBounds<IVector2, GeometryT>
 
 >
          extends
-            IBounds<IVector2<?>, GeometryT> {
+            IBounds<IVector2, GeometryT> {
 
 
    public boolean touches(final IBounds2D<?> that);

@@ -48,15 +48,15 @@ import es.igosoftware.util.GMath;
 
 public final class GSegment2D
          extends
-            GSegment<IVector2<?>, GSegment2D, GAxisAlignedRectangle>
+            GSegment<IVector2, GAxisAlignedRectangle>
          implements
-            IPolygon2D<GSegment2D> {
+            IPolygon2D {
 
    private static final long serialVersionUID = 1L;
 
 
-   public GSegment2D(final IVector2<?> fromPoint,
-                     final IVector2<?> toPoint) {
+   public GSegment2D(final IVector2 fromPoint,
+                     final IVector2 toPoint) {
       super(fromPoint, toPoint);
    }
 
@@ -76,7 +76,7 @@ public final class GSegment2D
 
 
    private IntersectionResult getIntersection(final GSegment2D that,
-                                              final GMutableVector2<IVector2<?>> intersection) {
+                                              final GMutableVector2<IVector2> intersection) {
       final double thisFromX = _from.x();
       final double thisFromY = _from.y();
 
@@ -147,7 +147,7 @@ public final class GSegment2D
 
 
    @Override
-   public IPolytope<IVector2<?>, GSegment2D, ?, GAxisAlignedRectangle> getHull() {
+   public IPolytope<IVector2, GSegment2D, GAxisAlignedRectangle> getHull() {
       return this;
    }
 
@@ -165,7 +165,7 @@ public final class GSegment2D
 
 
    @Override
-   public IPolygon2D<?> createSimplified(final double capsRadiansTolerance) {
+   public IPolygon2D createSimplified(final double capsRadiansTolerance) {
       return this;
    }
 

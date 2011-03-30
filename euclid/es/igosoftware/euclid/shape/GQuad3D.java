@@ -52,9 +52,9 @@ import es.igosoftware.util.ITransformer;
 
 public final class GQuad3D
          extends
-            GQuad<IVector3<?>, GSegment3D, GQuad3D, GAxisAlignedBox>
+            GQuad<IVector3, GSegment3D, GAxisAlignedBox>
          implements
-            IPolygon3D<GQuad3D> {
+            IPolygon3D {
 
    private static final long serialVersionUID = 1L;
 
@@ -62,10 +62,10 @@ public final class GQuad3D
    private GQuad2D           _quad2d;
 
 
-   public GQuad3D(final IVector3<?> pV0,
-                  final IVector3<?> pV1,
-                  final IVector3<?> pV2,
-                  final IVector3<?> pV3) {
+   public GQuad3D(final IVector3 pV0,
+                  final IVector3 pV1,
+                  final IVector3 pV2,
+                  final IVector3 pV3) {
       super(pV0, pV1, pV2, pV3);
 
       _plane = initializePlane();
@@ -73,11 +73,11 @@ public final class GQuad3D
 
 
    private GPlane initializePlane() {
-      final List<IVector3<?>> points = new ArrayList<IVector3<?>>(getPoints());
+      final List<IVector3> points = new ArrayList<IVector3>(getPoints());
       try {
          final GPlane plane = GPlane.getBestFitPlane(points);
 
-         for (final IVector3<?> point : points) {
+         for (final IVector3 point : points) {
             if (!plane.contains(point)) {
                throw new IllegalArgumentException("Points are not coplanar");
             }
@@ -96,8 +96,8 @@ public final class GQuad3D
 
    @Override
    public GAxisAlignedBox getBounds() {
-      final IVector3<?> lower = GVectorUtils.min(_v0, _v1, _v2, _v3);
-      final IVector3<?> upper = GVectorUtils.max(_v0, _v1, _v2, _v3);
+      final IVector3 lower = GVectorUtils.min(_v0, _v1, _v2, _v3);
+      final IVector3 upper = GVectorUtils.max(_v0, _v1, _v2, _v3);
       return new GAxisAlignedBox(lower, upper);
    }
 
@@ -111,29 +111,29 @@ public final class GQuad3D
 
 
    private GQuad2D initializeQuad2D() {
-      final List<IVector2<?>> points2d;
+      final List<IVector2> points2d;
 
-      final List<IVector3<?>> points = getPoints();
+      final List<IVector3> points = getPoints();
       if (_plane.isCloseToPlaneXY()) {
-         points2d = GCollections.collect(points, new ITransformer<IVector3<?>, IVector2<?>>() {
+         points2d = GCollections.collect(points, new ITransformer<IVector3, IVector2>() {
             @Override
-            public IVector2<?> transform(final IVector3<?> element) {
+            public IVector2 transform(final IVector3 element) {
                return new GVector2D(element.x(), element.y());
             }
          });
       }
       else if (_plane.isCloseToPlaneXZ()) {
-         points2d = GCollections.collect(points, new ITransformer<IVector3<?>, IVector2<?>>() {
+         points2d = GCollections.collect(points, new ITransformer<IVector3, IVector2>() {
             @Override
-            public IVector2<?> transform(final IVector3<?> element) {
+            public IVector2 transform(final IVector3 element) {
                return new GVector2D(element.x(), element.z());
             }
          });
       }
       else /*if (_plane.isCloseToPlaneYZ())*/{
-         points2d = GCollections.collect(points, new ITransformer<IVector3<?>, IVector2<?>>() {
+         points2d = GCollections.collect(points, new ITransformer<IVector3, IVector2>() {
             @Override
-            public IVector2<?> transform(final IVector3<?> element) {
+            public IVector2 transform(final IVector3 element) {
                return new GVector2D(element.y(), element.z());
             }
          });
@@ -157,7 +157,7 @@ public final class GQuad3D
 
 
    @Override
-   public boolean contains(final IVector3<?> point) {
+   public boolean contains(final IVector3 point) {
       if (!getBounds().contains(point)) {
          return false;
       }
@@ -201,7 +201,7 @@ public final class GQuad3D
 
    @Override
    protected List<GSegment3D> initializeEdges() {
-      final List<IVector3<?>> points = getPoints();
+      final List<IVector3> points = getPoints();
       final int pointsCount = points.size();
 
       final GSegment3D[] edges = new GSegment3D[pointsCount];

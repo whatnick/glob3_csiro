@@ -58,8 +58,8 @@ public final class GShape {
    }
 
 
-   public static IPolygon3D<?> createPolygon(final boolean validate,
-                                             final IVector3<?>... points) {
+   public static IPolygon3D createPolygon(final boolean validate,
+                                          final IVector3... points) {
       final int pointsCount = points.length;
 
       if (pointsCount < 3) {
@@ -78,8 +78,8 @@ public final class GShape {
    }
 
 
-   public static IPolygon2D<?> createPolygon(final boolean validate,
-                                             final IVector2<?>... points) {
+   public static IPolygon2D createPolygon(final boolean validate,
+                                          final IVector2... points) {
       final int pointsCount = points.length;
 
       if (pointsCount < 3) {
@@ -98,8 +98,8 @@ public final class GShape {
    }
 
 
-   public static IPolygon2D<?> createLine2(final boolean validate,
-                                           final List<IVector2<?>> points) {
+   public static IPolygon2D createLine2(final boolean validate,
+                                        final List<IVector2> points) {
       final int pointsCount = points.size();
 
       if (pointsCount < 2) {
@@ -114,8 +114,8 @@ public final class GShape {
    }
 
 
-   public static IPolygon2D<?> createLine2(final boolean validate,
-                                           final IVector2<?>... points) {
+   public static IPolygon2D createLine2(final boolean validate,
+                                        final IVector2... points) {
       final int pointsCount = points.length;
 
       if (pointsCount < 2) {
@@ -130,8 +130,8 @@ public final class GShape {
    }
 
 
-   public static IPolygon2D<?> createPolygon2(final boolean validate,
-                                              final List<IVector2<?>> points) {
+   public static IPolygon2D createPolygon2(final boolean validate,
+                                           final List<IVector2> points) {
       final int pointsCount = points.size();
 
       if (pointsCount < 3) {
@@ -150,8 +150,8 @@ public final class GShape {
    }
 
 
-   public static IPolygon2D<?> createPolygon2(final boolean validate,
-                                              final IVector2<?>... points) {
+   public static IPolygon2D createPolygon2(final boolean validate,
+                                           final IVector2... points) {
       final int pointsCount = points.length;
 
       if (pointsCount < 3) {
@@ -170,8 +170,8 @@ public final class GShape {
    }
 
 
-   public static IPolygon3D<?> createPolygon3(final boolean validate,
-                                              final List<IVector3<?>> points) {
+   public static IPolygon3D createPolygon3(final boolean validate,
+                                           final List<IVector3> points) {
       final int pointsCount = points.size();
 
       if (pointsCount < 3) {
@@ -190,31 +190,31 @@ public final class GShape {
    }
 
 
-   public static boolean isConvexQuad(final IVector3<?> a,
-                                      final IVector3<?> b,
-                                      final IVector3<?> c,
-                                      final IVector3<?> d) {
+   public static boolean isConvexQuad(final IVector3 a,
+                                      final IVector3 b,
+                                      final IVector3 c,
+                                      final IVector3 d) {
       // from Real-Time Collision Detection   (Christer Ericson)
       //    page 60
 
-      final IVector3<?> dSubB = d.sub(b);
-      final IVector3<?> bda = dSubB.cross(a.sub(b));
-      final IVector3<?> bdc = dSubB.cross(c.sub(b));
+      final IVector3 dSubB = d.sub(b);
+      final IVector3 bda = dSubB.cross(a.sub(b));
+      final IVector3 bdc = dSubB.cross(c.sub(b));
 
       if (GMath.positiveOrZero(bda.dot(bdc))) {
          return false;
       }
 
-      final IVector3<?> cSubA = c.sub(a);
-      final IVector3<?> acd = cSubA.cross(d.sub(a));
-      final IVector3<?> acb = cSubA.cross(b.sub(a));
+      final IVector3 cSubA = c.sub(a);
+      final IVector3 acd = cSubA.cross(d.sub(a));
+      final IVector3 acb = cSubA.cross(b.sub(a));
 
       //return acd.dot(acb) < 0.0f; 
       return GMath.negativeOrZero(acd.dot(acb));
    }
 
 
-   //   public static <VectorT extends IVector<VectorT, ?, ?>, BoundsT extends IFiniteBounds<VectorT, BoundsT>, GeometryT extends IBoundedGeometry<VectorT, GeometryT, BoundsT>> BoundsT getBounds(final Collection<GeometryT> geometries) {
+   //   public static <VectorT extends IVector<VectorT, ?>, BoundsT extends IFiniteBounds<VectorT, BoundsT>, GeometryT extends IBoundedGeometry<VectorT, GeometryT, BoundsT>> BoundsT getBounds(final Collection<GeometryT> geometries) {
    //
    //      if ((geometries == null) || geometries.isEmpty()) {
    //         return null;
@@ -235,9 +235,9 @@ public final class GShape {
 
    public static <
 
-   VectorT extends IVector<VectorT, ?, ?>,
+   VectorT extends IVector<VectorT, ?>,
 
-   GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>> GAxisAlignedOrthotope<VectorT, ?
+   GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>> GAxisAlignedOrthotope<VectorT, ?
 
    > getBounds(final Collection<GeometryT> geometries) {
 
@@ -259,11 +259,11 @@ public final class GShape {
 
    public static <
 
-   VectorT extends IVector<VectorT, ?, ?>,
+   VectorT extends IVector<VectorT, ?>,
 
    ElementT,
 
-   GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>> GAxisAlignedOrthotope<VectorT, ?
+   GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>> GAxisAlignedOrthotope<VectorT, ?
 
    > getBounds(final Iterable<? extends ElementT> elements,
                final ITransformer<ElementT, GeometryT> transformer) {

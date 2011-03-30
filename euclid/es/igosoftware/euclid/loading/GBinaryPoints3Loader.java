@@ -69,23 +69,23 @@ import es.igosoftware.util.GProgress;
 
 public final class GBinaryPoints3Loader
          extends
-            GUnstructuredFilePointsLoader<IVector3<?>> {
+            GUnstructuredFilePointsLoader<IVector3> {
 
 
-   public static void save(final IUnstructuredVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices,
+   public static void save(final IUnstructuredVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices,
                            final GFileName fileName) throws IOException {
       save(vertices, GProjection.EUCLID, fileName);
    }
 
 
-   public static void save(final IUnstructuredVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices,
+   public static void save(final IUnstructuredVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices,
                            final GProjection projection,
                            final GFileName fileName) throws IOException {
       save(vertices, projection, fileName, true);
    }
 
 
-   public static void save(final IUnstructuredVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices,
+   public static void save(final IUnstructuredVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices,
                            final GProjection projection,
                            final GFileName fileName,
                            final boolean verbose) throws IOException {
@@ -140,11 +140,11 @@ public final class GBinaryPoints3Loader
       output.writeInt(groupsShape);
 
       //      final GAxisAlignedOrthotope<VectorT, ?> bounds = GAxisAlignedOrthotope.minimumOrthotope(vertices);
-      final GAxisAlignedOrthotope<IVector3<?>, ?> bounds = vertices.getBounds();
+      final GAxisAlignedOrthotope<IVector3, ?> bounds = vertices.getBounds();
       saveVector(output, dimensions, vectorPrecision, bounds._lower);
       saveVector(output, dimensions, vectorPrecision, bounds._upper);
 
-      final IVector3<?> referencePoint = vertices.getReferencePoint();
+      final IVector3 referencePoint = vertices.getReferencePoint();
       saveVector(output, dimensions, GVectorPrecision.DOUBLE, referencePoint);
 
       // save group #1
@@ -189,7 +189,7 @@ public final class GBinaryPoints3Loader
    private static void saveVector(final DataOutputStream output,
                                   final byte dimensions,
                                   final GVectorPrecision precision,
-                                  final IVector<?, ?, ?> vector) throws IOException {
+                                  final IVector<?, ?> vector) throws IOException {
       switch (precision) {
          case FLOAT:
             for (byte i = 0; i < dimensions; i++) {
@@ -231,7 +231,7 @@ public final class GBinaryPoints3Loader
       private final GProjection      _projection;
       private final GVectorPrecision _vectorPrecision;
       private final GColorPrecision  _colorPrecision;
-      private final IVector3<?>      _referencePoint;
+      private final IVector3         _referencePoint;
       private final boolean          _hasIntensities;
       private final boolean          _hasColors;
       private final boolean          _hasNormals;
@@ -271,8 +271,8 @@ public final class GBinaryPoints3Loader
 
          _groupsShape = input.readInt();
 
-         final IVector3<?> lower = readVector(input);
-         final IVector3<?> upper = readVector(input);
+         final IVector3 lower = readVector(input);
+         final IVector3 upper = readVector(input);
          _bounds = new GAxisAlignedBox(lower, upper);
 
          _referencePoint = readVector(input, GVectorPrecision.DOUBLE);
@@ -314,8 +314,8 @@ public final class GBinaryPoints3Loader
       //
       //         _groupsShape = input.getInt();
       //
-      //         final IVector3<?> lower = readVector(input);
-      //         final IVector3<?> upper = readVector(input);
+      //         final IVector3 lower = readVector(input);
+      //         final IVector3 upper = readVector(input);
       //         _bounds = new GAxisAlignedBox(lower, upper);
       //
       //         _referencePoint = readVector(input, GVectorPrecision.DOUBLE);
@@ -328,18 +328,18 @@ public final class GBinaryPoints3Loader
       //      }
 
 
-      private IVector3<?> readVector(final DataInputStream input) throws IOException {
+      private IVector3 readVector(final DataInputStream input) throws IOException {
          return readVector(input, _vectorPrecision);
       }
 
 
-      //      private IVector3<?> readVector(final ByteBuffer input) throws IOException {
+      //      private IVector3 readVector(final ByteBuffer input) throws IOException {
       //         return readVector(input, _vectorPrecision);
       //      }
 
 
-      private IVector3<?> readVector(final DataInputStream input,
-                                     final GVectorPrecision vectorPrecision) throws IOException {
+      private IVector3 readVector(final DataInputStream input,
+                                  final GVectorPrecision vectorPrecision) throws IOException {
          switch (vectorPrecision) {
             case DOUBLE:
                final double dx = input.readDouble();
@@ -357,7 +357,7 @@ public final class GBinaryPoints3Loader
       }
 
 
-      //      private IVector3<?> readVector(final ByteBuffer input,
+      //      private IVector3 readVector(final ByteBuffer input,
       //                                     final GVectorPrecision vectorPrecision) throws IOException {
       //         switch (vectorPrecision) {
       //            case DOUBLE:
@@ -605,14 +605,14 @@ public final class GBinaryPoints3Loader
 
 
       for (int i = 0; i < pointsToRead; i++) {
-         final IVector3<?> point = header._referencePoint.add(header.readVector(input));
+         final IVector3 point = header._referencePoint.add(header.readVector(input));
 
          final float intensity = header._hasIntensities ? input.readFloat() : 0;
          //final float intensity = header._hasIntensities ? input.getFloat() : 0;
 
          final IColor color = header._hasColors ? header.readColor(input) : null;
 
-         final IVector3<?> normal = header._hasNormals ? header.readVector(input).normalized() : null;
+         final IVector3 normal = header._hasNormals ? header.readVector(input).normalized() : null;
 
          final long userData = header._hasUserData ? input.readLong() : 0;
 

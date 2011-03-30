@@ -13,9 +13,9 @@ import es.igosoftware.euclid.vector.IVector;
 
 public interface IGlobeFeatureCollection<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
-FeatureGeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>,
+FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>,
 
 TypeT extends IGlobeFeatureCollection<VectorT, FeatureGeometryT, TypeT>
 
@@ -34,9 +34,9 @@ TypeT extends IGlobeFeatureCollection<VectorT, FeatureGeometryT, TypeT>
 
    public static interface IFeatureVisitor<
 
-   VectorT extends IVector<VectorT, ?, ?>,
+   VectorT extends IVector<VectorT, ?>,
 
-   FeatureGeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>
+   FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
 
    > {
 

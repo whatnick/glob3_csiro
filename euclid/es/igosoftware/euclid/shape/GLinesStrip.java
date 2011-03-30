@@ -17,17 +17,15 @@ import es.igosoftware.util.GAssert;
 
 public abstract class GLinesStrip<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
-SegmentT extends GSegment<VectorT, SegmentT, BoundsT>,
-
-GeometryT extends GLinesStrip<VectorT, SegmentT, GeometryT, BoundsT>,
+SegmentT extends GSegment<VectorT, BoundsT>,
 
 BoundsT extends IBounds<VectorT, BoundsT>
 
 >
          extends
-            GPolytopeAbstract<VectorT, SegmentT, GeometryT, BoundsT> {
+            GPolytopeAbstract<VectorT, SegmentT, BoundsT> {
 
 
    private static final long   serialVersionUID = 1L;
@@ -190,16 +188,15 @@ BoundsT extends IBounds<VectorT, BoundsT>
    }
 
 
-   @SuppressWarnings("unchecked")
    @Override
-   public GeometryT getHull() {
-      return (GeometryT) this;
+   public VectorT getCentroid() {
+      return GVectorUtils.getAverage(_points);
    }
 
 
    @Override
-   public VectorT getCentroid() {
-      return GVectorUtils.getAverage(_points);
+   public IPolytope<VectorT, SegmentT, BoundsT> getHull() {
+      return this;
    }
 
 }

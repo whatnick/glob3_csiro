@@ -202,9 +202,9 @@ public class G3DModelNode
          final Matrix globalMatrix = getGlobalMatrix(parentMatrix);
 
          final List<Vec4> verticesInGlobalCoordinates = GCollections.collect(_model.getVertices(),
-                  new ITransformer<IVector3<?>, Vec4>() {
+                  new ITransformer<IVector3, Vec4>() {
                      @Override
-                     public Vec4 transform(final IVector3<?> element) {
+                     public Vec4 transform(final IVector3 element) {
                         final Vec4 vec4 = GWWUtils.toVec4(element);
                         final Vec4 transformed = vec4.transformBy4(globalMatrix);
                         return GWWUtils.toVec3(transformed);
@@ -230,7 +230,7 @@ public class G3DModelNode
 
          _pickableMeshesBounds.clear();
 
-         final List<IVector3<?>> modelVertices = _model.getVertices();
+         final List<IVector3> modelVertices = _model.getVertices();
 
          for (final GPair<GModelMesh, Object> meshAndUserData : _pickableMeshes) {
             final GModelMesh mesh = meshAndUserData._first;
@@ -239,7 +239,7 @@ public class G3DModelNode
 
             for (final GFace face : mesh.getFaces()) {
                for (final int vertexIndex : face._vertexIndices) {
-                  final IVector3<?> vertex = modelVertices.get(vertexIndex);
+                  final IVector3 vertex = modelVertices.get(vertexIndex);
 
                   final Vec4 vertexVec4 = GWWUtils.toVec4(vertex);
                   final Vec4 transformedVec4 = GWWUtils.toVec3(vertexVec4.transformBy4(globalMatrix));

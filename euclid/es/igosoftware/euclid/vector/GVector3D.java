@@ -51,9 +51,9 @@ import es.igosoftware.util.XStringTokenizer;
 
 public class GVector3D
          extends
-            GVectorAbstract<IVector3<?>, GVector3D, GAxisAlignedBox>
+            GVectorAbstract<IVector3, GAxisAlignedBox>
          implements
-            IVector3<GVector3D> {
+            IVector3 {
 
    private static final class Normalized
             extends
@@ -162,7 +162,7 @@ public class GVector3D
    }
 
 
-   public GVector3D(final IVector2<?> vector2d,
+   public GVector3D(final IVector2 vector2d,
                     final double z) {
       this(vector2d.x(), vector2d.y(), z);
    }
@@ -199,7 +199,7 @@ public class GVector3D
 
 
    @Override
-   public final GVector3D add(final IVector3<?> that) {
+   public final GVector3D add(final IVector3 that) {
       return new GVector3D(_x + that.x(), _y + that.y(), _z + that.z(), false);
    }
 
@@ -211,7 +211,7 @@ public class GVector3D
 
 
    //   @Override
-   //   public double angle(final IVector3<?> that) {
+   //   public double angle(final IVector3 that) {
    //      double vDot = dot(that) / (length() * that.length());
    //      if (vDot < -1.0) {
    //         vDot = -1.0;
@@ -230,7 +230,7 @@ public class GVector3D
 
 
    @Override
-   public final double squaredDistance(final IVector3<?> that) {
+   public final double squaredDistance(final IVector3 that) {
       final double dx = _x - that.x();
       final double dy = _y - that.y();
       final double dz = _z - that.z();
@@ -239,13 +239,13 @@ public class GVector3D
 
 
    @Override
-   public final double dot(final IVector3<?> that) {
+   public final double dot(final IVector3 that) {
       return (_x * that.x() + _y * that.y() + _z * that.z());
    }
 
 
    @Override
-   public final GVector3D interpolatedTo(final IVector3<?> that,
+   public final GVector3D interpolatedTo(final IVector3 that,
                                          final double alpha) {
       //      final double newX = (1.0 - alpha) * x + alpha * that.getX();
       //      final double newY = (1.0 - alpha) * y + alpha * that.getY();
@@ -311,7 +311,7 @@ public class GVector3D
 
 
    @Override
-   public final GVector3D scale(final IVector3<?> that) {
+   public final GVector3D scale(final IVector3 that) {
       return new GVector3D(_x * that.x(), _y * that.y(), _z * that.z());
    }
 
@@ -323,13 +323,13 @@ public class GVector3D
 
 
    @Override
-   public final GVector3D div(final IVector3<?> that) {
+   public final GVector3D div(final IVector3 that) {
       return new GVector3D(_x / that.x(), _y / that.y(), _z / that.z());
    }
 
 
    @Override
-   public final GVector3D sub(final IVector3<?> that) {
+   public final GVector3D sub(final IVector3 that) {
       return new GVector3D(_x - that.x(), _y - that.y(), _z - that.z(), false);
    }
 
@@ -347,13 +347,13 @@ public class GVector3D
 
 
    @Override
-   public final GVector3D max(final IVector3<?> that) {
+   public final GVector3D max(final IVector3 that) {
       return new GVector3D(Math.max(_x, that.x()), Math.max(_y, that.y()), Math.max(_z, that.z()), false);
    }
 
 
    @Override
-   public final GVector3D min(final IVector3<?> that) {
+   public final GVector3D min(final IVector3 that) {
       return new GVector3D(Math.min(_x, that.x()), Math.min(_y, that.y()), Math.min(_z, that.z()), false);
    }
 
@@ -384,7 +384,7 @@ public class GVector3D
       if (getClass() != obj.getClass()) {
          return false;
       }
-      final IVector3<?> other = (IVector3<?>) obj;
+      final IVector3 other = (IVector3) obj;
       if (Double.doubleToLongBits(_x) != Double.doubleToLongBits(other.x())) {
          return false;
       }
@@ -420,13 +420,13 @@ public class GVector3D
    //
    //
    //   @Override
-   //   public boolean contains(final IVector3<?> vector) {
+   //   public boolean contains(final IVector3 vector) {
    //      return false;
    //   }
 
 
    @Override
-   public final GVector3D cross(final IVector3<?> that) {
+   public final GVector3D cross(final IVector3 that) {
       final double thatX = that.x();
       final double thatY = that.y();
       final double thatZ = that.z();
@@ -472,8 +472,8 @@ public class GVector3D
 
 
    @Override
-   public final boolean between(final IVector3<?> min,
-                                final IVector3<?> max) {
+   public final boolean between(final IVector3 min,
+                                final IVector3 max) {
       final double precision = GMath.maxD(precision(), min.precision(), max.precision());
       return GMath.between(_x, min.x(), max.x(), precision) && GMath.between(_y, min.y(), max.y(), precision)
              && GMath.between(_z, min.z(), max.z(), precision);
@@ -487,14 +487,14 @@ public class GVector3D
 
 
    @Override
-   public final boolean closeTo(final IVector3<?> that) {
+   public final boolean closeTo(final IVector3 that) {
       final double precision = Math.max(precision(), that.precision());
       return closeTo(that, precision);
    }
 
 
    @Override
-   public final boolean closeTo(final IVector3<?> that,
+   public final boolean closeTo(final IVector3 that,
                                 final double precision) {
       return GMath.closeTo(x(), that.x(), precision) && GMath.closeTo(y(), that.y(), precision)
              && GMath.closeTo(z(), that.z(), precision);
@@ -528,25 +528,25 @@ public class GVector3D
 
 
    @Override
-   public final IVector3<?> nextUp() {
+   public final IVector3 nextUp() {
       return new GVector3D(GMath.nextUp(_x), GMath.nextUp(_y), GMath.nextUp(_z), false);
    }
 
 
    @Override
-   public final IVector3<?> previousDown() {
+   public final IVector3 previousDown() {
       return new GVector3D(GMath.previousDown(_x), GMath.previousDown(_y), GMath.previousDown(_z), false);
    }
 
 
    @Override
-   public final IVector3<?> asDouble() {
+   public final IVector3 asDouble() {
       return this;
    }
 
 
    @Override
-   public final boolean greaterOrEquals(final IVector3<?> that) {
+   public final boolean greaterOrEquals(final IVector3 that) {
       final double precision = Math.max(precision(), that.precision());
       return GMath.greaterOrEquals(_x, that.x(), precision) && GMath.greaterOrEquals(_y, that.y(), precision)
              && GMath.greaterOrEquals(_z, that.z(), precision);
@@ -554,7 +554,7 @@ public class GVector3D
 
 
    @Override
-   public final boolean lessOrEquals(final IVector3<?> that) {
+   public final boolean lessOrEquals(final IVector3 that) {
       final double precision = Math.max(precision(), that.precision());
       return GMath.lessOrEquals(_x, that.x(), precision) && GMath.lessOrEquals(_y, that.y(), precision)
              && GMath.lessOrEquals(_z, that.z(), precision);
@@ -562,8 +562,8 @@ public class GVector3D
 
 
    @Override
-   public final IVector3<?> reproject(final GProjection sourceProjection,
-                                      final GProjection targetProjection) {
+   public final IVector3 reproject(final GProjection sourceProjection,
+                                   final GProjection targetProjection) {
       //      if (sourceProjection == targetProjection) {
       //         return this;
       //      }

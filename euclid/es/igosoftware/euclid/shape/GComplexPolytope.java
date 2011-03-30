@@ -50,19 +50,17 @@ import es.igosoftware.util.GAssert;
 
 public abstract class GComplexPolytope<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
-SegmentT extends GSegment<VectorT, SegmentT, BoundsT>,
-
-GeometryT extends GComplexPolytope<VectorT, SegmentT, GeometryT, BoundsT, PolytopeT>,
+SegmentT extends GSegment<VectorT, BoundsT>,
 
 BoundsT extends IBounds<VectorT, BoundsT>,
 
-PolytopeT extends IPolytope<VectorT, SegmentT, ?, BoundsT>
+PolytopeT extends IPolytope<VectorT, SegmentT, BoundsT>
 
 >
          extends
-            GPolytopeAbstract<VectorT, SegmentT, GeometryT, BoundsT> {
+            GPolytopeAbstract<VectorT, SegmentT, BoundsT> {
 
    private static final long       serialVersionUID = 1L;
 
@@ -190,7 +188,7 @@ PolytopeT extends IPolytope<VectorT, SegmentT, ?, BoundsT>
       if (getClass() != obj.getClass()) {
          return false;
       }
-      final GComplexPolytope<?, ?, ?, ?, ?> other = (GComplexPolytope<?, ?, ?, ?, ?>) obj;
+      final GComplexPolytope<?, ?, ?, ?> other = (GComplexPolytope<?, ?, ?, ?>) obj;
       if (_holes == null) {
          if (other._holes != null) {
             return false;

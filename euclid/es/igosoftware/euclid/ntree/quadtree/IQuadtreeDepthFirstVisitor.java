@@ -13,6 +13,6 @@ ElementT
 
 >
          extends
-            IGTDepthFirstVisitor<IVector2<?>, GAxisAlignedRectangle, ElementT> {
+            IGTDepthFirstVisitor<IVector2, GAxisAlignedRectangle, ElementT> {
 
 }

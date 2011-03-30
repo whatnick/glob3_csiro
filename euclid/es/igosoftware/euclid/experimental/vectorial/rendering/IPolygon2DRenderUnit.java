@@ -16,7 +16,7 @@ public interface IPolygon2DRenderUnit {
 
    public BufferedImage render(final GRenderingQuadtree<
 
-                               IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>
+                               IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>
 
                                > quadtree,
                                final GAxisAlignedRectangle region,

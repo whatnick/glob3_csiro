@@ -42,15 +42,15 @@ import es.igosoftware.util.GMath;
 
 public final class GDisk
          extends
-            GNBall<IVector2<?>, GDisk>
+            GNBall<IVector2, GDisk>
          implements
             IBounds2D<GDisk>,
-            IFiniteBounds<IVector2<?>, GDisk> {
+            IFiniteBounds<IVector2, GDisk> {
 
    private static final long serialVersionUID = 1L;
 
 
-   public GDisk(final IVector2<?> center,
+   public GDisk(final IVector2 center,
                 final double radius) {
       super(center, radius);
    }
@@ -113,7 +113,7 @@ public final class GDisk
 
 
    @Override
-   public boolean touchesBounds(final IBounds<IVector2<?>, ?> that) {
+   public boolean touchesBounds(final IBounds<IVector2, ?> that) {
       return touches((IBounds2D<?>) that);
    }
 

@@ -297,7 +297,7 @@ final class GSGPointsLoader {
                      //                  final float x = input.readFloat();
                      //                  final float y = input.readFloat();
                      //                  final float z = input.readFloat();
-                     //                  final IVector3<?> point = new GVector3D(x, y, z);
+                     //                  final IVector3 point = new GVector3D(x, y, z);
                      //                  final Position _position = GConverter.toPosition(projection, _node._referencePoint.add(point));
 
                      final int i3 = i * 3;

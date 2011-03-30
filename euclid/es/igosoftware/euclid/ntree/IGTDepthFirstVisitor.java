@@ -8,7 +8,7 @@ import es.igosoftware.euclid.vector.IVector;
 
 public interface IGTDepthFirstVisitor<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
 BoundsT extends GAxisAlignedOrthotope<VectorT, ?>,
 

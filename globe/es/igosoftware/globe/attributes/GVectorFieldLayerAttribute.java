@@ -78,7 +78,7 @@ public abstract class GVectorFieldLayerAttribute
       final String options[];
       if (layer instanceof IGlobeVector2Layer) {
          @SuppressWarnings("unchecked")
-         final IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> vectorLayer = (IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer;
+         final IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> vectorLayer = (IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) layer;
 
          final List<GField> fields = vectorLayer.getFeaturesCollection().getFields();
          options = new String[fields.size()];

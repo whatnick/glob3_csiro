@@ -47,7 +47,7 @@ import es.igosoftware.euclid.vector.IVector3;
 
 public final class GVertex3Container
          extends
-            GVertexContainerWithDefaultsAbstract<IVector3<?>, GVertex3Container> {
+            GVertexContainerWithDefaultsAbstract<IVector3, GVertex3Container> {
 
 
    public GVertex3Container(final GVectorPrecision vectorPrecision,
@@ -104,7 +104,7 @@ public final class GVertex3Container
                             final boolean withColors,
                             final IColor defaultColor,
                             final boolean withNormals,
-                            final IVector3<?> defaultNormal) {
+                            final IVector3 defaultNormal) {
       this(vectorPrecision, colorPrecision, projection, GVector3D.ZERO, 3, withIntensities, defaultIntensity, withColors,
            defaultColor, withNormals, defaultNormal);
    }
@@ -118,7 +118,7 @@ public final class GVertex3Container
                             final boolean withColors,
                             final IColor defaultColor,
                             final boolean withNormals,
-                            final IVector3<?> defaultNormal,
+                            final IVector3 defaultNormal,
                             final boolean withUserData,
                             final long defaultUserData) {
       this(vectorPrecision, colorPrecision, projection, GVector3D.ZERO, 3, withIntensities, defaultIntensity, withColors,
@@ -129,7 +129,7 @@ public final class GVertex3Container
    public GVertex3Container(final GVectorPrecision vectorPrecision,
                             final GColorPrecision colorPrecision,
                             final GProjection projection,
-                            final IVector3<?> referencePoint,
+                            final IVector3 referencePoint,
                             final int initialCapacity,
                             final boolean withIntensities,
                             final boolean withColors,
@@ -142,7 +142,7 @@ public final class GVertex3Container
    public GVertex3Container(final GVectorPrecision vectorPrecision,
                             final GColorPrecision colorPrecision,
                             final GProjection projection,
-                            final IVector3<?> referencePoint,
+                            final IVector3 referencePoint,
                             final int initialCapacity,
                             final boolean withIntensities,
                             final boolean withColors,
@@ -156,13 +156,13 @@ public final class GVertex3Container
    public GVertex3Container(final GVectorPrecision vectorPrecision,
                             final GColorPrecision colorPrecision,
                             final GProjection projection,
-                            final IVector3<?> referencePoint,
+                            final IVector3 referencePoint,
                             final boolean withIntensities,
                             final float defaultIntensity,
                             final boolean withColors,
                             final IColor defaultColor,
                             final boolean withNormals,
-                            final IVector3<?> defaultNormal) {
+                            final IVector3 defaultNormal) {
       this(vectorPrecision, colorPrecision, projection, referencePoint, 3, withIntensities, defaultIntensity, withColors,
            defaultColor, withNormals, defaultNormal);
    }
@@ -171,13 +171,13 @@ public final class GVertex3Container
    public GVertex3Container(final GVectorPrecision vectorPrecision,
                             final GColorPrecision colorPrecision,
                             final GProjection projection,
-                            final IVector3<?> referencePoint,
+                            final IVector3 referencePoint,
                             final boolean withIntensities,
                             final float defaultIntensity,
                             final boolean withColors,
                             final IColor defaultColor,
                             final boolean withNormals,
-                            final IVector3<?> defaultNormal,
+                            final IVector3 defaultNormal,
                             final boolean withUserData,
                             final long defaultUserData) {
       this(vectorPrecision, colorPrecision, projection, referencePoint, 3, withIntensities, defaultIntensity, withColors,
@@ -188,14 +188,14 @@ public final class GVertex3Container
    public GVertex3Container(final GVectorPrecision vectorPrecision,
                             final GColorPrecision colorPrecision,
                             final GProjection projection,
-                            final IVector3<?> referencePoint,
+                            final IVector3 referencePoint,
                             final int initialCapacity,
                             final boolean withIntensities,
                             final float defaultIntensity,
                             final boolean withColors,
                             final IColor defaultColor,
                             final boolean withNormals,
-                            final IVector3<?> defaultNormal) {
+                            final IVector3 defaultNormal) {
       this(vectorPrecision, colorPrecision, projection, referencePoint, initialCapacity, withIntensities, defaultIntensity,
            withColors, defaultColor, withNormals, defaultNormal, false, 0);
    }
@@ -210,7 +210,7 @@ public final class GVertex3Container
                             final boolean withColors,
                             final IColor defaultColor,
                             final boolean withNormals,
-                            final IVector3<?> defaultNormal) {
+                            final IVector3 defaultNormal) {
       this(vectorPrecision, colorPrecision, projection, GVector3D.ZERO, initialCapacity, withIntensities, defaultIntensity,
            withColors, defaultColor, withNormals, defaultNormal, false, 0);
    }
@@ -219,14 +219,14 @@ public final class GVertex3Container
    public GVertex3Container(final GVectorPrecision vectorPrecision,
                             final GColorPrecision colorPrecision,
                             final GProjection projection,
-                            final IVector3<?> referencePoint,
+                            final IVector3 referencePoint,
                             final int initialCapacity,
                             final boolean withIntensities,
                             final float defaultIntensity,
                             final boolean withColors,
                             final IColor defaultColor,
                             final boolean withNormals,
-                            final IVector3<?> defaultNormal,
+                            final IVector3 defaultNormal,
                             final boolean withUserData,
                             final long defaultUserData) {
       super(vectorPrecision, colorPrecision, projection, referencePoint, initialCapacity, withIntensities, defaultIntensity,
@@ -243,7 +243,7 @@ public final class GVertex3Container
                             final boolean withColors,
                             final IColor defaultColor,
                             final boolean withNormals,
-                            final IVector3<?> defaultNormal,
+                            final IVector3 defaultNormal,
                             final boolean withUserData,
                             final long defaultUserData) {
       super(vectorPrecision, colorPrecision, projection, GVector3D.ZERO, initialCapacity, withIntensities, defaultIntensity,
@@ -258,7 +258,7 @@ public final class GVertex3Container
 
 
    @Override
-   protected GVertexContainerWithDefaultsAbstract.VectorHandler<IVector3<?>> initializePointsHandler() {
+   protected GVertexContainerWithDefaultsAbstract.VectorHandler<IVector3> initializePointsHandler() {
       switch (_vectorPrecision) {
          case FLOAT:
             return new Vector3HandlerF(_capacity);
@@ -271,7 +271,7 @@ public final class GVertex3Container
 
 
    @Override
-   protected GVertexContainerWithDefaultsAbstract.VectorHandler<IVector3<?>> initializeNormalsHandler() {
+   protected GVertexContainerWithDefaultsAbstract.VectorHandler<IVector3> initializeNormalsHandler() {
       switch (_vectorPrecision) {
          case FLOAT:
             return new Vector3HandlerF(_capacity);
@@ -304,7 +304,7 @@ public final class GVertex3Container
 
    @Override
    public GVertex3Container newEmptyContainer(final int initialCapacity,
-                                              final IVector3<?> referencePoint) {
+                                              final IVector3 referencePoint) {
       return newEmptyContainer(initialCapacity, _projection, referencePoint);
    }
 
@@ -312,7 +312,7 @@ public final class GVertex3Container
    @Override
    public GVertex3Container newEmptyContainer(final int initialCapacity,
                                               final GProjection projection,
-                                              final IVector3<?> referencePoint) {
+                                              final IVector3 referencePoint) {
 
       return new GVertex3Container(_vectorPrecision, _colorPrecision, projection, referencePoint, initialCapacity,
                hasIntensities(), _defaultIntensity, hasColors(), _defaultColor, hasNormals(), _defaultNormal, hasUserData(),
@@ -337,11 +337,11 @@ public final class GVertex3Container
       System.out.println(container3Reprojected.toString());
 
       for (int i = 0; i < container3.size(); i++) {
-         final IVertexContainer.Vertex<IVector3<?>> vertex = container3.getVertex(i);
+         final IVertexContainer.Vertex<IVector3> vertex = container3.getVertex(i);
          System.out.println(vertex.toString());
       }
 
-      //final IVertexContainer.Vertex<IVector3<?>> v1 = container3.getVertex(0);
+      //final IVertexContainer.Vertex<IVector3> v1 = container3.getVertex(0);
 
 
       //               final ByteBuffer points3Colors = container3.getPointsAndColorsByteBuffer();

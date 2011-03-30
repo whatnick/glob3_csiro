@@ -88,7 +88,7 @@ public class GOctreeTest {
       //      octree.depthFirstAcceptVisitor(new GOTLeafVisitor() {
       //         @Override
       //         public void visitLeaf(final GOTLeafNode leaf) {
-      //            final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> leafVertices = leaf.getVertices();
+      //            final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> leafVertices = leaf.getVertices();
       //            //                  System.out.println(leafVertices);
       //            Assert.assertEquals("vertices per leaf", 8000, leafVertices.size());
       //         }
@@ -136,26 +136,26 @@ public class GOctreeTest {
                                       final GAxisAlignedBox region) {
 
 
-      final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> returned = octree.getVerticesInRegion(region);
+      final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> returned = octree.getVerticesInRegion(region);
 
       System.out.println("Region: " + region + ", vertices: " + returned);
 
       // check that all the returned points are inside the region
       for (int i = 0; i < returned.size(); i++) {
-         final IVector3<?> point = returned.getPoint(i);
+         final IVector3 point = returned.getPoint(i);
          Assert.assertTrue("point in region " + point, region.contains(point));
       }
 
 
       // check no point outside the returned vertices are inside the region
-      final HashSet<IVector3<?>> returnedSet = new HashSet<IVector3<?>>();
+      final HashSet<IVector3> returnedSet = new HashSet<IVector3>();
       for (int i = 0; i < returned.size(); i++) {
          returnedSet.add(returned.getPoint(i));
       }
 
-      final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices = octree.getOriginalVertices();
+      final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices = octree.getOriginalVertices();
       for (int i = 0; i < vertices.size(); i++) {
-         final IVector3<?> pointOutOfRegion = vertices.getPoint(i);
+         final IVector3 pointOutOfRegion = vertices.getPoint(i);
          if (returnedSet.contains(pointOutOfRegion)) {
             continue;
          }
@@ -187,13 +187,13 @@ public class GOctreeTest {
 
       final GOctree.DuplicatesPolicy duplicatesPolicy = new GOctree.DuplicatesPolicy() {
          @Override
-         public int[] removeDuplicates(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices1,
+         public int[] removeDuplicates(final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices1,
                                        final int[] verticesIndexes) {
-            final Set<IVector3<?>> selectedPoints = new HashSet<IVector3<?>>();
+            final Set<IVector3> selectedPoints = new HashSet<IVector3>();
             final List<Integer> selectedIndices = new ArrayList<Integer>();
 
             for (final int index : verticesIndexes) {
-               final IVector3<?> point = vertices1.getPoint(index);
+               final IVector3 point = vertices1.getPoint(index);
                if (!selectedPoints.contains(point)) {
                   selectedPoints.add(point);
                   selectedIndices.add(index);
@@ -211,8 +211,8 @@ public class GOctreeTest {
    }
 
 
-   private void assertCloseTo(final IVector3<?> expected,
-                              final IVector3<?> got) {
+   private void assertCloseTo(final IVector3 expected,
+                              final IVector3 got) {
       if (expected.closeTo(got)) {
          return;
       }

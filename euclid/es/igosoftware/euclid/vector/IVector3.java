@@ -46,21 +46,21 @@ import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 //         extends
 //            IVector<IVector3>,
 //            IGeometry<IVector3, IVector3> {
-public interface IVector3<GeometryT extends IVector3<GeometryT>>
+public interface IVector3
          extends
-            IVector<IVector3<?>, GeometryT, GAxisAlignedBox> {
+            IVector<IVector3, GAxisAlignedBox> {
 
    public static class DefaultComparator
             implements
-               Comparator<IVector3<?>>,
+               Comparator<IVector3>,
                Serializable {
 
       private static final long serialVersionUID = 1L;
 
 
       @Override
-      public int compare(final IVector3<?> p1,
-                         final IVector3<?> p2) {
+      public int compare(final IVector3 p1,
+                         final IVector3 p2) {
          return GVectorUtils.compare(p1, p2);
       }
    }
@@ -76,10 +76,10 @@ public interface IVector3<GeometryT extends IVector3<GeometryT>>
 
 
    @Override
-   public IVector2<?> asVector2();
+   public IVector2 asVector2();
 
 
-   public IVector3<?> cross(final IVector3<?> that);
+   public IVector3 cross(final IVector3 that);
 
 
 }

@@ -26,10 +26,10 @@ public class WWFeatureIterator
          implements
             IFeatureIterator {
 
-   private final GFilterIterator<IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>> _iterator;
+   private final GFilterIterator<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> _iterator;
 
 
-   public WWFeatureIterator(final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features,
+   public WWFeatureIterator(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features,
                             final List<IVectorLayerFilter> filters) {
 
       final List<SextanteFilterPredicate> predicates = new ArrayList<SextanteFilterPredicate>();
@@ -38,7 +38,7 @@ public class WWFeatureIterator
 
       }
 
-      _iterator = new GFilterIterator<IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>>(
+      _iterator = new GFilterIterator<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>>(
                features.iterator(), predicates.toArray(new SextanteFilterPredicate[0]));
 
    }
@@ -57,8 +57,8 @@ public class WWFeatureIterator
    public IFeature next() throws IteratorException {
 
       try {
-         final IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> globeFeature = _iterator.next();
-         final IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>> euclidGeom = globeFeature.getDefaultGeometry();
+         final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> globeFeature = _iterator.next();
+         final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> euclidGeom = globeFeature.getDefaultGeometry();
          final List<Object> record = globeFeature.getAttributes();
          final Geometry jtsGeom = GJTSUtils.toJTS(euclidGeom);
          final IFeature sextanteFeature = new FeatureImpl(jtsGeom, record.toArray());

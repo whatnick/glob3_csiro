@@ -53,7 +53,7 @@ import es.igosoftware.util.IRangeEvaluator;
 
 public abstract class GVertexContainerAbstract<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
 VertexT extends IVertexContainer.Vertex<VectorT>,
 
@@ -243,7 +243,7 @@ MutableT extends GVertexContainerAbstract<VectorT, VertexT, MutableT>
       long userDataSum = getUserData(0);
 
       final IColor firstColor = getColor(0);
-      IVector3<?> colorSum = (firstColor == null) ? null : asVector(firstColor); // use a vector to sum the colors, to avoid the clamp to [0..1] while adding
+      IVector3 colorSum = (firstColor == null) ? null : asVector(firstColor); // use a vector to sum the colors, to avoid the clamp to [0..1] while adding
 
 
       for (int i = 1; i < size; i++) {
@@ -278,7 +278,7 @@ MutableT extends GVertexContainerAbstract<VectorT, VertexT, MutableT>
    }
 
 
-   protected static IColor asColor(final IVector3<?> iVector3) {
+   protected static IColor asColor(final IVector3 iVector3) {
       return GColorF.newRGB((float) iVector3.x(), (float) iVector3.y(), (float) iVector3.z());
    }
 

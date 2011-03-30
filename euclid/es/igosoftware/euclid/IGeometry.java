@@ -45,9 +45,7 @@ import es.igosoftware.euclid.vector.IVector;
 
 public interface IGeometry<
 
-VectorT extends IVector<VectorT, ?, ?>,
-
-GeometryT extends IGeometry<VectorT, GeometryT>
+VectorT extends IVector<VectorT, ?>
 
 >
          extends

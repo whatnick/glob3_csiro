@@ -51,19 +51,17 @@ import es.igosoftware.util.GAssert;
 
 public abstract class GTriangle<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
-SegmentT extends GSegment<VectorT, SegmentT, BoundsT>,
-
-GeometryT extends GTriangle<VectorT, SegmentT, GeometryT, BoundsT>,
+SegmentT extends GSegment<VectorT, BoundsT>,
 
 BoundsT extends IBounds<VectorT, BoundsT>
 
 >
          extends
-            GPolytopeAbstract<VectorT, SegmentT, GeometryT, BoundsT>
+            GPolytopeAbstract<VectorT, SegmentT, BoundsT>
          implements
-            IPolygon<VectorT, SegmentT, GeometryT, BoundsT> {
+            IPolygon<VectorT, SegmentT, BoundsT> {
 
    private static final long serialVersionUID = 1L;
 
@@ -168,7 +166,7 @@ BoundsT extends IBounds<VectorT, BoundsT>
       if (getClass() != obj.getClass()) {
          return false;
       }
-      final GTriangle<?, ?, ?, ?> other = (GTriangle<?, ?, ?, ?>) obj;
+      final GTriangle<?, ?, ?> other = (GTriangle<?, ?, ?>) obj;
       if (_v0 == null) {
          if (other._v0 != null) {
             return false;

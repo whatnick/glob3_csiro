@@ -50,9 +50,9 @@ import es.igosoftware.util.GMath;
 
 public class GVector2D
          extends
-            GVectorAbstract<IVector2<?>, GVector2D, GAxisAlignedRectangle>
+            GVectorAbstract<IVector2, GAxisAlignedRectangle>
          implements
-            IVector2<GVector2D> {
+            IVector2 {
 
 
    private static final class Normalized
@@ -109,7 +109,7 @@ public class GVector2D
    public static final GVector2D Y_DOWN            = new GVector2D(0, -1).normalized();
 
 
-   public static IVector2<?> load(final DataInputStream input) throws IOException {
+   public static IVector2 load(final DataInputStream input) throws IOException {
       final double x = input.readDouble();
       final double y = input.readDouble();
       return new GVector2D(x, y);
@@ -164,7 +164,7 @@ public class GVector2D
 
 
    @Override
-   public final GVector2D add(final IVector2<?> that) {
+   public final GVector2D add(final IVector2 that) {
       return new GVector2D(_x + that.x(), _y + that.y(), false);
    }
 
@@ -176,7 +176,7 @@ public class GVector2D
 
 
    //   @Override
-   //   public double angle(final IVector2<?> that) {
+   //   public double angle(final IVector2 that) {
    //      double vDot = dot(that) / (length() * that.length());
    //      if (vDot < -1.0) {
    //         vDot = -1.0;
@@ -195,7 +195,7 @@ public class GVector2D
 
 
    @Override
-   public final double squaredDistance(final IVector2<?> that) {
+   public final double squaredDistance(final IVector2 that) {
       final double dx = _x - that.x();
       final double dy = _y - that.y();
       return dx * dx + dy * dy;
@@ -203,7 +203,7 @@ public class GVector2D
 
 
    @Override
-   public final double dot(final IVector2<?> that) {
+   public final double dot(final IVector2 that) {
       return (_x * that.x() + _y * that.y());
    }
 
@@ -219,7 +219,7 @@ public class GVector2D
       if (getClass() != obj.getClass()) {
          return false;
       }
-      final IVector2<?> other = (IVector2<?>) obj;
+      final IVector2 other = (IVector2) obj;
       if (Double.doubleToLongBits(_x) != Double.doubleToLongBits(other.x())) {
          return false;
       }
@@ -241,7 +241,7 @@ public class GVector2D
 
 
    @Override
-   public final GVector2D interpolatedTo(final IVector2<?> that,
+   public final GVector2D interpolatedTo(final IVector2 that,
                                          final double alpha) {
       //      final double newX = (1.0 - alpha) * x + alpha * that.getX();
       //      final double newY = (1.0 - alpha) * y + alpha * that.getY();
@@ -303,7 +303,7 @@ public class GVector2D
 
 
    @Override
-   public final GVector2D scale(final IVector2<?> that) {
+   public final GVector2D scale(final IVector2 that) {
       return new GVector2D(_x * that.x(), _y * that.y());
    }
 
@@ -315,13 +315,13 @@ public class GVector2D
 
 
    @Override
-   public final GVector2D div(final IVector2<?> that) {
+   public final GVector2D div(final IVector2 that) {
       return new GVector2D(_x / that.x(), _y / that.y());
    }
 
 
    @Override
-   public final GVector2D sub(final IVector2<?> that) {
+   public final GVector2D sub(final IVector2 that) {
       return new GVector2D(_x - that.x(), _y - that.y(), false);
    }
 
@@ -339,13 +339,13 @@ public class GVector2D
 
 
    @Override
-   public final GVector2D max(final IVector2<?> that) {
+   public final GVector2D max(final IVector2 that) {
       return new GVector2D(Math.max(_x, that.x()), Math.max(_y, that.y()), false);
    }
 
 
    @Override
-   public final GVector2D min(final IVector2<?> that) {
+   public final GVector2D min(final IVector2 that) {
       return new GVector2D(Math.min(_x, that.x()), Math.min(_y, that.y()), false);
    }
 
@@ -369,7 +369,7 @@ public class GVector2D
    //
    //
    //   @Override
-   //   public boolean contains(final IVector2<?> vector) {
+   //   public boolean contains(final IVector2 vector) {
    //      return false;
    //   } 
 
@@ -405,8 +405,8 @@ public class GVector2D
 
 
    @Override
-   public final boolean between(final IVector2<?> min,
-                                final IVector2<?> max) {
+   public final boolean between(final IVector2 min,
+                                final IVector2 max) {
       final double precision = GMath.maxD(precision(), min.precision(), max.precision());
       return GMath.between(_x, min.x(), max.x(), precision) && GMath.between(_y, min.y(), max.y(), precision);
    }
@@ -419,14 +419,14 @@ public class GVector2D
 
 
    @Override
-   public final boolean closeTo(final IVector2<?> that) {
+   public final boolean closeTo(final IVector2 that) {
       final double precision = Math.max(precision(), that.precision());
       return closeTo(that, precision);
    }
 
 
    @Override
-   public final boolean closeTo(final IVector2<?> that,
+   public final boolean closeTo(final IVector2 that,
                                 final double precision) {
       return GMath.closeTo(x(), that.x(), precision) && GMath.closeTo(y(), that.y(), precision);
    }
@@ -457,46 +457,46 @@ public class GVector2D
 
 
    @Override
-   public final IVector2<?> asVector2() {
+   public final IVector2 asVector2() {
       return this;
    }
 
 
    @Override
-   public final IVector2<?> nextUp() {
+   public final IVector2 nextUp() {
       return new GVector2D(GMath.nextUp(_x), GMath.nextUp(_y), false);
    }
 
 
    @Override
-   public final IVector2<?> previousDown() {
+   public final IVector2 previousDown() {
       return new GVector2D(GMath.previousDown(_x), GMath.previousDown(_y), false);
    }
 
 
    @Override
-   public final IVector2<?> asDouble() {
+   public final IVector2 asDouble() {
       return this;
    }
 
 
    @Override
-   public final boolean greaterOrEquals(final IVector2<?> that) {
+   public final boolean greaterOrEquals(final IVector2 that) {
       final double precision = Math.max(precision(), that.precision());
       return GMath.greaterOrEquals(_x, that.x(), precision) && GMath.greaterOrEquals(_y, that.y(), precision);
    }
 
 
    @Override
-   public final boolean lessOrEquals(final IVector2<?> that) {
+   public final boolean lessOrEquals(final IVector2 that) {
       final double precision = Math.max(precision(), that.precision());
       return GMath.lessOrEquals(_x, that.x(), precision) && GMath.lessOrEquals(_y, that.y(), precision);
    }
 
 
    @Override
-   public final IVector2<?> reproject(final GProjection sourceProjection,
-                                      final GProjection targetProjection) {
+   public final IVector2 reproject(final GProjection sourceProjection,
+                                   final GProjection targetProjection) {
       //      if (sourceProjection == targetProjection) {
       //         return this;
       //      }

@@ -26,7 +26,7 @@ import es.igosoftware.util.ITransformer;
 
 public class GGTInnerNode<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
 BoundsT extends GAxisAlignedOrthotope<VectorT, ?>,
 
@@ -42,7 +42,7 @@ ElementT
 
    static class GeometriesDistribution<
 
-   VectorT extends IVector<VectorT, ?, ?>,
+   VectorT extends IVector<VectorT, ?>,
 
    ElementT
 
@@ -72,13 +72,13 @@ ElementT
 
    static final <
 
-   VectorT extends IVector<VectorT, ?, ?>,
+   VectorT extends IVector<VectorT, ?>,
 
    BoundsT extends GAxisAlignedOrthotope<VectorT, ?>,
 
    ElementT,
 
-   GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>
+   GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
 
    > GeometriesDistribution<VectorT, ElementT> distributeGeometries(final BoundsT bounds,
                                                                     final Iterable<? extends ElementT> elements,
@@ -130,7 +130,7 @@ ElementT
                 final BoundsT bounds,
                 final Collection<ElementT> ownElements,
                 final Collection<ElementT> elementsToDistribute,
-                final ITransformer<ElementT, ? extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>> transformer,
+                final ITransformer<ElementT, ? extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>> transformer,
                 final int depth,
                 final GGeometryNTreeParameters parameters,
                 final GProgress progress) {
@@ -141,7 +141,7 @@ ElementT
 
 
    private GGTNode<VectorT, BoundsT, ElementT>[] initializeChildren(final Collection<ElementT> elements,
-                                                                    final ITransformer<ElementT, ? extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>> transformer,
+                                                                    final ITransformer<ElementT, ? extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>> transformer,
                                                                     final int depth,
                                                                     final GGeometryNTreeParameters parameters,
                                                                     final GProgress progress) {
@@ -155,7 +155,7 @@ ElementT
       }
 
       for (final ElementT element : elements) {
-         final IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>> geometry = transformer.transform(element);
+         final IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>> geometry = transformer.transform(element);
 
          final GAxisAlignedOrthotope<VectorT, ?> geometryBounds = geometry.getBounds().asAxisAlignedOrthotope();
          int geometryAddedCounter = 0;
@@ -203,7 +203,7 @@ ElementT
                                                                               final GAxisAlignedOrthotope<VectorT, ?>[] childrenBounds,
                                                                               final int maxChildrenCount,
                                                                               final List<ArrayList<ElementT>> elementsByChild,
-                                                                              final ITransformer<ElementT, ? extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>> transformer) {
+                                                                              final ITransformer<ElementT, ? extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>> transformer) {
       @SuppressWarnings({ "cast", "unchecked" })
       final GGTNode<VectorT, BoundsT, ElementT>[] result = (GGTNode<VectorT, BoundsT, ElementT>[]) new GGTNode[maxChildrenCount];
 
@@ -225,7 +225,7 @@ ElementT
                                                                              final GAxisAlignedOrthotope<VectorT, ?>[] childrenBounds,
                                                                              final int maxChildrenCount,
                                                                              final List<ArrayList<ElementT>> elementsByChild,
-                                                                             final ITransformer<ElementT, ? extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>> transformer) {
+                                                                             final ITransformer<ElementT, ? extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>> transformer) {
       final ExecutorService executor = GConcurrent.getDefaultExecutor();
 
       @SuppressWarnings("unchecked")
@@ -265,7 +265,7 @@ ElementT
    @SuppressWarnings("unchecked")
    private GGTNode<VectorT, BoundsT, ElementT> createChildNode(final GAxisAlignedOrthotope<VectorT, ?> bounds,
                                                                final Collection<ElementT> elements,
-                                                               final ITransformer<ElementT, ? extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>> transformer,
+                                                               final ITransformer<ElementT, ? extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>> transformer,
                                                                final int depth,
                                                                final GGeometryNTreeParameters parameters,
                                                                final GProgress progress) {

@@ -95,8 +95,8 @@ public class GBinaryPointsFormatTest {
    }
 
 
-   private void testSaveAndLoad(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices)
-                                                                                                                      throws IOException {
+   private void testSaveAndLoad(final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices)
+                                                                                                                throws IOException {
       populateVertices3(vertices);
 
       final GFileName fileName = saveVertices(vertices);
@@ -105,7 +105,7 @@ public class GBinaryPointsFormatTest {
 
       loader.load();
 
-      final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> readVertices = loader.getVertices();
+      final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> readVertices = loader.getVertices();
 
       Assert.assertTrue("Precision", vertices.samePrecision(readVertices));
       Assert.assertTrue("Shape", vertices.sameShapeThan(readVertices));
@@ -141,7 +141,7 @@ public class GBinaryPointsFormatTest {
    }
 
 
-   private void populateVertices3(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices) {
+   private void populateVertices3(final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices) {
       vertices.addPoint(new GVector3D(1, 10, 100), 1, GVector3D.X_UP, GColorI.WHITE);
       vertices.addPoint(new GVector3D(2, 20, 200), 2, GVector3D.Y_UP, GColorI.BLACK);
       vertices.addPoint(new GVector3D(3, 30, 300), 3, GVector3D.Z_UP, GColorI.newRGB(0.1f, 0.2f, 0.3f));
@@ -160,15 +160,14 @@ public class GBinaryPointsFormatTest {
    }
 
 
-   private GFileName saveVertices(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices)
-                                                                                                                        throws IOException {
+   private GFileName saveVertices(final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices)
+                                                                                                                  throws IOException {
       final File file = File.createTempFile("GBinaryPointsFormatTest-", ".bp");
       file.deleteOnExit();
 
       final GFileName fileName = GFileName.fromFile(file);
 
-      GBinaryPoints3Loader.save((IUnstructuredVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?>) vertices,
-               fileName);
+      GBinaryPoints3Loader.save((IUnstructuredVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?>) vertices, fileName);
 
       return fileName;
    }

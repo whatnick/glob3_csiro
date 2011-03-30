@@ -24,7 +24,7 @@ import es.igosoftware.util.ITransformer;
 
 public abstract class GGeometryNTree<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
 BoundsT extends GAxisAlignedOrthotope<VectorT, ?>,
 
@@ -52,7 +52,7 @@ ElementT
    protected GGeometryNTree(final String name,
                             final GAxisAlignedOrthotope<VectorT, ?> bounds,
                             final Iterable<? extends ElementT> elements,
-                            final ITransformer<ElementT, ? extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>> transformer,
+                            final ITransformer<ElementT, ? extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>> transformer,
                             final GGeometryNTreeParameters parameters) {
       _name = name;
       _elements = elements;
@@ -191,8 +191,8 @@ ElementT
 
 
    @SuppressWarnings("unchecked")
-   private static <VectorT extends IVector<VectorT, ?, ?>> VectorT smallestBiggerMultipleOf(final VectorT lower,
-                                                                                            final double smallestExtension) {
+   private static <VectorT extends IVector<VectorT, ?>> VectorT smallestBiggerMultipleOf(final VectorT lower,
+                                                                                         final double smallestExtension) {
 
       final byte dimensionsCount = lower.dimensions();
 
@@ -447,14 +447,14 @@ ElementT
    //      System.out.println("-----------------\n");
    //
    //
-   //      final Collection<IPolygon2D<?>> elements = new ArrayList<IPolygon2D<?>>();
+   //      final Collection<IPolygon2D> elements = new ArrayList<IPolygon2D>();
    //
    //      elements.add(new GTriangle2D(new GVector2D(0, 0), new GVector2D(1, 0), new GVector2D(0, 1)));
    //      elements.add(new GQuad2D(new GVector2D(10, 10), new GVector2D(11, 10), new GVector2D(10, 11), new GVector2D(20, 11)));
    //
    //      //final GAxisAlignedRectangle bounds = new GAxisAlignedRectangle(GVector2D.ZERO, GVector2D.X_UP);
    //      final GAxisAlignedRectangle bounds = null;
-   //      final GGeometryQuadtree<IPolygon2D<?>> quadtree = new GGeometryQuadtree<IPolygon2D<?>>("test tree", bounds, elements,
+   //      final GGeometryQuadtree<IPolygon2D> quadtree = new GGeometryQuadtree<IPolygon2D>("test tree", bounds, elements,
    //               new GGeometryNTreeParameters(true, 10, 10, GGeometryNTreeParameters.BoundsPolicy.MINIMUM));
    //   }
 

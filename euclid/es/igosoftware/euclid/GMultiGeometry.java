@@ -28,15 +28,15 @@ import es.igosoftware.util.ITransformer;
 
 public class GMultiGeometry<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
-ChildrenGeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>
+ChildrenGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
 
 >
          extends
-            GGeometryAbstract<VectorT, GMultiGeometry<VectorT, ChildrenGeometryT>>
+            GGeometryAbstract<VectorT>
          implements
-            IBoundedGeometry<VectorT, GMultiGeometry<VectorT, ChildrenGeometryT>, GAxisAlignedOrthotope<VectorT, ?>>,
+            IBoundedGeometry<VectorT, GAxisAlignedOrthotope<VectorT, ?>>,
             Iterable<ChildrenGeometryT> {
 
 
@@ -184,22 +184,22 @@ ChildrenGeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<V
       System.out.println("--------------\n");
 
 
-      final GMultiGeometry<IVector2<?>, IVector2<?>> multiPoint2D = new GMultiGeometry<IVector2<?>, IVector2<?>>(GVector2D.UNIT,
+      final GMultiGeometry<IVector2, IVector2> multiPoint2D = new GMultiGeometry<IVector2, IVector2>(GVector2D.UNIT,
                GVector2D.X_DOWN, new GVector2D(10, 10));
       System.out.println(multiPoint2D);
       System.out.println("  bounds=" + multiPoint2D.getBounds());
       System.out.println();
 
 
-      final GMultiGeometry<IVector3<?>, IVector3<?>> multiPoint3D = new GMultiGeometry<IVector3<?>, IVector3<?>>(GVector3D.UNIT,
+      final GMultiGeometry<IVector3, IVector3> multiPoint3D = new GMultiGeometry<IVector3, IVector3>(GVector3D.UNIT,
                GVector3D.X_DOWN, new GVector3D(10, 10, 10));
       System.out.println(multiPoint3D);
       System.out.println("  bounds=" + multiPoint3D.getBounds());
       System.out.println();
 
 
-      final GMultiGeometry<IVector2<?>, IPolygon2D<?>> multiLine2D = new GMultiGeometry<IVector2<?>, IPolygon2D<?>>(
-               new GSegment2D(GVector2D.ZERO, GVector2D.UNIT));
+      final GMultiGeometry<IVector2, IPolygon2D> multiLine2D = new GMultiGeometry<IVector2, IPolygon2D>(new GSegment2D(
+               GVector2D.ZERO, GVector2D.UNIT));
       System.out.println(multiLine2D);
       System.out.println("  bounds=" + multiLine2D.getBounds());
       System.out.println();

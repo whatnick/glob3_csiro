@@ -30,16 +30,16 @@ class GPolygon2DRenderUnit
 
 
    @Override
-   public BufferedImage render(final GRenderingQuadtree<IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>> quadtree,
+   public BufferedImage render(final GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> quadtree,
                                final GAxisAlignedRectangle region,
                                final GRenderingAttributes attributes) {
 
-      final IVector2<?> extent = region.getExtent();
+      final IVector2 extent = region.getExtent();
 
       final int width = attributes._textureWidth;
       final int height = attributes._textureHeight;
 
-      final IVector2<?> scale = new GVector2D(width, height).div(extent);
+      final IVector2 scale = new GVector2D(width, height).div(extent);
 
       final BufferedImage renderedImage = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
       renderedImage.setAccelerationPriority(1);
@@ -73,11 +73,11 @@ class GPolygon2DRenderUnit
    }
 
 
-   private void processNode(final GGTNode<IVector2<?>, GAxisAlignedRectangle, IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>> node,
-                            final GRenderingQuadtree<IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>> quadtree,
+   private void processNode(final GGTNode<IVector2, GAxisAlignedRectangle, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> node,
+                            final GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> quadtree,
                             final GAxisAlignedRectangle region,
                             final GRenderingAttributes attributes,
-                            final IVector2<?> scale,
+                            final IVector2 scale,
                             final Graphics2D g2d,
                             final BufferedImage renderedImage) {
 
@@ -88,13 +88,13 @@ class GPolygon2DRenderUnit
       }
 
 
-      final IVector2<?> scaledNodeExtent = nodeBounds.getExtent().scale(scale);
+      final IVector2 scaledNodeExtent = nodeBounds.getExtent().scale(scale);
       final double projectedSize = scaledNodeExtent.x() * scaledNodeExtent.y();
       if (projectedSize <= attributes._lodMinSize) {
          if (attributes._renderLODIgnores || attributes._debugLODRendering) {
             final Color color = attributes._debugLODRendering ? Color.RED : attributes._lodColor;
 
-            final IVector2<?> projectedCenter = nodeBounds.getCenter().sub(region._lower).scale(scale);
+            final IVector2 projectedCenter = nodeBounds.getCenter().sub(region._lower).scale(scale);
             setPixel(renderedImage, projectedCenter, color);
          }
 
@@ -103,10 +103,10 @@ class GPolygon2DRenderUnit
 
 
       if (node instanceof GGTInnerNode) {
-         final GGTInnerNode<IVector2<?>, GAxisAlignedRectangle, IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>> inner;
-         inner = (GGTInnerNode<IVector2<?>, GAxisAlignedRectangle, IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>>) node;
+         final GGTInnerNode<IVector2, GAxisAlignedRectangle, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> inner;
+         inner = (GGTInnerNode<IVector2, GAxisAlignedRectangle, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>>) node;
 
-         for (final GGTNode<IVector2<?>, GAxisAlignedRectangle, IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>> child : inner.getChildren()) {
+         for (final GGTNode<IVector2, GAxisAlignedRectangle, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> child : inner.getChildren()) {
             processNode(child, quadtree, region, attributes, scale, g2d, renderedImage);
          }
       }
@@ -116,10 +116,10 @@ class GPolygon2DRenderUnit
    }
 
 
-   private void renderNodeGeometries(final GGTNode<IVector2<?>, ? extends IFiniteBounds<IVector2<?>, ?>, IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>> node,
+   private void renderNodeGeometries(final GGTNode<IVector2, ? extends IFiniteBounds<IVector2, ?>, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> node,
                                      final GAxisAlignedRectangle region,
                                      final GRenderingAttributes attributes,
-                                     final IVector2<?> scale,
+                                     final IVector2 scale,
                                      final Graphics2D g2d,
                                      final BufferedImage renderedImage) {
 
@@ -127,8 +127,8 @@ class GPolygon2DRenderUnit
       if (attributes._renderBounds) {
          final GAxisAlignedRectangle nodeBounds = node.getBounds().asRectangle();
 
-         final IVector2<?> nodeLower = nodeBounds._lower.sub(region._lower).scale(scale);
-         final IVector2<?> nodeUpper = nodeBounds._upper.sub(region._lower).scale(scale);
+         final IVector2 nodeLower = nodeBounds._lower.sub(region._lower).scale(scale);
+         final IVector2 nodeUpper = nodeBounds._upper.sub(region._lower).scale(scale);
 
          g2d.setStroke(new BasicStroke(0.25f));
          g2d.setColor(Color.GREEN);
@@ -140,8 +140,8 @@ class GPolygon2DRenderUnit
       }
 
 
-      for (final IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> feature : node.getElements()) {
-         final IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>> geometry = feature.getDefaultGeometry();
+      for (final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature : node.getElements()) {
+         final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> geometry = feature.getDefaultGeometry();
          if (geometry.getBounds().asAxisAlignedOrthotope().touches(region)) {
             renderGeometry(geometry, scale, renderedImage, g2d, region, attributes);
          }
@@ -170,7 +170,7 @@ class GPolygon2DRenderUnit
 
 
    private static void setPixel(final BufferedImage renderedImage,
-                                final IVector2<?> point,
+                                final IVector2 point,
                                 final Color color) {
 
       final int imageX = Math.round((float) point.x());
@@ -217,8 +217,8 @@ class GPolygon2DRenderUnit
 
 
    @SuppressWarnings("unchecked")
-   private void renderGeometry(final IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>> geometry,
-                               final IVector2<?> scale,
+   private void renderGeometry(final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> geometry,
+                               final IVector2 scale,
                                final BufferedImage renderedImage,
                                final Graphics2D g2d,
                                final GAxisAlignedRectangle region,
@@ -232,7 +232,7 @@ class GPolygon2DRenderUnit
       }
 
 
-      final IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>> geometryToDraw;
+      final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> geometryToDraw;
       if (geometry instanceof GComplexPolytope) {
          geometryToDraw = ((GComplexPolytope) geometry).getHull();
       }
@@ -244,14 +244,14 @@ class GPolygon2DRenderUnit
       }
 
 
-      final GAxisAlignedOrthotope<IVector2<?>, ?> geometryBounds = geometryToDraw.getBounds().asAxisAlignedOrthotope();
-      final IVector2<?> scaledGeometryExtent = geometryBounds.getExtent().scale(scale);
+      final GAxisAlignedOrthotope<IVector2, ?> geometryBounds = geometryToDraw.getBounds().asAxisAlignedOrthotope();
+      final IVector2 scaledGeometryExtent = geometryBounds.getExtent().scale(scale);
       final double projectedSize = scaledGeometryExtent.x() * scaledGeometryExtent.y();
       if (projectedSize <= attributes._lodMinSize) {
          if (attributes._renderLODIgnores || attributes._debugLODRendering) {
             final Color color = attributes._debugLODRendering ? Color.MAGENTA : attributes._lodColor;
 
-            final IVector2<?> projectedCenter = geometryBounds.getCenter().sub(region._lower).scale(scale);
+            final IVector2 projectedCenter = geometryBounds.getCenter().sub(region._lower).scale(scale);
             setPixel(renderedImage, projectedCenter, color);
          }
 
@@ -260,8 +260,8 @@ class GPolygon2DRenderUnit
 
 
       if (geometryToDraw instanceof IVector) {
-         final IVector2<?> point2 = (IVector2<?>) geometryToDraw;
-         final IVector2<?> point = point2.sub(region._lower).scale(scale);
+         final IVector2 point2 = (IVector2) geometryToDraw;
+         final IVector2 point = point2.sub(region._lower).scale(scale);
 
          final int x = Math.round((float) point.x());
          final int y = Math.round((float) point.y());
@@ -269,13 +269,13 @@ class GPolygon2DRenderUnit
          drawPoint(g2d, attributes, x, y);
       }
       else if (geometryToDraw instanceof IPolygon2D) {
-         final IPolygon2D<?> polygon = (IPolygon2D<?>) geometryToDraw;
+         final IPolygon2D polygon = (IPolygon2D) geometryToDraw;
          final int nPoints = polygon.getPointsCount();
          final int[] xPoints = new int[nPoints];
          final int[] yPoints = new int[nPoints];
 
          for (int i = 0; i < nPoints; i++) {
-            final IVector2<?> point = polygon.getPoint(i).sub(region._lower).scale(scale);
+            final IVector2 point = polygon.getPoint(i).sub(region._lower).scale(scale);
 
             xPoints[i] = Math.round((float) point.x());
             yPoints[i] = Math.round((float) point.y());

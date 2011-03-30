@@ -29,11 +29,11 @@ public class GGeometryNTreeParameters {
 
    public static interface AcceptLeafNodeCreationPolicy<
 
-   VectorT extends IVector<VectorT, ?, ?>,
+   VectorT extends IVector<VectorT, ?>,
 
    ElementT,
 
-   GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>
+   GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
 
    > {
       public boolean accept(final int depth,
@@ -46,11 +46,11 @@ public class GGeometryNTreeParameters {
 
    ElementT,
 
-   GeometryT extends IBoundedGeometry<IVector3<?>, ?, ? extends IFiniteBounds<IVector3<?>, ?>>
+   GeometryT extends IBoundedGeometry<IVector3, ? extends IFiniteBounds<IVector3, ?>>
 
    >
             extends
-               AcceptLeafNodeCreationPolicy<IVector3<?>, ElementT, GeometryT> {
+               AcceptLeafNodeCreationPolicy<IVector3, ElementT, GeometryT> {
 
 
    }
@@ -60,22 +60,22 @@ public class GGeometryNTreeParameters {
 
    ElementT,
 
-   GeometryT extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>
+   GeometryT extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>
 
    >
             extends
-               AcceptLeafNodeCreationPolicy<IVector2<?>, ElementT, GeometryT> {
+               AcceptLeafNodeCreationPolicy<IVector2, ElementT, GeometryT> {
 
    }
 
 
    private static class DefaultAcceptLeafNodeCreationPolicy<
 
-   VectorT extends IVector<VectorT, ?, ?>,
+   VectorT extends IVector<VectorT, ?>,
 
    ElementT,
 
-   GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>
+   GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
 
    >
             implements

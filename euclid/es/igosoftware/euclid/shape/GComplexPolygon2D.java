@@ -45,38 +45,26 @@ import es.igosoftware.euclid.vector.IVector2;
 
 public final class GComplexPolygon2D
          extends
-            GComplexPolytope<
-
-            IVector2<?>,
-
-            GSegment2D,
-
-            GComplexPolygon2D,
-
-            GAxisAlignedRectangle,
-
-            IPolygon2D<?>
-
-            >
+            GComplexPolytope<IVector2, GSegment2D, GAxisAlignedRectangle, IPolygon2D>
          implements
-            IPolygon2D<GComplexPolygon2D> {
+            IPolygon2D {
 
    private static final long serialVersionUID = 1L;
 
 
-   public GComplexPolygon2D(final IPolygon2D<?> hull,
-                            final List<IPolygon2D<?>> holes) {
+   public GComplexPolygon2D(final IPolygon2D hull,
+                            final List<IPolygon2D> holes) {
       super(hull, holes);
    }
 
 
    @Override
-   public boolean contains(final IVector2<?> point) {
+   public boolean contains(final IVector2 point) {
       if (!_hull.contains(point)) {
          return false;
       }
 
-      for (final IPolygon2D<?> hole : _holes) {
+      for (final IPolygon2D hole : _holes) {
          if (hole.contains(point)) {
             return false;
          }
@@ -92,7 +80,7 @@ public final class GComplexPolygon2D
          return true;
       }
 
-      for (final IPolygon2D<?> hole : _holes) {
+      for (final IPolygon2D hole : _holes) {
          if (hole.isSelfIntersected()) {
             return true;
          }
@@ -104,11 +92,11 @@ public final class GComplexPolygon2D
 
    @Override
    public GComplexPolygon2D createSimplified(final double capsRadiansTolerance) {
-      final IPolygon2D<?> simplifiedShell = _hull.createSimplified(capsRadiansTolerance);
+      final IPolygon2D simplifiedShell = _hull.createSimplified(capsRadiansTolerance);
 
-      final List<IPolygon2D<?>> simplifiedHoles = new ArrayList<IPolygon2D<?>>(_holes.size());
+      final List<IPolygon2D> simplifiedHoles = new ArrayList<IPolygon2D>(_holes.size());
 
-      for (final IPolygon2D<?> hole : _holes) {
+      for (final IPolygon2D hole : _holes) {
          simplifiedHoles.add(hole.createSimplified(capsRadiansTolerance));
       }
 
@@ -135,10 +123,10 @@ public final class GComplexPolygon2D
 
 
    @Override
-   public double squaredDistance(final IVector2<?> point) {
+   public double squaredDistance(final IVector2 point) {
       double min = _hull.squaredDistance(point);
 
-      for (final IPolygon2D<?> hole : _holes) {
+      for (final IPolygon2D hole : _holes) {
          final double current = hole.squaredDistance(point);
          if (current < min) {
             min = current;
@@ -153,7 +141,7 @@ public final class GComplexPolygon2D
    protected List<GSegment2D> initializeEdges() {
       final List<GSegment2D> result = new ArrayList<GSegment2D>();
       result.addAll(_hull.getEdges());
-      for (final IPolygon2D<?> hole : _holes) {
+      for (final IPolygon2D hole : _holes) {
          result.addAll(hole.getEdges());
       }
       return result;

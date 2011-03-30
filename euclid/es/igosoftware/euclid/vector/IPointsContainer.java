@@ -44,13 +44,11 @@ import es.igosoftware.euclid.IGeometry;
 
 public interface IPointsContainer<
 
-VectorT extends IVector<VectorT, ?, ?>,
-
-GeometryT extends IPointsContainer<VectorT, GeometryT>
+VectorT extends IVector<VectorT, ?>
 
 >
          extends
-            IGeometry<VectorT, GeometryT>,
+            IGeometry<VectorT>,
             Iterable<VectorT> {
 
 

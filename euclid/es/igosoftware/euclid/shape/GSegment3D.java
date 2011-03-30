@@ -42,13 +42,13 @@ import es.igosoftware.euclid.vector.IVector3;
 
 public final class GSegment3D
          extends
-            GSegment<IVector3<?>, GSegment3D, GAxisAlignedBox> {
+            GSegment<IVector3, GAxisAlignedBox> {
 
    private static final long serialVersionUID = 1L;
 
 
-   public GSegment3D(final IVector3<?> fromPoint,
-                     final IVector3<?> toPoint) {
+   public GSegment3D(final IVector3 fromPoint,
+                     final IVector3 toPoint) {
       super(fromPoint, toPoint);
    }
 
@@ -59,7 +59,7 @@ public final class GSegment3D
    }
 
 
-   public IVector3<?> getIntersection(final GPlane plane) {
+   public IVector3 getIntersection(final GPlane plane) {
 
       return plane.getIntersection(this);
    }

@@ -43,15 +43,15 @@ import es.igosoftware.util.GMath;
 
 public final class GBall
          extends
-            GNBall<IVector3<?>, GBall>
+            GNBall<IVector3, GBall>
          implements
             IBounds3D<GBall>,
-            IFiniteBounds<IVector3<?>, GBall> {
+            IFiniteBounds<IVector3, GBall> {
 
    private static final long serialVersionUID = 1L;
 
 
-   public GBall(final IVector3<?> center,
+   public GBall(final IVector3 center,
                 final double radius) {
       super(center, radius);
    }
@@ -121,7 +121,7 @@ public final class GBall
 
 
    @Override
-   public boolean touchesBounds(final IBounds<IVector3<?>, ?> that) {
+   public boolean touchesBounds(final IBounds<IVector3, ?> that) {
       return touches((IBounds3D<?>) that);
    }
 

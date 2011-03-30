@@ -48,14 +48,13 @@ import es.igosoftware.util.GMath;
 
 public abstract class GNBall<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
 GeometryT extends GNBall<VectorT, GeometryT>
 
 >
-
          extends
-            GGeometryAbstract<VectorT, GeometryT>
+            GGeometryAbstract<VectorT>
          implements
             IBounds<VectorT, GeometryT> {
 

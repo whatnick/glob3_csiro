@@ -51,17 +51,15 @@ import es.igosoftware.util.GAssert;
 
 public abstract class GSimplePolytope<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
-SegmentT extends GSegment<VectorT, SegmentT, BoundsT>,
-
-GeometryT extends GSimplePolytope<VectorT, SegmentT, GeometryT, BoundsT>,
+SegmentT extends GSegment<VectorT, BoundsT>,
 
 BoundsT extends IBounds<VectorT, BoundsT>
 
 >
          extends
-            GPolytopeAbstract<VectorT, SegmentT, GeometryT, BoundsT> {
+            GPolytopeAbstract<VectorT, SegmentT, BoundsT> {
 
 
    private static final long  serialVersionUID = 1L;
@@ -180,7 +178,7 @@ BoundsT extends IBounds<VectorT, BoundsT>
       if (getClass() != obj.getClass()) {
          return false;
       }
-      final GSimplePolytope<?, ?, ?, ?> other = (GSimplePolytope<?, ?, ?, ?>) obj;
+      final GSimplePolytope<?, ?, ?> other = (GSimplePolytope<?, ?, ?>) obj;
       if (_points == null) {
          if (other._points != null) {
             return false;
