@@ -79,15 +79,13 @@ GeometryT extends IGeometry<VectorT, GeometryT>
    public abstract Object clone();
 
 
-   public GeometryT transformedBy(final IVectorTransformer<VectorT> transformer);
-
-
    public double precision();
 
 
-   public boolean closeTo(final GeometryT that);
-
-
    public VectorT getCentroid();
+
+
+   public GeometryT transformedBy(final IVectorTransformer<VectorT> transformer);
+
 
 }

@@ -329,7 +329,7 @@ public final class GPlane
       _normal = p1p0.cross(p2p0).normalized();
       _d = -_normal.dot(point0);
 
-      if (GVectorUtils.closeToZero(_normal)) {
+      if (_normal.closeToZero()) {
          throw new GColinearException(point0, point1, point2);
       }
    }
@@ -706,12 +706,6 @@ public final class GPlane
 
       System.out.println("Punto de intersección:" + intersectionP);
 
-   }
-
-
-   @Override
-   public boolean closeTo(final GPlane that) {
-      return GMath.closeTo(_d, that._d) && _normal.closeTo(that._normal);
    }
 
 

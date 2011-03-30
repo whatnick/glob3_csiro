@@ -167,12 +167,6 @@ GeometryT extends GNBall<VectorT, GeometryT>
    }
 
 
-   @Override
-   public boolean closeTo(final GeometryT that) {
-      return _center.closeTo(that._center) && GMath.closeTo(_radius, that._radius);
-   }
-
-
    public boolean isFullInside(final GAxisAlignedOrthotope<VectorT, ?> orthotope) {
       final VectorT lower = _center.sub(_radius);
       final VectorT upper = _center.add(_radius);

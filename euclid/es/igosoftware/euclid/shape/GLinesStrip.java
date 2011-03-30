@@ -150,20 +150,6 @@ BoundsT extends IBounds<VectorT, BoundsT>
 
 
    @Override
-   public boolean closeTo(final GeometryT that) {
-      if (getPointsCount() != that.getPointsCount()) {
-         return false;
-      }
-      for (int i = 0; i < getPointsCount(); i++) {
-         if (!_points.get(i).closeTo(that._points.get(i))) {
-            return false;
-         }
-      }
-      return true;
-   }
-
-
-   @Override
    public VectorT closestPointOnBoundary(final VectorT point) {
       GAssert.notNull(point, "point");
 

@@ -590,12 +590,6 @@ public class GVector3F
 
 
    @Override
-   public boolean closeTo(final GVector3F that) {
-      return closeTo((IVector3<?>) that);
-   }
-
-
-   @Override
    public GAxisAlignedBox getBounds() {
       return new GAxisAlignedBox(this, nextUp());
    }

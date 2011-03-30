@@ -359,12 +359,6 @@ GeometryT extends GAxisAlignedOrthotope<VectorT, GeometryT>
    }
 
 
-   @Override
-   public boolean closeTo(final GeometryT that) {
-      return _lower.closeTo(that._lower) && _upper.closeTo(that._upper);
-   }
-
-
    public boolean isFullInside(final GAxisAlignedOrthotope<VectorT, ?> that) {
       return _lower.greaterOrEquals(that._lower) && _upper.lessOrEquals(that._upper);
    }

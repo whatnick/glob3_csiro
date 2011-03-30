@@ -290,20 +290,6 @@ BoundsT extends IBounds<VectorT, BoundsT>
    }
 
 
-   //   public boolean closeTo(final GSegment<VectorT, ?, ?> that) {
-   //      final VectorT from = that._from;
-   //      final VectorT to = that._to;
-   //
-   //      return _from.closeTo(from) && _to.closeTo(to);
-   //   }
-
-
-   @Override
-   public boolean closeTo(final GeometryT that) {
-      return _from.closeTo(that._from) && _to.closeTo(that._to);
-   }
-
-
    @Override
    public VectorT getCentroid() {
       return _from.add(_to).div(2);

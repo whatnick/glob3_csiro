@@ -502,12 +502,6 @@ public class GVector2D
 
 
    @Override
-   public boolean closeTo(final GVector2D that) {
-      return closeTo((IVector2<?>) that);
-   }
-
-
-   @Override
    public GAxisAlignedRectangle getBounds() {
       return new GAxisAlignedRectangle(this, nextUp());
    }

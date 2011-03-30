@@ -172,15 +172,6 @@ public final class GSegment2D
 
 
    @Override
-   public boolean closeTo(final IPolytope<IVector2<?>, GSegment2D, ?, GAxisAlignedRectangle> that) {
-      if (getClass() == that.getClass()) {
-         return closeTo((GSegment2D) that);
-      }
-      return false;
-   }
-
-
-   @Override
    public List<GTriangle2D> triangulate() {
       return null;
    }

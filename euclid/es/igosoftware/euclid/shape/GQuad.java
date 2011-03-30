@@ -237,12 +237,6 @@ BoundsT extends IBounds<VectorT, BoundsT>
    public abstract boolean isConvex();
 
 
-   @Override
-   public boolean closeTo(final GeometryT that) {
-      return _v0.closeTo(that._v0) && _v1.closeTo(that._v1) && _v2.closeTo(that._v2) && _v3.closeTo(that._v3);
-   }
-
-
    @SuppressWarnings("unchecked")
    @Override
    public VectorT getCentroid() {

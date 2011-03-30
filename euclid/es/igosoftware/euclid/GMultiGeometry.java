@@ -172,25 +172,6 @@ ChildrenGeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<V
 
 
    @Override
-   public boolean closeTo(final GMultiGeometry<VectorT, ChildrenGeometryT> that) {
-      //      if (_children.size() != that._children.size()) {
-      //         return false;
-      //      }
-      //
-      //      for (int i = 0; i < _children.size(); i++) {
-      //         final ChildrenGeometryT thisChild = _children.get(i);
-      //         final ChildrenGeometryT thatChild = that._children.get(i);
-      //         if (!thisChild.closeTo(thatChild)) {
-      //            return false;
-      //         }
-      //      }
-      //
-      //      return true;
-      throw new RuntimeException("Operation not supported");
-   }
-
-
-   @Override
    public String toString() {
       return "GComposite " + _children;
    }

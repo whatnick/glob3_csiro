@@ -48,21 +48,10 @@ import java.util.Random;
 
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
 import es.igosoftware.util.GCollections;
-import es.igosoftware.util.GMath;
 import es.igosoftware.util.IComparatorInt;
 
 
 public final class GVectorUtils {
-
-   public static boolean closeToZero(final IVector2<?> vector) {
-      return GMath.closeToZero(vector.x()) && GMath.closeToZero(vector.y());
-   }
-
-
-   public static boolean closeToZero(final IVector3<?> vector) {
-      return GMath.closeToZero(vector.x()) && GMath.closeToZero(vector.y()) && GMath.closeToZero(vector.z());
-   }
-
 
    public static int compare(final IVector2<?> p1,
                              final IVector2<?> p2) {

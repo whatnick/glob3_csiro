@@ -172,12 +172,6 @@ GeometryT extends GNCapsule<VectorT, SegmentT, GeometryT>
    }
 
 
-   @Override
-   public boolean closeTo(final GeometryT that) {
-      return _segment.closeTo(that._segment) && GMath.closeTo(_radius, that._radius);
-   }
-
-
    public boolean isFullInside(final GAxisAlignedOrthotope<VectorT, ?> orthotope) {
 
 

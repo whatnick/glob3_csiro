@@ -76,6 +76,4 @@ BoundsT extends IBounds<VectorT, BoundsT>
    public BoundsT getBounds();
 
 
-   public boolean closeTo(final IPolytope<VectorT, SegmentT, ?, BoundsT> that);
-
 }

@@ -178,4 +178,5 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
    public VectorT reproject(final GProjection sourceProjection,
                             final GProjection targetProjection);
 
+
 }
