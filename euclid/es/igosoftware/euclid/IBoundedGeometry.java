@@ -50,7 +50,7 @@ VectorT extends IVector<VectorT, ?, ?>,
 
 GeometryT extends IBoundedGeometry<VectorT, GeometryT, BoundsT>,
 
-BoundsT extends IBounds<VectorT, BoundsT>
+BoundsT extends IBounds<VectorT, ?>
 
 >
          extends
