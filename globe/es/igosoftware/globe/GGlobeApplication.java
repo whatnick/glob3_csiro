@@ -109,6 +109,8 @@ import gov.nasa.worldwind.SceneController;
 import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
+import gov.nasa.worldwind.event.SelectEvent;
+import gov.nasa.worldwind.event.SelectListener;
 import gov.nasa.worldwind.examples.sunlight.RectangularNormalTessellator;
 import gov.nasa.worldwind.examples.util.StatusLayer;
 import gov.nasa.worldwind.geom.Angle;
@@ -116,6 +118,7 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Sector;
 import gov.nasa.worldwind.globes.Earth;
 import gov.nasa.worldwind.globes.Globe;
+import gov.nasa.worldwind.layers.CompassLayer;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
 import gov.nasa.worldwind.layers.ViewControlsLayer;
@@ -548,7 +551,55 @@ public abstract class GGlobeApplication
       layers.add(viewControlsLayer);
       getWorldWindowGLCanvas().addSelectListener(new ViewControlsSelectListener(getWorldWindowGLCanvas(), viewControlsLayer));
 
+
+      // Find Compass layer and enable picking
+      for (final Layer layer : layers) {
+         if (layer instanceof CompassLayer) {
+            layer.setPickEnabled(true);
+         }
+      }
+
+      configureCompassInteraction();
+
       return layers;
+   }
+
+
+   private void configureCompassInteraction() {
+      // Add select listener to handle drag events on the compass
+      getWorldWindowGLCanvas().addSelectListener(new SelectListener() {
+         private Angle _dragStartHeading = null;
+         private Angle _viewStartHeading = null;
+
+
+         @Override
+         public void selected(final SelectEvent event) {
+            if (event.getTopObject() instanceof CompassLayer) {
+               final View view = getView();
+
+               final Angle heading = (Angle) event.getTopPickedObject().getValue("Heading");
+
+               final String eventAction = event.getEventAction();
+               if (eventAction.equals(SelectEvent.DRAG) && (_dragStartHeading == null)) {
+                  _dragStartHeading = heading;
+                  _viewStartHeading = view.getHeading();
+               }
+               else if (eventAction.equals(SelectEvent.ROLLOVER) && (_dragStartHeading != null)) {
+                  final double move = heading.degrees - _dragStartHeading.degrees;
+                  double newHeading = _viewStartHeading.degrees - move;
+                  newHeading = newHeading >= 0 ? newHeading : newHeading + 360;
+                  view.stopAnimations();
+                  view.setHeading(Angle.fromDegrees(newHeading));
+               }
+               else if (eventAction.equals(SelectEvent.DRAG_END)) {
+                  _dragStartHeading = null;
+               }
+               else if (eventAction.equals(SelectEvent.LEFT_DOUBLE_CLICK)) {
+                  goToHeading(Angle.fromDegrees(0));
+               }
+            }
+         }
+      });
    }
 
 
@@ -972,6 +1023,41 @@ public abstract class GGlobeApplication
    }
 
 
+   @Override
+   public void goToHeading(final Angle heading) {
+      if (heading == null) {
+         return;
+      }
+
+
+      final View rawView = getView();
+      if (rawView instanceof GCustomView) {
+         final GCustomView view = (GCustomView) rawView;
+
+         final GCustomViewInputHandler customViewInputHandler = (GCustomViewInputHandler) view.getViewInputHandler();
+
+         customViewInputHandler.stopAnimators();
+         customViewInputHandler.addHeadingAnimator(view.getHeading(), heading);
+
+         redraw();
+      }
+      else if (rawView instanceof OrbitView) {
+         final OrbitView view = (OrbitView) rawView;
+
+         final OrbitViewInputHandler orbitViewInputHandler = (OrbitViewInputHandler) view.getViewInputHandler();
+
+         orbitViewInputHandler.stopAnimators();
+         orbitViewInputHandler.addHeadingAnimator(view.getHeading(), heading);
+
+         redraw();
+      }
+      else {
+         rawView.setHeading(heading);
+      }
+
+   }
+
+
    public void jumpTo(final Position position,
                       final double elevation) {
       if (getView() instanceof GCustomView) {
@@ -1004,7 +1090,6 @@ public abstract class GGlobeApplication
                view.setZoom(elevation);
 
                redraw();
-
             }
             else {
                final OrbitView view = (OrbitView) getView();
