@@ -211,6 +211,7 @@ public class GHomePositionModule
    public void initializeTranslations(final IGlobeApplication application) {
       application.addTranslation("es", "Go to home", "Ir a casa");
       application.addTranslation("de", "Go to home", "Nach Hause gehen");
+      application.addTranslation("pt", "Go to home", "Home");
    }
 
 }

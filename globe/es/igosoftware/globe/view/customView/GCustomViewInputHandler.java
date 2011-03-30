@@ -37,7 +37,6 @@
 package es.igosoftware.globe.view.customView;
 
 import es.igosoftware.globe.GGlobeApplication;
-import es.igosoftware.globe.layers.I3DContentCollectionLayer;
 import es.igosoftware.globe.view.GInputState;
 import es.igosoftware.util.GMath;
 import gov.nasa.worldwind.View;
@@ -61,7 +60,6 @@ import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.LatLon;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Vec4;
-import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.util.Logging;
 import gov.nasa.worldwind.util.PropertyAccessor;
 import gov.nasa.worldwind.view.BasicViewPropertyLimits;
@@ -1164,18 +1162,19 @@ public class GCustomViewInputHandler
    public boolean onExitPanoramic(final View view) {
       final GCustomView customView = (GCustomView) view;
       final GGlobeApplication application = GGlobeApplication.instance();
-      //final I3DContentCollectionLayer panoramicLayer = application.getContentCollectionLayer();
-
-      for (final Layer layer : application.getLayerList()) {
-         if ((layer instanceof I3DContentCollectionLayer) && layer.isEnabled()) {
-            final I3DContentCollectionLayer panoramicLayer = (I3DContentCollectionLayer) layer;
-            panoramicLayer.exitContent(customView);
-         }
+      //         //final I3DContentCollectionLayer panoramicLayer = application.getContentCollectionLayer();
+      //   
+      //         for (final Layer layer : application.getLayerList()) {
+      //            if ((layer instanceof I3DContentCollectionLayer) && layer.isEnabled()) {
+      //               final I3DContentCollectionLayer panoramicLayer = (I3DContentCollectionLayer) layer;
+      //               panoramicLayer.exitContent(customView);
+      //            }
+      //         }
+      if (customView.getPanoramic() != null) {
+         customView.getPanoramic().deactivate(customView, application);
       }
       application.redraw();
 
-      //System.out.println(customView.getRestorableState());
-      //customView.goTo(new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710), 270000), 270000);
 
       return true;
    }

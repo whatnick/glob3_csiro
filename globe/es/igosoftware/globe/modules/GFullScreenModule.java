@@ -162,6 +162,7 @@ public class GFullScreenModule
    public void initializeTranslations(final IGlobeApplication application) {
       application.addTranslation("es", DEFAULT_LABEL, "Pantalla Completa");
       application.addTranslation("de", DEFAULT_LABEL, "Vollbild");
+      application.addTranslation("pt", DEFAULT_LABEL, "Ecrã Completo");
    }
 
 

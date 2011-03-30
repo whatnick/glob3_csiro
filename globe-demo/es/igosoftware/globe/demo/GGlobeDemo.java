@@ -221,7 +221,8 @@ public class GGlobeDemo
             @Override
             public void picked(final GPanoramic pickedPanoramic) {
                if (pickedPanoramic != null) {
-                  panoramicLayer.enterPanoramic(pickedPanoramic, (GCustomView) getView());
+                  //panoramicLayer.enterPanoramic(pickedPanoramic, (GCustomView) getView());
+                  pickedPanoramic.activate((GCustomView) getView(), GGlobeDemo.this);
                }
             }
          });

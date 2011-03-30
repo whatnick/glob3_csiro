@@ -42,6 +42,10 @@ import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.globe.GGlobeApplication;
+import es.igosoftware.globe.IGlobeApplication;
+import es.igosoftware.globe.view.GBasicOrbitViewLimits;
+import es.igosoftware.globe.view.GPanoramicViewLimits;
+import es.igosoftware.globe.view.customView.GCustomView;
 import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.io.ILoader;
@@ -188,6 +192,7 @@ public class GPanoramic
    private final Layer                                                       _layer;
    private double                                                            _currentDistanceFromEye;
 
+
    private boolean                                                           _isHidden;
 
 
@@ -230,6 +235,8 @@ public class GPanoramic
       _zoomLevels = readZoomLevels();
 
       _maxResolutionInPanoramic = _zoomLevels.getLevels().size() - 1;
+
+
    }
 
 
@@ -622,6 +629,50 @@ public class GPanoramic
    }
 
 
+   public void activate(final GCustomView view,
+                        final GGlobeApplication application) {
+
+      if (!view.hasCameraState()) {
+         view.saveCameraState();
+      }
+
+      application.jumpTo(getPosition(), 0);
+      //      view.setInputState(GInputState.PANORAMICS);
+      view.enterPanoramic(this);
+      //final GPanoramicViewLimits viewLimits = new GPanoramicViewLimits();
+      view.setOrbitViewLimits(new GPanoramicViewLimits());
+
+
+      //      hideOtherLayers(application, this._layer);
+      //      hideOtherPanoramics(this);
+
+      view.setFieldOfView(Angle.fromDegrees(120));
+
+      if (_activationListeners != null) {
+         for (final GPanoramic.ActivationListener listener : _activationListeners) {
+            listener.activated(this);
+         }
+      }
+
+   }
+
+
+   public void deactivate(final GCustomView view,
+                          final IGlobeApplication application) {
+
+      view.exitPanoramic(this);
+      view.setOrbitViewLimits(new GBasicOrbitViewLimits());
+      view.restoreCameraState();
+
+      if (_activationListeners != null) {
+         for (final GPanoramic.ActivationListener listener : _activationListeners) {
+            listener.deactivated(this);
+         }
+      }
+
+   }
+
+
    @Override
    public void render(final DrawContext dc) {
       final GL gl = dc.getGL();
@@ -850,6 +901,7 @@ public class GPanoramic
          }
 
          final GL gl = dc.getGL();
+         //TODO: transparency or not
          gl.glCallList(_displayList);
 
          if (texture != null) {
