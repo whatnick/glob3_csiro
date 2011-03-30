@@ -580,23 +580,22 @@ public abstract class GGlobeApplication
 
                final Angle heading = (Angle) event.getTopPickedObject().getValue("Heading");
 
-               final String eventAction = event.getEventAction();
-               if (eventAction.equals(SelectEvent.DRAG) && (_dragStartHeading == null)) {
+               if (event.isDrag() && (_dragStartHeading == null)) {
                   _dragStartHeading = heading;
                   _viewStartHeading = view.getHeading();
                }
-               else if (eventAction.equals(SelectEvent.ROLLOVER) && (_dragStartHeading != null)) {
+               else if (event.isRollover() && (_dragStartHeading != null)) {
                   final double move = heading.degrees - _dragStartHeading.degrees;
                   double newHeading = _viewStartHeading.degrees - move;
                   newHeading = (newHeading >= 0) ? newHeading : newHeading + 360;
                   view.stopAnimations();
                   view.setHeading(Angle.fromDegrees(newHeading));
                }
-               else if (eventAction.equals(SelectEvent.DRAG_END)) {
+               else if (event.isDragEnd()) {
                   _dragStartHeading = null;
                }
-               else if (eventAction.equals(SelectEvent.LEFT_DOUBLE_CLICK)) {
-                  goToHeading(Angle.fromDegrees(0));
+               else if (event.isLeftDoubleClick()) {
+                  goToHeading(Angle.ZERO);
                }
             }
          }
