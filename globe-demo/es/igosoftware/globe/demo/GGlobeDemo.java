@@ -39,6 +39,8 @@ package es.igosoftware.globe.demo;
 
 import java.awt.Color;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -58,6 +60,8 @@ import es.igosoftware.globe.GHomePositionModule;
 import es.igosoftware.globe.GLayersManagerModule;
 import es.igosoftware.globe.GStatisticsModule;
 import es.igosoftware.globe.IGlobeModule;
+import es.igosoftware.globe.layers.hud.GHUDIcon;
+import es.igosoftware.globe.layers.hud.GHUDLayer;
 import es.igosoftware.globe.modules.GFullScreenModule;
 import es.igosoftware.globe.modules.view.GAnaglyphViewerModule;
 import es.igosoftware.globe.modules.view.GFlatWorldModule;
@@ -156,17 +160,28 @@ public class GGlobeDemo
       }
 
 
-      //      final IconLayer iconLayer = new IconLayer();
-      //      final Position iconPos = new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0.0);
-      //      final UserFacingIcon icon = new UserFacingIcon(
-      //               "/home/oliver/Desktop/GLOB3-Repository/glob3/media/logo/bitmaps/logo32x32.png", iconPos);
-      //      iconLayer.addIcon(icon);
-      //      layers.add(iconLayer);
-
-      //      createVectorialLayer(layers);
+      createHUDLayer(layers);
 
 
       return layers;
+   }
+
+
+   private void createHUDLayer(final LayerList layers) {
+      final GHUDIcon hudIcon = new GHUDIcon("../globe/bitmaps/icons/earth.png", GHUDIcon.Position.SOUTHEAST);
+
+      hudIcon.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(final ActionEvent e) {
+            System.out.println("Clicked on the earth icon!");
+            JOptionPane.showConfirmDialog(getFrame(), "Clicked on the earth icon!");
+         }
+      });
+
+      final GHUDLayer hudLayer = new GHUDLayer();
+      hudLayer.addElement(hudIcon);
+
+      layers.add(hudLayer);
    }
 
 

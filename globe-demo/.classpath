@@ -5,5 +5,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/globe"/>
 	<classpathentry kind="lib" path="/globe/libs/worldwind.jar" sourcepath="/home/oliver/Desktop/IGO-Repository/ww"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/globe-points-streaming"/>
+	<classpathentry kind="lib" path="/globe/libs/jogl/gluegen-rt.jar"/>
+	<classpathentry kind="lib" path="/globe/libs/jogl/jogl.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
