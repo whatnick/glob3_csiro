@@ -44,9 +44,6 @@ import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.globe.layers.GVector2RenderingTheme;
-import es.igosoftware.globe.view.GBasicOrbitViewLimits;
-import es.igosoftware.globe.view.GInputState;
-import es.igosoftware.globe.view.GPanoramicViewLimits;
 import es.igosoftware.globe.view.customView.GCustomView;
 import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.avlist.AVKey;
@@ -99,11 +96,28 @@ public class GPanoramicLayer
    }
 
 
-   public void addPanoramic(final GPanoramic panoramic) {
-      if (isDuplicateName(panoramic.getName())) {
-         throw new RuntimeException("A Panoramic with the name " + panoramic.getName() + " already exists!!");
+   public void addPanoramic(final GPanoramic panoramica) {
+      if (isDuplicateName(panoramica.getName())) {
+         throw new RuntimeException("A Panoramic with the name " + panoramica.getName() + " already exists!!");
       }
-      _panoramics.add(panoramic);
+      _panoramics.add(panoramica);
+      panoramica.addActivationListener(new GPanoramic.ActivationListener() {
+
+         @Override
+         public void deactivated(final GPanoramic panoramic) {
+            unhideHiddenPanoramics();
+            unhideHiddenLayers();
+
+         }
+
+
+         @Override
+         public void activated(final GPanoramic panoramic) {
+            hideOtherLayers(GPanoramicLayer.this);
+            hideOtherPanoramics(panoramic);
+
+         }
+      });
 
    }
 
@@ -272,33 +286,34 @@ public class GPanoramicLayer
    }
 
 
-   public void enterPanoramic(final GPanoramic panoramic,
-                              final GCustomView view) {
-      final GGlobeApplication application = GGlobeApplication.instance();
-      if (!view.hasCameraState()) {
-         view.saveCameraState();
-      }
+   //
+   //   public void enterPanoramic(final GPanoramic panoramic,
+   //                              final GCustomView view) {
+   //      final GGlobeApplication application = GGlobeApplication.instance();
+   //      if (!view.hasCameraState()) {
+   //         view.saveCameraState();
+   //      }
+   //
+   //      application.jumpTo(panoramic.getPosition(), 0);
+   //      view.setInputState(GInputState.PANORAMICS);
+   //      final GPanoramicViewLimits viewLimits = new GPanoramicViewLimits();
+   //      view.setOrbitViewLimits(viewLimits);
+   //      hideOtherLayers(this);
+   //      hideOtherPanoramics(panoramic);
+   //
+   //      view.setFieldOfView(Angle.fromDegrees(120));
+   //   }
 
-      application.jumpTo(panoramic.getPosition(), 0);
-      view.setInputState(GInputState.PANORAMICS);
-      final GPanoramicViewLimits viewLimits = new GPanoramicViewLimits();
-      view.setOrbitViewLimits(viewLimits);
-      hideOtherLayers(this);
-      hideOtherPanoramics(panoramic);
 
-      view.setFieldOfView(Angle.fromDegrees(120));
-   }
-
-
-   @Override
-   public void exitContent(final GCustomView view) {
-      view.setInputState(GInputState.ORBIT);
-      view.setOrbitViewLimits(new GBasicOrbitViewLimits());
-      view.restoreCameraState();
-
-      unhideHiddenPanoramics();
-      unhideHiddenLayers();
-   }
+   //   @Override
+   //   public void exitContent(final GCustomView view) {
+   //      view.setInputState(GInputState.ORBIT);
+   //      view.setOrbitViewLimits(new GBasicOrbitViewLimits());
+   //      view.restoreCameraState();
+   //
+   //      unhideHiddenPanoramics();
+   //      unhideHiddenLayers();
+   //   }
 
 
    private void hideOtherPanoramics(final GPanoramic visiblePanoramic) {

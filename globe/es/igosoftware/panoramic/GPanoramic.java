@@ -43,7 +43,7 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.globe.GGlobeApplication;
 import es.igosoftware.globe.IGlobeApplication;
-import es.igosoftware.globe.view.GInputState;
+import es.igosoftware.globe.view.GBasicOrbitViewLimits;
 import es.igosoftware.globe.view.GPanoramicViewLimits;
 import es.igosoftware.globe.view.customView.GCustomView;
 import es.igosoftware.io.GFileName;
@@ -192,7 +192,7 @@ public class GPanoramic
    private final Layer                                                       _layer;
    private double                                                            _currentDistanceFromEye;
 
-   private final List<Layer>                                                 _hiddenLayers           = new ArrayList<Layer>();
+
    private boolean                                                           _isHidden;
 
 
@@ -235,6 +235,8 @@ public class GPanoramic
       _zoomLevels = readZoomLevels();
 
       _maxResolutionInPanoramic = _zoomLevels.getLevels().size() - 1;
+
+
    }
 
 
@@ -635,13 +637,14 @@ public class GPanoramic
       }
 
       application.jumpTo(getPosition(), 0);
-      view.setInputState(GInputState.PANORAMICS);
-      final GPanoramicViewLimits viewLimits = new GPanoramicViewLimits();
-      view.setOrbitViewLimits(viewLimits);
+      //      view.setInputState(GInputState.PANORAMICS);
+      view.enterPanoramic(this);
+      //final GPanoramicViewLimits viewLimits = new GPanoramicViewLimits();
+      view.setOrbitViewLimits(new GPanoramicViewLimits());
 
 
-      hideOtherLayers(application, this._layer);
-      hideOtherPanoramics(this);
+      //      hideOtherLayers(application, this._layer);
+      //      hideOtherPanoramics(this);
 
       view.setFieldOfView(Angle.fromDegrees(120));
 
@@ -654,24 +657,12 @@ public class GPanoramic
    }
 
 
-   private void hideOtherLayers(final GGlobeApplication application,
-                                final Layer visibleLayer) {
-      for (final Layer layer : application.getLayerList()) {
-         if (layer.isEnabled() && (layer != visibleLayer)) {
-            layer.setEnabled(false);
-            _hiddenLayers.add(layer);
-         }
-      }
-   }
-
-
-   private void hideOtherContents(final GPanoramic panoramic) {
-
-   }
-
-
    public void deactivate(final GCustomView view,
                           final IGlobeApplication application) {
+
+      view.exitPanoramic(this);
+      view.setOrbitViewLimits(new GBasicOrbitViewLimits());
+      view.restoreCameraState();
 
       if (_activationListeners != null) {
          for (final GPanoramic.ActivationListener listener : _activationListeners) {
