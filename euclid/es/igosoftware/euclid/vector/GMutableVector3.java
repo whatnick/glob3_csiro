@@ -41,6 +41,7 @@ import java.io.IOException;
 
 import es.igosoftware.euclid.GGeometryAbstract;
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
+import es.igosoftware.euclid.matrix.GMatrix33D;
 import es.igosoftware.euclid.matrix.GMatrix44D;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.shape.GRenderType;
@@ -383,9 +384,9 @@ public final class GMutableVector3<T extends IVector3<?>>
 
 
    @Override
-   public GMutableVector3<T> transformedBy(final IVectorTransformer<IVector3<?>> transformer) {
-      set(_value.transformedBy(transformer));
-      return this;
+   public IVector3<?> transformedBy(final GMatrix33D matrix) {
+      _value = _value.transformedBy(matrix);
+      return _value;
    }
 
 

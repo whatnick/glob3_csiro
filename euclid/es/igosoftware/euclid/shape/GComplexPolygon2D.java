@@ -41,9 +41,6 @@ import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.vector.IVector2;
-import es.igosoftware.euclid.vector.IVectorTransformer;
-import es.igosoftware.util.GCollections;
-import es.igosoftware.util.ITransformer;
 
 
 public final class GComplexPolygon2D
@@ -160,19 +157,6 @@ public final class GComplexPolygon2D
          result.addAll(hole.getEdges());
       }
       return result;
-   }
-
-
-   @Override
-   public GComplexPolygon2D transformedBy(final IVectorTransformer<IVector2<?>> transformer) {
-      final List<IPolygon2D<?>> transformedHoles = GCollections.collect(_holes, new ITransformer<IPolygon2D<?>, IPolygon2D<?>>() {
-         @Override
-         public IPolygon2D<?> transform(final IPolygon2D<?> element) {
-            return (IPolygon2D<?>) element.transformedBy(transformer);
-         }
-      });
-
-      return new GComplexPolygon2D((IPolygon2D<?>) _hull.transformedBy(transformer), transformedHoles);
    }
 
 

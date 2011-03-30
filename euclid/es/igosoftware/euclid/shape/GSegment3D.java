@@ -38,7 +38,6 @@ package es.igosoftware.euclid.shape;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 import es.igosoftware.euclid.vector.IVector3;
-import es.igosoftware.euclid.vector.IVectorTransformer;
 
 
 public final class GSegment3D
@@ -57,18 +56,6 @@ public final class GSegment3D
    @Override
    public GAxisAlignedBox getBounds() {
       return new GAxisAlignedBox(_from, _to);
-   }
-
-
-   //   @Override
-   //   public GAxisAlignedBox getAxisAlignedBoundingBox() {
-   //      return getBounds();
-   //   }
-
-
-   @Override
-   public GSegment3D transformedBy(final IVectorTransformer<IVector3<?>> transformer) {
-      return new GSegment3D(_from.transformedBy(transformer), _to.transformedBy(transformer));
    }
 
 

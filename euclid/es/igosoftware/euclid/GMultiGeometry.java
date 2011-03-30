@@ -21,7 +21,6 @@ import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
-import es.igosoftware.euclid.vector.IVectorTransformer;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.ITransformer;
@@ -155,19 +154,6 @@ ChildrenGeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<V
       for (final ChildrenGeometryT child : _children) {
          child.save(output);
       }
-   }
-
-
-   @Override
-   public GMultiGeometry<VectorT, ChildrenGeometryT> transformedBy(final IVectorTransformer<VectorT> transformer) {
-      //      return new GComposite<VectorT, ChildrenGeometryT>(GCollections.collect(_children,
-      //               new ITransformer<ChildrenGeometryT, ChildrenGeometryT>() {
-      //                  @Override
-      //                  public ChildrenGeometryT transform(final ChildrenGeometryT element) {
-      //                     return element.transformedBy(transformer);
-      //                  }
-      //               }));
-      throw new RuntimeException("Operation not supported");
    }
 
 

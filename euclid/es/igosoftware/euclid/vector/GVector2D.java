@@ -41,6 +41,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.matrix.GMatrix33D;
 import es.igosoftware.euclid.matrix.GMatrix44D;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.util.GAssert;
@@ -441,9 +442,11 @@ public class GVector2D
 
 
    @Override
-   public final GVector2D transformedBy(final IVectorTransformer<IVector2<?>> transformer) {
-      final IVector2<?> transformated = transformer.transform(this);
-      return new GVector2D(transformated.x(), transformated.y());
+   public final GVector2D transformedBy(final GMatrix33D matrix) {
+      final double newX = (matrix._m00 * _x) + (matrix._m01 * _y) + matrix._m02;
+      final double newY = (matrix._m10 * _x) + (matrix._m11 * _y) + matrix._m12;
+
+      return new GVector2D(newX, newY);
    }
 
 

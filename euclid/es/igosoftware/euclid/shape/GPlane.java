@@ -51,7 +51,6 @@ import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
-import es.igosoftware.euclid.vector.IVectorTransformer;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GMath;
@@ -653,13 +652,6 @@ public final class GPlane
    public void save(final DataOutputStream output) throws IOException {
       _normal.save(output);
       output.writeDouble(_d);
-   }
-
-
-   @Override
-   public GPlane transformedBy(final IVectorTransformer<IVector3<?>> transformer) {
-      // TODO: scale/shear d;
-      return new GPlane(_normal.transformedBy(transformer).normalized(), _d);
    }
 
 

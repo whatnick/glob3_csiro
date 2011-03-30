@@ -41,7 +41,6 @@ import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.vector.IVector2;
-import es.igosoftware.euclid.vector.IVectorTransformer;
 
 
 public final class GTriangle2D
@@ -216,12 +215,6 @@ public final class GTriangle2D
       result.add(new GSegment2D(_v0, _v2));
       result.add(new GSegment2D(_v1, _v0));
       return result;
-   }
-
-
-   @Override
-   public GTriangle2D transformedBy(final IVectorTransformer<IVector2<?>> transformer) {
-      return new GTriangle2D(_v0.transformedBy(transformer), _v1.transformedBy(transformer), _v2.transformedBy(transformer));
    }
 
 

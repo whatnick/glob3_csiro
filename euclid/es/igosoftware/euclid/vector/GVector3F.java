@@ -41,6 +41,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
+import es.igosoftware.euclid.matrix.GMatrix33D;
 import es.igosoftware.euclid.matrix.GMatrix44D;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.util.GAssert;
@@ -533,9 +534,12 @@ public class GVector3F
 
 
    @Override
-   public final GVector3F transformedBy(final IVectorTransformer<IVector3<?>> transformer) {
-      final IVector3<?> transformated = transformer.transform(this);
-      return new GVector3F(transformated.x(), transformated.y(), transformated.z());
+   public final GVector3F transformedBy(final GMatrix33D matrix) {
+      final double newX = (matrix._m00 * _x) + (matrix._m01 * _y) + (matrix._m02 * _z);
+      final double newY = (matrix._m10 * _x) + (matrix._m11 * _y) + (matrix._m12 * _z);
+      final double newZ = (matrix._m20 * _x) + (matrix._m21 * _y) + (matrix._m22 * _z);
+
+      return new GVector3F(newX, newY, newZ);
    }
 
 

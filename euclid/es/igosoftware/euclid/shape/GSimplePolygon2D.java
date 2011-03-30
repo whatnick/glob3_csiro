@@ -45,8 +45,6 @@ import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.utils.GTriangulate;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
-import es.igosoftware.euclid.vector.IVectorTransformer;
-import es.igosoftware.util.GCollections;
 
 
 public final class GSimplePolygon2D
@@ -334,12 +332,6 @@ public final class GSimplePolygon2D
    @Override
    public GSimplePolygon2D getHull() {
       return this;
-   }
-
-
-   @Override
-   public GSimplePolygon2D transformedBy(final IVectorTransformer<IVector2<?>> transformer) {
-      return new GSimplePolygon2D(false, GCollections.collect(_points, transformer));
    }
 
 

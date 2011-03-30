@@ -39,7 +39,6 @@ package es.igosoftware.euclid.bounding;
 import es.igosoftware.euclid.shape.GPlane;
 import es.igosoftware.euclid.shape.GSegment3D;
 import es.igosoftware.euclid.vector.IVector3;
-import es.igosoftware.euclid.vector.IVectorTransformer;
 import es.igosoftware.util.GMath;
 
 
@@ -113,15 +112,6 @@ public class GCapsule3D
    @Override
    public GCapsule3D getBounds() {
       return this;
-   }
-
-
-   @Override
-   public GCapsule3D transformedBy(final IVectorTransformer<IVector3<?>> transformer) {
-      // TODO: scale/shear radius;
-      final GSegment3D transformedSegment = new GSegment3D(_segment._from.transformedBy(transformer),
-               _segment._to.transformedBy(transformer));
-      return new GCapsule3D(transformedSegment, _radius);
    }
 
 

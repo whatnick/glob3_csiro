@@ -46,7 +46,6 @@ import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
-import es.igosoftware.euclid.vector.IVectorTransformer;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.ITransformer;
 
@@ -213,20 +212,6 @@ public final class GQuad3D
       }
 
       return Arrays.asList(edges);
-   }
-
-
-   @Override
-   public GQuad3D transformedBy(final IVectorTransformer<IVector3<?>> transformer) {
-      final IVector3<?> tv0 = _v0.transformedBy(transformer);
-      final IVector3<?> tv1 = _v1.transformedBy(transformer);
-      final IVector3<?> tv2 = _v2.transformedBy(transformer);
-      final IVector3<?> tv3 = _v3.transformedBy(transformer);
-
-      return new GQuad3D(tv0, tv1, tv2, tv3);
-
-      //      return new GQuad2D(_v0.transformedBy(transformer), _v1.transformedBy(transformer), _v2.transformedBy(transformer),
-      //               _v3.transformedBy(transformer));
    }
 
 

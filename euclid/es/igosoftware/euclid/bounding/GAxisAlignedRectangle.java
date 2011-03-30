@@ -51,7 +51,6 @@ import es.igosoftware.euclid.shape.GSegment2D;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector2;
-import es.igosoftware.euclid.vector.IVectorTransformer;
 import es.igosoftware.util.GMath;
 
 
@@ -363,12 +362,6 @@ public final class GAxisAlignedRectangle
    @Override
    public GAxisAlignedRectangle getBounds() {
       return this;
-   }
-
-
-   @Override
-   public GAxisAlignedRectangle transformedBy(final IVectorTransformer<IVector2<?>> transformer) {
-      return new GAxisAlignedRectangle(_lower.transformedBy(transformer), _upper.transformedBy(transformer));
    }
 
 

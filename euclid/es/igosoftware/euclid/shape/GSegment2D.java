@@ -43,7 +43,6 @@ import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.vector.GMutableVector2;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
-import es.igosoftware.euclid.vector.IVectorTransformer;
 import es.igosoftware.util.GMath;
 
 
@@ -66,12 +65,6 @@ public final class GSegment2D
    public GAxisAlignedRectangle getBounds() {
       return new GAxisAlignedRectangle(_from, _to);
    }
-
-
-   //   @Override
-   //   public GAxisAlignedBox getAxisAlignedBoundingBox() {
-   //      return getBounds().getAxisAlignedBoundingBox();
-   //   }
 
 
    public static enum IntersectionResult {
@@ -138,12 +131,6 @@ public final class GSegment2D
       //final IntersectionResult intersects = getIntersection(that, new GMutableVector2<IVector2>(GVector2D.ZERO));
       final IntersectionResult intersects = getIntersection(that, null);
       return (intersects == IntersectionResult.COINCIDENT) || (intersects == IntersectionResult.INTERSECTING);
-   }
-
-
-   @Override
-   public GSegment2D transformedBy(final IVectorTransformer<IVector2<?>> transformer) {
-      return new GSegment2D(_from.transformedBy(transformer), _to.transformedBy(transformer));
    }
 
 

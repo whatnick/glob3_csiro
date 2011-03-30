@@ -45,7 +45,6 @@ import es.igosoftware.euclid.utils.GTriangulate;
 import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector2;
-import es.igosoftware.euclid.vector.IVectorTransformer;
 
 
 public final class GQuad2D
@@ -191,20 +190,6 @@ public final class GQuad2D
       }
 
       return Arrays.asList(edges);
-   }
-
-
-   @Override
-   public GQuad2D transformedBy(final IVectorTransformer<IVector2<?>> transformer) {
-      final IVector2<?> tv0 = _v0.transformedBy(transformer);
-      final IVector2<?> tv1 = _v1.transformedBy(transformer);
-      final IVector2<?> tv2 = _v2.transformedBy(transformer);
-      final IVector2<?> tv3 = _v3.transformedBy(transformer);
-
-      return new GQuad2D(tv0, tv1, tv2, tv3);
-
-      //      return new GQuad2D(_v0.transformedBy(transformer), _v1.transformedBy(transformer), _v2.transformedBy(transformer),
-      //               _v3.transformedBy(transformer));
    }
 
 

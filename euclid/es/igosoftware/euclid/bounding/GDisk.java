@@ -37,7 +37,6 @@
 package es.igosoftware.euclid.bounding;
 
 import es.igosoftware.euclid.vector.IVector2;
-import es.igosoftware.euclid.vector.IVectorTransformer;
 import es.igosoftware.util.GMath;
 
 
@@ -75,12 +74,6 @@ public final class GDisk
    }
 
 
-   //   @Override
-   //   public boolean touchesWithBall(final GBall ball) {
-   //      return ball.touchesWithDisk(this);
-   //   }
-
-
    @Override
    public boolean touchesWithDisk(final GDisk disk) {
       final double radius = _radius + disk._radius;
@@ -95,34 +88,9 @@ public final class GDisk
    }
 
 
-   //   @Override
-   //   public boolean touchesWithBox(final GAxisAlignedBox box) {
-   //      return box.touchesWithDisk(this);
-   //   }
-
-
    @Override
    public GDisk getBounds() {
       return this;
-   }
-
-
-   //   @Override
-   //   public GAxisAlignedBox asBox() {
-   //      return new GAxisAlignedRectangle(center.sub(radius), center.add(radius)).asBox();
-   //   }
-
-
-   //   @Override
-   //   public boolean touchesWithPlane(final GPlane plane) {
-   //      return plane.touchesWithDisk(this);
-   //   }
-
-
-   @Override
-   public GDisk transformedBy(final IVectorTransformer<IVector2<?>> transformer) {
-      // TODO: scale/shear radius;
-      return new GDisk(_center.transformedBy(transformer), _radius);
    }
 
 

@@ -46,7 +46,6 @@ import es.igosoftware.euclid.utils.GTriangulate;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
-import es.igosoftware.euclid.vector.IVectorTransformer;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.ITransformer;
@@ -287,12 +286,6 @@ public final class GSimplePolygon3D
    @Override
    public GSimplePolygon3D getHull() {
       return this;
-   }
-
-
-   @Override
-   public GSimplePolygon3D transformedBy(final IVectorTransformer<IVector3<?>> transformer) {
-      return new GSimplePolygon3D(true, GCollections.collect(_points, transformer));
    }
 
 

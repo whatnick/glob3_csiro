@@ -52,7 +52,6 @@ import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
-import es.igosoftware.euclid.vector.IVectorTransformer;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.XStringTokenizer;
 
@@ -663,12 +662,6 @@ public final class GAxisAlignedBox
    @Override
    public boolean touchesWithPlane(final GPlane plane) {
       return plane.touchesWithBox(this);
-   }
-
-
-   @Override
-   public GAxisAlignedBox transformedBy(final IVectorTransformer<IVector3<?>> transformer) {
-      return new GAxisAlignedBox(_lower.transformedBy(transformer), _upper.transformedBy(transformer));
    }
 
 

@@ -41,7 +41,6 @@ import java.io.IOException;
 import java.io.Serializable;
 
 import es.igosoftware.euclid.vector.IVector;
-import es.igosoftware.euclid.vector.IVectorTransformer;
 
 
 public interface IGeometry<
@@ -83,9 +82,6 @@ GeometryT extends IGeometry<VectorT, GeometryT>
 
 
    public VectorT getCentroid();
-
-
-   public GeometryT transformedBy(final IVectorTransformer<VectorT> transformer);
 
 
 }

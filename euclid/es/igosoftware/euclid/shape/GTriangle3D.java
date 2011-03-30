@@ -41,7 +41,6 @@ import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 import es.igosoftware.euclid.vector.IVector3;
-import es.igosoftware.euclid.vector.IVectorTransformer;
 
 
 public final class GTriangle3D
@@ -216,12 +215,6 @@ public final class GTriangle3D
       result.add(new GSegment3D(_v0, _v2));
       result.add(new GSegment3D(_v1, _v0));
       return result;
-   }
-
-
-   @Override
-   public GTriangle3D transformedBy(final IVectorTransformer<IVector3<?>> transformer) {
-      return new GTriangle3D(_v0.transformedBy(transformer), _v1.transformedBy(transformer), _v2.transformedBy(transformer));
    }
 
 

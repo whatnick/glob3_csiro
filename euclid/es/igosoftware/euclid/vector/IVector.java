@@ -38,6 +38,7 @@ package es.igosoftware.euclid.vector;
 
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
+import es.igosoftware.euclid.matrix.GMatrix33D;
 import es.igosoftware.euclid.matrix.GMatrix44D;
 import es.igosoftware.euclid.projection.GProjection;
 
@@ -152,6 +153,9 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
 
 
    public VectorT sub(final VectorT that);
+
+
+   public VectorT transformedBy(final GMatrix33D matrix);
 
 
    public VectorT transformedBy(final GMatrix44D matrix);
