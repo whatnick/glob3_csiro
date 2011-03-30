@@ -90,12 +90,25 @@ public class GPanoramic
          implements
             OrderedRenderable {
 
+
+   public static interface ActivationListener {
+
+      public void activated(final GPanoramic panoramic);
+
+
+      public void deactivated(final GPanoramic panoramic);
+
+   }
+
+
    private static final int                                                  TILE_THETA_SUBDIVISIONS = 2;
    private static final int                                                  TILE_RHO_SUBDIVISIONS   = 1;
 
    private static final double                                               MIN_PROYECTED_SIZE      = 12;
 
    private static final GDisplayListCache<PanoramicTile>                     QUAD_STRIPS_DISPLAY_LIST_CACHE;
+
+   private List<GPanoramic.ActivationListener>                               _activationListeners;
 
 
    static {
@@ -1049,6 +1062,28 @@ public class GPanoramic
          _point = point;
          _normal = normal.normalized();
          _texCoord = texCoord;
+      }
+   }
+
+
+   public void addActivationListener(final GPanoramic.ActivationListener listener) {
+      GAssert.notNull(listener, "listener");
+
+      if (_activationListeners == null) {
+         _activationListeners = new ArrayList<GPanoramic.ActivationListener>();
+      }
+      _activationListeners.add(listener);
+   }
+
+
+   public void removeActivationListener(final GPanoramic.ActivationListener listener) {
+      GAssert.notNull(listener, "listener");
+
+      if (_activationListeners != null) {
+         _activationListeners.remove(listener);
+         if (_activationListeners.isEmpty()) {
+            _activationListeners = null;
+         }
       }
    }
 
