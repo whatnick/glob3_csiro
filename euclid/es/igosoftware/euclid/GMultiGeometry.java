@@ -13,14 +13,8 @@ import java.util.List;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.shape.GRenderType;
-import es.igosoftware.euclid.shape.GSegment2D;
-import es.igosoftware.euclid.shape.IPolygon2D;
-import es.igosoftware.euclid.vector.GVector2D;
-import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector;
-import es.igosoftware.euclid.vector.IVector2;
-import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.ITransformer;
@@ -30,13 +24,15 @@ public class GMultiGeometry<
 
 VectorT extends IVector<VectorT, ?>,
 
-ChildrenGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
+ChildrenGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>,
+
+BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
 
 >
          extends
             GGeometryAbstract<VectorT>
          implements
-            IBoundedGeometry<VectorT, GAxisAlignedOrthotope<VectorT, ?>>,
+            IBoundedGeometry<VectorT, BoundsT>,
             Iterable<ChildrenGeometryT> {
 
 
@@ -128,8 +124,9 @@ ChildrenGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<Vect
    }
 
 
+   @SuppressWarnings("unchecked")
    @Override
-   public GAxisAlignedOrthotope<VectorT, ?> getBounds() {
+   public BoundsT getBounds() {
       final List<GAxisAlignedOrthotope<VectorT, ?>> bounds = GCollections.collect(_children,
                new ITransformer<ChildrenGeometryT, GAxisAlignedOrthotope<VectorT, ?>>() {
                   @Override
@@ -138,7 +135,7 @@ ChildrenGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<Vect
                   }
                });
 
-      return GAxisAlignedOrthotope.merge(bounds);
+      return (BoundsT) GAxisAlignedOrthotope.merge(bounds);
    }
 
 
@@ -159,7 +156,7 @@ ChildrenGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<Vect
 
    @Override
    public String toString() {
-      return "GComposite " + _children;
+      return "GMultiGeometry" + dimensions() + " " + _children;
    }
 
 
@@ -176,35 +173,6 @@ ChildrenGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<Vect
    @Override
    public Iterator<ChildrenGeometryT> iterator() {
       return Collections.unmodifiableList(_children).iterator();
-   }
-
-
-   public static void main(final String[] args) {
-      System.out.println("GComposite 0.1");
-      System.out.println("--------------\n");
-
-
-      final GMultiGeometry<IVector2, IVector2> multiPoint2D = new GMultiGeometry<IVector2, IVector2>(GVector2D.UNIT,
-               GVector2D.X_DOWN, new GVector2D(10, 10));
-      System.out.println(multiPoint2D);
-      System.out.println("  bounds=" + multiPoint2D.getBounds());
-      System.out.println();
-
-
-      final GMultiGeometry<IVector3, IVector3> multiPoint3D = new GMultiGeometry<IVector3, IVector3>(GVector3D.UNIT,
-               GVector3D.X_DOWN, new GVector3D(10, 10, 10));
-      System.out.println(multiPoint3D);
-      System.out.println("  bounds=" + multiPoint3D.getBounds());
-      System.out.println();
-
-
-      final GMultiGeometry<IVector2, IPolygon2D> multiLine2D = new GMultiGeometry<IVector2, IPolygon2D>(new GSegment2D(
-               GVector2D.ZERO, GVector2D.UNIT));
-      System.out.println(multiLine2D);
-      System.out.println("  bounds=" + multiLine2D.getBounds());
-      System.out.println();
-
-
    }
 
 
