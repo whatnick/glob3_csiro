@@ -96,6 +96,7 @@ import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GHolder;
 import es.igosoftware.util.GLogger;
+import es.igosoftware.util.GMath;
 import es.igosoftware.util.GPair;
 import es.igosoftware.util.GUtils;
 import es.igosoftware.util.IPredicate;
@@ -587,7 +588,7 @@ public abstract class GGlobeApplication
                else if (eventAction.equals(SelectEvent.ROLLOVER) && (_dragStartHeading != null)) {
                   final double move = heading.degrees - _dragStartHeading.degrees;
                   double newHeading = _viewStartHeading.degrees - move;
-                  newHeading = newHeading >= 0 ? newHeading : newHeading + 360;
+                  newHeading = (newHeading >= 0) ? newHeading : newHeading + 360;
                   view.stopAnimations();
                   view.setHeading(Angle.fromDegrees(newHeading));
                }
@@ -989,72 +990,67 @@ public abstract class GGlobeApplication
                     final Angle heading,
                     final Angle pitch,
                     final double elevation) {
+      final View view = getView();
       if ((heading == null) || (pitch == null)) {
-         getView().goTo(position, elevation);
+         view.goTo(position, elevation);
+         return;
+      }
+
+
+      if (view instanceof GCustomView) {
+         final GCustomViewInputHandler inputHandler = (GCustomViewInputHandler) ((GCustomView) view).getViewInputHandler();
+
+         inputHandler.stopAnimators();
+         inputHandler.addPanToAnimator(position, heading, pitch, elevation, true);
+
+         redraw();
+      }
+      else if (view instanceof OrbitView) {
+         final OrbitViewInputHandler inputHandler = (OrbitViewInputHandler) ((OrbitView) view).getViewInputHandler();
+
+         inputHandler.stopAnimators();
+         inputHandler.addPanToAnimator(position, heading, pitch, elevation, true);
+
+         redraw();
       }
       else {
-         try {
-            if (getView() instanceof GCustomView) {
-               final GCustomView view = (GCustomView) getView();
-
-               final GCustomViewInputHandler customViewInputHandler = (GCustomViewInputHandler) view.getViewInputHandler();
-
-               customViewInputHandler.stopAnimators();
-               customViewInputHandler.addPanToAnimator(position, heading, pitch, elevation, true);
-
-               redraw();
-            }
-            else {
-               final OrbitView view = (OrbitView) getView();
-
-               final OrbitViewInputHandler orbitViewInputHandler = (OrbitViewInputHandler) view.getViewInputHandler();
-
-               orbitViewInputHandler.stopAnimators();
-               orbitViewInputHandler.addPanToAnimator(position, heading, pitch, elevation, true);
-
-               redraw();
-            }
-         }
-         catch (final ClassCastException e) {
-            logSevere(e);
-            getView().goTo(position, elevation);
-         }
+         view.goTo(position, elevation);
       }
+
    }
 
 
    @Override
    public void goToHeading(final Angle heading) {
-      if (heading == null) {
+      final View view = getView();
+
+      final Angle currentHeading = view.getHeading();
+
+      if ((heading == null) || GMath.closeTo(heading.degrees, currentHeading.degrees)) {
          return;
       }
 
 
-      final View rawView = getView();
-      if (rawView instanceof GCustomView) {
-         final GCustomView view = (GCustomView) rawView;
+      if (view instanceof GCustomView) {
+         final GCustomViewInputHandler inputHandler = (GCustomViewInputHandler) ((GCustomView) view).getViewInputHandler();
 
-         final GCustomViewInputHandler customViewInputHandler = (GCustomViewInputHandler) view.getViewInputHandler();
-
-         customViewInputHandler.stopAnimators();
-         customViewInputHandler.addHeadingAnimator(view.getHeading(), heading);
+         inputHandler.stopAnimators();
+         inputHandler.addHeadingAnimator(currentHeading, heading);
 
          redraw();
       }
-      else if (rawView instanceof OrbitView) {
-         final OrbitView view = (OrbitView) rawView;
+      else if (view instanceof OrbitView) {
+         final OrbitViewInputHandler inputHandler = (OrbitViewInputHandler) ((OrbitView) view).getViewInputHandler();
 
-         final OrbitViewInputHandler orbitViewInputHandler = (OrbitViewInputHandler) view.getViewInputHandler();
-
-         orbitViewInputHandler.stopAnimators();
-         orbitViewInputHandler.addHeadingAnimator(view.getHeading(), heading);
+         inputHandler.stopAnimators();
+         inputHandler.addHeadingAnimator(currentHeading, heading);
 
          redraw();
       }
       else {
-         rawView.setHeading(heading);
+         // fall back to change without animation
+         view.setHeading(heading);
       }
-
    }
 
 
