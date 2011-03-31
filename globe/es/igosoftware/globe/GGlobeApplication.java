@@ -370,6 +370,7 @@ public abstract class GGlobeApplication
             }
 
             if (url == null) {
+               logWarning("Can't find an image named: " + key._fileName);
                return null;
             }
 
@@ -415,6 +416,7 @@ public abstract class GGlobeApplication
                      }
 
                      if (url == null) {
+                        logWarning("Can't find an image named: " + key._fileName);
                         return null;
                      }
 
