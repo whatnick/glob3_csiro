@@ -153,6 +153,7 @@ public class GGlobeDemo
       layers.add(caceres3DLayer);
 
       createHUDLayer(layers);
+
       try {
          final GPanoramicLayer panoramicLayer = createPanoramicLayer();
          layers.add(panoramicLayer);
@@ -167,7 +168,8 @@ public class GGlobeDemo
 
 
    private void createHUDLayer(final LayerList layers) {
-      final GHUDIcon hudIcon = new GHUDIcon(getImage(GFileName.relative("icons", "earth.png")), GHUDIcon.Position.SOUTHEAST);
+      final GHUDIcon hudIcon = new GHUDIcon(getImage(GFileName.relative("icons", "earth.png"), 48, 48),
+               GHUDIcon.Position.SOUTHEAST);
 
       hudIcon.addActionListener(new ActionListener() {
          @Override

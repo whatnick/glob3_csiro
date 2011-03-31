@@ -263,12 +263,11 @@ public class GPanoramic
       _maxResolutionInPanoramic = _zoomLevels.getLevels().size() - 1;
 
       final GGlobeApplication application = GGlobeApplication.instance();
-      _hudIcon = new GHUDIcon(application.getImage(_exitIconName), GHUDIcon.Position.NORTHEAST);
+      _hudIcon = new GHUDIcon(application.getImage(_exitIconName, 48, 48), GHUDIcon.Position.NORTHEAST);
 
       _hudIcon.addActionListener(new ActionListener() {
          @Override
          public void actionPerformed(final ActionEvent e) {
-            //System.out.println("Clicked on the earth icon!");
             deactivate((GCustomView) GGlobeApplication.instance().getView());
          }
       });
