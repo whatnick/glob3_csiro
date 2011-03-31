@@ -47,7 +47,7 @@ public final class GTriangle3D
          extends
             GTriangle<IVector3, GSegment3D, GAxisAlignedBox>
          implements
-            IPolygon3D {
+            ISimplePolygon3D {
 
    private static final long serialVersionUID = 1L;
 
@@ -180,32 +180,9 @@ public final class GTriangle3D
 
 
    @Override
-   public GTriangle3D createSimplified(final double capsRadiansTolerance) {
-      return this;
-   }
-
-
-   @Override
-   public GTriangle3D getHull() {
-      return this;
-   }
-
-
-   @Override
    public boolean isSelfIntersected() {
       return false;
    }
-
-
-   //   private GSegment3D getE1() {
-   //      return new GSegment3D(_v3, _v2);
-   //   }
-   //   private GSegment3D getE2() {
-   //      return new GSegment3D(_v1, _v3);
-   //   }
-   //   private GSegment3D getE3() {
-   //      return new GSegment3D(_v2, _v1);
-   //   }
 
 
    @Override
@@ -230,5 +207,6 @@ public final class GTriangle3D
    public GRenderType getRenderType() {
       return GRenderType.POLYGON;
    }
+
 
 }

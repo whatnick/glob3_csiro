@@ -20,6 +20,7 @@ import es.igosoftware.euclid.shape.GComplexPolytope;
 import es.igosoftware.euclid.shape.GRenderType;
 import es.igosoftware.euclid.shape.IPolygon2D;
 import es.igosoftware.euclid.vector.GVector2D;
+import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.vector.IVector2;
 
@@ -268,8 +269,8 @@ class GPolygon2DRenderUnit
 
          drawPoint(g2d, attributes, x, y);
       }
-      else if (geometryToDraw instanceof IPolygon2D) {
-         final IPolygon2D polygon = (IPolygon2D) geometryToDraw;
+      else if (geometryToDraw instanceof IPointsContainer) {
+         final IPointsContainer<IVector2> polygon = (IPointsContainer<IVector2>) geometryToDraw;
          final int nPoints = polygon.getPointsCount();
          final int[] xPoints = new int[nPoints];
          final int[] yPoints = new int[nPoints];

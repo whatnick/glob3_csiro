@@ -59,7 +59,7 @@ BoundsT extends IBounds<VectorT, BoundsT>
          extends
             GPolytopeAbstract<VectorT, SegmentT, BoundsT>
          implements
-            IPolygon<VectorT, SegmentT, BoundsT> {
+            ISimplePolygon<VectorT, SegmentT, BoundsT> {
 
    private static final long serialVersionUID = 1L;
 

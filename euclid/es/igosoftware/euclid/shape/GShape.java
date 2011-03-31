@@ -58,8 +58,8 @@ public final class GShape {
    }
 
 
-   public static IPolygon3D createPolygon(final boolean validate,
-                                          final IVector3... points) {
+   public static ISimplePolygon3D createPolygon(final boolean validate,
+                                                final IVector3... points) {
       final int pointsCount = points.length;
 
       if (pointsCount < 3) {
@@ -78,8 +78,8 @@ public final class GShape {
    }
 
 
-   public static IPolygon2D createPolygon(final boolean validate,
-                                          final IVector2... points) {
+   public static ISimplePolygon2D createPolygon(final boolean validate,
+                                                final IVector2... points) {
       final int pointsCount = points.length;
 
       if (pointsCount < 3) {
@@ -130,8 +130,8 @@ public final class GShape {
    }
 
 
-   public static IPolygon2D createPolygon2(final boolean validate,
-                                           final List<IVector2> points) {
+   public static ISimplePolygon2D createPolygon2(final boolean validate,
+                                                 final List<IVector2> points) {
       final int pointsCount = points.size();
 
       if (pointsCount < 3) {
@@ -150,8 +150,8 @@ public final class GShape {
    }
 
 
-   public static IPolygon2D createPolygon2(final boolean validate,
-                                           final IVector2... points) {
+   public static ISimplePolygon2D createPolygon2(final boolean validate,
+                                                 final IVector2... points) {
       final int pointsCount = points.length;
 
       if (pointsCount < 3) {
@@ -170,8 +170,8 @@ public final class GShape {
    }
 
 
-   public static IPolygon3D createPolygon3(final boolean validate,
-                                           final List<IVector3> points) {
+   public static ISimplePolygon3D createPolygon3(final boolean validate,
+                                                 final List<IVector3> points) {
       final int pointsCount = points.size();
 
       if (pointsCount < 3) {

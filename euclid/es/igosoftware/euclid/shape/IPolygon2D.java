@@ -50,8 +50,4 @@ public interface IPolygon2D
    public List<GTriangle2D> triangulate();
 
 
-   @Override
-   public IPolygon2D createSimplified(final double capsRadiansTolerance);
-
-
 }

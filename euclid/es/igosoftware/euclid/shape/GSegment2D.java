@@ -147,12 +147,6 @@ public final class GSegment2D
 
 
    @Override
-   public GSegment2D createSimplified(final double capsRadiansTolerance) {
-      return this;
-   }
-
-
-   @Override
    public GRenderType getRenderType() {
       return GRenderType.POLYLINE;
    }

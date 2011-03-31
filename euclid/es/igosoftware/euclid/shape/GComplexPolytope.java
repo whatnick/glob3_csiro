@@ -54,11 +54,13 @@ SegmentT extends GSegment<VectorT, SegmentT, ?>,
 
 BoundsT extends IBounds<VectorT, BoundsT>,
 
-PolytopeT extends IPolytope<VectorT, SegmentT, BoundsT>
+PolytopeT extends ISimplePolytope<VectorT, SegmentT, BoundsT>
 
 >
          extends
-            GPolytopeAbstract<VectorT, SegmentT, BoundsT> {
+            GPolytopeAbstract<VectorT, SegmentT, BoundsT>
+         implements
+            IComplexPolytope<VectorT, SegmentT, BoundsT> {
 
    private static final long       serialVersionUID = 1L;
 
@@ -149,10 +151,6 @@ PolytopeT extends IPolytope<VectorT, SegmentT, BoundsT>
 
 
    protected abstract String getStringName();
-
-
-   @Override
-   public abstract boolean isSelfIntersected();
 
 
    @Override

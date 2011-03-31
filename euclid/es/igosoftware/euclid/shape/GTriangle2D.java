@@ -47,7 +47,7 @@ public final class GTriangle2D
          extends
             GTriangle<IVector2, GSegment2D, GAxisAlignedRectangle>
          implements
-            IPolygon2D {
+            ISimplePolygon2D {
 
    private static final long serialVersionUID = 1L;
 
@@ -180,32 +180,9 @@ public final class GTriangle2D
 
 
    @Override
-   public GTriangle2D createSimplified(final double capsRadiansTolerance) {
-      return this;
-   }
-
-
-   @Override
-   public GTriangle2D getHull() {
-      return this;
-   }
-
-
-   @Override
    public boolean isSelfIntersected() {
       return false;
    }
-
-
-   //   private GSegment2D getE1() {
-   //      return new GSegment2D(_v3, _v2);
-   //   }
-   //   private GSegment2D getE2() {
-   //      return new GSegment2D(_v1, _v3);
-   //   }
-   //   private GSegment2D getE3() {
-   //      return new GSegment2D(_v2, _v1);
-   //   }
 
 
    @Override

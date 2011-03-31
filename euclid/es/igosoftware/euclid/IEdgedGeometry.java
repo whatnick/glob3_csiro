@@ -6,6 +6,7 @@ import java.util.List;
 
 import es.igosoftware.euclid.bounding.IBounds;
 import es.igosoftware.euclid.shape.GSegment;
+import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector;
 
 
@@ -19,16 +20,14 @@ BoundsT extends IBounds<VectorT, ?>
 
 >
          extends
-            IBoundedGeometry<VectorT, BoundsT> {
+            IBoundedGeometry<VectorT, BoundsT>,
+            IPointsContainer<VectorT> {
 
 
    public boolean isSelfIntersected();
 
 
    public List<SegmentT> getEdges();
-
-
-   public IEdgedGeometry<VectorT, SegmentT, BoundsT> createSimplified(final double capsRadiansTolerance);
 
 
    public VectorT closestPointOnBoundary(final VectorT point);

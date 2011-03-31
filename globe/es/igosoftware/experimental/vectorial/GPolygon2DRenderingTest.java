@@ -64,8 +64,6 @@ public class GPolygon2DRenderingTest {
       System.out.println("Shape Loader 0.1");
       System.out.println("----------------\n");
 
-      //      System.out.println("GeoTools version: " + GeoTools.getVersion() + "\n");
-
 
       //      final GFileName fileName = GFileName.absoluteFromParts("home", "dgd", "Escritorio", "sample-shp", "cartobrutal",
       //               "world-modified", "world.shp");
@@ -77,7 +75,7 @@ public class GPolygon2DRenderingTest {
       final GProjection projection = GProjection.EPSG_4326;
 
 
-      final IGlobeFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features = GShapeLoader.readFeatures(
+      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features = GShapeLoader.readFeatures(
                fileName, projection);
 
       //      System.out.println(">>>>>>>>>> CONNECT PROFILER");

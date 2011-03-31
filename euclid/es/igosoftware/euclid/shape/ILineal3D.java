@@ -45,8 +45,4 @@ public interface ILineal3D
             ILineal<IVector3, GSegment3D, GAxisAlignedBox> {
 
 
-   @Override
-   public ILineal3D createSimplified(final double capsRadiansTolerance);
-
-
 }

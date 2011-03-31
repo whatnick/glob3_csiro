@@ -45,8 +45,4 @@ public interface ILineal2D
             ILineal<IVector2, GSegment2D, GAxisAlignedRectangle> {
 
 
-   @Override
-   public ILineal2D createSimplified(final double capsRadiansTolerance);
-
-
 }

@@ -38,10 +38,24 @@ package es.igosoftware.euclid.shape;
 
 import es.igosoftware.euclid.IEdgedGeometry;
 import es.igosoftware.euclid.bounding.IBounds;
-import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector;
 
 
+/**
+ * In elementary geometry, a polytope is a geometric object with flat sides, which exists in any general number of dimensions. A
+ * polygon is a polytope in two dimensions, a polyhedron in three dimensions, and so on in higher dimensions (such as a polychoron
+ * in four dimensions).<br/>
+ * <br/>
+ * Generic VectorT defines the Polytope dimensions.<br/>
+ * <br/>
+ * See http://en.wikipedia.org/wiki/Polytope
+ * 
+ * @author dgd
+ * 
+ * @param <VectorT>
+ * @param <SegmentT>
+ * @param <BoundsT>
+ */
 public interface IPolytope<
 
 VectorT extends IVector<VectorT, ?>,
@@ -52,15 +66,7 @@ BoundsT extends IBounds<VectorT, BoundsT>
 
 >
          extends
-            IPointsContainer<VectorT>,
             IEdgedGeometry<VectorT, SegmentT, BoundsT> {
-
-
-   @Override
-   public IPolytope<VectorT, SegmentT, BoundsT> createSimplified(final double capsRadiansTolerance);
-
-
-   public IPolytope<VectorT, SegmentT, BoundsT> getHull();
 
 
 }
