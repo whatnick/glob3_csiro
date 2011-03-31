@@ -16,12 +16,11 @@ import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.ntree.GGTInnerNode;
 import es.igosoftware.euclid.ntree.GGTNode;
-import es.igosoftware.euclid.shape.GComplexPolytope;
-import es.igosoftware.euclid.shape.GRenderType;
+import es.igosoftware.euclid.shape.IComplexPolygon2D;
+import es.igosoftware.euclid.shape.ILineal2D;
 import es.igosoftware.euclid.shape.IPolygon2D;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IPointsContainer;
-import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.vector.IVector2;
 
 
@@ -217,7 +216,6 @@ class GPolygon2DRenderUnit
    }
 
 
-   @SuppressWarnings("unchecked")
    private void renderGeometry(final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> geometry,
                                final IVector2 scale,
                                final BufferedImage renderedImage,
@@ -225,82 +223,114 @@ class GPolygon2DRenderUnit
                                final GAxisAlignedRectangle region,
                                final GRenderingAttributes attributes) {
 
-      final GRenderType renderType = geometry.getRenderType();
+      if (!(geometry instanceof IVector2)) {
+         // size validation only for non-point
+         final GAxisAlignedOrthotope<IVector2, ?> geometryBounds = geometry.getBounds().asAxisAlignedOrthotope();
+         final IVector2 scaledGeometryExtent = geometryBounds.getExtent().scale(scale);
+         final double projectedSize = scaledGeometryExtent.x() * scaledGeometryExtent.y();
+         if (projectedSize <= attributes._lodMinSize) {
+            if (attributes._renderLODIgnores || attributes._debugLODRendering) {
+               final Color color = attributes._debugLODRendering ? Color.MAGENTA : attributes._lodColor;
 
-      if (renderType == GRenderType.DO_NOT_RENDER) {
-         System.out.println("Ignoring rendering of " + geometry);
-         return;
+               final IVector2 projectedCenter = geometryBounds.getCenter().sub(region._lower).scale(scale);
+               setPixel(renderedImage, projectedCenter, color);
+            }
+
+            return;
+         }
       }
 
-
-      final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> geometryToDraw;
-      if (geometry instanceof GComplexPolytope) {
-         geometryToDraw = ((GComplexPolytope) geometry).getHull();
+      final int _______Diego_at_work;
+      // TODO: Point_Line_Polygon_attributes;
+      // TODO: rename_from_polygon2d;
+      if (geometry instanceof IVector2) {
+         renderVector2((IVector2) geometry, scale, g2d, region, attributes);
+      }
+      else if (geometry instanceof ILineal2D) {
+         renderLineal2D((ILineal2D) geometry, scale, g2d, region, attributes);
       }
       else if (geometry instanceof IPolygon2D) {
-         geometryToDraw = geometry;
+         renderPolygon2D((IPolygon2D) geometry, scale, g2d, region, attributes);
+      }
+      else {
+         System.out.println("Warning: geometry type " + geometry.getClass() + " not supported");
+      }
+   }
+
+
+   private void renderVector2(final IVector2 point,
+                              final IVector2 scale,
+                              final Graphics2D g2d,
+                              final GAxisAlignedRectangle region,
+                              final GRenderingAttributes attributes) {
+      final IVector2 projectedPoint = point.sub(region._lower).scale(scale);
+
+      final int x = Math.round((float) projectedPoint.x());
+      final int y = Math.round((float) projectedPoint.y());
+
+      drawPoint(g2d, attributes, x, y);
+   }
+
+
+   private static class Points {
+      private final int   _nPoints;
+      private final int[] _xPoints;
+      private final int[] _yPoints;
+
+
+      private Points(final int nPoints,
+                     final int[] xPoints,
+                     final int[] yPoints) {
+         _nPoints = nPoints;
+         _xPoints = xPoints;
+         _yPoints = yPoints;
+      }
+   }
+
+
+   private Points getPoints(final IPointsContainer<IVector2> polygon,
+                            final IVector2 scale,
+                            final GAxisAlignedRectangle region) {
+      final int nPoints = polygon.getPointsCount();
+      final int[] xPoints = new int[nPoints];
+      final int[] yPoints = new int[nPoints];
+
+      for (int i = 0; i < nPoints; i++) {
+         final IVector2 point = polygon.getPoint(i).sub(region._lower).scale(scale);
+
+         xPoints[i] = Math.round((float) point.x());
+         yPoints[i] = Math.round((float) point.y());
+      }
+
+      return new Points(nPoints, xPoints, yPoints);
+   }
+
+
+   private void renderLineal2D(final ILineal2D geometry,
+                               final IVector2 scale,
+                               final Graphics2D g2d,
+                               final GAxisAlignedRectangle region,
+                               final GRenderingAttributes attributes) {
+      drawPolyline(g2d, attributes, getPoints(geometry, scale, region));
+   }
+
+
+   private void renderPolygon2D(final IPolygon2D geometry,
+                                final IVector2 scale,
+                                final Graphics2D g2d,
+                                final GAxisAlignedRectangle region,
+                                final GRenderingAttributes attributes) {
+
+      final IPolygon2D geometryToDraw;
+      if (geometry instanceof IComplexPolygon2D) {
+         // TODO: tesselate complex polygon 
+         geometryToDraw = ((IComplexPolygon2D) geometry).getHull();
       }
       else {
          geometryToDraw = geometry;
       }
 
-
-      final GAxisAlignedOrthotope<IVector2, ?> geometryBounds = geometryToDraw.getBounds().asAxisAlignedOrthotope();
-      final IVector2 scaledGeometryExtent = geometryBounds.getExtent().scale(scale);
-      final double projectedSize = scaledGeometryExtent.x() * scaledGeometryExtent.y();
-      if (projectedSize <= attributes._lodMinSize) {
-         if (attributes._renderLODIgnores || attributes._debugLODRendering) {
-            final Color color = attributes._debugLODRendering ? Color.MAGENTA : attributes._lodColor;
-
-            final IVector2 projectedCenter = geometryBounds.getCenter().sub(region._lower).scale(scale);
-            setPixel(renderedImage, projectedCenter, color);
-         }
-
-         return;
-      }
-
-
-      if (geometryToDraw instanceof IVector) {
-         final IVector2 point2 = (IVector2) geometryToDraw;
-         final IVector2 point = point2.sub(region._lower).scale(scale);
-
-         final int x = Math.round((float) point.x());
-         final int y = Math.round((float) point.y());
-
-         drawPoint(g2d, attributes, x, y);
-      }
-      else if (geometryToDraw instanceof IPointsContainer) {
-         final IPointsContainer<IVector2> polygon = (IPointsContainer<IVector2>) geometryToDraw;
-         final int nPoints = polygon.getPointsCount();
-         final int[] xPoints = new int[nPoints];
-         final int[] yPoints = new int[nPoints];
-
-         for (int i = 0; i < nPoints; i++) {
-            final IVector2 point = polygon.getPoint(i).sub(region._lower).scale(scale);
-
-            xPoints[i] = Math.round((float) point.x());
-            yPoints[i] = Math.round((float) point.y());
-         }
-
-         switch (renderType) {
-            case POINT:
-               // do nothing, POINTS ARE RENDERED BEFORE was ignored before
-               break;
-
-            case POLYLINE:
-               drawPolyline(g2d, attributes, nPoints, xPoints, yPoints);
-               break;
-
-            case POLYGON:
-               drawPolygon(g2d, attributes, nPoints, xPoints, yPoints);
-               break;
-
-            case DO_NOT_RENDER:
-               // do nothing, DO_NOT_RENDER was ignored before
-               break;
-         }
-      }
-
+      drawPolygon(g2d, attributes, getPoints(geometryToDraw, scale, region));
    }
 
 
@@ -308,8 +338,8 @@ class GPolygon2DRenderUnit
                                  final GRenderingAttributes attributes,
                                  final int x,
                                  final int y) {
-      final int width = 2;
-      final int height = 2;
+      final int width = Math.max(1, Math.round(attributes._borderWidth)) * 2;
+      final int height = width;
 
       // fill point
       g2d.setColor(attributes._fillColor);
@@ -325,9 +355,7 @@ class GPolygon2DRenderUnit
 
    private static void drawPolyline(final Graphics2D g2d,
                                     final GRenderingAttributes attributes,
-                                    final int nPoints,
-                                    final int[] xPoints,
-                                    final int[] yPoints) {
+                                    final Points points) {
       // render border
       if (attributes._borderWidth > 0) {
          //final float borderWidth = (float) (attributes._borderWidth / ((scale.x() + scale.y()) / 2));
@@ -337,7 +365,7 @@ class GPolygon2DRenderUnit
 
             g2d.setStroke(borderStroke);
             g2d.setColor(attributes._borderColor);
-            g2d.drawPolyline(xPoints, yPoints, nPoints);
+            g2d.drawPolyline(points._xPoints, points._yPoints, points._nPoints);
          }
       }
    }
@@ -345,12 +373,10 @@ class GPolygon2DRenderUnit
 
    private static void drawPolygon(final Graphics2D g2d,
                                    final GRenderingAttributes attributes,
-                                   final int nPoints,
-                                   final int[] xPoints,
-                                   final int[] yPoints) {
+                                   final Points points) {
       // fill polygon
       g2d.setColor(attributes._fillColor);
-      g2d.fillPolygon(xPoints, yPoints, nPoints);
+      g2d.fillPolygon(points._xPoints, points._yPoints, points._nPoints);
 
 
       // render border
@@ -362,7 +388,7 @@ class GPolygon2DRenderUnit
 
             g2d.setStroke(borderStroke);
             g2d.setColor(attributes._borderColor);
-            g2d.drawPolygon(xPoints, yPoints, nPoints);
+            g2d.drawPolygon(points._xPoints, points._yPoints, points._nPoints);
          }
       }
    }
