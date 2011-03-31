@@ -223,8 +223,16 @@ class GPolygon2DRenderUnit
                                final GAxisAlignedRectangle region,
                                final GRenderingAttributes attributes) {
 
-      if (!(geometry instanceof IVector2)) {
-         // size validation only for non-point
+      final int _______Diego_at_work;
+      // TODO: Point_Line_Polygon_attributes;
+      // TODO: rename_from_polygon2d;
+
+
+      if (geometry instanceof IVector2) {
+         renderPoint((IVector2) geometry, scale, g2d, region, attributes);
+      }
+      else {
+         // size validation only for non-points
          final GAxisAlignedOrthotope<IVector2, ?> geometryBounds = geometry.getBounds().asAxisAlignedOrthotope();
          final IVector2 scaledGeometryExtent = geometryBounds.getExtent().scale(scale);
          final double projectedSize = scaledGeometryExtent.x() * scaledGeometryExtent.y();
@@ -238,31 +246,27 @@ class GPolygon2DRenderUnit
 
             return;
          }
-      }
 
-      final int _______Diego_at_work;
-      // TODO: Point_Line_Polygon_attributes;
-      // TODO: rename_from_polygon2d;
-      if (geometry instanceof IVector2) {
-         renderVector2((IVector2) geometry, scale, g2d, region, attributes);
-      }
-      else if (geometry instanceof ILineal2D) {
-         renderLineal2D((ILineal2D) geometry, scale, g2d, region, attributes);
-      }
-      else if (geometry instanceof IPolygon2D) {
-         renderPolygon2D((IPolygon2D) geometry, scale, g2d, region, attributes);
-      }
-      else {
-         System.out.println("Warning: geometry type " + geometry.getClass() + " not supported");
+
+         if (geometry instanceof ILineal2D) {
+            renderPolyline((ILineal2D) geometry, scale, g2d, region, attributes);
+         }
+         else if (geometry instanceof IPolygon2D) {
+            renderPolygon((IPolygon2D) geometry, scale, g2d, region, attributes);
+         }
+         else {
+            System.out.println("Warning: geometry type " + geometry.getClass() + " not supported");
+         }
+
       }
    }
 
 
-   private void renderVector2(final IVector2 point,
-                              final IVector2 scale,
-                              final Graphics2D g2d,
-                              final GAxisAlignedRectangle region,
-                              final GRenderingAttributes attributes) {
+   private static void renderPoint(final IVector2 point,
+                                   final IVector2 scale,
+                                   final Graphics2D g2d,
+                                   final GAxisAlignedRectangle region,
+                                   final GRenderingAttributes attributes) {
       final IVector2 projectedPoint = point.sub(region._lower).scale(scale);
 
       final int x = Math.round((float) projectedPoint.x());
@@ -288,9 +292,9 @@ class GPolygon2DRenderUnit
    }
 
 
-   private Points getPoints(final IPointsContainer<IVector2> polygon,
-                            final IVector2 scale,
-                            final GAxisAlignedRectangle region) {
+   private static Points getPoints(final IPointsContainer<IVector2> polygon,
+                                   final IVector2 scale,
+                                   final GAxisAlignedRectangle region) {
       final int nPoints = polygon.getPointsCount();
       final int[] xPoints = new int[nPoints];
       final int[] yPoints = new int[nPoints];
@@ -306,20 +310,20 @@ class GPolygon2DRenderUnit
    }
 
 
-   private void renderLineal2D(final ILineal2D geometry,
-                               final IVector2 scale,
-                               final Graphics2D g2d,
-                               final GAxisAlignedRectangle region,
-                               final GRenderingAttributes attributes) {
+   private static void renderPolyline(final ILineal2D geometry,
+                                      final IVector2 scale,
+                                      final Graphics2D g2d,
+                                      final GAxisAlignedRectangle region,
+                                      final GRenderingAttributes attributes) {
       drawPolyline(g2d, attributes, getPoints(geometry, scale, region));
    }
 
 
-   private void renderPolygon2D(final IPolygon2D geometry,
-                                final IVector2 scale,
-                                final Graphics2D g2d,
-                                final GAxisAlignedRectangle region,
-                                final GRenderingAttributes attributes) {
+   private static void renderPolygon(final IPolygon2D geometry,
+                                     final IVector2 scale,
+                                     final Graphics2D g2d,
+                                     final GAxisAlignedRectangle region,
+                                     final GRenderingAttributes attributes) {
 
       final IPolygon2D geometryToDraw;
       if (geometry instanceof IComplexPolygon2D) {
