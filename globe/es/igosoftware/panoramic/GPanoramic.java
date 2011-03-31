@@ -261,22 +261,16 @@ public class GPanoramic
       _maxResolutionInPanoramic = _zoomLevels.getLevels().size() - 1;
 
       addButtonToHUDLayer();
-
-
    }
 
 
    private void addButtonToHUDLayer() {
-
       if (_exitIcon != null) {
-         // _hudIcon = new GHUDIcon("../globe/bitmaps/icons/earth.png", GHUDIcon.Position.SOUTHEAST);
-         //System.out.println("Exit Icon : " + _exitIcon.buildPath());
-         _hudIcon = new GHUDIcon(_exitIcon.buildPath(), GHUDIcon.Position.SOUTHEAST);
+         _hudIcon = new GHUDIcon(_exitIcon.buildPath(), GHUDIcon.Position.NORTHEAST);
       }
       else {
-         _hudIcon = new GHUDIcon("../globe/bitmaps/icons/earth.png", GHUDIcon.Position.SOUTHEAST);
+         _hudIcon = new GHUDIcon("../globe/bitmaps/icons/quit.png", GHUDIcon.Position.NORTHEAST);
       }
-
 
       _hudIcon.addActionListener(new ActionListener() {
          @Override
