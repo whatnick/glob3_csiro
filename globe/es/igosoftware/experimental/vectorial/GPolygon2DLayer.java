@@ -863,7 +863,7 @@ public class GPolygon2DLayer
 
    @Override
    public Icon getIcon(final IGlobeApplication application) {
-      return application.getIcon(GFileName.relative("vectorial.png"));
+      return application.getSmallIcon(GFileName.relative("vectorial.png"));
    }
 
 

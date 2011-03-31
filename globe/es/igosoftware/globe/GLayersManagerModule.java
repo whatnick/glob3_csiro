@@ -131,7 +131,7 @@ public class GLayersManagerModule
    @Override
    public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application) {
       final IGenericAction addLayer = new GButtonGenericAction("Add a layer", 'A',
-               application.getIcon(GFileName.relative("add.png")), IGenericAction.MenuArea.FILE, true) {
+               application.getSmallIcon(GFileName.relative("add.png")), IGenericAction.MenuArea.FILE, true) {
 
          @Override
          public boolean isVisible() {
@@ -248,7 +248,7 @@ public class GLayersManagerModule
                                                        final IGlobeLayer layer) {
 
       final ILayerAction addLayer = new GButtonLayerAction("Add a layer", 'A',
-               application.getIcon(GFileName.relative("add.png")), false) {
+               application.getSmallIcon(GFileName.relative("add.png")), false) {
          @Override
          public boolean isVisible() {
             return !getAllLayerInfos(application).isEmpty();
@@ -263,7 +263,7 @@ public class GLayersManagerModule
 
 
       final ILayerAction zoomToLayer = new GButtonLayerAction("Zoom to layer", 'Z',
-               application.getIcon(GFileName.relative("zoom.png")), true) {
+               application.getSmallIcon(GFileName.relative("zoom.png")), true) {
          @Override
          public boolean isVisible() {
             return (layer != null) && (layer.getExtent() != null);
@@ -278,7 +278,7 @@ public class GLayersManagerModule
 
 
       final ILayerAction removeLayer = new GButtonLayerAction("Remove layer", 'R',
-               application.getIcon(GFileName.relative("remove.png")), true) {
+               application.getSmallIcon(GFileName.relative("remove.png")), true) {
          @Override
          public boolean isVisible() {
             return (layer != null);
@@ -301,7 +301,8 @@ public class GLayersManagerModule
       };
 
 
-      final ILayerAction moveUp = new GButtonLayerAction("Move up", 'U', application.getIcon(GFileName.relative("up.png")), false) {
+      final ILayerAction moveUp = new GButtonLayerAction("Move up", 'U', application.getSmallIcon(GFileName.relative("up.png")),
+               false) {
          @Override
          public boolean isVisible() {
             return (layer != null);
@@ -336,8 +337,8 @@ public class GLayersManagerModule
       };
 
 
-      final ILayerAction moveDown = new GButtonLayerAction("Move down", 'D', application.getIcon(GFileName.relative("down.png")),
-               false) {
+      final ILayerAction moveDown = new GButtonLayerAction("Move down", 'D',
+               application.getSmallIcon(GFileName.relative("down.png")), false) {
          @Override
          public boolean isVisible() {
             return (layer != null);

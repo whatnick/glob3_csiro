@@ -182,7 +182,7 @@ public class GWMSLayer
 
    @Override
    public Icon getIcon(final IGlobeApplication application) {
-      return application.getIcon(GFileName.relative("earth.png"));
+      return application.getSmallIcon(GFileName.relative("earth.png"));
    }
 
 

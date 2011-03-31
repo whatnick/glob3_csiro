@@ -136,7 +136,7 @@ public class GPanoramicLayer
 
    @Override
    public Icon getIcon(final IGlobeApplication application) {
-      return application.getIcon(GFileName.relative("panoramic.png"));
+      return application.getSmallIcon(GFileName.relative("panoramic.png"));
    }
 
 

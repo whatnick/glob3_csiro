@@ -394,7 +394,7 @@ public class GMultidimensionalViewerLayer
 
    @Override
    public Icon getIcon(final IGlobeApplication application) {
-      return application.getIcon(GFileName.relative("pointscloud.png"));
+      return application.getSmallIcon(GFileName.relative("pointscloud.png"));
    }
 
 

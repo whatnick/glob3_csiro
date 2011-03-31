@@ -137,7 +137,7 @@ public class GHomePositionModule
 
    @Override
    public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application) {
-      final IGenericAction gotoHome = new GButtonGenericAction(_label, application.getIcon(_iconName),
+      final IGenericAction gotoHome = new GButtonGenericAction(_label, application.getSmallIcon(_iconName),
                IGenericAction.MenuArea.NAVIGATION, true) {
 
          @Override

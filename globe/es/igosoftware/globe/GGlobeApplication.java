@@ -429,6 +429,11 @@ public abstract class GGlobeApplication
                            return null;
                         }
 
+                        if ((key._width < 0) || (key._height < 0)) {
+                           // negatives sizes means no resize
+                           return image;
+                        }
+
                         final int width = image.getWidth(null);
                         final int height = image.getHeight(null);
                         if ((width == -1) || (height == -1)) {
@@ -638,8 +643,8 @@ public abstract class GGlobeApplication
          return;
       }
 
-      final JMenuItem exitItem = GSwingUtils.createMenuItem(getTranslation("Exit"), getIcon(GFileName.relative("quit.png")), 'x',
-               new ActionListener() {
+      final JMenuItem exitItem = GSwingUtils.createMenuItem(getTranslation("Exit"), getSmallIcon(GFileName.relative("quit.png")),
+               'x', new ActionListener() {
                   @Override
                   public void actionPerformed(final ActionEvent e) {
                      exit();
@@ -667,13 +672,13 @@ public abstract class GGlobeApplication
 
    @Override
    public BufferedImage getImage(final GFileName imageName) {
-      final int defaultIconSize = getDefaultIconSize();
-      return getImage(imageName, defaultIconSize, defaultIconSize);
+      //         final int defaultIconSize = getDefaultIconSize();
+      return getImage(imageName, -1, -1);
    }
 
 
    @Override
-   public Icon getIcon(final GFileName iconName) {
+   public Icon getSmallIcon(final GFileName iconName) {
       final int defaultIconSize = getDefaultIconSize();
       return getIcon(iconName, defaultIconSize, defaultIconSize);
    }

@@ -100,7 +100,7 @@ public class GAnaglyphViewerModule
    public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application) {
 
       final IGenericAction action = new GCheckBoxGenericAction(_label, ' ',
-               application.getIcon(GFileName.relative("anaglyph.png")), IGenericAction.MenuArea.VIEW, true, _initialState) {
+               application.getSmallIcon(GFileName.relative("anaglyph.png")), IGenericAction.MenuArea.VIEW, true, _initialState) {
          @Override
          public void execute() {
             doIt(application, isSelected());

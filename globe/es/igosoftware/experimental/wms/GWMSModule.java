@@ -43,7 +43,7 @@ public class GWMSModule
    public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application) {
 
       final IGenericAction addWMSLayer = new GButtonGenericAction("Add WMS layer", 'W',
-               application.getIcon(GFileName.relative("earth-add.png")), IGenericAction.MenuArea.FILE, true) {
+               application.getSmallIcon(GFileName.relative("earth-add.png")), IGenericAction.MenuArea.FILE, true) {
 
          @Override
          public boolean isVisible() {

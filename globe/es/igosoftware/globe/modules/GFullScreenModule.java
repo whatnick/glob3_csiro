@@ -103,7 +103,7 @@ public class GFullScreenModule
 
 
       final IGenericAction switchFullScreen = new GCheckBoxGenericAction(_label, 'F',
-               application.getIcon(GFileName.relative("fullscreen.png")), IGenericAction.MenuArea.VIEW, true, false) {
+               application.getSmallIcon(GFileName.relative("fullscreen.png")), IGenericAction.MenuArea.VIEW, true, false) {
 
 
          @Override

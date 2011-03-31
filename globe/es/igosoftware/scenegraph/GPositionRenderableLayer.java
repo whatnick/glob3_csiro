@@ -562,7 +562,7 @@ public class GPositionRenderableLayer
 
    @Override
    public Icon getIcon(final IGlobeApplication application) {
-      return application.getIcon(_iconName);
+      return application.getSmallIcon(_iconName);
    }
 
 

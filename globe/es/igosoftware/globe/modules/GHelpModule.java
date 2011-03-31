@@ -160,8 +160,8 @@ public class GHelpModule
          return Collections.emptyList();
       }
 
-      final IGenericAction help = new GButtonGenericAction(_label, application.getIcon(_iconName), IGenericAction.MenuArea.HELP,
-               true) {
+      final IGenericAction help = new GButtonGenericAction(_label, application.getSmallIcon(_iconName),
+               IGenericAction.MenuArea.HELP, true) {
 
          @Override
          public void execute() {

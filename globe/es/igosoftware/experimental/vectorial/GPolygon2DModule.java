@@ -106,7 +106,7 @@ public class GPolygon2DModule
    @Override
    public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application) {
       final GButtonGenericAction creates = new GButtonGenericAction("Creates a New Vectorial Layer",
-               application.getIcon(GFileName.relative("new-vectorial.png")), IGenericAction.MenuArea.EDIT, true) {
+               application.getSmallIcon(GFileName.relative("new-vectorial.png")), IGenericAction.MenuArea.EDIT, true) {
          @Override
          public void execute() {
             createNewLayer(application);
@@ -127,7 +127,7 @@ public class GPolygon2DModule
 
          if ((features != null) && features.isEditable()) {
             final GCheckBoxLayerAction editAction = new GCheckBoxLayerAction("Edit",
-                     application.getIcon(GFileName.relative("edit.png")), true, false) {
+                     application.getSmallIcon(GFileName.relative("edit.png")), true, false) {
                @Override
                public boolean isVisible() {
                   return (layer instanceof IGlobeVector2Layer)
@@ -260,7 +260,7 @@ public class GPolygon2DModule
             final String extension = GIOUtils.getExtension(f);
 
             if ((extension != null) && extension.toLowerCase().equals("shp")) {
-               return application.getIcon(GFileName.relative("vectorial.png"));
+               return application.getSmallIcon(GFileName.relative("vectorial.png"));
             }
 
             return super.getIcon(f);
@@ -296,7 +296,7 @@ public class GPolygon2DModule
 
       final String answer = (String) JOptionPane.showInputDialog(application.getFrame(),
                application.getTranslation("Enter the name for the new layer"), application.getTranslation("Vectorial Layer"),
-               JOptionPane.PLAIN_MESSAGE, application.getIcon(GFileName.relative("new-vectorial.png")), null,
+               JOptionPane.PLAIN_MESSAGE, application.getSmallIcon(GFileName.relative("new-vectorial.png")), null,
                application.getTranslation(DEFAULT_LAYER_NAME));
 
       if ((answer != null) && !answer.trim().isEmpty()) {
