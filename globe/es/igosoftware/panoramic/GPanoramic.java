@@ -42,7 +42,8 @@ import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.globe.GGlobeApplication;
-import es.igosoftware.globe.IGlobeApplication;
+import es.igosoftware.globe.layers.hud.GHUDIcon;
+import es.igosoftware.globe.layers.hud.GHUDLayer;
 import es.igosoftware.globe.view.GBasicOrbitViewLimits;
 import es.igosoftware.globe.view.GPanoramicViewLimits;
 import es.igosoftware.globe.view.customView.GCustomView;
@@ -75,6 +76,8 @@ import gov.nasa.worldwind.render.OrderedRenderable;
 import gov.nasa.worldwind.util.WWMath;
 
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -190,10 +193,14 @@ public class GPanoramic
    private int                                                               _currentLevel;
 
    private final Layer                                                       _layer;
+   private final GHUDLayer                                                   _hudLayer;
+   private final GFileName                                                   _exitIcon;
+   private GHUDIcon                                                          _hudIcon;
    private double                                                            _currentDistanceFromEye;
 
 
    private boolean                                                           _isHidden;
+   private boolean                                                           _isActive               = false;
 
 
    public GPanoramic(final Layer layer,
@@ -201,8 +208,21 @@ public class GPanoramic
                      final ILoader loader,
                      final GFileName panoramicName,
                      final double radius,
-                     final Position position) throws IOException {
-      this(layer, name, loader, panoramicName, radius, position, 0, GElevationAnchor.SURFACE);
+                     final Position position,
+                     final GHUDLayer hudLayer) throws IOException {
+      this(layer, name, loader, panoramicName, radius, position, 0, GElevationAnchor.SURFACE, hudLayer, null);
+   }
+
+
+   public GPanoramic(final Layer layer,
+                     final String name,
+                     final ILoader loader,
+                     final GFileName panoramicName,
+                     final double radius,
+                     final Position position,
+                     final GHUDLayer hudLayer,
+                     final GFileName exitIcon) throws IOException {
+      this(layer, name, loader, panoramicName, radius, position, 0, GElevationAnchor.SURFACE, hudLayer, exitIcon);
    }
 
 
@@ -213,7 +233,9 @@ public class GPanoramic
                      final double radius,
                      final Position position,
                      final double headingInDegrees,
-                     final GElevationAnchor anchor) throws IOException {
+                     final GElevationAnchor anchor,
+                     final GHUDLayer hudLayer,
+                     final GFileName exitIcon) throws IOException {
       GAssert.notNull(name, "name");
       GAssert.notNull(loader, "loader");
       GAssert.isPositive(radius, "radius");
@@ -229,6 +251,8 @@ public class GPanoramic
       _position = position;
       _headingInDegrees = headingInDegrees;
       _anchor = anchor;
+      _hudLayer = hudLayer;
+      _exitIcon = exitIcon;
 
       _tiles = createTopTiles();
 
@@ -236,7 +260,44 @@ public class GPanoramic
 
       _maxResolutionInPanoramic = _zoomLevels.getLevels().size() - 1;
 
+      addButtonToHUDLayer();
 
+
+   }
+
+
+   private void addButtonToHUDLayer() {
+
+      if (_exitIcon != null) {
+         // _hudIcon = new GHUDIcon("../globe/bitmaps/icons/earth.png", GHUDIcon.Position.SOUTHEAST);
+         //System.out.println("Exit Icon : " + _exitIcon.buildPath());
+         _hudIcon = new GHUDIcon(_exitIcon.buildPath(), GHUDIcon.Position.SOUTHEAST);
+      }
+      else {
+         _hudIcon = new GHUDIcon("../globe/bitmaps/icons/earth.png", GHUDIcon.Position.SOUTHEAST);
+      }
+
+
+      _hudIcon.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(final ActionEvent e) {
+            //System.out.println("Clicked on the earth icon!");
+            deactivate((GCustomView) GGlobeApplication.instance().getView());
+         }
+      });
+
+      _hudIcon.setEnable(false);
+      _hudLayer.addElement(_hudIcon);
+   }
+
+
+   public boolean isActive() {
+      return _isActive;
+   }
+
+
+   public GHUDLayer getHUDLayer() {
+      return _hudLayer;
    }
 
 
@@ -632,6 +693,9 @@ public class GPanoramic
    public void activate(final GCustomView view,
                         final GGlobeApplication application) {
 
+      _hudIcon.setEnable(true);
+      _isActive = true;
+
       if (!view.hasCameraState()) {
          view.saveCameraState();
       }
@@ -657,8 +721,10 @@ public class GPanoramic
    }
 
 
-   public void deactivate(final GCustomView view,
-                          final IGlobeApplication application) {
+   public void deactivate(final GCustomView view) {
+
+      _hudIcon.setEnable(false);
+      _isActive = false;
 
       view.exitPanoramic(this);
       view.setOrbitViewLimits(new GBasicOrbitViewLimits());
@@ -902,6 +968,17 @@ public class GPanoramic
 
          final GL gl = dc.getGL();
          //TODO: transparency or not
+         //         if (!_isActive) {
+         //            //            final double opacity = 0.5;
+         //            //            gl.glPushAttrib(GL.GL_COLOR_BUFFER_BIT | GL.GL_POLYGON_BIT | GL.GL_CURRENT_BIT);
+         //            //            // Enable blending using white premultiplied by the current opacity.
+         //            //            gl.glColor4d(opacity, opacity, opacity, opacity);
+         //            _layer.setOpacity(0.5);
+         //
+         //         }
+         //         else {
+         //            _layer.setOpacity(1.0);
+         //         }
          gl.glCallList(_displayList);
 
          if (texture != null) {

@@ -44,6 +44,7 @@ import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.globe.layers.GVector2RenderingTheme;
+import es.igosoftware.globe.layers.hud.GHUDLayer;
 import es.igosoftware.globe.view.customView.GCustomView;
 import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.avlist.AVKey;
@@ -113,7 +114,7 @@ public class GPanoramicLayer
 
          @Override
          public void activated(final GPanoramic panoramic) {
-            hideOtherLayers(GPanoramicLayer.this);
+            hideOtherLayers(GPanoramicLayer.this, panoramic.getHUDLayer());
             hideOtherPanoramics(panoramic);
 
          }
@@ -286,36 +287,6 @@ public class GPanoramicLayer
    }
 
 
-   //
-   //   public void enterPanoramic(final GPanoramic panoramic,
-   //                              final GCustomView view) {
-   //      final GGlobeApplication application = GGlobeApplication.instance();
-   //      if (!view.hasCameraState()) {
-   //         view.saveCameraState();
-   //      }
-   //
-   //      application.jumpTo(panoramic.getPosition(), 0);
-   //      view.setInputState(GInputState.PANORAMICS);
-   //      final GPanoramicViewLimits viewLimits = new GPanoramicViewLimits();
-   //      view.setOrbitViewLimits(viewLimits);
-   //      hideOtherLayers(this);
-   //      hideOtherPanoramics(panoramic);
-   //
-   //      view.setFieldOfView(Angle.fromDegrees(120));
-   //   }
-
-
-   //   @Override
-   //   public void exitContent(final GCustomView view) {
-   //      view.setInputState(GInputState.ORBIT);
-   //      view.setOrbitViewLimits(new GBasicOrbitViewLimits());
-   //      view.restoreCameraState();
-   //
-   //      unhideHiddenPanoramics();
-   //      unhideHiddenLayers();
-   //   }
-
-
    private void hideOtherPanoramics(final GPanoramic visiblePanoramic) {
       if (_panoramics.size() <= 1) {
          return;
@@ -339,12 +310,13 @@ public class GPanoramicLayer
    }
 
 
-   private void hideOtherLayers(final Layer visibleLayer) {
+   private void hideOtherLayers(final Layer visibleLayer,
+                                final GHUDLayer hudLayer) {
       _hasHiddenLayers = true;
 
       final GGlobeApplication application = GGlobeApplication.instance();
       for (final Layer layer : application.getLayerList()) {
-         if (layer == visibleLayer) {
+         if ((layer == visibleLayer) || (layer == hudLayer)) {
             continue;
          }
 

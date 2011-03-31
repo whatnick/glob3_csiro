@@ -104,6 +104,9 @@ public class GCustomView
 
    public void exitPanoramic(final GPanoramic panoramic) {
 
+      if (panoramic != _panoramica) {
+         System.out.println("This is not the same panoramic that you entered...");
+      }
       setInputState(GInputState.ORBIT);
       _panoramica = null;
    }
@@ -975,11 +978,12 @@ public class GCustomView
       //      stopMovement();
       //      stopMovementOnCenter();
 
-      setPitch(_savedCameraState.getPitch());
+
       setFieldOfView(_savedCameraState.getFov());
       setCenterPosition(_savedCameraState.getCenterPosition());
       setZoom(_savedCameraState.getZoom());
       setHeading(_savedCameraState.getHeading());
+      setPitch(_savedCameraState.getPitch());
 
       _savedCameraState = null;
 

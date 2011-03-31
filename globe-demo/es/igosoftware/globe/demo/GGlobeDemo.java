@@ -39,8 +39,6 @@ package es.igosoftware.globe.demo;
 
 import java.awt.Color;
 import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -60,7 +58,6 @@ import es.igosoftware.globe.GHomePositionModule;
 import es.igosoftware.globe.GLayersManagerModule;
 import es.igosoftware.globe.GStatisticsModule;
 import es.igosoftware.globe.IGlobeModule;
-import es.igosoftware.globe.layers.hud.GHUDIcon;
 import es.igosoftware.globe.layers.hud.GHUDLayer;
 import es.igosoftware.globe.modules.GFullScreenModule;
 import es.igosoftware.globe.modules.view.GAnaglyphViewerModule;
@@ -100,6 +97,8 @@ public class GGlobeDemo
          extends
             GGlobeApplication {
    private static final long              serialVersionUID = 1L;
+
+   private GHUDLayer                      _hudLayer;
 
 
    static {
@@ -150,7 +149,7 @@ public class GGlobeDemo
       final GPositionRenderableLayer caceres3DLayer = createCaceres3DModelLayer();
       layers.add(caceres3DLayer);
 
-
+      createHUDLayer(layers);
       try {
          final GPanoramicLayer panoramicLayer = createPanoramicLayer();
          layers.add(panoramicLayer);
@@ -160,28 +159,25 @@ public class GGlobeDemo
       }
 
 
-      createHUDLayer(layers);
-
-
       return layers;
    }
 
 
    private void createHUDLayer(final LayerList layers) {
-      final GHUDIcon hudIcon = new GHUDIcon("../globe/bitmaps/icons/earth.png", GHUDIcon.Position.SOUTHEAST);
+      //      final GHUDIcon hudIcon = new GHUDIcon("../globe/bitmaps/icons/earth.png", GHUDIcon.Position.SOUTHEAST);
+      //
+      //      hudIcon.addActionListener(new ActionListener() {
+      //         @Override
+      //         public void actionPerformed(final ActionEvent e) {
+      //            System.out.println("Clicked on the earth icon!");
+      //            JOptionPane.showConfirmDialog(getFrame(), "Clicked on the earth icon!");
+      //         }
+      //      });
 
-      hudIcon.addActionListener(new ActionListener() {
-         @Override
-         public void actionPerformed(final ActionEvent e) {
-            System.out.println("Clicked on the earth icon!");
-            JOptionPane.showConfirmDialog(getFrame(), "Clicked on the earth icon!");
-         }
-      });
+      _hudLayer = new GHUDLayer();
+      //hudLayer.addElement(hudIcon);
 
-      final GHUDLayer hudLayer = new GHUDLayer();
-      hudLayer.addElement(hudIcon);
-
-      layers.add(hudLayer);
+      layers.add(_hudLayer);
    }
 
 
@@ -210,7 +206,7 @@ public class GGlobeDemo
       try {
          final ILoader loader = new GFileLoader(GFileName.relative("PANOS"));
          panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", loader, GFileName.relative("Barrancos"),
-                  500, new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0)));
+                  500, new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0), _hudLayer));
 
          //panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", "data/panoramics/barruecos", 500,
          //         new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0)));
