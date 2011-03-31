@@ -97,11 +97,11 @@ BoundsT extends IBounds<VectorT, BoundsT>
 
 
    @Override
-   public VectorT getPoint(final int i) {
-      if (i == 0) {
+   public VectorT getPoint(final int index) {
+      if (index == 0) {
          return _from;
       }
-      if (i == 1) {
+      if (index == 1) {
          return _to;
       }
       throw new IndexOutOfBoundsException();

@@ -17,9 +17,12 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
-import es.igosoftware.euclid.GMultiGeometry2D;
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.multigeometry.GMultiGeometry2D;
+import es.igosoftware.euclid.multigeometry.GMultiLine2D;
+import es.igosoftware.euclid.multigeometry.GMultiPoint2D;
+import es.igosoftware.euclid.multigeometry.GMultiPolygon2D;
 import es.igosoftware.euclid.shape.GComplexPolygon2D;
 import es.igosoftware.euclid.shape.GLinesStrip2D;
 import es.igosoftware.euclid.shape.GQuad2D;
@@ -141,7 +144,7 @@ public class GJTSUtils {
    }
 
 
-   public static GMultiGeometry2D<IVector2> toEuclid(final MultiPoint jtsPoints) {
+   public static GMultiPoint2D toEuclid(final MultiPoint jtsPoints) {
       if (jtsPoints == null) {
          return null;
       }
@@ -152,11 +155,11 @@ public class GJTSUtils {
          points.add(toEuclid((Point) jtsPoints.getGeometryN(i)));
       }
 
-      return new GMultiGeometry2D<IVector2>(points);
+      return new GMultiPoint2D(points);
    }
 
 
-   public static GMultiGeometry2D<ILineal2D> toEuclid(final MultiLineString jtsLines) {
+   public static GMultiLine2D toEuclid(final MultiLineString jtsLines) {
       if (jtsLines == null) {
          return null;
       }
@@ -167,11 +170,11 @@ public class GJTSUtils {
          lines.add(toEuclid((LineString) jtsLines.getGeometryN(i)));
       }
 
-      return new GMultiGeometry2D<ILineal2D>(lines);
+      return new GMultiLine2D(lines);
    }
 
 
-   public static GMultiGeometry2D<IPolygon2D> toEuclid(final MultiPolygon jtsPolygons) {
+   public static GMultiPolygon2D toEuclid(final MultiPolygon jtsPolygons) {
       if (jtsPolygons == null) {
          return null;
       }
@@ -182,7 +185,7 @@ public class GJTSUtils {
          polygons.add(toEuclid((Polygon) jtsPolygons.getGeometryN(i)));
       }
 
-      return new GMultiGeometry2D<IPolygon2D>(polygons);
+      return new GMultiPolygon2D(polygons);
    }
 
 

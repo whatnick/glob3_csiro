@@ -120,8 +120,8 @@ PolytopeT extends IPolytope<VectorT, SegmentT, BoundsT>
 
 
    @Override
-   public final VectorT getPoint(final int i) {
-      return getPoints().get(i);
+   public final VectorT getPoint(final int index) {
+      return getPoints().get(index);
    }
 
 

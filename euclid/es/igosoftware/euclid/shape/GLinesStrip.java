@@ -99,8 +99,8 @@ BoundsT extends IBounds<VectorT, BoundsT>
 
 
    @Override
-   public VectorT getPoint(final int i) {
-      return _points.get(i);
+   public VectorT getPoint(final int index) {
+      return _points.get(index);
    }
 
 

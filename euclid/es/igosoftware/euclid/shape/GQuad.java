@@ -110,8 +110,8 @@ BoundsT extends IBounds<VectorT, BoundsT>
 
 
    @Override
-   public VectorT getPoint(final int i) {
-      switch (i) {
+   public VectorT getPoint(final int index) {
+      switch (index) {
          case 0:
             return _v0;
          case 1:

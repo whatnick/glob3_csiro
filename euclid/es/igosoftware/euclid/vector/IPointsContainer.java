@@ -54,7 +54,7 @@ VectorT extends IVector<VectorT, ?>
    public List<VectorT> getPoints();
 
 
-   public VectorT getPoint(final int i);
+   public VectorT getPoint(final int index);
 
 
    public int getPointsCount();
