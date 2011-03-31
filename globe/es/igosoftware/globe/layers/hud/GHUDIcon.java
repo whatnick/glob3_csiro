@@ -78,7 +78,7 @@ public class GHUDIcon
    private final GHUDIcon.Position _position;
    private int                     _borderWidth     = 20;
    private int                     _borderHeight    = 20;
-   private float                   _opacity         = 0.7f;
+   private float                   _opacity         = 0.65f;
 
    private boolean                 _isEnable        = true;
    private double                  _distanceFromEye = 0;
@@ -153,7 +153,7 @@ public class GHUDIcon
          //         }
 
          gl.glEnable(GL.GL_BLEND);
-         gl.glBlendFunc(GL.GL_ONE_MINUS_SRC_ALPHA, GL.GL_ONE);
+         gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
          gl.glDisable(GL.GL_DEPTH_TEST);
 
          // Load a parallel projection with xy dimensions (viewportWidth, viewportHeight)
@@ -234,45 +234,6 @@ public class GHUDIcon
    }
 
 
-   //   private void initializeTexture(final DrawContext dc) {
-   //      //      Texture iconTexture = dc.getTextureCache().get(_iconFileName);
-   //      //      if (iconTexture != null) {
-   //      //         return;
-   //      //      }
-   //      //
-   //      //      InputStream iconStream = null;
-   //      //      try {
-   //      //         iconStream = getClass().getResourceAsStream(_iconFileName.buildPath('/'));
-   //      //         if (iconStream == null) {
-   //      //            final File iconFile = _iconFileName.asFile();
-   //      //            if (iconFile.exists()) {
-   //      //               iconStream = new FileInputStream(iconFile);
-   //      //            }
-   //      //         }
-   //      //
-   //      //         iconTexture = TextureIO.newTexture(_image, true);
-   //      //         iconTexture.bind();
-   //      //         _iconWidth = iconTexture.getWidth();
-   //      //         _iconHeight = iconTexture.getHeight();
-   //      //         dc.getTextureCache().put(_iconFileName, iconTexture);
-   //      //      }
-   //      //      catch (final IOException e) {
-   //      //         throw new RuntimeException(e);
-   //      //      }
-   //      //      finally {
-   //      //         GIOUtils.gentlyClose(iconStream);
-   //      //      }
-   //
-   //      final GL gl = dc.getGL();
-   //      gl.glTexEnvf(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_MODULATE);
-   //      gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR_MIPMAP_LINEAR);
-   //      gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
-   //      gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE);
-   //      gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE);
-   //
-   //   }
-
-
    private Vec4 computeLocation(final Rectangle viewport,
                                 final float scale) {
       final double width = _textureWidth;
@@ -314,7 +275,7 @@ public class GHUDIcon
 
    private float calculateOpacity() {
       if (_highlighted) {
-         return 1;
+         return 1.0f;
       }
       return _opacity;
    }

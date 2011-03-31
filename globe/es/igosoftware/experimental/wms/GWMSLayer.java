@@ -41,6 +41,7 @@ import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.avlist.AVList;
@@ -181,7 +182,7 @@ public class GWMSLayer
 
    @Override
    public Icon getIcon(final IGlobeApplication application) {
-      return application.getIcon("earth.png");
+      return application.getIcon(GFileName.relative("earth.png"));
    }
 
 

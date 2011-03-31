@@ -36,8 +36,6 @@
 
 package es.igosoftware.euclid.shape;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.List;
 
 import es.igosoftware.euclid.GGeometryAbstract;
@@ -638,20 +636,6 @@ public final class GPlane
    @Override
    public boolean containsOnBoundary(final IVector3 point) {
       return GMath.closeToZero(signedDistance(point));
-   }
-
-
-   //   @Override
-   //   public GAxisAlignedBox asBox() {
-   //      // TODO: If the plane is parallel to any axis, an "half infinite" box can be created
-   //      return new GAxisAlignedBox(GVector3D.NEGATIVE_INFINITY, GVector3D.POSITIVE_INFINITY);
-   //   }
-
-
-   @Override
-   public void save(final DataOutputStream output) throws IOException {
-      _normal.save(output);
-      output.writeDouble(_d);
    }
 
 

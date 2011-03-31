@@ -68,6 +68,7 @@ import es.igosoftware.globe.actions.GButtonGenericAction;
 import es.igosoftware.globe.actions.IGenericAction;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GPair;
 
 
@@ -75,15 +76,15 @@ public class GHelpModule
          extends
             GAbstractGlobeModule {
 
-   private static final String DEFAULT_LABEL     = "Help";
-   private static final String DEFAULT_ICON_NAME = "help.png";
+   private static final String    DEFAULT_LABEL     = "Help";
+   private static final GFileName DEFAULT_ICON_NAME = GFileName.relative("help.png");
 
-   private final String        _label;
-   private final String        _iconName;
-   private final String[][]    _languageHtmlURL;
-   private final boolean       _autoOpen;
-   private final boolean       _showInPanel;
-   private final Color         _bgColor;
+   private final String           _label;
+   private final GFileName        _iconName;
+   private final String[][]       _languageHtmlURL;
+   private final boolean          _autoOpen;
+   private final boolean          _showInPanel;
+   private final Color            _bgColor;
 
 
    public GHelpModule(final String htmlURL) {
@@ -97,7 +98,7 @@ public class GHelpModule
 
 
    public GHelpModule(final String label,
-                      final String iconName,
+                      final GFileName iconName,
                       final String htmlURL,
                       final boolean autoOpen,
                       final boolean showInPanel) {
@@ -106,7 +107,7 @@ public class GHelpModule
 
 
    public GHelpModule(final String label,
-                      final String iconName,
+                      final GFileName iconName,
                       final String[][] languageHtmlURL,
                       final boolean autoOpen,
                       final boolean showInPanel) {
@@ -123,7 +124,7 @@ public class GHelpModule
 
 
    public GHelpModule(final String label,
-                      final String iconName,
+                      final GFileName iconName,
                       final String htmlURL,
                       final boolean autoOpen,
                       final boolean showInPanel,
@@ -133,7 +134,7 @@ public class GHelpModule
 
 
    public GHelpModule(final String label,
-                      final String iconName,
+                      final GFileName iconName,
                       final String[][] languageHtmlURL,
                       final boolean autoOpen,
                       final boolean showInPanel,

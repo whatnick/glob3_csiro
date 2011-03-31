@@ -37,7 +37,6 @@
 package es.igosoftware.euclid.vector;
 
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
@@ -302,13 +301,6 @@ public class GVector2F
       final double newX = _x / length;
       final double newY = _y / length;
       return new GVector2F.Normalized(newX, newY);
-   }
-
-
-   @Override
-   public final void save(final DataOutputStream output) throws IOException {
-      output.writeFloat(_x);
-      output.writeFloat(_y);
    }
 
 

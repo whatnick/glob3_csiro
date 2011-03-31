@@ -36,8 +36,6 @@
 
 package es.igosoftware.euclid.shape;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
@@ -53,7 +51,7 @@ public abstract class GTriangle<
 
 VectorT extends IVector<VectorT, ?>,
 
-SegmentT extends GSegment<VectorT, BoundsT>,
+SegmentT extends GSegment<VectorT, SegmentT, ?>,
 
 BoundsT extends IBounds<VectorT, BoundsT>
 
@@ -133,14 +131,6 @@ BoundsT extends IBounds<VectorT, BoundsT>
    @Override
    public final String toString() {
       return "Triangle (" + _v0 + " " + _v1 + " " + _v2 + ")";
-   }
-
-
-   @Override
-   public final void save(final DataOutputStream output) throws IOException {
-      _v0.save(output);
-      _v1.save(output);
-      _v2.save(output);
    }
 
 

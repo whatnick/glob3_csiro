@@ -44,7 +44,7 @@ public interface IPolygon<
 
 VectorT extends IVector<VectorT, ?>,
 
-SegmentT extends GSegment<VectorT, BoundsT>,
+SegmentT extends GSegment<VectorT, SegmentT, ?>,
 
 BoundsT extends IBounds<VectorT, BoundsT>
 
@@ -53,5 +53,9 @@ BoundsT extends IBounds<VectorT, BoundsT>
             IPolytope<VectorT, SegmentT, BoundsT> {
 
    public boolean isConvex();
+
+
+   @Override
+   public IPolygon<VectorT, SegmentT, BoundsT> createSimplified(final double capsRadiansTolerance);
 
 }

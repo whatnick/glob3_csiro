@@ -92,10 +92,8 @@ public class GShapefileTools {
       while (iterator.hasNext()) {
          final SimpleFeature feature = iterator.next();
          final Geometry jtsGeometry = (Geometry) feature.getDefaultGeometry();
-         for (final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> euclidGeometry : GJTSUtils.toEuclid(jtsGeometry)) {
-            features.add(new GGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>(
-                     euclidGeometry, feature.getAttributes()));
-         }
+         features.add(new GGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>(
+                  GJTSUtils.toEuclid(jtsGeometry), feature.getAttributes()));
       }
 
       final SimpleFeatureType schema = featureSource.getSchema();

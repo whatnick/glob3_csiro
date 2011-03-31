@@ -48,6 +48,7 @@ import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.globe.layers.GVector2RenderingTheme;
 import es.igosoftware.globe.utils.GAreasEventsLayer;
 import es.igosoftware.globe.utils.GAreasEventsLayer.IAreaEventsListener;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.loading.GDisplayListCache;
 import es.igosoftware.scenegraph.GElevationAnchor;
@@ -737,7 +738,7 @@ public final class GPanoramicLayerOLD
 
    @Override
    public Icon getIcon(final IGlobeApplication application) {
-      return application.getIcon("panoramic.png");
+      return application.getIcon(GFileName.relative("panoramic.png"));
    }
 
 

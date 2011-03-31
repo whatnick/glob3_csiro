@@ -36,8 +36,6 @@
 
 package es.igosoftware.euclid.shape;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -52,7 +50,7 @@ public abstract class GComplexPolytope<
 
 VectorT extends IVector<VectorT, ?>,
 
-SegmentT extends GSegment<VectorT, BoundsT>,
+SegmentT extends GSegment<VectorT, SegmentT, ?>,
 
 BoundsT extends IBounds<VectorT, BoundsT>,
 
@@ -151,16 +149,6 @@ PolytopeT extends IPolytope<VectorT, SegmentT, BoundsT>
 
 
    protected abstract String getStringName();
-
-
-   @Override
-   public final void save(final DataOutputStream output) throws IOException {
-      _hull.save(output);
-      output.writeInt(_holes.size());
-      for (final PolytopeT hole : _holes) {
-         hole.save(output);
-      }
-   }
 
 
    @Override

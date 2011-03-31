@@ -10,7 +10,7 @@ import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.IVector3;
 
 
-public class GMultiGeometry3<
+public class GMultiGeometry3D<
 
 ChildrenGeometryT extends IBoundedGeometry<IVector3, ? extends IFiniteBounds<IVector3, ?>>
 
@@ -22,22 +22,22 @@ ChildrenGeometryT extends IBoundedGeometry<IVector3, ? extends IFiniteBounds<IVe
    private static final long serialVersionUID = 1L;
 
 
-   public GMultiGeometry3(final ChildrenGeometryT... children) {
+   public GMultiGeometry3D(final ChildrenGeometryT... children) {
       super(children);
    }
 
 
-   public GMultiGeometry3(final List<ChildrenGeometryT> children) {
+   public GMultiGeometry3D(final List<ChildrenGeometryT> children) {
       super(children);
    }
 
 
    public static void main(final String[] args) {
-      System.out.println("GMultiGeometry3 0.1");
-      System.out.println("-------------------\n");
+      System.out.println("GMultiGeometry3D 0.1");
+      System.out.println("--------------------\n");
 
 
-      final GMultiGeometry3<IVector3> multiPoint2D = new GMultiGeometry3<IVector3>(GVector3D.UNIT, GVector3D.X_DOWN,
+      final GMultiGeometry3D<IVector3> multiPoint2D = new GMultiGeometry3D<IVector3>(GVector3D.UNIT, GVector3D.X_DOWN,
                new GVector3D(10, 10, 5));
       System.out.println(multiPoint2D);
       System.out.println("  bounds=" + multiPoint2D.getBounds());

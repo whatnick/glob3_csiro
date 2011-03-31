@@ -64,6 +64,7 @@ import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.shape.GComplexPolygon2D;
 import es.igosoftware.euclid.shape.GShape;
+import es.igosoftware.euclid.shape.ILineal2D;
 import es.igosoftware.euclid.shape.IPolygon2D;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
@@ -236,7 +237,7 @@ public class GShapeLoader {
                final com.vividsolutions.jts.geom.LineString jtsPolygon = (com.vividsolutions.jts.geom.LineString) multiline.getGeometryN(i);
 
                try {
-                  final IPolygon2D euclidLines = createLine(jtsPolygon.getCoordinates(), projection);
+                  final ILineal2D euclidLines = createLine(jtsPolygon.getCoordinates(), projection);
 
                   euclidFeatures.add(createFeature(euclidLines, feature));
                }
@@ -316,8 +317,8 @@ public class GShapeLoader {
    }
 
 
-   private static IPolygon2D createLine(final Coordinate[] jtsCoordinates,
-                                        final GProjection projection) {
+   private static ILineal2D createLine(final Coordinate[] jtsCoordinates,
+                                       final GProjection projection) {
       final List<IVector2> points = removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeLastIfRepeated(convert(
                jtsCoordinates, projection))))));
 

@@ -36,8 +36,6 @@
 
 package es.igosoftware.euclid.shape;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -53,7 +51,7 @@ public abstract class GSimplePolytope<
 
 VectorT extends IVector<VectorT, ?>,
 
-SegmentT extends GSegment<VectorT, BoundsT>,
+SegmentT extends GSegment<VectorT, SegmentT, ?>,
 
 BoundsT extends IBounds<VectorT, BoundsT>
 
@@ -198,15 +196,6 @@ BoundsT extends IBounds<VectorT, BoundsT>
 
 
    protected abstract String getStringName();
-
-
-   @Override
-   public final void save(final DataOutputStream output) throws IOException {
-      output.writeInt(_points.size());
-      for (final VectorT point : _points) {
-         point.save(output);
-      }
-   }
 
 
    @Override

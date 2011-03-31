@@ -2,8 +2,6 @@
 
 package es.igosoftware.euclid;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,7 +18,7 @@ import es.igosoftware.util.GCollections;
 import es.igosoftware.util.ITransformer;
 
 
-public class GMultiGeometry<
+public abstract class GMultiGeometry<
 
 VectorT extends IVector<VectorT, ?>,
 
@@ -55,9 +53,14 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
    }
 
 
+   public ChildrenGeometryT getExemplar() {
+      return _children.get(0);
+   }
+
+
    @Override
    public byte dimensions() {
-      return _children.get(0).dimensions();
+      return getExemplar().dimensions();
    }
 
 
@@ -89,7 +92,7 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
 
    @Override
    public VectorT closestPoint(final VectorT point) {
-      VectorT closest = _children.get(0).closestPoint(point);
+      VectorT closest = getExemplar().closestPoint(point);
       double closestDistance = closest.squaredDistance(point);
 
       for (int i = 1; i < _children.size(); i++) {
@@ -107,7 +110,7 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
 
    @Override
    public double precision() {
-      return _children.get(0).precision();
+      return getExemplar().precision();
    }
 
 
@@ -141,16 +144,7 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
 
    @Override
    public GRenderType getRenderType() {
-      return _children.get(0).getRenderType();
-   }
-
-
-   @Override
-   public void save(final DataOutputStream output) throws IOException {
-      output.writeInt(_children.size());
-      for (final ChildrenGeometryT child : _children) {
-         child.save(output);
-      }
+      return getExemplar().getRenderType();
    }
 
 
@@ -175,5 +169,9 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
       return Collections.unmodifiableList(_children).iterator();
    }
 
+
+   public ChildrenGeometryT getChild(final int index) {
+      return _children.get(index);
+   }
 
 }

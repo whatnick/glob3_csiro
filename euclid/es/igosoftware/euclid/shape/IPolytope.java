@@ -36,9 +36,7 @@
 
 package es.igosoftware.euclid.shape;
 
-import java.util.List;
-
-import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.IEdgedGeometry;
 import es.igosoftware.euclid.bounding.IBounds;
 import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector;
@@ -48,30 +46,21 @@ public interface IPolytope<
 
 VectorT extends IVector<VectorT, ?>,
 
-SegmentT extends GSegment<VectorT, BoundsT>,
+SegmentT extends GSegment<VectorT, SegmentT, ?>,
 
 BoundsT extends IBounds<VectorT, BoundsT>
 
 >
          extends
             IPointsContainer<VectorT>,
-            IBoundedGeometry<VectorT, BoundsT> {
+            IEdgedGeometry<VectorT, SegmentT, BoundsT> {
 
 
-   public boolean isSelfIntersected();
-
-
+   @Override
    public IPolytope<VectorT, SegmentT, BoundsT> createSimplified(final double capsRadiansTolerance);
 
 
    public IPolytope<VectorT, SegmentT, BoundsT> getHull();
-
-
-   public List<SegmentT> getEdges();
-
-
-   @Override
-   public BoundsT getBounds();
 
 
 }

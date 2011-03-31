@@ -45,6 +45,7 @@ import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EventListener;
 import java.util.List;
@@ -76,7 +77,7 @@ import es.igosoftware.globe.actions.IGenericAction;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.GBooleanLayerAttribute;
 import es.igosoftware.globe.attributes.ILayerAttribute;
-import es.igosoftware.util.GCollections;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GPair;
 import es.igosoftware.util.GTriplet;
 import gov.nasa.worldwind.avlist.AVKey;
@@ -129,8 +130,8 @@ public class GLayersManagerModule
 
    @Override
    public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application) {
-      final IGenericAction addLayer = new GButtonGenericAction("Add a layer", 'A', application.getIcon("add.png"),
-               IGenericAction.MenuArea.FILE, true) {
+      final IGenericAction addLayer = new GButtonGenericAction("Add a layer", 'A',
+               application.getIcon(GFileName.relative("add.png")), IGenericAction.MenuArea.FILE, true) {
 
          @Override
          public boolean isVisible() {
@@ -183,7 +184,8 @@ public class GLayersManagerModule
 
       final ModuleAndLayerInfo moduleAndLayerInfo = (ModuleAndLayerInfo) JOptionPane.showInputDialog(application.getFrame(),
                application.getTranslation("Select a layer"), application.getTranslation("Add a layer"),
-               JOptionPane.PLAIN_MESSAGE, application.getIcon("add.png", 32, 32), allLayerInfos.toArray(), null);
+               JOptionPane.PLAIN_MESSAGE, application.getIcon(GFileName.relative("add.png"), 32, 32), allLayerInfos.toArray(),
+               null);
 
       if (moduleAndLayerInfo != null) {
          createNewLayer(application, moduleAndLayerInfo._module, moduleAndLayerInfo._layerInfo);
@@ -245,7 +247,8 @@ public class GLayersManagerModule
    public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application,
                                                        final IGlobeLayer layer) {
 
-      final ILayerAction addLayer = new GButtonLayerAction("Add a layer", 'A', application.getIcon("add.png"), false) {
+      final ILayerAction addLayer = new GButtonLayerAction("Add a layer", 'A',
+               application.getIcon(GFileName.relative("add.png")), false) {
          @Override
          public boolean isVisible() {
             return !getAllLayerInfos(application).isEmpty();
@@ -259,7 +262,8 @@ public class GLayersManagerModule
       };
 
 
-      final ILayerAction zoomToLayer = new GButtonLayerAction("Zoom to layer", 'Z', application.getIcon("zoom.png"), true) {
+      final ILayerAction zoomToLayer = new GButtonLayerAction("Zoom to layer", 'Z',
+               application.getIcon(GFileName.relative("zoom.png")), true) {
          @Override
          public boolean isVisible() {
             return (layer != null) && (layer.getExtent() != null);
@@ -273,7 +277,8 @@ public class GLayersManagerModule
       };
 
 
-      final ILayerAction removeLayer = new GButtonLayerAction("Remove layer", 'R', application.getIcon("remove.png"), true) {
+      final ILayerAction removeLayer = new GButtonLayerAction("Remove layer", 'R',
+               application.getIcon(GFileName.relative("remove.png")), true) {
          @Override
          public boolean isVisible() {
             return (layer != null);
@@ -296,7 +301,7 @@ public class GLayersManagerModule
       };
 
 
-      final ILayerAction moveUp = new GButtonLayerAction("Move up", 'U', application.getIcon("up.png"), false) {
+      final ILayerAction moveUp = new GButtonLayerAction("Move up", 'U', application.getIcon(GFileName.relative("up.png")), false) {
          @Override
          public boolean isVisible() {
             return (layer != null);
@@ -331,7 +336,8 @@ public class GLayersManagerModule
       };
 
 
-      final ILayerAction moveDown = new GButtonLayerAction("Move down", 'D', application.getIcon("down.png"), false) {
+      final ILayerAction moveDown = new GButtonLayerAction("Move down", 'D', application.getIcon(GFileName.relative("down.png")),
+               false) {
          @Override
          public boolean isVisible() {
             return (layer != null);
@@ -366,7 +372,7 @@ public class GLayersManagerModule
          }
       };
 
-      return GCollections.createList(addLayer, zoomToLayer, removeLayer, moveUp, moveDown);
+      return Arrays.asList(addLayer, zoomToLayer, removeLayer, moveUp, moveDown);
    }
 
 
@@ -706,8 +712,8 @@ public class GLayersManagerModule
 
 
    @Override
-   public List<ILayerAttribute<?>> getLayerAttributes(final IGlobeApplication application,
-                                                      final IGlobeLayer layer) {
+   public List<? extends ILayerAttribute<?>> getLayerAttributes(final IGlobeApplication application,
+                                                                final IGlobeLayer layer) {
       final GBooleanLayerAttribute visible = new GBooleanLayerAttribute("Visible", "Enabled") {
          @Override
          public boolean isVisible() {
@@ -727,28 +733,8 @@ public class GLayersManagerModule
          }
       };
 
-      //      final GSelectionLayerAttribute crs = new GSelectionLayerAttribute("CRS", "CRS", GProjection.getEPSGProjections()) {
-      //
-      //         @Override
-      //         public boolean isVisible() {
-      //            return true;
-      //         }
-      //
-      //
-      //         @Override
-      //         public GProjection get() {
-      //            return layer.getProjection();
-      //         }
-      //
-      //
-      //         @Override
-      //         public void set(final Object value) {
-      //            layer.setProjection((GProjection) value);
-      //         }
-      //      };
 
-      return GCollections.createList(visible/*, crs*/);
-
+      return Arrays.asList(visible);
    }
 
 

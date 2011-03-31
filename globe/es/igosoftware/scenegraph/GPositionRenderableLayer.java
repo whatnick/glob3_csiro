@@ -88,7 +88,7 @@ public class GPositionRenderableLayer
          implements
             IGlobeVectorLayer {
 
-   private static final String DEFAULT_ICON_NAME = "3d.png";
+   private static final GFileName DEFAULT_ICON_NAME = GFileName.relative("3d.png");
 
 
    ////////////////////////////////////////////////////////////////////////////////////////////
@@ -260,7 +260,7 @@ public class GPositionRenderableLayer
 
    private final boolean               _dumpSceneGraph;
 
-   private final String                _iconName;
+   private final GFileName             _iconName;
 
 
    public GPositionRenderableLayer(final String name,
@@ -270,7 +270,7 @@ public class GPositionRenderableLayer
 
 
    public GPositionRenderableLayer(final String name,
-                                   final String iconName,
+                                   final GFileName iconName,
                                    final boolean dumpSceneGraph) {
       _name = name;
       _iconName = iconName;

@@ -36,8 +36,6 @@
 
 package es.igosoftware.euclid.bounding;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -276,13 +274,6 @@ GeometryT extends GAxisAlignedOrthotope<VectorT, GeometryT>
 
 
    protected abstract String getStringName();
-
-
-   @Override
-   public final void save(final DataOutputStream output) throws IOException {
-      _lower.save(output);
-      _upper.save(output);
-   }
 
 
    public abstract GAxisAlignedOrthotope<VectorT, GeometryT> expandedByDistance(final double delta);

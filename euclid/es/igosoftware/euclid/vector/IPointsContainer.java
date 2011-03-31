@@ -36,7 +36,6 @@
 
 package es.igosoftware.euclid.vector;
 
-import java.util.Iterator;
 import java.util.List;
 
 import es.igosoftware.euclid.IGeometry;
@@ -60,8 +59,5 @@ VectorT extends IVector<VectorT, ?>
 
    public int getPointsCount();
 
-
-   @Override
-   public Iterator<VectorT> iterator();
 
 }

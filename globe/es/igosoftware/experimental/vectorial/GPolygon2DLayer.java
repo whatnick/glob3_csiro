@@ -58,6 +58,7 @@ import es.igosoftware.globe.attributes.GFloatLayerAttribute;
 import es.igosoftware.globe.attributes.GGroupAttribute;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.globe.layers.GVector2RenderingTheme;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GPair;
@@ -862,7 +863,7 @@ public class GPolygon2DLayer
 
    @Override
    public Icon getIcon(final IGlobeApplication application) {
-      return application.getIcon("vectorial.png");
+      return application.getIcon(GFileName.relative("vectorial.png"));
    }
 
 

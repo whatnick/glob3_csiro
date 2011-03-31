@@ -3,11 +3,11 @@
 package es.igosoftware.utils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
@@ -17,6 +17,7 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
+import es.igosoftware.euclid.GMultiGeometry2D;
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.shape.GComplexPolygon2D;
@@ -26,6 +27,7 @@ import es.igosoftware.euclid.shape.GSegment2D;
 import es.igosoftware.euclid.shape.GShape;
 import es.igosoftware.euclid.shape.GSimplePolygon2D;
 import es.igosoftware.euclid.shape.GTriangle2D;
+import es.igosoftware.euclid.shape.ILineal2D;
 import es.igosoftware.euclid.shape.IPolygon2D;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IPointsContainer;
@@ -49,18 +51,18 @@ public class GJTSUtils {
    }
 
 
-   public static List<? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> toEuclid(final Geometry jtsGeometry) {
+   public static IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> toEuclid(final Geometry jtsGeometry) {
       if (jtsGeometry == null) {
          return null;
       }
       else if (jtsGeometry instanceof Point) {
-         return Collections.singletonList(toEuclid((Point) jtsGeometry));
+         return toEuclid((Point) jtsGeometry);
       }
       else if (jtsGeometry instanceof Polygon) {
-         return Collections.singletonList(toEuclid((Polygon) jtsGeometry));
+         return toEuclid((Polygon) jtsGeometry);
       }
       else if (jtsGeometry instanceof LineString) {
-         return Collections.singletonList(toEuclid((LineString) jtsGeometry));
+         return toEuclid((LineString) jtsGeometry);
       }
       else if (jtsGeometry instanceof MultiPoint) {
          return toEuclid((MultiPoint) jtsGeometry);
@@ -115,7 +117,7 @@ public class GJTSUtils {
    }
 
 
-   public static IPolygon2D createEuclidLine(final Coordinate... coordinates) {
+   public static ILineal2D createEuclidLine(final Coordinate... coordinates) {
       return GShape.createLine2(false, toEuclid(coordinates));
    }
 
@@ -130,7 +132,7 @@ public class GJTSUtils {
    }
 
 
-   public static IPolygon2D toEuclid(final LineString jtsLine) {
+   public static ILineal2D toEuclid(final LineString jtsLine) {
       if (jtsLine == null) {
          return null;
       }
@@ -139,79 +141,69 @@ public class GJTSUtils {
    }
 
 
-   public static List<IVector2> toEuclid(final MultiPoint jtsPoints) {
+   public static GMultiGeometry2D<IVector2> toEuclid(final MultiPoint jtsPoints) {
       if (jtsPoints == null) {
          return null;
       }
 
       final int count = jtsPoints.getNumGeometries();
-      final List<IVector2> result = new ArrayList<IVector2>(count);
+      final List<IVector2> points = new ArrayList<IVector2>(count);
       for (int i = 0; i < count; i++) {
-         result.add(toEuclid((Point) jtsPoints.getGeometryN(i)));
+         points.add(toEuclid((Point) jtsPoints.getGeometryN(i)));
       }
 
-      return result;
+      return new GMultiGeometry2D<IVector2>(points);
    }
 
 
-   public static List<IPolygon2D> toEuclid(final MultiLineString jtsLines) {
+   public static GMultiGeometry2D<ILineal2D> toEuclid(final MultiLineString jtsLines) {
       if (jtsLines == null) {
          return null;
       }
 
       final int count = jtsLines.getNumGeometries();
-      final List<IPolygon2D> result = new ArrayList<IPolygon2D>(count);
+      final List<ILineal2D> lines = new ArrayList<ILineal2D>(count);
       for (int i = 0; i < count; i++) {
-         result.add(toEuclid((LineString) jtsLines.getGeometryN(i)));
+         lines.add(toEuclid((LineString) jtsLines.getGeometryN(i)));
       }
 
-      return result;
+      return new GMultiGeometry2D<ILineal2D>(lines);
    }
 
 
-   public static List<IPolygon2D> toEuclid(final MultiPolygon jtsPolygons) {
+   public static GMultiGeometry2D<IPolygon2D> toEuclid(final MultiPolygon jtsPolygons) {
       if (jtsPolygons == null) {
          return null;
       }
 
       final int count = jtsPolygons.getNumGeometries();
-      final List<IPolygon2D> result = new ArrayList<IPolygon2D>(count);
+      final List<IPolygon2D> polygons = new ArrayList<IPolygon2D>(count);
       for (int i = 0; i < count; i++) {
-         result.add(toEuclid((Polygon) jtsPolygons.getGeometryN(i)));
+         polygons.add(toEuclid((Polygon) jtsPolygons.getGeometryN(i)));
       }
 
-      return result;
+      return new GMultiGeometry2D<IPolygon2D>(polygons);
    }
 
 
    public static Geometry toJTS(final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> geometry) {
-
-
       if (geometry == null) {
          return null;
       }
 
-
       if (geometry instanceof IVector2) {
          return toJTS(((IVector2) geometry));
       }
-      else if (geometry instanceof GLinesStrip2D) {
-         return toJTS((GLinesStrip2D) geometry);
+      else if (geometry instanceof ILineal2D) {
+         return toJTS((ILineal2D) geometry);
       }
-      else if (geometry instanceof GSegment2D) {
-         return toJTS((GSegment2D) geometry);
+      else if (geometry instanceof IPolygon2D) {
+         return toJTS((IPolygon2D) geometry);
       }
-      else if (geometry instanceof GComplexPolygon2D) {
-         return toJTS((GComplexPolygon2D) geometry);
-      }
-      else if (geometry instanceof GSimplePolygon2D) {
-         return toJTS((GSimplePolygon2D) geometry);
-      }
-      else if (geometry instanceof GQuad2D) {
-         return toJTS((GQuad2D) geometry);
-      }
-      else if (geometry instanceof GTriangle2D) {
-         return toJTS((GTriangle2D) geometry);
+      else if (geometry instanceof GMultiGeometry2D) {
+         @SuppressWarnings("unchecked")
+         final GMultiGeometry2D<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> multigeometry = (GMultiGeometry2D<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) geometry;
+         return toJTS(multigeometry);
       }
       else {
          throw new RuntimeException("Euclid geometry not supported (" + geometry.getClass() + ")");
@@ -232,6 +224,46 @@ public class GJTSUtils {
       }
 
       return result;
+   }
+
+
+   public static LineString toJTS(final ILineal2D lineal) {
+      if (lineal == null) {
+         return null;
+      }
+
+      if (lineal instanceof GLinesStrip2D) {
+         return toJTS((GLinesStrip2D) lineal);
+      }
+      else if (lineal instanceof GSegment2D) {
+         return toJTS((GSegment2D) lineal);
+      }
+      else {
+         throw new RuntimeException("Lineal type not supported (" + lineal.getClass() + ")");
+      }
+   }
+
+
+   public static Polygon toJTS(final IPolygon2D polygon) {
+      if (polygon == null) {
+         return null;
+      }
+
+      if (polygon instanceof GTriangle2D) {
+         return toJTS((GTriangle2D) polygon);
+      }
+      else if (polygon instanceof GQuad2D) {
+         return toJTS((GQuad2D) polygon);
+      }
+      else if (polygon instanceof GSimplePolygon2D) {
+         return toJTS((GSimplePolygon2D) polygon);
+      }
+      else if (polygon instanceof GComplexPolygon2D) {
+         return toJTS((GComplexPolygon2D) polygon);
+      }
+      else {
+         throw new RuntimeException("Polygon type not supported (" + polygon.getClass() + ")");
+      }
    }
 
 
@@ -304,26 +336,79 @@ public class GJTSUtils {
    }
 
 
-   public static Coordinate[] toJTS(final List<IVector2> points) {
+   public static GeometryCollection toJTS(final GMultiGeometry2D<? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> multigeometry) {
+      final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> exemplar = multigeometry.getExemplar();
+
+      if (exemplar instanceof ILineal2D) {
+         return createMultiLineString(multigeometry);
+      }
+      else if (exemplar instanceof IPolygon2D) {
+         return createMultiPolygon(multigeometry);
+      }
+      else if (exemplar instanceof IVector2) {
+         return createMultiPoint(multigeometry);
+      }
+      else {
+         throw new RuntimeException("Multigeometry children's type not supported (" + exemplar.getClass() + ")");
+      }
+   }
+
+
+   private static MultiLineString createMultiLineString(final GMultiGeometry2D<? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> multigeometry) {
+      final LineString[] children = new LineString[multigeometry.getChildrenCount()];
+      int index = 0;
+
+      for (final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> child : multigeometry) {
+         children[index++] = toJTS((ILineal2D) child);
+      }
+
+      return JTS_GEOMETRY_FACTORY.createMultiLineString(children);
+   }
+
+
+   private static MultiPolygon createMultiPolygon(final GMultiGeometry2D<? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> multigeometry) {
+      final Polygon[] children = new Polygon[multigeometry.getChildrenCount()];
+      int index = 0;
+
+      for (final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> child : multigeometry) {
+         children[index++] = toJTS((IPolygon2D) child);
+      }
+
+      return JTS_GEOMETRY_FACTORY.createMultiPolygon(children);
+   }
+
+
+   private static MultiPoint createMultiPoint(final GMultiGeometry2D<? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> multigeometry) {
+      final Point[] children = new Point[multigeometry.getChildrenCount()];
+      int index = 0;
+
+      for (final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> child : multigeometry) {
+         children[index++] = toJTS((IVector2) child);
+      }
+
+      return JTS_GEOMETRY_FACTORY.createMultiPoint(children);
+   }
+
+
+   public static Point[] toJTS(final List<IVector2> points) {
       if (points == null) {
          return null;
       }
 
-      final Coordinate[] result = new Coordinate[points.size()];
+      final Point[] result = new Point[points.size()];
       for (int i = 0; i < result.length; i++) {
-         final IVector2 point = points.get(i);
-         result[i] = new Coordinate(point.x(), point.y());
+         result[i] = toJTS(points.get(i));
       }
 
       return result;
    }
 
 
-   public static Coordinate[] toJTS(final IVector2... points) {
-      final Coordinate[] result = new Coordinate[points.length];
+   public static Point[] toJTS(final IVector2... points) {
+      final Point[] result = new Point[points.length];
+
       for (int i = 0; i < result.length; i++) {
-         final IVector2 point = points[i];
-         result[i] = new Coordinate(point.x(), point.y());
+         result[i] = toJTS(points[i]);
       }
 
       return result;

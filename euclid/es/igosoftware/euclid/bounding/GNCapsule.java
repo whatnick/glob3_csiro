@@ -36,9 +36,6 @@
 
 package es.igosoftware.euclid.bounding;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-
 import es.igosoftware.euclid.GGeometryAbstract;
 import es.igosoftware.euclid.shape.GRenderType;
 import es.igosoftware.euclid.shape.GSegment;
@@ -50,7 +47,7 @@ public abstract class GNCapsule<
 
 VectorT extends IVector<VectorT, ?>,
 
-SegmentT extends GSegment<VectorT, ?>,
+SegmentT extends GSegment<VectorT, SegmentT, ?>,
 
 GeometryT extends GNCapsule<VectorT, SegmentT, GeometryT>
 
@@ -98,13 +95,6 @@ GeometryT extends GNCapsule<VectorT, SegmentT, GeometryT>
 
 
    protected abstract String getStringName();
-
-
-   @Override
-   public final void save(final DataOutputStream output) throws IOException {
-      _segment.save(output);
-      output.writeDouble(_radius);
-   }
 
 
    @Override

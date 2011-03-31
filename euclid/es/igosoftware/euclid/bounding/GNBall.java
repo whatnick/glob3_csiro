@@ -36,9 +36,6 @@
 
 package es.igosoftware.euclid.bounding;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-
 import es.igosoftware.euclid.GGeometryAbstract;
 import es.igosoftware.euclid.shape.GRenderType;
 import es.igosoftware.euclid.vector.IVector;
@@ -93,13 +90,6 @@ GeometryT extends GNBall<VectorT, GeometryT>
 
 
    protected abstract String getStringName();
-
-
-   @Override
-   public final void save(final DataOutputStream output) throws IOException {
-      _center.save(output);
-      output.writeDouble(_radius);
-   }
 
 
    @Override

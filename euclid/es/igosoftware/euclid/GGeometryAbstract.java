@@ -36,11 +36,6 @@
 
 package es.igosoftware.euclid;
 
-import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 import es.igosoftware.euclid.vector.IVector;
 
 
@@ -56,30 +51,13 @@ VectorT extends IVector<VectorT, ?>
 
 
    @Override
-   public final void save(final String fileName) throws IOException {
-      DataOutputStream output = null;
-
-      try {
-         output = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)));
-
-         save(output);
-      }
-      finally {
-         if (output != null) {
-            output.close();
-         }
-      }
-   }
-
-
-   @Override
    public double distance(final VectorT point) {
       return Math.sqrt(squaredDistance(point));
    }
 
 
    @Override
-   public final Object clone() {
+   public GGeometryAbstract<VectorT> clone() {
       return this;
    }
 

@@ -110,8 +110,9 @@ public class GPanoramic
 
    private static final int                                                  TILE_THETA_SUBDIVISIONS = 2;
    private static final int                                                  TILE_RHO_SUBDIVISIONS   = 1;
-
    private static final double                                               MIN_PROYECTED_SIZE      = 12;
+
+   private static final GFileName                                            DEFAULT_EXIT_ICON_NAME  = GFileName.relative("quit.png");
 
    private static final GDisplayListCache<PanoramicTile>                     QUAD_STRIPS_DISPLAY_LIST_CACHE;
 
@@ -194,8 +195,8 @@ public class GPanoramic
 
    private final Layer                                                       _layer;
    private final GHUDLayer                                                   _hudLayer;
-   private final GFileName                                                   _exitIcon;
-   private GHUDIcon                                                          _hudIcon;
+   private final GFileName                                                   _exitIconName;
+   private final GHUDIcon                                                    _hudIcon;
    private double                                                            _currentDistanceFromEye;
 
 
@@ -210,7 +211,7 @@ public class GPanoramic
                      final double radius,
                      final Position position,
                      final GHUDLayer hudLayer) throws IOException {
-      this(layer, name, loader, panoramicName, radius, position, 0, GElevationAnchor.SURFACE, hudLayer, null);
+      this(layer, name, loader, panoramicName, radius, position, 0, GElevationAnchor.SURFACE, hudLayer, DEFAULT_EXIT_ICON_NAME);
    }
 
 
@@ -221,8 +222,8 @@ public class GPanoramic
                      final double radius,
                      final Position position,
                      final GHUDLayer hudLayer,
-                     final GFileName exitIcon) throws IOException {
-      this(layer, name, loader, panoramicName, radius, position, 0, GElevationAnchor.SURFACE, hudLayer, exitIcon);
+                     final GFileName exitIconName) throws IOException {
+      this(layer, name, loader, panoramicName, radius, position, 0, GElevationAnchor.SURFACE, hudLayer, exitIconName);
    }
 
 
@@ -235,12 +236,13 @@ public class GPanoramic
                      final double headingInDegrees,
                      final GElevationAnchor anchor,
                      final GHUDLayer hudLayer,
-                     final GFileName exitIcon) throws IOException {
+                     final GFileName exitIconName) throws IOException {
       GAssert.notNull(name, "name");
       GAssert.notNull(loader, "loader");
       GAssert.isPositive(radius, "radius");
       GAssert.notNull(position, "position");
       GAssert.notNull(anchor, "anchor");
+      GAssert.notNull(exitIconName, "exitIconName");
 
       _layer = layer;
 
@@ -252,7 +254,7 @@ public class GPanoramic
       _headingInDegrees = headingInDegrees;
       _anchor = anchor;
       _hudLayer = hudLayer;
-      _exitIcon = exitIcon;
+      _exitIconName = exitIconName;
 
       _tiles = createTopTiles();
 
@@ -260,17 +262,8 @@ public class GPanoramic
 
       _maxResolutionInPanoramic = _zoomLevels.getLevels().size() - 1;
 
-      addButtonToHUDLayer();
-   }
-
-
-   private void addButtonToHUDLayer() {
-      if (_exitIcon != null) {
-         _hudIcon = new GHUDIcon(_exitIcon.buildPath(), GHUDIcon.Position.NORTHEAST);
-      }
-      else {
-         _hudIcon = new GHUDIcon("../globe/bitmaps/icons/quit.png", GHUDIcon.Position.NORTHEAST);
-      }
+      final GGlobeApplication application = GGlobeApplication.instance();
+      _hudIcon = new GHUDIcon(application.getImage(_exitIconName), GHUDIcon.Position.NORTHEAST);
 
       _hudIcon.addActionListener(new ActionListener() {
          @Override

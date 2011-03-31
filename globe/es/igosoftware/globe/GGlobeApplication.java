@@ -51,6 +51,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -92,9 +93,11 @@ import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.globe.view.customView.GCustomView;
 import es.igosoftware.globe.view.customView.GCustomViewInputHandler;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GHolder;
+import es.igosoftware.util.GImageUtils;
 import es.igosoftware.util.GLogger;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.GPair;
@@ -175,15 +178,15 @@ public abstract class GGlobeApplication
 
 
    private static class IconKey {
-      private final String _name;
-      private final int    _width;
-      private final int    _height;
+      private final GFileName _fileName;
+      private final int       _width;
+      private final int       _height;
 
 
-      private IconKey(final String name,
+      private IconKey(final GFileName fileName,
                       final int width,
                       final int height) {
-         _name = name;
+         _fileName = fileName;
          _width = width;
          _height = height;
       }
@@ -194,7 +197,7 @@ public abstract class GGlobeApplication
          final int prime = 31;
          int result = 1;
          result = prime * result + _height;
-         result = prime * result + ((_name == null) ? 0 : _name.hashCode());
+         result = prime * result + ((_fileName == null) ? 0 : _fileName.hashCode());
          result = prime * result + _width;
          return result;
       }
@@ -215,12 +218,12 @@ public abstract class GGlobeApplication
          if (_height != other._height) {
             return false;
          }
-         if (_name == null) {
-            if (other._name != null) {
+         if (_fileName == null) {
+            if (other._fileName != null) {
                return false;
             }
          }
-         else if (!_name.equals(other._name)) {
+         else if (!_fileName.equals(other._fileName)) {
             return false;
          }
          if (_width != other._width) {
@@ -230,10 +233,10 @@ public abstract class GGlobeApplication
       }
    }
 
-   private static GGlobeApplication                         _application;
+   private static GGlobeApplication                                 _application;
 
-   private final LRUCache<IconKey, Icon, RuntimeException>  _iconsCache;
-   private final LRUCache<IconKey, Image, RuntimeException> _imagesCache;
+   private final LRUCache<IconKey, Icon, RuntimeException>          _iconsCache;
+   private final LRUCache<IconKey, BufferedImage, RuntimeException> _imagesCache;
 
 
    private static void initializeFonts() {
@@ -327,9 +330,15 @@ public abstract class GGlobeApplication
    protected GGlobeApplication(final String language) {
       logInfo("Starting " + getApplicationNameAndVersion() + "...");
 
+      registerInstance(this);
+
       _currentLanguage = language;
 
       _translationsSets = initializeTranslations();
+
+      _iconsCache = initializeIconsCache();
+      _imagesCache = initializeImagesCache();
+
 
       _wwGLCanvas = new WorldWindowGLCanvas();
 
@@ -339,15 +348,10 @@ public abstract class GGlobeApplication
       _wwGLCanvas.setModel(model);
 
       _modules = initializeModules();
-
-      _iconsCache = initializaIconsCache();
-      _imagesCache = initializaImagesCache();
-
-      registerInstance(this);
    }
 
 
-   private LRUCache<IconKey, Icon, RuntimeException> initializaIconsCache() {
+   private LRUCache<IconKey, Icon, RuntimeException> initializeIconsCache() {
       return new LRUCache<IconKey, Icon, RuntimeException>(50, new LRUCache.ValueFactory<IconKey, Icon, RuntimeException>() {
          private static final long serialVersionUID = 1L;
 
@@ -356,10 +360,10 @@ public abstract class GGlobeApplication
          public Icon create(final IconKey key) {
 
             URL url = null;
-            for (final String directory : getIconsDirectories()) {
-               final String path = directory + "/" + key._name;
+            for (final GFileName directory : getIconsDirectories()) {
+               final GFileName path = GFileName.fromParts(directory, key._fileName);
 
-               url = getClass().getClassLoader().getResource(path);
+               url = getClass().getClassLoader().getResource(path.buildPath('/'));
                if (url != null) {
                   break;
                }
@@ -391,54 +395,55 @@ public abstract class GGlobeApplication
    }
 
 
-   private LRUCache<IconKey, Image, RuntimeException> initializaImagesCache() {
-      return new LRUCache<IconKey, Image, RuntimeException>(50, new LRUCache.ValueFactory<IconKey, Image, RuntimeException>() {
-         private static final long serialVersionUID = 1L;
+   private LRUCache<IconKey, BufferedImage, RuntimeException> initializeImagesCache() {
+      return new LRUCache<IconKey, BufferedImage, RuntimeException>(50,
+               new LRUCache.ValueFactory<IconKey, BufferedImage, RuntimeException>() {
+                  private static final long serialVersionUID = 1L;
 
 
-         @Override
-         public Image create(final IconKey key) {
+                  @Override
+                  public BufferedImage create(final IconKey key) {
 
-            URL url = null;
-            for (final String directory : getIconsDirectories()) {
-               final String path = directory + "/" + key._name;
+                     URL url = null;
+                     for (final GFileName directory : getIconsDirectories()) {
+                        final GFileName path = GFileName.fromParts(directory, key._fileName);
 
-               url = getClass().getClassLoader().getResource(path);
-               if (url != null) {
-                  break;
-               }
-            }
+                        url = getClass().getClassLoader().getResource(path.buildPath('/'));
+                        if (url != null) {
+                           break;
+                        }
+                     }
 
-            if (url == null) {
-               return null;
-            }
+                     if (url == null) {
+                        return null;
+                     }
 
-            try {
+                     try {
 
 
-               final BufferedImage image = ImageIO.read(url);
+                        final BufferedImage image = ImageIO.read(url);
 
-               if (image == null) {
-                  return null;
-               }
+                        if (image == null) {
+                           return null;
+                        }
 
-               final int width = image.getWidth(null);
-               final int height = image.getHeight(null);
-               if ((width == -1) || (height == -1)) {
-                  return image;
-               }
-               if ((width == key._width) && (height == key._height)) {
-                  return image;
-               }
+                        final int width = image.getWidth(null);
+                        final int height = image.getHeight(null);
+                        if ((width == -1) || (height == -1)) {
+                           return image;
+                        }
+                        if ((width == key._width) && (height == key._height)) {
+                           return image;
+                        }
 
-               final Image resizedImage = image.getScaledInstance(key._width, key._height, Image.SCALE_SMOOTH);
-               return resizedImage;
-            }
-            catch (final IOException e) {
-               return null;
-            }
-         }
-      });
+                        final Image resizedImage = image.getScaledInstance(key._width, key._height, Image.SCALE_SMOOTH);
+                        return GImageUtils.asBufferedImage(resizedImage);
+                     }
+                     catch (final IOException e) {
+                        return null;
+                     }
+                  }
+               });
    }
 
 
@@ -514,13 +519,15 @@ public abstract class GGlobeApplication
    }
 
 
-   protected List<String> getIconsDirectories() {
-      return GCollections.createList("bitmaps/icons", "bitmaps", "../globe/bitmaps/icons", "globe/bitmaps/icons");
+   protected List<GFileName> getIconsDirectories() {
+      return Arrays.asList(GFileName.relative("bitmaps", "icons"), GFileName.relative("bitmaps"),
+               GFileName.relative("..", "globe", "bitmaps", "icons"), GFileName.relative("globe", "bitmaps", "icons"));
    }
 
 
-   protected List<String> getImagesDirectories() {
-      return GCollections.createList("bitmaps/icons", "bitmaps", "../globe/bitmaps/icons", "globe/bitmaps/icons");
+   protected List<GFileName> getImagesDirectories() {
+      return Arrays.asList(GFileName.relative("bitmaps", "icons"), GFileName.relative("bitmaps"),
+               GFileName.relative("..", "globe", "bitmaps", "icons"), GFileName.relative("globe", "bitmaps", "icons"));
    }
 
 
@@ -629,7 +636,7 @@ public abstract class GGlobeApplication
          return;
       }
 
-      final JMenuItem exitItem = GSwingUtils.createMenuItem(getTranslation("Exit"), getIcon("quit.png"), 'x',
+      final JMenuItem exitItem = GSwingUtils.createMenuItem(getTranslation("Exit"), getIcon(GFileName.relative("quit.png")), 'x',
                new ActionListener() {
                   @Override
                   public void actionPerformed(final ActionEvent e) {
@@ -641,7 +648,7 @@ public abstract class GGlobeApplication
 
 
    @Override
-   public Icon getIcon(final String iconName,
+   public Icon getIcon(final GFileName iconName,
                        final int width,
                        final int height) {
       return _iconsCache.get(new IconKey(iconName, width, height));
@@ -649,24 +656,24 @@ public abstract class GGlobeApplication
 
 
    @Override
-   public Image getImage(final String imageName,
-                         final int width,
-                         final int height) {
+   public BufferedImage getImage(final GFileName imageName,
+                                 final int width,
+                                 final int height) {
       return _imagesCache.get(new IconKey(imageName, width, height));
    }
 
 
    @Override
-   public Icon getIcon(final String iconName) {
+   public BufferedImage getImage(final GFileName imageName) {
       final int defaultIconSize = getDefaultIconSize();
-      return getIcon(iconName, defaultIconSize, defaultIconSize);
+      return getImage(imageName, defaultIconSize, defaultIconSize);
    }
 
 
    @Override
-   public Image getImage(final String imageName) {
+   public Icon getIcon(final GFileName iconName) {
       final int defaultIconSize = getDefaultIconSize();
-      return getImage(imageName, defaultIconSize, defaultIconSize);
+      return getIcon(iconName, defaultIconSize, defaultIconSize);
    }
 
 

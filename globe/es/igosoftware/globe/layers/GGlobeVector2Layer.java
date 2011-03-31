@@ -53,6 +53,7 @@ import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeVector2Layer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.utils.GWWUtils;
 import gov.nasa.worldwind.avlist.AVKey;
@@ -205,7 +206,7 @@ public class GGlobeVector2Layer
 
    @Override
    public Icon getIcon(final IGlobeApplication application) {
-      return application.getIcon("vectorial.png");
+      return application.getIcon(GFileName.relative("vectorial.png"));
    }
 
 

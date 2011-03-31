@@ -46,6 +46,7 @@ import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.globe.layers.GVector2RenderingTheme;
 import es.igosoftware.globe.layers.hud.GHUDLayer;
 import es.igosoftware.globe.view.customView.GCustomView;
+import es.igosoftware.io.GFileName;
 import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
@@ -135,7 +136,7 @@ public class GPanoramicLayer
 
    @Override
    public Icon getIcon(final IGlobeApplication application) {
-      return application.getIcon("panoramic.png");
+      return application.getIcon(GFileName.relative("panoramic.png"));
    }
 
 

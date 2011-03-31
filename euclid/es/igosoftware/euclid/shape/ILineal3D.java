@@ -36,26 +36,17 @@
 
 package es.igosoftware.euclid.shape;
 
-import es.igosoftware.euclid.GEdgedGeometryAbstract;
-import es.igosoftware.euclid.bounding.IBounds;
-import es.igosoftware.euclid.vector.IVector;
+import es.igosoftware.euclid.bounding.GAxisAlignedBox;
+import es.igosoftware.euclid.vector.IVector3;
 
 
-public abstract class GPolytopeAbstract<
-
-VectorT extends IVector<VectorT, ?>,
-
-SegmentT extends GSegment<VectorT, SegmentT, ?>,
-
-BoundsT extends IBounds<VectorT, BoundsT>
-
->
+public interface ILineal3D
          extends
-            GEdgedGeometryAbstract<VectorT, SegmentT, BoundsT>
-         implements
-            IPolytope<VectorT, SegmentT, BoundsT> {
+            ILineal<IVector3, GSegment3D, GAxisAlignedBox> {
 
-   private static final long serialVersionUID = 1L;
+
+   @Override
+   public ILineal3D createSimplified(final double capsRadiansTolerance);
 
 
 }

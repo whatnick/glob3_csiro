@@ -16,7 +16,7 @@ public class GLinesStrip2D
          extends
             GLinesStrip<IVector2, GSegment2D, GAxisAlignedRectangle>
          implements
-            IPolygon2D {
+            ILineal2D {
 
 
    private static final long     serialVersionUID = 1L;
@@ -108,13 +108,7 @@ public class GLinesStrip2D
 
 
    @Override
-   public List<GTriangle2D> triangulate() {
-      throw new RuntimeException("Unsupported operation");
-   }
-
-
-   @Override
-   public IPolygon2D createSimplified(final double capsRadiansTolerance) {
+   public ILineal2D createSimplified(final double capsRadiansTolerance) {
       final LinkedList<IVector2> points = new LinkedList<IVector2>(getPoints());
 
       List<IVector2> previousPoints = new ArrayList<IVector2>(points);
@@ -160,6 +154,12 @@ public class GLinesStrip2D
    @Override
    public GRenderType getRenderType() {
       return GRenderType.POLYLINE;
+   }
+
+
+   @Override
+   public GLinesStrip2D clone() {
+      return this;
    }
 
 
