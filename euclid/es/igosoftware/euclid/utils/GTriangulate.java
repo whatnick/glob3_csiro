@@ -65,11 +65,11 @@ public class GTriangulate {
 
 
    private static final class VectorAndIndex {
-      private final IVector2<?> _vector;
-      private final int         _originalIndex;
+      private final IVector2 _vector;
+      private final int      _originalIndex;
 
 
-      public VectorAndIndex(final IVector2<?> vector,
+      public VectorAndIndex(final IVector2 vector,
                             final int index) {
          _vector = vector;
          _originalIndex = index;
@@ -102,7 +102,7 @@ public class GTriangulate {
      The circumcircle is returned in circle
      NOTE: A point on the edge is inside the circumcircle
    */
-   private static boolean CircumCircle(final IVector2<?> point,
+   private static boolean CircumCircle(final IVector2 point,
                                        final double x1,
                                        final double y1,
                                        final double x2,
@@ -167,12 +167,12 @@ public class GTriangulate {
    }
 
 
-   public static IndexedTriangle[] triangulate(final List<IVector2<?>> points) {
-      return triangulate(points.toArray(new IVector2<?>[points.size()]));
+   public static IndexedTriangle[] triangulate(final List<IVector2> points) {
+      return triangulate(points.toArray(new IVector2[points.size()]));
    }
 
 
-   public static IndexedTriangle[] triangulate(final IVector2<?>... originalPoints) {
+   public static IndexedTriangle[] triangulate(final IVector2... originalPoints) {
       final int pointsCount = originalPoints.length;
 
       if (pointsCount < 3) {
@@ -229,9 +229,9 @@ public class GTriangulate {
       This is to allow calculation of the bounding triangle
       */
       final GAxisAlignedRectangle bounds = GAxisAlignedRectangle.minimumBoundingRectangle(originalPoints);
-      final IVector2<?> extent = bounds.getExtent();
+      final IVector2 extent = bounds.getExtent();
       final double dmax = Math.max(extent.x(), extent.y());
-      final IVector2<?> center = bounds.getCenter();
+      final IVector2 center = bounds.getCenter();
 
       /*
        Set up the supertriangle
@@ -256,7 +256,7 @@ public class GTriangulate {
               Include each point one at a time into the existing mesh
       */
       for (int i = 0; i < pointsCount; i++) {
-         final IVector2<?> vector = points[i]._vector;
+         final IVector2 vector = points[i]._vector;
 
          nedge = 0;
 
@@ -394,7 +394,7 @@ public class GTriangulate {
 
 
    public static void main(final String[] args) {
-      final IVector2<?>[] points = new IVector2<?>[3200];
+      final IVector2[] points = new IVector2[3200];
 
       for (int i = 0; i < points.length; i++) {
          points[i] = new GVector2D(1280 * Math.random(), 1024 * Math.random());
@@ -426,7 +426,7 @@ public class GTriangulate {
       //      */
       //      System.out.println("size(1280, 1024); noFill();");
       //
-      //      for (final IVector2<?> point : points) {
+      //      for (final IVector2 point : points) {
       //         System.out.println("rect(" + (point.x() - 1.5) + "," + (point.y() - 1.5) + ", 3, 3);");
       //      }
       //

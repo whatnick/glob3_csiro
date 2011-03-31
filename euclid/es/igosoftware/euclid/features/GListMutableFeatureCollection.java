@@ -22,9 +22,9 @@ import es.igosoftware.util.GAssert;
 
 public class GListMutableFeatureCollection<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
-FeatureGeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>>
+FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>>
          extends
             GMutableAbstract<GListMutableFeatureCollection<VectorT, FeatureGeometryT>>
          implements
@@ -149,7 +149,7 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<Ve
    }
 
 
-   private static <VectorT extends IVector<VectorT, ?, ?>> GVectorLayerType getShapeType(final IGeometry<VectorT, ?> geometry) {
+   private static <VectorT extends IVector<VectorT, ?>> GVectorLayerType getShapeType(final IGeometry<VectorT> geometry) {
       if (geometry instanceof IVector) {
          return GVectorLayerType.POINT;
       }

@@ -13,6 +13,6 @@ ElementT
 
 >
          extends
-            IGTBreadFirstVisitor<IVector3<?>, GAxisAlignedBox, ElementT> {
+            IGTBreadFirstVisitor<IVector3, GAxisAlignedBox, ElementT> {
 
 }

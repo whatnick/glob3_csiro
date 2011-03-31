@@ -152,7 +152,7 @@ public interface IRenderer {
                                          final FloatBuffer colors);
 
 
-   public <VectorT extends IVector<VectorT, ?, ?>> int createDisplayList(final float pointSize,
-                                                                         final IVertexContainer<VectorT, IVertexContainer.Vertex<VectorT>, ?> vertices);
+   public <VectorT extends IVector<VectorT, ?>> int createDisplayList(final float pointSize,
+                                                                      final IVertexContainer<VectorT, IVertexContainer.Vertex<VectorT>, ?> vertices);
 
 }

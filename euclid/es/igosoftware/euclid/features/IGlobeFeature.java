@@ -11,9 +11,9 @@ import es.igosoftware.euclid.vector.IVector;
 
 public interface IGlobeFeature<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
-GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>
+GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
 
 > {
 

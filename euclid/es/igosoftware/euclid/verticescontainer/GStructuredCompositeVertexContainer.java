@@ -54,7 +54,7 @@ import es.igosoftware.util.ITransformer;
 
 public final class GStructuredCompositeVertexContainer<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
 GroupT extends IStructuredVertexContainer.IVertexGroup<VectorT, IVertexContainer.Vertex<VectorT>, GroupT>
 

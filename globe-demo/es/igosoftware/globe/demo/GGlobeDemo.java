@@ -206,7 +206,9 @@ public class GGlobeDemo
       try {
          final ILoader loader = new GFileLoader(GFileName.relative("PANOS"));
          panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", loader, GFileName.relative("Barrancos"),
-                  500, new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0), _hudLayer));
+
+         500, new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0), _hudLayer));
+
 
          //panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", "data/panoramics/barruecos", 500,
          //         new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0)));

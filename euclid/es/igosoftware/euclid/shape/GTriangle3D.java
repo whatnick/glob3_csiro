@@ -41,21 +41,20 @@ import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 import es.igosoftware.euclid.vector.IVector3;
-import es.igosoftware.euclid.vector.IVectorTransformer;
 
 
 public final class GTriangle3D
          extends
-            GTriangle<IVector3<?>, GSegment3D, GTriangle3D, GAxisAlignedBox>
+            GTriangle<IVector3, GSegment3D, GAxisAlignedBox>
          implements
-            IPolygon3D<GTriangle3D> {
+            IPolygon3D {
 
    private static final long serialVersionUID = 1L;
 
 
-   public GTriangle3D(final IVector3<?> pV1,
-                      final IVector3<?> pV2,
-                      final IVector3<?> pV3) {
+   public GTriangle3D(final IVector3 pV1,
+                      final IVector3 pV2,
+                      final IVector3 pV3) {
       super(pV1, pV2, pV3);
    }
 
@@ -90,8 +89,8 @@ public final class GTriangle3D
 
    @Override
    public GAxisAlignedBox getBounds() {
-      final IVector3<?> lower = _v0.min(_v1).min(_v2);
-      final IVector3<?> upper = _v0.max(_v1).max(_v2);
+      final IVector3 lower = _v0.min(_v1).min(_v2);
+      final IVector3 upper = _v0.max(_v1).max(_v2);
       return new GAxisAlignedBox(lower, upper);
    }
 
@@ -103,19 +102,19 @@ public final class GTriangle3D
 
 
    @Override
-   public boolean contains(final IVector3<?> point) {
+   public boolean contains(final IVector3 point) {
       if (!getBounds().contains(point)) {
          return false;
       }
 
-      final List<IVector3<?>> points = getPoints();
+      final List<IVector3> points = getPoints();
 
       final double x = point.x();
       final double y = point.y();
 
       int hits = 0;
 
-      final IVector3<?> last = points.get(points.size() - 1);
+      final IVector3 last = points.get(points.size() - 1);
 
       double lastX = last.x();
       double lastY = last.y();
@@ -124,7 +123,7 @@ public final class GTriangle3D
 
       // Walk the edges of the polygon
       for (int i = 0; i < points.size(); lastX = curX, lastY = curY, i++) {
-         final IVector3<?> cur = points.get(i);
+         final IVector3 cur = points.get(i);
          curX = cur.x();
          curY = cur.y();
 
@@ -216,12 +215,6 @@ public final class GTriangle3D
       result.add(new GSegment3D(_v0, _v2));
       result.add(new GSegment3D(_v1, _v0));
       return result;
-   }
-
-
-   @Override
-   public GTriangle3D transformedBy(final IVectorTransformer<IVector3<?>> transformer) {
-      return new GTriangle3D(_v0.transformedBy(transformer), _v1.transformedBy(transformer), _v2.transformedBy(transformer));
    }
 
 

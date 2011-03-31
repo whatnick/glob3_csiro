@@ -38,16 +38,15 @@ package es.igosoftware.euclid.bounding;
 
 import es.igosoftware.euclid.shape.GSegment2D;
 import es.igosoftware.euclid.vector.IVector2;
-import es.igosoftware.euclid.vector.IVectorTransformer;
 import es.igosoftware.util.GMath;
 
 
 public final class GCapsule2D
          extends
-            GNCapsule<IVector2<?>, GSegment2D, GCapsule2D>
+            GNCapsule<IVector2, GSegment2D, GCapsule2D>
          implements
             IBounds2D<GCapsule2D>,
-            IFiniteBounds<IVector2<?>, GCapsule2D> {
+            IFiniteBounds<IVector2, GCapsule2D> {
 
    /**
     * 
@@ -85,7 +84,7 @@ public final class GCapsule2D
       //      final double squareDistanceTo = _segment._to.squaredDistance(disk._center);
       //      final double squareDistance = GMath.minD(squareDistanceFrom, squareDistanceTo);
 
-      final IVector2<?> closestPoint = _segment.closestPoint(disk._center);
+      final IVector2 closestPoint = _segment.closestPoint(disk._center);
       final double squareDistance = closestPoint.squaredDistance(disk._center);
 
       final double radius = _radius + disk._radius;
@@ -107,18 +106,9 @@ public final class GCapsule2D
 
 
    @Override
-   public GCapsule2D transformedBy(final IVectorTransformer<IVector2<?>> transformer) {
-      // TODO: scale/shear radius;
-      final GSegment2D transformedSegment = new GSegment2D(_segment._from.transformedBy(transformer),
-               _segment._to.transformedBy(transformer));
-      return new GCapsule2D(transformedSegment, _radius);
-   }
-
-
-   @Override
    public boolean touchesWithCapsule2D(final GCapsule2D capsule) {
-      final IVector2<?> closestFrom = _segment.closestPoint(capsule._segment._from);
-      final IVector2<?> closestTo = _segment.closestPoint(capsule._segment._to);
+      final IVector2 closestFrom = _segment.closestPoint(capsule._segment._from);
+      final IVector2 closestTo = _segment.closestPoint(capsule._segment._to);
 
       final double squareDistanceFrom = capsule._segment.squaredDistance(closestFrom);
       final double squareDistanceTo = capsule._segment.squaredDistance(closestTo);
@@ -143,7 +133,7 @@ public final class GCapsule2D
 
 
    @Override
-   public boolean touchesBounds(final IBounds<IVector2<?>, ?> that) {
+   public boolean touchesBounds(final IBounds<IVector2, ?> that) {
       return touches((IBounds2D<?>) that);
    }
 

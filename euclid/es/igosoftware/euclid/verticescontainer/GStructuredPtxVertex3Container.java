@@ -54,7 +54,7 @@ import es.igosoftware.euclid.vector.IVectorI2;
 
 public final class GStructuredPtxVertex3Container
          extends
-            GStructuredVertexContainerWithDefaultsAbstract<IVector3<?>, GPtx3Group, GStructuredPtxVertex3Container> {
+            GStructuredVertexContainerWithDefaultsAbstract<IVector3, GPtx3Group, GStructuredPtxVertex3Container> {
 
    //----------------------------------------------------------------------------
    // Strategy-pattern classes to handle short/int vectors
@@ -288,7 +288,7 @@ public final class GStructuredPtxVertex3Container
                                          final boolean withColors,
                                          final IColor defaultColor,
                                          final boolean withNormals,
-                                         final IVector3<?> defaultNormal,
+                                         final IVector3 defaultNormal,
                                          final boolean withUserData,
                                          final long defaultUserData,
                                          final boolean storeAsRawData,
@@ -312,7 +312,7 @@ public final class GStructuredPtxVertex3Container
                                          final boolean withColors,
                                          final IColor defaultColor,
                                          final boolean withNormals,
-                                         final IVector3<?> defaultNormal,
+                                         final IVector3 defaultNormal,
                                          final boolean withUserData,
                                          final long defaultUserData,
                                          final boolean storeAsRawData,
@@ -350,7 +350,7 @@ public final class GStructuredPtxVertex3Container
 
 
    @Override
-   protected GCommonVertexContainerAbstract.VectorHandler<IVector3<?>> initializeNormalsHandler() {
+   protected GCommonVertexContainerAbstract.VectorHandler<IVector3> initializeNormalsHandler() {
       switch (_vectorPrecision) {
          case FLOAT:
             return new Vector3HandlerF(_capacity);
@@ -363,7 +363,7 @@ public final class GStructuredPtxVertex3Container
 
 
    @Override
-   protected GCommonVertexContainerAbstract.VectorHandler<IVector3<?>> initializePointsHandler() {
+   protected GCommonVertexContainerAbstract.VectorHandler<IVector3> initializePointsHandler() {
       switch (_vectorPrecision) {
          case FLOAT:
             return new Vector3HandlerF(_capacity);

@@ -77,14 +77,14 @@ public class GPolygon2DRenderingTest {
       final GProjection projection = GProjection.EPSG_4326;
 
 
-      final IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features = GShapeLoader.readFeatures(
+      final IGlobeFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features = GShapeLoader.readFeatures(
                fileName, projection);
 
       //      System.out.println(">>>>>>>>>> CONNECT PROFILER");
       //      GUtils.delay(20 * 1000); 
 
 
-      final GAxisAlignedOrthotope<IVector2<?>, ?> featuresBounds = features.getBounds();
+      final GAxisAlignedOrthotope<IVector2, ?> featuresBounds = features.getBounds();
 
 
       final GPolygon2DRenderer renderer = new GPolygon2DRenderer(features);
@@ -102,7 +102,7 @@ public class GPolygon2DRenderingTest {
       final int textureDimension = 256;
       final boolean renderBounds = false;
 
-      final IVector2<?> extent = region.getExtent();
+      final IVector2 extent = region.getExtent();
 
       final int textureWidth;
       final int textureHeight;
@@ -129,14 +129,14 @@ public class GPolygon2DRenderingTest {
    }
 
 
-   private static <VectorT extends IVector<VectorT, ?, ?>> GAxisAlignedOrthotope<VectorT, ?> centerBounds(final GAxisAlignedOrthotope<VectorT, ?> bounds,
-                                                                                                          final VectorT center) {
+   private static <VectorT extends IVector<VectorT, ?>> GAxisAlignedOrthotope<VectorT, ?> centerBounds(final GAxisAlignedOrthotope<VectorT, ?> bounds,
+                                                                                                       final VectorT center) {
       final VectorT delta = bounds.getCenter().sub(center);
       return bounds.translatedBy(delta.negated());
    }
 
 
-   private static <VectorT extends IVector<VectorT, ?, ?>> GAxisAlignedOrthotope<VectorT, ?> multipleOfSmallestDimention(final GAxisAlignedOrthotope<VectorT, ?> bounds) {
+   private static <VectorT extends IVector<VectorT, ?>> GAxisAlignedOrthotope<VectorT, ?> multipleOfSmallestDimention(final GAxisAlignedOrthotope<VectorT, ?> bounds) {
       final VectorT extent = bounds.getCenter();
 
       double smallestExtension = Double.POSITIVE_INFINITY;
@@ -154,8 +154,8 @@ public class GPolygon2DRenderingTest {
 
 
    @SuppressWarnings("unchecked")
-   private static <VectorT extends IVector<VectorT, ?, ?>> VectorT smallestBiggerMultipleOf(final VectorT lower,
-                                                                                            final double smallestExtension) {
+   private static <VectorT extends IVector<VectorT, ?>> VectorT smallestBiggerMultipleOf(final VectorT lower,
+                                                                                         final double smallestExtension) {
 
       final byte dimensionsCount = lower.dimensions();
 

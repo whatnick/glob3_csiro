@@ -47,19 +47,17 @@ import es.igosoftware.util.GAssert;
 
 public abstract class GPolytopeAbstract<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
-SegmentT extends GSegment<VectorT, SegmentT, BoundsT>,
-
-GeometryT extends GPolytopeAbstract<VectorT, SegmentT, GeometryT, BoundsT>,
+SegmentT extends GSegment<VectorT, BoundsT>,
 
 BoundsT extends IBounds<VectorT, BoundsT>
 
 >
          extends
-            GGeometryAbstract<VectorT, GeometryT>
+            GGeometryAbstract<VectorT>
          implements
-            IPolytope<VectorT, SegmentT, GeometryT, BoundsT> {
+            IPolytope<VectorT, SegmentT, BoundsT> {
 
    private static final long serialVersionUID = 1L;
 
@@ -112,14 +110,5 @@ BoundsT extends IBounds<VectorT, BoundsT>
       return closestPoint;
    }
 
-
-   @SuppressWarnings("unchecked")
-   @Override
-   public final boolean closeTo(final IPolytope<VectorT, SegmentT, ?, BoundsT> that) {
-      if (getClass() == that.getClass()) {
-         return closeTo((GeometryT) that);
-      }
-      return false;
-   }
 
 }

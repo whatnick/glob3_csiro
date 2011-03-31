@@ -87,12 +87,12 @@ public class GPoints2RenderingTheme
 
 
    @Override
-   protected Renderable[] getRenderables(final IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> feature,
+   protected Renderable[] getRenderables(final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                          final GProjection projection,
                                          final Globe globe) {
 
-      final IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>> geom = feature.getDefaultGeometry();
-      final IVector2<?> coord = geom.getBounds().asAxisAlignedOrthotope()._center;
+      final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> geom = feature.getDefaultGeometry();
+      final IVector2 coord = geom.getBounds().asAxisAlignedOrthotope()._center;
 
       LatLon latlon;
       if (projection.equals(GProjection.EPSG_4326)) {
@@ -101,7 +101,7 @@ public class GPoints2RenderingTheme
          latlon = new LatLon(Angle.fromDegrees(coord.y()), Angle.fromDegrees(coord.x()));
       }
       else {
-         final IVector2<?> transformedPt = projection.transformPoint(GProjection.EPSG_4326, new GVector2D(coord.x(), coord.y()));
+         final IVector2 transformedPt = projection.transformPoint(GProjection.EPSG_4326, new GVector2D(coord.x(), coord.y()));
          latlon = new LatLon(Angle.fromRadians(transformedPt.y()), Angle.fromRadians(transformedPt.x()));
       }
 

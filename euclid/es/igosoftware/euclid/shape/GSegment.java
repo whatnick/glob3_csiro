@@ -54,18 +54,16 @@ import es.igosoftware.util.GMath;
 
 public abstract class GSegment<
 
-VectorT extends IVector<VectorT, ?, ?>,
-
-GeometryT extends GSegment<VectorT, GeometryT, BoundsT>,
+VectorT extends IVector<VectorT, ?>,
 
 BoundsT extends IBounds<VectorT, BoundsT>
 
 >
          extends
-            GGeometryAbstract<VectorT, GeometryT>
+            GGeometryAbstract<VectorT>
          implements
-            IBoundedGeometry<VectorT, GeometryT, BoundsT>,
-            IPointsContainer<VectorT, GeometryT> {
+            IBoundedGeometry<VectorT, BoundsT>,
+            IPointsContainer<VectorT> {
 
    private static final long serialVersionUID = 1L;
 
@@ -180,7 +178,7 @@ BoundsT extends IBounds<VectorT, BoundsT>
       if (getClass() != obj.getClass()) {
          return false;
       }
-      final GSegment<?, ?, ?> other = (GSegment<?, ?, ?>) obj;
+      final GSegment<?, ?> other = (GSegment<?, ?>) obj;
       if (_from == null) {
          if (other._from != null) {
             return false;
@@ -287,20 +285,6 @@ BoundsT extends IBounds<VectorT, BoundsT>
       // c projects inside the [a,b] interval; must do deferred divide now
       t = t / denom;
       return _from.add(vectorAB.scale(t));
-   }
-
-
-   //   public boolean closeTo(final GSegment<VectorT, ?, ?> that) {
-   //      final VectorT from = that._from;
-   //      final VectorT to = that._to;
-   //
-   //      return _from.closeTo(from) && _to.closeTo(to);
-   //   }
-
-
-   @Override
-   public boolean closeTo(final GeometryT that) {
-      return _from.closeTo(that._from) && _to.closeTo(that._to);
    }
 
 

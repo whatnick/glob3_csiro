@@ -74,13 +74,13 @@ public abstract class GVector2RenderingTheme {
    }
 
 
-   public void calculateExtremeValues(final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features) {
+   public void calculateExtremeValues(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features) {
 
       if (_hasToRecalculateExtremeValues) {
          double dMin = Double.POSITIVE_INFINITY;
          double dMax = Double.NEGATIVE_INFINITY;
 
-         for (final IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> element : features) {
+         for (final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> element : features) {
             final String sValue = element.getAttribute(_fieldIndex).toString();
             final double dValue = Double.parseDouble(sValue);
             dMin = Math.min(dMin, dValue);
@@ -92,7 +92,7 @@ public abstract class GVector2RenderingTheme {
    }
 
 
-   protected abstract Renderable[] getRenderables(final IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> feature,
+   protected abstract Renderable[] getRenderables(final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                                   final GProjection projection,
                                                   final Globe globe);
 

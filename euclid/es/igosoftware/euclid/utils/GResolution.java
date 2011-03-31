@@ -50,19 +50,19 @@ public final class GResolution
             GLoggerObject {
 
 
-   private final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> _vertices;
-   private final boolean                                                                _verbose;
+   private final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> _vertices;
+   private final boolean                                                          _verbose;
 
 
-   private GVector3D                                                                    _maxCoordenates;
-   private GVector3D                                                                    _minCoordenates;
-   private GVector3D                                                                    _maxDeltaResolutions;
-   private GVector3D                                                                    _minDeltaResolutions;
-   private GVector3D                                                                    _averageResolutions;
-   private GVector3D                                                                    _standardDeviations;
+   private GVector3D                                                              _maxCoordenates;
+   private GVector3D                                                              _minCoordenates;
+   private GVector3D                                                              _maxDeltaResolutions;
+   private GVector3D                                                              _minDeltaResolutions;
+   private GVector3D                                                              _averageResolutions;
+   private GVector3D                                                              _standardDeviations;
 
 
-   public GResolution(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices,
+   public GResolution(final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices,
                       final boolean verbose) {
       super();
       _vertices = vertices;
@@ -136,7 +136,7 @@ public final class GResolution
    }
 
 
-   private void calculateResolutions(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices) {
+   private void calculateResolutions(final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices) {
 
       final long start = System.currentTimeMillis();
 
@@ -145,7 +145,7 @@ public final class GResolution
       final double[] zs = new double[vertices.size()];
 
       for (int i = 0; i < vertices.size(); i++) {
-         final IVector3<?> point = vertices.getPoint(i);
+         final IVector3 point = vertices.getPoint(i);
          xs[i] = point.x();
          ys[i] = point.y();
          zs[i] = point.z();

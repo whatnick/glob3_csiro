@@ -41,21 +41,20 @@ import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.vector.IVector2;
-import es.igosoftware.euclid.vector.IVectorTransformer;
 
 
 public final class GTriangle2D
          extends
-            GTriangle<IVector2<?>, GSegment2D, GTriangle2D, GAxisAlignedRectangle>
+            GTriangle<IVector2, GSegment2D, GAxisAlignedRectangle>
          implements
-            IPolygon2D<GTriangle2D> {
+            IPolygon2D {
 
    private static final long serialVersionUID = 1L;
 
 
-   public GTriangle2D(final IVector2<?> pV1,
-                      final IVector2<?> pV2,
-                      final IVector2<?> pV3) {
+   public GTriangle2D(final IVector2 pV1,
+                      final IVector2 pV2,
+                      final IVector2 pV3) {
       super(pV1, pV2, pV3);
    }
 
@@ -90,8 +89,8 @@ public final class GTriangle2D
 
    @Override
    public GAxisAlignedRectangle getBounds() {
-      final IVector2<?> lower = _v0.min(_v1).min(_v2);
-      final IVector2<?> upper = _v0.max(_v1).max(_v2);
+      final IVector2 lower = _v0.min(_v1).min(_v2);
+      final IVector2 upper = _v0.max(_v1).max(_v2);
       return new GAxisAlignedRectangle(lower, upper);
    }
 
@@ -103,19 +102,19 @@ public final class GTriangle2D
 
 
    @Override
-   public boolean contains(final IVector2<?> point) {
+   public boolean contains(final IVector2 point) {
       if (!getBounds().contains(point)) {
          return false;
       }
 
-      final List<IVector2<?>> points = getPoints();
+      final List<IVector2> points = getPoints();
 
       final double x = point.x();
       final double y = point.y();
 
       int hits = 0;
 
-      final IVector2<?> last = points.get(points.size() - 1);
+      final IVector2 last = points.get(points.size() - 1);
 
       double lastX = last.x();
       double lastY = last.y();
@@ -124,7 +123,7 @@ public final class GTriangle2D
 
       // Walk the edges of the polygon
       for (int i = 0; i < points.size(); lastX = curX, lastY = curY, i++) {
-         final IVector2<?> cur = points.get(i);
+         final IVector2 cur = points.get(i);
          curX = cur.x();
          curY = cur.y();
 
@@ -216,12 +215,6 @@ public final class GTriangle2D
       result.add(new GSegment2D(_v0, _v2));
       result.add(new GSegment2D(_v1, _v0));
       return result;
-   }
-
-
-   @Override
-   public GTriangle2D transformedBy(final IVectorTransformer<IVector2<?>> transformer) {
-      return new GTriangle2D(_v0.transformedBy(transformer), _v1.transformedBy(transformer), _v2.transformedBy(transformer));
    }
 
 

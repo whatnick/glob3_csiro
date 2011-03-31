@@ -55,11 +55,11 @@ public abstract class GOTNode
          extends
             GOTComponent {
 
-   protected final GOTInnerNode        _parent;
-   protected final GAxisAlignedBox     _bounds;
+   protected final GOTInnerNode     _parent;
+   protected final GAxisAlignedBox  _bounds;
 
 
-   private WeightedVertex<IVector3<?>> _averageVertex;
+   private WeightedVertex<IVector3> _averageVertex;
 
 
    protected GOTNode(final GOTInnerNode parent,
@@ -140,7 +140,7 @@ public abstract class GOTNode
 
 
    @Override
-   public final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> getVertices() {
+   public final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> getVertices() {
       return getOctree().getOriginalVertices().asSubContainer(getVerticesIndexes());
    }
 
@@ -163,15 +163,15 @@ public abstract class GOTNode
    }
 
 
-   //   protected abstract boolean getNearestLeaf(final IVector3<?> point,
+   //   protected abstract boolean getNearestLeaf(final IVector3 point,
    //                                             final GHolder<GOTLeafNode> nearestLeafHolder,
    //                                             final GHolder<Double> shortestSquaredDistance);
 
 
-   protected abstract WeightedVertex<IVector3<?>> calculateAverageVertex();
+   protected abstract WeightedVertex<IVector3> calculateAverageVertex();
 
 
-   public final synchronized WeightedVertex<IVector3<?>> getAverageVertex() {
+   public final synchronized WeightedVertex<IVector3> getAverageVertex() {
       if (_averageVertex == null) {
          _averageVertex = calculateAverageVertex();
       }
@@ -186,7 +186,7 @@ public abstract class GOTNode
    }
 
 
-   protected abstract boolean removeVertex(final Vertex<IVector3<?>> vertex,
+   protected abstract boolean removeVertex(final Vertex<IVector3> vertex,
                                            final int index);
 
 

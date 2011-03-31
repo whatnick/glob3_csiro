@@ -50,13 +50,13 @@ public class GPCLeafNode
          extends
             GPCNode {
 
-   private static final long                           serialVersionUID = 1L;
+   private static final long                        serialVersionUID = 1L;
 
-   private final String                                _id;
-   private final int                                   _pointsCount;
-   private int[]                                       _lodIndices;
-   private IVector3<?>                                 _referencePoint;
-   private final GAxisAlignedOrthotope<IVector3<?>, ?> _minimumBounds;
+   private final String                             _id;
+   private final int                                _pointsCount;
+   private int[]                                    _lodIndices;
+   private IVector3                                 _referencePoint;
+   private final GAxisAlignedOrthotope<IVector3, ?> _minimumBounds;
 
 
    GPCLeafNode(final GOTLeafNode node,
@@ -83,7 +83,7 @@ public class GPCLeafNode
    }
 
 
-   public GAxisAlignedOrthotope<IVector3<?>, ?> getMinimumBounds() {
+   public GAxisAlignedOrthotope<IVector3, ?> getMinimumBounds() {
       return _minimumBounds;
    }
 
@@ -93,7 +93,7 @@ public class GPCLeafNode
    }
 
 
-   public IVector3<?> getReferencePoint() {
+   public IVector3 getReferencePoint() {
       return _referencePoint;
    }
 
@@ -103,7 +103,7 @@ public class GPCLeafNode
    }
 
 
-   public void setReferencePoint(final IVector3<?> point) {
+   public void setReferencePoint(final IVector3 point) {
       _referencePoint = point;
    }
 

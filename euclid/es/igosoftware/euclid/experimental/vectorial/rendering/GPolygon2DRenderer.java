@@ -17,24 +17,24 @@ import es.igosoftware.euclid.vector.IVector2;
 
 public class GPolygon2DRenderer {
 
-   private final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?>        _features;
-   private final GRenderingQuadtree<IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>> _quadtree;
+   private final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?>        _features;
+   private final GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> _quadtree;
 
 
-   public GPolygon2DRenderer(final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features) {
+   public GPolygon2DRenderer(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features) {
       _features = features;
 
       _quadtree = createQuadtree();
    }
 
 
-   private GRenderingQuadtree<IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>> createQuadtree() {
+   private GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> createQuadtree() {
       final GGeometryNTreeParameters.AcceptLeafNodeCreationPolicy acceptLeafNodeCreationPolicy;
-      acceptLeafNodeCreationPolicy = new GGeometryNTreeParameters.Accept2DLeafNodeCreationPolicy<IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>() {
+      acceptLeafNodeCreationPolicy = new GGeometryNTreeParameters.Accept2DLeafNodeCreationPolicy<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>() {
          @Override
          public boolean accept(final int depth,
-                               final GAxisAlignedOrthotope<IVector2<?>, ?> bounds,
-                               final Collection<IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>> elements) {
+                               final GAxisAlignedOrthotope<IVector2, ?> bounds,
+                               final Collection<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> elements) {
             if (depth >= 10) {
                return true;
             }
@@ -48,7 +48,7 @@ public class GPolygon2DRenderer {
                GGeometryNTreeParameters.BoundsPolicy.MINIMUM, true);
 
 
-      return new GRenderingQuadtree<IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>>(
+      return new GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>>(
                "Rendering", _features, parameters);
 
    }

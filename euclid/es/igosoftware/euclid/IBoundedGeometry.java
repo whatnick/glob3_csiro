@@ -46,15 +46,13 @@ import es.igosoftware.euclid.vector.IVector;
  */
 public interface IBoundedGeometry<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
-GeometryT extends IBoundedGeometry<VectorT, GeometryT, BoundsT>,
-
-BoundsT extends IBounds<VectorT, BoundsT>
+BoundsT extends IBounds<VectorT, ?>
 
 >
          extends
-            IGeometry<VectorT, GeometryT> {
+            IGeometry<VectorT> {
 
 
    public BoundsT getBounds();

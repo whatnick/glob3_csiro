@@ -64,21 +64,21 @@ public class WWVectorLayer
          extends
             AbstractVectorLayer {
 
-   private GFileName                                                                                                                    _filename;
-   private String                                                                                                                       _name;
-   private GProjection                                                                                                                  _projection;
-   private List<GField>                                                                                                                 _fields;
-   private IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> _features;
+   private GFileName                                                                                                        _filename;
+   private String                                                                                                           _name;
+   private GProjection                                                                                                      _projection;
+   private List<GField>                                                                                                     _fields;
+   private IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> _features;
 
 
    public WWVectorLayer(final String name,
-                        final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features) {
+                        final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features) {
       _name = name;
       initializeFromFeatures(features);
    }
 
 
-   private void initializeFromFeatures(final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features) {
+   private void initializeFromFeatures(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features) {
       _features = features;
       _projection = features.getProjection();
       _fields = features.getFields();
@@ -97,7 +97,7 @@ public class WWVectorLayer
       _projection = projection;
 
       //Le estoy pasando un null porque no se como hacer esto...
-      _features = new GListMutableFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>(
+      _features = new GListMutableFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>(
                projection, fields, null, GIOUtils.getUniqueID(filename.asFile()));
    }
 
@@ -117,9 +117,9 @@ public class WWVectorLayer
    public void addFeature(final Geometry jtsGeometry,
                           final Object[] values) {
       if (_features instanceof IGlobeMutableFeatureCollection) {
-         final GListMutableFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> mutable = (GListMutableFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) _features;
-         for (final IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>> euclidGeometry : GJTSUtils.toEuclid(jtsGeometry)) {
-            mutable.add(new GGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>(
+         final GListMutableFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> mutable = (GListMutableFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) _features;
+         for (final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> euclidGeometry : GJTSUtils.toEuclid(jtsGeometry)) {
+            mutable.add(new GGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>(
                      euclidGeometry, Arrays.asList(values)));
          }
       }
@@ -145,7 +145,7 @@ public class WWVectorLayer
    }
 
 
-   private static int getShapeType(final IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>> geometry) {
+   private static int getShapeType(final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> geometry) {
       if (geometry instanceof IPolygon) {
          return IVectorLayer.SHAPE_TYPE_POLYGON;
       }
@@ -193,8 +193,8 @@ public class WWVectorLayer
 
 
    @SuppressWarnings("unchecked")
-   private void saveFeatures(final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features)
-                                                                                                                                                                         throws IOException {
+   private void saveFeatures(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features)
+                                                                                                                                                             throws IOException {
 
       final SimpleFeatureType featureType = buildFeatureType(_name, getShapeType(), _fields, DefaultGeographicCRS.WGS84);
       final DataStore dataStore = createDatastore(_filename, featureType);
@@ -205,7 +205,7 @@ public class WWVectorLayer
       final FeatureWriter<SimpleFeatureType, SimpleFeature> featWriter = dataStore.getFeatureWriterAppend(ft.getTypeName(),
                Transaction.AUTO_COMMIT);
 
-      for (final IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> feature : features) {
+      for (final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature : features) {
          final Geometry gtsGeometry = GJTSUtils.toJTS(feature.getDefaultGeometry());
 
          final List<Object> attributes = new ArrayList<Object>();
@@ -275,15 +275,15 @@ public class WWVectorLayer
    }
 
 
-   private Rectangle2D getRectangle3DBounds(final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features) {
+   private Rectangle2D getRectangle3DBounds(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features) {
 
       double xMin = Double.POSITIVE_INFINITY;
       double xMax = Double.NEGATIVE_INFINITY;
       double yMin = Double.POSITIVE_INFINITY;
       double yMax = Double.NEGATIVE_INFINITY;
 
-      for (final IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> feature : features) {
-         final GAxisAlignedOrthotope<IVector2<?>, ?> envelope = feature.getDefaultGeometry().getBounds().asAxisAlignedOrthotope();
+      for (final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature : features) {
+         final GAxisAlignedOrthotope<IVector2, ?> envelope = feature.getDefaultGeometry().getBounds().asAxisAlignedOrthotope();
          xMin = Math.min(xMin, envelope._lower.x());
          yMin = Math.min(yMin, envelope._lower.y());
          xMax = Math.max(xMax, envelope._upper.x());

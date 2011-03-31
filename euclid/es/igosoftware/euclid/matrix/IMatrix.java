@@ -42,7 +42,7 @@ import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.vector.IVectorTransformer;
 
 
-public interface IMatrix<MatrixT, VectorT extends IVector<VectorT, ?, ?>>
+public interface IMatrix<MatrixT, VectorT extends IVector<VectorT, ?>>
          extends
             IVectorTransformer<VectorT> {
 

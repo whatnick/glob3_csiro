@@ -49,7 +49,7 @@ public class GJTSUtils {
    }
 
 
-   public static List<? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> toEuclid(final Geometry jtsGeometry) {
+   public static List<? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> toEuclid(final Geometry jtsGeometry) {
       if (jtsGeometry == null) {
          return null;
       }
@@ -77,7 +77,7 @@ public class GJTSUtils {
    }
 
 
-   public static IVector2<?> toEuclid(final Point jtsPoint) {
+   public static IVector2 toEuclid(final Point jtsPoint) {
       if (jtsPoint == null) {
          return null;
       }
@@ -86,12 +86,12 @@ public class GJTSUtils {
    }
 
 
-   public static IPolygon2D<?> toEuclid(final Polygon jtsPolygon) {
+   public static IPolygon2D toEuclid(final Polygon jtsPolygon) {
       if (jtsPolygon == null) {
          return null;
       }
 
-      final IPolygon2D<?> outerPolygon = createEuclidPolygon(jtsPolygon.getCoordinates());
+      final IPolygon2D outerPolygon = createEuclidPolygon(jtsPolygon.getCoordinates());
 
       final int holesCount = jtsPolygon.getNumInteriorRing();
       if (holesCount == 0) {
@@ -99,7 +99,7 @@ public class GJTSUtils {
       }
 
 
-      final List<IPolygon2D<?>> jtsHoles = new ArrayList<IPolygon2D<?>>(holesCount);
+      final List<IPolygon2D> jtsHoles = new ArrayList<IPolygon2D>(holesCount);
       for (int j = 0; j < holesCount; j++) {
          final LineString jtsHole = jtsPolygon.getInteriorRingN(j);
 
@@ -110,18 +110,18 @@ public class GJTSUtils {
    }
 
 
-   public static IPolygon2D<?> createEuclidPolygon(final Coordinate... coordinates) {
+   public static IPolygon2D createEuclidPolygon(final Coordinate... coordinates) {
       return GShape.createPolygon2(false, toEuclid(coordinates));
    }
 
 
-   public static IPolygon2D<?> createEuclidLine(final Coordinate... coordinates) {
+   public static IPolygon2D createEuclidLine(final Coordinate... coordinates) {
       return GShape.createLine2(false, toEuclid(coordinates));
    }
 
 
-   public static IVector2<?>[] toEuclid(final Coordinate... coordinates) {
-      final IVector2<?>[] points = new IVector2<?>[coordinates.length];
+   public static IVector2[] toEuclid(final Coordinate... coordinates) {
+      final IVector2[] points = new IVector2[coordinates.length];
       for (int i = 0; i < coordinates.length; i++) {
          final Coordinate coordinate = coordinates[i];
          points[i] = new GVector2D(coordinate.x, coordinate.y);
@@ -130,7 +130,7 @@ public class GJTSUtils {
    }
 
 
-   public static IPolygon2D<?> toEuclid(final LineString jtsLine) {
+   public static IPolygon2D toEuclid(final LineString jtsLine) {
       if (jtsLine == null) {
          return null;
       }
@@ -139,13 +139,13 @@ public class GJTSUtils {
    }
 
 
-   public static List<IVector2<?>> toEuclid(final MultiPoint jtsPoints) {
+   public static List<IVector2> toEuclid(final MultiPoint jtsPoints) {
       if (jtsPoints == null) {
          return null;
       }
 
       final int count = jtsPoints.getNumGeometries();
-      final List<IVector2<?>> result = new ArrayList<IVector2<?>>(count);
+      final List<IVector2> result = new ArrayList<IVector2>(count);
       for (int i = 0; i < count; i++) {
          result.add(toEuclid((Point) jtsPoints.getGeometryN(i)));
       }
@@ -154,13 +154,13 @@ public class GJTSUtils {
    }
 
 
-   public static List<IPolygon2D<?>> toEuclid(final MultiLineString jtsLines) {
+   public static List<IPolygon2D> toEuclid(final MultiLineString jtsLines) {
       if (jtsLines == null) {
          return null;
       }
 
       final int count = jtsLines.getNumGeometries();
-      final List<IPolygon2D<?>> result = new ArrayList<IPolygon2D<?>>(count);
+      final List<IPolygon2D> result = new ArrayList<IPolygon2D>(count);
       for (int i = 0; i < count; i++) {
          result.add(toEuclid((LineString) jtsLines.getGeometryN(i)));
       }
@@ -169,13 +169,13 @@ public class GJTSUtils {
    }
 
 
-   public static List<IPolygon2D<?>> toEuclid(final MultiPolygon jtsPolygons) {
+   public static List<IPolygon2D> toEuclid(final MultiPolygon jtsPolygons) {
       if (jtsPolygons == null) {
          return null;
       }
 
       final int count = jtsPolygons.getNumGeometries();
-      final List<IPolygon2D<?>> result = new ArrayList<IPolygon2D<?>>(count);
+      final List<IPolygon2D> result = new ArrayList<IPolygon2D>(count);
       for (int i = 0; i < count; i++) {
          result.add(toEuclid((Polygon) jtsPolygons.getGeometryN(i)));
       }
@@ -184,7 +184,7 @@ public class GJTSUtils {
    }
 
 
-   public static Geometry toJTS(final IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>> geometry) {
+   public static Geometry toJTS(final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> geometry) {
 
 
       if (geometry == null) {
@@ -193,7 +193,7 @@ public class GJTSUtils {
 
 
       if (geometry instanceof IVector2) {
-         return toJTS(((IVector2<?>) geometry));
+         return toJTS(((IVector2) geometry));
       }
       else if (geometry instanceof GLinesStrip2D) {
          return toJTS((GLinesStrip2D) geometry);
@@ -219,7 +219,7 @@ public class GJTSUtils {
    }
 
 
-   private static Coordinate[] getJTSCoordinates(final IPointsContainer<IVector2<?>, ?> pointsContainer) {
+   private static Coordinate[] getJTSCoordinates(final IPointsContainer<IVector2> pointsContainer) {
       if (pointsContainer == null) {
          return null;
       }
@@ -227,7 +227,7 @@ public class GJTSUtils {
       final Coordinate[] result = new Coordinate[pointsContainer.getPointsCount()];
 
       for (int i = 0; i < result.length; i++) {
-         final IVector2<?> point = pointsContainer.getPoint(i);
+         final IVector2 point = pointsContainer.getPoint(i);
          result[i] = new Coordinate(point.x(), point.y());
       }
 
@@ -282,7 +282,7 @@ public class GJTSUtils {
 
       final LinearRing jtsShell = JTS_GEOMETRY_FACTORY.createLinearRing(getJTSCoordinates(polygon));
 
-      final List<IPolygon2D<?>> holes = polygon.getHoles();
+      final List<IPolygon2D> holes = polygon.getHoles();
       final LinearRing[] jtsHoles = new LinearRing[holes.size()];
 
       for (int i = 0; i < jtsHoles.length; i++) {
@@ -304,14 +304,14 @@ public class GJTSUtils {
    }
 
 
-   public static Coordinate[] toJTS(final List<IVector2<?>> points) {
+   public static Coordinate[] toJTS(final List<IVector2> points) {
       if (points == null) {
          return null;
       }
 
       final Coordinate[] result = new Coordinate[points.size()];
       for (int i = 0; i < result.length; i++) {
-         final IVector2<?> point = points.get(i);
+         final IVector2 point = points.get(i);
          result[i] = new Coordinate(point.x(), point.y());
       }
 
@@ -319,10 +319,10 @@ public class GJTSUtils {
    }
 
 
-   public static Coordinate[] toJTS(final IVector2<?>... points) {
+   public static Coordinate[] toJTS(final IVector2... points) {
       final Coordinate[] result = new Coordinate[points.length];
       for (int i = 0; i < result.length; i++) {
-         final IVector2<?> point = points[i];
+         final IVector2 point = points[i];
          result[i] = new Coordinate(point.x(), point.y());
       }
 
@@ -330,7 +330,7 @@ public class GJTSUtils {
    }
 
 
-   public static Point toJTS(final IVector2<?> vector) {
+   public static Point toJTS(final IVector2 vector) {
       if (vector == null) {
          return null;
       }

@@ -167,7 +167,7 @@ public abstract class GPointsCloud
 
       //ensureBinaryConversion(sourceDirectory, sourceFilesNames);
 
-      final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices = loadVertices(sourceFilesNames);
+      final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices = loadVertices(sourceFilesNames);
 
       processVertices(vertices, resolutions);
    }
@@ -183,8 +183,8 @@ public abstract class GPointsCloud
    }
 
 
-   private IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> loadVertices(final String[] sourceFilesNames)
-                                                                                                                               throws IOException {
+   private IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> loadVertices(final String[] sourceFilesNames)
+                                                                                                                         throws IOException {
       final GFileName allFileName = GFileName.fromParentAndParts(_targetDirectoryName, "__all__.bp");
 
       ensureAllFile(sourceFilesNames, allFileName);
@@ -195,13 +195,13 @@ public abstract class GPointsCloud
 
       loader.load();
 
-      final IUnstructuredVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices = loader.getVertices();
+      final IUnstructuredVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices = loader.getVertices();
 
       if (_filterBounds != null) {
-         //final Object filteredVertices = vertices.select(new IPredicate<IVertexContainer.Vertex<IVector3<?>>>() {
-         final IUnstructuredVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> filteredVertices = vertices.select(new IPredicate<IVertexContainer.Vertex<IVector3<?>>>() {
+         //final Object filteredVertices = vertices.select(new IPredicate<IVertexContainer.Vertex<IVector3>>() {
+         final IUnstructuredVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> filteredVertices = vertices.select(new IPredicate<IVertexContainer.Vertex<IVector3>>() {
             @Override
-            public boolean evaluate(final IVertexContainer.Vertex<IVector3<?>> vertex) {
+            public boolean evaluate(final IVertexContainer.Vertex<IVector3> vertex) {
                return _filterBounds.contains(vertex._point);
             }
          });
@@ -233,10 +233,10 @@ public abstract class GPointsCloud
 
       loader.load();
 
-      final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices = loader.getVertices();
+      final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices = loader.getVertices();
 
       logInfo("Calculating reference point...");
-      final IVector3<?> referencePoint = vertices.getAverage()._point.rounded();
+      final IVector3 referencePoint = vertices.getAverage()._point.rounded();
       logInfo("Reference point: " + referencePoint);
 
       logInfo("Converting to float with reference point...");
@@ -252,23 +252,23 @@ public abstract class GPointsCloud
    }
 
 
-   private void processVertices(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices,
+   private void processVertices(final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices,
                                 final GVector2D[] resolutions) {
       logInfo("Processing " + vertices);
-      final GAxisAlignedOrthotope<IVector3<?>, ?> bounds = vertices.getBounds();
+      final GAxisAlignedOrthotope<IVector3, ?> bounds = vertices.getBounds();
       //      logInfo("Bounds: " + bounds);
       //      logInfo("Extent: " + bounds.getExtent());
 
 
       final GOctree.DuplicatesPolicy duplicatesPolicy = new GOctree.DuplicatesPolicy() {
          @Override
-         public int[] removeDuplicates(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices1,
+         public int[] removeDuplicates(final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices1,
                                        final int[] verticesIndexes) {
-            final Set<IVector3<?>> selectedPoints = new HashSet<IVector3<?>>();
+            final Set<IVector3> selectedPoints = new HashSet<IVector3>();
             final List<Integer> selectedIndices = new ArrayList<Integer>();
 
             for (final int index : verticesIndexes) {
-               final IVector3<?> point = vertices1.getPoint(index);
+               final IVector3 point = vertices1.getPoint(index);
                if (!selectedPoints.contains(point)) {
                   selectedPoints.add(point);
                   selectedIndices.add(index);
@@ -288,8 +288,8 @@ public abstract class GPointsCloud
    }
 
 
-   private void reduceVertices(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices,
-                               final GAxisAlignedOrthotope<IVector3<?>, ?> bounds,
+   private void reduceVertices(final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices,
+                               final GAxisAlignedOrthotope<IVector3, ?> bounds,
                                final GOctree octree,
                                final GVector2D resolution) {
       final Point2I gridExtent = calculateGridExtent(bounds, resolution);
@@ -338,14 +338,14 @@ public abstract class GPointsCloud
    }
 
 
-   protected abstract void processGridInitialization(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices,
-                                                     final GAxisAlignedOrthotope<IVector3<?>, ?> bounds,
+   protected abstract void processGridInitialization(final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices,
+                                                     final GAxisAlignedOrthotope<IVector3, ?> bounds,
                                                      final GVector2D resolution,
                                                      final int gridWidth,
                                                      final int gridHeight);
 
 
-   protected abstract void processGridLeaf(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> leafVertices,
+   protected abstract void processGridLeaf(final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> leafVertices,
                                            final GVector2D resolution,
                                            final int gridWidth,
                                            final int gridHeight,
@@ -353,13 +353,13 @@ public abstract class GPointsCloud
                                            final int y);
 
 
-   protected abstract void processGridFinalization(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices,
+   protected abstract void processGridFinalization(final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices,
                                                    final GVector2D resolution,
                                                    final int gridWidth,
                                                    final int gridHeight);
 
 
-   private void processLeafs(final GAxisAlignedOrthotope<IVector3<?>, ?> bounds,
+   private void processLeafs(final GAxisAlignedOrthotope<IVector3, ?> bounds,
                              final GOctree octree,
                              final GVector2D resolution,
                              final int gridWidth,
@@ -377,7 +377,7 @@ public abstract class GPointsCloud
          final int x = xFrom;
          final int y = yFrom;
          final GAxisAlignedBox leafBounds = calculateBoundsForLeaf(bounds, resolution, gridWidth, gridHeight, x, y);
-         final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> leafVertices = octree.getVerticesInRegion(leafBounds);
+         final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> leafVertices = octree.getVerticesInRegion(leafBounds);
          synchronized (this) {
             processGridLeaf(leafVertices, resolution, gridWidth, gridHeight, x, y);
          }
@@ -398,7 +398,7 @@ public abstract class GPointsCloud
          final GAxisAlignedBox completeBounds = GAxisAlignedBox.merge(boundsList);
          boundsList.clear(); // release some memory
 
-         final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> completeBoundsVertices = octree.getVerticesInRegion(completeBounds);
+         final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> completeBoundsVertices = octree.getVerticesInRegion(completeBounds);
 
          if (completeBoundsVertices.size() == 0) {
             for (int x = xFrom; x < xTo; x++) {
@@ -420,7 +420,7 @@ public abstract class GPointsCloud
                for (int y = yFrom; y < yTo; y++) {
                   final GAxisAlignedBox leafBounds = leafBoundsGrid[x - xFrom][y - yFrom];
 
-                  final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> leafVertices = completeBoundsOctree.getVerticesInRegion(leafBounds);
+                  final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> leafVertices = completeBoundsOctree.getVerticesInRegion(leafBounds);
 
                   synchronized (this) {
                      processGridLeaf(leafVertices, resolution, gridWidth, gridHeight, x, y);
@@ -434,7 +434,7 @@ public abstract class GPointsCloud
    }
 
 
-   private GAxisAlignedBox calculateBoundsForLeaf(final GAxisAlignedOrthotope<IVector3<?>, ?> bounds,
+   private GAxisAlignedBox calculateBoundsForLeaf(final GAxisAlignedOrthotope<IVector3, ?> bounds,
                                                   final GVector2D resolution,
                                                   final int gridWidth,
                                                   final int gridHeight,
@@ -452,9 +452,9 @@ public abstract class GPointsCloud
    }
 
 
-   private static GPointsCloud.Point2I calculateGridExtent(final GAxisAlignedOrthotope<IVector3<?>, ?> bounds,
+   private static GPointsCloud.Point2I calculateGridExtent(final GAxisAlignedOrthotope<IVector3, ?> bounds,
                                                            final GVector2D resolution) {
-      final IVector3<?> extent = bounds.getExtent();
+      final IVector3 extent = bounds.getExtent();
       int columnsCount = Math.round((float) (extent.x() / resolution.x()));
       int rowsCount = Math.round((float) (extent.y() / resolution.y()));
 
@@ -486,8 +486,8 @@ public abstract class GPointsCloud
 
 
          @Override
-         protected void processGridInitialization(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices,
-                                                  final GAxisAlignedOrthotope<IVector3<?>, ?> bounds,
+         protected void processGridInitialization(final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices,
+                                                  final GAxisAlignedOrthotope<IVector3, ?> bounds,
                                                   final GVector2D resolution,
                                                   final int gridWidth,
                                                   final int gridHeight) {
@@ -499,13 +499,13 @@ public abstract class GPointsCloud
 
 
          @Override
-         protected void processGridLeaf(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> leafVertices,
+         protected void processGridLeaf(final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> leafVertices,
                                         final GVector2D resolution,
                                         final int gridWidth,
                                         final int gridHeight,
                                         final int x,
                                         final int y) {
-            final WeightedVertex<IVector3<?>> average = leafVertices.getAverage();
+            final WeightedVertex<IVector3> average = leafVertices.getAverage();
             if (average != null) {
                _simplifiedVertices.addPoint(average);
             }
@@ -513,7 +513,7 @@ public abstract class GPointsCloud
 
 
          @Override
-         protected void processGridFinalization(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices,
+         protected void processGridFinalization(final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices,
                                                 final GVector2D resolution,
                                                 final int gridWidth,
                                                 final int gridHeight) {

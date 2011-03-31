@@ -71,7 +71,7 @@ import es.igosoftware.util.XStringTokenizer;
 
 public final class GPTX3Loader
          extends
-            GStructuredFilePointsLoader<IVector3<?>, GPtx3Group> {
+            GStructuredFilePointsLoader<IVector3, GPtx3Group> {
 
    private static final int       MAX_MARK_SIZE = 1024 * 1024 * 256; // max size of input file for reset after mark.
 
@@ -90,7 +90,7 @@ public final class GPTX3Loader
    // header
    private int                    _columns;
    private int                    _rows;
-   private IVector3<?>            _translationVector;
+   private IVector3               _translationVector;
    private GMatrix33D             _rotationMatrix;
    private GMatrix44D             _transformationMatrix;
 
@@ -234,7 +234,7 @@ public final class GPTX3Loader
    //
    //            final XStringTokenizer tokenizer = new XStringTokenizer(line);
    //
-   //            final IVector3<?> point = parsePoint(tokenizer);
+   //            final IVector3 point = parsePoint(tokenizer);
    //
    //            if ((!includeEmptyPoints) && (point.closeToZero())) {
    //
@@ -317,7 +317,7 @@ public final class GPTX3Loader
 
             final XStringTokenizer tokenizer = new XStringTokenizer(line);
 
-            final IVector3<?> point = parsePoint(tokenizer);
+            final IVector3 point = parsePoint(tokenizer);
 
             if ((!includeEmptyPoints) && (point.closeToZero())) {
 
@@ -399,7 +399,7 @@ public final class GPTX3Loader
    }
 
 
-   private IVector3<?> parsePoint(final XStringTokenizer tokenizer) {
+   private IVector3 parsePoint(final XStringTokenizer tokenizer) {
 
       if (_vectorPrecision == GVectorPrecision.DOUBLE) {
          final double x = tokenizer.nextDoubleToken();
@@ -585,7 +585,7 @@ public final class GPTX3Loader
             System.out.println();
 
             // Get new groups with reference point
-            final IVector3<?> referencePoint = (IVector3<?>) subVertices.getAverage()._point;
+            final IVector3 referencePoint = (IVector3) subVertices.getAverage()._point;
             final GPtx3Group newGroup = group.newEmptyContainer(group.size(), referencePoint);
             groupsMap.put(group, newGroup);
          }
@@ -597,10 +597,10 @@ public final class GPTX3Loader
 
          final GStructuredPtxVertex3Container newVertices = vertices.newEmptyContainer(vertices.size());
 
-         final Iterator<StructuredVertex<IVector3<?>, GPtx3Group>> verticesIterator = vertices.vertexIterator();
+         final Iterator<StructuredVertex<IVector3, GPtx3Group>> verticesIterator = vertices.vertexIterator();
 
          while (verticesIterator.hasNext()) {
-            final IStructuredVertexContainer.StructuredVertex<IVector3<?>, GPtx3Group> structuredVertex = verticesIterator.next();
+            final IStructuredVertexContainer.StructuredVertex<IVector3, GPtx3Group> structuredVertex = verticesIterator.next();
             newVertices.addPoint(structuredVertex._point, structuredVertex._intensity, structuredVertex._normal,
                      structuredVertex._color, structuredVertex._userData, structuredVertex._rowColumn,
                      groupsMap.get(structuredVertex._group));

@@ -41,14 +41,11 @@ import java.io.IOException;
 import java.io.Serializable;
 
 import es.igosoftware.euclid.vector.IVector;
-import es.igosoftware.euclid.vector.IVectorTransformer;
 
 
 public interface IGeometry<
 
-VectorT extends IVector<VectorT, ?, ?>,
-
-GeometryT extends IGeometry<VectorT, GeometryT>
+VectorT extends IVector<VectorT, ?>
 
 >
          extends
@@ -79,15 +76,10 @@ GeometryT extends IGeometry<VectorT, GeometryT>
    public abstract Object clone();
 
 
-   public GeometryT transformedBy(final IVectorTransformer<VectorT> transformer);
-
-
    public double precision();
 
 
-   public boolean closeTo(final GeometryT that);
-
-
    public VectorT getCentroid();
+
 
 }

@@ -48,14 +48,13 @@ import es.igosoftware.util.GMath;
 
 public abstract class GNBall<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
 GeometryT extends GNBall<VectorT, GeometryT>
 
 >
-
          extends
-            GGeometryAbstract<VectorT, GeometryT>
+            GGeometryAbstract<VectorT>
          implements
             IBounds<VectorT, GeometryT> {
 
@@ -164,12 +163,6 @@ GeometryT extends GNBall<VectorT, GeometryT>
       final VectorT centerRadiusDirection = _center.sub(point).normalized();
 
       return _center.add(centerRadiusDirection.scale(_radius));
-   }
-
-
-   @Override
-   public boolean closeTo(final GeometryT that) {
-      return _center.closeTo(that._center) && GMath.closeTo(_radius, that._radius);
    }
 
 

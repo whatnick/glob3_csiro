@@ -141,7 +141,7 @@ public class GAddVectorLayerModule
 
          @Override
          public String get() {
-            return coloringMethods[((IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer).getRenderingTheme().getColoringMethod().ordinal()];
+            return coloringMethods[((IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) layer).getRenderingTheme().getColoringMethod().ordinal()];
          }
 
 
@@ -157,7 +157,7 @@ public class GAddVectorLayerModule
             else if (value.equals("Lookup table")) {
                iMethod = GVector2RenderingTheme.ColoringMethod.COLOR_LUT;
             }
-            final IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> vectorLayer = (IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer;
+            final IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> vectorLayer = (IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) layer;
             vectorLayer.getRenderingTheme().setColoringMethod(iMethod);
             vectorLayer.redraw();
          }
@@ -173,13 +173,13 @@ public class GAddVectorLayerModule
 
          @Override
          public Color get() {
-            return ((IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer).getRenderingTheme().getColor();
+            return ((IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) layer).getRenderingTheme().getColor();
          }
 
 
          @Override
          public void set(final Color value) {
-            final IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> vectorLayer = (IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer;
+            final IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> vectorLayer = (IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) layer;
             vectorLayer.getRenderingTheme().setColor(value);
             vectorLayer.redraw();
          }
@@ -189,7 +189,7 @@ public class GAddVectorLayerModule
          @Override
          public boolean isVisible() {
             if (layer instanceof IGlobeVector2Layer) {
-               final GVectorLayerType shapeType = ((IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer).getFeaturesCollection().getShapeType();
+               final GVectorLayerType shapeType = ((IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) layer).getFeaturesCollection().getShapeType();
                return shapeType == GVectorLayerType.POLYGON;
             }
             return false;
@@ -198,13 +198,13 @@ public class GAddVectorLayerModule
 
          @Override
          public Color get() {
-            return ((IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer).getRenderingTheme().getColor();
+            return ((IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) layer).getRenderingTheme().getColor();
          }
 
 
          @Override
          public void set(final Color value) {
-            final IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> vectorLayer = (IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer;
+            final IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> vectorLayer = (IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) layer;
             vectorLayer.getRenderingTheme().setColor(value);
             vectorLayer.redraw();
          }
@@ -219,14 +219,14 @@ public class GAddVectorLayerModule
 
          @Override
          public LinearGradientPaint get() {
-            final IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> vectorLayer = (IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer;
+            final IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> vectorLayer = (IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) layer;
             return vectorLayer.getRenderingTheme().getGradient();
          }
 
 
          @Override
          public void set(final LinearGradientPaint gradient) {
-            final IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> vectorLayer = (IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer;
+            final IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> vectorLayer = (IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) layer;
             vectorLayer.getRenderingTheme().setGradient(gradient);
             vectorLayer.redraw();
          }
@@ -236,7 +236,7 @@ public class GAddVectorLayerModule
          @Override
          public boolean isVisible() {
             if (layer instanceof IGlobeVector2Layer) {
-               final GVectorLayerType shapeType = ((IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer).getFeaturesCollection().getShapeType();
+               final GVectorLayerType shapeType = ((IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) layer).getFeaturesCollection().getShapeType();
                return shapeType == GVectorLayerType.POINT;
             }
             return false;
@@ -245,7 +245,7 @@ public class GAddVectorLayerModule
 
          @Override
          public String get() {
-            final IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> vectorLayer = (IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer;
+            final IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> vectorLayer = (IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) layer;
             final List<GField> fields = vectorLayer.getFeaturesCollection().getFields();
             final GPoints2RenderingTheme rend = (GPoints2RenderingTheme) vectorLayer.getRenderingTheme();
             return fields.get(rend.getFieldIndex()).getName();
@@ -255,7 +255,7 @@ public class GAddVectorLayerModule
          @Override
          public void set(final String value) {
             int iField = 0;
-            final IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> vectorLayer = (IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer;
+            final IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> vectorLayer = (IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) layer;
             final List<GField> fields = vectorLayer.getFeaturesCollection().getFields();
 
             for (int i = 0; i < fields.size(); i++) {
@@ -277,7 +277,7 @@ public class GAddVectorLayerModule
          @Override
          public boolean isVisible() {
             if (layer instanceof IGlobeVector2Layer) {
-               final GVectorLayerType shapeType = ((IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer).getFeaturesCollection().getShapeType();
+               final GVectorLayerType shapeType = ((IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) layer).getFeaturesCollection().getShapeType();
                return (shapeType == GVectorLayerType.LINE) || (shapeType == GVectorLayerType.POLYGON);
             }
             return false;
@@ -286,7 +286,7 @@ public class GAddVectorLayerModule
 
          @Override
          public Float get() {
-            final IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> vectorLayer = (IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer;
+            final IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> vectorLayer = (IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) layer;
             final GVectorLayerType shapeType = vectorLayer.getFeaturesCollection().getShapeType();
             if (shapeType == GVectorLayerType.LINE) {
                return (float) ((GLines2RenderingTheme) vectorLayer.getRenderingTheme()).getLineThickness();
@@ -302,7 +302,7 @@ public class GAddVectorLayerModule
 
          @Override
          public void set(final Float value) {
-            final IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> vectorLayer = (IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer;
+            final IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> vectorLayer = (IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) layer;
             final GVectorLayerType shapeType = vectorLayer.getFeaturesCollection().getShapeType();
             if (shapeType == GVectorLayerType.LINE) {
                ((GLines2RenderingTheme) vectorLayer.getRenderingTheme()).setLineThickness(value.intValue());
@@ -320,7 +320,7 @@ public class GAddVectorLayerModule
          @Override
          public boolean isVisible() {
             if (layer instanceof IGlobeVector2Layer) {
-               final GVectorLayerType shapeType = ((IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer).getFeaturesCollection().getShapeType();
+               final GVectorLayerType shapeType = ((IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) layer).getFeaturesCollection().getShapeType();
                return shapeType == GVectorLayerType.POINT;
             }
             return false;
@@ -329,7 +329,7 @@ public class GAddVectorLayerModule
 
          @Override
          public String get() {
-            final GPoints2RenderingTheme rend = (GPoints2RenderingTheme) ((IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer).getRenderingTheme();
+            final GPoints2RenderingTheme rend = (GPoints2RenderingTheme) ((IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) layer).getRenderingTheme();
             return altitudeMethods[rend.getAltitudeMethod().ordinal()];
          }
 
@@ -346,7 +346,7 @@ public class GAddVectorLayerModule
             else if (value.equals("Absolute")) {
                iMethod = GPoints2RenderingTheme.AltitudeMethod.ABSOLUTE;
             }
-            final IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> vectorLayer = (IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer;
+            final IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> vectorLayer = (IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) layer;
             final GPoints2RenderingTheme rend = (GPoints2RenderingTheme) vectorLayer.getRenderingTheme();
             rend.setAltitudeMethod(iMethod);
             vectorLayer.redraw();
@@ -360,7 +360,7 @@ public class GAddVectorLayerModule
          @Override
          public boolean isVisible() {
             if (layer instanceof IGlobeVector2Layer) {
-               final GVectorLayerType shapeType = ((IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer).getFeaturesCollection().getShapeType();
+               final GVectorLayerType shapeType = ((IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) layer).getFeaturesCollection().getShapeType();
                return shapeType == GVectorLayerType.POINT;
             }
             return false;
@@ -369,7 +369,7 @@ public class GAddVectorLayerModule
 
          @Override
          public String get() {
-            final GPoints2RenderingTheme rend = (GPoints2RenderingTheme) ((IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer).getRenderingTheme();
+            final GPoints2RenderingTheme rend = (GPoints2RenderingTheme) ((IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) layer).getRenderingTheme();
             return altitudeSources[rend.getAltitudeOrigin().ordinal()];
          }
 
@@ -383,7 +383,7 @@ public class GAddVectorLayerModule
             else if (value.equals("Field")) {
                iMethod = GPoints2RenderingTheme.TakeAltitude.FROM_FIELD;
             }
-            final IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> vectorLayer = (IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer;
+            final IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> vectorLayer = (IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) layer;
             final GPoints2RenderingTheme rend = (GPoints2RenderingTheme) vectorLayer.getRenderingTheme();
             rend.setAltitudeOrigin(iMethod);
             vectorLayer.redraw();
@@ -395,7 +395,7 @@ public class GAddVectorLayerModule
          @Override
          public boolean isVisible() {
             if (layer instanceof IGlobeVector2Layer) {
-               final GVectorLayerType shapeType = ((IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer).getFeaturesCollection().getShapeType();
+               final GVectorLayerType shapeType = ((IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) layer).getFeaturesCollection().getShapeType();
                return shapeType == GVectorLayerType.POINT;
             }
             return false;
@@ -404,7 +404,7 @@ public class GAddVectorLayerModule
 
          @Override
          public String get() {
-            final IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> vectorLayer = (IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer;
+            final IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> vectorLayer = (IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) layer;
             final List<GField> fields = vectorLayer.getFeaturesCollection().getFields();
             final GPoints2RenderingTheme rend = (GPoints2RenderingTheme) vectorLayer.getRenderingTheme();
             return fields.get(rend.getAltitudeField()).getName();
@@ -415,7 +415,7 @@ public class GAddVectorLayerModule
          public void set(final String value) {
 
             int iField = 0;
-            final IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> vectorLayer = (IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer;
+            final IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> vectorLayer = (IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) layer;
             final List<GField> fields = vectorLayer.getFeaturesCollection().getFields();
 
             for (int i = 0; i < fields.size(); i++) {
@@ -436,7 +436,7 @@ public class GAddVectorLayerModule
          @Override
          public boolean isVisible() {
             if (layer instanceof IGlobeVector2Layer) {
-               final GVectorLayerType shapeType = ((IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer).getFeaturesCollection().getShapeType();
+               final GVectorLayerType shapeType = ((IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) layer).getFeaturesCollection().getShapeType();
                return (shapeType == GVectorLayerType.POINT);
             }
             return false;
@@ -445,14 +445,14 @@ public class GAddVectorLayerModule
 
          @Override
          public Float get() {
-            final GPoints2RenderingTheme rend = (GPoints2RenderingTheme) ((IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer).getRenderingTheme();
+            final GPoints2RenderingTheme rend = (GPoints2RenderingTheme) ((IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) layer).getRenderingTheme();
             return new Float(rend.getFixedAltitude());
          }
 
 
          @Override
          public void set(final Float value) {
-            final IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> vectorLayer = (IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer;
+            final IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> vectorLayer = (IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) layer;
             final GPoints2RenderingTheme rend = (GPoints2RenderingTheme) vectorLayer.getRenderingTheme();
             rend.setFixedAltitude(value.doubleValue());
             vectorLayer.redraw();
@@ -484,7 +484,7 @@ public class GAddVectorLayerModule
 
          try {
             final File file = new File(sFilename);
-            final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features = GShapefileTools.readFile(file);
+            final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features = GShapefileTools.readFile(file);
             if (features != null) {
 
                final GGlobeVector2Layer layer = new GGlobeVector2Layer(file.getName(), features);

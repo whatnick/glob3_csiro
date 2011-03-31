@@ -46,27 +46,25 @@ import es.igosoftware.euclid.vector.IVector;
 
 public interface IPolytope<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
-SegmentT extends GSegment<VectorT, SegmentT, BoundsT>,
-
-GeometryT extends IPolytope<VectorT, SegmentT, GeometryT, BoundsT>,
+SegmentT extends GSegment<VectorT, BoundsT>,
 
 BoundsT extends IBounds<VectorT, BoundsT>
 
 >
          extends
-            IPointsContainer<VectorT, GeometryT>,
-            IBoundedGeometry<VectorT, GeometryT, BoundsT> {
+            IPointsContainer<VectorT>,
+            IBoundedGeometry<VectorT, BoundsT> {
 
 
    public boolean isSelfIntersected();
 
 
-   public IPolytope<VectorT, SegmentT, ?, BoundsT> createSimplified(final double capsRadiansTolerance);
+   public IPolytope<VectorT, SegmentT, BoundsT> createSimplified(final double capsRadiansTolerance);
 
 
-   public IPolytope<VectorT, SegmentT, ?, BoundsT> getHull();
+   public IPolytope<VectorT, SegmentT, BoundsT> getHull();
 
 
    public List<SegmentT> getEdges();
@@ -75,7 +73,5 @@ BoundsT extends IBounds<VectorT, BoundsT>
    @Override
    public BoundsT getBounds();
 
-
-   public boolean closeTo(final IPolytope<VectorT, SegmentT, ?, BoundsT> that);
 
 }

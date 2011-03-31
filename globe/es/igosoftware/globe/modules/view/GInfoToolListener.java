@@ -134,7 +134,7 @@ public class GInfoToolListener
             final Sector extent = gRasterLayer.getExtent();
             if (extent.contains(currentPosition)) {
                final GRasterGeodata geodata = gRasterLayer.getRasterGeodata();
-               final IVector2<?> transformedPt = GProjection.EPSG_4326.transformPoint(geodata._projection, new GVector2D(
+               final IVector2 transformedPt = GProjection.EPSG_4326.transformPoint(geodata._projection, new GVector2D(
                         currentPosition.longitude.degrees, currentPosition.latitude.degrees));
                final double dX = transformedPt.x();
                final double dY = transformedPt.y();
