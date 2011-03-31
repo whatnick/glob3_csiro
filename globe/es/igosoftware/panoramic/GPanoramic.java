@@ -961,18 +961,15 @@ public class GPanoramic
          }
 
          final GL gl = dc.getGL();
-         //TODO: transparency or not
-         //         if (!_isActive) {
-         //            //            final double opacity = 0.5;
-         //            //            gl.glPushAttrib(GL.GL_COLOR_BUFFER_BIT | GL.GL_POLYGON_BIT | GL.GL_CURRENT_BIT);
-         //            //            // Enable blending using white premultiplied by the current opacity.
-         //            //            gl.glColor4d(opacity, opacity, opacity, opacity);
-         //            _layer.setOpacity(0.5);
-         //
-         //         }
-         //         else {
-         //            _layer.setOpacity(1.0);
-         //         }
+
+         if (!_isActive) {
+
+            _layer.setOpacity(0.75);
+
+         }
+         else {
+            _layer.setOpacity(1.0);
+         }
          gl.glCallList(_displayList);
 
          if (texture != null) {
