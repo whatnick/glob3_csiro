@@ -146,12 +146,6 @@ public final class GSegment2D
    }
 
 
-   @Override
-   public GRenderType getRenderType() {
-      return GRenderType.POLYLINE;
-   }
-
-
    public boolean neighborWithSegment(final GSegment2D that) {
 
       final double epsilon = 0.0001;

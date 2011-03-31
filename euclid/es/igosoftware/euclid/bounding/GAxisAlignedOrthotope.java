@@ -40,7 +40,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import es.igosoftware.euclid.GGeometryAbstract;
-import es.igosoftware.euclid.shape.GRenderType;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
@@ -372,10 +371,5 @@ GeometryT extends GAxisAlignedOrthotope<VectorT, GeometryT>
 
    public abstract GeometryT mergedWith(final GAxisAlignedOrthotope<VectorT, ?> that);
 
-
-   @Override
-   public GRenderType getRenderType() {
-      return GRenderType.DO_NOT_RENDER;
-   }
 
 }

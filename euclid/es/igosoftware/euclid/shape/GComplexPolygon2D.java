@@ -140,10 +140,4 @@ public final class GComplexPolygon2D
    }
 
 
-   @Override
-   public GRenderType getRenderType() {
-      return GRenderType.POLYGON;
-   }
-
-
 }

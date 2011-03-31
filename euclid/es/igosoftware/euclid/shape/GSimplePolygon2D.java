@@ -294,9 +294,4 @@ public final class GSimplePolygon2D
    }
 
 
-   @Override
-   public GRenderType getRenderType() {
-      return GRenderType.POLYGON;
-   }
-
 }

@@ -191,9 +191,4 @@ public final class GQuad2D
    }
 
 
-   @Override
-   public GRenderType getRenderType() {
-      return GRenderType.POLYGON;
-   }
-
 }

@@ -38,7 +38,6 @@ package es.igosoftware.euclid.vector;
 
 import es.igosoftware.euclid.GGeometryAbstract;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
-import es.igosoftware.euclid.shape.GRenderType;
 import es.igosoftware.util.GMath;
 
 
@@ -115,10 +114,5 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
       return (VectorT) this;
    }
 
-
-   @Override
-   public GRenderType getRenderType() {
-      return GRenderType.POINT;
-   }
 
 }

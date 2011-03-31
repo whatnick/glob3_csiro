@@ -71,12 +71,6 @@ public final class GSegment3D
 
 
    @Override
-   public GRenderType getRenderType() {
-      return GRenderType.POLYLINE;
-   }
-
-
-   @Override
    public boolean isSelfIntersected() {
       return false;
    }

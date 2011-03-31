@@ -12,7 +12,6 @@ import es.igosoftware.euclid.GGeometryAbstract;
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
-import es.igosoftware.euclid.shape.GRenderType;
 import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GAssert;
@@ -141,12 +140,6 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
                });
 
       return (BoundsT) GAxisAlignedOrthotope.merge(bounds);
-   }
-
-
-   @Override
-   public GRenderType getRenderType() {
-      return getExemplar().getRenderType();
    }
 
 

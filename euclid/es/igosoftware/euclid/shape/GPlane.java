@@ -790,9 +790,4 @@ public final class GPlane
    }
 
 
-   @Override
-   public GRenderType getRenderType() {
-      return GRenderType.DO_NOT_RENDER;
-   }
-
 }

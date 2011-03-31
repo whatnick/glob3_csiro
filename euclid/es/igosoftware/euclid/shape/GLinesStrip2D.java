@@ -104,12 +104,6 @@ public class GLinesStrip2D
 
 
    @Override
-   public GRenderType getRenderType() {
-      return GRenderType.POLYLINE;
-   }
-
-
-   @Override
    public GLinesStrip2D clone() {
       return this;
    }

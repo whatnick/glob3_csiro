@@ -37,7 +37,6 @@
 package es.igosoftware.euclid;
 
 import es.igosoftware.euclid.bounding.IBounds;
-import es.igosoftware.euclid.shape.GRenderType;
 import es.igosoftware.euclid.vector.IVector;
 
 
@@ -56,9 +55,6 @@ BoundsT extends IBounds<VectorT, ?>
 
 
    public BoundsT getBounds();
-
-
-   public GRenderType getRenderType();
 
 
 }

@@ -203,10 +203,4 @@ public final class GTriangle2D
    }
 
 
-   @Override
-   public GRenderType getRenderType() {
-      return GRenderType.POLYGON;
-   }
-
-
 }
