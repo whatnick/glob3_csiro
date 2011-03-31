@@ -52,7 +52,7 @@ public class WWInputFactory
          final Layer layer = layerList.get(i);
          if (layer instanceof IGlobeVector2Layer) {
             @SuppressWarnings("unchecked")
-            final IGlobeVector2Layer<? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> globeVector2Layer = (IGlobeVector2Layer<? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>) layer;
+            final IGlobeVector2Layer<? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> globeVector2Layer = (IGlobeVector2Layer<? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) layer;
             obj = new WWVectorLayer(globeVector2Layer.getName(), globeVector2Layer.getFeaturesCollection());
             layers.add(obj);
          }

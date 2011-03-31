@@ -23,9 +23,9 @@ import es.igosoftware.util.ITransformer;
 
 public class GListFeatureCollection<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
-FeatureGeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>
+FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
 
 >
 
@@ -35,29 +35,29 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<Ve
 
    public static <
 
-   VectorT extends IVector<VectorT, ?, ?>,
+   VectorT extends IVector<VectorT, ?>,
 
-   FeatureGeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>
+   FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
 
-   > GListFeatureCollection<VectorT, IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>> fromGeometryList(final GProjection projection,
-                                                                                                                         final List<FeatureGeometryT> geometries,
-                                                                                                                         final String uniqueID) {
+   > GListFeatureCollection<VectorT, IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>> fromGeometryList(final GProjection projection,
+                                                                                                                      final List<FeatureGeometryT> geometries,
+                                                                                                                      final String uniqueID) {
 
       final List<GField> fields = Collections.emptyList();
 
-      final List<IGlobeFeature<VectorT, IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>>> features = GCollections.collect(
+      final List<IGlobeFeature<VectorT, IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>>> features = GCollections.collect(
                geometries,
-               new ITransformer<FeatureGeometryT, IGlobeFeature<VectorT, IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>>>() {
+               new ITransformer<FeatureGeometryT, IGlobeFeature<VectorT, IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>>>() {
 
                   @Override
-                  public IGlobeFeature<VectorT, IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>> transform(final FeatureGeometryT geometry) {
-                     return new GGlobeFeature<VectorT, IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>>(
-                              geometry, Collections.emptyList());
+                  public IGlobeFeature<VectorT, IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>> transform(final FeatureGeometryT geometry) {
+                     return new GGlobeFeature<VectorT, IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>>(geometry,
+                              Collections.emptyList());
                   }
                });
 
 
-      return new GListFeatureCollection<VectorT, IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>>(projection,
+      return new GListFeatureCollection<VectorT, IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>>(projection,
                fields, features, uniqueID);
    }
 
@@ -159,7 +159,7 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<Ve
    }
 
 
-   private static <VectorT extends IVector<VectorT, ?, ?>> GVectorLayerType getShapeType(final IGeometry<VectorT, ?> geometry) {
+   private static <VectorT extends IVector<VectorT, ?>> GVectorLayerType getShapeType(final IGeometry<VectorT> geometry) {
       if (geometry instanceof IVector) {
          return GVectorLayerType.POINT;
       }

@@ -74,8 +74,8 @@ public class GShapefileTools {
    }
 
 
-   public static IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> readFile(final File file)
-                                                                                                                                                                       throws IOException {
+   public static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> readFile(final File file)
+                                                                                                                                                           throws IOException {
 
       final HashMap<String, URL> connect = new HashMap<String, URL>();
       connect.put("url", file.toURI().toURL());
@@ -86,14 +86,14 @@ public class GShapefileTools {
       final FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = dataStore.getFeatureSource(query.getTypeName());
       final FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = featureSource.getFeatures(query);
       final FeatureIterator<SimpleFeature> iterator = featureCollection.features();
-      final List<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>> features = new ArrayList<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>>(
+      final List<IGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> features = new ArrayList<IGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>>(
                featureCollection.size());
 
       while (iterator.hasNext()) {
          final SimpleFeature feature = iterator.next();
          final Geometry jtsGeometry = (Geometry) feature.getDefaultGeometry();
-         for (final IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>> euclidGeometry : GJTSUtils.toEuclid(jtsGeometry)) {
-            features.add(new GGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>(
+         for (final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> euclidGeometry : GJTSUtils.toEuclid(jtsGeometry)) {
+            features.add(new GGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>(
                      euclidGeometry, feature.getAttributes()));
          }
       }
@@ -112,8 +112,8 @@ public class GShapefileTools {
       final GProjection projection = GProjection.EPSG_4326;
 
       final String uniqueID = GIOUtils.getUniqueID(file);
-      return new GListFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>(
-               projection, fields, features, uniqueID);
+      return new GListFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>(projection,
+               fields, features, uniqueID);
    }
 
 }

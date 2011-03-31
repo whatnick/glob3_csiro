@@ -67,7 +67,7 @@ public class GOTInnerNode
                                              final int[] nodeVerticesIndexes,
                                              final GAxisAlignedBox nodeBounds,
                                              final int depth,
-                                             final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices) {
+                                             final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices) {
 
       // just one vertex, create a leaf
       if (nodeVerticesIndexes.length == 1) {
@@ -79,7 +79,7 @@ public class GOTInnerNode
          return true;
       }
 
-      final IVector3<?> nodeExtent = nodeBounds._extent;
+      final IVector3 nodeExtent = nodeBounds._extent;
 
       // if the extent if too small, force a leaf creation
       if (((nodeExtent.x() <= 0.000001) || (nodeExtent.y() <= 0.000001) || (nodeExtent.z() <= 0.000001))) {
@@ -151,9 +151,9 @@ public class GOTInnerNode
                                              final GOctree.Parameters parameters,
                                              final Object auxiliaryObject,
                                              final GProgress progress,
-                                             final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices)
-                                                                                                                                   throws InterruptedException,
-                                                                                                                                   ExecutionException {
+                                             final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices)
+                                                                                                                             throws InterruptedException,
+                                                                                                                             ExecutionException {
 
       final ExecutorService executor = GConcurrent.getDefaultExecutor();
 
@@ -225,9 +225,9 @@ public class GOTInnerNode
                                    final GOctree.Parameters parameters,
                                    final Object auxiliaryObject,
                                    final GProgress progress,
-                                   final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices)
-                                                                                                                         throws InterruptedException,
-                                                                                                                         ExecutionException {
+                                   final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices)
+                                                                                                                   throws InterruptedException,
+                                                                                                                   ExecutionException {
 
 
       final int[][] nodesVerticesIndexes = splitVerticexIndexesIntoNodes(verticesIndexes.get(), parameters, auxiliaryObject);
@@ -388,7 +388,7 @@ public class GOTInnerNode
    }
 
 
-   final protected int getNearestVertexIndex(final IVector3<?> target) {
+   final protected int getNearestVertexIndex(final IVector3 target) {
       //      final GOTLeafNode nearestLeaf = getNearestLeaf(point);
       //      GAssert.notNull(nearestLeaf, "nearestLeaf");
       //
@@ -396,7 +396,7 @@ public class GOTInnerNode
       //      double minDistance = Double.POSITIVE_INFINITY;
       //
       //      for (final int vertexIndex : nearestLeaf.getVerticesIndexes()) {
-      //         final IVector3<?> currentPoint = getOctree().getPoint(vertexIndex);
+      //         final IVector3 currentPoint = getOctree().getPoint(vertexIndex);
       //         final double currentDistance = currentPoint.squaredDistance(point);
       //         if (currentDistance < minDistance) {
       //            minDistance = currentDistance;
@@ -411,7 +411,7 @@ public class GOTInnerNode
       //
       //      final int[] candidatesVerticesIndices = getOctree().getVerticesIndexesInRegion(candidatesRegion, nearestLeaf);
       //      for (final int candidateVertexIndex : candidatesVerticesIndices) {
-      //         final IVector3<?> currentPoint = getOctree().getPoint(candidateVertexIndex);
+      //         final IVector3 currentPoint = getOctree().getPoint(candidateVertexIndex);
       //         final double currentDistance = currentPoint.squaredDistance(point);
       //         if (currentDistance < minDistance) {
       //            minDistance = currentDistance;
@@ -427,7 +427,7 @@ public class GOTInnerNode
       //      double minDistance = Double.POSITIVE_INFINITY;
       //
       //      for (final int vertexIndex : nearestLeaf.getVerticesIndexes()) {
-      //         final IVector3<?> currentPoint = getOctree().getPoint(vertexIndex);
+      //         final IVector3 currentPoint = getOctree().getPoint(vertexIndex);
       //         final double currentDistance = currentPoint.squaredDistance(target);
       //         if (currentDistance < minDistance) {
       //            minDistance = currentDistance;
@@ -486,7 +486,7 @@ public class GOTInnerNode
    }
 
 
-   //   final private GOTLeafNode getNearestLeaf(final IVector3<?> point) {
+   //   final private GOTLeafNode getNearestLeaf(final IVector3 point) {
    //      final GHolder<GOTLeafNode> nearestLeafHolder = new GHolder<GOTLeafNode>(null);
    //      final GHolder<Double> shortestSquaredDistance = new GHolder<Double>(Double.POSITIVE_INFINITY);
    //
@@ -497,7 +497,7 @@ public class GOTInnerNode
 
 
    //   @Override
-   //   final protected boolean getNearestLeaf(final IVector3<?> point,
+   //   final protected boolean getNearestLeaf(final IVector3 point,
    //                                          final GHolder<GOTLeafNode> nearestLeafHolder,
    //                                          final GHolder<Double> shortestSquaredDistance) {
    //
@@ -546,14 +546,14 @@ public class GOTInnerNode
 
 
    @Override
-   protected WeightedVertex<IVector3<?>> calculateAverageVertex() {
+   protected WeightedVertex<IVector3> calculateAverageVertex() {
       for (final GOTNode child : _children) {
          if (child != null) {
             child.getAverageVertex(); // force lazy initialization
          }
       }
 
-      final List<WeightedVertex<IVector3<?>>> nodesAverages = new ArrayList<WeightedVertex<IVector3<?>>>(_children.length);
+      final List<WeightedVertex<IVector3>> nodesAverages = new ArrayList<WeightedVertex<IVector3>>(_children.length);
 
       for (final GOTNode child : _children) {
          if (child != null) {
@@ -563,14 +563,14 @@ public class GOTInnerNode
 
       return IVertexContainer.WeightedVertex.getAverage(nodesAverages);
 
-      //      final List<Future<WeightedVertex<IVector3<?>>>> futures = new ArrayList<Future<WeightedVertex<IVector3<?>>>>(
+      //      final List<Future<WeightedVertex<IVector3>>> futures = new ArrayList<Future<WeightedVertex<IVector3>>>(
       //               _children.length);
       //      final ExecutorService executor = GConcurrent.getDefaultExecutor();
       //      for (final GOTNode child : _children) {
       //         if (node != null) {
-      //            final Future<WeightedVertex<IVector3<?>>> future = executor.submit(new Callable<WeightedVertex<IVector3<?>>>() {
+      //            final Future<WeightedVertex<IVector3>> future = executor.submit(new Callable<WeightedVertex<IVector3>>() {
       //               @Override
-      //               public WeightedVertex<IVector3<?>> call() throws Exception {
+      //               public WeightedVertex<IVector3> call() throws Exception {
       //                  return node.getAverageVertex();
       //               }
       //            });
@@ -622,7 +622,7 @@ public class GOTInnerNode
 
 
    @Override
-   protected boolean removeVertex(final Vertex<IVector3<?>> vertex,
+   protected boolean removeVertex(final Vertex<IVector3> vertex,
                                   final int index) {
       if (!_bounds.contains(vertex._point)) {
          return false;

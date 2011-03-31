@@ -9,10 +9,10 @@ import es.igosoftware.euclid.vector.IVector2;
 
 public interface IGlobeVector2Layer<
 
-GeometryT extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>
+GeometryT extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>
 
 >
          extends
-            IGlobeVectorLayer<IVector2<?>, GeometryT> {
+            IGlobeVectorLayer<IVector2, GeometryT> {
 
 }

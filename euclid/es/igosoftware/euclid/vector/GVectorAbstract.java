@@ -44,17 +44,15 @@ import es.igosoftware.util.GMath;
 
 public abstract class GVectorAbstract<
 
-VectorT extends IVector<VectorT, ?, BoundsT>,
-
-GeometryT extends GVectorAbstract<VectorT, GeometryT, BoundsT>,
+VectorT extends IVector<VectorT, BoundsT>,
 
 BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
 
 >
          extends
-            GGeometryAbstract<VectorT, GeometryT>
+            GGeometryAbstract<VectorT>
          implements
-            IVector<VectorT, GeometryT, BoundsT> {
+            IVector<VectorT, BoundsT> {
 
    private static final long serialVersionUID = 1L;
 
@@ -105,6 +103,10 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
 
    @Override
    public abstract boolean equals(final Object that);
+
+
+   @Override
+   public abstract int hashCode();
 
 
    @SuppressWarnings("unchecked")

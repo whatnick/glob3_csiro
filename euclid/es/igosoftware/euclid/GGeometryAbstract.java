@@ -46,13 +46,11 @@ import es.igosoftware.euclid.vector.IVector;
 
 public abstract class GGeometryAbstract<
 
-VectorT extends IVector<VectorT, ?, ?>,
-
-GeometryT extends GGeometryAbstract<VectorT, GeometryT>
+VectorT extends IVector<VectorT, ?>
 
 >
          implements
-            IGeometry<VectorT, GeometryT> {
+            IGeometry<VectorT> {
 
    private static final long serialVersionUID = 1L;
 

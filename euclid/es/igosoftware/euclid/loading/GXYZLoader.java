@@ -66,10 +66,10 @@ import es.igosoftware.util.XStringTokenizer;
 
 public final class GXYZLoader
          extends
-            GUnstructuredFilePointsLoader<IVector3<?>> {
+            GUnstructuredFilePointsLoader<IVector3> {
 
 
-   public static void save(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices,
+   public static void save(final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices,
                            final GFileName fileName) throws IOException {
 
       final long started = System.currentTimeMillis();
@@ -87,7 +87,7 @@ public final class GXYZLoader
       final BufferedWriter output = new BufferedWriter(new FileWriter(fileName.buildPath()));
 
       for (int i = 0; i < verticesCount; i++) {
-         final IVector3<?> point = vertices.getPoint(i);
+         final IVector3 point = vertices.getPoint(i);
          output.write(Double.toString(point.x()));
          output.write(" ");
          output.write(Double.toString(point.y()));
@@ -234,7 +234,7 @@ public final class GXYZLoader
                }
             }
             else {
-               final IVector3<?> point = parsePoint(tokenizer);
+               final IVector3 point = parsePoint(tokenizer);
                float intensity = parseIntensity(tokenizer);
                IColor color = parseColor(tokenizer);
 
@@ -263,7 +263,7 @@ public final class GXYZLoader
    }
 
 
-   private IVector3<?> parsePoint(final XStringTokenizer tokenizer) {
+   private IVector3 parsePoint(final XStringTokenizer tokenizer) {
       if (_vectorPrecision == GVectorPrecision.DOUBLE) {
          final double x = tokenizer.nextDoubleToken();
          final double y = tokenizer.nextDoubleToken();

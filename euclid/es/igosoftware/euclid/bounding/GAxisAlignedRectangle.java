@@ -51,31 +51,30 @@ import es.igosoftware.euclid.shape.GSegment2D;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector2;
-import es.igosoftware.euclid.vector.IVectorTransformer;
 import es.igosoftware.util.GMath;
 
 
 public final class GAxisAlignedRectangle
          extends
-            GAxisAlignedOrthotope<IVector2<?>, GAxisAlignedRectangle>
+            GAxisAlignedOrthotope<IVector2, GAxisAlignedRectangle>
          implements
             IBounds2D<GAxisAlignedRectangle>,
-            IFiniteBounds<IVector2<?>, GAxisAlignedRectangle> {
+            IFiniteBounds<IVector2, GAxisAlignedRectangle> {
 
    private static final long                 serialVersionUID = 1L;
 
    public static final GAxisAlignedRectangle EMPTY            = new GAxisAlignedRectangle(GVector2D.ZERO, GVector2D.ZERO);
 
 
-   public static GAxisAlignedRectangle minimumBoundingRectangle(final Collection<? extends IPointsContainer<IVector2<?>, ?>> pointsContainers) {
+   public static GAxisAlignedRectangle minimumBoundingRectangle(final Collection<? extends IPointsContainer<IVector2>> pointsContainers) {
       double minX = Double.POSITIVE_INFINITY;
       double minY = Double.POSITIVE_INFINITY;
 
       double maxX = Double.NEGATIVE_INFINITY;
       double maxY = Double.NEGATIVE_INFINITY;
 
-      for (final IPointsContainer<IVector2<?>, ?> pointsContainer : pointsContainers) {
-         for (final IVector2<?> point : pointsContainer) {
+      for (final IPointsContainer<IVector2> pointsContainer : pointsContainers) {
+         for (final IVector2 point : pointsContainer) {
             final double x = point.x();
             final double y = point.y();
 
@@ -87,21 +86,21 @@ public final class GAxisAlignedRectangle
          }
       }
 
-      final IVector2<?> lower = new GVector2D(minX, minY);
-      final IVector2<?> upper = new GVector2D(maxX, maxY);
+      final IVector2 lower = new GVector2D(minX, minY);
+      final IVector2 upper = new GVector2D(maxX, maxY);
 
       return new GAxisAlignedRectangle(lower, upper);
    }
 
 
-   public static GAxisAlignedRectangle minimumBoundingRectangle(final Iterable<? extends IVector2<?>> points) {
+   public static GAxisAlignedRectangle minimumBoundingRectangle(final Iterable<? extends IVector2> points) {
       double minX = Double.POSITIVE_INFINITY;
       double minY = Double.POSITIVE_INFINITY;
 
       double maxX = Double.NEGATIVE_INFINITY;
       double maxY = Double.NEGATIVE_INFINITY;
 
-      for (final IVector2<?> point : points) {
+      for (final IVector2 point : points) {
          final double x = point.x();
          final double y = point.y();
 
@@ -112,14 +111,14 @@ public final class GAxisAlignedRectangle
          maxY = Math.max(maxY, y);
       }
 
-      final IVector2<?> lower = new GVector2D(minX, minY);
-      final IVector2<?> upper = new GVector2D(maxX, maxY);
+      final IVector2 lower = new GVector2D(minX, minY);
+      final IVector2 upper = new GVector2D(maxX, maxY);
 
       return new GAxisAlignedRectangle(lower, upper);
    }
 
 
-   public static GAxisAlignedRectangle minimumBoundingRectangle(final Iterator<? extends IVector2<?>> points) {
+   public static GAxisAlignedRectangle minimumBoundingRectangle(final Iterator<? extends IVector2> points) {
       double minX = Double.POSITIVE_INFINITY;
       double minY = Double.POSITIVE_INFINITY;
 
@@ -127,7 +126,7 @@ public final class GAxisAlignedRectangle
       double maxY = Double.NEGATIVE_INFINITY;
 
       while (points.hasNext()) {
-         final IVector2<?> point = points.next();
+         final IVector2 point = points.next();
 
          final double x = point.x();
          final double y = point.y();
@@ -139,21 +138,21 @@ public final class GAxisAlignedRectangle
          maxY = Math.max(maxY, y);
       }
 
-      final IVector2<?> lower = new GVector2D(minX, minY);
-      final IVector2<?> upper = new GVector2D(maxX, maxY);
+      final IVector2 lower = new GVector2D(minX, minY);
+      final IVector2 upper = new GVector2D(maxX, maxY);
 
       return new GAxisAlignedRectangle(lower, upper);
    }
 
 
-   public static GAxisAlignedRectangle minimumBoundingRectangle(final IVector2<?>... points) {
+   public static GAxisAlignedRectangle minimumBoundingRectangle(final IVector2... points) {
       double minX = Double.POSITIVE_INFINITY;
       double minY = Double.POSITIVE_INFINITY;
 
       double maxX = Double.NEGATIVE_INFINITY;
       double maxY = Double.NEGATIVE_INFINITY;
 
-      for (final IVector2<?> point : points) {
+      for (final IVector2 point : points) {
          final double x = point.x();
          final double y = point.y();
 
@@ -164,8 +163,8 @@ public final class GAxisAlignedRectangle
          maxY = Math.max(maxY, y);
       }
 
-      final IVector2<?> lower = new GVector2D(minX, minY);
-      final IVector2<?> upper = new GVector2D(maxX, maxY);
+      final IVector2 lower = new GVector2D(minX, minY);
+      final IVector2 upper = new GVector2D(maxX, maxY);
 
       return new GAxisAlignedRectangle(lower, upper);
    }
@@ -179,8 +178,8 @@ public final class GAxisAlignedRectangle
       double maxY = Double.NEGATIVE_INFINITY;
 
       for (final GAxisAlignedRectangle box : boxes) {
-         final IVector2<?> currentLower = box._lower;
-         final IVector2<?> currentUpper = box._upper;
+         final IVector2 currentLower = box._lower;
+         final IVector2 currentUpper = box._upper;
 
          minX = Math.min(minX, currentLower.x());
          minY = Math.min(minY, currentLower.y());
@@ -194,8 +193,8 @@ public final class GAxisAlignedRectangle
          return GAxisAlignedRectangle.EMPTY;
       }
 
-      final IVector2<?> lower = new GVector2D(minX, minY);
-      final IVector2<?> upper = new GVector2D(maxX, maxY);
+      final IVector2 lower = new GVector2D(minX, minY);
+      final IVector2 upper = new GVector2D(maxX, maxY);
       return new GAxisAlignedRectangle(lower, upper);
    }
 
@@ -208,8 +207,8 @@ public final class GAxisAlignedRectangle
       double maxY = Double.NEGATIVE_INFINITY;
 
       for (final GAxisAlignedRectangle box : boxes) {
-         final IVector2<?> currentLower = box._lower;
-         final IVector2<?> currentUpper = box._upper;
+         final IVector2 currentLower = box._lower;
+         final IVector2 currentUpper = box._upper;
 
          minX = Math.min(minX, currentLower.x());
          minY = Math.min(minY, currentLower.y());
@@ -223,14 +222,14 @@ public final class GAxisAlignedRectangle
          return GAxisAlignedRectangle.EMPTY;
       }
 
-      final IVector2<?> lower = new GVector2D(minX, minY);
-      final IVector2<?> upper = new GVector2D(maxX, maxY);
+      final IVector2 lower = new GVector2D(minX, minY);
+      final IVector2 upper = new GVector2D(maxX, maxY);
       return new GAxisAlignedRectangle(lower, upper);
    }
 
 
-   public static <PointT extends IVector2<?>> GAxisAlignedRectangle load(final Class<PointT> pointClass,
-                                                                         final String fileName) throws IOException {
+   public static <PointT extends IVector2> GAxisAlignedRectangle load(final Class<PointT> pointClass,
+                                                                      final String fileName) throws IOException {
       DataInputStream input = null;
 
       try {
@@ -246,16 +245,16 @@ public final class GAxisAlignedRectangle
    }
 
 
-   public static <PointT extends IVector2<?>> GAxisAlignedRectangle load(final Class<PointT> pointClass,
-                                                                         final DataInputStream input) throws IOException {
+   public static <PointT extends IVector2> GAxisAlignedRectangle load(final Class<PointT> pointClass,
+                                                                      final DataInputStream input) throws IOException {
 
       try {
          final Method loadMethod = pointClass.getMethod("load", DataInputStream.class);
 
-         final IVector2<?> lower = (IVector2<?>) loadMethod.invoke(null, input);
-         final IVector2<?> upper = (IVector2<?>) loadMethod.invoke(null, input);
-         //      final IVector2<?> lower = IVector2.load(input);
-         //      final IVector2<?> upper = IVector2.load(input);
+         final IVector2 lower = (IVector2) loadMethod.invoke(null, input);
+         final IVector2 upper = (IVector2) loadMethod.invoke(null, input);
+         //      final IVector2 lower = IVector2.load(input);
+         //      final IVector2 upper = IVector2.load(input);
          return new GAxisAlignedRectangle(lower, upper);
       }
       catch (final Exception e) {
@@ -264,8 +263,8 @@ public final class GAxisAlignedRectangle
    }
 
 
-   public GAxisAlignedRectangle(final IVector2<?> lower,
-                                final IVector2<?> upper) {
+   public GAxisAlignedRectangle(final IVector2 lower,
+                                final IVector2 upper) {
       super(lower, upper);
    }
 
@@ -278,8 +277,8 @@ public final class GAxisAlignedRectangle
 
    @Override
    public boolean touchesWithRectangle(final GAxisAlignedRectangle that) {
-      final IVector2<?> thatLower = that._lower;
-      final IVector2<?> thatUpper = that._upper;
+      final IVector2 thatLower = that._lower;
+      final IVector2 thatUpper = that._upper;
 
       return ((_upper.x() > thatLower.x()) && (thatUpper.x() > _lower.x()) && (_upper.y() > thatLower.y()) && (thatUpper.y() > _lower.y()));
    }
@@ -295,8 +294,8 @@ public final class GAxisAlignedRectangle
    public boolean neighborWithRectangle(final GAxisAlignedRectangle that,
                                         final double epsilon) {
 
-      final IVector2<?> thatLower = that._lower;
-      final IVector2<?> thatUpper = that._upper;
+      final IVector2 thatLower = that._lower;
+      final IVector2 thatUpper = that._upper;
 
       return (GMath.greaterOrEquals(_upper.x() + epsilon, thatLower.x()))
              && (GMath.greaterOrEquals(thatUpper.x() + epsilon, _lower.x()))
@@ -319,14 +318,14 @@ public final class GAxisAlignedRectangle
 
 
    @Override
-   public GAxisAlignedRectangle expandedByDistance(final IVector2<?> delta) {
+   public GAxisAlignedRectangle expandedByDistance(final IVector2 delta) {
       return new GAxisAlignedRectangle(_lower.sub(delta), _upper.add(delta));
    }
 
 
    @Override
-   public List<IVector2<?>> getVertices() {
-      final List<IVector2<?>> v = new ArrayList<IVector2<?>>(4);
+   public List<IVector2> getVertices() {
+      final List<IVector2> v = new ArrayList<IVector2>(4);
 
       v.add(new GVector2D(_lower.x(), _lower.y()));
       v.add(new GVector2D(_lower.x(), _upper.y()));
@@ -353,7 +352,7 @@ public final class GAxisAlignedRectangle
 
    @Override
    public boolean touchesWithDisk(final GDisk disk) {
-      final IVector2<?> diskCenter = disk._center;
+      final IVector2 diskCenter = disk._center;
       final double diskRadius = disk._radius;
       return (Math.abs(_center.x() - diskCenter.x()) < (diskRadius + _extent.x()))
              && (Math.abs(_center.y() - diskCenter.y()) < (diskRadius + _extent.y()));
@@ -367,13 +366,7 @@ public final class GAxisAlignedRectangle
 
 
    @Override
-   public GAxisAlignedRectangle transformedBy(final IVectorTransformer<IVector2<?>> transformer) {
-      return new GAxisAlignedRectangle(_lower.transformedBy(transformer), _upper.transformedBy(transformer));
-   }
-
-
-   @Override
-   public GAxisAlignedRectangle translatedBy(final IVector2<?> delta) {
+   public GAxisAlignedRectangle translatedBy(final IVector2 delta) {
       return new GAxisAlignedRectangle(_lower.add(delta), _upper.add(delta));
    }
 
@@ -493,7 +486,7 @@ public final class GAxisAlignedRectangle
    @Override
    public boolean touchesWithCapsule2D(final GCapsule2D capsule) {
 
-      final IVector2<?> segmentClosestPoint = capsule._segment.closestPoint(_center);
+      final IVector2 segmentClosestPoint = capsule._segment.closestPoint(_center);
       final double capsuleRadius = capsule._radius;
 
       return (Math.abs(_center.x() - segmentClosestPoint.x()) < (capsuleRadius + _extent.x()))
@@ -539,13 +532,13 @@ public final class GAxisAlignedRectangle
 
 
    @Override
-   public boolean touches(final GAxisAlignedOrthotope<IVector2<?>, ?> that) {
+   public boolean touches(final GAxisAlignedOrthotope<IVector2, ?> that) {
       return touchesWithRectangle((GAxisAlignedRectangle) that);
    }
 
 
    @Override
-   public boolean touchesBounds(final IBounds<IVector2<?>, ?> that) {
+   public boolean touchesBounds(final IBounds<IVector2, ?> that) {
       return touches((IBounds2D<?>) that);
    }
 
@@ -568,7 +561,7 @@ public final class GAxisAlignedRectangle
 
 
    @Override
-   public GAxisAlignedRectangle mergedWith(final GAxisAlignedOrthotope<IVector2<?>, ?> that) {
+   public GAxisAlignedRectangle mergedWith(final GAxisAlignedOrthotope<IVector2, ?> that) {
       return new GAxisAlignedRectangle(_lower.min(that._lower), _upper.max(that._upper));
    }
 

@@ -66,12 +66,12 @@ public class GLines2RenderingTheme
 
 
    @Override
-   protected Renderable[] getRenderables(final IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> feature,
+   protected Renderable[] getRenderables(final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                          final GProjection projection,
                                          final Globe globe) {
 
 
-      final IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>> geom = feature.getDefaultGeometry();
+      final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> geom = feature.getDefaultGeometry();
 
 
       if (!(geom instanceof IPointsContainer)) {
@@ -79,12 +79,12 @@ public class GLines2RenderingTheme
       }
 
       @SuppressWarnings("unchecked")
-      final IPointsContainer<IVector2<?>, ?> points = (IPointsContainer<IVector2<?>, ?>) geom;
+      final IPointsContainer<IVector2> points = (IPointsContainer<IVector2>) geom;
 
       final List<LatLon> list = new ArrayList<LatLon>(points.getPointsCount());
 
-      for (final IVector2<?> point : points) {
-         final IVector2<?> transformedPt = projection.transformPoint(GProjection.EPSG_4326, point);
+      for (final IVector2 point : points) {
+         final IVector2 transformedPt = projection.transformPoint(GProjection.EPSG_4326, point);
          final LatLon latlon = new LatLon(Angle.fromRadians(transformedPt.y()), Angle.fromRadians(transformedPt.x()));
          list.add(latlon);
       }

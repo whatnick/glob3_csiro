@@ -69,8 +69,8 @@ public abstract class GNodeAbstract
    protected double                   _pitch;                              // in degrees
 
    //protected double                   _scale;
-   protected IVector3<?>              _scale;
-   protected IVector3<?>              _translation;
+   protected IVector3                 _scale;
+   protected IVector3                 _translation;
 
    private final GTransformationOrder _transformOrder;
 
@@ -97,7 +97,7 @@ public abstract class GNodeAbstract
                            final double roll,
                            final double pitch,
                            final double scale,
-                           final IVector3<?> translation) {
+                           final IVector3 translation) {
       this(name, transformOrder, heading, roll, pitch, scale, scale, scale, translation);
    }
 
@@ -110,7 +110,7 @@ public abstract class GNodeAbstract
                            final double scaleX,
                            final double scaleY,
                            final double scaleZ,
-                           final IVector3<?> translation) {
+                           final IVector3 translation) {
       GAssert.notNull(name, "name");
       GAssert.notNull(transformOrder, "transformOrder");
 
@@ -464,12 +464,12 @@ public abstract class GNodeAbstract
    }
 
 
-   public IVector3<?> getScale() {
+   public IVector3 getScale() {
       return _scale;
    }
 
 
-   public IVector3<?> getTranslation() {
+   public IVector3 getTranslation() {
       return _translation;
    }
 

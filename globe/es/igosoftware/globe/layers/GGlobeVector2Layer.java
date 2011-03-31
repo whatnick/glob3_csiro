@@ -71,22 +71,22 @@ public class GGlobeVector2Layer
          extends
             RenderableLayer
          implements
-            IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> {
+            IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> {
 
-   private final GVector2RenderingTheme                                                                                                       _renderingTheme;
-   private final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> _features;
+   private final GVector2RenderingTheme                                                                                           _renderingTheme;
+   private final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> _features;
 
-   private boolean                                                                                                                            _isInitialized = false;
-   private Sector                                                                                                                             _extent;
+   private boolean                                                                                                                _isInitialized = false;
+   private Sector                                                                                                                 _extent;
 
 
-   private static GVector2RenderingTheme getDefaultRenderer(final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features) {
+   private static GVector2RenderingTheme getDefaultRenderer(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features) {
 
       if (features.isEmpty()) {
          return null;
       }
 
-      final IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>> geometry = features.get(0).getDefaultGeometry();
+      final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> geometry = features.get(0).getDefaultGeometry();
 
       if (geometry instanceof IVector) {
          return new GPoints2RenderingTheme();
@@ -104,13 +104,13 @@ public class GGlobeVector2Layer
 
 
    public GGlobeVector2Layer(final String name,
-                             final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features) {
+                             final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features) {
       this(name, features, getDefaultRenderer(features));
    }
 
 
    public GGlobeVector2Layer(final String name,
-                             final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features,
+                             final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features,
                              final GVector2RenderingTheme rendereringTheme) {
       GAssert.notNull(name, "name");
       GAssert.notNull(features, "features");
@@ -122,8 +122,8 @@ public class GGlobeVector2Layer
       _renderingTheme = rendereringTheme;
 
       if (_features instanceof IGlobeMutableFeatureCollection) {
-         final IGlobeMutableFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> mutableFeatures;
-         mutableFeatures = (IGlobeMutableFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?>) _features;
+         final IGlobeMutableFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> mutableFeatures;
+         mutableFeatures = (IGlobeMutableFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?>) _features;
          mutableFeatures.addChangeListener(new IMutable.ChangeListener() {
             @Override
             public void mutableChanged() {
@@ -143,7 +143,7 @@ public class GGlobeVector2Layer
 
       final GProjection projection = _features.getProjection();
 
-      for (final IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> feature : _features) {
+      for (final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature : _features) {
          for (final Renderable element : _renderingTheme.getRenderables(feature, projection, globe)) {
             addRenderable(element);
          }
@@ -152,7 +152,7 @@ public class GGlobeVector2Layer
 
 
    @Override
-   public IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> getFeaturesCollection() {
+   public IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> getFeaturesCollection() {
       return _features;
    }
 
@@ -168,11 +168,11 @@ public class GGlobeVector2Layer
 
 
    private Sector calculateExtent() {
-      GAxisAlignedOrthotope<IVector2<?>, ?> mergedExtent = null;
+      GAxisAlignedOrthotope<IVector2, ?> mergedExtent = null;
 
-      for (final IGlobeFeature<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> feature : _features) {
-         final IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>> geom = feature.getDefaultGeometry();
-         final GAxisAlignedOrthotope<IVector2<?>, ?> bounds = geom.getBounds().asAxisAlignedOrthotope();
+      for (final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature : _features) {
+         final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> geom = feature.getDefaultGeometry();
+         final GAxisAlignedOrthotope<IVector2, ?> bounds = geom.getBounds().asAxisAlignedOrthotope();
 
          if (mergedExtent == null) {
             mergedExtent = bounds;

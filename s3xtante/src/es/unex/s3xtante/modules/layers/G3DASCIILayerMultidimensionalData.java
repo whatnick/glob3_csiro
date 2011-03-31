@@ -271,7 +271,7 @@ public class G3DASCIILayerMultidimensionalData
       colorsBuffer.rewind();
 
       for (int i = 0; i < pointsCount; i++) {
-         final IVector3<?> point = vertexContainer.getPoint(i);
+         final IVector3 point = vertexContainer.getPoint(i);
          pointsBuffer.put((float) point.x());
          pointsBuffer.put((float) point.y());
          pointsBuffer.put((float) point.z());

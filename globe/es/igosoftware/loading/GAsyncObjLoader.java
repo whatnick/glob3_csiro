@@ -321,7 +321,7 @@ public class GAsyncObjLoader {
    }
 
 
-   private IVector3<?> parsePoint(final String line) {
+   private IVector3 parsePoint(final String line) {
       final XStringTokenizer tokenizer = new XStringTokenizer(line, " ");
 
       final double x = tokenizer.nextDoubleToken();
@@ -332,7 +332,7 @@ public class GAsyncObjLoader {
    }
 
 
-   private IVector3<?> parseNormal(final String line) {
+   private IVector3 parseNormal(final String line) {
       final XStringTokenizer tokenizer = new XStringTokenizer(line, " ");
 
       final double x = tokenizer.nextDoubleToken();
@@ -343,7 +343,7 @@ public class GAsyncObjLoader {
    }
 
 
-   private IVector2<?> parseUV(final String line) {
+   private IVector2 parseUV(final String line) {
       final XStringTokenizer tokenizer = new XStringTokenizer(line, " ");
 
       try {

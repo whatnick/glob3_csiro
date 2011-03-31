@@ -101,7 +101,7 @@ public class GPolygon2DLayer
          extends
             AbstractLayer
          implements
-            IGlobeVector2Layer<IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> {
+            IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> {
 
 
    private static final int    TIMEOUT_FOR_CACHED_RESULTS     = 200;
@@ -461,7 +461,7 @@ public class GPolygon2DLayer
 
       private final Tile                  _parent;
       private final GAxisAlignedRectangle _tileBounds;
-      private final IVector2<?>           _tileBoundsExtent;
+      private final IVector2              _tileBoundsExtent;
       private final String                _id;
       private final GPolygon2DLayer       _layer;
 
@@ -499,7 +499,7 @@ public class GPolygon2DLayer
       private double computeProjectedPixels(final DrawContext dc) {
          //         final LatLon[] tileSectorCorners = _tileSector.getCorners();
 
-         final List<IVector2<?>> tileSectorCorners = _tileBounds.getVertices();
+         final List<IVector2> tileSectorCorners = _tileBounds.getVertices();
 
          final Vec4 firstProjected = GWWUtils.getScreenPoint(dc, tileSectorCorners.get(0));
          double minX = firstProjected.x;
@@ -609,14 +609,14 @@ public class GPolygon2DLayer
          final Tile ancestor = ancestorAndImage._first;
          ancestor.moveUpInCache();
 
-         final IVector2<?> scale = _tileBoundsExtent.div(ancestor._tileBoundsExtent);
+         final IVector2 scale = _tileBoundsExtent.div(ancestor._tileBoundsExtent);
 
          final GVector2D textureExtent = new GVector2D(_layer._attributes._textureWidth, _layer._attributes._textureHeight);
 
-         final IVector2<?> topLeft = _tileBounds._lower.sub(ancestor._tileBounds._lower).scale(scale).div(_tileBoundsExtent).scale(
+         final IVector2 topLeft = _tileBounds._lower.sub(ancestor._tileBounds._lower).scale(scale).div(_tileBoundsExtent).scale(
                   textureExtent);
 
-         final IVector2<?> widthAndHeight = textureExtent.scale(scale);
+         final IVector2 widthAndHeight = textureExtent.scale(scale);
 
          final int width = (int) widthAndHeight.x();
          final int height = (int) widthAndHeight.y();
@@ -708,14 +708,14 @@ public class GPolygon2DLayer
    }
 
 
-   private static final GGlobeStateKeyCache<GAxisAlignedOrthotope<IVector2<?>, ?>, Box>                                                       BOX_CACHE;
+   private static final GGlobeStateKeyCache<GAxisAlignedOrthotope<IVector2, ?>, Box>                                              BOX_CACHE;
 
    static {
-      BOX_CACHE = new GGlobeStateKeyCache<GAxisAlignedOrthotope<IVector2<?>, ?>, Box>(
-               new GGlobeStateKeyCache.Factory<GAxisAlignedOrthotope<IVector2<?>, ?>, Box>() {
+      BOX_CACHE = new GGlobeStateKeyCache<GAxisAlignedOrthotope<IVector2, ?>, Box>(
+               new GGlobeStateKeyCache.Factory<GAxisAlignedOrthotope<IVector2, ?>, Box>() {
                   @Override
                   public Box create(final DrawContext dc,
-                                    final GAxisAlignedOrthotope<IVector2<?>, ?> bounds) {
+                                    final GAxisAlignedOrthotope<IVector2, ?> bounds) {
                      final Globe globe = dc.getView().getGlobe();
                      final double verticalExaggeration = dc.getVerticalExaggeration();
 
@@ -727,34 +727,34 @@ public class GPolygon2DLayer
    }
 
 
-   private Sector                                                                                                                             _polygonsSector;
+   private Sector                                                                                                                 _polygonsSector;
 
 
-   private GPolygon2DRenderer                                                                                                                 _renderer;
-   private final String                                                                                                                       _name;
-   private GAxisAlignedOrthotope<IVector2<?>, ?>                                                                                              _polygonsBounds;
-   private final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> _features;
+   private GPolygon2DRenderer                                                                                                     _renderer;
+   private final String                                                                                                           _name;
+   private GAxisAlignedOrthotope<IVector2, ?>                                                                                     _polygonsBounds;
+   private final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> _features;
 
 
-   private GRenderingAttributes                                                                                                               _attributes;
+   private GRenderingAttributes                                                                                                   _attributes;
 
-   private List<Tile>                                                                                                                         _topTiles;
-   private final List<Tile>                                                                                                                   _currentTiles               = new ArrayList<Tile>();
-
-
-   private int                                                                                                                                _fillColorAlpha             = 127;
-   private int                                                                                                                                _borderColorAlpha           = 255;
-
-   private View                                                                                                                               _lastView;
+   private List<Tile>                                                                                                             _topTiles;
+   private final List<Tile>                                                                                                       _currentTiles               = new ArrayList<Tile>();
 
 
-   private long                                                                                                                               _lastCurrentTilesCalculated = -1;
+   private int                                                                                                                    _fillColorAlpha             = 127;
+   private int                                                                                                                    _borderColorAlpha           = 255;
 
-   private boolean                                                                                                                            _debugRendering             = false;
+   private View                                                                                                                   _lastView;
+
+
+   private long                                                                                                                   _lastCurrentTilesCalculated = -1;
+
+   private boolean                                                                                                                _debugRendering             = false;
 
 
    public GPolygon2DLayer(final String name,
-                          final IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features) {
+                          final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features) {
       GAssert.notNull(name, "name");
       GAssert.notNull(features, "features");
 
@@ -763,8 +763,8 @@ public class GPolygon2DLayer
 
       if (_features.isEditable()) {
          if (features instanceof IGlobeMutableFeatureCollection) {
-            final IGlobeMutableFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> editableFeatures;
-            editableFeatures = (IGlobeMutableFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?>) features;
+            final IGlobeMutableFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> editableFeatures;
+            editableFeatures = (IGlobeMutableFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?>) features;
 
             editableFeatures.addChangeListener(new IMutable.ChangeListener() {
                @Override
@@ -818,7 +818,7 @@ public class GPolygon2DLayer
    }
 
 
-   private static List<GAxisAlignedRectangle> createTopLevelSectors(final GAxisAlignedOrthotope<IVector2<?>, ?> polygonsSector) {
+   private static List<GAxisAlignedRectangle> createTopLevelSectors(final GAxisAlignedOrthotope<IVector2, ?> polygonsSector) {
 
       final List<GAxisAlignedRectangle> allTopLevelSectors = createTopLevelSectors();
 
@@ -1450,7 +1450,7 @@ public class GPolygon2DLayer
 
 
    @Override
-   public IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> getFeaturesCollection() {
+   public IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> getFeaturesCollection() {
       return _features;
    }
 

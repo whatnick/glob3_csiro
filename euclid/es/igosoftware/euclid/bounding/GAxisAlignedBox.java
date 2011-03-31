@@ -52,31 +52,30 @@ import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
-import es.igosoftware.euclid.vector.IVectorTransformer;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.XStringTokenizer;
 
 
 public final class GAxisAlignedBox
          extends
-            GAxisAlignedOrthotope<IVector3<?>, GAxisAlignedBox>
+            GAxisAlignedOrthotope<IVector3, GAxisAlignedBox>
          implements
             IBounds3D<GAxisAlignedBox>,
-            IFiniteBounds<IVector3<?>, GAxisAlignedBox> {
+            IFiniteBounds<IVector3, GAxisAlignedBox> {
 
    private static final long           serialVersionUID = 1L;
 
    public static final GAxisAlignedBox EMPTY            = new GAxisAlignedBox(GVector3D.ZERO, GVector3D.ZERO);
 
 
-   public static <PointT extends IVector3<?>> GAxisAlignedBox load(final Class<PointT> pointClass,
-                                                                   final DataInputStream input) throws IOException {
+   public static <PointT extends IVector3> GAxisAlignedBox load(final Class<PointT> pointClass,
+                                                                final DataInputStream input) throws IOException {
 
       try {
          final Method loadMethod = pointClass.getMethod("load", DataInputStream.class);
 
-         final IVector3<?> lower = (IVector3<?>) loadMethod.invoke(null, input);
-         final IVector3<?> upper = (IVector3<?>) loadMethod.invoke(null, input);
+         final IVector3 lower = (IVector3) loadMethod.invoke(null, input);
+         final IVector3 upper = (IVector3) loadMethod.invoke(null, input);
          return new GAxisAlignedBox(lower, upper);
       }
       catch (final Exception e) {
@@ -85,8 +84,8 @@ public final class GAxisAlignedBox
    }
 
 
-   public static <PointT extends IVector3<?>> GAxisAlignedBox load(final Class<PointT> pointClass,
-                                                                   final String fileName) throws IOException {
+   public static <PointT extends IVector3> GAxisAlignedBox load(final Class<PointT> pointClass,
+                                                                final String fileName) throws IOException {
       DataInputStream input = null;
 
       try {
@@ -102,7 +101,7 @@ public final class GAxisAlignedBox
    }
 
 
-   public static GAxisAlignedBox minimumBoundingBox(final Collection<? extends IPointsContainer<IVector3<?>, ?>> pointsContainers) {
+   public static GAxisAlignedBox minimumBoundingBox(final Collection<? extends IPointsContainer<IVector3>> pointsContainers) {
       double minX = Double.POSITIVE_INFINITY;
       double minY = Double.POSITIVE_INFINITY;
       double minZ = Double.POSITIVE_INFINITY;
@@ -111,8 +110,8 @@ public final class GAxisAlignedBox
       double maxY = Double.NEGATIVE_INFINITY;
       double maxZ = Double.NEGATIVE_INFINITY;
 
-      for (final IPointsContainer<IVector3<?>, ?> pointsContainer : pointsContainers) {
-         for (final IVector3<?> point : pointsContainer) {
+      for (final IPointsContainer<IVector3> pointsContainer : pointsContainers) {
+         for (final IVector3 point : pointsContainer) {
             final double x = point.x();
             final double y = point.y();
             final double z = point.z();
@@ -127,8 +126,8 @@ public final class GAxisAlignedBox
          }
       }
 
-      final IVector3<?> lower = new GVector3D(minX, minY, minZ);
-      final IVector3<?> upper = new GVector3D(maxX, maxY, maxZ);
+      final IVector3 lower = new GVector3D(minX, minY, minZ);
+      final IVector3 upper = new GVector3D(maxX, maxY, maxZ);
       return new GAxisAlignedBox(lower, upper);
    }
 
@@ -143,8 +142,8 @@ public final class GAxisAlignedBox
       double maxZ = Double.NEGATIVE_INFINITY;
 
       for (final GAxisAlignedBox box : boxes) {
-         final IVector3<?> currentLower = box._lower;
-         final IVector3<?> currentUpper = box._upper;
+         final IVector3 currentLower = box._lower;
+         final IVector3 currentUpper = box._upper;
 
          minX = Math.min(minX, currentLower.x());
          minY = Math.min(minY, currentLower.y());
@@ -160,8 +159,8 @@ public final class GAxisAlignedBox
          return GAxisAlignedBox.EMPTY;
       }
 
-      final IVector3<?> lower = new GVector3D(minX, minY, minZ);
-      final IVector3<?> upper = new GVector3D(maxX, maxY, maxZ);
+      final IVector3 lower = new GVector3D(minX, minY, minZ);
+      final IVector3 upper = new GVector3D(maxX, maxY, maxZ);
       return new GAxisAlignedBox(lower, upper);
    }
 
@@ -181,8 +180,8 @@ public final class GAxisAlignedBox
       double maxZ = Double.NEGATIVE_INFINITY;
 
       for (final GAxisAlignedBox box : boxes) {
-         final IVector3<?> currentLower = box._lower;
-         final IVector3<?> currentUpper = box._upper;
+         final IVector3 currentLower = box._lower;
+         final IVector3 currentUpper = box._upper;
 
          minX = Math.min(minX, currentLower.x());
          minY = Math.min(minY, currentLower.y());
@@ -204,12 +203,12 @@ public final class GAxisAlignedBox
    }
 
 
-   public static GAxisAlignedBox minimumBoundingBox(final Iterable<? extends IVector3<?>> points) {
+   public static GAxisAlignedBox minimumBoundingBox(final Iterable<? extends IVector3> points) {
       return minimumBoundingBox(points.iterator());
    }
 
 
-   public static GAxisAlignedBox minimumBoundingBox(final Iterator<? extends IVector3<?>> iterator) {
+   public static GAxisAlignedBox minimumBoundingBox(final Iterator<? extends IVector3> iterator) {
       double minX = Double.POSITIVE_INFINITY;
       double minY = Double.POSITIVE_INFINITY;
       double minZ = Double.POSITIVE_INFINITY;
@@ -219,7 +218,7 @@ public final class GAxisAlignedBox
       double maxZ = Double.NEGATIVE_INFINITY;
 
       while (iterator.hasNext()) {
-         final IVector3<?> point = iterator.next();
+         final IVector3 point = iterator.next();
          final double x = point.x();
          final double y = point.y();
          final double z = point.z();
@@ -233,15 +232,15 @@ public final class GAxisAlignedBox
          maxZ = Math.max(maxZ, z);
       }
 
-      final IVector3<?> lower = new GVector3D(minX, minY, minZ);
-      final IVector3<?> upper = new GVector3D(maxX, maxY, maxZ);
+      final IVector3 lower = new GVector3D(minX, minY, minZ);
+      final IVector3 upper = new GVector3D(maxX, maxY, maxZ);
 
       return new GAxisAlignedBox(lower, upper);
    }
 
 
-   public static <PointT extends IVector3<?>> GAxisAlignedBox parseString(final Class<PointT> pointClass,
-                                                                          final String string) throws IOException {
+   public static <PointT extends IVector3> GAxisAlignedBox parseString(final Class<PointT> pointClass,
+                                                                       final String string) throws IOException {
       try {
          final String[] tokens = XStringTokenizer.getAllTokens(string, "_");
          if (tokens.length != 2) {
@@ -250,8 +249,8 @@ public final class GAxisAlignedBox
 
          final Method parseMethod = pointClass.getMethod("parseString", String.class);
 
-         final IVector3<?> lower = (IVector3<?>) parseMethod.invoke(null, tokens[0]);
-         final IVector3<?> upper = (IVector3<?>) parseMethod.invoke(null, tokens[1]);
+         final IVector3 lower = (IVector3) parseMethod.invoke(null, tokens[0]);
+         final IVector3 upper = (IVector3) parseMethod.invoke(null, tokens[1]);
          return new GAxisAlignedBox(lower, upper);
       }
       catch (final Exception e) {
@@ -260,8 +259,8 @@ public final class GAxisAlignedBox
    }
 
 
-   public GAxisAlignedBox(final IVector3<?> lower,
-                          final IVector3<?> upper) {
+   public GAxisAlignedBox(final IVector3 lower,
+                          final IVector3 upper) {
       super(lower, upper);
    }
 
@@ -273,7 +272,7 @@ public final class GAxisAlignedBox
 
 
    @Override
-   public GAxisAlignedBox expandedByDistance(final IVector3<?> delta) {
+   public GAxisAlignedBox expandedByDistance(final IVector3 delta) {
       return new GAxisAlignedBox(_lower.sub(delta), _upper.add(delta));
    }
 
@@ -291,8 +290,8 @@ public final class GAxisAlignedBox
 
 
    @Override
-   public List<IVector3<?>> getVertices() {
-      final List<IVector3<?>> v = new ArrayList<IVector3<?>>(8);
+   public List<IVector3> getVertices() {
+      final List<IVector3> v = new ArrayList<IVector3>(8);
 
       v.add(new GVector3D(_lower.x(), _lower.y(), _lower.z()));
       v.add(new GVector3D(_lower.x(), _lower.y(), _upper.z()));
@@ -319,14 +318,14 @@ public final class GAxisAlignedBox
    //         return this;
    //      }
    //
-   //      final IVector3<?> projectedLower = _lower.reproject(sourceProjection, targetProjection);
-   //      final IVector3<?> projectedUpper = _upper.reproject(sourceProjection, targetProjection);
+   //      final IVector3 projectedLower = _lower.reproject(sourceProjection, targetProjection);
+   //      final IVector3 projectedUpper = _upper.reproject(sourceProjection, targetProjection);
    //      return new GAxisAlignedBox(projectedLower, projectedUpper);
    //   }
 
 
    private GAxisAlignedBox splitByXY(final int key,
-                                     final IVector2<?> pivot) {
+                                     final IVector2 pivot) {
       final int xKey = key & 1;
       final int yKey = key & 2;
 
@@ -347,7 +346,7 @@ public final class GAxisAlignedBox
 
 
    private GAxisAlignedBox splitByXYZ(final int key,
-                                      final IVector3<?> pivot) {
+                                      final IVector3 pivot) {
       final int xKey = key & 1;
       final int yKey = key & 2;
       final int zKey = key & 4;
@@ -463,7 +462,7 @@ public final class GAxisAlignedBox
    }
 
 
-   public GAxisAlignedBox[] subdividedByXY(final IVector2<?> pivot) {
+   public GAxisAlignedBox[] subdividedByXY(final IVector2 pivot) {
       final GAxisAlignedBox[] result = new GAxisAlignedBox[4];
 
       for (int i = 0; i < 4; i++) {
@@ -621,7 +620,7 @@ public final class GAxisAlignedBox
    }
 
 
-   public GAxisAlignedBox[] subdividedByXYZ(final IVector3<?> pivot) {
+   public GAxisAlignedBox[] subdividedByXYZ(final IVector3 pivot) {
       final GAxisAlignedBox[] result = new GAxisAlignedBox[8];
 
       for (int i = 0; i < 8; i++) {
@@ -639,14 +638,14 @@ public final class GAxisAlignedBox
 
 
    @Override
-   public boolean touchesBounds(final IBounds<IVector3<?>, ?> that) {
+   public boolean touchesBounds(final IBounds<IVector3, ?> that) {
       return touches((IBounds3D<?>) that);
    }
 
 
    @Override
    public boolean touchesWithBall(final GBall ball) {
-      final IVector3<?> ballCenter = ball._center;
+      final IVector3 ballCenter = ball._center;
       final double ballRadius = ball._radius;
       return (Math.abs(_center.x() - ballCenter.x()) < (ballRadius + _extent.x()))
              && (Math.abs(_center.y() - ballCenter.y()) < (ballRadius + _extent.y()))
@@ -667,13 +666,7 @@ public final class GAxisAlignedBox
 
 
    @Override
-   public GAxisAlignedBox transformedBy(final IVectorTransformer<IVector3<?>> transformer) {
-      return new GAxisAlignedBox(_lower.transformedBy(transformer), _upper.transformedBy(transformer));
-   }
-
-
-   @Override
-   public GAxisAlignedBox translatedBy(final IVector3<?> delta) {
+   public GAxisAlignedBox translatedBy(final IVector3 delta) {
       return new GAxisAlignedBox(_lower.add(delta), _upper.add(delta));
    }
 
@@ -681,7 +674,7 @@ public final class GAxisAlignedBox
    @Override
    public boolean touchesWithCapsule3D(final GCapsule3D capsule) {
 
-      final IVector3<?> segmentClosestPoint = capsule._segment.closestPoint(_center);
+      final IVector3 segmentClosestPoint = capsule._segment.closestPoint(_center);
       final double capsuleRadius = capsule._radius;
 
       return (Math.abs(_center.x() - segmentClosestPoint.x()) < (capsuleRadius + _extent.x()))
@@ -730,13 +723,13 @@ public final class GAxisAlignedBox
 
 
    @Override
-   public boolean touches(final GAxisAlignedOrthotope<IVector3<?>, ?> that) {
+   public boolean touches(final GAxisAlignedOrthotope<IVector3, ?> that) {
       return touchesWithBox((GAxisAlignedBox) that);
    }
 
 
    @Override
-   public GAxisAlignedBox mergedWith(final GAxisAlignedOrthotope<IVector3<?>, ?> that) {
+   public GAxisAlignedBox mergedWith(final GAxisAlignedOrthotope<IVector3, ?> that) {
       return new GAxisAlignedBox(_lower.min(that._lower), _upper.max(that._upper));
    }
 

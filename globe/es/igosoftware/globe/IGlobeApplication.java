@@ -121,6 +121,9 @@ public interface IGlobeApplication {
                     final double elevation);
 
 
+   public void goToHeading(final Angle heading);
+
+
    public void logInfo(final String msg);
 
 

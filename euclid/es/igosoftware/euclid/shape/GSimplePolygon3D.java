@@ -46,7 +46,6 @@ import es.igosoftware.euclid.utils.GTriangulate;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
-import es.igosoftware.euclid.vector.IVectorTransformer;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.ITransformer;
@@ -54,9 +53,9 @@ import es.igosoftware.util.ITransformer;
 
 public final class GSimplePolygon3D
          extends
-            GSimplePolytope<IVector3<?>, GSegment3D, GSimplePolygon3D, GAxisAlignedBox>
+            GSimplePolytope<IVector3, GSegment3D, GAxisAlignedBox>
          implements
-            IPolygon3D<GSimplePolygon3D> {
+            IPolygon3D {
 
 
    private static final long serialVersionUID = 1L;
@@ -69,7 +68,7 @@ public final class GSimplePolygon3D
 
 
    public GSimplePolygon3D(final boolean validate,
-                           final IVector3<?>... points) {
+                           final IVector3... points) {
       super(validate, points);
 
       _plane = initializePlane();
@@ -77,7 +76,7 @@ public final class GSimplePolygon3D
 
 
    public GSimplePolygon3D(final boolean validate,
-                           final List<IVector3<?>> points) {
+                           final List<IVector3> points) {
       super(validate, points);
 
       _plane = initializePlane();
@@ -97,7 +96,7 @@ public final class GSimplePolygon3D
       try {
          final GPlane plane = GPlane.getBestFitPlane(_points);
 
-         for (final IVector3<?> point : _points) {
+         for (final IVector3 point : _points) {
             if (!plane.contains(point)) {
                throw new IllegalArgumentException("Points are not coplanar");
             }
@@ -116,7 +115,7 @@ public final class GSimplePolygon3D
 
    @Override
    protected List<GSegment3D> initializeEdges() {
-      final List<IVector3<?>> points = getPoints();
+      final List<IVector3> points = getPoints();
       final int pointsCount = points.size();
 
       final GSegment3D[] edges = new GSegment3D[pointsCount];
@@ -143,7 +142,7 @@ public final class GSimplePolygon3D
 
 
    @Override
-   public boolean contains(final IVector3<?> point) {
+   public boolean contains(final IVector3 point) {
       if (!getBounds().contains(point)) {
          return false;
       }
@@ -169,28 +168,28 @@ public final class GSimplePolygon3D
 
 
    private GSimplePolygon2D initializePolygon2D() {
-      final List<IVector2<?>> points2d;
+      final List<IVector2> points2d;
 
       if (_plane.isCloseToPlaneXY()) {
-         points2d = GCollections.collect(_points, new ITransformer<IVector3<?>, IVector2<?>>() {
+         points2d = GCollections.collect(_points, new ITransformer<IVector3, IVector2>() {
             @Override
-            public IVector2<?> transform(final IVector3<?> element) {
+            public IVector2 transform(final IVector3 element) {
                return new GVector2D(element.x(), element.y());
             }
          });
       }
       else if (_plane.isCloseToPlaneXZ()) {
-         points2d = GCollections.collect(_points, new ITransformer<IVector3<?>, IVector2<?>>() {
+         points2d = GCollections.collect(_points, new ITransformer<IVector3, IVector2>() {
             @Override
-            public IVector2<?> transform(final IVector3<?> element) {
+            public IVector2 transform(final IVector3 element) {
                return new GVector2D(element.x(), element.z());
             }
          });
       }
       else /*if (_plane.isCloseToPlaneYZ())*/{
-         points2d = GCollections.collect(_points, new ITransformer<IVector3<?>, IVector2<?>>() {
+         points2d = GCollections.collect(_points, new ITransformer<IVector3, IVector2>() {
             @Override
-            public IVector2<?> transform(final IVector3<?> element) {
+            public IVector2 transform(final IVector3 element) {
                return new GVector2D(element.y(), element.z());
             }
          });
@@ -201,10 +200,10 @@ public final class GSimplePolygon3D
 
 
    @Override
-   public IPolygon3D<?> createSimplified(final double capsRadiansTolerance) {
-      final LinkedList<IVector3<?>> points = new LinkedList<IVector3<?>>(getPoints());
+   public IPolygon3D createSimplified(final double capsRadiansTolerance) {
+      final LinkedList<IVector3> points = new LinkedList<IVector3>(getPoints());
 
-      List<IVector3<?>> previousPoints = new ArrayList<IVector3<?>>(points);
+      List<IVector3> previousPoints = new ArrayList<IVector3>(points);
 
       boolean changed;
       do {
@@ -222,9 +221,9 @@ public final class GSimplePolygon3D
 
             final GTriangle3D triangle = new GTriangle3D(points.get(prePreviousI), points.get(previousI), points.get(i));
             if (triangle.isCaps(capsRadiansTolerance)) {
-               previousPoints = new ArrayList<IVector3<?>>(points);
+               previousPoints = new ArrayList<IVector3>(points);
 
-               final IVector3<?> average = points.get(i).add(points.get(previousI)).div(2);
+               final IVector3 average = points.get(i).add(points.get(previousI)).div(2);
                points.set(i, average);
                points.remove(previousI);
 
@@ -266,7 +265,7 @@ public final class GSimplePolygon3D
 
 
    @Override
-   public double squaredDistance(final IVector3<?> point) {
+   public double squaredDistance(final IVector3 point) {
       if (contains(point)) {
          return 0;
       }
@@ -287,12 +286,6 @@ public final class GSimplePolygon3D
    @Override
    public GSimplePolygon3D getHull() {
       return this;
-   }
-
-
-   @Override
-   public GSimplePolygon3D transformedBy(final IVectorTransformer<IVector3<?>> transformer) {
-      return new GSimplePolygon3D(true, GCollections.collect(_points, transformer));
    }
 
 

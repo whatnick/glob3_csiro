@@ -49,7 +49,7 @@ import es.igosoftware.util.IPredicate;
 import es.igosoftware.util.ITransformer;
 
 
-public final class GCompositeVertexContainer<VectorT extends IVector<VectorT, ?, ?>>
+public final class GCompositeVertexContainer<VectorT extends IVector<VectorT, ?>>
          extends
             GCommonCompositeVertexContainer<VectorT,
 

@@ -42,13 +42,13 @@ import es.igosoftware.euclid.vector.IVector;
 
 public interface IBounds<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
 GeometryT extends IBounds<VectorT, GeometryT>
 
 >
          extends
-            IBoundedGeometry<VectorT, GeometryT, GeometryT> {
+            IBoundedGeometry<VectorT, GeometryT> {
 
 
    public boolean touches(final GeometryT that);

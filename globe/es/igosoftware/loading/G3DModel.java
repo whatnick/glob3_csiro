@@ -726,7 +726,7 @@ public class G3DModel {
    }
 
 
-   public List<IVector3<?>> getVertices() {
+   public List<IVector3> getVertices() {
       return _modelData.getVertices();
    }
 
@@ -926,9 +926,9 @@ public class G3DModel {
       }
 
       final GModelData modelData = mesh.getModel();
-      final List<IVector3<?>> normals = modelData.getNormals();
-      final List<IVector2<?>> texCoords = modelData.getTexCoords();
-      final List<IVector3<?>> vertices = modelData.getVertices();
+      final List<IVector3> normals = modelData.getNormals();
+      final List<IVector2> texCoords = modelData.getTexCoords();
+      final List<IVector3> vertices = modelData.getVertices();
 
       for (final GFace face : mesh.getFaces()) {
          final int verticesCount = face._vertexIndices.length;
@@ -949,7 +949,7 @@ public class G3DModel {
             for (int i = 0; i < verticesCount; i++) {
                if (mesh._hasNormals) {
                   final int normalIndex = face._normalIndices[i];
-                  final IVector3<?> normal = normals.get(normalIndex);
+                  final IVector3 normal = normals.get(normalIndex);
                   if (normal != null) {
                      gl.glNormal3f((float) normal.x(), (float) normal.y(), (float) normal.z());
                   }
@@ -957,14 +957,14 @@ public class G3DModel {
 
                if ((texture != null) && !texCoords.isEmpty()) {
                   final int textureIndex = face._texCoordIndices[i];
-                  final IVector2<?> uv = texCoords.get(textureIndex);
+                  final IVector2 uv = texCoords.get(textureIndex);
                   if (uv != null) {
                      gl.glTexCoord2f((float) uv.x(), (float) uv.y());
                   }
                }
 
                final int vertexIndex = face._vertexIndices[i];
-               final IVector3<?> vertex = vertices.get(vertexIndex);
+               final IVector3 vertex = vertices.get(vertexIndex);
                gl.glVertex3f((float) vertex.x(), (float) vertex.y(), (float) vertex.z());
             }
          }
@@ -1005,9 +1005,9 @@ public class G3DModel {
       renderUnit.prepareGL(dc);
 
       final GModelData modelData = renderUnit._meshes.get(0).getModel();
-      final List<IVector3<?>> normals = modelData.getNormals();
-      final List<IVector2<?>> texCoords = modelData.getTexCoords();
-      final List<IVector3<?>> vertices = modelData.getVertices();
+      final List<IVector3> normals = modelData.getNormals();
+      final List<IVector2> texCoords = modelData.getTexCoords();
+      final List<IVector3> vertices = modelData.getVertices();
 
       final GL gl = dc.getGL();
 
@@ -1043,7 +1043,7 @@ public class G3DModel {
                for (int i = 0; i < verticesCount; i++) {
                   if (mesh._hasNormals) {
                      final int normalIndex = face._normalIndices[i];
-                     final IVector3<?> normal = normals.get(normalIndex);
+                     final IVector3 normal = normals.get(normalIndex);
                      if (normal != null) {
                         gl.glNormal3f((float) normal.x(), (float) normal.y(), (float) normal.z());
                      }
@@ -1051,14 +1051,14 @@ public class G3DModel {
 
                   if (!texCoords.isEmpty()) {
                      final int textureIndex = face._texCoordIndices[i];
-                     final IVector2<?> uv = texCoords.get(textureIndex);
+                     final IVector2 uv = texCoords.get(textureIndex);
                      if (uv != null) {
                         gl.glTexCoord2f((float) uv.x(), (float) uv.y());
                      }
                   }
 
                   final int vertexIndex = face._vertexIndices[i];
-                  final IVector3<?> vertex = vertices.get(vertexIndex);
+                  final IVector3 vertex = vertices.get(vertexIndex);
                   gl.glVertex3f((float) vertex.x(), (float) vertex.y(), (float) vertex.z());
                }
             }

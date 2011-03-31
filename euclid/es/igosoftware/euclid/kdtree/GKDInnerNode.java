@@ -49,7 +49,7 @@ import es.igosoftware.util.GHolder;
 import es.igosoftware.util.GProgress;
 
 
-public class GKDInnerNode<VectorT extends IVector<VectorT, ?, ?>, VertexT extends IVertexContainer.Vertex<VectorT>>
+public class GKDInnerNode<VectorT extends IVector<VectorT, ?>, VertexT extends IVertexContainer.Vertex<VectorT>>
          extends
             GKDNode<VectorT, VertexT> {
 
@@ -202,14 +202,14 @@ public class GKDInnerNode<VectorT extends IVector<VectorT, ?, ?>, VertexT extend
    //
    //      return IVertexContainer.WeightedVertex.getAverage(nodesAverages);
    //
-   //      //      final List<Future<WeightedVertex<IVector3<?>>>> futures = new ArrayList<Future<WeightedVertex<IVector3<?>>>>(
+   //      //      final List<Future<WeightedVertex<IVector3>>> futures = new ArrayList<Future<WeightedVertex<IVector3>>>(
    //      //               _children.length);
    //      //      final ExecutorService executor = GConcurrent.getDefaultExecutor();
    //      //      for (final GOTNode child : _children) {
    //      //         if (node != null) {
-   //      //            final Future<WeightedVertex<IVector3<?>>> future = executor.submit(new Callable<WeightedVertex<IVector3<?>>>() {
+   //      //            final Future<WeightedVertex<IVector3>> future = executor.submit(new Callable<WeightedVertex<IVector3>>() {
    //      //               @Override
-   //      //               public WeightedVertex<IVector3<?>> call() throws Exception {
+   //      //               public WeightedVertex<IVector3> call() throws Exception {
    //      //                  return node.getAverageVertex();
    //      //               }
    //      //            });

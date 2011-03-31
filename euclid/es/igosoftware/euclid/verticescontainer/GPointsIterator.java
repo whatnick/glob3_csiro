@@ -42,7 +42,7 @@ import java.util.NoSuchElementException;
 import es.igosoftware.euclid.vector.IVector;
 
 
-final class GPointsIterator<VectorT extends IVector<VectorT, ?, ?>>
+final class GPointsIterator<VectorT extends IVector<VectorT, ?>>
          implements
             Iterator<VectorT> {
 

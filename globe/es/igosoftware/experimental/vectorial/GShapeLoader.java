@@ -76,9 +76,9 @@ import es.igosoftware.util.GProgress;
 public class GShapeLoader {
 
 
-   private static List<IVector2<?>> convert(final Coordinate[] coordinates,
-                                            final GProjection projection) {
-      final List<IVector2<?>> result = new ArrayList<IVector2<?>>(coordinates.length);
+   private static List<IVector2> convert(final Coordinate[] coordinates,
+                                         final GProjection projection) {
+      final List<IVector2> result = new ArrayList<IVector2>(coordinates.length);
 
       for (final Coordinate coordinate : coordinates) {
          if (projection.isLatLong()) {
@@ -93,14 +93,14 @@ public class GShapeLoader {
    }
 
 
-   private static List<IVector2<?>> removeLastIfRepeated(final List<IVector2<?>> points) {
+   private static List<IVector2> removeLastIfRepeated(final List<IVector2> points) {
       if (points.size() < 2) {
          return points;
       }
 
-      final IVector2<?> first = points.get(0);
+      final IVector2 first = points.get(0);
       final int lastIndex = points.size() - 1;
-      final IVector2<?> last = points.get(lastIndex);
+      final IVector2 last = points.get(lastIndex);
       if (first.closeTo(last)) {
          return points.subList(0, lastIndex - 1);
       }
@@ -109,13 +109,13 @@ public class GShapeLoader {
    }
 
 
-   private static List<IVector2<?>> removeConsecutiveEqualsPoints(final List<IVector2<?>> points) {
+   private static List<IVector2> removeConsecutiveEqualsPoints(final List<IVector2> points) {
       final int pointsCount = points.size();
-      final ArrayList<IVector2<?>> result = new ArrayList<IVector2<?>>(pointsCount);
+      final ArrayList<IVector2> result = new ArrayList<IVector2>(pointsCount);
 
       for (int i = 0; i < pointsCount; i++) {
-         final IVector2<?> current = points.get(i);
-         final IVector2<?> next = points.get((i + 1) % pointsCount);
+         final IVector2 current = points.get(i);
+         final IVector2 next = points.get((i + 1) % pointsCount);
          if (!current.closeTo(next)) {
             result.add(current);
          }
@@ -126,16 +126,16 @@ public class GShapeLoader {
    }
 
 
-   public static IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> readFeatures(final File file,
-                                                                                                                                                 final GProjection projection)
-                                                                                                                                                                              throws IOException {
+   public static IGlobeFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> readFeatures(final File file,
+                                                                                                                                     final GProjection projection)
+                                                                                                                                                                  throws IOException {
       return readFeatures(GFileName.fromFile(file), projection);
    }
 
 
-   public static IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> readFeatures(final GFileName fileName,
-                                                                                                                                                 final GProjection projection)
-                                                                                                                                                                              throws IOException {
+   public static IGlobeFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> readFeatures(final GFileName fileName,
+                                                                                                                                     final GProjection projection)
+                                                                                                                                                                  throws IOException {
       final File file = fileName.asFile();
       if (!file.exists()) {
          throw new IOException("File not found!");
@@ -154,7 +154,7 @@ public class GShapeLoader {
       //      final GIntHolder validVerticesCounter = new GIntHolder(0);
 
       final int featuresCount = featuresCollection.size();
-      final ArrayList<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>> euclidFeatures = new ArrayList<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>>(
+      final ArrayList<IGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> euclidFeatures = new ArrayList<IGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>>(
                featuresCount);
 
 
@@ -186,7 +186,7 @@ public class GShapeLoader {
                final com.vividsolutions.jts.geom.Polygon jtsPolygon = (com.vividsolutions.jts.geom.Polygon) multipolygon.getGeometryN(i);
 
                try {
-                  final IPolygon2D<?> outerEuclidPolygon = createPolygon(jtsPolygon.getCoordinates(), projection);
+                  final IPolygon2D outerEuclidPolygon = createPolygon(jtsPolygon.getCoordinates(), projection);
 
                   final int holesCount = jtsPolygon.getNumInteriorRing();
                   if (holesCount == 0) {
@@ -194,12 +194,12 @@ public class GShapeLoader {
                   }
                   else {
 
-                     final List<IPolygon2D<?>> euclidHoles = new ArrayList<IPolygon2D<?>>(holesCount);
+                     final List<IPolygon2D> euclidHoles = new ArrayList<IPolygon2D>(holesCount);
                      for (int j = 0; j < holesCount; j++) {
                         final LineString jtsHole = jtsPolygon.getInteriorRingN(j);
 
                         try {
-                           final IPolygon2D<?> euclidHole = createPolygon(jtsHole.getCoordinates(), projection);
+                           final IPolygon2D euclidHole = createPolygon(jtsHole.getCoordinates(), projection);
                            euclidHoles.add(euclidHole);
                         }
                         catch (final IllegalArgumentException e) {
@@ -207,7 +207,7 @@ public class GShapeLoader {
                         }
                      }
 
-                     final IPolygon2D<?> euclidPolygon;
+                     final IPolygon2D euclidPolygon;
                      if (euclidHoles.isEmpty()) {
                         euclidPolygon = outerEuclidPolygon;
                      }
@@ -236,7 +236,7 @@ public class GShapeLoader {
                final com.vividsolutions.jts.geom.LineString jtsPolygon = (com.vividsolutions.jts.geom.LineString) multiline.getGeometryN(i);
 
                try {
-                  final IPolygon2D<?> euclidLines = createLine(jtsPolygon.getCoordinates(), projection);
+                  final IPolygon2D euclidLines = createLine(jtsPolygon.getCoordinates(), projection);
 
                   euclidFeatures.add(createFeature(euclidLines, feature));
                }
@@ -250,7 +250,7 @@ public class GShapeLoader {
          else if (type.getBinding() == com.vividsolutions.jts.geom.Point.class) {
             final com.vividsolutions.jts.geom.Point point = (com.vividsolutions.jts.geom.Point) geometryAttribute.getValue();
 
-            final IVector2<?> euclidPoint = createPoint(point.getCoordinate(), projection);
+            final IVector2 euclidPoint = createPoint(point.getCoordinate(), projection);
 
             euclidFeatures.add(createFeature(euclidPoint, feature));
 
@@ -295,38 +295,38 @@ public class GShapeLoader {
       }
 
 
-      return new GListFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>(
+      return new GListFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>(
                GProjection.EPSG_4326, fields, euclidFeatures, GIOUtils.getUniqueID(file));
    }
 
 
-   private static IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> createFeature(final IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>> geometry,
-                                                                                                                                      final SimpleFeature feature) {
-      return new GGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>>(geometry,
+   private static IGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> createFeature(final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> geometry,
+                                                                                                                          final SimpleFeature feature) {
+      return new GGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>(geometry,
                feature.getAttributes());
    }
 
 
-   private static IPolygon2D<?> createPolygon(final Coordinate[] jtsCoordinates,
-                                              final GProjection projection) {
-      final List<IVector2<?>> points = removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeLastIfRepeated(convert(
+   private static IPolygon2D createPolygon(final Coordinate[] jtsCoordinates,
+                                           final GProjection projection) {
+      final List<IVector2> points = removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeLastIfRepeated(convert(
                jtsCoordinates, projection))))));
 
       return GShape.createPolygon2(false, points);
    }
 
 
-   private static IPolygon2D<?> createLine(final Coordinate[] jtsCoordinates,
-                                           final GProjection projection) {
-      final List<IVector2<?>> points = removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeLastIfRepeated(convert(
+   private static IPolygon2D createLine(final Coordinate[] jtsCoordinates,
+                                        final GProjection projection) {
+      final List<IVector2> points = removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeLastIfRepeated(convert(
                jtsCoordinates, projection))))));
 
       return GShape.createLine2(false, points);
    }
 
 
-   private static IVector2<?> createPoint(final Coordinate coordinate,
-                                          final GProjection projection) {
+   private static IVector2 createPoint(final Coordinate coordinate,
+                                       final GProjection projection) {
 
       if (projection.isLatLong()) {
          return new GVector2D(Math.toRadians(coordinate.x), Math.toRadians(coordinate.y));
@@ -340,7 +340,7 @@ public class GShapeLoader {
       System.out.println("GShapeLoader 0.1");
       System.out.println("----------------\n");
 
-      final IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features = GShapeLoader.readFeatures(
+      final IGlobeFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features = GShapeLoader.readFeatures(
                GFileName.absolute("home", "dgd", "Desktop", "sample-shp", "shp", "great_britain.shp", "roads.shp"),
                GProjection.EPSG_4326);
 

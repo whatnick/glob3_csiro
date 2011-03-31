@@ -34,14 +34,19 @@
 */
 
 
-package es.igosoftware.globe.layers;
+package es.igosoftware.globe.layers.hud;
 
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.media.opengl.GL;
 
@@ -49,11 +54,11 @@ import com.sun.opengl.util.texture.Texture;
 import com.sun.opengl.util.texture.TextureCoords;
 import com.sun.opengl.util.texture.TextureIO;
 
+import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GLogger;
-import gov.nasa.worldwind.exception.WWRuntimeException;
+import es.igosoftware.util.GMath;
 import gov.nasa.worldwind.geom.Vec4;
 import gov.nasa.worldwind.render.DrawContext;
-import gov.nasa.worldwind.util.Logging;
 
 
 public class GHUDIcon
@@ -71,45 +76,30 @@ public class GHUDIcon
    }
 
 
-   public static enum ResizeBehavior {
-      RESIZE_STRETCH,
-      RESIZE_SHRINK_ONLY,
-      RESIZE_KEEP_FIXED_SIZE;
-   }
+   private String                  _iconFileName;
+   private int                     _iconWidth;
+   private int                     _iconHeight;
+   private final GHUDIcon.Position _position;
+   private int                     _borderWidth     = 20;
+   private int                     _borderHeight    = 20;
+   private float                   _opacity         = 0.7f;
 
+   private boolean                 _isEnable        = true;
+   private double                  _distanceFromEye = 0;
 
-   private String               _iconFileName;
-   private int                  _iconWidth;
-   private int                  _iconHeight;
-   private final double         _iconScale       = 1.0;
-   private final double         _toViewportScale = 1.0;
-   private final ResizeBehavior _resizeBehavior;
-   private final Position       _position;
-   private int                  _borderWidth     = 20;
-   private int                  _borderHeight    = 20;
-   private double               _opacity         = 1;
+   private Rectangle               _lastScreenBounds;
+   private boolean                 _highlighted;
 
-   private boolean              _isEnable        = true;
-   private double               _distanceFromEye = 0;
-
-
-   public GHUDIcon(final String iconFileName) {
-      this(iconFileName, Position.SOUTHWEST, ResizeBehavior.RESIZE_SHRINK_ONLY);
-   }
+   private List<ActionListener>    _actionListeners;
 
 
    public GHUDIcon(final String iconFileName,
-                   final Position position) {
-      this(iconFileName, position, ResizeBehavior.RESIZE_SHRINK_ONLY);
-   }
+                   final GHUDIcon.Position position) {
+      GAssert.notNull(iconFileName, "iconFileName");
+      GAssert.notNull(position, "position");
 
-
-   public GHUDIcon(final String iconFileName,
-                   final Position position,
-                   final ResizeBehavior resizeBehavior) {
       _iconFileName = iconFileName;
       _position = position;
-      _resizeBehavior = resizeBehavior;
    }
 
 
@@ -122,7 +112,7 @@ public class GHUDIcon
    @Override
    public void pick(final DrawContext dc,
                     final Point pickPoint) {
-      drawIcon(dc);
+      //      drawIcon(dc);
    }
 
 
@@ -163,9 +153,6 @@ public class GHUDIcon
          gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
          gl.glDisable(GL.GL_DEPTH_TEST);
 
-         final double width = getScaledIconWidth();
-         final double height = getScaledIconHeight();
-
          // Load a parallel projection with xy dimensions (viewportWidth, viewportHeight)
          // into the GL projection matrix.
          final Rectangle viewport = dc.getView().getViewport();
@@ -173,7 +160,7 @@ public class GHUDIcon
          gl.glPushMatrix();
          projectionPushed = true;
          gl.glLoadIdentity();
-         final double maxwh = width > height ? width : height;
+         final double maxwh = (_iconWidth > _iconHeight) ? _iconWidth : _iconHeight;
          gl.glOrtho(0d, viewport.width, 0d, viewport.height, -0.6 * maxwh, 0.6 * maxwh);
 
          gl.glMatrixMode(GL.GL_MODELVIEW);
@@ -182,16 +169,17 @@ public class GHUDIcon
          gl.glLoadIdentity();
 
          // Translate and scale
-         final double scale = computeScale(viewport);
+         final float scale = computeScale(viewport);
          final Vec4 locationSW = computeLocation(viewport, scale);
          gl.glTranslated(locationSW.x(), locationSW.y(), locationSW.z());
          // Scale to 0..1 space
-         gl.glScaled(scale, scale, 1);
-         gl.glScaled(width, height, 1d);
+         gl.glScalef(scale, scale, 1f);
+         gl.glScaled(_iconWidth, _iconHeight, 1d);
+
+         _lastScreenBounds = calculateScreenBounds(viewport, locationSW, scale);
 
          if (!dc.isPickingMode()) {
-            // Draw world map icon
-            gl.glColor4d(1d, 1d, 1d, getOpacity());
+            gl.glColor4f(1, 1, 1, calculateOpacity());
             gl.glEnable(GL.GL_TEXTURE_2D);
             iconTexture.bind();
 
@@ -212,6 +200,27 @@ public class GHUDIcon
             gl.glPopAttrib();
          }
       }
+   }
+
+
+   private float computeScale(final Rectangle viewport) {
+      return Math.min(1, (float) viewport.width / _iconWidth) * (_highlighted ? 1.15f : 1f);
+   }
+
+
+   private Rectangle calculateScreenBounds(final Rectangle viewport,
+                                           final Vec4 position,
+                                           final float scale) {
+      final int iWidth = toInt(_iconWidth * scale);
+      final int iHeight = toInt(_iconHeight * scale);
+      final int iX = toInt(position.x);
+      final int iY = viewport.height - iHeight - toInt(position.y);
+      return new Rectangle(iX, iY, iWidth, iHeight);
+   }
+
+
+   private static int toInt(final double value) {
+      return GMath.toInt(Math.round(value));
    }
 
 
@@ -237,9 +246,7 @@ public class GHUDIcon
          dc.getTextureCache().put(_iconFileName, iconTexture);
       }
       catch (final IOException e) {
-         final String msg = Logging.getMessage("layers.IOExceptionDuringInitialization");
-         Logging.logger().severe(msg);
-         throw new WWRuntimeException(msg, e);
+         throw new RuntimeException(e);
       }
 
       final GL gl = dc.getGL();
@@ -249,59 +256,13 @@ public class GHUDIcon
       gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE);
       gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE);
 
-      // Enable texture anisotropy, improves "tilted" world map quality.
-      /*int[] maxAnisotropy = new int[1];
-      gl
-      		.glGetIntegerv(GL.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT,
-      				maxAnisotropy, 0);
-      gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAX_ANISOTROPY_EXT,
-      		maxAnisotropy[0]);*/
-   }
-
-
-   private double getScaledIconWidth() {
-      return _iconWidth * _iconScale;
-   }
-
-
-   private double getScaledIconHeight() {
-      return _iconHeight * _iconScale;
-   }
-
-
-   private double computeScale(final Rectangle viewport) {
-
-      switch (_resizeBehavior) {
-         case RESIZE_SHRINK_ONLY:
-            return Math.min(1d, (_toViewportScale) * viewport.width / getScaledIconWidth());
-         case RESIZE_STRETCH:
-            return (_toViewportScale) * viewport.width / getScaledIconWidth();
-         case RESIZE_KEEP_FIXED_SIZE:
-            return 1d;
-         default:
-            return 1d;
-      }
-
-      //      if (_resizeBehavior.equals(RESIZE_SHRINK_ONLY)) {
-      //         return Math.min(1d, (_toViewportScale) * viewport.width / getScaledIconWidth());
-      //      }
-      //      else if (_resizeBehavior.equals(RESIZE_STRETCH)) {
-      //         return (_toViewportScale) * viewport.width / getScaledIconWidth();
-      //      }
-      //      else if (_resizeBehavior.equals(RESIZE_KEEP_FIXED_SIZE)) {
-      //         return 1d;
-      //      }
-      //      else {
-      //         return 1d;
-      //      }
-
    }
 
 
    private Vec4 computeLocation(final Rectangle viewport,
-                                final double scale) {
-      final double width = getScaledIconWidth();
-      final double height = getScaledIconHeight();
+                                final float scale) {
+      final double width = _iconWidth;
+      final double height = _iconHeight;
 
       final double scaledWidth = scale * width;
       final double scaledHeight = scale * height;
@@ -332,12 +293,20 @@ public class GHUDIcon
    }
 
 
-   public double getOpacity() {
+   public float getOpacity() {
       return _opacity;
    }
 
 
-   public void setOpacity(final double opacity) {
+   private float calculateOpacity() {
+      if (_highlighted) {
+         return 1;
+      }
+      return _opacity;
+   }
+
+
+   public void setOpacity(final float opacity) {
       _opacity = opacity;
    }
 
@@ -386,5 +355,62 @@ public class GHUDIcon
    public void setDistanceFromEye(final double distanceFromEye) {
       _distanceFromEye = distanceFromEye;
    }
+
+
+   @Override
+   public String toString() {
+      return "GHUDIcon [iconFileName=" + _iconFileName + ", position=" + _position + "]";
+   }
+
+
+   @Override
+   public Rectangle getLastScreenBounds() {
+      return _lastScreenBounds;
+   }
+
+
+   @Override
+   public void setHighlighted(final boolean highlighted) {
+      _highlighted = highlighted;
+   }
+
+
+   @Override
+   public boolean hasActionListeners() {
+      return (_actionListeners != null) && !_actionListeners.isEmpty();
+   }
+
+
+   @Override
+   public void mouseClicked(final MouseEvent evt) {
+      if (_actionListeners != null) {
+         for (final ActionListener listener : _actionListeners) {
+            final ActionEvent actionEvent = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null, evt.getWhen(), 0);
+            listener.actionPerformed(actionEvent);
+         }
+      }
+   }
+
+
+   public void removeActionListener(final ActionListener listener) {
+      if (_actionListeners == null) {
+         return;
+      }
+
+      _actionListeners.remove(listener);
+
+      if (_actionListeners.isEmpty()) {
+         _actionListeners = null;
+      }
+   }
+
+
+   public void addActionListener(final ActionListener listener) {
+      if (_actionListeners == null) {
+         _actionListeners = new ArrayList<ActionListener>(2);
+      }
+      _actionListeners.add(listener);
+   }
+
 
 }

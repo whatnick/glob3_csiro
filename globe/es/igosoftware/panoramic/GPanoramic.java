@@ -42,6 +42,10 @@ import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.globe.GGlobeApplication;
+import es.igosoftware.globe.IGlobeApplication;
+import es.igosoftware.globe.view.GBasicOrbitViewLimits;
+import es.igosoftware.globe.view.GPanoramicViewLimits;
+import es.igosoftware.globe.view.customView.GCustomView;
 import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.io.ILoader;
@@ -129,10 +133,10 @@ public class GPanoramic
                gl.glBegin(GL.GL_QUAD_STRIP);
 
                for (final Vertex vertex : quadStrip) {
-                  final IVector2<?> texCoord = vertex._texCoord;
+                  final IVector2 texCoord = vertex._texCoord;
                   gl.glTexCoord2f((float) texCoord.x(), (float) vertex._texCoord.y());
 
-                  final IVector3<?> point = vertex._point;
+                  final IVector3 point = vertex._point;
                   gl.glVertex3f((float) point.x(), (float) point.y(), (float) point.z());
                }
 
@@ -188,6 +192,7 @@ public class GPanoramic
    private final Layer                                                       _layer;
    private double                                                            _currentDistanceFromEye;
 
+
    private boolean                                                           _isHidden;
 
 
@@ -230,6 +235,8 @@ public class GPanoramic
       _zoomLevels = readZoomLevels();
 
       _maxResolutionInPanoramic = _zoomLevels.getLevels().size() - 1;
+
+
    }
 
 
@@ -622,6 +629,50 @@ public class GPanoramic
    }
 
 
+   public void activate(final GCustomView view,
+                        final GGlobeApplication application) {
+
+      if (!view.hasCameraState()) {
+         view.saveCameraState();
+      }
+
+      application.jumpTo(getPosition(), 0);
+      //      view.setInputState(GInputState.PANORAMICS);
+      view.enterPanoramic(this);
+      //final GPanoramicViewLimits viewLimits = new GPanoramicViewLimits();
+      view.setOrbitViewLimits(new GPanoramicViewLimits());
+
+
+      //      hideOtherLayers(application, this._layer);
+      //      hideOtherPanoramics(this);
+
+      view.setFieldOfView(Angle.fromDegrees(120));
+
+      if (_activationListeners != null) {
+         for (final GPanoramic.ActivationListener listener : _activationListeners) {
+            listener.activated(this);
+         }
+      }
+
+   }
+
+
+   public void deactivate(final GCustomView view,
+                          final IGlobeApplication application) {
+
+      view.exitPanoramic(this);
+      view.setOrbitViewLimits(new GBasicOrbitViewLimits());
+      view.restoreCameraState();
+
+      if (_activationListeners != null) {
+         for (final GPanoramic.ActivationListener listener : _activationListeners) {
+            listener.deactivated(this);
+         }
+      }
+
+   }
+
+
    @Override
    public void render(final DrawContext dc) {
       final GL gl = dc.getGL();
@@ -696,8 +747,8 @@ public class GPanoramic
 
       private Box                      _extent;
 
-      private final IVector3<?>        _center;
-      private final IVector3<?>        _normal;
+      private final IVector3           _center;
+      private final IVector3           _normal;
 
       private final int                _level;
       private final int                _row;
@@ -723,8 +774,8 @@ public class GPanoramic
       }
 
 
-      private IVector3<?> initializeCenter() {
-         final List<IVector3<?>> points = new ArrayList<IVector3<?>>();
+      private IVector3 initializeCenter() {
+         final List<IVector3> points = new ArrayList<IVector3>();
          for (final List<Vertex> quadStrip : _quadStrips) {
             for (final Vertex vertex : quadStrip) {
                points.add(vertex._point);
@@ -734,8 +785,8 @@ public class GPanoramic
       }
 
 
-      private IVector3<?> initializeNormal() {
-         final List<IVector3<?>> normals = new ArrayList<IVector3<?>>();
+      private IVector3 initializeNormal() {
+         final List<IVector3> normals = new ArrayList<IVector3>();
          for (final List<Vertex> quadStrip : _quadStrips) {
             for (final Vertex vertex : quadStrip) {
                normals.add(vertex._normal);
@@ -850,6 +901,7 @@ public class GPanoramic
          }
 
          final GL gl = dc.getGL();
+         //TODO: transparency or not
          gl.glCallList(_displayList);
 
          if (texture != null) {
@@ -900,7 +952,7 @@ public class GPanoramic
          gl.glBegin(GL.GL_LINES);
          gl.glVertex3d(_center.x(), _center.y(), _center.z());
 
-         final IVector3<?> destination = _center.add(_normal.scale(_radius / 5));
+         final IVector3 destination = _center.add(_normal.scale(_radius / 5));
          gl.glVertex3d(destination.x(), destination.y(), destination.z());
          gl.glEnd();
 
@@ -1051,14 +1103,14 @@ public class GPanoramic
 
 
    private static class Vertex {
-      private final IVector3<?> _point;
-      private final IVector3<?> _normal;
-      private final IVector2<?> _texCoord;
+      private final IVector3 _point;
+      private final IVector3 _normal;
+      private final IVector2 _texCoord;
 
 
-      private Vertex(final IVector3<?> point,
-                     final IVector3<?> normal,
-                     final IVector2<?> texCoord) {
+      private Vertex(final IVector3 point,
+                     final IVector3 normal,
+                     final IVector2 texCoord) {
          _point = point;
          _normal = normal.normalized();
          _texCoord = texCoord;

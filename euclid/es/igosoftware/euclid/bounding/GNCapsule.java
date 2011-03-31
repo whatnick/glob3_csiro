@@ -48,15 +48,15 @@ import es.igosoftware.util.GMath;
 
 public abstract class GNCapsule<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
-SegmentT extends GSegment<VectorT, SegmentT, ?>,
+SegmentT extends GSegment<VectorT, ?>,
 
 GeometryT extends GNCapsule<VectorT, SegmentT, GeometryT>
 
 >
          extends
-            GGeometryAbstract<VectorT, GeometryT>
+            GGeometryAbstract<VectorT>
          implements
             IBounds<VectorT, GeometryT> {
 
@@ -169,12 +169,6 @@ GeometryT extends GNCapsule<VectorT, SegmentT, GeometryT>
       final VectorT segmentRadiusDirection = closestPoint.sub(point).normalized();
 
       return closestPoint.add(segmentRadiusDirection.scale(_radius));
-   }
-
-
-   @Override
-   public boolean closeTo(final GeometryT that) {
-      return _segment.closeTo(that._segment) && GMath.closeTo(_radius, that._radius);
    }
 
 

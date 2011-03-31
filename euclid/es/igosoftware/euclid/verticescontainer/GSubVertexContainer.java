@@ -48,7 +48,7 @@ import es.igosoftware.util.IPredicate;
 import es.igosoftware.util.ITransformer;
 
 
-public final class GSubVertexContainer<VectorT extends IVector<VectorT, ?, ?>>
+public final class GSubVertexContainer<VectorT extends IVector<VectorT, ?>>
          extends
             GCommonSubVertexContainer<
 

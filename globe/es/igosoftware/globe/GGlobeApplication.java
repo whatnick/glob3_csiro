@@ -96,6 +96,7 @@ import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GHolder;
 import es.igosoftware.util.GLogger;
+import es.igosoftware.util.GMath;
 import es.igosoftware.util.GPair;
 import es.igosoftware.util.GUtils;
 import es.igosoftware.util.IPredicate;
@@ -109,6 +110,8 @@ import gov.nasa.worldwind.SceneController;
 import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
+import gov.nasa.worldwind.event.SelectEvent;
+import gov.nasa.worldwind.event.SelectListener;
 import gov.nasa.worldwind.examples.sunlight.RectangularNormalTessellator;
 import gov.nasa.worldwind.examples.util.StatusLayer;
 import gov.nasa.worldwind.geom.Angle;
@@ -116,6 +119,7 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Sector;
 import gov.nasa.worldwind.globes.Earth;
 import gov.nasa.worldwind.globes.Globe;
+import gov.nasa.worldwind.layers.CompassLayer;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
 import gov.nasa.worldwind.layers.ViewControlsLayer;
@@ -548,7 +552,54 @@ public abstract class GGlobeApplication
       layers.add(viewControlsLayer);
       getWorldWindowGLCanvas().addSelectListener(new ViewControlsSelectListener(getWorldWindowGLCanvas(), viewControlsLayer));
 
+
+      // Find Compass layer and enable picking
+      for (final Layer layer : layers) {
+         if (layer instanceof CompassLayer) {
+            layer.setPickEnabled(true);
+         }
+      }
+
+      configureCompassInteraction();
+
       return layers;
+   }
+
+
+   private void configureCompassInteraction() {
+      // Add select listener to handle drag events on the compass
+      getWorldWindowGLCanvas().addSelectListener(new SelectListener() {
+         private Angle _dragStartHeading = null;
+         private Angle _viewStartHeading = null;
+
+
+         @Override
+         public void selected(final SelectEvent event) {
+            if (event.getTopObject() instanceof CompassLayer) {
+               final View view = getView();
+
+               final Angle heading = (Angle) event.getTopPickedObject().getValue("Heading");
+
+               if (event.isDrag() && (_dragStartHeading == null)) {
+                  _dragStartHeading = heading;
+                  _viewStartHeading = view.getHeading();
+               }
+               else if (event.isRollover() && (_dragStartHeading != null)) {
+                  final double move = heading.degrees - _dragStartHeading.degrees;
+                  double newHeading = _viewStartHeading.degrees - move;
+                  newHeading = (newHeading >= 0) ? newHeading : newHeading + 360;
+                  view.stopAnimations();
+                  view.setHeading(Angle.fromDegrees(newHeading));
+               }
+               else if (event.isDragEnd()) {
+                  _dragStartHeading = null;
+               }
+               else if (event.isLeftDoubleClick()) {
+                  goToHeading(Angle.ZERO);
+               }
+            }
+         }
+      });
    }
 
 
@@ -938,36 +989,66 @@ public abstract class GGlobeApplication
                     final Angle heading,
                     final Angle pitch,
                     final double elevation) {
+      final View view = getView();
       if ((heading == null) || (pitch == null)) {
-         getView().goTo(position, elevation);
+         view.goTo(position, elevation);
+         return;
+      }
+
+
+      if (view instanceof GCustomView) {
+         final GCustomViewInputHandler inputHandler = (GCustomViewInputHandler) ((GCustomView) view).getViewInputHandler();
+
+         inputHandler.stopAnimators();
+         inputHandler.addPanToAnimator(position, heading, pitch, elevation, true);
+
+         redraw();
+      }
+      else if (view instanceof OrbitView) {
+         final OrbitViewInputHandler inputHandler = (OrbitViewInputHandler) ((OrbitView) view).getViewInputHandler();
+
+         inputHandler.stopAnimators();
+         inputHandler.addPanToAnimator(position, heading, pitch, elevation, true);
+
+         redraw();
       }
       else {
-         try {
-            if (getView() instanceof GCustomView) {
-               final GCustomView view = (GCustomView) getView();
+         view.goTo(position, elevation);
+      }
 
-               final GCustomViewInputHandler customViewInputHandler = (GCustomViewInputHandler) view.getViewInputHandler();
+   }
 
-               customViewInputHandler.stopAnimators();
-               customViewInputHandler.addPanToAnimator(position, heading, pitch, elevation, true);
 
-               redraw();
-            }
-            else {
-               final OrbitView view = (OrbitView) getView();
+   @Override
+   public void goToHeading(final Angle heading) {
+      final View view = getView();
 
-               final OrbitViewInputHandler orbitViewInputHandler = (OrbitViewInputHandler) view.getViewInputHandler();
+      final Angle currentHeading = view.getHeading();
 
-               orbitViewInputHandler.stopAnimators();
-               orbitViewInputHandler.addPanToAnimator(position, heading, pitch, elevation, true);
+      if ((heading == null) || GMath.closeTo(heading.degrees, currentHeading.degrees)) {
+         return;
+      }
 
-               redraw();
-            }
-         }
-         catch (final ClassCastException e) {
-            logSevere(e);
-            getView().goTo(position, elevation);
-         }
+
+      if (view instanceof GCustomView) {
+         final GCustomViewInputHandler inputHandler = (GCustomViewInputHandler) ((GCustomView) view).getViewInputHandler();
+
+         inputHandler.stopAnimators();
+         inputHandler.addHeadingAnimator(currentHeading, heading);
+
+         redraw();
+      }
+      else if (view instanceof OrbitView) {
+         final OrbitViewInputHandler inputHandler = (OrbitViewInputHandler) ((OrbitView) view).getViewInputHandler();
+
+         inputHandler.stopAnimators();
+         inputHandler.addHeadingAnimator(currentHeading, heading);
+
+         redraw();
+      }
+      else {
+         // fall back to change without animation
+         view.setHeading(heading);
       }
    }
 
@@ -1004,7 +1085,6 @@ public abstract class GGlobeApplication
                view.setZoom(elevation);
 
                redraw();
-
             }
             else {
                final OrbitView view = (OrbitView) getView();
@@ -1199,12 +1279,12 @@ public abstract class GGlobeApplication
       translations.put("de", german);
 
       final HashMap<String, String> portugese = new HashMap<String, String>();
-      german.put("Exit", "Sair");
-      german.put("File", "Arquivo");
-      german.put("View", "Vista");
-      german.put("Analysis", "Análise");
-      german.put("Navigation", "Navegação");
-      german.put("Help", "Ajuda");
+      portugese.put("Exit", "Sair");
+      portugese.put("File", "Arquivo");
+      portugese.put("View", "Vista");
+      portugese.put("Analysis", "Análise");
+      portugese.put("Navigation", "Navegação");
+      portugese.put("Help", "Ajuda");
       translations.put("pt", portugese);
 
 

@@ -34,15 +34,32 @@
 */
 
 
-package es.igosoftware.globe.layers;
+package es.igosoftware.globe.layers.hud;
 
 import gov.nasa.worldwind.render.OrderedRenderable;
+
+import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
 
 
 public interface IHUDElement
          extends
             OrderedRenderable {
 
+
    public boolean isEnable();
+
+
+   public Rectangle getLastScreenBounds();
+
+
+   public void setHighlighted(final boolean highlighted);
+
+
+   public boolean hasActionListeners();
+
+
+   public void mouseClicked(final MouseEvent evt);
+
 
 }

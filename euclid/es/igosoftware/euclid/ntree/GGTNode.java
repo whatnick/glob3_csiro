@@ -12,7 +12,7 @@ import es.igosoftware.util.GLoggerObject;
 
 public abstract class GGTNode<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
 BoundsT extends GAxisAlignedOrthotope<VectorT, ?>,
 

@@ -56,59 +56,59 @@ import es.igosoftware.util.ITransformer;
 
 
 public class VectorTest {
-   private static final IVector2<?>   generic2F       = new GVector2F(1000000.2f, 2000000.3f);
-   private static final IVector2<?>   generic2FNeg    = new GVector2F(-1000000.2f, -2000000.3f);
-   private static final IVector2<?>   generic2D       = new GVector2D(1000000.2, 2000000.3);
-   private static final IVector2<?>   generic2DNeg    = new GVector2D(-1000000.2, -2000000.3);
-   private static final IVector2<?>   generic2Rounded = new GVector2D(1000000.0, 2000000);
+   private static final IVector2   generic2F       = new GVector2F(1000000.2f, 2000000.3f);
+   private static final IVector2   generic2FNeg    = new GVector2F(-1000000.2f, -2000000.3f);
+   private static final IVector2   generic2D       = new GVector2D(1000000.2, 2000000.3);
+   private static final IVector2   generic2DNeg    = new GVector2D(-1000000.2, -2000000.3);
+   private static final IVector2   generic2Rounded = new GVector2D(1000000.0, 2000000);
 
-   private static final IVector3<?>   generic3F       = new GVector3F(1000000.2f, 2000000.3f, 3000000.4f);
-   private static final IVector3<?>   generic3FNeg    = new GVector3F(-1000000.2f, -2000000.3f, -3000000.4f);
-   private static final IVector3<?>   generic3D       = new GVector3D(1000000.2, 2000000.3, 3000000.4);
-   private static final IVector3<?>   generic3DNeg    = new GVector3D(-1000000.2, -2000000.3, -3000000.4);
-   private static final IVector3<?>   generic3Rounded = new GVector3D(1000000, 2000000, 3000000);
+   private static final IVector3   generic3F       = new GVector3F(1000000.2f, 2000000.3f, 3000000.4f);
+   private static final IVector3   generic3FNeg    = new GVector3F(-1000000.2f, -2000000.3f, -3000000.4f);
+   private static final IVector3   generic3D       = new GVector3D(1000000.2, 2000000.3, 3000000.4);
+   private static final IVector3   generic3DNeg    = new GVector3D(-1000000.2, -2000000.3, -3000000.4);
+   private static final IVector3   generic3Rounded = new GVector3D(1000000, 2000000, 3000000);
 
-   private static final IVector2<?>[] generics2       = { VectorTest.generic2F, VectorTest.generic2D };
-   private static final IVector3<?>[] generics3       = { VectorTest.generic3F, VectorTest.generic3D };
-   private static final IVector2<?>[] generics2Neg    = { VectorTest.generic2FNeg, VectorTest.generic2DNeg };
-   private static final IVector3<?>[] generics3Neg    = { VectorTest.generic3FNeg, VectorTest.generic3DNeg };
+   private static final IVector2[] generics2       = { VectorTest.generic2F, VectorTest.generic2D };
+   private static final IVector3[] generics3       = { VectorTest.generic3F, VectorTest.generic3D };
+   private static final IVector2[] generics2Neg    = { VectorTest.generic2FNeg, VectorTest.generic2DNeg };
+   private static final IVector3[] generics3Neg    = { VectorTest.generic3FNeg, VectorTest.generic3DNeg };
 
-   private static final IVector2<?>[] generics2All    = { VectorTest.generic2F, VectorTest.generic2D, VectorTest.generic2FNeg,
+   private static final IVector2[] generics2All    = { VectorTest.generic2F, VectorTest.generic2D, VectorTest.generic2FNeg,
             VectorTest.generic2DNeg, VectorTest.generic2Rounded };
-   //   private static final IVector2<?>[] generics2D      = { VectorTest.generic2D, VectorTest.generic2DNeg,
+   //   private static final IVector2[] generics2D      = { VectorTest.generic2D, VectorTest.generic2DNeg,
    //            VectorTest.generic2Rounded               };
 
-   private static final IVector3<?>[] generics3All    = { VectorTest.generic3F, VectorTest.generic3D, VectorTest.generic3FNeg,
+   private static final IVector3[] generics3All    = { VectorTest.generic3F, VectorTest.generic3D, VectorTest.generic3FNeg,
             VectorTest.generic3DNeg, VectorTest.generic3Rounded };
 
-   //   private static final IVector3<?>[] generics3D      = { VectorTest.generic3D, VectorTest.generic3DNeg,
+   //   private static final IVector3[] generics3D      = { VectorTest.generic3D, VectorTest.generic3DNeg,
    //            VectorTest.generic3Rounded               };
 
 
-   private static final IVector2<?>[] zeros2          = { GVector2F.ZERO, GVector2D.ZERO };
-   private static final IVector3<?>[] zeros3          = { GVector3F.ZERO, GVector3D.ZERO };
+   private static final IVector2[] zeros2          = { GVector2F.ZERO, GVector2D.ZERO };
+   private static final IVector3[] zeros3          = { GVector3F.ZERO, GVector3D.ZERO };
 
-   private static final IVector2<?>[] all2D           = { VectorTest.generic2D, VectorTest.generic2DNeg, GVector2D.X_UP,
+   private static final IVector2[] all2D           = { VectorTest.generic2D, VectorTest.generic2DNeg, GVector2D.X_UP,
             GVector2D.Y_UP, GVector2D.X_DOWN, GVector2D.Y_DOWN, GVector2D.ZERO };
-   private static final IVector2<?>[] all2F           = { VectorTest.generic2F, VectorTest.generic2FNeg, GVector2F.X_UP,
+   private static final IVector2[] all2F           = { VectorTest.generic2F, VectorTest.generic2FNeg, GVector2F.X_UP,
             GVector2F.Y_UP, GVector2F.Y_DOWN, GVector2F.Y_DOWN, GVector2F.ZERO };
-   private static final IVector2<?>[] all2            = { VectorTest.generic2F, VectorTest.generic2D, VectorTest.generic2FNeg,
+   private static final IVector2[] all2            = { VectorTest.generic2F, VectorTest.generic2D, VectorTest.generic2FNeg,
             VectorTest.generic2DNeg, GVector2F.X_UP, GVector2D.X_UP, GVector2F.Y_UP, GVector2D.Y_UP, GVector2F.Y_DOWN,
             GVector2D.X_DOWN, GVector2F.Y_DOWN, GVector2D.Y_DOWN, GVector2F.ZERO, GVector2D.ZERO };
 
-   private static final IVector3<?>[] all3D           = { VectorTest.generic3D, VectorTest.generic3DNeg, GVector3D.X_UP,
+   private static final IVector3[] all3D           = { VectorTest.generic3D, VectorTest.generic3DNeg, GVector3D.X_UP,
             GVector3D.Y_UP, GVector3D.Z_UP, GVector3D.X_DOWN, GVector3D.Y_DOWN, GVector3D.Z_DOWN, GVector3D.ZERO };
-   private static final IVector3<?>[] all3F           = { VectorTest.generic3F, VectorTest.generic3FNeg, GVector3F.X_UP,
+   private static final IVector3[] all3F           = { VectorTest.generic3F, VectorTest.generic3FNeg, GVector3F.X_UP,
             GVector3F.Y_UP, GVector3F.Z_UP, GVector3F.Y_DOWN, GVector3F.Y_DOWN, GVector3F.Z_DOWN, GVector3F.ZERO };
-   private static final IVector3<?>[] all3            = { VectorTest.generic3F, VectorTest.generic3D, VectorTest.generic3FNeg,
+   private static final IVector3[] all3            = { VectorTest.generic3F, VectorTest.generic3D, VectorTest.generic3FNeg,
             VectorTest.generic3DNeg, GVector3F.X_UP, GVector3D.X_UP, GVector3F.Y_UP, GVector3D.Y_UP, GVector3F.Z_UP,
             GVector3D.Z_UP, GVector3F.Y_DOWN, GVector3D.X_DOWN, GVector3F.Y_DOWN, GVector3D.Y_DOWN, GVector3F.Z_DOWN,
             GVector3D.Z_DOWN, GVector3F.ZERO, GVector3D.ZERO };
 
 
-   private <T extends IVector2<?>> void assertCloseTo(final String description,
-                                                      final T expected,
-                                                      final T current) {
+   private <T extends IVector2> void assertCloseTo(final String description,
+                                                   final T expected,
+                                                   final T current) {
       if (expected.closeTo(current)) {
          return;
       }
@@ -117,9 +117,9 @@ public class VectorTest {
    }
 
 
-   private <T extends IVector3<?>> void assertCloseTo(final String description,
-                                                      final T expected,
-                                                      final T current) {
+   private <T extends IVector3> void assertCloseTo(final String description,
+                                                   final T expected,
+                                                   final T current) {
       if (expected.closeTo(current)) {
          return;
       }
@@ -128,14 +128,14 @@ public class VectorTest {
    }
 
 
-   private static interface PairEvaluation<VectorT extends IVector<VectorT, ?, ?>> {
+   private static interface PairEvaluation<VectorT extends IVector<VectorT, ?>> {
       void evaluate(final VectorT vector1,
                     final VectorT vector2);
    }
 
 
-   private <VectorT extends IVector<VectorT, ?, ?>> void combinationsDo(final VectorT[] vectors,
-                                                                        final PairEvaluation<VectorT> evaluation) {
+   private <VectorT extends IVector<VectorT, ?>> void combinationsDo(final VectorT[] vectors,
+                                                                     final PairEvaluation<VectorT> evaluation) {
       for (int i = 0; i < vectors.length; i++) {
          for (int j = i; j < vectors.length; j++) {
             evaluation.evaluate(vectors[i], vectors[j]);
@@ -144,8 +144,8 @@ public class VectorTest {
    }
 
 
-   private List<IVector<?, ?, ?>> getVectorsWithOneDimension(final int... dimension) {
-      final List<IVector<?, ?, ?>> result = new ArrayList<IVector<?, ?, ?>>();
+   private List<IVector<?, ?>> getVectorsWithOneDimension(final int... dimension) {
+      final List<IVector<?, ?>> result = new ArrayList<IVector<?, ?>>();
       for (final int element : dimension) {
          result.add(new GVector3D(element, 0, 0));
          result.add(new GVector3D(0, element, 0));
@@ -163,13 +163,12 @@ public class VectorTest {
       }
 
 
-      final List<IVector<?, ?, ?>> mutables = GCollections.collect(result,
-               new ITransformer<IVector<?, ?, ?>, IVector<?, ?, ?>>() {
-                  @Override
-                  public IVector<?, ?, ?> transform(final IVector<?, ?, ?> element) {
-                     return element.asMutable();
-                  }
-               });
+      final List<IVector<?, ?>> mutables = GCollections.collect(result, new ITransformer<IVector<?, ?>, IVector<?, ?>>() {
+         @Override
+         public IVector<?, ?> transform(final IVector<?, ?> element) {
+            return element.asMutable();
+         }
+      });
 
       result.addAll(mutables);
 
@@ -177,8 +176,8 @@ public class VectorTest {
    }
 
 
-   private Iterable<IVector<?, ?, ?>> getVectorsWithTwoDimensions(final int... dimension) {
-      final List<IVector<?, ?, ?>> result = new ArrayList<IVector<?, ?, ?>>();
+   private Iterable<IVector<?, ?>> getVectorsWithTwoDimensions(final int... dimension) {
+      final List<IVector<?, ?>> result = new ArrayList<IVector<?, ?>>();
       for (final int element : dimension) {
          result.add(new GVector3D(element, element, 0));
          result.add(new GVector3D(0, element, element));
@@ -192,13 +191,12 @@ public class VectorTest {
          result.add(new GVector2F(element, element));
       }
 
-      final List<IVector<?, ?, ?>> mutables = GCollections.collect(result,
-               new ITransformer<IVector<?, ?, ?>, IVector<?, ?, ?>>() {
-                  @Override
-                  public IVector<?, ?, ?> transform(final IVector<?, ?, ?> element) {
-                     return element.asMutable();
-                  }
-               });
+      final List<IVector<?, ?>> mutables = GCollections.collect(result, new ITransformer<IVector<?, ?>, IVector<?, ?>>() {
+         @Override
+         public IVector<?, ?> transform(final IVector<?, ?> element) {
+            return element.asMutable();
+         }
+      });
 
       result.addAll(mutables);
 
@@ -206,16 +204,16 @@ public class VectorTest {
    }
 
 
-   private Iterable<IVector3<?>> getVectorsWithThreeDimensions(final int... dimension) {
-      final List<IVector3<?>> result = new ArrayList<IVector3<?>>();
+   private Iterable<IVector3> getVectorsWithThreeDimensions(final int... dimension) {
+      final List<IVector3> result = new ArrayList<IVector3>();
       for (final int element : dimension) {
          result.add(new GVector3D(element, element, element));
          result.add(new GVector3F(element, element, element));
       }
 
-      final List<IVector3<?>> mutables = GCollections.collect(result, new ITransformer<IVector3<?>, IVector3<?>>() {
+      final List<IVector3> mutables = GCollections.collect(result, new ITransformer<IVector3, IVector3>() {
          @Override
-         public IVector3<?> transform(final IVector3<?> element) {
+         public IVector3 transform(final IVector3 element) {
             return element.asMutable();
          }
       });
@@ -228,7 +226,7 @@ public class VectorTest {
 
    @Test
    public void testBetween() {
-      for (final IVector2<?> element : VectorTest.all2) {
+      for (final IVector2 element : VectorTest.all2) {
          Assert.assertTrue(element + " 2Ds between neg and pos infinity",
                   element.between(GVector2D.NEGATIVE_INFINITY, GVector2D.POSITIVE_INFINITY));
          Assert.assertFalse(element + " 2Ds between pos and neg infinity",
@@ -236,7 +234,7 @@ public class VectorTest {
          Assert.assertFalse(element + " " + element.getClass() + " 2Ds between (1,1) and (1,1)",
                   element.between(GVector2D.UNIT, GVector2D.UNIT));
       }
-      for (final IVector3<?> element : VectorTest.all3) {
+      for (final IVector3 element : VectorTest.all3) {
          Assert.assertTrue(element + " 3Ds between neg and pos infinity",
                   element.between(GVector3D.NEGATIVE_INFINITY, GVector3D.POSITIVE_INFINITY));
          Assert.assertFalse(element + " 3Ds between pos and neg infinity",
@@ -250,35 +248,35 @@ public class VectorTest {
    public void testLength() {
 
 
-      for (final IVector<?, ?, ?> vector : getVectorsWithOneDimension(1, -1)) {
+      for (final IVector<?, ?> vector : getVectorsWithOneDimension(1, -1)) {
          Assert.assertEquals(vector + " length", 1.0, vector.length());
          Assert.assertEquals(vector + " length", 1.0, vector.squaredLength());
       }
 
 
-      for (final IVector<?, ?, ?> vector : getVectorsWithOneDimension(2, -2)) {
+      for (final IVector<?, ?> vector : getVectorsWithOneDimension(2, -2)) {
          Assert.assertEquals(vector + " length", 2.0, vector.length());
          Assert.assertEquals(vector + " length", 4.0, vector.squaredLength());
       }
 
 
-      for (final IVector<?, ?, ?> vector : getVectorsWithTwoDimensions(1, -1)) {
+      for (final IVector<?, ?> vector : getVectorsWithTwoDimensions(1, -1)) {
          Assert.assertEquals(vector + " length", Math.sqrt(2), vector.length());
          Assert.assertEquals(vector + " length", 2.0, vector.squaredLength());
       }
 
-      for (final IVector<?, ?, ?> vector : getVectorsWithTwoDimensions(2, -2)) {
+      for (final IVector<?, ?> vector : getVectorsWithTwoDimensions(2, -2)) {
          Assert.assertEquals(vector + " length", Math.sqrt(8), vector.length());
          Assert.assertEquals(vector + " length", 8.0, vector.squaredLength());
       }
 
 
-      for (final IVector<?, ?, ?> vector : getVectorsWithThreeDimensions(1, -1)) {
+      for (final IVector<?, ?> vector : getVectorsWithThreeDimensions(1, -1)) {
          Assert.assertEquals(vector + " length", Math.sqrt(3), vector.length());
          Assert.assertEquals(vector + " length", 3.0, vector.squaredLength());
       }
 
-      for (final IVector<?, ?, ?> vector : getVectorsWithThreeDimensions(2, -2)) {
+      for (final IVector<?, ?> vector : getVectorsWithThreeDimensions(2, -2)) {
          Assert.assertEquals(vector + " length", Math.sqrt(12), vector.length());
          Assert.assertEquals(vector + " length", 12.0, vector.squaredLength());
 
@@ -291,46 +289,46 @@ public class VectorTest {
    public void testNormalization() {
 
 
-      for (final IVector<?, ?, ?> vector : getVectorsWithOneDimension(1, -1)) {
+      for (final IVector<?, ?> vector : getVectorsWithOneDimension(1, -1)) {
          Assert.assertEquals(vector + "normalized", 1.0, (vector.normalized()).length());
          Assert.assertEquals(vector + "normalized", 1.0, (vector.normalized()).squaredLength());
          Assert.assertTrue(vector + "isNormalized", (vector.normalized()).isNormalized());
 
       }
-      for (final IVector<?, ?, ?> vector : getVectorsWithOneDimension(2, -2)) {
+      for (final IVector<?, ?> vector : getVectorsWithOneDimension(2, -2)) {
          Assert.assertEquals(vector + "isNormalized", false, vector.isNormalized());
          Assert.assertEquals(vector + "normalized", 1.0, (vector.normalized()).length());
          Assert.assertEquals(vector + "normalized", 1.0, (vector.normalized()).squaredLength());
          Assert.assertTrue(vector + "isNormalized", (vector.normalized()).isNormalized());
       }
-      for (final IVector<?, ?, ?> vector : getVectorsWithTwoDimensions(1, -1)) {
+      for (final IVector<?, ?> vector : getVectorsWithTwoDimensions(1, -1)) {
          Assert.assertEquals(vector + "isNormalized", false, vector.isNormalized());
          Assert.assertEquals(vector + "normalized", 1.0, (vector.normalized()).length());
          Assert.assertEquals(vector + "normalized", 1.0, (vector.normalized()).squaredLength());
          Assert.assertTrue(vector + "isNormalized", (vector.normalized()).isNormalized());
       }
-      for (final IVector<?, ?, ?> vector : getVectorsWithTwoDimensions(2, -2)) {
+      for (final IVector<?, ?> vector : getVectorsWithTwoDimensions(2, -2)) {
          Assert.assertEquals(vector + "isNormalized", false, vector.isNormalized());
          Assert.assertEquals(vector + "normalized", 1.0, (vector.normalized()).length());
          Assert.assertEquals(vector + "normalized", 1.0, (vector.normalized()).squaredLength());
          Assert.assertTrue(vector + "isNormalized", (vector.normalized()).isNormalized());
       }
-      for (final IVector<?, ?, ?> vector : getVectorsWithThreeDimensions(1, -1)) {
+      for (final IVector<?, ?> vector : getVectorsWithThreeDimensions(1, -1)) {
          Assert.assertEquals(vector + "isNormalized", false, vector.isNormalized());
          Assert.assertEquals(vector + "normalized", 1.0, (vector.normalized()).length());
          Assert.assertEquals(vector + "normalized", 1.0, (vector.normalized()).squaredLength());
          Assert.assertTrue(vector + "isNormalized", (vector.normalized()).isNormalized());
       }
-      for (final IVector<?, ?, ?> vector : getVectorsWithThreeDimensions(2, -2)) {
+      for (final IVector<?, ?> vector : getVectorsWithThreeDimensions(2, -2)) {
          Assert.assertEquals(vector + "isNormalized", false, vector.isNormalized());
          Assert.assertEquals(vector + "normalized", 1.0, (vector.normalized()).length());
          Assert.assertEquals(vector + "normalized", 1.0, (vector.normalized()).squaredLength());
          Assert.assertTrue(vector + "isNormalized", (vector.normalized()).isNormalized());
       }
-      for (final IVector<?, ?, ?> element : VectorTest.zeros2) {
+      for (final IVector<?, ?> element : VectorTest.zeros2) {
          Assert.assertSame("normalize Zero-Vec2", element, element.normalized());
       }
-      for (final IVector<?, ?, ?> element : VectorTest.zeros3) {
+      for (final IVector<?, ?> element : VectorTest.zeros3) {
          Assert.assertSame("normalize Zero-Vec3", element, element.normalized());
       }
 
@@ -339,10 +337,10 @@ public class VectorTest {
 
    @Test
    public void testDimensions() {
-      for (final IVector2<?> element : VectorTest.all2) {
+      for (final IVector2 element : VectorTest.all2) {
          Assert.assertEquals(element + " 2dims", 2, element.dimensions());
       }
-      for (final IVector3<?> element : VectorTest.all3) {
+      for (final IVector3 element : VectorTest.all3) {
          Assert.assertEquals(element + " 3dims", 3, element.dimensions());
       }
    }
@@ -350,23 +348,23 @@ public class VectorTest {
 
    @Test
    public void testClosestPoint() {
-      for (final IVector2<?> element : VectorTest.all2) {
+      for (final IVector2 element : VectorTest.all2) {
          Assert.assertSame("closestPoint same", element, element.closestPoint(element));
       }
-      combinationsDo(VectorTest.all2, new PairEvaluation<IVector2<?>>() {
+      combinationsDo(VectorTest.all2, new PairEvaluation<IVector2>() {
          @Override
-         public void evaluate(final IVector2<?> vector1,
-                              final IVector2<?> vector2) {
+         public void evaluate(final IVector2 vector1,
+                              final IVector2 vector2) {
             Assert.assertSame("closestPoint pairwise", vector2, vector1.closestPoint(vector2));
          }
       });
-      for (final IVector3<?> element : VectorTest.all3) {
+      for (final IVector3 element : VectorTest.all3) {
          Assert.assertSame("closestPoint same", element, element.closestPoint(element));
       }
-      combinationsDo(VectorTest.all3, new PairEvaluation<IVector3<?>>() {
+      combinationsDo(VectorTest.all3, new PairEvaluation<IVector3>() {
          @Override
-         public void evaluate(final IVector3<?> vector1,
-                              final IVector3<?> vector2) {
+         public void evaluate(final IVector3 vector1,
+                              final IVector3 vector2) {
             Assert.assertSame("closestPoint pairwise", vector2, vector1.closestPoint(vector2));
          }
       });
@@ -375,10 +373,10 @@ public class VectorTest {
 
    @Test
    public void testContains() {
-      for (final IVector2<?> element : VectorTest.all2) {
+      for (final IVector2 element : VectorTest.all2) {
          Assert.assertTrue(element + " contains self", element.contains(element));
       }
-      for (final IVector3<?> element : VectorTest.all3) {
+      for (final IVector3 element : VectorTest.all3) {
          Assert.assertTrue(element + " contains self", element.contains(element));
       }
    }
@@ -386,16 +384,16 @@ public class VectorTest {
 
    @Test
    public void testClamp() {
-      for (final IVector2<?> element : VectorTest.generics2) {
+      for (final IVector2 element : VectorTest.generics2) {
          assertCloseTo("clamp to upper 2D", GVector2D.UNIT, element.clamp(GVector2D.ZERO, GVector2D.UNIT));
       }
-      for (final IVector2<?> element : VectorTest.generics2Neg) {
+      for (final IVector2 element : VectorTest.generics2Neg) {
          assertCloseTo("clamp to lower 2D", GVector2D.ZERO, element.clamp(GVector2D.ZERO, GVector2D.UNIT));
       }
-      for (final IVector3<?> element : VectorTest.generics3) {
+      for (final IVector3 element : VectorTest.generics3) {
          assertCloseTo("clamp to upper 3D", GVector3D.UNIT, element.clamp(GVector3D.ZERO, GVector3D.UNIT));
       }
-      for (final IVector3<?> element : VectorTest.generics3Neg) {
+      for (final IVector3 element : VectorTest.generics3Neg) {
          assertCloseTo("clamp to lower 2D", GVector3D.ZERO, element.clamp(GVector3D.ZERO, GVector3D.UNIT));
       }
    }
@@ -403,41 +401,41 @@ public class VectorTest {
 
    @Test
    public void testSquaredDistance() {
-      for (final IVector2<?> element : VectorTest.all2) {
+      for (final IVector2 element : VectorTest.all2) {
          Assert.assertEquals("distance to self = 0", 0, element.squaredDistance(element),
                   GMath.DEFAULT_NUMERICAL_PRECISION_DOUBLE);
 
       }
-      for (final IVector3<?> element : VectorTest.all3) {
+      for (final IVector3 element : VectorTest.all3) {
          Assert.assertEquals("distance to self = 0", 0, element.squaredDistance(element),
                   GMath.DEFAULT_NUMERICAL_PRECISION_DOUBLE);
       }
 
       //All these tests fail with big numbers....
-      //      for (final IVector2<?> element : VectorTest.all2) {
+      //      for (final IVector2 element : VectorTest.all2) {
       //         Assert.assertTrue(element + "sqdistance to 0 = this.squaredLength()", GMath.closeTo(element.squaredLength(),
       //                  element.squaredDistance(GVector2F.ZERO), GMath.DEFAULT_NUMERICAL_PRECISION_FLOAT));
       //
       //      }
-      //      for (final IVector3<?> element : VectorTest.all3) {
+      //      for (final IVector3 element : VectorTest.all3) {
       //         Assert.assertTrue(element + "distance to 0 = this.squaredLength()", GMath.closeTo(element.squaredLength(),
       //                  element.squaredDistance(GVector3D.ZERO)));
       //      }
 
-      //      for (final IVector2<?> element : VectorTest.all2) {
+      //      for (final IVector2 element : VectorTest.all2) {
       //         Assert.assertEquals("distance to -self = 2*squaredLength*2", 2 * element.squaredLength() * 2,
       //                  element.squaredDistance(element.negated()), GMath.DEFAULT_NUMERICAL_PRECISION_FLOAT);
       //      }
-      //      for (final IVector3<?> element : VectorTest.all3) {
+      //      for (final IVector3 element : VectorTest.all3) {
       //         Assert.assertEquals("distance to -self = 0", 2 * element.squaredLength() * 2,
       //                  element.squaredDistance(element.negated()), GMath.DEFAULT_NUMERICAL_PRECISION_FLOAT);
       //      }
 
-      for (final IVector2<?> element : VectorTest.all2) {
+      for (final IVector2 element : VectorTest.all2) {
          Assert.assertEquals("distance to -infinity = infinity", Double.POSITIVE_INFINITY,
                   element.squaredDistance(GVector2D.NEGATIVE_INFINITY), GMath.DEFAULT_NUMERICAL_PRECISION_FLOAT);
       }
-      for (final IVector3<?> element : VectorTest.all3) {
+      for (final IVector3 element : VectorTest.all3) {
          Assert.assertEquals("distance to -infinity", Double.POSITIVE_INFINITY,
                   element.squaredDistance(GVector3D.NEGATIVE_INFINITY), GMath.DEFAULT_NUMERICAL_PRECISION_FLOAT);
 
@@ -447,7 +445,7 @@ public class VectorTest {
 
    //   @GConcurrentTest
    //   public void testInterpolation() {
-   //      for (final IVector2<?> element : VectorTest.all2F) {
+   //      for (final IVector2 element : VectorTest.all2F) {
    //         assertCloseTo(element + " interpolatedTo self, 0.5", element.scale(0.5f), element.interpolatedTo(element.negated(), 2.0));
    //
    //      }
@@ -655,26 +653,25 @@ public class VectorTest {
       //single number addition/subtraction/scale/div/negated
       final double toAdd = 1;
       final double toScale = 2;
-      IVector2<?> result;
+      IVector2 result;
 
-      final IVector2<?> desiredAddResult2D = new GVector2D(VectorTest.generic2D.x() + toAdd, VectorTest.generic2D.y() + toAdd);
-      final IVector2<?> desiredAddResult2DNeg = new GVector2D(VectorTest.generic2DNeg.x() + toAdd, VectorTest.generic2DNeg.y()
-                                                                                                   + toAdd);
+      final IVector2 desiredAddResult2D = new GVector2D(VectorTest.generic2D.x() + toAdd, VectorTest.generic2D.y() + toAdd);
+      final IVector2 desiredAddResult2DNeg = new GVector2D(VectorTest.generic2DNeg.x() + toAdd, VectorTest.generic2DNeg.y()
+                                                                                                + toAdd);
 
-      final IVector2<?> desiredSubResult2D = new GVector2D(VectorTest.generic2D.x() - toAdd, VectorTest.generic2D.y() - toAdd);
-      final IVector2<?> desiredSubResult2DNeg = new GVector2D(VectorTest.generic2DNeg.x() - toAdd, VectorTest.generic2DNeg.y()
-                                                                                                   - toAdd);
+      final IVector2 desiredSubResult2D = new GVector2D(VectorTest.generic2D.x() - toAdd, VectorTest.generic2D.y() - toAdd);
+      final IVector2 desiredSubResult2DNeg = new GVector2D(VectorTest.generic2DNeg.x() - toAdd, VectorTest.generic2DNeg.y()
+                                                                                                - toAdd);
 
-      final IVector2<?> desiredScaleResult2D = new GVector2D(VectorTest.generic2D.x() * toScale, VectorTest.generic2D.y()
-                                                                                                 * toScale);
-      final IVector2<?> desiredScaleResult2DNeg = new GVector2D(VectorTest.generic2DNeg.x() * toScale,
-               VectorTest.generic2DNeg.y() * toScale);
+      final IVector2 desiredScaleResult2D = new GVector2D(VectorTest.generic2D.x() * toScale, VectorTest.generic2D.y() * toScale);
+      final IVector2 desiredScaleResult2DNeg = new GVector2D(VectorTest.generic2DNeg.x() * toScale, VectorTest.generic2DNeg.y()
+                                                                                                    * toScale);
 
-      final IVector2<?> desiredDivResult2D = new GVector2D(VectorTest.generic2D.x() / toScale, VectorTest.generic2D.y() / toScale);
-      final IVector2<?> desiredDivResult2DNeg = new GVector2D(VectorTest.generic2DNeg.x() / toScale, VectorTest.generic2DNeg.y()
-                                                                                                     / toScale);
+      final IVector2 desiredDivResult2D = new GVector2D(VectorTest.generic2D.x() / toScale, VectorTest.generic2D.y() / toScale);
+      final IVector2 desiredDivResult2DNeg = new GVector2D(VectorTest.generic2DNeg.x() / toScale, VectorTest.generic2DNeg.y()
+                                                                                                  / toScale);
 
-      final IVector2<?> zero = new GVector2D(0, 0);
+      final IVector2 zero = new GVector2D(0, 0);
 
 
       for (int i = 0; i < 2; i++) {
@@ -727,34 +724,34 @@ public class VectorTest {
       //single number addition/subtraction/scale/div/negated
       final double toAdd = 1;
       final double toScale = 2;
-      IVector3<?> result;
+      IVector3 result;
 
-      //      final IVector3<?> desiredAddResult3D = new GVector3D(2.2, 3.3, 4.4);
-      final IVector3<?> desiredAddResult3D = new GVector3D(VectorTest.generic3D.x() + toAdd, VectorTest.generic3D.y() + toAdd,
+      //      final IVector3 desiredAddResult3D = new GVector3D(2.2, 3.3, 4.4);
+      final IVector3 desiredAddResult3D = new GVector3D(VectorTest.generic3D.x() + toAdd, VectorTest.generic3D.y() + toAdd,
                VectorTest.generic3D.z() + toAdd);
-      final IVector3<?> desiredAddResult3DNeg = new GVector3D(VectorTest.generic3DNeg.x() + toAdd, VectorTest.generic3DNeg.y()
-                                                                                                   + toAdd,
+      final IVector3 desiredAddResult3DNeg = new GVector3D(VectorTest.generic3DNeg.x() + toAdd, VectorTest.generic3DNeg.y()
+                                                                                                + toAdd,
                VectorTest.generic3DNeg.z() + toAdd);
 
-      final IVector3<?> desiredSubResult3D = new GVector3D(VectorTest.generic3D.x() - toAdd, VectorTest.generic3D.y() - toAdd,
+      final IVector3 desiredSubResult3D = new GVector3D(VectorTest.generic3D.x() - toAdd, VectorTest.generic3D.y() - toAdd,
                VectorTest.generic3D.z() - toAdd);
-      final IVector3<?> desiredSubResult3DNeg = new GVector3D(VectorTest.generic3DNeg.x() - toAdd, VectorTest.generic3DNeg.y()
-                                                                                                   - toAdd,
+      final IVector3 desiredSubResult3DNeg = new GVector3D(VectorTest.generic3DNeg.x() - toAdd, VectorTest.generic3DNeg.y()
+                                                                                                - toAdd,
                VectorTest.generic3DNeg.z() - toAdd);
 
-      final IVector3<?> desiredScaleResult3D = new GVector3D(VectorTest.generic3D.x() * toScale, VectorTest.generic3D.y()
-                                                                                                 * toScale,
+      final IVector3 desiredScaleResult3D = new GVector3D(VectorTest.generic3D.x() * toScale, VectorTest.generic3D.y() * toScale,
                VectorTest.generic3D.z() * toScale);
-      final IVector3<?> desiredScaleResult3DNeg = new GVector3D(VectorTest.generic3DNeg.x() * toScale,
-               VectorTest.generic3DNeg.y() * toScale, VectorTest.generic3DNeg.z() * toScale);
+      final IVector3 desiredScaleResult3DNeg = new GVector3D(VectorTest.generic3DNeg.x() * toScale, VectorTest.generic3DNeg.y()
+                                                                                                    * toScale,
+               VectorTest.generic3DNeg.z() * toScale);
 
-      final IVector3<?> desiredDivResult3D = new GVector3D(VectorTest.generic3D.x() / toScale,
-               VectorTest.generic3D.y() / toScale, VectorTest.generic3D.z() / toScale);
-      final IVector3<?> desiredDivResult3DNeg = new GVector3D(VectorTest.generic3DNeg.x() / toScale, VectorTest.generic3DNeg.y()
-                                                                                                     / toScale,
+      final IVector3 desiredDivResult3D = new GVector3D(VectorTest.generic3D.x() / toScale, VectorTest.generic3D.y() / toScale,
+               VectorTest.generic3D.z() / toScale);
+      final IVector3 desiredDivResult3DNeg = new GVector3D(VectorTest.generic3DNeg.x() / toScale, VectorTest.generic3DNeg.y()
+                                                                                                  / toScale,
                VectorTest.generic3DNeg.z() / toScale);
 
-      final IVector3<?> zero = new GVector3D(0, 0, 0);
+      final IVector3 zero = new GVector3D(0, 0, 0);
 
 
       for (int i = 0; i < 2; i++) {
@@ -804,12 +801,12 @@ public class VectorTest {
    @Test
    public void testPairsNonZero2AddSubScaleDivReciprocal() {
 
-      combinationsDo(VectorTest.generics2All, new PairEvaluation<IVector2<?>>() {
+      combinationsDo(VectorTest.generics2All, new PairEvaluation<IVector2>() {
          @Override
-         public void evaluate(final IVector2<?> vector1,
-                              final IVector2<?> vector2) {
+         public void evaluate(final IVector2 vector1,
+                              final IVector2 vector2) {
 
-            final IVector2<?> unit = new GVector2D(1, 1);
+            final IVector2 unit = new GVector2D(1, 1);
 
             assertCloseTo("(a+b)-b=a", vector1, (vector1.add(vector2)).sub(vector2));
             assertCloseTo("a+b-b=a", vector1, vector1.add(vector2).sub(vector2));
@@ -880,11 +877,11 @@ public class VectorTest {
       Assert.assertTrue(GVector3D.X_UP + ".angle(" + GVector3D.Y_DOWN + ") = " + (GVector3D.X_UP).angle(GVector3D.Y_UP),
                GMath.closeTo(GMath.HALF_PI, ((GVector3D.X_UP).angle(GVector3D.Y_DOWN))));
 
-      //      IVector2<?> vec1 = new GVector2F(9000000, 9000000);
-      //      IVector2<?> vec2 = new GVector2F(9000000, 0);
+      //      IVector2 vec1 = new GVector2F(9000000, 9000000);
+      //      IVector2 vec2 = new GVector2F(9000000, 0);
       //
-      //      IVector2<?> vec3 = new GVector2F(1000000, 1000000);
-      //      IVector2<?> vec4 = new GVector2F(-1000000, -1000000);
+      //      IVector2 vec3 = new GVector2F(1000000, 1000000);
+      //      IVector2 vec4 = new GVector2F(-1000000, -1000000);
       //
       //      Assert.assertTrue("test1 " + (vec1.angle(vec2)), GMath.closeTo(GMath.QUARTER_PI, (vec1.angle(vec2)),
       //               GMath.DEFAULT_NUMERICAL_PRECISION_FLOAT));
@@ -937,14 +934,14 @@ public class VectorTest {
       Assert.assertTrue("yaxis x xaxis = -zaxis", (GVector3F.Z_DOWN).closeTo((GVector3F.Y_UP).cross(GVector3F.X_UP)));
       Assert.assertTrue("xaxis x zaxis = -yaxis", (GVector3F.Y_DOWN).closeTo((GVector3F.X_UP).cross(GVector3F.Z_UP)));
 
-      for (final IVector3<?> element : VectorTest.all3) {
+      for (final IVector3 element : VectorTest.all3) {
          assertCloseTo("vec X vec = zero", GVector3D.ZERO, element.cross(element));
       }
-      combinationsDo(VectorTest.generics3All, new PairEvaluation<IVector3<?>>() {
+      combinationsDo(VectorTest.generics3All, new PairEvaluation<IVector3>() {
          @Override
-         public void evaluate(final IVector3<?> vector1,
-                              final IVector3<?> vector2) {
-            final IVector3<?> cross = (vector1.cross(vector2)).normalized();
+         public void evaluate(final IVector3 vector1,
+                              final IVector3 vector2) {
+            final IVector3 cross = (vector1.cross(vector2)).normalized();
             Assert.assertTrue("", GMath.closeTo(0, vector1.normalized().dot(cross)));
             Assert.assertTrue("", GMath.closeTo(0, vector2.normalized().dot(cross)));
 
@@ -955,12 +952,12 @@ public class VectorTest {
 
    @Test
    public void testPairsNonZero3AddSub() {
-      combinationsDo(VectorTest.generics3All, new PairEvaluation<IVector3<?>>() {
+      combinationsDo(VectorTest.generics3All, new PairEvaluation<IVector3>() {
          @Override
-         public void evaluate(final IVector3<?> vector1,
-                              final IVector3<?> vector2) {
+         public void evaluate(final IVector3 vector1,
+                              final IVector3 vector2) {
 
-            final IVector3<?> unit = new GVector3D(1, 1, 1);
+            final IVector3 unit = new GVector3D(1, 1, 1);
 
             assertCloseTo("(a+b)-b=a", vector1, (vector1.add(vector2)).sub(vector2));
             assertCloseTo("a+b-b=a", vector1, vector1.add(vector2).sub(vector2));
@@ -991,7 +988,7 @@ public class VectorTest {
    }
 
 
-   private void testIndexOutOfBoundsException(final IVector<?, ?, ?> vector) {
+   private void testIndexOutOfBoundsException(final IVector<?, ?> vector) {
       boolean thrown = false;
       try {
          vector.get((byte) -1);

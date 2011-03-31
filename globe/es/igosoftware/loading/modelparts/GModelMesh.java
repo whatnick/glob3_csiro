@@ -174,15 +174,15 @@ public class GModelMesh
 
    private Vec4 getCentroid() {
       if (_centroid == null) {
-         final List<IVector3<?>> vertices = _model.getVertices();
+         final List<IVector3> vertices = _model.getVertices();
 
-         IVector3<?> min = GVector3D.POSITIVE_INFINITY;
-         IVector3<?> max = GVector3D.NEGATIVE_INFINITY;
+         IVector3 min = GVector3D.POSITIVE_INFINITY;
+         IVector3 max = GVector3D.NEGATIVE_INFINITY;
 
          for (final GFace face : _faces) {
             for (final int vertexIndex : face._vertexIndices) {
 
-               final IVector3<?> vertex = vertices.get(vertexIndex);
+               final IVector3 vertex = vertices.get(vertexIndex);
                min = min.min(vertex);
                max = max.max(vertex);
             }
