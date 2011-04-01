@@ -78,7 +78,7 @@ BoundsT extends IBounds<VectorT, BoundsT>
    }
 
 
-   public double lenght() {
+   public double length() {
       return _from.distance(_to);
    }
 

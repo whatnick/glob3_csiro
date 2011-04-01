@@ -78,7 +78,7 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
    public final double angle(final VectorT that) {
       final double normProduct = length() * that.length();
       if (GMath.closeToZero(normProduct)) {
-         throw new RuntimeException("the product of the lenght() of the vectors is zero");
+         throw new RuntimeException("the product of the length() of the vectors is zero");
       }
 
       final double dot = dot(that) / normProduct;

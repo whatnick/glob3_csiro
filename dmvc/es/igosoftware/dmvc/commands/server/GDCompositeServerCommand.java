@@ -22,8 +22,8 @@ public final class GDCompositeServerCommand
 
    private final GArrayProtocolField<IDServerCommand> _children        = new GArrayProtocolField<IDServerCommand>(false) {
                                                                           @Override
-                                                                          protected IDServerCommand[] createArray(final int lenght) {
-                                                                             return new IDServerCommand[lenght];
+                                                                          protected IDServerCommand[] createArray(final int length) {
+                                                                             return new IDServerCommand[length];
                                                                           }
                                                                        };
 
