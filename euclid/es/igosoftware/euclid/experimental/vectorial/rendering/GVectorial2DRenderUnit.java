@@ -199,11 +199,6 @@ class GVectorial2DRenderUnit
                                final GAxisAlignedRectangle region,
                                final GRenderingAttributes attributes) {
 
-      final int _______Diego_at_work;
-      // TODO: Point_Line_Polygon_attributes;
-      // TODO: rename_from_polygon2d;
-
-
       if (geometry instanceof IVector2) {
          renderPoint((IVector2) geometry, scale, g2d, region, attributes);
       }
