@@ -13,7 +13,7 @@ import es.igosoftware.util.ITransformer;
 
 public class GGeometryOctree<ElementT>
          extends
-            GGeometryNTree<IVector3, GAxisAlignedBox, ElementT> {
+            GGeometryNTree<IVector3, ElementT> {
 
 
    public GGeometryOctree(final String name,
@@ -29,5 +29,6 @@ public class GGeometryOctree<ElementT>
    protected String getTreeName() {
       return "Octree";
    }
+
 
 }

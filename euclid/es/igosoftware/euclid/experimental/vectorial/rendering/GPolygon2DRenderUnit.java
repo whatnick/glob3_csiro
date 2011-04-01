@@ -61,19 +61,15 @@ class GPolygon2DRenderUnit
       final AffineTransform transformFlipY = AffineTransform.getScaleInstance(1, -1);
       transformFlipY.concatenate(AffineTransform.getTranslateInstance(0, -height));
 
-      //      final AffineTransform transform = new AffineTransform();
-      //      transform.concatenate(transformFlipY);
-      //      g2d.setTransform(transform);
       g2d.setTransform(transformFlipY);
 
       processNode(quadtree.getRoot(), quadtree, region, attributes, scale, g2d, renderedImage);
-
 
       return renderedImage;
    }
 
 
-   private void processNode(final GGTNode<IVector2, GAxisAlignedRectangle, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> node,
+   private void processNode(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> node,
                             final GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> quadtree,
                             final GAxisAlignedRectangle region,
                             final GRenderingAttributes attributes,
@@ -103,20 +99,19 @@ class GPolygon2DRenderUnit
 
 
       if (node instanceof GGTInnerNode) {
-         final GGTInnerNode<IVector2, GAxisAlignedRectangle, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> inner;
-         inner = (GGTInnerNode<IVector2, GAxisAlignedRectangle, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>>) node;
+         final GGTInnerNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> inner;
+         inner = (GGTInnerNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>>) node;
 
-         for (final GGTNode<IVector2, GAxisAlignedRectangle, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> child : inner.getChildren()) {
+         for (final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> child : inner.getChildren()) {
             processNode(child, quadtree, region, attributes, scale, g2d, renderedImage);
          }
       }
 
-      // renderNodeGeometries(node, scale, g2d, renderedImage);
       renderNodeGeometries(node, region, attributes, scale, g2d, renderedImage);
    }
 
 
-   private void renderNodeGeometries(final GGTNode<IVector2, ? extends IFiniteBounds<IVector2, ?>, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> node,
+   private void renderNodeGeometries(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> node,
                                      final GAxisAlignedRectangle region,
                                      final GRenderingAttributes attributes,
                                      final IVector2 scale,
@@ -125,7 +120,7 @@ class GPolygon2DRenderUnit
 
 
       if (attributes._renderBounds) {
-         final GAxisAlignedRectangle nodeBounds = node.getBounds().asRectangle();
+         final GAxisAlignedOrthotope<IVector2, ?> nodeBounds = node.getBounds();
 
          final IVector2 nodeLower = nodeBounds._lower.sub(region._lower).scale(scale);
          final IVector2 nodeUpper = nodeBounds._upper.sub(region._lower).scale(scale);
@@ -148,25 +143,6 @@ class GPolygon2DRenderUnit
       }
 
    }
-
-
-   //   private Color scaleColor(final Color color,
-   //                            final double alpha) {
-   //      final float alphaF = GMath.clamp((float) alpha, 0.5f, 1);
-   //
-   //      //      final int r = Math.round(color.getRed() * alphaF);
-   //      //      final int g = Math.round(color.getGreen() * alphaF);
-   //      //      final int b = Math.round(color.getBlue() * alphaF);
-   //
-   //      final int r = color.getRed();
-   //      final int g = color.getGreen();
-   //      final int b = color.getBlue();
-   //
-   //      final int a = Math.round(color.getAlpha() * alphaF);
-   //      //      final int a = color.getAlpha();
-   //
-   //      return new Color(r, g, b, a);
-   //   }
 
 
    private static void setPixel(final BufferedImage renderedImage,
@@ -342,7 +318,7 @@ class GPolygon2DRenderUnit
                                  final GRenderingAttributes attributes,
                                  final int x,
                                  final int y) {
-      final int width = Math.max(1, Math.round(attributes._borderWidth)) * 2;
+      final int width = Math.max(1, Math.round(attributes._borderWidth) * 2);
       final int height = width;
 
       // fill point

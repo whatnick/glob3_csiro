@@ -65,12 +65,11 @@ public class GPolygon2DRenderingTest {
       System.out.println("----------------\n");
 
 
-      //      final GFileName fileName = GFileName.absoluteFromParts("home", "dgd", "Escritorio", "sample-shp", "cartobrutal",
+      //      final GFileName fileName = GFileName.absoluteFromParts("home", "dgd", "Desktop", "sample-shp", "cartobrutal",
       //               "world-modified", "world.shp");
-      //      final GFileName fileName = GFileName.absoluteFromParts("home", "dgd", "Escritorio", "sample-shp", "shp", "argentina.shp",
+      //      final GFileName fileName = GFileName.absoluteFromParts("home", "dgd", "Desktop", "sample-shp", "shp", "argentina.shp",
       //      "roads.shp");
-      final GFileName fileName = GFileName.absolute("home", "dgd", "Escritorio", "sample-shp", "shp", "argentina.shp",
-               "places.shp");
+      final GFileName fileName = GFileName.absolute("home", "dgd", "Desktop", "sample-shp", "shp", "argentina.shp", "roads.shp");
 
       final GProjection projection = GProjection.EPSG_4326;
 

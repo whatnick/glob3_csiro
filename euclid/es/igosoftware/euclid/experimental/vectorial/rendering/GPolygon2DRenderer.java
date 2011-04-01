@@ -30,16 +30,12 @@ public class GPolygon2DRenderer {
 
    private GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> createQuadtree() {
       final GGeometryNTreeParameters.AcceptLeafNodeCreationPolicy acceptLeafNodeCreationPolicy;
-      acceptLeafNodeCreationPolicy = new GGeometryNTreeParameters.Accept2DLeafNodeCreationPolicy<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>() {
+      acceptLeafNodeCreationPolicy = new GGeometryNTreeParameters.Accept2DLeafNodeCreationPolicy<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>>() {
          @Override
          public boolean accept(final int depth,
                                final GAxisAlignedOrthotope<IVector2, ?> bounds,
                                final Collection<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> elements) {
-            if (depth >= 10) {
-               return true;
-            }
-
-            return elements.size() <= 2;
+            return (depth >= 10) || (elements.size() <= 2);
          }
       };
 
