@@ -46,8 +46,8 @@ import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
-import es.igosoftware.euclid.experimental.vectorial.rendering.GPolygon2DRenderer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GRenderingAttributes;
+import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorial2DRenderer;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.GVectorUtils;
@@ -84,7 +84,7 @@ public class GPolygon2DRenderingTest {
       final GAxisAlignedOrthotope<IVector2, ?> featuresBounds = features.getBounds();
 
 
-      final GPolygon2DRenderer renderer = new GPolygon2DRenderer(features);
+      final GVectorial2DRenderer renderer = new GVectorial2DRenderer(features);
 
 
       final GAxisAlignedRectangle region = ((GAxisAlignedRectangle) centerBounds(multipleOfSmallestDimention(featuresBounds),
@@ -189,7 +189,7 @@ public class GPolygon2DRenderingTest {
    }
 
 
-   private static void render(final GPolygon2DRenderer renderer,
+   private static void render(final GVectorial2DRenderer renderer,
                               final GAxisAlignedRectangle region,
                               final GFileName directoryName,
                               final GRenderingAttributes attributes,

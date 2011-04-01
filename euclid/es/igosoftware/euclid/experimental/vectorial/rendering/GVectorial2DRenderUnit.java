@@ -24,9 +24,9 @@ import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector2;
 
 
-class GPolygon2DRenderUnit
+class GVectorial2DRenderUnit
          implements
-            IPolygon2DRenderUnit {
+            IVectorial2DRenderUnit {
 
 
    @Override
