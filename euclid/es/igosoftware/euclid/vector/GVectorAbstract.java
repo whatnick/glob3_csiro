@@ -134,4 +134,10 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
    }
 
 
+   @Override
+   public final boolean containsOnBoundary(final VectorT point) {
+      return closeTo(point);
+   }
+
+
 }

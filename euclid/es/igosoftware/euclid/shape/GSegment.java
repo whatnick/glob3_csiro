@@ -200,6 +200,7 @@ BoundsT extends IBounds<VectorT, BoundsT>
    }
 
 
+   @Override
    public boolean containsOnBoundary(final VectorT point) {
       return contains(point);
    }

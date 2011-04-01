@@ -445,4 +445,10 @@ public final class GMutableVector3<T extends IVector3>
    }
 
 
+   @Override
+   public boolean containsOnBoundary(final IVector3 point) {
+      return _value.containsOnBoundary(point);
+   }
+
+
 }

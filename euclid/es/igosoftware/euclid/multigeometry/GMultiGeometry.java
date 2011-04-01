@@ -16,6 +16,7 @@ import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GCollections;
+import es.igosoftware.util.GMath;
 import es.igosoftware.util.ITransformer;
 
 
@@ -200,6 +201,12 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
    @Override
    public double distanceToBoundary(final VectorT point) {
       return Math.sqrt(squaredDistance(point));
+   }
+
+
+   @Override
+   public final boolean containsOnBoundary(final VectorT point) {
+      return GMath.closeToZero(distanceToBoundary(point));
    }
 
 

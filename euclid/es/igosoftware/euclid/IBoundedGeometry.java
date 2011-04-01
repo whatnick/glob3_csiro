@@ -65,4 +65,7 @@ BoundsT extends IBounds<VectorT, ?>
 
    public double distanceToBoundary(final VectorT point);
 
+
+   public boolean containsOnBoundary(final VectorT point);
+
 }
