@@ -1389,15 +1389,15 @@ public final class GCollections {
    }
 
 
-   public static <T, ET extends T> List<T> createList(final ET... elements) {
-      final ArrayList<T> result = new ArrayList<T>(elements.length);
-
-      for (final T element : elements) {
-         result.add(element);
-      }
-
-      return result;
-   }
+   //   public static <T, ET extends T> List<T> createList(final ET... elements) {
+   //      final ArrayList<T> result = new ArrayList<T>(elements.length);
+   //
+   //      for (final T element : elements) {
+   //         result.add(element);
+   //      }
+   //
+   //      return result;
+   //   }
 
 
    public static float[] toFloat(final double doubleList[]) {

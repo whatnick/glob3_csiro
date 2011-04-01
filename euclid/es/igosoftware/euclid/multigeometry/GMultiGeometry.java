@@ -1,18 +1,17 @@
 
 
-package es.igosoftware.euclid;
+package es.igosoftware.euclid.multigeometry;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import es.igosoftware.euclid.GGeometryAbstract;
+import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
-import es.igosoftware.euclid.shape.GRenderType;
 import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GAssert;
@@ -20,7 +19,7 @@ import es.igosoftware.util.GCollections;
 import es.igosoftware.util.ITransformer;
 
 
-public class GMultiGeometry<
+public abstract class GMultiGeometry<
 
 VectorT extends IVector<VectorT, ?>,
 
@@ -55,9 +54,14 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
    }
 
 
+   public ChildrenGeometryT getExemplar() {
+      return _children.get(0);
+   }
+
+
    @Override
    public byte dimensions() {
-      return _children.get(0).dimensions();
+      return getExemplar().dimensions();
    }
 
 
@@ -89,7 +93,7 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
 
    @Override
    public VectorT closestPoint(final VectorT point) {
-      VectorT closest = _children.get(0).closestPoint(point);
+      VectorT closest = getExemplar().closestPoint(point);
       double closestDistance = closest.squaredDistance(point);
 
       for (int i = 1; i < _children.size(); i++) {
@@ -107,7 +111,7 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
 
    @Override
    public double precision() {
-      return _children.get(0).precision();
+      return getExemplar().precision();
    }
 
 
@@ -140,21 +144,6 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
 
 
    @Override
-   public GRenderType getRenderType() {
-      return _children.get(0).getRenderType();
-   }
-
-
-   @Override
-   public void save(final DataOutputStream output) throws IOException {
-      output.writeInt(_children.size());
-      for (final ChildrenGeometryT child : _children) {
-         child.save(output);
-      }
-   }
-
-
-   @Override
    public String toString() {
       return "GMultiGeometry" + dimensions() + " " + _children;
    }
@@ -175,5 +164,9 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
       return Collections.unmodifiableList(_children).iterator();
    }
 
+
+   public ChildrenGeometryT getChild(final int index) {
+      return _children.get(index);
+   }
 
 }

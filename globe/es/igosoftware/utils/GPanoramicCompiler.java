@@ -55,6 +55,7 @@ import javax.media.jai.JAI;
 
 import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
+import es.igosoftware.util.GImageUtils;
 import es.igosoftware.util.GLogger;
 import es.igosoftware.util.GProgress;
 
@@ -230,18 +231,6 @@ public class GPanoramicCompiler {
    }
 
 
-   private static BufferedImage getRenderedImage(final Image image) {
-      final BufferedImage renderedImage = new BufferedImage(image.getWidth(null), image.getHeight(null),
-               BufferedImage.TYPE_3BYTE_BGR);
-
-      final Graphics2D g2d = renderedImage.createGraphics();
-      g2d.drawImage(image, 0, 0, null);
-      g2d.dispose();
-
-      return renderedImage;
-   }
-
-
    private static BufferedImage fix(final BufferedImage bi,
                                     final int width,
                                     final int height,
@@ -365,7 +354,7 @@ public class GPanoramicCompiler {
          scaledImage = image.getScaledInstance(level._width, level._height, Image.SCALE_SMOOTH);
       }
 
-      final BufferedImage scaledRenderedImage = getRenderedImage(scaledImage);
+      final BufferedImage scaledRenderedImage = GImageUtils.asBufferedImage(scaledImage);
 
       //      logInfo("Saving scaled image...");
       //      final File scaledFile = new File(levelDirectory, "scaled.jpg");

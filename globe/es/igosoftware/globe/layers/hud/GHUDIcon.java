@@ -41,10 +41,7 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,7 +52,6 @@ import com.sun.opengl.util.texture.TextureCoords;
 import com.sun.opengl.util.texture.TextureIO;
 
 import es.igosoftware.util.GAssert;
-import es.igosoftware.util.GLogger;
 import es.igosoftware.util.GMath;
 import gov.nasa.worldwind.geom.Vec4;
 import gov.nasa.worldwind.render.DrawContext;
@@ -65,8 +61,6 @@ public class GHUDIcon
          implements
             IHUDElement {
 
-   private static final GLogger logger = GLogger.instance();
-
 
    public static enum Position {
       NORTHWEST,
@@ -75,14 +69,16 @@ public class GHUDIcon
       SOUTHEAST;
    }
 
+   private BufferedImage           _image;
 
-   private String                  _iconFileName;
-   private int                     _iconWidth;
-   private int                     _iconHeight;
+   private Texture                 _texture;
+   private int                     _textureWidth;
+   private int                     _textureHeight;
+
    private final GHUDIcon.Position _position;
    private int                     _borderWidth     = 20;
    private int                     _borderHeight    = 20;
-   private float                   _opacity         = 0.7f;
+   private float                   _opacity         = 0.65f;
 
    private boolean                 _isEnable        = true;
    private double                  _distanceFromEye = 0;
@@ -93,12 +89,13 @@ public class GHUDIcon
    private List<ActionListener>    _actionListeners;
 
 
-   public GHUDIcon(final String iconFileName,
+   public GHUDIcon(final BufferedImage image,
                    final GHUDIcon.Position position) {
-      GAssert.notNull(iconFileName, "iconFileName");
+      GAssert.notNull(image, "image");
       GAssert.notNull(position, "position");
 
-      _iconFileName = iconFileName;
+      _image = image;
+
       _position = position;
    }
 
@@ -123,8 +120,14 @@ public class GHUDIcon
 
 
    private void drawIcon(final DrawContext dc) {
-      if (_iconFileName == null) {
-         return;
+      if (_texture == null) {
+
+         _texture = TextureIO.newTexture(_image, true);
+         if (_texture == null) {
+            return;
+         }
+         _textureWidth = _texture.getWidth();
+         _textureHeight = _texture.getHeight();
       }
 
       final GL gl = dc.getGL();
@@ -138,19 +141,19 @@ public class GHUDIcon
                          | GL.GL_TRANSFORM_BIT | GL.GL_VIEWPORT_BIT | GL.GL_CURRENT_BIT);
          attribsPushed = true;
 
-         // Initialize texture if not done yet 
-         Texture iconTexture = dc.getTextureCache().get(_iconFileName);
-         if (iconTexture == null) {
-            initializeTexture(dc);
-            iconTexture = dc.getTextureCache().get(_iconFileName);
-            if (iconTexture == null) {
-               logger.warning("Can't load icon \"" + _iconFileName + "\"");
-               return;
-            }
-         }
+         //         // Initialize texture if not done yet 
+         //         Texture iconTexture = dc.getTextureCache().get(_iconFileName);
+         //         if (iconTexture == null) {
+         //            initializeTexture(dc);
+         //            iconTexture = dc.getTextureCache().get(_iconFileName);
+         //            if (iconTexture == null) {
+         //               logger.warning("Can't load icon \"" + _iconFileName + "\"");
+         //               return;
+         //            }
+         //         }
 
          gl.glEnable(GL.GL_BLEND);
-         gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+         gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
          gl.glDisable(GL.GL_DEPTH_TEST);
 
          // Load a parallel projection with xy dimensions (viewportWidth, viewportHeight)
@@ -160,7 +163,7 @@ public class GHUDIcon
          gl.glPushMatrix();
          projectionPushed = true;
          gl.glLoadIdentity();
-         final double maxwh = (_iconWidth > _iconHeight) ? _iconWidth : _iconHeight;
+         final double maxwh = (_textureWidth > _textureHeight) ? _textureWidth : _textureHeight;
          gl.glOrtho(0d, viewport.width, 0d, viewport.height, -0.6 * maxwh, 0.6 * maxwh);
 
          gl.glMatrixMode(GL.GL_MODELVIEW);
@@ -174,16 +177,23 @@ public class GHUDIcon
          gl.glTranslated(locationSW.x(), locationSW.y(), locationSW.z());
          // Scale to 0..1 space
          gl.glScalef(scale, scale, 1f);
-         gl.glScaled(_iconWidth, _iconHeight, 1d);
+         gl.glScaled(_textureWidth, _textureHeight, 1d);
 
          _lastScreenBounds = calculateScreenBounds(viewport, locationSW, scale);
 
          if (!dc.isPickingMode()) {
-            gl.glColor4f(1, 1, 1, calculateOpacity());
             gl.glEnable(GL.GL_TEXTURE_2D);
-            iconTexture.bind();
+            _texture.bind();
 
-            final TextureCoords texCoords = iconTexture.getImageTexCoords();
+            gl.glTexEnvf(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_MODULATE);
+            gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR_MIPMAP_LINEAR);
+            gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
+            gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE);
+            gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE);
+
+
+            gl.glColor4f(1, 1, 1, calculateOpacity());
+            final TextureCoords texCoords = _texture.getImageTexCoords();
             dc.drawUnitQuad(texCoords);
          }
       }
@@ -204,15 +214,15 @@ public class GHUDIcon
 
 
    private float computeScale(final Rectangle viewport) {
-      return Math.min(1, (float) viewport.width / _iconWidth) * (_highlighted ? 1.15f : 1f);
+      return Math.min(1, (float) viewport.width / _textureWidth) * (_highlighted ? 1.15f : 1f);
    }
 
 
    private Rectangle calculateScreenBounds(final Rectangle viewport,
                                            final Vec4 position,
                                            final float scale) {
-      final int iWidth = toInt(_iconWidth * scale);
-      final int iHeight = toInt(_iconHeight * scale);
+      final int iWidth = toInt(_textureWidth * scale);
+      final int iHeight = toInt(_textureHeight * scale);
       final int iX = toInt(position.x);
       final int iY = viewport.height - iHeight - toInt(position.y);
       return new Rectangle(iX, iY, iWidth, iHeight);
@@ -224,45 +234,10 @@ public class GHUDIcon
    }
 
 
-   private void initializeTexture(final DrawContext dc) {
-      Texture iconTexture = dc.getTextureCache().get(_iconFileName);
-      if (iconTexture != null) {
-         return;
-      }
-
-      try {
-         InputStream iconStream = getClass().getResourceAsStream(_iconFileName);
-         if (iconStream == null) {
-            final File iconFile = new File(_iconFileName);
-            if (iconFile.exists()) {
-               iconStream = new FileInputStream(iconFile);
-            }
-         }
-
-         iconTexture = TextureIO.newTexture(iconStream, true, null);
-         iconTexture.bind();
-         _iconWidth = iconTexture.getWidth();
-         _iconHeight = iconTexture.getHeight();
-         dc.getTextureCache().put(_iconFileName, iconTexture);
-      }
-      catch (final IOException e) {
-         throw new RuntimeException(e);
-      }
-
-      final GL gl = dc.getGL();
-      gl.glTexEnvf(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_MODULATE);
-      gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR_MIPMAP_LINEAR);
-      gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
-      gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE);
-      gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE);
-
-   }
-
-
    private Vec4 computeLocation(final Rectangle viewport,
                                 final float scale) {
-      final double width = _iconWidth;
-      final double height = _iconHeight;
+      final double width = _textureWidth;
+      final double height = _textureHeight;
 
       final double scaledWidth = scale * width;
       final double scaledHeight = scale * height;
@@ -300,7 +275,7 @@ public class GHUDIcon
 
    private float calculateOpacity() {
       if (_highlighted) {
-         return 1;
+         return 1.0f;
       }
       return _opacity;
    }
@@ -342,16 +317,6 @@ public class GHUDIcon
    }
 
 
-   public String getIconFileName() {
-      return _iconFileName;
-   }
-
-
-   public void setIconFileName(final String iconFileName) {
-      _iconFileName = iconFileName;
-   }
-
-
    public void setDistanceFromEye(final double distanceFromEye) {
       _distanceFromEye = distanceFromEye;
    }
@@ -359,7 +324,7 @@ public class GHUDIcon
 
    @Override
    public String toString() {
-      return "GHUDIcon [iconFileName=" + _iconFileName + ", position=" + _position + "]";
+      return "GHUDIcon [texture=" + _texture + ", position=" + _position + "]";
    }
 
 
@@ -410,6 +375,12 @@ public class GHUDIcon
          _actionListeners = new ArrayList<ActionListener>(2);
       }
       _actionListeners.add(listener);
+   }
+
+
+   public void setImage(final BufferedImage image) {
+      _image = image;
+      _texture = null;
    }
 
 

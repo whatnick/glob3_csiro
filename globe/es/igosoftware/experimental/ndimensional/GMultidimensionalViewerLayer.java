@@ -50,6 +50,7 @@ import es.igosoftware.globe.attributes.GSelectionLayerAttribute;
 import es.igosoftware.globe.attributes.GSeparatorAttribute;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.globe.layers.GVector2RenderingTheme;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GRange;
 import es.igosoftware.util.LRUCache;
@@ -393,7 +394,7 @@ public class GMultidimensionalViewerLayer
 
    @Override
    public Icon getIcon(final IGlobeApplication application) {
-      return application.getIcon("pointscloud.png");
+      return application.getSmallIcon(GFileName.relative("pointscloud.png"));
    }
 
 

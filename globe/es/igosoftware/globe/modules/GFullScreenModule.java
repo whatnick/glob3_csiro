@@ -51,6 +51,7 @@ import es.igosoftware.globe.actions.GCheckBoxGenericAction;
 import es.igosoftware.globe.actions.IGenericAction;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GPair;
 
 
@@ -101,8 +102,8 @@ public class GFullScreenModule
       }
 
 
-      final IGenericAction switchFullScreen = new GCheckBoxGenericAction(_label, 'F', application.getIcon("fullscreen.png"),
-               IGenericAction.MenuArea.VIEW, true, false) {
+      final IGenericAction switchFullScreen = new GCheckBoxGenericAction(_label, 'F',
+               application.getSmallIcon(GFileName.relative("fullscreen.png")), IGenericAction.MenuArea.VIEW, true, false) {
 
 
          @Override

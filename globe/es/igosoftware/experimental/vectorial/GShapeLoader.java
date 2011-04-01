@@ -64,7 +64,9 @@ import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.shape.GComplexPolygon2D;
 import es.igosoftware.euclid.shape.GShape;
+import es.igosoftware.euclid.shape.ILineal2D;
 import es.igosoftware.euclid.shape.IPolygon2D;
+import es.igosoftware.euclid.shape.ISimplePolygon2D;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.io.GFileName;
@@ -126,16 +128,16 @@ public class GShapeLoader {
    }
 
 
-   public static IGlobeFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> readFeatures(final File file,
-                                                                                                                                     final GProjection projection)
-                                                                                                                                                                  throws IOException {
+   public static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> readFeatures(final File file,
+                                                                                                                                               final GProjection projection)
+                                                                                                                                                                            throws IOException {
       return readFeatures(GFileName.fromFile(file), projection);
    }
 
 
-   public static IGlobeFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> readFeatures(final GFileName fileName,
-                                                                                                                                     final GProjection projection)
-                                                                                                                                                                  throws IOException {
+   public static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> readFeatures(final GFileName fileName,
+                                                                                                                                               final GProjection projection)
+                                                                                                                                                                            throws IOException {
       final File file = fileName.asFile();
       if (!file.exists()) {
          throw new IOException("File not found!");
@@ -186,7 +188,7 @@ public class GShapeLoader {
                final com.vividsolutions.jts.geom.Polygon jtsPolygon = (com.vividsolutions.jts.geom.Polygon) multipolygon.getGeometryN(i);
 
                try {
-                  final IPolygon2D outerEuclidPolygon = createPolygon(jtsPolygon.getCoordinates(), projection);
+                  final ISimplePolygon2D outerEuclidPolygon = createPolygon(jtsPolygon.getCoordinates(), projection);
 
                   final int holesCount = jtsPolygon.getNumInteriorRing();
                   if (holesCount == 0) {
@@ -194,12 +196,12 @@ public class GShapeLoader {
                   }
                   else {
 
-                     final List<IPolygon2D> euclidHoles = new ArrayList<IPolygon2D>(holesCount);
+                     final List<ISimplePolygon2D> euclidHoles = new ArrayList<ISimplePolygon2D>(holesCount);
                      for (int j = 0; j < holesCount; j++) {
                         final LineString jtsHole = jtsPolygon.getInteriorRingN(j);
 
                         try {
-                           final IPolygon2D euclidHole = createPolygon(jtsHole.getCoordinates(), projection);
+                           final ISimplePolygon2D euclidHole = createPolygon(jtsHole.getCoordinates(), projection);
                            euclidHoles.add(euclidHole);
                         }
                         catch (final IllegalArgumentException e) {
@@ -236,7 +238,7 @@ public class GShapeLoader {
                final com.vividsolutions.jts.geom.LineString jtsPolygon = (com.vividsolutions.jts.geom.LineString) multiline.getGeometryN(i);
 
                try {
-                  final IPolygon2D euclidLines = createLine(jtsPolygon.getCoordinates(), projection);
+                  final ILineal2D euclidLines = createLine(jtsPolygon.getCoordinates(), projection);
 
                   euclidFeatures.add(createFeature(euclidLines, feature));
                }
@@ -307,8 +309,8 @@ public class GShapeLoader {
    }
 
 
-   private static IPolygon2D createPolygon(final Coordinate[] jtsCoordinates,
-                                           final GProjection projection) {
+   private static ISimplePolygon2D createPolygon(final Coordinate[] jtsCoordinates,
+                                                 final GProjection projection) {
       final List<IVector2> points = removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeLastIfRepeated(convert(
                jtsCoordinates, projection))))));
 
@@ -316,8 +318,8 @@ public class GShapeLoader {
    }
 
 
-   private static IPolygon2D createLine(final Coordinate[] jtsCoordinates,
-                                        final GProjection projection) {
+   private static ILineal2D createLine(final Coordinate[] jtsCoordinates,
+                                       final GProjection projection) {
       final List<IVector2> points = removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeLastIfRepeated(convert(
                jtsCoordinates, projection))))));
 
@@ -340,7 +342,7 @@ public class GShapeLoader {
       System.out.println("GShapeLoader 0.1");
       System.out.println("----------------\n");
 
-      final IGlobeFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features = GShapeLoader.readFeatures(
+      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features = GShapeLoader.readFeatures(
                GFileName.absolute("home", "dgd", "Desktop", "sample-shp", "shp", "great_britain.shp", "roads.shp"),
                GProjection.EPSG_4326);
 

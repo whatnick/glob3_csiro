@@ -41,6 +41,7 @@ import java.awt.Component;
 import java.awt.LinearGradientPaint;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.JFileChooser;
@@ -75,7 +76,6 @@ import es.igosoftware.globe.layers.GPoints2RenderingTheme;
 import es.igosoftware.globe.layers.GPolygons2RenderingTheme;
 import es.igosoftware.globe.layers.GVector2RenderingTheme;
 import es.igosoftware.io.GGenericFileFilter;
-import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GPair;
 
 
@@ -460,8 +460,8 @@ public class GAddVectorLayerModule
       };
 
 
-      return GCollections.createList(method, color, ramp, colorField, thickness, borderColor, /*shape,*/altitudeMethod,
-               altitudeSource, altitudeField, fixedAltitude);
+      return Arrays.asList(method, color, ramp, colorField, thickness, borderColor, /*shape,*/altitudeMethod, altitudeSource,
+               altitudeField, fixedAltitude);
    }
 
 
@@ -507,7 +507,7 @@ public class GAddVectorLayerModule
 
    @Override
    public List<? extends ILayerInfo> getAvailableLayers(final IGlobeApplication application) {
-      return GCollections.createList(new GLayerInfo("Shape File"));
+      return Arrays.asList(new GLayerInfo("Shape File"));
    }
 
 

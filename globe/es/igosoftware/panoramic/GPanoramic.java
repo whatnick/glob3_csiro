@@ -42,7 +42,8 @@ import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.globe.GGlobeApplication;
-import es.igosoftware.globe.IGlobeApplication;
+import es.igosoftware.globe.layers.hud.GHUDIcon;
+import es.igosoftware.globe.layers.hud.GHUDLayer;
 import es.igosoftware.globe.view.GBasicOrbitViewLimits;
 import es.igosoftware.globe.view.GPanoramicViewLimits;
 import es.igosoftware.globe.view.customView.GCustomView;
@@ -75,6 +76,8 @@ import gov.nasa.worldwind.render.OrderedRenderable;
 import gov.nasa.worldwind.util.WWMath;
 
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -107,8 +110,9 @@ public class GPanoramic
 
    private static final int                                                  TILE_THETA_SUBDIVISIONS = 2;
    private static final int                                                  TILE_RHO_SUBDIVISIONS   = 1;
-
    private static final double                                               MIN_PROYECTED_SIZE      = 12;
+
+   private static final GFileName                                            DEFAULT_EXIT_ICON_NAME  = GFileName.relative("quit.png");
 
    private static final GDisplayListCache<PanoramicTile>                     QUAD_STRIPS_DISPLAY_LIST_CACHE;
 
@@ -190,10 +194,14 @@ public class GPanoramic
    private int                                                               _currentLevel;
 
    private final Layer                                                       _layer;
+   private final GHUDLayer                                                   _hudLayer;
+   private final GFileName                                                   _exitIconName;
+   private final GHUDIcon                                                    _hudIcon;
    private double                                                            _currentDistanceFromEye;
 
 
    private boolean                                                           _isHidden;
+   private boolean                                                           _isActive               = false;
 
 
    public GPanoramic(final Layer layer,
@@ -201,8 +209,21 @@ public class GPanoramic
                      final ILoader loader,
                      final GFileName panoramicName,
                      final double radius,
-                     final Position position) throws IOException {
-      this(layer, name, loader, panoramicName, radius, position, 0, GElevationAnchor.SURFACE);
+                     final Position position,
+                     final GHUDLayer hudLayer) throws IOException {
+      this(layer, name, loader, panoramicName, radius, position, 0, GElevationAnchor.SURFACE, hudLayer, DEFAULT_EXIT_ICON_NAME);
+   }
+
+
+   public GPanoramic(final Layer layer,
+                     final String name,
+                     final ILoader loader,
+                     final GFileName panoramicName,
+                     final double radius,
+                     final Position position,
+                     final GHUDLayer hudLayer,
+                     final GFileName exitIconName) throws IOException {
+      this(layer, name, loader, panoramicName, radius, position, 0, GElevationAnchor.SURFACE, hudLayer, exitIconName);
    }
 
 
@@ -213,12 +234,15 @@ public class GPanoramic
                      final double radius,
                      final Position position,
                      final double headingInDegrees,
-                     final GElevationAnchor anchor) throws IOException {
+                     final GElevationAnchor anchor,
+                     final GHUDLayer hudLayer,
+                     final GFileName exitIconName) throws IOException {
       GAssert.notNull(name, "name");
       GAssert.notNull(loader, "loader");
       GAssert.isPositive(radius, "radius");
       GAssert.notNull(position, "position");
       GAssert.notNull(anchor, "anchor");
+      GAssert.notNull(exitIconName, "exitIconName");
 
       _layer = layer;
 
@@ -229,6 +253,8 @@ public class GPanoramic
       _position = position;
       _headingInDegrees = headingInDegrees;
       _anchor = anchor;
+      _hudLayer = hudLayer;
+      _exitIconName = exitIconName;
 
       _tiles = createTopTiles();
 
@@ -236,7 +262,28 @@ public class GPanoramic
 
       _maxResolutionInPanoramic = _zoomLevels.getLevels().size() - 1;
 
+      final GGlobeApplication application = GGlobeApplication.instance();
+      _hudIcon = new GHUDIcon(application.getImage(_exitIconName, 48, 48), GHUDIcon.Position.NORTHEAST);
 
+      _hudIcon.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(final ActionEvent e) {
+            deactivate((GCustomView) GGlobeApplication.instance().getView());
+         }
+      });
+
+      _hudIcon.setEnable(false);
+      _hudLayer.addElement(_hudIcon);
+   }
+
+
+   public boolean isActive() {
+      return _isActive;
+   }
+
+
+   public GHUDLayer getHUDLayer() {
+      return _hudLayer;
    }
 
 
@@ -632,6 +679,9 @@ public class GPanoramic
    public void activate(final GCustomView view,
                         final GGlobeApplication application) {
 
+      _hudIcon.setEnable(true);
+      _isActive = true;
+
       if (!view.hasCameraState()) {
          view.saveCameraState();
       }
@@ -657,8 +707,10 @@ public class GPanoramic
    }
 
 
-   public void deactivate(final GCustomView view,
-                          final IGlobeApplication application) {
+   public void deactivate(final GCustomView view) {
+
+      _hudIcon.setEnable(false);
+      _isActive = false;
 
       view.exitPanoramic(this);
       view.setOrbitViewLimits(new GBasicOrbitViewLimits());
@@ -901,7 +953,15 @@ public class GPanoramic
          }
 
          final GL gl = dc.getGL();
-         //TODO: transparency or not
+
+         if (!_isActive) {
+
+            _layer.setOpacity(0.75);
+
+         }
+         else {
+            _layer.setOpacity(1.0);
+         }
          gl.glCallList(_displayList);
 
          if (texture != null) {

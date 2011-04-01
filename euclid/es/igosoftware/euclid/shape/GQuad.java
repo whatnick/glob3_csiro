@@ -36,8 +36,6 @@
 
 package es.igosoftware.euclid.shape;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
@@ -53,7 +51,7 @@ public abstract class GQuad<
 
 VectorT extends IVector<VectorT, ?>,
 
-SegmentT extends GSegment<VectorT, BoundsT>,
+SegmentT extends GSegment<VectorT, SegmentT, ?>,
 
 BoundsT extends IBounds<VectorT, BoundsT>
 
@@ -112,8 +110,8 @@ BoundsT extends IBounds<VectorT, BoundsT>
 
 
    @Override
-   public VectorT getPoint(final int i) {
-      switch (i) {
+   public VectorT getPoint(final int index) {
+      switch (index) {
          case 0:
             return _v0;
          case 1:
@@ -137,15 +135,6 @@ BoundsT extends IBounds<VectorT, BoundsT>
    @Override
    public final String toString() {
       return "Quad (" + _v0 + " " + _v1 + " " + _v2 + " " + _v3 + ")";
-   }
-
-
-   @Override
-   public final void save(final DataOutputStream output) throws IOException {
-      _v0.save(output);
-      _v1.save(output);
-      _v2.save(output);
-      _v3.save(output);
    }
 
 

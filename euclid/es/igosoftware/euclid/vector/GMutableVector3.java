@@ -36,15 +36,11 @@
 
 package es.igosoftware.euclid.vector;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-
 import es.igosoftware.euclid.GGeometryAbstract;
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 import es.igosoftware.euclid.matrix.GMatrix33D;
 import es.igosoftware.euclid.matrix.GMatrix44D;
 import es.igosoftware.euclid.projection.GProjection;
-import es.igosoftware.euclid.shape.GRenderType;
 import es.igosoftware.util.GAssert;
 
 
@@ -312,22 +308,10 @@ public final class GMutableVector3<T extends IVector3>
 
 
    @Override
-   public synchronized void save(final DataOutputStream output) throws IOException {
-      _value.save(output);
-   }
-
-
-   @Override
    public synchronized GMutableVector3<T> scale(final double scale) {
       _value = _value.scale(scale);
       return this;
    }
-
-
-   //   @Override
-   //   public IVector3 closestPointOnBoundary(final IVector3 point) {
-   //      return _value.closestPointOnBoundary(point);
-   //   }
 
 
    @Override
@@ -440,12 +424,6 @@ public final class GMutableVector3<T extends IVector3>
    @Override
    public GAxisAlignedBox getBounds() {
       return _value.getBounds();
-   }
-
-
-   @Override
-   public GRenderType getRenderType() {
-      return _value.getRenderType();
    }
 
 

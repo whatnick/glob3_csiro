@@ -36,13 +36,18 @@
 
 package es.igosoftware.euclid.shape;
 
+import java.util.Collections;
+import java.util.List;
+
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 import es.igosoftware.euclid.vector.IVector3;
 
 
 public final class GSegment3D
          extends
-            GSegment<IVector3, GAxisAlignedBox> {
+            GSegment<IVector3, GSegment3D, GAxisAlignedBox>
+         implements
+            ILineal3D {
 
    private static final long serialVersionUID = 1L;
 
@@ -66,8 +71,20 @@ public final class GSegment3D
 
 
    @Override
-   public GRenderType getRenderType() {
-      return GRenderType.POLYLINE;
+   public boolean isSelfIntersected() {
+      return false;
+   }
+
+
+   @Override
+   public List<GSegment3D> getEdges() {
+      return Collections.singletonList(this);
+   }
+
+
+   @Override
+   public GSegment3D clone() {
+      return this;
    }
 
 }

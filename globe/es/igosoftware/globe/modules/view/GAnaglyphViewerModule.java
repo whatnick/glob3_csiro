@@ -47,6 +47,7 @@ import es.igosoftware.globe.actions.GCheckBoxGenericAction;
 import es.igosoftware.globe.actions.IGenericAction;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GPair;
 import gov.nasa.worldwind.AnaglyphSceneController;
 import gov.nasa.worldwind.Configuration;
@@ -98,8 +99,8 @@ public class GAnaglyphViewerModule
    @Override
    public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application) {
 
-      final IGenericAction action = new GCheckBoxGenericAction(_label, ' ', application.getIcon("anaglyph.png"),
-               IGenericAction.MenuArea.VIEW, true, _initialState) {
+      final IGenericAction action = new GCheckBoxGenericAction(_label, ' ',
+               application.getSmallIcon(GFileName.relative("anaglyph.png")), IGenericAction.MenuArea.VIEW, true, _initialState) {
          @Override
          public void execute() {
             doIt(application, isSelected());

@@ -36,8 +36,6 @@
 
 package es.igosoftware.euclid.shape;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.List;
 
 import es.igosoftware.euclid.GGeometryAbstract;
@@ -641,20 +639,6 @@ public final class GPlane
    }
 
 
-   //   @Override
-   //   public GAxisAlignedBox asBox() {
-   //      // TODO: If the plane is parallel to any axis, an "half infinite" box can be created
-   //      return new GAxisAlignedBox(GVector3D.NEGATIVE_INFINITY, GVector3D.POSITIVE_INFINITY);
-   //   }
-
-
-   @Override
-   public void save(final DataOutputStream output) throws IOException {
-      _normal.save(output);
-      output.writeDouble(_d);
-   }
-
-
    public boolean isCloseToPlaneXY() {
       return (_normal.z() > Math.abs(_normal.x())) && (_normal.z() > Math.abs(_normal.y()));
    }
@@ -805,10 +789,5 @@ public final class GPlane
       throw new RuntimeException("The plane has not a centroid");
    }
 
-
-   @Override
-   public GRenderType getRenderType() {
-      return GRenderType.DO_NOT_RENDER;
-   }
 
 }

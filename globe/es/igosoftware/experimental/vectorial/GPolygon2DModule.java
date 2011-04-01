@@ -69,6 +69,7 @@ import es.igosoftware.globe.actions.GCheckBoxLayerAction;
 import es.igosoftware.globe.actions.IGenericAction;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GGenericFileFilter;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.util.GPair;
@@ -105,7 +106,7 @@ public class GPolygon2DModule
    @Override
    public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application) {
       final GButtonGenericAction creates = new GButtonGenericAction("Creates a New Vectorial Layer",
-               application.getIcon("new-vectorial.png"), IGenericAction.MenuArea.EDIT, true) {
+               application.getSmallIcon(GFileName.relative("new-vectorial.png")), IGenericAction.MenuArea.EDIT, true) {
          @Override
          public void execute() {
             createNewLayer(application);
@@ -125,7 +126,8 @@ public class GPolygon2DModule
          final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features = vectorLayer.getFeaturesCollection();
 
          if ((features != null) && features.isEditable()) {
-            final GCheckBoxLayerAction editAction = new GCheckBoxLayerAction("Edit", application.getIcon("edit.png"), true, false) {
+            final GCheckBoxLayerAction editAction = new GCheckBoxLayerAction("Edit",
+                     application.getSmallIcon(GFileName.relative("edit.png")), true, false) {
                @Override
                public boolean isVisible() {
                   return (layer instanceof IGlobeVector2Layer)
@@ -204,7 +206,7 @@ public class GPolygon2DModule
             final GProjection projection = GProjection.EPSG_4326;
 
             try {
-               final IGlobeFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features = GShapeLoader.readFeatures(
+               final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features = GShapeLoader.readFeatures(
                         file, projection);
 
                final GPolygon2DLayer layer = new GPolygon2DLayer(file.getName(), features);
@@ -258,7 +260,7 @@ public class GPolygon2DModule
             final String extension = GIOUtils.getExtension(f);
 
             if ((extension != null) && extension.toLowerCase().equals("shp")) {
-               return application.getIcon("vectorial.png");
+               return application.getSmallIcon(GFileName.relative("vectorial.png"));
             }
 
             return super.getIcon(f);
@@ -294,7 +296,7 @@ public class GPolygon2DModule
 
       final String answer = (String) JOptionPane.showInputDialog(application.getFrame(),
                application.getTranslation("Enter the name for the new layer"), application.getTranslation("Vectorial Layer"),
-               JOptionPane.PLAIN_MESSAGE, application.getIcon("new-vectorial.png"), null,
+               JOptionPane.PLAIN_MESSAGE, application.getSmallIcon(GFileName.relative("new-vectorial.png")), null,
                application.getTranslation(DEFAULT_LAYER_NAME));
 
       if ((answer != null) && !answer.trim().isEmpty()) {

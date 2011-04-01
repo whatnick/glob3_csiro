@@ -118,12 +118,9 @@ public class WWVectorLayer
                           final Object[] values) {
       if (_features instanceof IGlobeMutableFeatureCollection) {
          final GListMutableFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> mutable = (GListMutableFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) _features;
-         for (final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> euclidGeometry : GJTSUtils.toEuclid(jtsGeometry)) {
-            mutable.add(new GGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>(
-                     euclidGeometry, Arrays.asList(values)));
-         }
+         mutable.add(new GGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>(
+                  GJTSUtils.toEuclid(jtsGeometry), Arrays.asList(values)));
       }
-
    }
 
 

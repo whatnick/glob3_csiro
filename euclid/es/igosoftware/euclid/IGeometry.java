@@ -36,8 +36,6 @@
 
 package es.igosoftware.euclid;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
 
 import es.igosoftware.euclid.vector.IVector;
@@ -51,11 +49,6 @@ VectorT extends IVector<VectorT, ?>
          extends
             Serializable,
             Cloneable {
-
-   public void save(final String fileName) throws IOException;
-
-
-   public abstract void save(final DataOutputStream output) throws IOException;
 
 
    public abstract byte dimensions();

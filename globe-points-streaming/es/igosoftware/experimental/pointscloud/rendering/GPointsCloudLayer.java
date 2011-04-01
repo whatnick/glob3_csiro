@@ -611,7 +611,7 @@ public final class GPointsCloudLayer
 
    @Override
    public Icon getIcon(final IGlobeApplication application) {
-      return application.getIcon("pointscloud.png");
+      return application.getSmallIcon(GFileName.relative("pointscloud.png"));
    }
 
 

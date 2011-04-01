@@ -101,6 +101,8 @@ public class GGlobeDemo
             GGlobeApplication {
    private static final long              serialVersionUID = 1L;
 
+   private GHUDLayer                      _hudLayer;
+
 
    static {
       Configuration.setValue(AVKey.SCENE_CONTROLLER_CLASS_NAME, AnaglyphSceneController.class.getName());
@@ -150,6 +152,7 @@ public class GGlobeDemo
       final GPositionRenderableLayer caceres3DLayer = createCaceres3DModelLayer();
       layers.add(caceres3DLayer);
 
+      createHUDLayer(layers);
 
       try {
          final GPanoramicLayer panoramicLayer = createPanoramicLayer();
@@ -160,15 +163,13 @@ public class GGlobeDemo
       }
 
 
-      createHUDLayer(layers);
-
-
       return layers;
    }
 
 
    private void createHUDLayer(final LayerList layers) {
-      final GHUDIcon hudIcon = new GHUDIcon("../globe/bitmaps/icons/earth.png", GHUDIcon.Position.SOUTHEAST);
+      final GHUDIcon hudIcon = new GHUDIcon(getImage(GFileName.relative("icons", "earth.png"), 48, 48),
+               GHUDIcon.Position.SOUTHEAST);
 
       hudIcon.addActionListener(new ActionListener() {
          @Override
@@ -178,10 +179,10 @@ public class GGlobeDemo
          }
       });
 
-      final GHUDLayer hudLayer = new GHUDLayer();
-      hudLayer.addElement(hudIcon);
+      _hudLayer = new GHUDLayer();
+      _hudLayer.addElement(hudIcon);
 
-      layers.add(hudLayer);
+      layers.add(_hudLayer);
    }
 
 
@@ -210,7 +211,8 @@ public class GGlobeDemo
       try {
          final ILoader loader = new GFileLoader(GFileName.relative("PANOS"));
          panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", loader, GFileName.relative("Barrancos"),
-                  100, new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0)));
+                  100, new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0), _hudLayer));
+
 
          //panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", "data/panoramics/barruecos", 500,
          //         new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0)));

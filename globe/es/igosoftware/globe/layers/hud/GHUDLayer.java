@@ -130,9 +130,9 @@ public class GHUDLayer
          @Override
          public void mouseClicked(final MouseEvent e) {
 
-            if (e.isConsumed()) {
-               return;
-            }
+            //            if (e.isConsumed()) {
+            //               return;
+            //            }
 
             boolean consumed = false;
 

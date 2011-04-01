@@ -37,7 +37,6 @@
 package es.igosoftware.euclid.vector;
 
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
@@ -315,14 +314,6 @@ public class GVector3F
       final double newY = _y / length;
       final double newZ = _z / length;
       return new GVector3F.Normalized(newX, newY, newZ);
-   }
-
-
-   @Override
-   public final void save(final DataOutputStream output) throws IOException {
-      output.writeFloat(_x);
-      output.writeFloat(_y);
-      output.writeFloat(_z);
    }
 
 

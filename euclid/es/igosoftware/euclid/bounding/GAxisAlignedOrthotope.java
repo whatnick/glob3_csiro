@@ -36,13 +36,10 @@
 
 package es.igosoftware.euclid.bounding;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
 import es.igosoftware.euclid.GGeometryAbstract;
-import es.igosoftware.euclid.shape.GRenderType;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
@@ -278,13 +275,6 @@ GeometryT extends GAxisAlignedOrthotope<VectorT, GeometryT>
    protected abstract String getStringName();
 
 
-   @Override
-   public final void save(final DataOutputStream output) throws IOException {
-      _lower.save(output);
-      _upper.save(output);
-   }
-
-
    public abstract GAxisAlignedOrthotope<VectorT, GeometryT> expandedByDistance(final double delta);
 
 
@@ -381,10 +371,5 @@ GeometryT extends GAxisAlignedOrthotope<VectorT, GeometryT>
 
    public abstract GeometryT mergedWith(final GAxisAlignedOrthotope<VectorT, ?> that);
 
-
-   @Override
-   public GRenderType getRenderType() {
-      return GRenderType.DO_NOT_RENDER;
-   }
 
 }

@@ -2,13 +2,12 @@
 
 package es.igosoftware.euclid.shape;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import es.igosoftware.euclid.GEdgedGeometryAbstract;
 import es.igosoftware.euclid.bounding.IBounds;
 import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector;
@@ -19,13 +18,15 @@ public abstract class GLinesStrip<
 
 VectorT extends IVector<VectorT, ?>,
 
-SegmentT extends GSegment<VectorT, BoundsT>,
+SegmentT extends GSegment<VectorT, SegmentT, ?>,
 
 BoundsT extends IBounds<VectorT, BoundsT>
 
 >
          extends
-            GPolytopeAbstract<VectorT, SegmentT, BoundsT> {
+            GEdgedGeometryAbstract<VectorT, SegmentT, BoundsT>
+         implements
+            ILineal<VectorT, SegmentT, BoundsT> {
 
 
    private static final long   serialVersionUID = 1L;
@@ -98,8 +99,8 @@ BoundsT extends IBounds<VectorT, BoundsT>
 
 
    @Override
-   public VectorT getPoint(final int i) {
-      return _points.get(i);
+   public VectorT getPoint(final int index) {
+      return _points.get(index);
    }
 
 
@@ -148,38 +149,8 @@ BoundsT extends IBounds<VectorT, BoundsT>
 
 
    @Override
-   public VectorT closestPointOnBoundary(final VectorT point) {
-      GAssert.notNull(point, "point");
-
-      double minDistance = Double.POSITIVE_INFINITY;
-      VectorT closestPoint = null;
-
-      for (final SegmentT edge : getEdges()) {
-         final VectorT currentPoint = edge.closestPointOnBoundary(point);
-         final double currentDistance = currentPoint.squaredDistance(point);
-
-         if (currentDistance <= minDistance) {
-            minDistance = currentDistance;
-            closestPoint = currentPoint;
-         }
-      }
-
-      return closestPoint;
-   }
-
-
-   @Override
    public Iterator<VectorT> iterator() {
       return getPoints().iterator();
-   }
-
-
-   @Override
-   public final void save(final DataOutputStream output) throws IOException {
-      output.writeInt(_points.size());
-      for (final VectorT point : _points) {
-         point.save(output);
-      }
    }
 
 
@@ -195,8 +166,15 @@ BoundsT extends IBounds<VectorT, BoundsT>
 
 
    @Override
-   public IPolytope<VectorT, SegmentT, BoundsT> getHull() {
+   public GLinesStrip<VectorT, SegmentT, BoundsT> clone() {
       return this;
    }
+
+
+   @Override
+   public VectorT closestPoint(final VectorT point) {
+      return closestPointOnBoundary(point);
+   }
+
 
 }

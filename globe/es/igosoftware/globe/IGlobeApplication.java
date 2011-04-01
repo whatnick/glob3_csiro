@@ -36,8 +36,16 @@
 
 package es.igosoftware.globe;
 
+import java.awt.Dimension;
+import java.awt.image.BufferedImage;
+import java.util.List;
+
+import javax.swing.Icon;
+import javax.swing.JFrame;
+
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
+import es.igosoftware.io.GFileName;
 import gov.nasa.worldwind.Model;
 import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
@@ -48,31 +56,36 @@ import gov.nasa.worldwind.globes.Globe;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
 
-import java.awt.Dimension;
-import java.awt.Image;
-import java.util.List;
-
-import javax.swing.Icon;
-import javax.swing.JFrame;
-
 
 public interface IGlobeApplication {
 
 
-   public Icon getIcon(final String iconName);
+   /**
+    * Answer a small icon suitable to fit in menus and toolbars
+    */
+   public Icon getSmallIcon(final GFileName iconName);
 
 
-   public Icon getIcon(final String iconName,
+   /**
+    * Answer an icon with the given size
+    */
+   public Icon getIcon(final GFileName iconName,
                        final int width,
                        final int height);
 
 
-   public Image getImage(final String imageName);
+   /**
+    * Answer an image without resizing it
+    */
+   public BufferedImage getImage(final GFileName imageName);
 
 
-   public Image getImage(final String imageName,
-                         final int width,
-                         final int height);
+   /**
+    * Answer an image with the given size
+    */
+   public BufferedImage getImage(final GFileName imageName,
+                                 final int width,
+                                 final int height);
 
 
    public Dimension initialDimension();

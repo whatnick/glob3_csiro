@@ -54,7 +54,7 @@ public final class GQuad3D
          extends
             GQuad<IVector3, GSegment3D, GAxisAlignedBox>
          implements
-            IPolygon3D {
+            ISimplePolygon3D {
 
    private static final long serialVersionUID = 1L;
 
@@ -173,31 +173,10 @@ public final class GQuad3D
 
 
    @Override
-   public GQuad3D createSimplified(final double capsRadiansTolerance) {
-      return this;
-   }
-
-
-   @Override
-   public GQuad3D getHull() {
-      return this;
-   }
-
-
-   @Override
    public boolean isSelfIntersected() {
       return false;
    }
 
-
-   //   @Override
-   //   protected List<GSegment2D> initializeEdges() {
-   //      final List<GSegment2D> result = new ArrayList<GSegment2D>(3);
-   //      result.add(new GSegment2D(_v2, _v1));
-   //      result.add(new GSegment2D(_v0, _v2));
-   //      result.add(new GSegment2D(_v1, _v0));
-   //      return result;
-   //   }
 
    @Override
    protected List<GSegment3D> initializeEdges() {
@@ -220,10 +199,5 @@ public final class GQuad3D
       return GShape.isConvexQuad(_v0, _v1, _v2, _v3);
    }
 
-
-   @Override
-   public GRenderType getRenderType() {
-      return GRenderType.POLYGON;
-   }
 
 }

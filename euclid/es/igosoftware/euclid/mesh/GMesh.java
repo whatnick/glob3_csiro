@@ -58,7 +58,7 @@ VertexT extends IVector<VertexT, ?>,
 
 FaceT extends IPolygon<VertexT, EdgeT, ?>,
 
-EdgeT extends GSegment<VertexT, ?>
+EdgeT extends GSegment<VertexT, EdgeT, ?>
 
 >
 

@@ -36,17 +36,13 @@
 
 package es.igosoftware.euclid.shape;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import es.igosoftware.euclid.GGeometryAbstract;
-import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.GEdgedGeometryAbstract;
 import es.igosoftware.euclid.bounding.IBounds;
-import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GMath;
@@ -56,14 +52,15 @@ public abstract class GSegment<
 
 VectorT extends IVector<VectorT, ?>,
 
+SegmentT extends GSegment<VectorT, SegmentT, ?>,
+
 BoundsT extends IBounds<VectorT, BoundsT>
 
 >
          extends
-            GGeometryAbstract<VectorT>
+            GEdgedGeometryAbstract<VectorT, SegmentT, BoundsT>
          implements
-            IBoundedGeometry<VectorT, BoundsT>,
-            IPointsContainer<VectorT> {
+            ILineal<VectorT, SegmentT, BoundsT> {
 
    private static final long serialVersionUID = 1L;
 
@@ -100,11 +97,11 @@ BoundsT extends IBounds<VectorT, BoundsT>
 
 
    @Override
-   public VectorT getPoint(final int i) {
-      if (i == 0) {
+   public VectorT getPoint(final int index) {
+      if (index == 0) {
          return _from;
       }
-      if (i == 1) {
+      if (index == 1) {
          return _to;
       }
       throw new IndexOutOfBoundsException();
@@ -145,13 +142,6 @@ BoundsT extends IBounds<VectorT, BoundsT>
 
 
    @Override
-   public final void save(final DataOutputStream output) throws IOException {
-      _from.save(output);
-      _to.save(output);
-   }
-
-
-   @Override
    public final String toString() {
       return "Segment [" + _from + " -> " + _to + "]";
    }
@@ -178,7 +168,7 @@ BoundsT extends IBounds<VectorT, BoundsT>
       if (getClass() != obj.getClass()) {
          return false;
       }
-      final GSegment<?, ?> other = (GSegment<?, ?>) obj;
+      final GSegment<?, ?, ?> other = (GSegment<?, ?, ?>) obj;
       if (_from == null) {
          if (other._from != null) {
             return false;
@@ -258,6 +248,7 @@ BoundsT extends IBounds<VectorT, BoundsT>
    }
 
 
+   @Override
    public VectorT closestPointOnBoundary(final VectorT point) {
       // from Real-Time Collision Detection - Christer Ericson 
       //   page 129
@@ -291,6 +282,18 @@ BoundsT extends IBounds<VectorT, BoundsT>
    @Override
    public VectorT getCentroid() {
       return _from.add(_to).div(2);
+   }
+
+
+   @Override
+   public GSegment<VectorT, SegmentT, BoundsT> clone() {
+      return this;
+   }
+
+
+   @Override
+   public List<SegmentT> initializeEdges() {
+      throw new RuntimeException("Must not happens as subclasses implements getEdges without calling initializeEdges()");
    }
 
 }

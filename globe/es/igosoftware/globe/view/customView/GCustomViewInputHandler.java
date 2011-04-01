@@ -92,6 +92,9 @@ public class GCustomViewInputHandler
    private final AnimationController _gotoAnimControl        = new AnimationController();
    private final AnimationController _uiAnimControl          = new AnimationController();
 
+   private final double              _panoramicMaxFOV        = 120;
+   private final double              _panoramicMinFOV        = 5;
+
 
    public GCustomViewInputHandler() {
 
@@ -319,11 +322,14 @@ public class GCustomViewInputHandler
       }
 
       if (view instanceof GCustomView) {
+         final GCustomView customView = (GCustomView) view;
+         final GInputState inputState = customView.getInputState();
          if (!headingChange.equals(Angle.ZERO)) {
-            final GCustomView customView = (GCustomView) view;
-            final GInputState inputState = customView.getInputState();
+
             if (inputState == GInputState.PANORAMICS) {
-               changeHeading((GCustomView) view, _uiAnimControl, headingChange.multiply(-1.0), actionAttribs);
+               changeHeading((GCustomView) view, _uiAnimControl,
+                        (headingChange.multiply(-1.0)).multiply((view.getFieldOfView().divide(_panoramicMaxFOV)).degrees),
+                        actionAttribs);
             }
             else {
                changeHeading((GCustomView) view, _uiAnimControl, headingChange, actionAttribs);
@@ -332,6 +338,15 @@ public class GCustomViewInputHandler
 
          if (!pitchChange.equals(Angle.ZERO)) {
             changePitch((GCustomView) view, _uiAnimControl, pitchChange, actionAttribs);
+
+
+            if (inputState == GInputState.PANORAMICS) {
+               changePitch((GCustomView) view, _uiAnimControl,
+                        pitchChange.multiply((view.getFieldOfView().divide(_panoramicMaxFOV)).degrees), actionAttribs);
+            }
+            else {
+               changePitch((GCustomView) view, _uiAnimControl, pitchChange, actionAttribs);
+            }
          }
       }
    }
@@ -1150,9 +1165,9 @@ public class GCustomViewInputHandler
 
 
       final double oldFov = view.getFieldOfView().degrees;
-      final double newFov = oldFov + (e.getWheelRotation() * 1.25);
+      final double newFov = oldFov + (e.getWheelRotation() * 5) * view.getFieldOfView().degrees / _panoramicMaxFOV;
 
-      view.setFieldOfView(Angle.fromDegrees(GMath.clamp(newFov, 10, 110)));
+      view.setFieldOfView(Angle.fromDegrees(GMath.clamp(newFov, _panoramicMinFOV, _panoramicMaxFOV)));
       e.consume();
 
       return true;
@@ -1171,7 +1186,7 @@ public class GCustomViewInputHandler
       //            }
       //         }
       if (customView.getPanoramic() != null) {
-         customView.getPanoramic().deactivate(customView, application);
+         customView.getPanoramic().deactivate(customView);
       }
       application.redraw();
 

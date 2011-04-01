@@ -38,7 +38,6 @@ package es.igosoftware.euclid.shape;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
@@ -51,7 +50,7 @@ public final class GSimplePolygon2D
          extends
             GSimplePolytope<IVector2, GSegment2D, GAxisAlignedRectangle>
          implements
-            IPolygon2D {
+            ISimplePolygon2D {
 
 
    private static final long     serialVersionUID = 1L;
@@ -240,52 +239,6 @@ public final class GSimplePolygon2D
       }
 
       return false;
-
-      //      return !isSimple();
-   }
-
-
-   @Override
-   public IPolygon2D createSimplified(final double capsRadiansTolerance) {
-      final LinkedList<IVector2> points = new LinkedList<IVector2>(getPoints());
-
-      List<IVector2> previousPoints = new ArrayList<IVector2>(points);
-
-      boolean changed;
-      do {
-         changed = false;
-
-         final int pointsCount = points.size();
-
-         if (pointsCount < 3) {
-            return GShape.createPolygon2(true, previousPoints);
-         }
-
-         for (int i = 0; i < pointsCount; i++) {
-            final int previousI = (i + pointsCount - 1) % pointsCount;
-            final int prePreviousI = (i + pointsCount - 2) % pointsCount;
-
-            final GTriangle2D triangle = new GTriangle2D(points.get(prePreviousI), points.get(previousI), points.get(i));
-            if (triangle.isCaps(capsRadiansTolerance)) {
-               previousPoints = new ArrayList<IVector2>(points);
-
-               final IVector2 average = points.get(i).add(points.get(previousI)).div(2);
-               points.set(i, average);
-               points.remove(previousI);
-
-               changed = true;
-               break; // exit for
-            }
-         }
-
-      }
-      while (changed);
-
-      if (points.size() < 3) {
-         return GShape.createPolygon2(true, previousPoints);
-      }
-
-      return GShape.createPolygon2(true, points);
    }
 
 
@@ -302,12 +255,6 @@ public final class GSimplePolygon2D
       }
       return _bounds;
    }
-
-
-   //   @Override
-   //   public GAxisAlignedBox getAxisAlignedBoundingBox() {
-   //      return getBounds().getAxisAlignedBoundingBox();
-   //   }
 
 
    @Override
@@ -330,12 +277,6 @@ public final class GSimplePolygon2D
 
 
    @Override
-   public GSimplePolygon2D getHull() {
-      return this;
-   }
-
-
-   @Override
    public List<GTriangle2D> triangulate() {
       final GTriangulate.IndexedTriangle[] iTriangles = GTriangulate.triangulate(_points);
 
@@ -352,10 +293,5 @@ public final class GSimplePolygon2D
       throw new RuntimeException("not yet implemented");
    }
 
-
-   @Override
-   public GRenderType getRenderType() {
-      return GRenderType.POLYGON;
-   }
 
 }
