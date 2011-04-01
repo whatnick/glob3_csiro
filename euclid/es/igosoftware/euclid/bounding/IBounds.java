@@ -60,13 +60,4 @@ GeometryT extends IBounds<VectorT, GeometryT> // the geometry is the bounds in t
    public boolean containsOnBoundary(final VectorT point);
 
 
-   public double squaredDistanceToBoundary(final VectorT point);
-
-
-   public double distanceToBoundary(final VectorT point);
-
-
-   public VectorT closestPointOnBoundary(final VectorT point);
-
-
 }

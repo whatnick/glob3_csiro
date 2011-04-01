@@ -77,4 +77,17 @@ BoundsT extends IBounds<VectorT, ?>
 
       return closestPoint;
    }
+
+
+   @Override
+   public double distanceToBoundary(final VectorT point) {
+      return Math.sqrt(squaredDistance(point));
+   }
+
+
+   @Override
+   public double squaredDistanceToBoundary(final VectorT point) {
+      return closestPointOnBoundary(point).squaredDistance(point);
+   }
+
 }

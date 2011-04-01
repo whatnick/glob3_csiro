@@ -115,4 +115,23 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
    }
 
 
+   @SuppressWarnings("unchecked")
+   @Override
+   public VectorT closestPointOnBoundary(final VectorT point) {
+      return (VectorT) this;
+   }
+
+
+   @Override
+   public double squaredDistanceToBoundary(final VectorT point) {
+      return squaredDistance(point);
+   }
+
+
+   @Override
+   public double distanceToBoundary(final VectorT point) {
+      return distance(point);
+   }
+
+
 }

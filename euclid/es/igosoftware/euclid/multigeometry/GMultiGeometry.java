@@ -169,4 +169,38 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
       return _children.get(index);
    }
 
+
+   @Override
+   public VectorT closestPointOnBoundary(final VectorT point) {
+      GAssert.notNull(point, "point");
+
+      double minDistance = Double.POSITIVE_INFINITY;
+      VectorT closestPoint = null;
+
+      for (final ChildrenGeometryT child : _children) {
+         final VectorT currentPoint = child.closestPointOnBoundary(point);
+         final double currentDistance = currentPoint.squaredDistance(point);
+
+         if (currentDistance <= minDistance) {
+            minDistance = currentDistance;
+            closestPoint = currentPoint;
+         }
+      }
+
+      return closestPoint;
+   }
+
+
+   @Override
+   public double squaredDistanceToBoundary(final VectorT point) {
+      return closestPointOnBoundary(point).squaredDistance(point);
+   }
+
+
+   @Override
+   public double distanceToBoundary(final VectorT point) {
+      return Math.sqrt(squaredDistance(point));
+   }
+
+
 }

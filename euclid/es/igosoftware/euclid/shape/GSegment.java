@@ -232,11 +232,13 @@ BoundsT extends IBounds<VectorT, BoundsT>
    }
 
 
+   @Override
    public double squaredDistanceToBoundary(final VectorT point) {
       return squaredDistance(point);
    }
 
 
+   @Override
    public double distanceToBoundary(final VectorT point) {
       return distance(point);
    }
