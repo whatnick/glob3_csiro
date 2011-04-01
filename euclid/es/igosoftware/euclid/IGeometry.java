@@ -41,11 +41,7 @@ import java.io.Serializable;
 import es.igosoftware.euclid.vector.IVector;
 
 
-public interface IGeometry<
-
-VectorT extends IVector<VectorT, ?>
-
->
+public interface IGeometry<VectorT extends IVector<VectorT, ?>>
          extends
             Serializable,
             Cloneable {

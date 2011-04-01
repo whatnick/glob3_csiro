@@ -41,11 +41,7 @@ import java.util.List;
 import es.igosoftware.euclid.IGeometry;
 
 
-public interface IPointsContainer<
-
-VectorT extends IVector<VectorT, ?>
-
->
+public interface IPointsContainer<VectorT extends IVector<VectorT, ?>>
          extends
             IGeometry<VectorT>,
             Iterable<VectorT> {
