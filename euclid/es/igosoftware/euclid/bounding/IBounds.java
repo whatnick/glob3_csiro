@@ -44,7 +44,7 @@ public interface IBounds<
 
 VectorT extends IVector<VectorT, ?>,
 
-GeometryT extends IBounds<VectorT, GeometryT>
+GeometryT extends IBounds<VectorT, GeometryT> // the geometry is the bounds in this hierarchy
 
 >
          extends
