@@ -47,9 +47,8 @@ import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.features.IGlobeMutableFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
-import es.igosoftware.euclid.shape.GLinesStrip2D;
-import es.igosoftware.euclid.shape.GSegment2D;
-import es.igosoftware.euclid.shape.IPolygon;
+import es.igosoftware.euclid.shape.ILineal2D;
+import es.igosoftware.euclid.shape.IPolygon2D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.experimental.vectorial.GShapefileTools;
 import es.igosoftware.io.GFileName;
@@ -143,10 +142,10 @@ public class WWVectorLayer
 
 
    private static int getShapeType(final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> geometry) {
-      if (geometry instanceof IPolygon) {
+      if (geometry instanceof IPolygon2D) {
          return IVectorLayer.SHAPE_TYPE_POLYGON;
       }
-      else if ((geometry instanceof GSegment2D) || (geometry instanceof GLinesStrip2D)) {
+      else if (geometry instanceof ILineal2D) {
          return IVectorLayer.SHAPE_TYPE_LINE;
       }
       else if (geometry instanceof IVector2) {
