@@ -50,6 +50,7 @@ import org.opengis.feature.GeometryAttribute;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.GeometryType;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineString;
@@ -128,17 +129,16 @@ public class GShapeLoader {
    }
 
 
-   public static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> readFeatures(final File file,
-                                                                                                                                               final GProjection projection)
-                                                                                                                                                                            throws IOException {
-      return readFeatures(GFileName.fromFile(file), projection);
-   }
-
-
    public static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> readFeatures(final GFileName fileName,
                                                                                                                                                final GProjection projection)
                                                                                                                                                                             throws IOException {
-      final File file = fileName.asFile();
+      return readFeatures(fileName.asFile(), projection);
+   }
+
+
+   public static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> readFeatures(final File file,
+                                                                                                                                               final GProjection projection)
+                                                                                                                                                                            throws IOException {
       if (!file.exists()) {
          throw new IOException("File not found!");
       }
@@ -149,6 +149,10 @@ public class GShapeLoader {
       final SimpleFeatureSource featureSource = store.getFeatureSource();
 
       final SimpleFeatureCollection featuresCollection = featureSource.getFeatures();
+
+      final CoordinateReferenceSystem crs = featureSource.getInfo().getCRS();
+      System.out.println("CoordinateReferenceSystem: " + crs);
+      System.out.println("CoordinateReferenceSystem: " + crs.getName());
 
       final GIntHolder validCounter = new GIntHolder(0);
       final GIntHolder polygonsWithHolesCounter = new GIntHolder(0);
@@ -165,8 +169,7 @@ public class GShapeLoader {
          public void informProgress(final double percent,
                                     final long elapsed,
                                     final long estimatedMsToFinish) {
-            System.out.println("Loading \"" + fileName.buildPath() + "\" "
-                               + progressString(percent, elapsed, estimatedMsToFinish));
+            System.out.println("Loading \"" + file.getName() + "\" " + progressString(percent, elapsed, estimatedMsToFinish));
          }
       };
 
@@ -342,11 +345,15 @@ public class GShapeLoader {
       System.out.println("GShapeLoader 0.1");
       System.out.println("----------------\n");
 
+      final GFileName samplesDirectory = GFileName.absolute("home", "dgd", "Desktop", "sample-shp");
+
+      //      final GFileName fileName = GFileName.fromParentAndParts(samplesDirectory, "shp", "great_britain.shp", "roads.shp");
+      final GFileName fileName = GFileName.fromParentAndParts(samplesDirectory, "cartobrutal", "world-modified", "world.shp");
+
       final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features = GShapeLoader.readFeatures(
-               GFileName.absolute("home", "dgd", "Desktop", "sample-shp", "shp", "great_britain.shp", "roads.shp"),
-               GProjection.EPSG_4326);
+               fileName, GProjection.EPSG_4326);
+
 
       System.out.println(features);
    }
-
 }

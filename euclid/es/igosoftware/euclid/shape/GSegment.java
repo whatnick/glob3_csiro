@@ -78,7 +78,7 @@ BoundsT extends IBounds<VectorT, BoundsT>
    }
 
 
-   public double lenght() {
+   public double length() {
       return _from.distance(_to);
    }
 
@@ -200,6 +200,7 @@ BoundsT extends IBounds<VectorT, BoundsT>
    }
 
 
+   @Override
    public boolean containsOnBoundary(final VectorT point) {
       return contains(point);
    }
@@ -232,11 +233,13 @@ BoundsT extends IBounds<VectorT, BoundsT>
    }
 
 
+   @Override
    public double squaredDistanceToBoundary(final VectorT point) {
       return squaredDistance(point);
    }
 
 
+   @Override
    public double distanceToBoundary(final VectorT point) {
       return distance(point);
    }

@@ -9,6 +9,7 @@ import es.igosoftware.euclid.bounding.IBounds;
 import es.igosoftware.euclid.shape.GSegment;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GAssert;
+import es.igosoftware.util.GMath;
 
 
 public abstract class GEdgedGeometryAbstract<
@@ -77,4 +78,24 @@ BoundsT extends IBounds<VectorT, ?>
 
       return closestPoint;
    }
+
+
+   @Override
+   public double distanceToBoundary(final VectorT point) {
+      return Math.sqrt(squaredDistance(point));
+   }
+
+
+   @Override
+   public double squaredDistanceToBoundary(final VectorT point) {
+      return closestPointOnBoundary(point).squaredDistance(point);
+   }
+
+
+   @Override
+   public boolean containsOnBoundary(final VectorT point) {
+      return GMath.closeToZero(distanceToBoundary(point));
+   }
+
+
 }

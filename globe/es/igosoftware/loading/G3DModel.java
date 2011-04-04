@@ -393,12 +393,12 @@ public class G3DModel {
 
    private static void applyTexture(final DrawContext dc,
                                     final Texture texture) {
+      final GL gl = dc.getGL();
       if (texture == null) {
+         gl.glDisable(GL.GL_TEXTURE_2D);
          return;
       }
 
-
-      final GL gl = dc.getGL();
 
       if (texture.getMustFlipVertically()) {
          gl.glMatrixMode(GL.GL_TEXTURE);

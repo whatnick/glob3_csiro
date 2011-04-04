@@ -414,4 +414,28 @@ public final class GMutableVector2<T extends IVector2>
    }
 
 
+   @Override
+   public IVector2 closestPointOnBoundary(final IVector2 point) {
+      return this;
+   }
+
+
+   @Override
+   public double squaredDistanceToBoundary(final IVector2 point) {
+      return _value.squaredDistance(point);
+   }
+
+
+   @Override
+   public double distanceToBoundary(final IVector2 point) {
+      return _value.distance(point);
+   }
+
+
+   @Override
+   public boolean containsOnBoundary(final IVector2 point) {
+      return _value.containsOnBoundary(point);
+   }
+
+
 }

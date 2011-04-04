@@ -497,12 +497,6 @@ public final class GPlane
    }
 
 
-   //   @Override
-   //   public boolean touchesWithRectangle(final GAxisAlignedRectangle rectangle) {
-   //      return touchesWithBox(rectangle.asBox());
-   //   }
-
-
    @Override
    public boolean touchesWithPlane(final GPlane plane) {
       // from Real-Time Collision Detection (Christer Ericson)
@@ -532,101 +526,6 @@ public final class GPlane
    }
 
 
-   //   private static class Lin {
-   //
-   //      private final IVector3 _point;
-   //      private final IVector3 _direction;
-   //
-   //
-   //      private Lin(final IVector3 point,
-   //                  final IVector3 direction) {
-   //         _point = point;
-   //         _direction = direction;
-   //      }
-   //
-   //
-   //      private boolean touchesWithDisk(final GDisk disk) {
-   //
-   //         final IVector2 C = disk.center;
-   //         final double r = disk.radius;
-   //
-   //         IVector2 d = L - E;
-   //
-   //         float a = d.Dot(d);
-   //         float b = 2 * f.Dot(d);
-   //         float c = f.Dot(f) - r * r;
-   //
-   //         float discriminant = b * b - 4 * a * c;
-   //         if (discriminant < 0) {
-   //            // no intersection
-   //         }
-   //         else {
-   //            // ray didn't totally miss sphere,
-   //            // so there is a solution to
-   //            // the equation.
-   //
-   //
-   //            discriminant = sqrt(discriminant);
-   //            float t1 = (-b + discriminant) / (2 * a);
-   //            float t2 = (-b - discriminant) / (2 * a);
-   //
-   //            if ((t1 >= 0) && (t1 <= 1)) {
-   //               // solution on is ON THE RAY.
-   //            }
-   //            else {
-   //               // solution "out of range" of ray
-   //            }
-   //
-   //            // use t2 for second point
-   //         }
-   //
-   //         
-   //         
-   //
-   //      }
-   //
-   //
-   //   }
-
-
-   //   // Given planes p1 and p2, compute line L = p+t*d of their intersection.
-   //   // Return 0 if no such line exists
-   //   private Lin getIntersectionLine(final GPlane that) {
-   //
-   //      // Compute direction of intersection line
-   //      final IVector3 direction = normal.cross(that.normal);
-   //
-   //      // If d is (near) zero, the planes are parallel (and separated)
-   //      // or coincident, so they’re not considered intersecting
-   //      final double denom = direction.dot(direction);
-   //      if (NumberUtils.closeToZero(denom)) {
-   //         return null;
-   //      }
-   //
-   //      // Compute point on intersection line
-   //      final IVector3 point = that.normal.scale(d).sub(normal.scale(that.d)).cross(direction).div(denom);
-   //
-   //      return new Lin(point, direction);
-   //   }
-
-
-   //   @Override
-   //   public boolean touchesWithDisk(final GDisk disk) {
-   //      // TODO: test this
-   //
-   //      final boolean planeIsParallelToZAxis = GMath.closeToZero(normal.getZ());
-   //      if (planeIsParallelToZAxis) {
-   //         final GVector3D diskCenter3d = new GVector3D(disk.center, 0);
-   //
-   //         return GMath.lessOrEquals(distance(diskCenter3d), disk.radius);
-   //      }
-   //
-   //      // the plane is not parallel to X axis -> it will intersect in any point with the "infinite" cylinder
-   //      // (the disk is considered as a cylinder with infinite Z dimensions)
-   //      return true;
-   //   }
-
-
    @Override
    public boolean contains(final IVector3 point) {
       return GMath.positiveOrZero(signedDistance(point));
@@ -651,37 +550,6 @@ public final class GPlane
 
    public boolean isCloseToPlaneYZ() {
       return (Math.abs(_normal.x()) > Math.abs(_normal.y())) && (Math.abs(_normal.x()) > _normal.z());
-   }
-
-
-   //   
-   //   public static void main(final String[] args) throws GColinearException {
-   //      //final GPlane plane = new GPlane(new GVector3D(1, 0, 0).normalized(), 5);
-   //      final GPlane plane = new GPlane(new GVector3D(1, 0, 0), new GVector3D(2, 2, 0), new GVector3D(1, 4, 2));
-   //      System.out.println(plane);
-   //      final GVector3D test = GVector3D.ZERO.add(0.5);
-   //      System.out.println(plane.signedDistance(test));
-   //      System.out.println(plane.closestPointOnBoundary(test));
-   //
-   //
-   //   }
-
-   public static void main(final String[] args) throws GColinearException, GInsufficientPointsException {
-      final GPlane plane = GPlane.getBestFitPlane(new GVector3D(1, 0, 0), new GVector3D(1, 1, 0), new GVector3D(1, 0, 1),
-               new GVector3D(1, 1, 2));
-      System.out.println(plane);
-
-      final GVector3D normal = new GVector3D(0, 1.0 / Math.sqrt(2), 1.0 / Math.sqrt(2));
-      final GVector3D A = new GVector3D(0, 0, 0);
-      final GVector3D B = new GVector3D(0, 3, 3);
-      final GSegment3D segment = new GSegment3D(A, B);
-      final GPlane plano = new GPlane(normal, 4.0);
-      //final GVector3D expectedP = new GVector3D(0, 2 * Math.sqrt(2), 2 * Math.sqrt(2));
-
-      final GVector3D intersectionP = (GVector3D) plano.getIntersection(segment);
-
-      System.out.println("Punto de intersección:" + intersectionP);
-
    }
 
 
@@ -737,14 +605,14 @@ public final class GPlane
    }
 
 
-   public double getZCoordenate(final IVector2 vectorXY) {
+   public double getZCoordinate(final IVector2 vectorXY) {
 
-      return getZCoordenate(vectorXY.x(), vectorXY.y());
+      return getZCoordinate(vectorXY.x(), vectorXY.y());
 
    }
 
 
-   public double getZCoordenate(final double x,
+   public double getZCoordinate(final double x,
                                 final double y) {
       // from plane definition: Ax + By + Cz + D = 0
       // plane normal = A, B, C
@@ -767,7 +635,7 @@ public final class GPlane
    public IVector3 getPointForXYCordenates(final double x,
                                            final double y) {
 
-      return new GVector3D(x, y, getZCoordenate(x, y));
+      return new GVector3D(x, y, getZCoordinate(x, y));
 
    }
 

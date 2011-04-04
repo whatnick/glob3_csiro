@@ -272,6 +272,7 @@ public class GPanoramic
          }
       });
 
+      _hudLayer.setEnabled(false);
       _hudIcon.setEnable(false);
       _hudLayer.addElement(_hudIcon);
    }
@@ -678,7 +679,7 @@ public class GPanoramic
 
    public void activate(final GCustomView view,
                         final GGlobeApplication application) {
-
+      _hudLayer.setEnabled(true);
       _hudIcon.setEnable(true);
       _isActive = true;
 
@@ -709,6 +710,7 @@ public class GPanoramic
 
    public void deactivate(final GCustomView view) {
 
+      _hudLayer.setEnabled(false);
       _hudIcon.setEnable(false);
       _isActive = false;
 

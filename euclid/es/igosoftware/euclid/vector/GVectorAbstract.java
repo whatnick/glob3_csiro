@@ -78,7 +78,7 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
    public final double angle(final VectorT that) {
       final double normProduct = length() * that.length();
       if (GMath.closeToZero(normProduct)) {
-         throw new RuntimeException("the product of the lenght() of the vectors is zero");
+         throw new RuntimeException("the product of the length() of the vectors is zero");
       }
 
       final double dot = dot(that) / normProduct;
@@ -112,6 +112,31 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
    @Override
    public VectorT getCentroid() {
       return (VectorT) this;
+   }
+
+
+   @SuppressWarnings("unchecked")
+   @Override
+   public VectorT closestPointOnBoundary(final VectorT point) {
+      return (VectorT) this;
+   }
+
+
+   @Override
+   public double squaredDistanceToBoundary(final VectorT point) {
+      return squaredDistance(point);
+   }
+
+
+   @Override
+   public double distanceToBoundary(final VectorT point) {
+      return distance(point);
+   }
+
+
+   @Override
+   public final boolean containsOnBoundary(final VectorT point) {
+      return closeTo(point);
    }
 
 

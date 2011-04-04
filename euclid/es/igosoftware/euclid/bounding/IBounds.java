@@ -44,7 +44,7 @@ public interface IBounds<
 
 VectorT extends IVector<VectorT, ?>,
 
-GeometryT extends IBounds<VectorT, GeometryT>
+GeometryT extends IBounds<VectorT, GeometryT> // the geometry is the bounds in this hierarchy
 
 >
          extends
@@ -55,18 +55,6 @@ GeometryT extends IBounds<VectorT, GeometryT>
 
 
    public boolean touchesBounds(final IBounds<VectorT, ?> that);
-
-
-   public boolean containsOnBoundary(final VectorT point);
-
-
-   public double squaredDistanceToBoundary(final VectorT point);
-
-
-   public double distanceToBoundary(final VectorT point);
-
-
-   public VectorT closestPointOnBoundary(final VectorT point);
 
 
 }

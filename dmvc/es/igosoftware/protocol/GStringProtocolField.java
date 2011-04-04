@@ -22,13 +22,13 @@ public class GStringProtocolField
 
    @Override
    protected void doRead(final DataInputStream input) throws IOException {
-      final int lenght = input.readInt();
-      if (lenght < 0) {
+      final int length = input.readInt();
+      if (length < 0) {
          set(null);
       }
       else {
-         final byte[] bytes = new byte[lenght];
-         for (int i = 0; i < lenght; i++) {
+         final byte[] bytes = new byte[length];
+         for (int i = 0; i < length; i++) {
             bytes[i] = input.readByte();
          }
          set(new String(bytes, UTF8));

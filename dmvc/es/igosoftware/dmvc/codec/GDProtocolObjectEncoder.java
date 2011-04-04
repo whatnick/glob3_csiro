@@ -61,7 +61,7 @@ public class GDProtocolObjectEncoder
          //      final int TODO_Remove_Print;
          //      System.out.println("-----> sending message, raw " + rawBytes.length + ", compressed " + compressedBytes.length);
 
-         final int compressedSign; // the message lenght is in negative to flag the contents is compressed 
+         final int compressedSign; // the message length is in negative to flag the contents is compressed 
          if (compressedBytes.length < rawBytes.length) {
             compressedSign = -1;
             bout.write(compressedBytes);

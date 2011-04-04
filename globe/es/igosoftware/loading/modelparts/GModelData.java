@@ -78,7 +78,7 @@ public class GModelData
 
    private GAxisAlignedBox        _bounds            = null;
 
-   private boolean                _useTexture        = true;
+   private boolean                _useTexture        = false;
    private boolean                _renderAsWireframe = false;
    private boolean                _useLighting       = true;
 

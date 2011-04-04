@@ -12,8 +12,7 @@ import es.igosoftware.euclid.IGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.projection.GProjection;
-import es.igosoftware.euclid.shape.GLinesStrip;
-import es.igosoftware.euclid.shape.GSegment;
+import es.igosoftware.euclid.shape.ILineal;
 import es.igosoftware.euclid.shape.IPolygon;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GAssert;
@@ -163,7 +162,7 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<Vecto
       if (geometry instanceof IVector) {
          return GVectorLayerType.POINT;
       }
-      else if ((geometry instanceof GSegment) || (geometry instanceof GLinesStrip)) {
+      else if (geometry instanceof ILineal) {
          return GVectorLayerType.LINE;
       }
       else if (geometry instanceof IPolygon) {

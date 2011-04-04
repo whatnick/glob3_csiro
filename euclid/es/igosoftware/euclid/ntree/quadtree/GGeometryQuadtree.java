@@ -13,7 +13,7 @@ import es.igosoftware.util.ITransformer;
 
 public class GGeometryQuadtree<ElementT>
          extends
-            GGeometryNTree<IVector2, GAxisAlignedRectangle, ElementT> {
+            GGeometryNTree<IVector2, ElementT> {
 
 
    public GGeometryQuadtree(final String name,

@@ -30,7 +30,4 @@ BoundsT extends IBounds<VectorT, ?>
    public List<SegmentT> getEdges();
 
 
-   public VectorT closestPointOnBoundary(final VectorT point);
-
-
 }
