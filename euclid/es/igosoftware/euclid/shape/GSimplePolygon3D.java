@@ -38,7 +38,6 @@ package es.igosoftware.euclid.shape;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
@@ -55,7 +54,7 @@ public final class GSimplePolygon3D
          extends
             GSimplePolytope<IVector3, GSegment3D, GAxisAlignedBox>
          implements
-            IPolygon3D {
+            ISimplePolygon3D {
 
 
    private static final long serialVersionUID = 1L;
@@ -200,50 +199,6 @@ public final class GSimplePolygon3D
 
 
    @Override
-   public IPolygon3D createSimplified(final double capsRadiansTolerance) {
-      final LinkedList<IVector3> points = new LinkedList<IVector3>(getPoints());
-
-      List<IVector3> previousPoints = new ArrayList<IVector3>(points);
-
-      boolean changed;
-      do {
-         changed = false;
-
-         final int pointsCount = points.size();
-
-         if (pointsCount < 3) {
-            return GShape.createPolygon3(true, previousPoints);
-         }
-
-         for (int i = 0; i < pointsCount; i++) {
-            final int previousI = (i + pointsCount - 1) % pointsCount;
-            final int prePreviousI = (i + pointsCount - 2) % pointsCount;
-
-            final GTriangle3D triangle = new GTriangle3D(points.get(prePreviousI), points.get(previousI), points.get(i));
-            if (triangle.isCaps(capsRadiansTolerance)) {
-               previousPoints = new ArrayList<IVector3>(points);
-
-               final IVector3 average = points.get(i).add(points.get(previousI)).div(2);
-               points.set(i, average);
-               points.remove(previousI);
-
-               changed = true;
-               break; // exit for
-            }
-         }
-
-      }
-      while (changed);
-
-      if (points.size() < 3) {
-         return GShape.createPolygon3(true, previousPoints);
-      }
-
-      return GShape.createPolygon3(true, points);
-   }
-
-
-   @Override
    protected String getStringName() {
       return "SimplePolygon";
    }
@@ -256,12 +211,6 @@ public final class GSimplePolygon3D
       }
       return _bounds;
    }
-
-
-   //   @Override
-   //   public GAxisAlignedBox getAxisAlignedBoundingBox() {
-   //      return getBounds().getAxisAlignedBoundingBox();
-   //   }
 
 
    @Override
@@ -284,20 +233,9 @@ public final class GSimplePolygon3D
 
 
    @Override
-   public GSimplePolygon3D getHull() {
-      return this;
-   }
-
-
-   @Override
    public boolean isConvex() {
       throw new RuntimeException("not yet implemented");
    }
 
-
-   @Override
-   public GRenderType getRenderType() {
-      return GRenderType.POLYGON;
-   }
 
 }

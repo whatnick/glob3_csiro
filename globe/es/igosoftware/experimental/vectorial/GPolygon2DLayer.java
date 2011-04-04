@@ -41,8 +41,8 @@ import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
-import es.igosoftware.euclid.experimental.vectorial.rendering.GPolygon2DRenderer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GRenderingAttributes;
+import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorial2DRenderer;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.features.IGlobeMutableFeatureCollection;
 import es.igosoftware.euclid.mutability.IMutable;
@@ -257,7 +257,7 @@ public class GPolygon2DLayer
 
 
                final GPolygon2DLayer layer = key._layer;
-               final GPolygon2DRenderer renderer = layer._renderer;
+               final GVectorial2DRenderer renderer = layer._renderer;
                final BufferedImage renderedImage = renderer.render(key._tileBounds, key._renderingAttributes);
                layer.redraw();
 
@@ -731,7 +731,7 @@ public class GPolygon2DLayer
    private Sector                                                                                                                 _polygonsSector;
 
 
-   private GPolygon2DRenderer                                                                                                     _renderer;
+   private GVectorial2DRenderer                                                                                                   _renderer;
    private final String                                                                                                           _name;
    private GAxisAlignedOrthotope<IVector2, ?>                                                                                     _polygonsBounds;
    private final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> _features;
@@ -793,7 +793,7 @@ public class GPolygon2DLayer
          _polygonsSector = Sector.FULL_SPHERE;
       }
 
-      _renderer = _features.isEmpty() ? null : new GPolygon2DRenderer(_features);
+      _renderer = _features.isEmpty() ? null : new GVectorial2DRenderer(_features);
    }
 
 

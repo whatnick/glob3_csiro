@@ -146,18 +146,6 @@ public final class GSegment2D
    }
 
 
-   @Override
-   public GSegment2D createSimplified(final double capsRadiansTolerance) {
-      return this;
-   }
-
-
-   @Override
-   public GRenderType getRenderType() {
-      return GRenderType.POLYLINE;
-   }
-
-
    public boolean neighborWithSegment(final GSegment2D that) {
 
       final double epsilon = 0.0001;

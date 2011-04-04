@@ -10,26 +10,18 @@ import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GLoggerObject;
 
 
-public abstract class GGTNode<
-
-VectorT extends IVector<VectorT, ?>,
-
-BoundsT extends GAxisAlignedOrthotope<VectorT, ?>,
-
-ElementT
-
->
+public abstract class GGTNode<VectorT extends IVector<VectorT, ?>, ElementT>
          extends
             GLoggerObject {
 
 
-   protected final GGTInnerNode<VectorT, BoundsT, ElementT> _parent;
-   protected final BoundsT                                  _bounds;
-   protected final Collection<ElementT>                     _elements;
+   protected final GGTInnerNode<VectorT, ElementT>   _parent;
+   protected final GAxisAlignedOrthotope<VectorT, ?> _bounds;
+   protected final Collection<ElementT>              _elements;
 
 
-   protected GGTNode(final GGTInnerNode<VectorT, BoundsT, ElementT> parent,
-                     final BoundsT bounds,
+   protected GGTNode(final GGTInnerNode<VectorT, ElementT> parent,
+                     final GAxisAlignedOrthotope<VectorT, ?> bounds,
                      final Collection<ElementT> elements) {
       _parent = parent;
       _bounds = bounds;
@@ -37,12 +29,12 @@ ElementT
    }
 
 
-   public final GGTInnerNode<VectorT, BoundsT, ElementT> getParent() {
+   public final GGTInnerNode<VectorT, ElementT> getParent() {
       return _parent;
    }
 
 
-   public final BoundsT getBounds() {
+   public final GAxisAlignedOrthotope<VectorT, ?> getBounds() {
       return _bounds;
    }
 
@@ -55,9 +47,9 @@ ElementT
    }
 
 
-   public final GGTInnerNode<VectorT, BoundsT, ElementT> getRoot() {
+   public final GGTInnerNode<VectorT, ElementT> getRoot() {
       if (_parent == null) {
-         return (GGTInnerNode<VectorT, BoundsT, ElementT>) this;
+         return (GGTInnerNode<VectorT, ElementT>) this;
       }
       return _parent.getRoot();
    }
@@ -69,7 +61,7 @@ ElementT
    }
 
 
-   public GGeometryNTree<VectorT, BoundsT, ElementT> getNTree() {
+   public GGeometryNTree<VectorT, ElementT> getNTree() {
       return _parent.getNTree();
    }
 
@@ -90,8 +82,8 @@ ElementT
    }
 
 
-   public abstract void depthFirstAcceptVisitor(final IGTDepthFirstVisitor<VectorT, BoundsT, ElementT> visitor)
-                                                                                                               throws IGTBreadFirstVisitor.AbortVisiting;
+   public abstract void depthFirstAcceptVisitor(final IGTDepthFirstVisitor<VectorT, ElementT> visitor)
+                                                                                                      throws IGTBreadFirstVisitor.AbortVisiting;
 
 
    public abstract int getLeafNodesCount();

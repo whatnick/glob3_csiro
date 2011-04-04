@@ -46,8 +46,8 @@ import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
-import es.igosoftware.euclid.experimental.vectorial.rendering.GPolygon2DRenderer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GRenderingAttributes;
+import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorial2DRenderer;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.GVectorUtils;
@@ -64,20 +64,17 @@ public class GPolygon2DRenderingTest {
       System.out.println("Shape Loader 0.1");
       System.out.println("----------------\n");
 
-      //      System.out.println("GeoTools version: " + GeoTools.getVersion() + "\n");
 
-
-      //      final GFileName fileName = GFileName.absoluteFromParts("home", "dgd", "Escritorio", "sample-shp", "cartobrutal",
+      //      final GFileName fileName = GFileName.absoluteFromParts("home", "dgd", "Desktop", "sample-shp", "cartobrutal",
       //               "world-modified", "world.shp");
-      //      final GFileName fileName = GFileName.absoluteFromParts("home", "dgd", "Escritorio", "sample-shp", "shp", "argentina.shp",
+      //      final GFileName fileName = GFileName.absoluteFromParts("home", "dgd", "Desktop", "sample-shp", "shp", "argentina.shp",
       //      "roads.shp");
-      final GFileName fileName = GFileName.absolute("home", "dgd", "Escritorio", "sample-shp", "shp", "argentina.shp",
-               "places.shp");
+      final GFileName fileName = GFileName.absolute("home", "dgd", "Desktop", "sample-shp", "shp", "argentina.shp", "roads.shp");
 
       final GProjection projection = GProjection.EPSG_4326;
 
 
-      final IGlobeFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features = GShapeLoader.readFeatures(
+      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features = GShapeLoader.readFeatures(
                fileName, projection);
 
       //      System.out.println(">>>>>>>>>> CONNECT PROFILER");
@@ -87,7 +84,7 @@ public class GPolygon2DRenderingTest {
       final GAxisAlignedOrthotope<IVector2, ?> featuresBounds = features.getBounds();
 
 
-      final GPolygon2DRenderer renderer = new GPolygon2DRenderer(features);
+      final GVectorial2DRenderer renderer = new GVectorial2DRenderer(features);
 
 
       final GAxisAlignedRectangle region = ((GAxisAlignedRectangle) centerBounds(multipleOfSmallestDimention(featuresBounds),
@@ -192,7 +189,7 @@ public class GPolygon2DRenderingTest {
    }
 
 
-   private static void render(final GPolygon2DRenderer renderer,
+   private static void render(final GVectorial2DRenderer renderer,
                               final GAxisAlignedRectangle region,
                               final GFileName directoryName,
                               final GRenderingAttributes attributes,

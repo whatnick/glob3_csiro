@@ -71,18 +71,6 @@ public final class GSegment3D
 
 
    @Override
-   public GRenderType getRenderType() {
-      return GRenderType.POLYLINE;
-   }
-
-
-   @Override
-   public GSegment3D createSimplified(final double capsRadiansTolerance) {
-      return this;
-   }
-
-
-   @Override
    public boolean isSelfIntersected() {
       return false;
    }

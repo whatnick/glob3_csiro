@@ -32,6 +32,7 @@ import es.igosoftware.euclid.shape.GSimplePolygon2D;
 import es.igosoftware.euclid.shape.GTriangle2D;
 import es.igosoftware.euclid.shape.ILineal2D;
 import es.igosoftware.euclid.shape.IPolygon2D;
+import es.igosoftware.euclid.shape.ISimplePolygon2D;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector2;
@@ -96,7 +97,7 @@ public class GJTSUtils {
          return null;
       }
 
-      final IPolygon2D outerPolygon = createEuclidPolygon(jtsPolygon.getCoordinates());
+      final ISimplePolygon2D outerPolygon = createEuclidPolygon(jtsPolygon.getCoordinates());
 
       final int holesCount = jtsPolygon.getNumInteriorRing();
       if (holesCount == 0) {
@@ -104,7 +105,7 @@ public class GJTSUtils {
       }
 
 
-      final List<IPolygon2D> jtsHoles = new ArrayList<IPolygon2D>(holesCount);
+      final List<ISimplePolygon2D> jtsHoles = new ArrayList<ISimplePolygon2D>(holesCount);
       for (int j = 0; j < holesCount; j++) {
          final LineString jtsHole = jtsPolygon.getInteriorRingN(j);
 
@@ -115,7 +116,7 @@ public class GJTSUtils {
    }
 
 
-   public static IPolygon2D createEuclidPolygon(final Coordinate... coordinates) {
+   public static ISimplePolygon2D createEuclidPolygon(final Coordinate... coordinates) {
       return GShape.createPolygon2(false, toEuclid(coordinates));
    }
 
@@ -317,7 +318,7 @@ public class GJTSUtils {
 
       final LinearRing jtsShell = JTS_GEOMETRY_FACTORY.createLinearRing(getJTSCoordinates(polygon));
 
-      final List<IPolygon2D> holes = polygon.getHoles();
+      final List<ISimplePolygon2D> holes = polygon.getHoles();
       final LinearRing[] jtsHoles = new LinearRing[holes.size()];
 
       for (int i = 0; i < jtsHoles.length; i++) {

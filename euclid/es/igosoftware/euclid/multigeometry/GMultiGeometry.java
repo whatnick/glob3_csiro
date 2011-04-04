@@ -12,11 +12,11 @@ import es.igosoftware.euclid.GGeometryAbstract;
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
-import es.igosoftware.euclid.shape.GRenderType;
 import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GCollections;
+import es.igosoftware.util.GMath;
 import es.igosoftware.util.ITransformer;
 
 
@@ -145,12 +145,6 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
 
 
    @Override
-   public GRenderType getRenderType() {
-      return getExemplar().getRenderType();
-   }
-
-
-   @Override
    public String toString() {
       return "GMultiGeometry" + dimensions() + " " + _children;
    }
@@ -175,5 +169,45 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
    public ChildrenGeometryT getChild(final int index) {
       return _children.get(index);
    }
+
+
+   @Override
+   public VectorT closestPointOnBoundary(final VectorT point) {
+      GAssert.notNull(point, "point");
+
+      double minDistance = Double.POSITIVE_INFINITY;
+      VectorT closestPoint = null;
+
+      for (final ChildrenGeometryT child : _children) {
+         final VectorT currentPoint = child.closestPointOnBoundary(point);
+         final double currentDistance = currentPoint.squaredDistance(point);
+
+         if (currentDistance <= minDistance) {
+            minDistance = currentDistance;
+            closestPoint = currentPoint;
+         }
+      }
+
+      return closestPoint;
+   }
+
+
+   @Override
+   public double squaredDistanceToBoundary(final VectorT point) {
+      return closestPointOnBoundary(point).squaredDistance(point);
+   }
+
+
+   @Override
+   public double distanceToBoundary(final VectorT point) {
+      return Math.sqrt(squaredDistance(point));
+   }
+
+
+   @Override
+   public final boolean containsOnBoundary(final VectorT point) {
+      return GMath.closeToZero(distanceToBoundary(point));
+   }
+
 
 }

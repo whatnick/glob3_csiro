@@ -38,7 +38,6 @@ package es.igosoftware.euclid.shape;
 
 import es.igosoftware.euclid.IEdgedGeometry;
 import es.igosoftware.euclid.bounding.IBounds;
-import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector;
 
 
@@ -52,12 +51,7 @@ BoundsT extends IBounds<VectorT, BoundsT>
 
 >
          extends
-            IPointsContainer<VectorT>,
             IEdgedGeometry<VectorT, SegmentT, BoundsT> {
-
-
-   @Override
-   public ILineal<VectorT, SegmentT, BoundsT> createSimplified(final double capsRadiansTolerance);
 
 
 }

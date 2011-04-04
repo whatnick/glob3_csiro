@@ -28,18 +28,13 @@ public abstract class GArrayProtocolField<T extends IProtocolObject>
    @SuppressWarnings("unchecked")
    @Override
    protected void doRead(final DataInputStream input) throws IOException {
-      final int lenght = input.readInt();
-      if (lenght < 0) {
+      final int length = input.readInt();
+      if (length < 0) {
          set(null);
       }
       else {
-         final T[] value = createArray(lenght);
-         for (int i = 0; i < lenght; i++) {
-            //            final FT child = (FT) _childrenField.clone();
-            //            child.read(input);
-            //            value[i] = child.get();
-
-            //value[i] = _multiplexor.createObject(bytes);
+         final T[] value = createArray(length);
+         for (int i = 0; i < length; i++) {
             value[i] = (T) _multiplexor.createObject(input);
          }
          set(value);
@@ -47,10 +42,7 @@ public abstract class GArrayProtocolField<T extends IProtocolObject>
    }
 
 
-   //   private T[] createArray(final int lenght) {
-   //      return (T[]) new IProtocolObject[lenght];
-   //   }
-   protected abstract T[] createArray(final int lenght);
+   protected abstract T[] createArray(final int length);
 
 
    @Override

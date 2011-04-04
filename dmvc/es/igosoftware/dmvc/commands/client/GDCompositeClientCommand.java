@@ -22,8 +22,8 @@ public final class GDCompositeClientCommand
 
    private final GArrayProtocolField<IDClientCommand> _children        = new GArrayProtocolField<IDClientCommand>(false) {
                                                                           @Override
-                                                                          protected IDClientCommand[] createArray(final int lenght) {
-                                                                             return new IDClientCommand[lenght];
+                                                                          protected IDClientCommand[] createArray(final int length) {
+                                                                             return new IDClientCommand[length];
                                                                           }
                                                                        };
 

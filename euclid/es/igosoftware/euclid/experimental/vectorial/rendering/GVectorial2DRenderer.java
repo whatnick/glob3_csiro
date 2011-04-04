@@ -15,13 +15,13 @@ import es.igosoftware.euclid.ntree.GGeometryNTreeParameters;
 import es.igosoftware.euclid.vector.IVector2;
 
 
-public class GPolygon2DRenderer {
+public class GVectorial2DRenderer {
 
    private final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?>        _features;
    private final GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> _quadtree;
 
 
-   public GPolygon2DRenderer(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features) {
+   public GVectorial2DRenderer(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features) {
       _features = features;
 
       _quadtree = createQuadtree();
@@ -30,16 +30,12 @@ public class GPolygon2DRenderer {
 
    private GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> createQuadtree() {
       final GGeometryNTreeParameters.AcceptLeafNodeCreationPolicy acceptLeafNodeCreationPolicy;
-      acceptLeafNodeCreationPolicy = new GGeometryNTreeParameters.Accept2DLeafNodeCreationPolicy<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>() {
+      acceptLeafNodeCreationPolicy = new GGeometryNTreeParameters.Accept2DLeafNodeCreationPolicy<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>>() {
          @Override
          public boolean accept(final int depth,
                                final GAxisAlignedOrthotope<IVector2, ?> bounds,
                                final Collection<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> elements) {
-            if (depth >= 10) {
-               return true;
-            }
-
-            return elements.size() <= 2;
+            return (depth >= 10) || (elements.size() <= 2);
          }
       };
 
@@ -56,7 +52,7 @@ public class GPolygon2DRenderer {
 
    public BufferedImage render(final GAxisAlignedRectangle region,
                                final GRenderingAttributes attributes) {
-      final IPolygon2DRenderUnit renderUnit = new GPolygon2DRenderUnit();
+      final IVectorial2DRenderUnit renderUnit = new GVectorial2DRenderUnit();
       return renderUnit.render(_quadtree, region, attributes);
    }
 

@@ -41,7 +41,6 @@ import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 import es.igosoftware.euclid.matrix.GMatrix33D;
 import es.igosoftware.euclid.matrix.GMatrix44D;
 import es.igosoftware.euclid.projection.GProjection;
-import es.igosoftware.euclid.shape.GRenderType;
 import es.igosoftware.util.GAssert;
 
 
@@ -429,8 +428,26 @@ public final class GMutableVector3<T extends IVector3>
 
 
    @Override
-   public GRenderType getRenderType() {
-      return _value.getRenderType();
+   public IVector3 closestPointOnBoundary(final IVector3 point) {
+      return this;
+   }
+
+
+   @Override
+   public double squaredDistanceToBoundary(final IVector3 point) {
+      return _value.squaredDistance(point);
+   }
+
+
+   @Override
+   public double distanceToBoundary(final IVector3 point) {
+      return _value.distance(point);
+   }
+
+
+   @Override
+   public boolean containsOnBoundary(final IVector3 point) {
+      return _value.containsOnBoundary(point);
    }
 
 

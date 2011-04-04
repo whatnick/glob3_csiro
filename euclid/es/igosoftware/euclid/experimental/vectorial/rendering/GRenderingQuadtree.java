@@ -11,11 +11,7 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.util.ITransformer;
 
 
-public class GRenderingQuadtree<
-
-FeatureT extends IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>
-
->
+public class GRenderingQuadtree<FeatureT extends IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>>
          extends
             GGeometryQuadtree<FeatureT> {
 

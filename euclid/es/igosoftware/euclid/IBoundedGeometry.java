@@ -37,7 +37,6 @@
 package es.igosoftware.euclid;
 
 import es.igosoftware.euclid.bounding.IBounds;
-import es.igosoftware.euclid.shape.GRenderType;
 import es.igosoftware.euclid.vector.IVector;
 
 
@@ -58,7 +57,15 @@ BoundsT extends IBounds<VectorT, ?>
    public BoundsT getBounds();
 
 
-   public GRenderType getRenderType();
+   public VectorT closestPointOnBoundary(final VectorT point);
 
+
+   public double squaredDistanceToBoundary(final VectorT point);
+
+
+   public double distanceToBoundary(final VectorT point);
+
+
+   public boolean containsOnBoundary(final VectorT point);
 
 }
