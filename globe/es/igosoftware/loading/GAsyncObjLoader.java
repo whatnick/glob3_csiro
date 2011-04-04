@@ -92,6 +92,7 @@ public class GAsyncObjLoader {
 
    private GModelMesh           _currentMesh    = null;
    private final ILoader        _loader;
+   GModelData                   _model;
 
 
    public GAsyncObjLoader(final ILoader loader) {
@@ -140,7 +141,7 @@ public class GAsyncObjLoader {
 
       final GFileName objDirectory = objFileName.getParent();
 
-      final GModelData model = new GModelData(objFileName);
+      _model = new GModelData(objFileName);
       _currentMesh = null;
 
       final InputStream stream = new FileInputStream(objFile);
@@ -189,7 +190,7 @@ public class GAsyncObjLoader {
             if (line.startsWith("v ")) {
                //System.out.println("Reading Vertex");
                final String dataString = line.substring(1);
-               model.addVertex(parsePoint(dataString));
+               _model.addVertex(parsePoint(dataString));
                continue;
             }
 
@@ -198,7 +199,7 @@ public class GAsyncObjLoader {
             if (line.startsWith(TEXTURE_DATA)) {
                //System.out.println("Reading TexCoord");
                final String dataString = line.substring(2);
-               model.addTexCoord(parseUV(dataString));
+               _model.addTexCoord(parseUV(dataString));
                continue;
             }
 
@@ -207,7 +208,7 @@ public class GAsyncObjLoader {
             if (line.startsWith("vn ")) {
                //getNormals(WaveFrontLoader.NORMAL_DATA, line, br);
                final String dataString = line.substring(2);
-               model.addNormal(parseNormal(dataString));
+               _model.addNormal(parseNormal(dataString));
                continue;
             }
 
@@ -223,16 +224,16 @@ public class GAsyncObjLoader {
             }
 
             if (line.startsWith("mtllib ")) {
-               processMaterialLib(model, objDirectory, line);
+               processMaterialLib(_model, objDirectory, line);
                continue;
             }
 
             if (line.startsWith("usemtl ")) {
                if (_currentMesh != null) {
-                  model.addmesh(_currentMesh);
+                  _model.addmesh(_currentMesh);
                }
                final GModelMesh newMesh = new GModelMesh(currentName);
-               processMaterialType(model, line, newMesh);
+               processMaterialType(_model, line, newMesh);
                _currentMesh = newMesh;
                continue;
             }
@@ -253,7 +254,7 @@ public class GAsyncObjLoader {
       finally {
          GIOUtils.gentlyClose(br);
       }
-      model.addmesh(_currentMesh);
+      _model.addmesh(_currentMesh);
 
 
       //model.setCenterPoint(center);
@@ -264,12 +265,12 @@ public class GAsyncObjLoader {
          logger.info("------------------------------------------------------------------------------------");
          logger.info("Model \"" + objFile + "\" loaded in " + GStringUtils.getTimeMessage(elapsed));
 
-         model.showStatistics();
+         _model.showStatistics();
 
          logger.info("------------------------------------------------------------------------------------");
       }
 
-      return model;
+      return _model;
    }
 
 
@@ -521,6 +522,7 @@ public class GAsyncObjLoader {
          else if (parts[0].equals("map_Kd") && (material != null)) {
             if (parts.length > 1) {
 
+               //_model.setUseTexture(true);
                final String texPath = line.substring(6).trim();
                final String[] pathParts = texPath.split("[/\\\\]");
 
