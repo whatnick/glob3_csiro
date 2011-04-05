@@ -15,9 +15,7 @@ public interface IGlobeFeatureCollection<
 
 VectorT extends IVector<VectorT, ?>,
 
-FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>,
-
-TypeT extends IGlobeFeatureCollection<VectorT, FeatureGeometryT, TypeT>
+FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
 
 >
          extends

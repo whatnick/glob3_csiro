@@ -17,11 +17,11 @@ import es.igosoftware.euclid.vector.IVector2;
 
 public class GVectorial2DRenderer {
 
-   private final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?>        _features;
+   private final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>           _features;
    private final GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> _quadtree;
 
 
-   public GVectorial2DRenderer(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features) {
+   public GVectorial2DRenderer(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features) {
       _features = features;
 
       _quadtree = createQuadtree();
@@ -43,7 +43,7 @@ public class GVectorial2DRenderer {
       final GGeometryNTreeParameters parameters = new GGeometryNTreeParameters(true, acceptLeafNodeCreationPolicy,
                GGeometryNTreeParameters.BoundsPolicy.MINIMUM, true);
 
-
+      // TODO: evaluate_if_multigeometries_must_go_into_the_quadtree;
       return new GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>>(
                "Rendering", _features, parameters);
 

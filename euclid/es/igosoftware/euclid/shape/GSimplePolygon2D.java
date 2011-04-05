@@ -194,6 +194,51 @@ public final class GSimplePolygon2D
       }
 
       return ((hits & 1) != 0);
+
+
+      //      boolean inside = false;
+      //
+      //      final double xt = point.x();
+      //      final double yt = point.y();
+      //
+      //      final int npoints = _points.size();
+      //      if (npoints < 3) {
+      //         return false;
+      //      }
+      //
+      //      double xold = _points.get(npoints - 1).x();
+      //      double yold = _points.get(npoints - 1).y();
+      //      for (final IVector2 each : _points) {
+      //         final double xnew = each.x();
+      //         final double ynew = each.y();
+      //
+      //         final double x1;
+      //         final double x2;
+      //         final double y1;
+      //         final double y2;
+      //         if (xnew > xold) {
+      //            x1 = xold;
+      //            x2 = xnew;
+      //            y1 = yold;
+      //            y2 = ynew;
+      //         }
+      //         else {
+      //            x1 = xnew;
+      //            x2 = xold;
+      //            y1 = ynew;
+      //            y2 = yold;
+      //         }
+      //
+      //         if (((xnew < xt) == (xt <= xold)) /* edge "open" at one end */
+      //             && ((yt - y1) * (x2 - x1) < (y2 - y1) * (xt - x1))) {
+      //            inside = !inside;
+      //         }
+      //
+      //         xold = xnew;
+      //         yold = ynew;
+      //      }
+      //
+      //      return inside;
    }
 
 

@@ -14,6 +14,7 @@ import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.features.IGlobeFeature;
+import es.igosoftware.euclid.multigeometry.GMultiGeometry2D;
 import es.igosoftware.euclid.ntree.GGTInnerNode;
 import es.igosoftware.euclid.ntree.GGTNode;
 import es.igosoftware.euclid.shape.IComplexPolygon2D;
@@ -199,7 +200,16 @@ class GVectorial2DRenderUnit
                                final GAxisAlignedRectangle region,
                                final GRenderingAttributes attributes) {
 
-      if (geometry instanceof IVector2) {
+      if (geometry instanceof GMultiGeometry2D) {
+         @SuppressWarnings("unchecked")
+         final GMultiGeometry2D<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> multigeometry = (GMultiGeometry2D<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) geometry;
+         for (final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> child : multigeometry) {
+            if (child.getBounds().asAxisAlignedOrthotope().touches(region)) {
+               renderGeometry(child, scale, renderedImage, g2d, region, attributes);
+            }
+         }
+      }
+      else if (geometry instanceof IVector2) {
          renderPoint((IVector2) geometry, scale, g2d, region, attributes);
       }
       else {

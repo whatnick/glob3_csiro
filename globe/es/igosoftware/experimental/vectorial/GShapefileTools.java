@@ -74,8 +74,8 @@ public class GShapefileTools {
    }
 
 
-   public static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> readFile(final File file)
-                                                                                                                                                           throws IOException {
+   public static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> readFile(final File file)
+                                                                                                                                                        throws IOException {
 
       final HashMap<String, URL> connect = new HashMap<String, URL>();
       connect.put("url", file.toURI().toURL());

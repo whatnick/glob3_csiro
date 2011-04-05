@@ -18,7 +18,7 @@ TypeT extends IGlobeMutableFeatureCollection<VectorT, FeatureGeometryT, TypeT>
 
 >
          extends
-            IGlobeFeatureCollection<VectorT, FeatureGeometryT, TypeT>,
+            IGlobeFeatureCollection<VectorT, FeatureGeometryT>,
             IMutable<TypeT> {
 
 

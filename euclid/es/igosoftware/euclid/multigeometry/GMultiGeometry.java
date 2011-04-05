@@ -55,14 +55,9 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
    }
 
 
-   public ChildrenGeometryT getExemplar() {
-      return _children.get(0);
-   }
-
-
    @Override
    public byte dimensions() {
-      return getExemplar().dimensions();
+      return _children.get(0).dimensions();
    }
 
 
@@ -94,11 +89,12 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
 
    @Override
    public VectorT closestPoint(final VectorT point) {
-      VectorT closest = getExemplar().closestPoint(point);
+      VectorT closest = _children.get(0).closestPoint(point);
       double closestDistance = closest.squaredDistance(point);
 
       for (int i = 1; i < _children.size(); i++) {
-         final VectorT current = _children.get(i).closestPoint(point);
+         final ChildrenGeometryT child = _children.get(i);
+         final VectorT current = child.closestPoint(point);
          final double currentDistance = current.squaredDistance(point);
          if (currentDistance < closestDistance) {
             closest = current;
@@ -112,7 +108,7 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
 
    @Override
    public double precision() {
-      return getExemplar().precision();
+      return _children.get(0).precision();
    }
 
 

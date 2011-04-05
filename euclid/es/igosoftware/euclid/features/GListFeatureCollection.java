@@ -29,7 +29,7 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<Vecto
 >
 
          implements
-            IGlobeFeatureCollection<VectorT, FeatureGeometryT, GListFeatureCollection<VectorT, FeatureGeometryT>> {
+            IGlobeFeatureCollection<VectorT, FeatureGeometryT> {
 
 
    public static <

@@ -341,7 +341,7 @@ public class GJTSUtils {
 
 
    public static GeometryCollection toJTS(final GMultiGeometry2D<? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> multigeometry) {
-      final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> exemplar = multigeometry.getExemplar();
+      final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> exemplar = multigeometry.getChild(0);
 
       if (exemplar instanceof ILineal2D) {
          return createMultiLineString(multigeometry);
