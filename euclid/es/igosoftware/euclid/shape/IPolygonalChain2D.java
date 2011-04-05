@@ -36,22 +36,15 @@
 
 package es.igosoftware.euclid.shape;
 
-import es.igosoftware.euclid.IEdgedGeometry;
-import es.igosoftware.euclid.bounding.IBounds;
-import es.igosoftware.euclid.vector.IVector;
+import es.igosoftware.euclid.ICurve2D;
+import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.vector.IVector2;
 
 
-public interface ILineal<
-
-VectorT extends IVector<VectorT, ?>,
-
-SegmentT extends GSegment<VectorT, SegmentT, ?>,
-
-BoundsT extends IBounds<VectorT, BoundsT>
-
->
+public interface IPolygonalChain2D
          extends
-            IEdgedGeometry<VectorT, SegmentT, BoundsT> {
+            IPolygonalChain<IVector2, GSegment2D, GAxisAlignedRectangle>,
+            ICurve2D {
 
 
 }

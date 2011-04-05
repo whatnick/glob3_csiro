@@ -98,8 +98,8 @@ public final class GShape {
    }
 
 
-   public static ILineal2D createLine2(final boolean validate,
-                                       final List<IVector2> points) {
+   public static IPolygonalChain2D createLine2(final boolean validate,
+                                               final List<IVector2> points) {
       final int pointsCount = points.size();
 
       if (pointsCount < 2) {
@@ -114,8 +114,8 @@ public final class GShape {
    }
 
 
-   public static ILineal2D createLine2(final boolean validate,
-                                       final IVector2... points) {
+   public static IPolygonalChain2D createLine2(final boolean validate,
+                                               final IVector2... points) {
       final int pointsCount = points.length;
 
       if (pointsCount < 2) {

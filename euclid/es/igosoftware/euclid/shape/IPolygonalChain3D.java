@@ -36,13 +36,13 @@
 
 package es.igosoftware.euclid.shape;
 
-import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
-import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.euclid.bounding.GAxisAlignedBox;
+import es.igosoftware.euclid.vector.IVector3;
 
 
-public interface ILineal2D
+public interface IPolygonalChain3D
          extends
-            ILineal<IVector2, GSegment2D, GAxisAlignedRectangle> {
+            IPolygonalChain<IVector3, GSegment3D, GAxisAlignedBox> {
 
 
 }

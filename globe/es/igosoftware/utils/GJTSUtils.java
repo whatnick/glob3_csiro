@@ -24,14 +24,10 @@ import es.igosoftware.euclid.multigeometry.GMultiLine2D;
 import es.igosoftware.euclid.multigeometry.GMultiPoint2D;
 import es.igosoftware.euclid.multigeometry.GMultiPolygon2D;
 import es.igosoftware.euclid.shape.GComplexPolygon2D;
-import es.igosoftware.euclid.shape.GLinesStrip2D;
-import es.igosoftware.euclid.shape.GQuad2D;
-import es.igosoftware.euclid.shape.GSegment2D;
 import es.igosoftware.euclid.shape.GShape;
-import es.igosoftware.euclid.shape.GSimplePolygon2D;
-import es.igosoftware.euclid.shape.GTriangle2D;
-import es.igosoftware.euclid.shape.ILineal2D;
+import es.igosoftware.euclid.shape.IComplexPolygon2D;
 import es.igosoftware.euclid.shape.IPolygon2D;
+import es.igosoftware.euclid.shape.IPolygonalChain2D;
 import es.igosoftware.euclid.shape.ISimplePolygon2D;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IPointsContainer;
@@ -121,7 +117,7 @@ public class GJTSUtils {
    }
 
 
-   public static ILineal2D createEuclidLine(final Coordinate... coordinates) {
+   public static IPolygonalChain2D createEuclidLine(final Coordinate... coordinates) {
       return GShape.createLine2(false, toEuclid(coordinates));
    }
 
@@ -136,7 +132,7 @@ public class GJTSUtils {
    }
 
 
-   public static ILineal2D toEuclid(final LineString jtsLine) {
+   public static IPolygonalChain2D toEuclid(final LineString jtsLine) {
       if (jtsLine == null) {
          return null;
       }
@@ -166,7 +162,7 @@ public class GJTSUtils {
       }
 
       final int count = jtsLines.getNumGeometries();
-      final List<ILineal2D> lines = new ArrayList<ILineal2D>(count);
+      final List<IPolygonalChain2D> lines = new ArrayList<IPolygonalChain2D>(count);
       for (int i = 0; i < count; i++) {
          lines.add(toEuclid((LineString) jtsLines.getGeometryN(i)));
       }
@@ -190,6 +186,7 @@ public class GJTSUtils {
    }
 
 
+   @SuppressWarnings("unchecked")
    public static Geometry toJTS(final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> geometry) {
       if (geometry == null) {
          return null;
@@ -198,16 +195,14 @@ public class GJTSUtils {
       if (geometry instanceof IVector2) {
          return toJTS(((IVector2) geometry));
       }
-      else if (geometry instanceof ILineal2D) {
-         return toJTS((ILineal2D) geometry);
+      else if (geometry instanceof IPolygonalChain2D) {
+         return toJTS((IPolygonalChain2D) geometry);
       }
       else if (geometry instanceof IPolygon2D) {
          return toJTS((IPolygon2D) geometry);
       }
-      else if (geometry instanceof GMultiGeometry2D) {
-         @SuppressWarnings("unchecked")
-         final GMultiGeometry2D<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> multigeometry = (GMultiGeometry2D<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) geometry;
-         return toJTS(multigeometry);
+      else if (geometry instanceof GMultiGeometry2D<?>) {
+         return toJTS((GMultiGeometry2D<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) geometry);
       }
       else {
          throw new RuntimeException("Euclid geometry not supported (" + geometry.getClass() + ")");
@@ -231,20 +226,12 @@ public class GJTSUtils {
    }
 
 
-   public static LineString toJTS(final ILineal2D lineal) {
+   public static LineString toJTS(final IPolygonalChain2D lineal) {
       if (lineal == null) {
          return null;
       }
 
-      if (lineal instanceof GLinesStrip2D) {
-         return toJTS((GLinesStrip2D) lineal);
-      }
-      else if (lineal instanceof GSegment2D) {
-         return toJTS((GSegment2D) lineal);
-      }
-      else {
-         throw new RuntimeException("Lineal type not supported (" + lineal.getClass() + ")");
-      }
+      return JTS_GEOMETRY_FACTORY.createLineString(getJTSCoordinates(lineal));
    }
 
 
@@ -253,65 +240,21 @@ public class GJTSUtils {
          return null;
       }
 
-      if (polygon instanceof GTriangle2D) {
-         return toJTS((GTriangle2D) polygon);
-      }
-      else if (polygon instanceof GQuad2D) {
-         return toJTS((GQuad2D) polygon);
-      }
-      else if (polygon instanceof GSimplePolygon2D) {
-         return toJTS((GSimplePolygon2D) polygon);
-      }
-      else if (polygon instanceof GComplexPolygon2D) {
-         return toJTS((GComplexPolygon2D) polygon);
-      }
-      else {
-         throw new RuntimeException("Polygon type not supported (" + polygon.getClass() + ")");
-      }
-   }
-
-
-   public static LineString toJTS(final GLinesStrip2D linesStrip) {
-      if (linesStrip == null) {
-         return null;
+      if (polygon instanceof IComplexPolygon2D) {
+         return toJTS((IComplexPolygon2D) polygon);
       }
 
-      return JTS_GEOMETRY_FACTORY.createLineString(getJTSCoordinates(linesStrip));
-   }
-
-
-   public static LineString toJTS(final GSegment2D segment) {
-      if (segment == null) {
-         return null;
-      }
-
-      return JTS_GEOMETRY_FACTORY.createLineString(getJTSCoordinates(segment));
-   }
-
-
-   public static Polygon toJTS(final GQuad2D quad) {
-      if (quad == null) {
-         return null;
-      }
-
-      final LinearRing jtsShell = JTS_GEOMETRY_FACTORY.createLinearRing(getJTSCoordinates(quad));
-      final LinearRing[] jtsHoles = null;
-      return JTS_GEOMETRY_FACTORY.createPolygon(jtsShell, jtsHoles);
-   }
-
-
-   public static Polygon toJTS(final GSimplePolygon2D polygon) {
-      if (polygon == null) {
-         return null;
-      }
 
       final LinearRing jtsShell = JTS_GEOMETRY_FACTORY.createLinearRing(getJTSCoordinates(polygon));
       final LinearRing[] jtsHoles = null;
       return JTS_GEOMETRY_FACTORY.createPolygon(jtsShell, jtsHoles);
+      //      else {
+      //         throw new RuntimeException("Polygon type not supported (" + polygon.getClass() + ")");
+      //      }
    }
 
 
-   public static Polygon toJTS(final GComplexPolygon2D polygon) {
+   public static Polygon toJTS(final IComplexPolygon2D polygon) {
       if (polygon == null) {
          return null;
       }
@@ -329,21 +272,10 @@ public class GJTSUtils {
    }
 
 
-   public static Polygon toJTS(final GTriangle2D triangle) {
-      if (triangle == null) {
-         return null;
-      }
-
-      final LinearRing jtsShell = JTS_GEOMETRY_FACTORY.createLinearRing(getJTSCoordinates(triangle));
-      final LinearRing[] jtsHoles = null;
-      return JTS_GEOMETRY_FACTORY.createPolygon(jtsShell, jtsHoles);
-   }
-
-
    public static GeometryCollection toJTS(final GMultiGeometry2D<? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> multigeometry) {
       final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> exemplar = multigeometry.getChild(0);
 
-      if (exemplar instanceof ILineal2D) {
+      if (exemplar instanceof IPolygonalChain2D) {
          return createMultiLineString(multigeometry);
       }
       else if (exemplar instanceof IPolygon2D) {
@@ -363,7 +295,7 @@ public class GJTSUtils {
       int index = 0;
 
       for (final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> child : multigeometry) {
-         children[index++] = toJTS((ILineal2D) child);
+         children[index++] = toJTS((IPolygonalChain2D) child);
       }
 
       return JTS_GEOMETRY_FACTORY.createMultiLineString(children);

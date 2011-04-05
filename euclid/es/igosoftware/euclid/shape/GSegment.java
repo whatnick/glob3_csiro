@@ -60,7 +60,7 @@ BoundsT extends IBounds<VectorT, BoundsT>
          extends
             GEdgedGeometryAbstract<VectorT, SegmentT, BoundsT>
          implements
-            ILineal<VectorT, SegmentT, BoundsT> {
+            IPolygonalChain<VectorT, SegmentT, BoundsT> {
 
    private static final long serialVersionUID = 1L;
 
@@ -295,8 +295,14 @@ BoundsT extends IBounds<VectorT, BoundsT>
 
 
    @Override
-   public List<SegmentT> initializeEdges() {
+   public final List<SegmentT> initializeEdges() {
       throw new RuntimeException("Must not happens as subclasses implements getEdges without calling initializeEdges()");
+   }
+
+
+   @Override
+   public final boolean isClosed() {
+      return false;
    }
 
 }

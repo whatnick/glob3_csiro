@@ -18,8 +18,8 @@ import es.igosoftware.euclid.multigeometry.GMultiGeometry2D;
 import es.igosoftware.euclid.ntree.GGTInnerNode;
 import es.igosoftware.euclid.ntree.GGTNode;
 import es.igosoftware.euclid.shape.IComplexPolygon2D;
-import es.igosoftware.euclid.shape.ILineal2D;
 import es.igosoftware.euclid.shape.IPolygon2D;
+import es.igosoftware.euclid.shape.IPolygonalChain2D;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector2;
@@ -229,8 +229,8 @@ class GVectorial2DRenderUnit
          }
 
 
-         if (geometry instanceof ILineal2D) {
-            renderPolyline((ILineal2D) geometry, scale, g2d, region, attributes);
+         if (geometry instanceof IPolygonalChain2D) {
+            renderPolyline((IPolygonalChain2D) geometry, scale, g2d, region, attributes);
          }
          else if (geometry instanceof IPolygon2D) {
             renderPolygon((IPolygon2D) geometry, scale, g2d, region, attributes);
@@ -291,7 +291,7 @@ class GVectorial2DRenderUnit
    }
 
 
-   private static void renderPolyline(final ILineal2D geometry,
+   private static void renderPolyline(final IPolygonalChain2D geometry,
                                       final IVector2 scale,
                                       final Graphics2D g2d,
                                       final GAxisAlignedRectangle region,

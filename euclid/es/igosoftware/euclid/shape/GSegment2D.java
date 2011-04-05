@@ -50,7 +50,7 @@ public final class GSegment2D
          extends
             GSegment<IVector2, GSegment2D, GAxisAlignedRectangle>
          implements
-            ILineal2D {
+            IPolygonalChain2D {
 
    private static final long serialVersionUID = 1L;
 

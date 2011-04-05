@@ -14,7 +14,7 @@ public class GLinesStrip2D
          extends
             GLinesStrip<IVector2, GSegment2D, GAxisAlignedRectangle>
          implements
-            ILineal2D {
+            IPolygonalChain2D {
 
 
    private static final long     serialVersionUID = 1L;

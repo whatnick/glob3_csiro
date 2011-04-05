@@ -2,6 +2,8 @@
 
 package es.igosoftware.euclid.shape;
 
+import java.util.List;
+
 import es.igosoftware.euclid.bounding.IBounds;
 import es.igosoftware.euclid.vector.IVector;
 
@@ -21,5 +23,9 @@ BoundsT extends IBounds<VectorT, BoundsT>
 
    @Override
    public ISimplePolygon<VectorT, SegmentT, BoundsT> getHull();
+
+
+   public abstract List<? extends IPolygon<VectorT, SegmentT, BoundsT>> getHoles();
+
 
 }

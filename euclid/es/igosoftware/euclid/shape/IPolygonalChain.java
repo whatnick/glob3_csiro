@@ -36,13 +36,42 @@
 
 package es.igosoftware.euclid.shape;
 
-import es.igosoftware.euclid.bounding.GAxisAlignedBox;
-import es.igosoftware.euclid.vector.IVector3;
+import es.igosoftware.euclid.ICurve;
+import es.igosoftware.euclid.IEdgedGeometry;
+import es.igosoftware.euclid.bounding.IBounds;
+import es.igosoftware.euclid.vector.IVector;
 
 
-public interface ILineal3D
+/**
+ * A polygonal chain, polygonal curve, polygonal path, or piecewise linear curve, is a connected series of line segments. More
+ * formally, a polygonal chain P is a curve specified by a sequence of points \scriptstyle(A_1, A_2, \dots, A_n) called its
+ * vertices so that the curve consists of the line segments connecting the consecutive vertices.<br/>
+ * <br/>
+ * In computer graphics a polygonal chain is called a polyline and is often used to approximate curved paths.<br/>
+ * <br/>
+ * See http://en.wikipedia.org/wiki/Polygonal_chain
+ * 
+ * @author dgd
+ * 
+ * @param <VectorT>
+ * @param <SegmentT>
+ * @param <BoundsT>
+ */
+public interface IPolygonalChain<
+
+VectorT extends IVector<VectorT, ?>,
+
+SegmentT extends GSegment<VectorT, SegmentT, ?>,
+
+BoundsT extends IBounds<VectorT, BoundsT>
+
+>
          extends
-            ILineal<IVector3, GSegment3D, GAxisAlignedBox> {
+            IEdgedGeometry<VectorT, SegmentT, BoundsT>,
+            ICurve<VectorT, BoundsT> {
+
+
+   public boolean isClosed();
 
 
 }

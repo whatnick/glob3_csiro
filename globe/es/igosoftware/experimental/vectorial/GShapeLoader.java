@@ -62,8 +62,8 @@ import es.igosoftware.euclid.multigeometry.GMultiGeometry2D;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.shape.GComplexPolygon2D;
 import es.igosoftware.euclid.shape.GShape;
-import es.igosoftware.euclid.shape.ILineal2D;
 import es.igosoftware.euclid.shape.IPolygon2D;
+import es.igosoftware.euclid.shape.IPolygonalChain2D;
 import es.igosoftware.euclid.shape.ISimplePolygon2D;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
@@ -215,12 +215,12 @@ public class GShapeLoader {
             final com.vividsolutions.jts.geom.MultiLineString multiline = (com.vividsolutions.jts.geom.MultiLineString) geometryAttribute.getValue();
             final int geometriesCount = multiline.getNumGeometries();
 
-            final List<ILineal2D> lines = new ArrayList<ILineal2D>(geometriesCount);
+            final List<IPolygonalChain2D> lines = new ArrayList<IPolygonalChain2D>(geometriesCount);
             for (int i = 0; i < geometriesCount; i++) {
                final com.vividsolutions.jts.geom.LineString jtsLine = (com.vividsolutions.jts.geom.LineString) multiline.getGeometryN(i);
 
                try {
-                  final ILineal2D euclidLine = createLine(jtsLine.getCoordinates(), projection);
+                  final IPolygonalChain2D euclidLine = createLine(jtsLine.getCoordinates(), projection);
 
                   //euclidFeatures.add(createFeature(euclidLines, feature));
                   lines.add(euclidLine);
@@ -235,7 +235,7 @@ public class GShapeLoader {
                   euclidFeatures.add(createFeature(lines.get(0), feature));
                }
                else {
-                  euclidFeatures.add(createFeature(new GMultiGeometry2D<ILineal2D>(lines), feature));
+                  euclidFeatures.add(createFeature(new GMultiGeometry2D<IPolygonalChain2D>(lines), feature));
                }
             }
 
@@ -371,8 +371,8 @@ public class GShapeLoader {
    }
 
 
-   private static ILineal2D createLine(final com.vividsolutions.jts.geom.Coordinate[] jtsCoordinates,
-                                       final GProjection projection) {
+   private static IPolygonalChain2D createLine(final com.vividsolutions.jts.geom.Coordinate[] jtsCoordinates,
+                                               final GProjection projection) {
       final List<IVector2> points = removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeLastIfRepeated(convert(
                jtsCoordinates, projection))))));
 
