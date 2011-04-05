@@ -47,7 +47,7 @@ public final class GSegment3D
          extends
             GSegment<IVector3, GSegment3D, GAxisAlignedBox>
          implements
-            ILineal3D {
+            IPolygonalChain3D {
 
    private static final long serialVersionUID = 1L;
 

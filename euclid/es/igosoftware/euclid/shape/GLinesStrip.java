@@ -26,7 +26,7 @@ BoundsT extends IBounds<VectorT, BoundsT>
          extends
             GEdgedGeometryAbstract<VectorT, SegmentT, BoundsT>
          implements
-            ILineal<VectorT, SegmentT, BoundsT> {
+            IPolygonalChain<VectorT, SegmentT, BoundsT> {
 
 
    private static final long   serialVersionUID = 1L;
@@ -174,6 +174,14 @@ BoundsT extends IBounds<VectorT, BoundsT>
    @Override
    public VectorT closestPoint(final VectorT point) {
       return closestPointOnBoundary(point);
+   }
+
+
+   @Override
+   public boolean isClosed() {
+      final VectorT first = _points.get(0);
+      final VectorT last = _points.get(_points.size() - 1);
+      return first.closeTo(last);
    }
 
 
