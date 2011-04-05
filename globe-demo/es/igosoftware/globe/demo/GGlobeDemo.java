@@ -358,12 +358,19 @@ public class GGlobeDemo
 
    private static void loadMultidimensionalData() {
       try {
-         final String[] valueVariablesNames = new String[] { "salt", "temp", "dens" };
+         //FIXME: Unused currently auto-detect code works
+         //final String[] valueVariablesNames = new String[] { "salt", "temp", "dens" };
          final GNetCDFMultidimentionalData.VectorVariable[] vectorVariables = new GNetCDFMultidimentionalData.VectorVariable[] { new GNetCDFMultidimentionalData.VectorVariable(
                   "Water Velocity", "u", "v") };
 
          final IMultidimensionalData cfData = new GNetCDFMultidimentionalData("data/mackenzie_depth_out_cf.nc", "longitude",
                   "latitude", "zc", "eta", null, vectorVariables, "n", true, true);
+
+         final GNetCDFMultidimentionalData.VectorVariable[] vectorVariablesBig = new GNetCDFMultidimentionalData.VectorVariable[] { new GNetCDFMultidimentionalData.VectorVariable(
+                  "Wind Velocity", "ueavg", "veavg") };
+
+         final IMultidimensionalData cfDataBig = new GNetCDFMultidimentionalData("data/BigData/ramsNZ12_l3.nc", "longitude",
+                  "latitude", "level", "pblht", null, vectorVariablesBig, "time", true, true);
 
 
          final Position headPosition = new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710), 0);
@@ -371,7 +378,7 @@ public class GGlobeDemo
                   headPosition, 10, 10, 20);
 
 
-         _multidimentionaldata = new IMultidimensionalData[] { cfData, headData };
+         _multidimentionaldata = new IMultidimensionalData[] { cfData, cfDataBig, headData };
          // _multidimentionaldata = new IMultidimensionalData[] { headData };
       }
       catch (final IOException e) {
