@@ -74,7 +74,7 @@ public class GPolygon2DRenderingTest {
       final GProjection projection = GProjection.EPSG_4326;
 
 
-      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features = GShapeLoader.readFeatures(
+      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features = GShapeLoader.readFeatures(
                fileName, projection);
 
       //      System.out.println(">>>>>>>>>> CONNECT PROFILER");

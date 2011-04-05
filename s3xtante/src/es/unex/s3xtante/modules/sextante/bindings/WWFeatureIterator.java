@@ -29,7 +29,7 @@ public class WWFeatureIterator
    private final GFilterIterator<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> _iterator;
 
 
-   public WWFeatureIterator(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features,
+   public WWFeatureIterator(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features,
                             final List<IVectorLayerFilter> filters) {
 
       final List<SextanteFilterPredicate> predicates = new ArrayList<SextanteFilterPredicate>();

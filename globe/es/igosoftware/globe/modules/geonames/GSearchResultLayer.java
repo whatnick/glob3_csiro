@@ -74,8 +74,8 @@ public class GSearchResultLayer
             IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> {
 
 
-   private final Sector                                                                                                 _extent;
-   private final IGlobeFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> _features;
+   private final Sector                                                                                              _extent;
+   private final IGlobeFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> _features;
 
 
    public GSearchResultLayer(final String searchText,
@@ -160,7 +160,7 @@ public class GSearchResultLayer
 
 
    @Override
-   public IGlobeFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> getFeaturesCollection() {
+   public IGlobeFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> getFeaturesCollection() {
       return _features;
    }
 

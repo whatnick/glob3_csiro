@@ -63,21 +63,21 @@ public class WWVectorLayer
          extends
             AbstractVectorLayer {
 
-   private GFileName                                                                                                        _filename;
-   private String                                                                                                           _name;
-   private GProjection                                                                                                      _projection;
-   private List<GField>                                                                                                     _fields;
-   private IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> _features;
+   private GFileName                                                                                                     _filename;
+   private String                                                                                                        _name;
+   private GProjection                                                                                                   _projection;
+   private List<GField>                                                                                                  _fields;
+   private IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> _features;
 
 
    public WWVectorLayer(final String name,
-                        final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features) {
+                        final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features) {
       _name = name;
       initializeFromFeatures(features);
    }
 
 
-   private void initializeFromFeatures(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features) {
+   private void initializeFromFeatures(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features) {
       _features = features;
       _projection = features.getProjection();
       _fields = features.getFields();
@@ -189,8 +189,8 @@ public class WWVectorLayer
 
 
    @SuppressWarnings("unchecked")
-   private void saveFeatures(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features)
-                                                                                                                                                             throws IOException {
+   private void saveFeatures(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features)
+                                                                                                                                                          throws IOException {
 
       final SimpleFeatureType featureType = buildFeatureType(_name, getShapeType(), _fields, DefaultGeographicCRS.WGS84);
       final DataStore dataStore = createDatastore(_filename, featureType);
@@ -271,7 +271,7 @@ public class WWVectorLayer
    }
 
 
-   private Rectangle2D getRectangle3DBounds(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features) {
+   private Rectangle2D getRectangle3DBounds(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features) {
 
       double xMin = Double.POSITIVE_INFINITY;
       double xMax = Double.NEGATIVE_INFINITY;

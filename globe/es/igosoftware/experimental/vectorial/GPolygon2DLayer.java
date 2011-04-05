@@ -709,7 +709,7 @@ public class GPolygon2DLayer
    }
 
 
-   private static final GGlobeStateKeyCache<GAxisAlignedOrthotope<IVector2, ?>, Box>                                              BOX_CACHE;
+   private static final GGlobeStateKeyCache<GAxisAlignedOrthotope<IVector2, ?>, Box>                                           BOX_CACHE;
 
    static {
       BOX_CACHE = new GGlobeStateKeyCache<GAxisAlignedOrthotope<IVector2, ?>, Box>(
@@ -728,34 +728,34 @@ public class GPolygon2DLayer
    }
 
 
-   private Sector                                                                                                                 _polygonsSector;
+   private Sector                                                                                                              _polygonsSector;
 
 
-   private GVectorial2DRenderer                                                                                                   _renderer;
-   private final String                                                                                                           _name;
-   private GAxisAlignedOrthotope<IVector2, ?>                                                                                     _polygonsBounds;
-   private final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> _features;
+   private GVectorial2DRenderer                                                                                                _renderer;
+   private final String                                                                                                        _name;
+   private GAxisAlignedOrthotope<IVector2, ?>                                                                                  _polygonsBounds;
+   private final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> _features;
 
 
-   private GRenderingAttributes                                                                                                   _attributes;
+   private GRenderingAttributes                                                                                                _attributes;
 
-   private List<Tile>                                                                                                             _topTiles;
-   private final List<Tile>                                                                                                       _currentTiles               = new ArrayList<Tile>();
-
-
-   private int                                                                                                                    _fillColorAlpha             = 127;
-   private int                                                                                                                    _borderColorAlpha           = 255;
-
-   private View                                                                                                                   _lastView;
+   private List<Tile>                                                                                                          _topTiles;
+   private final List<Tile>                                                                                                    _currentTiles               = new ArrayList<Tile>();
 
 
-   private long                                                                                                                   _lastCurrentTilesCalculated = -1;
+   private int                                                                                                                 _fillColorAlpha             = 127;
+   private int                                                                                                                 _borderColorAlpha           = 255;
 
-   private boolean                                                                                                                _debugRendering             = false;
+   private View                                                                                                                _lastView;
+
+
+   private long                                                                                                                _lastCurrentTilesCalculated = -1;
+
+   private boolean                                                                                                             _debugRendering             = false;
 
 
    public GPolygon2DLayer(final String name,
-                          final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features) {
+                          final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features) {
       GAssert.notNull(name, "name");
       GAssert.notNull(features, "features");
 
@@ -764,8 +764,8 @@ public class GPolygon2DLayer
 
       if (_features.isEditable()) {
          if (features instanceof IGlobeMutableFeatureCollection) {
-            final IGlobeMutableFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> editableFeatures;
-            editableFeatures = (IGlobeMutableFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?>) features;
+            @SuppressWarnings("unchecked")
+            final IGlobeMutableFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> editableFeatures = (IGlobeMutableFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?>) features;
 
             editableFeatures.addChangeListener(new IMutable.ChangeListener() {
                @Override
@@ -1451,7 +1451,7 @@ public class GPolygon2DLayer
 
 
    @Override
-   public IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> getFeaturesCollection() {
+   public IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> getFeaturesCollection() {
       return _features;
    }
 

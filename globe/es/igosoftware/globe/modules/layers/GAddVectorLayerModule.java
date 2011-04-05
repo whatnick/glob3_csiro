@@ -484,7 +484,7 @@ public class GAddVectorLayerModule
 
          try {
             final File file = new File(sFilename);
-            final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features = GShapefileTools.readFile(file);
+            final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features = GShapefileTools.readFile(file);
             if (features != null) {
 
                final GGlobeVector2Layer layer = new GGlobeVector2Layer(file.getName(), features);

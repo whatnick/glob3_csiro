@@ -123,7 +123,7 @@ public class GPolygon2DModule
       if (layer instanceof IGlobeVector2Layer) {
          @SuppressWarnings("unchecked")
          final IGlobeVector2Layer<? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> vectorLayer = (IGlobeVector2Layer<? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) layer;
-         final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features = vectorLayer.getFeaturesCollection();
+         final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features = vectorLayer.getFeaturesCollection();
 
          if ((features != null) && features.isEditable()) {
             final GCheckBoxLayerAction editAction = new GCheckBoxLayerAction("Edit",
@@ -206,7 +206,7 @@ public class GPolygon2DModule
             final GProjection projection = GProjection.EPSG_4326;
 
             try {
-               final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features = GShapeLoader.readFeatures(
+               final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features = GShapeLoader.readFeatures(
                         file, projection);
 
                final GPolygon2DLayer layer = new GPolygon2DLayer(file.getName(), features);
@@ -315,7 +315,7 @@ public class GPolygon2DModule
    private void startEditionOfLayer(final IGlobeVector2Layer<? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> layer) {
       System.out.println("Starting edition of: " + layer);
 
-      //      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features = layer.getFeaturesCollection();
+      //      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features = layer.getFeaturesCollection();
 
       final int ______Diego_at_work;
    }

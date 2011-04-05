@@ -126,16 +126,16 @@ public class GShapeLoader {
    }
 
 
-   public static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> readFeatures(final GFileName fileName,
-                                                                                                                                               final GProjection projection)
-                                                                                                                                                                            throws IOException {
+   public static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> readFeatures(final GFileName fileName,
+                                                                                                                                            final GProjection projection)
+                                                                                                                                                                         throws IOException {
       return readFeatures(fileName.asFile(), projection);
    }
 
 
-   public static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> readFeatures(final File file,
-                                                                                                                                               final GProjection projection)
-                                                                                                                                                                            throws IOException {
+   public static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> readFeatures(final File file,
+                                                                                                                                            final GProjection projection)
+                                                                                                                                                                         throws IOException {
       if (!file.exists()) {
          throw new IOException("File not found!");
       }
@@ -401,7 +401,7 @@ public class GShapeLoader {
       //      final GFileName fileName = GFileName.fromParentAndParts(samplesDirectory, "cartobrutal", "world-modified", "world.shp");
       //      final GFileName fileName = GFileName.fromParentAndParts(samplesDirectory, "shp", "argentina.shp", "places.shp");
 
-      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features = GShapeLoader.readFeatures(
+      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features = GShapeLoader.readFeatures(
                fileName, GProjection.EPSG_4326);
 
 
