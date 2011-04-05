@@ -119,9 +119,7 @@ GeometryT extends GAxisAlignedOrthotope<VectorT, GeometryT>
 
    @SuppressWarnings("unchecked")
    public static <VectorT extends IVector<VectorT, ?>> GAxisAlignedOrthotope<VectorT, ?> minimumOrthotope(final VectorT... points) {
-      if (points.length == 0) {
-         throw new IllegalArgumentException("Empty points");
-      }
+      GAssert.notEmpty(points, "points");
 
       final VectorT exemplar = points[0];
       VectorT lower = exemplar;
@@ -196,8 +194,8 @@ GeometryT extends GAxisAlignedOrthotope<VectorT, GeometryT>
       _lower = lower.min(upper);
       _upper = lower.max(upper);
 
-      _extent = _upper.sub(_lower);
       _center = _lower.add(_upper).div(2);
+      _extent = _upper.sub(_lower);
    }
 
 

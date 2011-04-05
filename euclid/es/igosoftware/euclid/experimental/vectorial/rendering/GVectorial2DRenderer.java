@@ -43,7 +43,7 @@ public class GVectorial2DRenderer {
       final GGeometryNTreeParameters parameters = new GGeometryNTreeParameters(true, acceptLeafNodeCreationPolicy,
                GGeometryNTreeParameters.BoundsPolicy.MINIMUM, true);
 
-
+      // TODO: evaluate_if_multigeometries_must_go_into_the_quadtree;
       return new GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>>(
                "Rendering", _features, parameters);
 
