@@ -47,6 +47,7 @@ class GVectorial2DRenderUnit
 
       final Graphics2D g2d = renderedImage.createGraphics();
       g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+      g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
       //      g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
       if (attributes._renderBounds) {
@@ -258,15 +259,12 @@ class GVectorial2DRenderUnit
 
 
    private static class Points {
-      private final int   _nPoints;
       private final int[] _xPoints;
       private final int[] _yPoints;
 
 
-      private Points(final int nPoints,
-                     final int[] xPoints,
+      private Points(final int[] xPoints,
                      final int[] yPoints) {
-         _nPoints = nPoints;
          _xPoints = xPoints;
          _yPoints = yPoints;
       }
@@ -287,7 +285,7 @@ class GVectorial2DRenderUnit
          yPoints[i] = Math.round((float) point.y());
       }
 
-      return new Points(nPoints, xPoints, yPoints);
+      return new Points(xPoints, yPoints);
    }
 
 
@@ -350,7 +348,7 @@ class GVectorial2DRenderUnit
 
             g2d.setStroke(borderStroke);
             g2d.setColor(attributes._borderColor);
-            g2d.drawPolyline(points._xPoints, points._yPoints, points._nPoints);
+            g2d.drawPolyline(points._xPoints, points._yPoints, points._xPoints.length);
          }
       }
    }
@@ -361,7 +359,7 @@ class GVectorial2DRenderUnit
                                    final Points points) {
       // fill polygon
       g2d.setColor(attributes._fillColor);
-      g2d.fillPolygon(points._xPoints, points._yPoints, points._nPoints);
+      g2d.fillPolygon(points._xPoints, points._yPoints, points._xPoints.length);
 
 
       // render border
@@ -373,7 +371,7 @@ class GVectorial2DRenderUnit
 
             g2d.setStroke(borderStroke);
             g2d.setColor(attributes._borderColor);
-            g2d.drawPolygon(points._xPoints, points._yPoints, points._nPoints);
+            g2d.drawPolygon(points._xPoints, points._yPoints, points._xPoints.length);
          }
       }
    }

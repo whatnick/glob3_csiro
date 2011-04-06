@@ -49,7 +49,6 @@ import es.igosoftware.globe.attributes.GRangeLayerAttribute;
 import es.igosoftware.globe.attributes.GSelectionLayerAttribute;
 import es.igosoftware.globe.attributes.GSeparatorAttribute;
 import es.igosoftware.globe.attributes.ILayerAttribute;
-import es.igosoftware.globe.layers.GVector2RenderingTheme;
 import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GRange;
@@ -794,12 +793,6 @@ public class GMultidimensionalViewerLayer
 
    @Override
    public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application) {
-      return null;
-   }
-
-
-   @Override
-   public GVector2RenderingTheme getRenderingTheme() {
       return null;
    }
 

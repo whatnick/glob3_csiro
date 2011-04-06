@@ -36,8 +36,13 @@
 
 package es.igosoftware.euclid.features;
 
-public enum GVectorLayerType {
+import java.util.EnumSet;
+
+
+public enum GGeometryType {
    POINT,
-   LINE,
-   POLYGON;
+   CURVE,
+   SURFACE;
+
+   public static final EnumSet<GGeometryType> ALL = EnumSet.allOf(GGeometryType.class);
 }

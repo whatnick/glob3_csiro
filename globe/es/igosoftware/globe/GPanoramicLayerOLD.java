@@ -45,7 +45,6 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
-import es.igosoftware.globe.layers.GVector2RenderingTheme;
 import es.igosoftware.globe.utils.GAreasEventsLayer;
 import es.igosoftware.globe.utils.GAreasEventsLayer.IAreaEventsListener;
 import es.igosoftware.io.GFileName;
@@ -681,12 +680,6 @@ public final class GPanoramicLayerOLD
 
    @Override
    public IGlobeFeatureCollection getFeaturesCollection() {
-      return null;
-   }
-
-
-   @Override
-   public GVector2RenderingTheme getRenderingTheme() {
       return null;
    }
 

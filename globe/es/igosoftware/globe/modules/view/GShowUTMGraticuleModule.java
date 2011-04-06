@@ -124,7 +124,6 @@ public class GShowUTMGraticuleModule
 
    @Override
    public void initializeTranslations(final IGlobeApplication application) {
-      // TODO Auto-generated method stub
 
    }
 

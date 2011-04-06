@@ -4,6 +4,7 @@ package es.igosoftware.euclid.features;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -66,6 +67,8 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<Vecto
    private final String                                         _uniqueID;
 
    private GAxisAlignedOrthotope<VectorT, ?>                    _bounds;
+
+   private EnumSet<GGeometryType>                               _geometriesTypes;
 
 
    public GListFeatureCollection(final GProjection projection,
@@ -149,24 +152,40 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<Vecto
 
 
    @Override
-   public GVectorLayerType getShapeType() {
-      if (_features.isEmpty()) {
-         return GVectorLayerType.POLYGON;
+   public EnumSet<GGeometryType> getGeometriesTypes() {
+      // lazy initialized to avoid an iteration on _features if GeometriesTypes is not needed
+
+      if (_geometriesTypes == null) {
+         _geometriesTypes = calculateGeometriesTypes();
       }
 
-      return getShapeType(_features.get(0).getDefaultGeometry());
+      return _geometriesTypes;
    }
 
 
-   private static <VectorT extends IVector<VectorT, ?>> GVectorLayerType getShapeType(final IGeometry<VectorT> geometry) {
+   private EnumSet<GGeometryType> calculateGeometriesTypes() {
+      final EnumSet<GGeometryType> result = EnumSet.noneOf(GGeometryType.class);
+
+      for (final IGlobeFeature<VectorT, FeatureGeometryT> feature : _features) {
+         result.add(getShapeType(feature.getDefaultGeometry()));
+         if (result.containsAll(GGeometryType.ALL)) {
+            return GGeometryType.ALL;
+         }
+      }
+
+      return result;
+   }
+
+
+   private static <VectorT extends IVector<VectorT, ?>> GGeometryType getShapeType(final IGeometry<VectorT> geometry) {
       if (geometry instanceof IVector) {
-         return GVectorLayerType.POINT;
+         return GGeometryType.POINT;
       }
       else if (geometry instanceof IPolygonalChain) {
-         return GVectorLayerType.LINE;
+         return GGeometryType.CURVE;
       }
       else if (geometry instanceof IPolygon) {
-         return GVectorLayerType.POLYGON;
+         return GGeometryType.SURFACE;
       }
       else {
          throw new RuntimeException("Unsupported geometry type: " + geometry.getClass());

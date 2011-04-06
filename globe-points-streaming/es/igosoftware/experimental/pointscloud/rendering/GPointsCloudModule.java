@@ -136,7 +136,8 @@ public class GPointsCloudModule
    public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application,
                                                        final IGlobeLayer layer) {
 
-      final ILayerAction reload = new GButtonLayerAction("Reload", application.getSmallIcon(GFileName.relative("reload.png")), true) {
+      final ILayerAction reload = new GButtonLayerAction("Reload", application.getSmallIcon(GFileName.relative("reload.png")),
+               true) {
          @Override
          public void execute() {
             ((GPointsCloudLayer) layer).reload();

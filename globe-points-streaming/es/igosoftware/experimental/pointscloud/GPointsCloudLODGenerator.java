@@ -91,15 +91,15 @@ public class GPointsCloudLODGenerator
 
 
    private static class Tile {
-      private final String                                                                 _id;
-      private final int                                                                    _pointsCount;
+      private final String                                                           _id;
+      private final int                                                              _pointsCount;
       private final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> _vertices;
-      private final GProjection                                                            _projection;
+      private final GProjection                                                      _projection;
       //      private final GAxisAlignedBox                  _bounds;
 
       //      private final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> _sortedVertices;
-      private final List<Integer>                                                          _sortedVertices;
-      private final List<Integer>                                                          _lodIndices;
+      private final List<Integer>                                                    _sortedVertices;
+      private final List<Integer>                                                    _lodIndices;
 
 
       private Tile(final GProjection projection,
@@ -360,10 +360,10 @@ public class GPointsCloudLODGenerator
    }
 
 
-   private final double                                                                 _maxLeafSideLength;
-   private final int                                                                    _maxLeafVertices;
-   private final GFileName                                                              _outputDirectoryName;
-   private final GProjection                                                            _projection;
+   private final double                                                           _maxLeafSideLength;
+   private final int                                                              _maxLeafVertices;
+   private final GFileName                                                        _outputDirectoryName;
+   private final GProjection                                                      _projection;
    private final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> _vertices;
 
 
@@ -399,7 +399,7 @@ public class GPointsCloudLODGenerator
 
 
    private static IVertexContainer<IVector3, Vertex<IVector3>, ?> toRadians(final IVertexContainer<IVector3, Vertex<IVector3>, ?> vertices,
-                                                                                  final GProjection projection) {
+                                                                            final GProjection projection) {
       if (projection.isLatLong()) {
          final IVertexContainer<IVector3, Vertex<IVector3>, ?> radiansVertices = new GVertex3Container(
                   vertices.vectorPrecision(), vertices.colorPrecision(), projection, vertices.hasIntensities(),
