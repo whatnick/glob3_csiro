@@ -19,8 +19,8 @@ public class GVectorialRenderingAttributes {
    public final double  _lodMinSize;
    public final boolean _debugLODRendering;
    public final boolean _renderBounds;
-   public final int     _textureWidth;
-   public final int     _textureHeight;
+   public final int     _imageWidth;
+   public final int     _imageHeight;
    public final Color   _lodColor;
 
 
@@ -30,12 +30,12 @@ public class GVectorialRenderingAttributes {
                                         final Color borderColor,
                                         final double lodMinSize,
                                         final boolean debugLODRendering,
-                                        final int textureWidth,
-                                        final int textureHeight,
+                                        final int imageWidth,
+                                        final int imageHeight,
                                         final boolean renderBounds) {
       GAssert.isPositiveOrZero(borderWidth, "borderWidth");
-      GAssert.isPositive(textureWidth, "textureWidth");
-      GAssert.isPositive(textureHeight, "textureHeight");
+      GAssert.isPositive(imageWidth, "imageWidth");
+      GAssert.isPositive(imageHeight, "imageHeight");
 
       _renderLODIgnores = renderLODIgnores;
       _borderWidth = borderWidth;
@@ -43,8 +43,8 @@ public class GVectorialRenderingAttributes {
       _borderColor = borderColor;
       _lodMinSize = lodMinSize;
       _debugLODRendering = debugLODRendering;
-      _textureWidth = textureWidth;
-      _textureHeight = textureHeight;
+      _imageWidth = imageWidth;
+      _imageHeight = imageHeight;
       _renderBounds = renderBounds;
 
       _lodColor = GColorUtil.mix(_borderColor, _fillColor, 0.75f);
@@ -66,8 +66,8 @@ public class GVectorialRenderingAttributes {
       result = prime * result + (int) (temp ^ (temp >>> 32));
       result = prime * result + (_renderBounds ? 1231 : 1237);
       result = prime * result + (_renderLODIgnores ? 1231 : 1237);
-      result = prime * result + _textureHeight;
-      result = prime * result + _textureWidth;
+      result = prime * result + _imageHeight;
+      result = prime * result + _imageWidth;
       return result;
    }
 
@@ -115,10 +115,10 @@ public class GVectorialRenderingAttributes {
       if (_renderLODIgnores != other._renderLODIgnores) {
          return false;
       }
-      if (_textureHeight != other._textureHeight) {
+      if (_imageHeight != other._imageHeight) {
          return false;
       }
-      if (_textureWidth != other._textureWidth) {
+      if (_imageWidth != other._imageWidth) {
          return false;
       }
       return true;
@@ -128,7 +128,7 @@ public class GVectorialRenderingAttributes {
    public String uniqueName() {
       return (_renderLODIgnores ? "t" : "f") + _borderWidth + Integer.toHexString(_fillColor.getRGB())
              + Integer.toHexString(_borderColor.getRGB()) + _lodMinSize + (_debugLODRendering ? "t" : "f")
-             + (_renderBounds ? "t" : "f") + Integer.toHexString(_textureWidth) + Integer.toHexString(_textureHeight)
+             + (_renderBounds ? "t" : "f") + Integer.toHexString(_imageWidth) + Integer.toHexString(_imageHeight)
              + Integer.toHexString(_lodColor.getRGB());
    }
 
@@ -137,8 +137,8 @@ public class GVectorialRenderingAttributes {
    public String toString() {
       return "GRenderingAttributes [_renderLODIgnores=" + _renderLODIgnores + ", _borderWidth=" + _borderWidth + ", _fillColor="
              + _fillColor + ", _borderColor=" + _borderColor + ", _lodMinSize=" + _lodMinSize + ", _debugLODRendering="
-             + _debugLODRendering + ", _renderBounds=" + _renderBounds + ", _textureWidth=" + _textureWidth + ", _textureHeight="
-             + _textureHeight + ", _lodColor=" + _lodColor + "]";
+             + _debugLODRendering + ", _renderBounds=" + _renderBounds + ", _imageWidth=" + _imageWidth + ", _imageHeight="
+             + _imageHeight + ", _lodColor=" + _lodColor + "]";
    }
 
 }
