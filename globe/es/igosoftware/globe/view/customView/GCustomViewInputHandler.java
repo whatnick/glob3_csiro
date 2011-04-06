@@ -337,7 +337,7 @@ public class GCustomViewInputHandler
          }
 
          if (!pitchChange.equals(Angle.ZERO)) {
-            changePitch((GCustomView) view, _uiAnimControl, pitchChange, actionAttribs);
+            //changePitch((GCustomView) view, _uiAnimControl, pitchChange, actionAttribs);
 
 
             if (inputState == GInputState.PANORAMICS) {
