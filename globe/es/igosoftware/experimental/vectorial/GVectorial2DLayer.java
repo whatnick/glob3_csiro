@@ -98,7 +98,7 @@ import javax.imageio.ImageIO;
 import javax.swing.Icon;
 
 
-public class GPolygon2DLayer
+public class GVectorial2DLayer
          extends
             AbstractLayer
          implements
@@ -116,13 +116,13 @@ public class GPolygon2DLayer
 
 
    private static final class RenderingKey {
-      private final GPolygon2DLayer       _layer;
+      private final GVectorial2DLayer     _layer;
       private final GAxisAlignedRectangle _tileBounds;
       private final GRenderingAttributes  _renderingAttributes;
       private final String                _id;
 
 
-      private RenderingKey(final GPolygon2DLayer layer,
+      private RenderingKey(final GVectorial2DLayer layer,
                            final GAxisAlignedRectangle tileSectorBounds,
                            //                           final Sector tileSector,
                            final GRenderingAttributes renderingAttributes,
@@ -215,7 +215,7 @@ public class GPolygon2DLayer
                FutureTask<BufferedImage> {
 
       private final double          _priority;
-      private GPolygon2DLayer       _layer;
+      private GVectorial2DLayer     _layer;
       private GAxisAlignedRectangle _tileBounds;
 
 
@@ -256,7 +256,7 @@ public class GPolygon2DLayer
                }
 
 
-               final GPolygon2DLayer layer = key._layer;
+               final GVectorial2DLayer layer = key._layer;
                final GVectorial2DRenderer renderer = layer._renderer;
                final BufferedImage renderedImage = renderer.render(key._tileBounds, key._renderingAttributes);
                layer.redraw();
@@ -406,7 +406,7 @@ public class GPolygon2DLayer
       }
 
       final LRUCache.SizePolicy<RenderingKey, Future<BufferedImage>, RuntimeException> sizePolicy;
-      sizePolicy = new LRUCache.SizePolicy<GPolygon2DLayer.RenderingKey, Future<BufferedImage>, RuntimeException>() {
+      sizePolicy = new LRUCache.SizePolicy<GVectorial2DLayer.RenderingKey, Future<BufferedImage>, RuntimeException>() {
          final private long _maxImageCacheSizeInBytes = Runtime.getRuntime().maxMemory() / 3;
 
 
@@ -464,7 +464,7 @@ public class GPolygon2DLayer
       private final GAxisAlignedRectangle _tileBounds;
       private final IVector2              _tileBoundsExtent;
       private final String                _id;
-      private final GPolygon2DLayer       _layer;
+      private final GVectorial2DLayer     _layer;
 
       private SurfaceImage                _surfaceImage;
       private BufferedImage               _ancestorContribution;
@@ -473,7 +473,7 @@ public class GPolygon2DLayer
       private Tile(final Tile parent,
                    final int positionInParent,
                    final GAxisAlignedRectangle tileBounds,
-                   final GPolygon2DLayer layer) {
+                   final GVectorial2DLayer layer) {
 
          _parent = parent;
 
@@ -542,7 +542,7 @@ public class GPolygon2DLayer
       private Tile[] slit() {
          final GAxisAlignedRectangle[] sectors = _tileBounds.subdivideAtCenter();
 
-         final Tile[] subTiles = new GPolygon2DLayer.Tile[4];
+         final Tile[] subTiles = new GVectorial2DLayer.Tile[4];
          subTiles[0] = new Tile(this, 0, sectors[0], _layer);
          subTiles[1] = new Tile(this, 1, sectors[1], _layer);
          subTiles[2] = new Tile(this, 2, sectors[2], _layer);
@@ -754,8 +754,8 @@ public class GPolygon2DLayer
    private boolean                                                                                                             _debugRendering             = false;
 
 
-   public GPolygon2DLayer(final String name,
-                          final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features) {
+   public GVectorial2DLayer(final String name,
+                            final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features) {
       GAssert.notNull(name, "name");
       GAssert.notNull(features, "features");
 
@@ -1172,12 +1172,12 @@ public class GPolygon2DLayer
          }
       }
 
-      IMAGES_CACHE.clear(new LRUCache.ValuePredicate<GPolygon2DLayer.RenderingKey, Future<BufferedImage>, RuntimeException>() {
+      IMAGES_CACHE.clear(new LRUCache.ValuePredicate<GVectorial2DLayer.RenderingKey, Future<BufferedImage>, RuntimeException>() {
          @Override
          public boolean evaluate(final RenderingKey key,
                                  final Future<BufferedImage> value,
                                  final RuntimeException exception) {
-            return (key._layer == GPolygon2DLayer.this);
+            return (key._layer == GVectorial2DLayer.this);
          }
       });
 

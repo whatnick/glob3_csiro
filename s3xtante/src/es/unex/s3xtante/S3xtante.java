@@ -6,7 +6,7 @@ import java.awt.Image;
 
 import javax.swing.SwingUtilities;
 
-import es.igosoftware.experimental.vectorial.GPolygon2DModule;
+import es.igosoftware.experimental.vectorial.GVectorial2DModule;
 import es.igosoftware.globe.GGlobeApplication;
 import es.igosoftware.globe.GLayersManagerModule;
 import es.igosoftware.globe.GStatisticsModule;
@@ -43,8 +43,8 @@ public class S3xtante
       //final GPointsCloudModule pointsCloudModule = new GPointsCloudModule(loader);
 
 
-      return new IGlobeModule[] { new GLayersManagerModule(), new GPolygon2DModule(), new GStatisticsModule(),
-               new GSextanteModule(), new GAddTableModule(), new GAddRasterLayerModule(), new GPolygon2DModule(),
+      return new IGlobeModule[] { new GLayersManagerModule(), new GVectorial2DModule(), new GStatisticsModule(),
+               new GSextanteModule(), new GAddTableModule(), new GAddRasterLayerModule(), new GVectorial2DModule(),
                new GViewControlsModule() };
 
    }

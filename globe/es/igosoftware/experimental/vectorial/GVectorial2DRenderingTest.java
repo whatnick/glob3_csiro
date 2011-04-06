@@ -59,7 +59,7 @@ import es.igosoftware.util.GMath;
 import es.igosoftware.util.GStringUtils;
 
 
-public class GPolygon2DRenderingTest {
+public class GVectorial2DRenderingTest {
    public static void main(final String[] args) throws IOException {
       System.out.println("Shape Loader 0.1");
       System.out.println("----------------\n");
