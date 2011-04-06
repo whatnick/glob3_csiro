@@ -354,7 +354,7 @@ public class GPanoramicCompiler {
          scaledImage = image.getScaledInstance(level._width, level._height, Image.SCALE_SMOOTH);
       }
 
-      final BufferedImage scaledRenderedImage = GImageUtils.asBufferedImage(scaledImage);
+      final BufferedImage scaledRenderedImage = GImageUtils.asBufferedImage(scaledImage, BufferedImage.TYPE_3BYTE_BGR);
 
       //      logInfo("Saving scaled image...");
       //      final File scaledFile = new File(levelDirectory, "scaled.jpg");
