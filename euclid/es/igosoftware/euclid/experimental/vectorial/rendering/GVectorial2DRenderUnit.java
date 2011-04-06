@@ -37,8 +37,8 @@ class GVectorial2DRenderUnit
 
       final IVector2 extent = region.getExtent();
 
-      final int width = attributes._textureWidth;
-      final int height = attributes._textureHeight;
+      final int width = attributes._imageWidth;
+      final int height = attributes._imageHeight;
 
       final IVector2 scale = new GVector2D(width, height).div(extent);
 
