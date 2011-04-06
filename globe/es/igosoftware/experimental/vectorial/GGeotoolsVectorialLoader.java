@@ -136,7 +136,7 @@ public class GGeotoolsVectorialLoader {
       final SimpleFeatureCollection featuresCollection = featureSource.getFeatures();
 
       final GIntHolder validCounter = new GIntHolder(0);
-      final GIntHolder polygonsWithHolesCounter = new GIntHolder(0);
+      //final GIntHolder polygonsWithHolesCounter = new GIntHolder(0);
       final GIntHolder invalidCounter = new GIntHolder(0);
       //      final GIntHolder validVerticesCounter = new GIntHolder(0);
       final GIntHolder polygonsCounter = new GIntHolder(0);
