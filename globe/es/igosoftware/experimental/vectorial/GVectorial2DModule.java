@@ -75,7 +75,7 @@ import es.igosoftware.io.GIOUtils;
 import es.igosoftware.util.GPair;
 
 
-public class GPolygon2DModule
+public class GVectorial2DModule
          extends
             GAbstractGlobeModule
          implements
@@ -121,8 +121,7 @@ public class GPolygon2DModule
    public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application,
                                                        final IGlobeLayer layer) {
       if (layer instanceof IGlobeVector2Layer) {
-         @SuppressWarnings("unchecked")
-         final IGlobeVector2Layer<? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> vectorLayer = (IGlobeVector2Layer<? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) layer;
+         final IGlobeVector2Layer vectorLayer = (IGlobeVector2Layer) layer;
          final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features = vectorLayer.getFeaturesCollection();
 
          if ((features != null) && features.isEditable()) {
@@ -180,8 +179,8 @@ public class GPolygon2DModule
 
 
    @Override
-   public GPolygon2DLayer addNewLayer(final IGlobeApplication application,
-                                      final ILayerInfo layerInfo) {
+   public GVectorial2DLayer addNewLayer(final IGlobeApplication application,
+                                        final ILayerInfo layerInfo) {
 
       final JFileChooser fileChooser = createFileChooser(application);
 
@@ -209,7 +208,7 @@ public class GPolygon2DModule
                final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features = GShapeLoader.readFeatures(
                         file, projection);
 
-               final GPolygon2DLayer layer = new GPolygon2DLayer(file.getName(), features);
+               final GVectorial2DLayer layer = new GVectorial2DLayer(file.getName(), features);
                //               layer.setShowExtents(true);
                application.addLayer(layer);
 
@@ -286,7 +285,7 @@ public class GPolygon2DModule
                projection, fields, featuresList, uniqueID);
 
       final String layerName = getLayerName(application);
-      final GPolygon2DLayer layer = new GPolygon2DLayer(layerName, features);
+      final GVectorial2DLayer layer = new GVectorial2DLayer(layerName, features);
 
       application.addLayer(layer);
    }
@@ -307,17 +306,17 @@ public class GPolygon2DModule
    }
 
 
-   private void stopEditionOfLayer(final IGlobeVector2Layer<? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> layer) {
+   private void stopEditionOfLayer(final IGlobeVector2Layer layer) {
       System.out.println("Stopping edition of: " + layer);
    }
 
 
-   private void startEditionOfLayer(final IGlobeVector2Layer<? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> layer) {
+   private void startEditionOfLayer(final IGlobeVector2Layer layer) {
       System.out.println("Starting edition of: " + layer);
 
       //      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features = layer.getFeaturesCollection();
 
-      final int ______Diego_at_work;
+      //      final int ______Diego_at_work;
    }
 
 

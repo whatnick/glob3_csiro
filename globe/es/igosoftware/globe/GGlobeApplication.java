@@ -1505,7 +1505,7 @@ public abstract class GGlobeApplication
       }
 
       // attributes from the layer itself
-      final List<ILayerAttribute<?>> layerAttributes = GCollections.selectNotNull(layer.getLayerAttributes(this));
+      final List<? extends ILayerAttribute<?>> layerAttributes = GCollections.selectNotNull(layer.getLayerAttributes(this));
       if ((layerAttributes != null) && !layerAttributes.isEmpty()) {
          result.add(layerAttributes);
       }

@@ -54,7 +54,8 @@ import es.igosoftware.experimental.ndimensional.G3DImageMultidimensionalData;
 import es.igosoftware.experimental.ndimensional.GMultidimensionalDataModule;
 import es.igosoftware.experimental.ndimensional.IMultidimensionalData;
 import es.igosoftware.experimental.pointscloud.rendering.GPointsCloudModule;
-import es.igosoftware.experimental.vectorial.GPolygon2DModule;
+import es.igosoftware.experimental.vectorial.GGeotoolsVectorialModule;
+import es.igosoftware.experimental.vectorial.GVectorial2DModule;
 import es.igosoftware.globe.GGlobeApplication;
 import es.igosoftware.globe.GHomePositionModule;
 import es.igosoftware.globe.GLayersManagerModule;
@@ -278,10 +279,10 @@ public class GGlobeDemo
       //         e.printStackTrace();
       //      }
 
-      return new IGlobeModule[] { homePositionModule, new GLayersManagerModule(), new GPolygon2DModule(), pointsCloudModule,
-               new GMultidimensionalDataModule(_multidimentionaldata), new GFlatWorldModule(), new GShowLatLonGraticuleModule(),
-               new GShowUTMGraticuleModule(), new GShowMeasureToolModule(), new GFullScreenModule(),
-               new GAnaglyphViewerModule(false), new GStatisticsModule() };
+      return new IGlobeModule[] { homePositionModule, new GLayersManagerModule(), new GVectorial2DModule(),
+               new GGeotoolsVectorialModule(), pointsCloudModule, new GMultidimensionalDataModule(_multidimentionaldata),
+               new GFlatWorldModule(), new GShowLatLonGraticuleModule(), new GShowUTMGraticuleModule(),
+               new GShowMeasureToolModule(), new GFullScreenModule(), new GAnaglyphViewerModule(false), new GStatisticsModule() };
    }
 
 

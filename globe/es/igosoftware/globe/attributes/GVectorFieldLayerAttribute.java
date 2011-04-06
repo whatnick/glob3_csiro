@@ -44,10 +44,7 @@ import java.util.List;
 
 import javax.swing.JComboBox;
 
-import es.igosoftware.euclid.IBoundedGeometry;
-import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.features.GField;
-import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
 import es.igosoftware.globe.IGlobeVector2Layer;
@@ -77,8 +74,7 @@ public abstract class GVectorFieldLayerAttribute
                                                        final IGlobeLayer layer) {
       final String options[];
       if (layer instanceof IGlobeVector2Layer) {
-         @SuppressWarnings("unchecked")
-         final IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> vectorLayer = (IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) layer;
+         final IGlobeVector2Layer vectorLayer = (IGlobeVector2Layer) layer;
 
          final List<GField> fields = vectorLayer.getFeaturesCollection().getFields();
          options = new String[fields.size()];

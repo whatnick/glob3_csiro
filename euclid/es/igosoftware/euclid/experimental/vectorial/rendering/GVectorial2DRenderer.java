@@ -51,7 +51,7 @@ public class GVectorial2DRenderer {
 
 
    public BufferedImage render(final GAxisAlignedRectangle region,
-                               final GRenderingAttributes attributes) {
+                               final GVectorialRenderingAttributes attributes) {
       final IVectorial2DRenderUnit renderUnit = new GVectorial2DRenderUnit();
       return renderUnit.render(_quadtree, region, attributes);
    }

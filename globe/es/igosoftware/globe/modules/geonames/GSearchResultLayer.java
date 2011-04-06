@@ -71,7 +71,7 @@ public class GSearchResultLayer
          extends
             MarkerLayer
          implements
-            IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> {
+            IGlobeVector2Layer {
 
 
    private final Sector                                                                                              _extent;

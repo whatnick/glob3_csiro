@@ -2,17 +2,16 @@
 
 package es.igosoftware.globe;
 
-import es.igosoftware.euclid.IBoundedGeometry;
-import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.globe.layers.GVector2RenderingTheme;
 
 
-public interface IGlobeVector2Layer<
-
-GeometryT extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>
-
->
+public interface IGlobeVector2Layer
          extends
-            IGlobeVectorLayer<IVector2, GeometryT> {
+            IGlobeVectorLayer<IVector2> {
+
+
+   public GVector2RenderingTheme getRenderingTheme();
+
 
 }

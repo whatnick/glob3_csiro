@@ -33,12 +33,12 @@ class GVectorial2DRenderUnit
    @Override
    public BufferedImage render(final GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> quadtree,
                                final GAxisAlignedRectangle region,
-                               final GRenderingAttributes attributes) {
+                               final GVectorialRenderingAttributes attributes) {
 
       final IVector2 extent = region.getExtent();
 
-      final int width = attributes._textureWidth;
-      final int height = attributes._textureHeight;
+      final int width = attributes._imageWidth;
+      final int height = attributes._imageHeight;
 
       final IVector2 scale = new GVector2D(width, height).div(extent);
 
@@ -47,6 +47,7 @@ class GVectorial2DRenderUnit
 
       final Graphics2D g2d = renderedImage.createGraphics();
       g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+      g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
       //      g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
       if (attributes._renderBounds) {
@@ -73,7 +74,7 @@ class GVectorial2DRenderUnit
    private void processNode(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> node,
                             final GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> quadtree,
                             final GAxisAlignedRectangle region,
-                            final GRenderingAttributes attributes,
+                            final GVectorialRenderingAttributes attributes,
                             final IVector2 scale,
                             final Graphics2D g2d,
                             final BufferedImage renderedImage) {
@@ -114,7 +115,7 @@ class GVectorial2DRenderUnit
 
    private void renderNodeGeometries(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> node,
                                      final GAxisAlignedRectangle region,
-                                     final GRenderingAttributes attributes,
+                                     final GVectorialRenderingAttributes attributes,
                                      final IVector2 scale,
                                      final Graphics2D g2d,
                                      final BufferedImage renderedImage) {
@@ -198,7 +199,7 @@ class GVectorial2DRenderUnit
                                final BufferedImage renderedImage,
                                final Graphics2D g2d,
                                final GAxisAlignedRectangle region,
-                               final GRenderingAttributes attributes) {
+                               final GVectorialRenderingAttributes attributes) {
 
       if (geometry instanceof GMultiGeometry2D) {
          @SuppressWarnings("unchecked")
@@ -247,7 +248,7 @@ class GVectorial2DRenderUnit
                                    final IVector2 scale,
                                    final Graphics2D g2d,
                                    final GAxisAlignedRectangle region,
-                                   final GRenderingAttributes attributes) {
+                                   final GVectorialRenderingAttributes attributes) {
       final IVector2 projectedPoint = point.sub(region._lower).scale(scale);
 
       final int x = Math.round((float) projectedPoint.x());
@@ -258,15 +259,12 @@ class GVectorial2DRenderUnit
 
 
    private static class Points {
-      private final int   _nPoints;
       private final int[] _xPoints;
       private final int[] _yPoints;
 
 
-      private Points(final int nPoints,
-                     final int[] xPoints,
+      private Points(final int[] xPoints,
                      final int[] yPoints) {
-         _nPoints = nPoints;
          _xPoints = xPoints;
          _yPoints = yPoints;
       }
@@ -287,7 +285,7 @@ class GVectorial2DRenderUnit
          yPoints[i] = Math.round((float) point.y());
       }
 
-      return new Points(nPoints, xPoints, yPoints);
+      return new Points(xPoints, yPoints);
    }
 
 
@@ -295,7 +293,7 @@ class GVectorial2DRenderUnit
                                       final IVector2 scale,
                                       final Graphics2D g2d,
                                       final GAxisAlignedRectangle region,
-                                      final GRenderingAttributes attributes) {
+                                      final GVectorialRenderingAttributes attributes) {
       drawPolyline(g2d, attributes, getPoints(geometry, scale, region));
    }
 
@@ -304,7 +302,7 @@ class GVectorial2DRenderUnit
                                      final IVector2 scale,
                                      final Graphics2D g2d,
                                      final GAxisAlignedRectangle region,
-                                     final GRenderingAttributes attributes) {
+                                     final GVectorialRenderingAttributes attributes) {
 
       final IPolygon2D geometryToDraw;
       if (geometry instanceof IComplexPolygon2D) {
@@ -320,7 +318,7 @@ class GVectorial2DRenderUnit
 
 
    private static void drawPoint(final Graphics2D g2d,
-                                 final GRenderingAttributes attributes,
+                                 final GVectorialRenderingAttributes attributes,
                                  final int x,
                                  final int y) {
       final int width = Math.max(1, Math.round(attributes._borderWidth) * 2);
@@ -339,7 +337,7 @@ class GVectorial2DRenderUnit
 
 
    private static void drawPolyline(final Graphics2D g2d,
-                                    final GRenderingAttributes attributes,
+                                    final GVectorialRenderingAttributes attributes,
                                     final Points points) {
       // render border
       if (attributes._borderWidth > 0) {
@@ -350,18 +348,18 @@ class GVectorial2DRenderUnit
 
             g2d.setStroke(borderStroke);
             g2d.setColor(attributes._borderColor);
-            g2d.drawPolyline(points._xPoints, points._yPoints, points._nPoints);
+            g2d.drawPolyline(points._xPoints, points._yPoints, points._xPoints.length);
          }
       }
    }
 
 
    private static void drawPolygon(final Graphics2D g2d,
-                                   final GRenderingAttributes attributes,
+                                   final GVectorialRenderingAttributes attributes,
                                    final Points points) {
       // fill polygon
       g2d.setColor(attributes._fillColor);
-      g2d.fillPolygon(points._xPoints, points._yPoints, points._nPoints);
+      g2d.fillPolygon(points._xPoints, points._yPoints, points._xPoints.length);
 
 
       // render border
@@ -373,7 +371,7 @@ class GVectorial2DRenderUnit
 
             g2d.setStroke(borderStroke);
             g2d.setColor(attributes._borderColor);
-            g2d.drawPolygon(points._xPoints, points._yPoints, points._nPoints);
+            g2d.drawPolygon(points._xPoints, points._yPoints, points._xPoints.length);
          }
       }
    }
