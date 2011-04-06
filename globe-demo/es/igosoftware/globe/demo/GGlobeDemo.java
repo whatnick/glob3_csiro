@@ -372,13 +372,19 @@ public class GGlobeDemo
          final IMultidimensionalData cfDataBig = new GNetCDFMultidimentionalData("data/BigData/ramsNZ12_l3.nc", "longitude",
                   "latitude", "level", "pblht", null, vectorVariablesBig, "time", true, true);
 
+         final GNetCDFMultidimentionalData.VectorVariable[] vectorVariablesCurvy = new GNetCDFMultidimentionalData.VectorVariable[] { new GNetCDFMultidimentionalData.VectorVariable(
+                  "Currents", "Chl_a", "DIC") };
+
+         final IMultidimensionalData cfDataCurvy = new GNetCDFMultidimentionalData("data/tuna_t2b_out3_0_35.nc", "x_centre",
+                  "y_centre", "z_centre", "topz", null, vectorVariablesCurvy, "record", true, true);
+
 
          final Position headPosition = new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710), 0);
          final IMultidimensionalData headData = new G3DImageMultidimensionalData("Mr Head", "data/cthead-8bit", ".png",
                   headPosition, 10, 10, 20);
 
 
-         _multidimentionaldata = new IMultidimensionalData[] { cfData, cfDataBig, headData };
+         _multidimentionaldata = new IMultidimensionalData[] { cfData, cfDataBig, cfDataCurvy, headData };
          // _multidimentionaldata = new IMultidimensionalData[] { headData };
       }
       catch (final IOException e) {

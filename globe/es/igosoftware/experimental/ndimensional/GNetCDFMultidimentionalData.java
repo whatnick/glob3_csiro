@@ -860,9 +860,14 @@ public class GNetCDFMultidimentionalData
                final double uValue = vectorVariable._uVariable.read(section).getDouble(0);
                final double vValue = vectorVariable._vVariable.read(section).getDouble(0);
 
+               if (Double.isNaN(uValue) || Double.isNaN(vValue)) {
+                  return;
+               }
+
                if (!Double.isNaN(vectorVariable._uMissingValue) && GMath.closeTo(uValue, vectorVariable._uMissingValue)) {
                   return;
                }
+
                if (!Double.isNaN(vectorVariable._vMissingValue) && GMath.closeTo(vValue, vectorVariable._vMissingValue)) {
                   return;
                }
