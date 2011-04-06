@@ -74,9 +74,6 @@ public class GGeotoolsVectorialModule
             ILayerFactoryModule {
 
 
-   private static final String DEFAULT_LAYER_NAME = "Geotools Vectorial Layer";
-
-
    @Override
    public String getName() {
       return "Geotools Vectorial Module";
@@ -91,7 +88,7 @@ public class GGeotoolsVectorialModule
 
    @Override
    public String getDescription() {
-      return "Module for handling any vectorial format from geootools API";
+      return "Module for handling vectorial formats from geootools API";
    }
 
 
@@ -132,13 +129,13 @@ public class GGeotoolsVectorialModule
 
    @Override
    public List<? extends ILayerInfo> getAvailableLayers(final IGlobeApplication application) {
-      return GLayerInfo.createFromNames("Geotools vectorial layer");
+      return GLayerInfo.createFromNames("Vectorial layer");
    }
 
 
    @Override
-   public GPolygon2DLayer addNewLayer(final IGlobeApplication application,
-                                      final ILayerInfo layerInfo) {
+   public GVectorial2DLayer addNewLayer(final IGlobeApplication application,
+                                        final ILayerInfo layerInfo) {
 
 
       connectoToDataSource(application);
@@ -208,7 +205,7 @@ public class GGeotoolsVectorialModule
                      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features = GGeotoolsVectorialLoader.readFeatures(
                               dataStore, layerName, projection);
 
-                     final GPolygon2DLayer layer = new GPolygon2DLayer(layerName, features);
+                     final GVectorial2DLayer layer = new GVectorial2DLayer(layerName, features);
                      //               layer.setShowExtents(true);
                      application.getLayerList().add(layer);
 
@@ -248,7 +245,6 @@ public class GGeotoolsVectorialModule
                      JOptionPane.ERROR_MESSAGE);
             //e.printStackTrace();
          }
-
 
       }
    }
