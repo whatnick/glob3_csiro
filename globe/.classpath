@@ -50,5 +50,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="libs/gt/gt-swing-2.7-M3.jar" sourcepath="/home/fpulido/Escritorio/Tools/geotools-2.7-M3-project.zip"/>
+	<classpathentry kind="lib" path="libs/gt/gt-oracle-spatial-2.7-M3.jar"/>
+	<classpathentry kind="lib" path="libs/gt/gt-jdbc-oracle-2.7-M3.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
