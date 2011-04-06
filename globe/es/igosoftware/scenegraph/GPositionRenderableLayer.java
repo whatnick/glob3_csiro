@@ -43,7 +43,6 @@ import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
-import es.igosoftware.globe.layers.GVector2RenderingTheme;
 import es.igosoftware.io.GFileLoader;
 import es.igosoftware.io.GFileName;
 import es.igosoftware.loading.G3DModel;
@@ -630,12 +629,6 @@ public class GPositionRenderableLayer
 
    @Override
    public IGlobeFeatureCollection getFeaturesCollection() {
-      return null;
-   }
-
-
-   @Override
-   public GVector2RenderingTheme getRenderingTheme() {
       return null;
    }
 

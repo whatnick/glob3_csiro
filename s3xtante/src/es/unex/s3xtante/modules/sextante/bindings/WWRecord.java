@@ -11,14 +11,12 @@ public class WWRecord
 
    @Override
    public Object getValue(final int arg0) {
-      // TODO Auto-generated method stub
       return null;
    }
 
 
    @Override
    public Object[] getValues() {
-      // TODO Auto-generated method stub
       return null;
    }
 

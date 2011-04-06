@@ -444,7 +444,7 @@ public abstract class GGlobeApplication
                         }
 
                         final Image resizedImage = image.getScaledInstance(key._width, key._height, Image.SCALE_SMOOTH);
-                        return GImageUtils.asBufferedImage(resizedImage);
+                        return GImageUtils.asBufferedImage(resizedImage, BufferedImage.TYPE_4BYTE_ABGR);
                      }
                      catch (final IOException e) {
                         return null;
@@ -1505,7 +1505,7 @@ public abstract class GGlobeApplication
       }
 
       // attributes from the layer itself
-      final List<ILayerAttribute<?>> layerAttributes = GCollections.selectNotNull(layer.getLayerAttributes(this));
+      final List<? extends ILayerAttribute<?>> layerAttributes = GCollections.selectNotNull(layer.getLayerAttributes(this));
       if ((layerAttributes != null) && !layerAttributes.isEmpty()) {
          result.add(layerAttributes);
       }

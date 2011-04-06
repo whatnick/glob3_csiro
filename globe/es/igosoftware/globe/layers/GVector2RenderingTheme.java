@@ -77,14 +77,14 @@ public abstract class GVector2RenderingTheme {
    public void calculateExtremeValues(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features) {
 
       if (_hasToRecalculateExtremeValues) {
-         double dMin = Double.POSITIVE_INFINITY;
-         double dMax = Double.NEGATIVE_INFINITY;
+         double min = Double.POSITIVE_INFINITY;
+         double max = Double.NEGATIVE_INFINITY;
 
          for (final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> element : features) {
             final String sValue = element.getAttribute(_fieldIndex).toString();
             final double dValue = Double.parseDouble(sValue);
-            dMin = Math.min(dMin, dValue);
-            dMax = Math.max(dMax, dValue);
+            min = Math.min(min, dValue);
+            max = Math.max(max, dValue);
          }
 
          _hasToRecalculateExtremeValues = false;

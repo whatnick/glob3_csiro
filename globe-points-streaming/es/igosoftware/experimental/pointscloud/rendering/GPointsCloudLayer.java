@@ -46,7 +46,6 @@ import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
-import es.igosoftware.globe.layers.GVector2RenderingTheme;
 import es.igosoftware.io.GFileName;
 import es.igosoftware.io.ILoader;
 import es.igosoftware.io.pointscloud.IPointsCloudLoader;
@@ -636,12 +635,6 @@ public final class GPointsCloudLayer
    public final void redraw() {
       // fire event to force a redraw
       firePropertyChange(AVKey.LAYER, null, this);
-   }
-
-
-   @Override
-   public GVector2RenderingTheme getRenderingTheme() {
-      return null;
    }
 
 

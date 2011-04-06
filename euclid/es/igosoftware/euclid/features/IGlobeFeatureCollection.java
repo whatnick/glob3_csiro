@@ -2,6 +2,7 @@
 
 package es.igosoftware.euclid.features;
 
+import java.util.EnumSet;
 import java.util.List;
 
 import es.igosoftware.euclid.IBoundedGeometry;
@@ -44,7 +45,7 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<Vecto
    }
 
 
-   public GVectorLayerType getShapeType();
+   public EnumSet<GGeometryType> getGeometriesTypes();
 
 
    public List<GField> getFields();

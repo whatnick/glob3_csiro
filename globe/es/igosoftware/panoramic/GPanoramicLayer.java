@@ -43,7 +43,6 @@ import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
-import es.igosoftware.globe.layers.GVector2RenderingTheme;
 import es.igosoftware.globe.layers.hud.GHUDLayer;
 import es.igosoftware.globe.view.customView.GCustomView;
 import es.igosoftware.io.GFileName;
@@ -188,12 +187,6 @@ public class GPanoramicLayer
 
    @Override
    public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application) {
-      return null;
-   }
-
-
-   @Override
-   public GVector2RenderingTheme getRenderingTheme() {
       return null;
    }
 

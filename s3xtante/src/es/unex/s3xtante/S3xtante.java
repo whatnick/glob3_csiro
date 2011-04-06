@@ -12,7 +12,6 @@ import es.igosoftware.globe.GLayersManagerModule;
 import es.igosoftware.globe.GStatisticsModule;
 import es.igosoftware.globe.IGlobeModule;
 import es.igosoftware.globe.modules.layers.GAddRasterLayerModule;
-import es.igosoftware.globe.modules.layers.GAddVectorLayerModule;
 import es.igosoftware.globe.modules.view.GViewControlsModule;
 import es.unex.s3xtante.modules.sextante.GSextanteModule;
 import es.unex.s3xtante.modules.tables.GAddTableModule;
@@ -45,7 +44,7 @@ public class S3xtante
 
 
       return new IGlobeModule[] { new GLayersManagerModule(), new GPolygon2DModule(), new GStatisticsModule(),
-               new GSextanteModule(), new GAddTableModule(), new GAddRasterLayerModule(), new GAddVectorLayerModule(),
+               new GSextanteModule(), new GAddTableModule(), new GAddRasterLayerModule(), new GPolygon2DModule(),
                new GViewControlsModule() };
 
    }

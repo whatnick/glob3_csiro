@@ -72,7 +72,7 @@ public final class GSGPointsNode
    private final GPositionBox    _minimumBox;
 
    Vec4                          _referencePoint4;
-   final IVector3             _referencePoint;
+   final IVector3                _referencePoint;
    private boolean               _wasVisible;
    boolean                       _colorFromElevation;
 

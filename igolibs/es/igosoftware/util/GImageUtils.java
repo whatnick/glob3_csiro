@@ -15,18 +15,21 @@ public class GImageUtils {
    }
 
 
-   public static BufferedImage asBufferedImage(final Image image) {
+   public static BufferedImage asBufferedImage(final Image image,
+                                               final int imageType) {
 
       if (image == null) {
          return null;
       }
 
       if (image instanceof BufferedImage) {
-         return (BufferedImage) image;
+         final BufferedImage bufferedImage = (BufferedImage) image;
+         if (bufferedImage.getType() == imageType) {
+            return bufferedImage;
+         }
       }
 
-      final BufferedImage burrefedImage = new BufferedImage(image.getWidth(null), image.getHeight(null),
-               BufferedImage.TYPE_4BYTE_ABGR);
+      final BufferedImage burrefedImage = new BufferedImage(image.getWidth(null), image.getHeight(null), imageType);
 
       final Graphics2D g2d = burrefedImage.createGraphics();
       g2d.drawImage(image, 0, 0, null);

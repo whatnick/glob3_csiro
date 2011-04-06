@@ -102,7 +102,7 @@ public class GPolygon2DLayer
          extends
             AbstractLayer
          implements
-            IGlobeVector2Layer<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> {
+            IGlobeVector2Layer {
 
 
    private static final int    TIMEOUT_FOR_CACHED_RESULTS     = 200;
