@@ -444,7 +444,7 @@ public abstract class GGlobeApplication
                         }
 
                         final Image resizedImage = image.getScaledInstance(key._width, key._height, Image.SCALE_SMOOTH);
-                        return GImageUtils.asBufferedImage(resizedImage);
+                        return GImageUtils.asBufferedImage(resizedImage, BufferedImage.TYPE_4BYTE_ABGR);
                      }
                      catch (final IOException e) {
                         return null;
