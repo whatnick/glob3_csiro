@@ -8,7 +8,7 @@ import es.igosoftware.euclid.utils.GColorUtil;
 import es.igosoftware.util.GAssert;
 
 
-public class GRenderingAttributes {
+public class GVectorialRenderingAttributes {
 
 
    public final boolean _renderLODIgnores;
@@ -24,15 +24,15 @@ public class GRenderingAttributes {
    public final Color   _lodColor;
 
 
-   public GRenderingAttributes(final boolean renderLODIgnores,
-                               final float borderWidth,
-                               final Color fillColor,
-                               final Color borderColor,
-                               final double lodMinSize,
-                               final boolean debugLODRendering,
-                               final int textureWidth,
-                               final int textureHeight,
-                               final boolean renderBounds) {
+   public GVectorialRenderingAttributes(final boolean renderLODIgnores,
+                                        final float borderWidth,
+                                        final Color fillColor,
+                                        final Color borderColor,
+                                        final double lodMinSize,
+                                        final boolean debugLODRendering,
+                                        final int textureWidth,
+                                        final int textureHeight,
+                                        final boolean renderBounds) {
       GAssert.isPositiveOrZero(borderWidth, "borderWidth");
       GAssert.isPositive(textureWidth, "textureWidth");
       GAssert.isPositive(textureHeight, "textureHeight");
@@ -83,7 +83,7 @@ public class GRenderingAttributes {
       if (getClass() != obj.getClass()) {
          return false;
       }
-      final GRenderingAttributes other = (GRenderingAttributes) obj;
+      final GVectorialRenderingAttributes other = (GVectorialRenderingAttributes) obj;
       if (_borderColor == null) {
          if (other._borderColor != null) {
             return false;

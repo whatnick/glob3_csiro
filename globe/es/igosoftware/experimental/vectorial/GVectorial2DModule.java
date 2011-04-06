@@ -75,7 +75,7 @@ import es.igosoftware.io.GIOUtils;
 import es.igosoftware.util.GPair;
 
 
-public class GPolygon2DModule
+public class GVectorial2DModule
          extends
             GAbstractGlobeModule
          implements
@@ -179,8 +179,8 @@ public class GPolygon2DModule
 
 
    @Override
-   public GPolygon2DLayer addNewLayer(final IGlobeApplication application,
-                                      final ILayerInfo layerInfo) {
+   public GVectorial2DLayer addNewLayer(final IGlobeApplication application,
+                                        final ILayerInfo layerInfo) {
 
       final JFileChooser fileChooser = createFileChooser(application);
 
@@ -208,7 +208,7 @@ public class GPolygon2DModule
                final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features = GShapeLoader.readFeatures(
                         file, projection);
 
-               final GPolygon2DLayer layer = new GPolygon2DLayer(file.getName(), features);
+               final GVectorial2DLayer layer = new GVectorial2DLayer(file.getName(), features);
                //               layer.setShowExtents(true);
                application.addLayer(layer);
 
@@ -285,7 +285,7 @@ public class GPolygon2DModule
                projection, fields, featuresList, uniqueID);
 
       final String layerName = getLayerName(application);
-      final GPolygon2DLayer layer = new GPolygon2DLayer(layerName, features);
+      final GVectorial2DLayer layer = new GVectorial2DLayer(layerName, features);
 
       application.addLayer(layer);
    }

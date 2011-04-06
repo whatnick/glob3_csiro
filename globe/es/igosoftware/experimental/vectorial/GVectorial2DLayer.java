@@ -41,8 +41,8 @@ import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
-import es.igosoftware.euclid.experimental.vectorial.rendering.GRenderingAttributes;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorial2DRenderer;
+import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorialRenderingAttributes;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.features.IGlobeMutableFeatureCollection;
 import es.igosoftware.euclid.mutability.IMutable;
@@ -98,7 +98,7 @@ import javax.imageio.ImageIO;
 import javax.swing.Icon;
 
 
-public class GPolygon2DLayer
+public class GVectorial2DLayer
          extends
             AbstractLayer
          implements
@@ -116,16 +116,16 @@ public class GPolygon2DLayer
 
 
    private static final class RenderingKey {
-      private final GPolygon2DLayer       _layer;
-      private final GAxisAlignedRectangle _tileBounds;
-      private final GRenderingAttributes  _renderingAttributes;
-      private final String                _id;
+      private final GVectorial2DLayer             _layer;
+      private final GAxisAlignedRectangle         _tileBounds;
+      private final GVectorialRenderingAttributes _renderingAttributes;
+      private final String                        _id;
 
 
-      private RenderingKey(final GPolygon2DLayer layer,
+      private RenderingKey(final GVectorial2DLayer layer,
                            final GAxisAlignedRectangle tileSectorBounds,
                            //                           final Sector tileSector,
-                           final GRenderingAttributes renderingAttributes,
+                           final GVectorialRenderingAttributes renderingAttributes,
                            final String id) {
          _layer = layer;
          _tileBounds = tileSectorBounds;
@@ -215,7 +215,7 @@ public class GPolygon2DLayer
                FutureTask<BufferedImage> {
 
       private final double          _priority;
-      private GPolygon2DLayer       _layer;
+      private GVectorial2DLayer     _layer;
       private GAxisAlignedRectangle _tileBounds;
 
 
@@ -256,7 +256,7 @@ public class GPolygon2DLayer
                }
 
 
-               final GPolygon2DLayer layer = key._layer;
+               final GVectorial2DLayer layer = key._layer;
                final GVectorial2DRenderer renderer = layer._renderer;
                final BufferedImage renderedImage = renderer.render(key._tileBounds, key._renderingAttributes);
                layer.redraw();
@@ -406,7 +406,7 @@ public class GPolygon2DLayer
       }
 
       final LRUCache.SizePolicy<RenderingKey, Future<BufferedImage>, RuntimeException> sizePolicy;
-      sizePolicy = new LRUCache.SizePolicy<GPolygon2DLayer.RenderingKey, Future<BufferedImage>, RuntimeException>() {
+      sizePolicy = new LRUCache.SizePolicy<GVectorial2DLayer.RenderingKey, Future<BufferedImage>, RuntimeException>() {
          final private long _maxImageCacheSizeInBytes = Runtime.getRuntime().maxMemory() / 3;
 
 
@@ -415,7 +415,7 @@ public class GPolygon2DLayer
             long totalBytes = 0;
 
             for (final Entry<RenderingKey, Future<BufferedImage>, RuntimeException> entry : entries) {
-               final GRenderingAttributes renderingAttributes = entry.getKey()._renderingAttributes;
+               final GVectorialRenderingAttributes renderingAttributes = entry.getKey()._renderingAttributes;
                totalBytes += renderingAttributes._textureWidth * renderingAttributes._textureHeight * BYTES_PER_PIXEL;
 
                if (totalBytes > _maxImageCacheSizeInBytes) {
@@ -464,7 +464,7 @@ public class GPolygon2DLayer
       private final GAxisAlignedRectangle _tileBounds;
       private final IVector2              _tileBoundsExtent;
       private final String                _id;
-      private final GPolygon2DLayer       _layer;
+      private final GVectorial2DLayer     _layer;
 
       private SurfaceImage                _surfaceImage;
       private BufferedImage               _ancestorContribution;
@@ -473,7 +473,7 @@ public class GPolygon2DLayer
       private Tile(final Tile parent,
                    final int positionInParent,
                    final GAxisAlignedRectangle tileBounds,
-                   final GPolygon2DLayer layer) {
+                   final GVectorial2DLayer layer) {
 
          _parent = parent;
 
@@ -542,7 +542,7 @@ public class GPolygon2DLayer
       private Tile[] slit() {
          final GAxisAlignedRectangle[] sectors = _tileBounds.subdivideAtCenter();
 
-         final Tile[] subTiles = new GPolygon2DLayer.Tile[4];
+         final Tile[] subTiles = new GVectorial2DLayer.Tile[4];
          subTiles[0] = new Tile(this, 0, sectors[0], _layer);
          subTiles[1] = new Tile(this, 1, sectors[1], _layer);
          subTiles[2] = new Tile(this, 2, sectors[2], _layer);
@@ -737,7 +737,7 @@ public class GPolygon2DLayer
    private final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> _features;
 
 
-   private GRenderingAttributes                                                                                                _attributes;
+   private GVectorialRenderingAttributes                                                                                       _attributes;
 
    private List<Tile>                                                                                                          _topTiles;
    private final List<Tile>                                                                                                    _currentTiles               = new ArrayList<Tile>();
@@ -754,8 +754,8 @@ public class GPolygon2DLayer
    private boolean                                                                                                             _debugRendering             = false;
 
 
-   public GPolygon2DLayer(final String name,
-                          final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features) {
+   public GVectorial2DLayer(final String name,
+                            final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features) {
       GAssert.notNull(name, "name");
       GAssert.notNull(features, "features");
 
@@ -803,7 +803,7 @@ public class GPolygon2DLayer
    }
 
 
-   private GRenderingAttributes createRenderingAttributes() {
+   private GVectorialRenderingAttributes createRenderingAttributes() {
       final boolean renderLODIgnores = true;
       final float borderWidth = 1f;
       final Color fillColor = createColor(new Color(1, 1, 0), _fillColorAlpha);
@@ -814,8 +814,8 @@ public class GPolygon2DLayer
       final int textureHeight = 256;
       final boolean renderBounds = _debugRendering;
 
-      return new GRenderingAttributes(renderLODIgnores, borderWidth, fillColor, borderColor, lodMinSize, debugLODRendering,
-               textureWidth, textureHeight, renderBounds);
+      return new GVectorialRenderingAttributes(renderLODIgnores, borderWidth, fillColor, borderColor, lodMinSize,
+               debugLODRendering, textureWidth, textureHeight, renderBounds);
    }
 
 
@@ -1055,9 +1055,9 @@ public class GPolygon2DLayer
 
       final Color oldValue = _attributes._borderColor;
 
-      _attributes = new GRenderingAttributes(_attributes._renderLODIgnores, _attributes._borderWidth, _attributes._fillColor,
-               newColor, _attributes._lodMinSize, _attributes._debugLODRendering, _attributes._textureWidth,
-               _attributes._textureHeight, _attributes._renderBounds);
+      _attributes = new GVectorialRenderingAttributes(_attributes._renderLODIgnores, _attributes._borderWidth,
+               _attributes._fillColor, newColor, _attributes._lodMinSize, _attributes._debugLODRendering,
+               _attributes._textureWidth, _attributes._textureHeight, _attributes._renderBounds);
 
       clearCache();
 
@@ -1077,7 +1077,7 @@ public class GPolygon2DLayer
 
       final Color oldValue = _attributes._fillColor;
 
-      _attributes = new GRenderingAttributes(_attributes._renderLODIgnores, _attributes._borderWidth, newColor,
+      _attributes = new GVectorialRenderingAttributes(_attributes._renderLODIgnores, _attributes._borderWidth, newColor,
                _attributes._borderColor, _attributes._lodMinSize, _attributes._debugLODRendering, _attributes._textureWidth,
                _attributes._textureHeight, _attributes._renderBounds);
 
@@ -1113,7 +1113,7 @@ public class GPolygon2DLayer
 
       final Color oldValue = _attributes._fillColor;
 
-      _attributes = new GRenderingAttributes(_attributes._renderLODIgnores, _attributes._borderWidth, newValue,
+      _attributes = new GVectorialRenderingAttributes(_attributes._renderLODIgnores, _attributes._borderWidth, newValue,
                _attributes._borderColor, _attributes._lodMinSize, _attributes._debugLODRendering, _attributes._textureWidth,
                _attributes._textureHeight, _attributes._renderBounds);
 
@@ -1132,9 +1132,9 @@ public class GPolygon2DLayer
 
       final Color oldValue = _attributes._borderColor;
 
-      _attributes = new GRenderingAttributes(_attributes._renderLODIgnores, _attributes._borderWidth, _attributes._fillColor,
-               newValue, _attributes._lodMinSize, _attributes._debugLODRendering, _attributes._textureWidth,
-               _attributes._textureHeight, _attributes._renderBounds);
+      _attributes = new GVectorialRenderingAttributes(_attributes._renderLODIgnores, _attributes._borderWidth,
+               _attributes._fillColor, newValue, _attributes._lodMinSize, _attributes._debugLODRendering,
+               _attributes._textureWidth, _attributes._textureHeight, _attributes._renderBounds);
 
       clearCache();
 
@@ -1154,7 +1154,7 @@ public class GPolygon2DLayer
 
       final float oldValue = _attributes._borderWidth;
 
-      _attributes = new GRenderingAttributes(_attributes._renderLODIgnores, newValue, _attributes._fillColor,
+      _attributes = new GVectorialRenderingAttributes(_attributes._renderLODIgnores, newValue, _attributes._fillColor,
                _attributes._borderColor, _attributes._lodMinSize, _attributes._debugLODRendering, _attributes._textureWidth,
                _attributes._textureHeight, _attributes._renderBounds);
 
@@ -1172,12 +1172,12 @@ public class GPolygon2DLayer
          }
       }
 
-      IMAGES_CACHE.clear(new LRUCache.ValuePredicate<GPolygon2DLayer.RenderingKey, Future<BufferedImage>, RuntimeException>() {
+      IMAGES_CACHE.clear(new LRUCache.ValuePredicate<GVectorial2DLayer.RenderingKey, Future<BufferedImage>, RuntimeException>() {
          @Override
          public boolean evaluate(final RenderingKey key,
                                  final Future<BufferedImage> value,
                                  final RuntimeException exception) {
-            return (key._layer == GPolygon2DLayer.this);
+            return (key._layer == GVectorial2DLayer.this);
          }
       });
 
@@ -1394,8 +1394,8 @@ public class GPolygon2DLayer
 
       _debugRendering = newValue;
 
-      _attributes = new GRenderingAttributes(_attributes._renderLODIgnores, _attributes._borderWidth, _attributes._fillColor,
-               _attributes._borderColor, _attributes._lodMinSize, newValue, _attributes._textureWidth,
+      _attributes = new GVectorialRenderingAttributes(_attributes._renderLODIgnores, _attributes._borderWidth,
+               _attributes._fillColor, _attributes._borderColor, _attributes._lodMinSize, newValue, _attributes._textureWidth,
                _attributes._textureHeight, newValue);
 
       clearCache();
