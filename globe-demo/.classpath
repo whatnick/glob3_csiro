@@ -4,11 +4,8 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/globe"/>
 	<classpathentry kind="lib" path="/globe/libs/worldwind.jar" sourcepath="/ww"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/globe-points-streaming"/>
-<<<<<<< HEAD
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-=======
 	<classpathentry kind="lib" path="/globe/libs/jogl/gluegen-rt.jar"/>
 	<classpathentry kind="lib" path="/globe/libs/jogl/jogl.jar"/>
->>>>>>> 0d6a7eef32ce1f6d0ce911fbd94b909954e37889
 	<classpathentry kind="output" path=""/>
 </classpath>
