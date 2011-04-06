@@ -345,12 +345,15 @@ public class GPanoramicCompiler {
       }
 
       final Image scaledImage;
+
+
       if ((level._width == image.getWidth()) && (level._height == image.getHeight())) {
          logInfo("No need to scale image");
          scaledImage = image;
       }
       else {
          logInfo("Scaling image...");
+
          scaledImage = image.getScaledInstance(level._width, level._height, Image.SCALE_SMOOTH);
       }
 
