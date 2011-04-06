@@ -144,6 +144,17 @@ public class GGeotoolsVectorialModule
    }
 
 
+   /**
+    * Allow connecting to any datastore factory from geotools: AbstractDataStoreFactory, ArcSDEDataStoreFactory,
+    * ArcSDEJNDIDataStoreFactory, DB2NGDataStoreFactory, DB2NGJNDIDataStoreFactory, H2DataStoreFactory, H2JNDIDataStoreFactory,
+    * IndexedShapefileDataStoreFactory, JDBCDataStoreFactory, JDBCJNDIDataStoreFactory, MySQLDataStoreFactory,
+    * MySQLJNDIDataStoreFactory, OracleNGDataStoreFactory, OracleNGJNDIDataStoreFactory, OracleNGOCIDataStoreFactory,
+    * PostgisNGDataStoreFactory, PostgisNGJNDIDataStoreFactory, PreGeneralizedDataStoreFactory, PropertyDataStoreFactory,
+    * ShapefileDataStoreFactory, ShapefileDirectoryFactory, SpatiaLiteDataStoreFactory, SpatiaLiteJNDIDataStoreFactory,
+    * SQLServerDataStoreFactory, SQLServerJNDIDataStoreFactory, WFSDataStoreFactory
+    * 
+    * @param application
+    */
    private void connectoToDataSource(final IGlobeApplication application) {
 
       //final int TODO_read_projection_or_ask_user;
