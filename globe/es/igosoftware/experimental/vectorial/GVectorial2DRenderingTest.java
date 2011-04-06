@@ -46,8 +46,8 @@ import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
-import es.igosoftware.euclid.experimental.vectorial.rendering.GRenderingAttributes;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorial2DRenderer;
+import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorialRenderingAttributes;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.GVectorUtils;
@@ -113,8 +113,8 @@ public class GVectorial2DRenderingTest {
          textureHeight = (int) Math.round(extent.y() / extent.x() * textureDimension);
       }
 
-      final GRenderingAttributes attributes = new GRenderingAttributes(renderLODIgnores, borderWidth, fillColor, borderColor,
-               lodMinSize, debugLODRendering, textureWidth, textureHeight, renderBounds);
+      final GVectorialRenderingAttributes attributes = new GVectorialRenderingAttributes(renderLODIgnores, borderWidth,
+               fillColor, borderColor, lodMinSize, debugLODRendering, textureWidth, textureHeight, renderBounds);
 
 
       GIOUtils.assureEmptyDirectory(directoryName, false);
@@ -192,7 +192,7 @@ public class GVectorial2DRenderingTest {
    private static void render(final GVectorial2DRenderer renderer,
                               final GAxisAlignedRectangle region,
                               final GFileName directoryName,
-                              final GRenderingAttributes attributes,
+                              final GVectorialRenderingAttributes attributes,
                               final int depth,
                               final int maxDepth) throws IOException {
 

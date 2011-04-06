@@ -16,7 +16,7 @@ public interface IVectorial2DRenderUnit {
 
    public BufferedImage render(final GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> quadtree,
                                final GAxisAlignedRectangle region,
-                               final GRenderingAttributes attributes);
+                               final GVectorialRenderingAttributes attributes);
 
 
 }

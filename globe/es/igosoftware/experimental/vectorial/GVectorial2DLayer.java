@@ -41,8 +41,8 @@ import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
-import es.igosoftware.euclid.experimental.vectorial.rendering.GRenderingAttributes;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorial2DRenderer;
+import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorialRenderingAttributes;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.features.IGlobeMutableFeatureCollection;
 import es.igosoftware.euclid.mutability.IMutable;
@@ -116,16 +116,16 @@ public class GVectorial2DLayer
 
 
    private static final class RenderingKey {
-      private final GVectorial2DLayer     _layer;
-      private final GAxisAlignedRectangle _tileBounds;
-      private final GRenderingAttributes  _renderingAttributes;
-      private final String                _id;
+      private final GVectorial2DLayer             _layer;
+      private final GAxisAlignedRectangle         _tileBounds;
+      private final GVectorialRenderingAttributes _renderingAttributes;
+      private final String                        _id;
 
 
       private RenderingKey(final GVectorial2DLayer layer,
                            final GAxisAlignedRectangle tileSectorBounds,
                            //                           final Sector tileSector,
-                           final GRenderingAttributes renderingAttributes,
+                           final GVectorialRenderingAttributes renderingAttributes,
                            final String id) {
          _layer = layer;
          _tileBounds = tileSectorBounds;
@@ -415,7 +415,7 @@ public class GVectorial2DLayer
             long totalBytes = 0;
 
             for (final Entry<RenderingKey, Future<BufferedImage>, RuntimeException> entry : entries) {
-               final GRenderingAttributes renderingAttributes = entry.getKey()._renderingAttributes;
+               final GVectorialRenderingAttributes renderingAttributes = entry.getKey()._renderingAttributes;
                totalBytes += renderingAttributes._textureWidth * renderingAttributes._textureHeight * BYTES_PER_PIXEL;
 
                if (totalBytes > _maxImageCacheSizeInBytes) {
@@ -737,7 +737,7 @@ public class GVectorial2DLayer
    private final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> _features;
 
 
-   private GRenderingAttributes                                                                                                _attributes;
+   private GVectorialRenderingAttributes                                                                                       _attributes;
 
    private List<Tile>                                                                                                          _topTiles;
    private final List<Tile>                                                                                                    _currentTiles               = new ArrayList<Tile>();
@@ -803,7 +803,7 @@ public class GVectorial2DLayer
    }
 
 
-   private GRenderingAttributes createRenderingAttributes() {
+   private GVectorialRenderingAttributes createRenderingAttributes() {
       final boolean renderLODIgnores = true;
       final float borderWidth = 1f;
       final Color fillColor = createColor(new Color(1, 1, 0), _fillColorAlpha);
@@ -814,8 +814,8 @@ public class GVectorial2DLayer
       final int textureHeight = 256;
       final boolean renderBounds = _debugRendering;
 
-      return new GRenderingAttributes(renderLODIgnores, borderWidth, fillColor, borderColor, lodMinSize, debugLODRendering,
-               textureWidth, textureHeight, renderBounds);
+      return new GVectorialRenderingAttributes(renderLODIgnores, borderWidth, fillColor, borderColor, lodMinSize,
+               debugLODRendering, textureWidth, textureHeight, renderBounds);
    }
 
 
@@ -1055,9 +1055,9 @@ public class GVectorial2DLayer
 
       final Color oldValue = _attributes._borderColor;
 
-      _attributes = new GRenderingAttributes(_attributes._renderLODIgnores, _attributes._borderWidth, _attributes._fillColor,
-               newColor, _attributes._lodMinSize, _attributes._debugLODRendering, _attributes._textureWidth,
-               _attributes._textureHeight, _attributes._renderBounds);
+      _attributes = new GVectorialRenderingAttributes(_attributes._renderLODIgnores, _attributes._borderWidth,
+               _attributes._fillColor, newColor, _attributes._lodMinSize, _attributes._debugLODRendering,
+               _attributes._textureWidth, _attributes._textureHeight, _attributes._renderBounds);
 
       clearCache();
 
@@ -1077,7 +1077,7 @@ public class GVectorial2DLayer
 
       final Color oldValue = _attributes._fillColor;
 
-      _attributes = new GRenderingAttributes(_attributes._renderLODIgnores, _attributes._borderWidth, newColor,
+      _attributes = new GVectorialRenderingAttributes(_attributes._renderLODIgnores, _attributes._borderWidth, newColor,
                _attributes._borderColor, _attributes._lodMinSize, _attributes._debugLODRendering, _attributes._textureWidth,
                _attributes._textureHeight, _attributes._renderBounds);
 
@@ -1113,7 +1113,7 @@ public class GVectorial2DLayer
 
       final Color oldValue = _attributes._fillColor;
 
-      _attributes = new GRenderingAttributes(_attributes._renderLODIgnores, _attributes._borderWidth, newValue,
+      _attributes = new GVectorialRenderingAttributes(_attributes._renderLODIgnores, _attributes._borderWidth, newValue,
                _attributes._borderColor, _attributes._lodMinSize, _attributes._debugLODRendering, _attributes._textureWidth,
                _attributes._textureHeight, _attributes._renderBounds);
 
@@ -1132,9 +1132,9 @@ public class GVectorial2DLayer
 
       final Color oldValue = _attributes._borderColor;
 
-      _attributes = new GRenderingAttributes(_attributes._renderLODIgnores, _attributes._borderWidth, _attributes._fillColor,
-               newValue, _attributes._lodMinSize, _attributes._debugLODRendering, _attributes._textureWidth,
-               _attributes._textureHeight, _attributes._renderBounds);
+      _attributes = new GVectorialRenderingAttributes(_attributes._renderLODIgnores, _attributes._borderWidth,
+               _attributes._fillColor, newValue, _attributes._lodMinSize, _attributes._debugLODRendering,
+               _attributes._textureWidth, _attributes._textureHeight, _attributes._renderBounds);
 
       clearCache();
 
@@ -1154,7 +1154,7 @@ public class GVectorial2DLayer
 
       final float oldValue = _attributes._borderWidth;
 
-      _attributes = new GRenderingAttributes(_attributes._renderLODIgnores, newValue, _attributes._fillColor,
+      _attributes = new GVectorialRenderingAttributes(_attributes._renderLODIgnores, newValue, _attributes._fillColor,
                _attributes._borderColor, _attributes._lodMinSize, _attributes._debugLODRendering, _attributes._textureWidth,
                _attributes._textureHeight, _attributes._renderBounds);
 
@@ -1394,8 +1394,8 @@ public class GVectorial2DLayer
 
       _debugRendering = newValue;
 
-      _attributes = new GRenderingAttributes(_attributes._renderLODIgnores, _attributes._borderWidth, _attributes._fillColor,
-               _attributes._borderColor, _attributes._lodMinSize, newValue, _attributes._textureWidth,
+      _attributes = new GVectorialRenderingAttributes(_attributes._renderLODIgnores, _attributes._borderWidth,
+               _attributes._fillColor, _attributes._borderColor, _attributes._lodMinSize, newValue, _attributes._textureWidth,
                _attributes._textureHeight, newValue);
 
       clearCache();
