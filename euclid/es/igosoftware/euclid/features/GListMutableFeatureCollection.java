@@ -9,13 +9,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.ICurve;
 import es.igosoftware.euclid.IGeometry;
+import es.igosoftware.euclid.ISurface;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.mutability.GMutableAbstract;
 import es.igosoftware.euclid.projection.GProjection;
-import es.igosoftware.euclid.shape.IPolygon;
-import es.igosoftware.euclid.shape.IPolygonalChain;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GAssert;
 
@@ -160,10 +160,10 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<Vecto
       if (geometry instanceof IVector) {
          return GGeometryType.POINT;
       }
-      else if (geometry instanceof IPolygonalChain) {
+      else if (geometry instanceof ICurve) {
          return GGeometryType.CURVE;
       }
-      else if (geometry instanceof IPolygon) {
+      else if (geometry instanceof ISurface) {
          return GGeometryType.SURFACE;
       }
       else {

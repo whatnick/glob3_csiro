@@ -36,6 +36,7 @@
 
 package es.igosoftware.euclid.shape;
 
+import es.igosoftware.euclid.ISurface;
 import es.igosoftware.euclid.bounding.IBounds;
 import es.igosoftware.euclid.vector.IVector;
 
@@ -62,7 +63,8 @@ BoundsT extends IBounds<VectorT, BoundsT>
 
 >
          extends
-            IPolytope<VectorT, SegmentT, BoundsT> {
+            IPolytope<VectorT, SegmentT, BoundsT>,
+            ISurface<VectorT, BoundsT> {
 
    public boolean isConvex();
 

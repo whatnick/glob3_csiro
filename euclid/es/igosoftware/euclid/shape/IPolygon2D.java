@@ -38,13 +38,15 @@ package es.igosoftware.euclid.shape;
 
 import java.util.List;
 
+import es.igosoftware.euclid.ISurface2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.vector.IVector2;
 
 
 public interface IPolygon2D
          extends
-            IPolygon<IVector2, GSegment2D, GAxisAlignedRectangle> {
+            IPolygon<IVector2, GSegment2D, GAxisAlignedRectangle>,
+            ISurface2D {
 
 
    public List<GTriangle2D> triangulate();
