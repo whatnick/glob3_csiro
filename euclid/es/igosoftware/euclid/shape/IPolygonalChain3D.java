@@ -44,7 +44,7 @@ import es.igosoftware.euclid.vector.IVector3;
 public interface IPolygonalChain3D
          extends
             IPolygonalChain<IVector3, GSegment3D, GAxisAlignedBox>,
-            ICurve3D {
+            ICurve3D<GAxisAlignedBox> {
 
 
 }

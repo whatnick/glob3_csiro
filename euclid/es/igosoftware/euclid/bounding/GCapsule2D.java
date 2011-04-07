@@ -45,8 +45,7 @@ public final class GCapsule2D
          extends
             GNCapsule<IVector2, GSegment2D, GCapsule2D>
          implements
-            IBounds2D<GCapsule2D>,
-            IFiniteBounds<IVector2, GCapsule2D> {
+            IBounds2D<GCapsule2D> {
 
    /**
     * 

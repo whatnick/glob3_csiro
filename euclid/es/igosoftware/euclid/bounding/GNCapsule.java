@@ -54,7 +54,7 @@ GeometryT extends GNCapsule<VectorT, SegmentT, GeometryT>
          extends
             GGeometryAbstract<VectorT>
          implements
-            IBounds<VectorT, GeometryT> {
+            IFiniteBounds<VectorT, GeometryT> {
 
    /**
     * 

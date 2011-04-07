@@ -44,7 +44,7 @@ import es.igosoftware.euclid.vector.IVector2;
 public interface IPolygonalChain2D
          extends
             IPolygonalChain<IVector2, GSegment2D, GAxisAlignedRectangle>,
-            ICurve2D {
+            ICurve2D<GAxisAlignedRectangle> {
 
 
 }

@@ -52,7 +52,7 @@ GeometryT extends GNBall<VectorT, GeometryT>
          extends
             GGeometryAbstract<VectorT>
          implements
-            IBounds<VectorT, GeometryT> {
+            IFiniteBounds<VectorT, GeometryT> {
 
    private static final long serialVersionUID = 1L;
 

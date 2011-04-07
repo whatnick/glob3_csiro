@@ -46,7 +46,7 @@ import es.igosoftware.euclid.vector.IVector2;
 public interface IPolygon2D
          extends
             IPolygon<IVector2, GSegment2D, GAxisAlignedRectangle>,
-            ISurface2D {
+            ISurface2D<GAxisAlignedRectangle> {
 
 
    public List<GTriangle2D> triangulate();

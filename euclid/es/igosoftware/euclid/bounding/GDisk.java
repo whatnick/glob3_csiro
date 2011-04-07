@@ -44,8 +44,7 @@ public final class GDisk
          extends
             GNBall<IVector2, GDisk>
          implements
-            IBounds2D<GDisk>,
-            IFiniteBounds<IVector2, GDisk> {
+            IBounds2D<GDisk> {
 
    private static final long serialVersionUID = 1L;
 

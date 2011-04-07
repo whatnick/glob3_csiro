@@ -2,6 +2,7 @@
 
 package es.igosoftware.euclid.bounding;
 
+import es.igosoftware.euclid.ISurface2D;
 import es.igosoftware.euclid.vector.IVector2;
 
 
@@ -11,7 +12,8 @@ GeometryT extends IBounds<IVector2, GeometryT>
 
 >
          extends
-            IBounds<IVector2, GeometryT> {
+            IBounds<IVector2, GeometryT>,
+            ISurface2D<GeometryT> {
 
 
    public boolean touches(final IBounds2D<?> that);

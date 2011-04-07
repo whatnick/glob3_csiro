@@ -46,8 +46,7 @@ public class GCapsule3D
          extends
             GNCapsule<IVector3, GSegment3D, GCapsule3D>
          implements
-            IBounds3D<GCapsule3D>,
-            IFiniteBounds<IVector3, GCapsule3D> {
+            IBounds3D<GCapsule3D> {
 
    /**
     * 
