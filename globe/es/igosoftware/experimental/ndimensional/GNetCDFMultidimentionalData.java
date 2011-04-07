@@ -272,6 +272,8 @@ public class GNetCDFMultidimentionalData
       /**
        * Auto-detect non-dimension variables in NetCDF, only retain vectors
        */
+      //FIXME: The assumption is that scalar and vector variables share dimensions, this is not the case for the 
+      //tuna dataset
       if (vectorVariables == null) {
          //vectorVariables = detectVectorVariables(longitudeVariableName, latitudeVariableName, elevationVariableName);
       }
@@ -298,10 +300,14 @@ public class GNetCDFMultidimentionalData
          vectorVariable._vMissingValue = (vMissingValueAtt == null) ? Double.NaN
                                                                    : vMissingValueAtt.getNumericValue().doubleValue();
 
-
+         //FIXME: Dimensions are only equal if the grid is Rectangular, Numerical e.g. curvilinear or rotated grids do not
+         //satisfy this constraint gridtype = "NUMERICAL"; as opposed to well unspecified
          if (!uVariable.getDimensions().equals(vVariable.getDimensions())) {
-            throw new RuntimeException("Variable " + vectorVariable._uVariableName + " has different dimensions than "
-                                       + vectorVariable._vVariableName);
+            if ((uVariable.getDimension(2).getLength() + 1 != vVariable.getDimension(2).getLength())
+                && (uVariable.getDimension(3).getLength() != vVariable.getDimension(3).getLength() + 1)) {
+               throw new RuntimeException("Variable " + vectorVariable._uVariableName + " has different dimensions than "
+                                          + vectorVariable._vVariableName);
+            }
          }
       }
       _vectorVariables = vectorVariables;

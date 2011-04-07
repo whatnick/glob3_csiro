@@ -373,7 +373,7 @@ public class GGlobeDemo
                   "latitude", "level", "pblht", null, vectorVariablesBig, "time", true, true);
 
          final GNetCDFMultidimentionalData.VectorVariable[] vectorVariablesCurvy = new GNetCDFMultidimentionalData.VectorVariable[] { new GNetCDFMultidimentionalData.VectorVariable(
-                  "Currents", "Chl_a", "DIC") };
+                  "Currents", "u1", "u2") };
 
          final IMultidimensionalData cfDataCurvy = new GNetCDFMultidimentionalData("data/tuna_t2b_out3_0_35.nc", "x_centre",
                   "y_centre", "z_centre", "topz", null, vectorVariablesCurvy, "record", true, true);
