@@ -7,7 +7,11 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/igolibs"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/globe"/>
 	<classpathentry kind="lib" path="/globe/libs/jogl/gluegen-rt.jar"/>
-	<classpathentry kind="lib" path="/globe/libs/jogl/jogl.jar"/>
-	<classpathentry kind="lib" path="/globe/libs/worldwind.jar"/>
+	<classpathentry kind="lib" path="/globe/libs/jogl/jogl.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="globe/libs"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/globe/libs/worldwind.jar" sourcepath="/home/fpulido/Escritorio/IGO-Repository/ww"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

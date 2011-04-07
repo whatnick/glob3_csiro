@@ -46,13 +46,13 @@ import es.igosoftware.euclid.vector.IVector2;
 
 public final class GVertex2Container
          extends
-            GVertexContainerWithDefaultsAbstract<IVector2<?>, GVertex2Container> {
+            GVertexContainerWithDefaultsAbstract<IVector2, GVertex2Container> {
 
 
    public GVertex2Container(final GVectorPrecision vectorPrecision,
                             final GColorPrecision colorPrecision,
                             final GProjection projection,
-                            final IVector2<?> referencePoint,
+                            final IVector2 referencePoint,
                             final boolean withIntensities,
                             final boolean withColors,
                             final boolean withNormals) {
@@ -63,7 +63,7 @@ public final class GVertex2Container
    public GVertex2Container(final GVectorPrecision vectorPrecision,
                             final GColorPrecision colorPrecision,
                             final GProjection projection,
-                            final IVector2<?> referencePoint,
+                            final IVector2 referencePoint,
                             final boolean withIntensities,
                             final boolean withColors,
                             final boolean withNormals,
@@ -76,13 +76,13 @@ public final class GVertex2Container
    public GVertex2Container(final GVectorPrecision vectorPrecision,
                             final GColorPrecision colorPrecision,
                             final GProjection projection,
-                            final IVector2<?> referencePoint,
+                            final IVector2 referencePoint,
                             final boolean withIntensities,
                             final float defaultIntensity,
                             final boolean withColors,
                             final IColor defaultColor,
                             final boolean withNormals,
-                            final IVector2<?> defaultNormal) {
+                            final IVector2 defaultNormal) {
       this(vectorPrecision, colorPrecision, projection, referencePoint, 3, withIntensities, defaultIntensity, withColors,
            defaultColor, withNormals, defaultNormal);
    }
@@ -91,13 +91,13 @@ public final class GVertex2Container
    public GVertex2Container(final GVectorPrecision vectorPrecision,
                             final GColorPrecision colorPrecision,
                             final GProjection projection,
-                            final IVector2<?> referencePoint,
+                            final IVector2 referencePoint,
                             final boolean withIntensities,
                             final float defaultIntensity,
                             final boolean withColors,
                             final IColor defaultColor,
                             final boolean withNormals,
-                            final IVector2<?> defaultNormal,
+                            final IVector2 defaultNormal,
                             final boolean withUserData,
                             final long userData) {
       this(vectorPrecision, colorPrecision, projection, referencePoint, 3, withIntensities, defaultIntensity, withColors,
@@ -135,7 +135,7 @@ public final class GVertex2Container
                             final boolean withColors,
                             final IColor defaultColor,
                             final boolean withNormals,
-                            final IVector2<?> defaultNormal) {
+                            final IVector2 defaultNormal) {
       this(vectorPrecision, colorPrecision, projection, GVector2D.ZERO, 3, withIntensities, defaultIntensity, withColors,
            defaultColor, withNormals, defaultNormal);
    }
@@ -149,7 +149,7 @@ public final class GVertex2Container
                             final boolean withColors,
                             final IColor defaultColor,
                             final boolean withNormals,
-                            final IVector2<?> defaultNormal,
+                            final IVector2 defaultNormal,
                             final boolean withUserData,
                             final long userData) {
       this(vectorPrecision, colorPrecision, projection, GVector2D.ZERO, 3, withIntensities, defaultIntensity, withColors,
@@ -160,14 +160,14 @@ public final class GVertex2Container
    public GVertex2Container(final GVectorPrecision vectorPrecision,
                             final GColorPrecision colorPrecision,
                             final GProjection projection,
-                            final IVector2<?> referencePoint,
+                            final IVector2 referencePoint,
                             final int initialCapacity,
                             final boolean withIntensities,
                             final float defaultIntensity,
                             final boolean withColors,
                             final IColor defaultColor,
                             final boolean withNormals,
-                            final IVector2<?> defaultNormal) {
+                            final IVector2 defaultNormal) {
       this(vectorPrecision, colorPrecision, projection, referencePoint, initialCapacity, withIntensities, defaultIntensity,
            withColors, defaultColor, withNormals, defaultNormal, false, 0);
    }
@@ -182,7 +182,7 @@ public final class GVertex2Container
                             final boolean withColors,
                             final IColor defaultColor,
                             final boolean withNormals,
-                            final IVector2<?> defaultNormal) {
+                            final IVector2 defaultNormal) {
       this(vectorPrecision, colorPrecision, projection, GVector2D.ZERO, initialCapacity, withIntensities, defaultIntensity,
            withColors, defaultColor, withNormals, defaultNormal, false, 0);
    }
@@ -191,14 +191,14 @@ public final class GVertex2Container
    public GVertex2Container(final GVectorPrecision vectorPrecision,
                             final GColorPrecision colorPrecision,
                             final GProjection projection,
-                            final IVector2<?> referencePoint,
+                            final IVector2 referencePoint,
                             final int initialCapacity,
                             final boolean withIntensities,
                             final float defaultIntensity,
                             final boolean withColors,
                             final IColor defaultColor,
                             final boolean withNormals,
-                            final IVector2<?> defaultNormal,
+                            final IVector2 defaultNormal,
                             final boolean withUserData,
                             final long defaultUserData) {
       super(vectorPrecision, colorPrecision, projection, referencePoint, initialCapacity, withIntensities, defaultIntensity,
@@ -215,7 +215,7 @@ public final class GVertex2Container
                             final boolean withColors,
                             final IColor defaultColor,
                             final boolean withNormals,
-                            final IVector2<?> defaultNormal,
+                            final IVector2 defaultNormal,
                             final boolean withUserData,
                             final long defaultUserData) {
       super(vectorPrecision, colorPrecision, projection, GVector2D.ZERO, initialCapacity, withIntensities, defaultIntensity,
@@ -230,7 +230,7 @@ public final class GVertex2Container
 
 
    @Override
-   protected GVertexContainerWithDefaultsAbstract.VectorHandler<IVector2<?>> initializePointsHandler() {
+   protected GVertexContainerWithDefaultsAbstract.VectorHandler<IVector2> initializePointsHandler() {
       switch (_vectorPrecision) {
          case FLOAT:
             return new Vector2HandlerF(_capacity);
@@ -243,7 +243,7 @@ public final class GVertex2Container
 
 
    @Override
-   protected GVertexContainerWithDefaultsAbstract.VectorHandler<IVector2<?>> initializeNormalsHandler() {
+   protected GVertexContainerWithDefaultsAbstract.VectorHandler<IVector2> initializeNormalsHandler() {
       switch (_vectorPrecision) {
          case FLOAT:
             return new Vector2HandlerF(_capacity);
@@ -269,7 +269,7 @@ public final class GVertex2Container
 
    @Override
    public GVertex2Container newEmptyContainer(final int initialCapacity,
-                                              final IVector2<?> referencePoint) {
+                                              final IVector2 referencePoint) {
       return newEmptyContainer(initialCapacity, _projection, referencePoint);
    }
 
@@ -284,7 +284,7 @@ public final class GVertex2Container
    @Override
    public GVertex2Container newEmptyContainer(final int initialCapacity,
                                               final GProjection projection,
-                                              final IVector2<?> referencePoint) {
+                                              final IVector2 referencePoint) {
 
       return new GVertex2Container(_vectorPrecision, _colorPrecision, projection, referencePoint, initialCapacity,
                hasIntensities(), _defaultIntensity, hasColors(), _defaultColor, hasNormals(), _defaultNormal, hasUserData(),

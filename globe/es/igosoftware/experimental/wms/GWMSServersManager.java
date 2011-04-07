@@ -13,6 +13,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,6 @@ import java.util.Set;
 import javax.xml.stream.XMLStreamException;
 
 import es.igosoftware.io.GIOUtils;
-import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GLogger;
 import gov.nasa.worldwind.exception.WWRuntimeException;
 import gov.nasa.worldwind.ogc.wms.WMSCapabilities;
@@ -175,7 +175,7 @@ public class GWMSServersManager {
       logger.info("Loading WMS server list..");
 
       final File serversFile = new File(fileName);
-      final List<GWMSServerData> emptyList = GCollections.createList();
+      final List<GWMSServerData> emptyList = Collections.emptyList();
 
       if (serversFile.exists()) {
 

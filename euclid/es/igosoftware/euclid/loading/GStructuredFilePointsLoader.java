@@ -52,7 +52,7 @@ import es.igosoftware.euclid.verticescontainer.IVertexContainer;
 import es.igosoftware.io.GFileName;
 
 
-public abstract class GStructuredFilePointsLoader<VectorT extends IVector<VectorT, ?, ?>,
+public abstract class GStructuredFilePointsLoader<VectorT extends IVector<VectorT, ?>,
 
 GroupT extends IStructuredVertexContainer.IVertexGroup<VectorT, IVertexContainer.Vertex<VectorT>, GroupT>>
          extends

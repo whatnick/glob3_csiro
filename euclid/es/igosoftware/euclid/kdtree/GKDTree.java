@@ -59,7 +59,7 @@ import es.igosoftware.util.GProgress;
 import es.igosoftware.util.GStringUtils;
 
 
-public final class GKDTree<VectorT extends IVector<VectorT, ?, ?>, VertexT extends IVertexContainer.Vertex<VectorT>>
+public final class GKDTree<VectorT extends IVector<VectorT, ?>, VertexT extends IVertexContainer.Vertex<VectorT>>
          extends
             GLoggerObject {
 
@@ -268,7 +268,7 @@ public final class GKDTree<VectorT extends IVector<VectorT, ?, ?>, VertexT exten
       System.out.println("GKDTree 0.1");
       System.out.println("-----------\n");
 
-      final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices = new GVertex3Container(
+      final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices = new GVertex3Container(
                GVectorPrecision.FLOAT, GColorPrecision.INT, GProjection.EUCLID, false, 0, false, null, false, null);
 
       vertices.addPoint(new GVector3F(0, 0, 0));
@@ -285,34 +285,34 @@ public final class GKDTree<VectorT extends IVector<VectorT, ?, ?>, VertexT exten
 
       vertices.makeImmutable();
 
-      final GKDTree<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>> tree = new GKDTree<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>>(
+      final GKDTree<IVector3, IVertexContainer.Vertex<IVector3>> tree = new GKDTree<IVector3, IVertexContainer.Vertex<IVector3>>(
                "Test", vertices, true);
 
-      tree.depthFirstAcceptVisitor(new IKDTreeVisitor<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>>() {
+      tree.depthFirstAcceptVisitor(new IKDTreeVisitor<IVector3, IVertexContainer.Vertex<IVector3>>() {
 
          @Override
-         public void endVisiting(final GKDTree<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>> kdtree) {
+         public void endVisiting(final GKDTree<IVector3, IVertexContainer.Vertex<IVector3>> kdtree) {
          }
 
 
          @Override
-         public void startVisiting(final GKDTree<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>> kdtree) {
+         public void startVisiting(final GKDTree<IVector3, IVertexContainer.Vertex<IVector3>> kdtree) {
          }
 
 
          @Override
-         public void visitInnerNode(final GKDInnerNode<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>> innerNode) {
+         public void visitInnerNode(final GKDInnerNode<IVector3, IVertexContainer.Vertex<IVector3>> innerNode) {
             processNode(innerNode);
          }
 
 
          @Override
-         public void visitLeafNode(final GKDLeafNode<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>> leafNode) {
+         public void visitLeafNode(final GKDLeafNode<IVector3, IVertexContainer.Vertex<IVector3>> leafNode) {
             processNode(leafNode);
          }
 
 
-         private void processNode(final GKDNode<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>> node) {
+         private void processNode(final GKDNode<IVector3, IVertexContainer.Vertex<IVector3>> node) {
             System.out.println(GStringUtils.spaces(node.getDepth()) + node);
          }
       });

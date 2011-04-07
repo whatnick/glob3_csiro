@@ -51,6 +51,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -59,6 +60,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -87,12 +89,17 @@ import org.pushingpixels.substance.api.fonts.FontSet;
 import org.pushingpixels.substance.api.skin.SubstanceMistAquaLookAndFeel;
 
 import es.igosoftware.globe.actions.IGenericAction;
-import es.igosoftware.globe.layers.I3DContentCollectionLayer;
+import es.igosoftware.globe.actions.ILayerAction;
+import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.globe.view.customView.GCustomView;
 import es.igosoftware.globe.view.customView.GCustomViewInputHandler;
+import es.igosoftware.io.GFileName;
+import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GHolder;
+import es.igosoftware.util.GImageUtils;
 import es.igosoftware.util.GLogger;
+import es.igosoftware.util.GMath;
 import es.igosoftware.util.GPair;
 import es.igosoftware.util.GUtils;
 import es.igosoftware.util.IPredicate;
@@ -106,6 +113,8 @@ import gov.nasa.worldwind.SceneController;
 import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
+import gov.nasa.worldwind.event.SelectEvent;
+import gov.nasa.worldwind.event.SelectListener;
 import gov.nasa.worldwind.examples.sunlight.RectangularNormalTessellator;
 import gov.nasa.worldwind.examples.util.StatusLayer;
 import gov.nasa.worldwind.geom.Angle;
@@ -113,6 +122,7 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Sector;
 import gov.nasa.worldwind.globes.Earth;
 import gov.nasa.worldwind.globes.Globe;
+import gov.nasa.worldwind.layers.CompassLayer;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
 import gov.nasa.worldwind.layers.ViewControlsLayer;
@@ -168,15 +178,15 @@ public abstract class GGlobeApplication
 
 
    private static class IconKey {
-      private final String _name;
-      private final int    _width;
-      private final int    _height;
+      private final GFileName _fileName;
+      private final int       _width;
+      private final int       _height;
 
 
-      private IconKey(final String name,
+      private IconKey(final GFileName fileName,
                       final int width,
                       final int height) {
-         _name = name;
+         _fileName = fileName;
          _width = width;
          _height = height;
       }
@@ -187,7 +197,7 @@ public abstract class GGlobeApplication
          final int prime = 31;
          int result = 1;
          result = prime * result + _height;
-         result = prime * result + ((_name == null) ? 0 : _name.hashCode());
+         result = prime * result + ((_fileName == null) ? 0 : _fileName.hashCode());
          result = prime * result + _width;
          return result;
       }
@@ -208,12 +218,12 @@ public abstract class GGlobeApplication
          if (_height != other._height) {
             return false;
          }
-         if (_name == null) {
-            if (other._name != null) {
+         if (_fileName == null) {
+            if (other._fileName != null) {
                return false;
             }
          }
-         else if (!_name.equals(other._name)) {
+         else if (!_fileName.equals(other._fileName)) {
             return false;
          }
          if (_width != other._width) {
@@ -223,10 +233,10 @@ public abstract class GGlobeApplication
       }
    }
 
-   private static GGlobeApplication                         _application;
+   private static GGlobeApplication                                 _application;
 
-   private final LRUCache<IconKey, Icon, RuntimeException>  _iconsCache;
-   private final LRUCache<IconKey, Image, RuntimeException> _imagesCache;
+   private final LRUCache<IconKey, Icon, RuntimeException>          _iconsCache;
+   private final LRUCache<IconKey, BufferedImage, RuntimeException> _imagesCache;
 
 
    private static void initializeFonts() {
@@ -286,24 +296,30 @@ public abstract class GGlobeApplication
    }
 
 
-   private final IGlobeModule[]                   _modules;
-   private final WorldWindowGLCanvas              _wwGLCanvas;
-   private JFrame                                 _frame;
+   private final IGlobeModule[]                                                     _modules;
+   private final WorldWindowGLCanvas                                                _wwGLCanvas;
+   private JFrame                                                                   _frame;
+
 
    // UI elements, they must be final
-   private JMenuBar                               _menubar;
-   private JToolBar                               _toolbar;
+   private JMenuBar                                                                 _menubar;
+   private JToolBar                                                                 _toolbar;
 
-   private JMenu                                  _fileMenu;
-   private JMenu                                  _navigationMenu;
-   private JMenu                                  _viewMenu;
-   private JMenu                                  _editMenu;
-   private JMenu                                  _analysisMenu;
-   private JMenu                                  _helpMenu;
+   private JMenu                                                                    _fileMenu;
+   private JMenu                                                                    _navigationMenu;
+   private JMenu                                                                    _viewMenu;
+   private JMenu                                                                    _editMenu;
+   private JMenu                                                                    _analysisMenu;
+   private JMenu                                                                    _helpMenu;
 
-   private final Map<String, Map<String, String>> _translationsSets;
+   private final Map<String, Map<String, String>>                                   _translationsSets;
 
-   private String                                 _currentLanguage;
+   private String                                                                   _currentLanguage;
+
+
+   // weak, so when the layer dies also the associated data dies
+   private final WeakHashMap<IGlobeLayer, List<List<? extends ILayerAction>>>       _layerActionsPerLayer    = new WeakHashMap<IGlobeLayer, List<List<? extends ILayerAction>>>();
+   private final WeakHashMap<IGlobeLayer, List<List<? extends ILayerAttribute<?>>>> _layerAttributesPerLayer = new WeakHashMap<IGlobeLayer, List<List<? extends ILayerAttribute<?>>>>();
 
 
    protected GGlobeApplication() {
@@ -314,9 +330,15 @@ public abstract class GGlobeApplication
    protected GGlobeApplication(final String language) {
       logInfo("Starting " + getApplicationNameAndVersion() + "...");
 
+      registerInstance(this);
+
       _currentLanguage = language;
 
       _translationsSets = initializeTranslations();
+
+      _iconsCache = initializeIconsCache();
+      _imagesCache = initializeImagesCache();
+
 
       _wwGLCanvas = new WorldWindowGLCanvas();
 
@@ -326,15 +348,10 @@ public abstract class GGlobeApplication
       _wwGLCanvas.setModel(model);
 
       _modules = initializeModules();
-
-      _iconsCache = initializaIconsCache();
-      _imagesCache = initializaImagesCache();
-
-      registerInstance(this);
    }
 
 
-   private LRUCache<IconKey, Icon, RuntimeException> initializaIconsCache() {
+   private LRUCache<IconKey, Icon, RuntimeException> initializeIconsCache() {
       return new LRUCache<IconKey, Icon, RuntimeException>(50, new LRUCache.ValueFactory<IconKey, Icon, RuntimeException>() {
          private static final long serialVersionUID = 1L;
 
@@ -343,16 +360,17 @@ public abstract class GGlobeApplication
          public Icon create(final IconKey key) {
 
             URL url = null;
-            for (final String directory : getIconsDirectories()) {
-               final String path = directory + "/" + key._name;
+            for (final GFileName directory : getIconsDirectories()) {
+               final GFileName path = GFileName.fromParts(directory, key._fileName);
 
-               url = getClass().getClassLoader().getResource(path);
+               url = getClass().getClassLoader().getResource(path.buildPath('/'));
                if (url != null) {
                   break;
                }
             }
 
             if (url == null) {
+               logWarning("Can't find an image named: " + key._fileName);
                return null;
             }
 
@@ -378,58 +396,67 @@ public abstract class GGlobeApplication
    }
 
 
-   private LRUCache<IconKey, Image, RuntimeException> initializaImagesCache() {
-      return new LRUCache<IconKey, Image, RuntimeException>(50, new LRUCache.ValueFactory<IconKey, Image, RuntimeException>() {
-         private static final long serialVersionUID = 1L;
+   private LRUCache<IconKey, BufferedImage, RuntimeException> initializeImagesCache() {
+      return new LRUCache<IconKey, BufferedImage, RuntimeException>(50,
+               new LRUCache.ValueFactory<IconKey, BufferedImage, RuntimeException>() {
+                  private static final long serialVersionUID = 1L;
 
 
-         @Override
-         public Image create(final IconKey key) {
+                  @Override
+                  public BufferedImage create(final IconKey key) {
 
-            URL url = null;
-            for (final String directory : getIconsDirectories()) {
-               final String path = directory + "/" + key._name;
+                     URL url = null;
+                     for (final GFileName directory : getIconsDirectories()) {
+                        final GFileName path = GFileName.fromParts(directory, key._fileName);
 
-               url = getClass().getClassLoader().getResource(path);
-               if (url != null) {
-                  break;
-               }
-            }
+                        url = getClass().getClassLoader().getResource(path.buildPath('/'));
+                        if (url != null) {
+                           break;
+                        }
+                     }
 
-            if (url == null) {
-               return null;
-            }
+                     if (url == null) {
+                        logWarning("Can't find an image named: " + key._fileName);
+                        return null;
+                     }
 
-            try {
+                     try {
 
 
-               final BufferedImage image = ImageIO.read(url);
+                        final BufferedImage image = ImageIO.read(url);
 
-               if (image == null) {
-                  return null;
-               }
+                        if (image == null) {
+                           return null;
+                        }
 
-               final int width = image.getWidth(null);
-               final int height = image.getHeight(null);
-               if ((width == -1) || (height == -1)) {
-                  return image;
-               }
-               if ((width == key._width) && (height == key._height)) {
-                  return image;
-               }
+                        if ((key._width < 0) || (key._height < 0)) {
+                           // negatives sizes means no resize
+                           return image;
+                        }
 
-               final Image resizedImage = image.getScaledInstance(key._width, key._height, Image.SCALE_SMOOTH);
-               return resizedImage;
-            }
-            catch (final IOException e) {
-               return null;
-            }
-         }
-      });
+                        final int width = image.getWidth(null);
+                        final int height = image.getHeight(null);
+                        if ((width == -1) || (height == -1)) {
+                           return image;
+                        }
+                        if ((width == key._width) && (height == key._height)) {
+                           return image;
+                        }
+
+                        final Image resizedImage = image.getScaledInstance(key._width, key._height, Image.SCALE_SMOOTH);
+                        return GImageUtils.asBufferedImage(resizedImage, BufferedImage.TYPE_4BYTE_ABGR);
+                     }
+                     catch (final IOException e) {
+                        return null;
+                     }
+                  }
+               });
    }
 
 
    private static void registerInstance(final GGlobeApplication application) {
+      GAssert.notNull(application, "application");
+
       if (_application != null) {
          throw new RuntimeException("Can't register more than one application");
       }
@@ -451,45 +478,44 @@ public abstract class GGlobeApplication
    private IGlobeModule[] initializeModules() {
       final GHolder<IGlobeModule[]> modules = new GHolder<IGlobeModule[]>(null);
 
-      try {
-         invokeInEventThread(new Runnable() {
-            @Override
-            public void run() {
-               //            final IGlobeModule[] modules = getModules();
-               modules.set(getInitialModules());
+      invokeInSwingThread(new Runnable() {
+         @Override
+         public void run() {
+            //            final IGlobeModule[] modules = getModules();
+            modules.set(getInitialModules());
 
-               for (final IGlobeModule module : modules.get()) {
-                  if (module != null) {
-                     module.initialize(GGlobeApplication.this);
-                     module.initializeTranslations(GGlobeApplication.this);
-                  }
+            for (final IGlobeModule module : modules.get()) {
+               if (module != null) {
+                  module.initialize(GGlobeApplication.this);
+                  module.initializeTranslations(GGlobeApplication.this);
                }
             }
-         });
-      }
-      catch (final InterruptedException e) {
-         e.printStackTrace();
-      }
-      catch (final InvocationTargetException e) {
-         e.printStackTrace();
-      }
-
+         }
+      });
 
       return GCollections.select(modules.get(), new IPredicate<IGlobeModule>() {
          @Override
          public boolean evaluate(final IGlobeModule element) {
-            return element != null;
+            return (element != null);
          }
       });
    }
 
 
-   private static void invokeInEventThread(final Runnable runnable) throws InterruptedException, InvocationTargetException {
+   private static void invokeInSwingThread(final Runnable runnable) {
       if (EventQueue.isDispatchThread()) {
          runnable.run();
       }
       else {
-         SwingUtilities.invokeAndWait(runnable);
+         try {
+            SwingUtilities.invokeAndWait(runnable);
+         }
+         catch (final InterruptedException e) {
+            e.printStackTrace();
+         }
+         catch (final InvocationTargetException e) {
+            e.printStackTrace();
+         }
       }
    }
 
@@ -500,13 +526,15 @@ public abstract class GGlobeApplication
    }
 
 
-   protected List<String> getIconsDirectories() {
-      return GCollections.createList("bitmaps/icons", "bitmaps", "../globe/bitmaps/icons", "globe/bitmaps/icons");
+   protected List<GFileName> getIconsDirectories() {
+      return Arrays.asList(GFileName.relative("bitmaps", "icons"), GFileName.relative("bitmaps"),
+               GFileName.relative("..", "globe", "bitmaps", "icons"), GFileName.relative("globe", "bitmaps", "icons"));
    }
 
 
-   protected List<String> getImagesDirectories() {
-      return GCollections.createList("bitmaps/icons", "bitmaps", "../globe/bitmaps/icons", "globe/bitmaps/icons");
+   protected List<GFileName> getImagesDirectories() {
+      return Arrays.asList(GFileName.relative("bitmaps", "icons"), GFileName.relative("bitmaps"),
+               GFileName.relative("..", "globe", "bitmaps", "icons"), GFileName.relative("globe", "bitmaps", "icons"));
    }
 
 
@@ -523,52 +551,90 @@ public abstract class GGlobeApplication
    protected LayerList getDefaultLayers() {
       final LayerList layers = new BasicModel().getLayers();
 
+
       final StatusLayer statusLayer = new StatusLayer();
       statusLayer.setEventSource(getWorldWindowGLCanvas());
-      // statusLayer.setCoordDecimalPlaces(2); // default is 4
       layers.add(statusLayer);
 
-      layers.getLayerByName("NASA Blue Marble Image").setEnabled(true);
 
+      layers.getLayerByName("NASA Blue Marble Image").setEnabled(true);
       layers.getLayerByName("Blue Marble (WMS) 2004").setEnabled(true);
       layers.getLayerByName("i-cubed Landsat").setEnabled(true);
-      //      layers.getLayerByName("MS Virtual Earth Aerial").setEnabled(true);
 
 
       final ViewControlsLayer viewControlsLayer = new ViewControlsLayer();
       layers.add(viewControlsLayer);
       getWorldWindowGLCanvas().addSelectListener(new ViewControlsSelectListener(getWorldWindowGLCanvas(), viewControlsLayer));
 
+
+      // Find Compass layer and enable picking
+      for (final Layer layer : layers) {
+         if (layer instanceof CompassLayer) {
+            layer.setPickEnabled(true);
+         }
+      }
+
+      configureCompassInteraction();
+
       return layers;
+   }
+
+
+   private void configureCompassInteraction() {
+      // Add select listener to handle drag events on the compass
+      getWorldWindowGLCanvas().addSelectListener(new SelectListener() {
+         private Angle _dragStartHeading = null;
+         private Angle _viewStartHeading = null;
+
+
+         @Override
+         public void selected(final SelectEvent event) {
+            if (event.getTopObject() instanceof CompassLayer) {
+               final View view = getView();
+
+               final Angle heading = (Angle) event.getTopPickedObject().getValue("Heading");
+
+               if (event.isDrag() && (_dragStartHeading == null)) {
+                  _dragStartHeading = heading;
+                  _viewStartHeading = view.getHeading();
+               }
+               else if (event.isRollover() && (_dragStartHeading != null)) {
+                  final double move = heading.degrees - _dragStartHeading.degrees;
+                  double newHeading = _viewStartHeading.degrees - move;
+                  newHeading = (newHeading >= 0) ? newHeading : newHeading + 360;
+                  view.stopAnimations();
+                  view.setHeading(Angle.fromDegrees(newHeading));
+               }
+               else if (event.isDragEnd()) {
+                  _dragStartHeading = null;
+               }
+               else if (event.isLeftDoubleClick()) {
+                  goToHeading(Angle.ZERO);
+               }
+            }
+         }
+      });
    }
 
 
    @Override
    public void init() {
-      try {
-         invokeInEventThread(new Runnable() {
-            @Override
-            public void run() {
-               SwingUtilities.updateComponentTreeUI(GGlobeApplication.this);
+      invokeInSwingThread(new Runnable() {
+         @Override
+         public void run() {
+            SwingUtilities.updateComponentTreeUI(GGlobeApplication.this);
 
-               initGUI();
+            initGUI();
 
-               IGlobeModule previousModule = null;
-               for (final IGlobeModule module : _modules) {
-                  initModuleGUI(module, previousModule);
-                  previousModule = module;
-               }
-
-               postInitGUI();
+            IGlobeModule previousModule = null;
+            for (final IGlobeModule module : _modules) {
+               initModuleGUI(module, previousModule);
+               previousModule = module;
             }
-         });
-      }
-      catch (final InterruptedException e) {
-         e.printStackTrace();
-      }
-      catch (final InvocationTargetException e) {
-         e.printStackTrace();
-      }
+
+            postInitGUI();
+         }
+      });
    }
 
 
@@ -577,8 +643,8 @@ public abstract class GGlobeApplication
          return;
       }
 
-      final JMenuItem exitItem = GSwingUtils.createMenuItem(getTranslation("Exit"), getIcon("quit.png"), 'x',
-               new ActionListener() {
+      final JMenuItem exitItem = GSwingUtils.createMenuItem(getTranslation("Exit"), getSmallIcon(GFileName.relative("quit.png")),
+               'x', new ActionListener() {
                   @Override
                   public void actionPerformed(final ActionEvent e) {
                      exit();
@@ -589,7 +655,7 @@ public abstract class GGlobeApplication
 
 
    @Override
-   public Icon getIcon(final String iconName,
+   public Icon getIcon(final GFileName iconName,
                        final int width,
                        final int height) {
       return _iconsCache.get(new IconKey(iconName, width, height));
@@ -597,24 +663,24 @@ public abstract class GGlobeApplication
 
 
    @Override
-   public Image getImage(final String imageName,
-                         final int width,
-                         final int height) {
+   public BufferedImage getImage(final GFileName imageName,
+                                 final int width,
+                                 final int height) {
       return _imagesCache.get(new IconKey(imageName, width, height));
    }
 
 
    @Override
-   public Icon getIcon(final String iconName) {
-      final int defaultIconSize = getDefaultIconSize();
-      return getIcon(iconName, defaultIconSize, defaultIconSize);
+   public BufferedImage getImage(final GFileName imageName) {
+      //         final int defaultIconSize = getDefaultIconSize();
+      return getImage(imageName, -1, -1);
    }
 
 
    @Override
-   public Image getImage(final String imageName) {
+   public Icon getSmallIcon(final GFileName iconName) {
       final int defaultIconSize = getDefaultIconSize();
-      return getImage(imageName, defaultIconSize, defaultIconSize);
+      return getIcon(iconName, defaultIconSize, defaultIconSize);
    }
 
 
@@ -937,36 +1003,66 @@ public abstract class GGlobeApplication
                     final Angle heading,
                     final Angle pitch,
                     final double elevation) {
+      final View view = getView();
       if ((heading == null) || (pitch == null)) {
-         getView().goTo(position, elevation);
+         view.goTo(position, elevation);
+         return;
+      }
+
+
+      if (view instanceof GCustomView) {
+         final GCustomViewInputHandler inputHandler = (GCustomViewInputHandler) ((GCustomView) view).getViewInputHandler();
+
+         inputHandler.stopAnimators();
+         inputHandler.addPanToAnimator(position, heading, pitch, elevation, true);
+
+         redraw();
+      }
+      else if (view instanceof OrbitView) {
+         final OrbitViewInputHandler inputHandler = (OrbitViewInputHandler) ((OrbitView) view).getViewInputHandler();
+
+         inputHandler.stopAnimators();
+         inputHandler.addPanToAnimator(position, heading, pitch, elevation, true);
+
+         redraw();
       }
       else {
-         try {
-            if (getView() instanceof GCustomView) {
-               final GCustomView view = (GCustomView) getView();
+         view.goTo(position, elevation);
+      }
 
-               final GCustomViewInputHandler customViewInputHandler = (GCustomViewInputHandler) view.getViewInputHandler();
+   }
 
-               customViewInputHandler.stopAnimators();
-               customViewInputHandler.addPanToAnimator(position, heading, pitch, elevation, true);
 
-               redraw();
-            }
-            else {
-               final OrbitView view = (OrbitView) getView();
+   @Override
+   public void goToHeading(final Angle heading) {
+      final View view = getView();
 
-               final OrbitViewInputHandler orbitViewInputHandler = (OrbitViewInputHandler) view.getViewInputHandler();
+      final Angle currentHeading = view.getHeading();
 
-               orbitViewInputHandler.stopAnimators();
-               orbitViewInputHandler.addPanToAnimator(position, heading, pitch, elevation, true);
+      if ((heading == null) || GMath.closeTo(heading.degrees, currentHeading.degrees)) {
+         return;
+      }
 
-               redraw();
-            }
-         }
-         catch (final ClassCastException e) {
-            logSevere(e);
-            getView().goTo(position, elevation);
-         }
+
+      if (view instanceof GCustomView) {
+         final GCustomViewInputHandler inputHandler = (GCustomViewInputHandler) ((GCustomView) view).getViewInputHandler();
+
+         inputHandler.stopAnimators();
+         inputHandler.addHeadingAnimator(currentHeading, heading);
+
+         redraw();
+      }
+      else if (view instanceof OrbitView) {
+         final OrbitViewInputHandler inputHandler = (OrbitViewInputHandler) ((OrbitView) view).getViewInputHandler();
+
+         inputHandler.stopAnimators();
+         inputHandler.addHeadingAnimator(currentHeading, heading);
+
+         redraw();
+      }
+      else {
+         // fall back to change without animation
+         view.setHeading(heading);
       }
    }
 
@@ -1003,7 +1099,6 @@ public abstract class GGlobeApplication
                view.setZoom(elevation);
 
                redraw();
-
             }
             else {
                final OrbitView view = (OrbitView) getView();
@@ -1133,12 +1228,6 @@ public abstract class GGlobeApplication
 
 
    @Override
-   public LayerList getLayerList() {
-      return getModel().getLayers();
-   }
-
-
-   @Override
    public List<? extends IGlobeLayer> getGlobeLayers() {
       final List<IGlobeLayer> result = new ArrayList<IGlobeLayer>();
 
@@ -1202,6 +1291,15 @@ public abstract class GGlobeApplication
       german.put("Navigation", "Navigation");
       german.put("Help", "Hilfe");
       translations.put("de", german);
+
+      final HashMap<String, String> portugese = new HashMap<String, String>();
+      portugese.put("Exit", "Sair");
+      portugese.put("File", "Arquivo");
+      portugese.put("View", "Vista");
+      portugese.put("Analysis", "Análise");
+      portugese.put("Navigation", "Navegação");
+      portugese.put("Help", "Ajuda");
+      translations.put("pt", portugese);
 
 
       return translations;
@@ -1302,17 +1400,6 @@ public abstract class GGlobeApplication
    }
 
 
-   public I3DContentCollectionLayer getContentCollectionLayer() {
-      for (final Layer layer : getLayerList()) {
-         if (layer instanceof I3DContentCollectionLayer) {
-            return (I3DContentCollectionLayer) layer;
-         }
-         continue;
-      }
-      return null;
-   }
-
-
    protected abstract IGlobeModule[] getInitialModules();
 
 
@@ -1320,5 +1407,113 @@ public abstract class GGlobeApplication
    public final IGlobeModule[] getModules() {
       return _modules;
    }
+
+
+   @Override
+   public LayerList getLayerList() {
+      return getModel().getLayers();
+   }
+
+
+   @Override
+   public boolean addLayer(final Layer layer) {
+      GAssert.notNull(layer, "layer");
+
+      return getLayerList().add(layer);
+   }
+
+
+   @Override
+   public void removeLayer(final Layer layer) {
+      GAssert.notNull(layer, "layer");
+
+      getLayerList().remove(layer);
+   }
+
+
+   @Override
+   public List<List<? extends ILayerAction>> getLayerActionsGroups(final IGlobeLayer layer) {
+      if (layer == null) {
+         return Collections.emptyList();
+      }
+
+      List<List<? extends ILayerAction>> actions = _layerActionsPerLayer.get(layer);
+      if (actions == null) {
+         actions = calculateLayerActions(layer);
+         _layerActionsPerLayer.put(layer, actions);
+      }
+
+      return actions;
+   }
+
+
+   private List<List<? extends ILayerAction>> calculateLayerActions(final IGlobeLayer layer) {
+      final ArrayList<List<? extends ILayerAction>> result = new ArrayList<List<? extends ILayerAction>>();
+
+
+      // actions from modules
+      for (final IGlobeModule module : getModules()) {
+         if (module != null) {
+            final List<? extends ILayerAction> moduleActions = GCollections.selectNotNull(module.getLayerActions(this, layer));
+            if ((moduleActions != null) && !moduleActions.isEmpty()) {
+               result.add(moduleActions);
+            }
+         }
+      }
+
+      // actions from the layer itself
+      final List<? extends ILayerAction> layerActions = GCollections.selectNotNull(layer.getLayerActions(this));
+      if ((layerActions != null) && !layerActions.isEmpty()) {
+         result.add(layerActions);
+      }
+
+      result.trimToSize();
+
+      return result;
+   }
+
+
+   @Override
+   public List<List<? extends ILayerAttribute<?>>> getLayerAttributesGroups(final IGlobeLayer layer) {
+      if (layer == null) {
+         return Collections.emptyList();
+      }
+
+      List<List<? extends ILayerAttribute<?>>> attributes = _layerAttributesPerLayer.get(layer);
+      if (attributes == null) {
+         attributes = calculateLayerAttributes(layer);
+         _layerAttributesPerLayer.put(layer, attributes);
+      }
+
+      return attributes;
+   }
+
+
+   private List<List<? extends ILayerAttribute<?>>> calculateLayerAttributes(final IGlobeLayer layer) {
+      final ArrayList<List<? extends ILayerAttribute<?>>> result = new ArrayList<List<? extends ILayerAttribute<?>>>();
+
+
+      // attributes from modules
+      for (final IGlobeModule module : getModules()) {
+         if (module != null) {
+            final List<? extends ILayerAttribute<?>> moduleAttributes = GCollections.selectNotNull(module.getLayerAttributes(
+                     this, layer));
+            if ((moduleAttributes != null) && !moduleAttributes.isEmpty()) {
+               result.add(moduleAttributes);
+            }
+         }
+      }
+
+      // attributes from the layer itself
+      final List<? extends ILayerAttribute<?>> layerAttributes = GCollections.selectNotNull(layer.getLayerAttributes(this));
+      if ((layerAttributes != null) && !layerAttributes.isEmpty()) {
+         result.add(layerAttributes);
+      }
+
+      result.trimToSize();
+
+      return result;
+   }
+
 
 }

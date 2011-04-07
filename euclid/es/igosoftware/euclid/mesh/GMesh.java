@@ -54,9 +54,9 @@ import es.igosoftware.util.ITransformer;
 
 public class GMesh<
 
-VertexT extends IVector<VertexT, ?, ?>,
+VertexT extends IVector<VertexT, ?>,
 
-FaceT extends IPolygon<VertexT, EdgeT, ?, ?>,
+FaceT extends IPolygon<VertexT, EdgeT, ?>,
 
 EdgeT extends GSegment<VertexT, EdgeT, ?>
 
@@ -172,7 +172,7 @@ EdgeT extends GSegment<VertexT, EdgeT, ?>
       System.out.println("GMesh 0.1");
       System.out.println("---------\n");
 
-      final GMesh<IVector3<?>, IPolygon3D<?>, GSegment3D> mesh = new GMesh<IVector3<?>, IPolygon3D<?>, GSegment3D>();
+      final GMesh<IVector3, IPolygon3D, GSegment3D> mesh = new GMesh<IVector3, IPolygon3D, GSegment3D>();
 
       mesh.addFace(new GTriangle3D(GVector3D.ZERO, new GVector3D(0, 1, 0), new GVector3D(0, 0, 1)));
       mesh.addFace(new GTriangle3D(GVector3D.ZERO, new GVector3D(1, 1, 0), new GVector3D(0, 0, 1)));

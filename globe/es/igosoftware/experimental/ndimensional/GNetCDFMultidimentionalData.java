@@ -585,7 +585,7 @@ public class GNetCDFMultidimentionalData
    }
 
 
-   private static final IVector2<?> reference = new GVector2D(1, 0);
+   private static final IVector2 reference = new GVector2D(1, 0);
 
 
    private GColorI colorizeVectorByAngle(final double u,
@@ -750,7 +750,7 @@ public class GNetCDFMultidimentionalData
       colorsBuffer.rewind();
 
       for (i = 0; i < pointsCount; i++) {
-         final IVector3<?> point = vertexContainer.getPoint(i);
+         final IVector3 point = vertexContainer.getPoint(i);
          pointsBuffer.put((float) point.x());
          pointsBuffer.put((float) point.y());
          pointsBuffer.put((float) point.z());
@@ -973,7 +973,7 @@ public class GNetCDFMultidimentionalData
       arrowscolorsBuffer.rewind();
 
       for (i = 0; i < pointsCount; i++) {
-         final IVector3<?> point = vertexContainer.getPoint(i);
+         final IVector3 point = vertexContainer.getPoint(i);
          pointsBuffer.put((float) point.x());
          pointsBuffer.put((float) point.y());
          pointsBuffer.put((float) point.z());
@@ -984,8 +984,8 @@ public class GNetCDFMultidimentionalData
          colorsBuffer.put(color.getBlue());
          //         colorsBuffer.put(0.25f);
          if (i % 2 == 1) {
-            final IVector3<?> pointR = arrowVertexContainer.getPoint(i - 1);
-            final IVector3<?> pointL = arrowVertexContainer.getPoint(i);
+            final IVector3 pointR = arrowVertexContainer.getPoint(i - 1);
+            final IVector3 pointL = arrowVertexContainer.getPoint(i);
 
             arrowsBuffer.put((float) point.x());
             arrowsBuffer.put((float) point.y());

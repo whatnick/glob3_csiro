@@ -38,22 +38,19 @@ package es.igosoftware.euclid.shape;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.utils.GTriangulate;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
-import es.igosoftware.euclid.vector.IVectorTransformer;
-import es.igosoftware.util.GCollections;
 
 
 public final class GSimplePolygon2D
          extends
-            GSimplePolytope<IVector2<?>, GSegment2D, GSimplePolygon2D, GAxisAlignedRectangle>
+            GSimplePolytope<IVector2, GSegment2D, GAxisAlignedRectangle>
          implements
-            IPolygon2D<GSimplePolygon2D> {
+            ISimplePolygon2D {
 
 
    private static final long     serialVersionUID = 1L;
@@ -63,13 +60,13 @@ public final class GSimplePolygon2D
 
 
    public GSimplePolygon2D(final boolean validate,
-                           final IVector2<?>... points) {
+                           final IVector2... points) {
       super(validate, points);
    }
 
 
    public GSimplePolygon2D(final boolean validate,
-                           final List<IVector2<?>> points) {
+                           final List<IVector2> points) {
       super(validate, points);
    }
 
@@ -84,7 +81,7 @@ public final class GSimplePolygon2D
 
    @Override
    protected List<GSegment2D> initializeEdges() {
-      final List<IVector2<?>> points = getPoints();
+      final List<IVector2> points = getPoints();
       final int pointsCount = points.size();
 
       final GSegment2D[] edges = new GSegment2D[pointsCount];
@@ -123,19 +120,19 @@ public final class GSimplePolygon2D
    //   }
 
    @Override
-   public boolean contains(final IVector2<?> point) {
+   public boolean contains(final IVector2 point) {
       if (!getBounds().contains(point)) {
          return false;
       }
 
-      final List<IVector2<?>> points = getPoints();
+      final List<IVector2> points = getPoints();
 
       final double x = point.x();
       final double y = point.y();
 
       int hits = 0;
 
-      final IVector2<?> last = points.get(points.size() - 1);
+      final IVector2 last = points.get(points.size() - 1);
 
       double lastX = last.x();
       double lastY = last.y();
@@ -144,7 +141,7 @@ public final class GSimplePolygon2D
 
       // Walk the edges of the polygon
       for (int i = 0; i < points.size(); lastX = curX, lastY = curY, i++) {
-         final IVector2<?> cur = points.get(i);
+         final IVector2 cur = points.get(i);
          curX = cur.x();
          curY = cur.y();
 
@@ -197,12 +194,57 @@ public final class GSimplePolygon2D
       }
 
       return ((hits & 1) != 0);
+
+
+      //      boolean inside = false;
+      //
+      //      final double xt = point.x();
+      //      final double yt = point.y();
+      //
+      //      final int npoints = _points.size();
+      //      if (npoints < 3) {
+      //         return false;
+      //      }
+      //
+      //      double xold = _points.get(npoints - 1).x();
+      //      double yold = _points.get(npoints - 1).y();
+      //      for (final IVector2 each : _points) {
+      //         final double xnew = each.x();
+      //         final double ynew = each.y();
+      //
+      //         final double x1;
+      //         final double x2;
+      //         final double y1;
+      //         final double y2;
+      //         if (xnew > xold) {
+      //            x1 = xold;
+      //            x2 = xnew;
+      //            y1 = yold;
+      //            y2 = ynew;
+      //         }
+      //         else {
+      //            x1 = xnew;
+      //            x2 = xold;
+      //            y1 = ynew;
+      //            y2 = yold;
+      //         }
+      //
+      //         if (((xnew < xt) == (xt <= xold)) /* edge "open" at one end */
+      //             && ((yt - y1) * (x2 - x1) < (y2 - y1) * (xt - x1))) {
+      //            inside = !inside;
+      //         }
+      //
+      //         xold = xnew;
+      //         yold = ynew;
+      //      }
+      //
+      //      return inside;
    }
 
 
    @Override
    public boolean isSelfIntersected() {
-      final List<IVector2<?>> points = getPoints();
+      final List<IVector2> points = getPoints();
       final int pointsCount = points.size();
       for (int i = 0; i < pointsCount; ++i) {
          if (i < pointsCount - 1) {
@@ -215,23 +257,23 @@ public final class GSimplePolygon2D
          }
 
          final int j = (i + 1) % pointsCount;
-         final IVector2<?> iToj = points.get(j).sub(points.get(i));
-         final IVector2<?> iTojNormal = new GVector2D(iToj.y(), -iToj.x());
+         final IVector2 iToj = points.get(j).sub(points.get(i));
+         final IVector2 iTojNormal = new GVector2D(iToj.y(), -iToj.x());
          // i is the first vertex and j is the second
          final int startK = (j + 1) % pointsCount;
          int endK = (i - 1 + pointsCount) % pointsCount;
          endK += startK < endK ? 0 : startK + 1;
          int k = startK;
-         IVector2<?> iTok = points.get(k).sub(points.get(i));
+         IVector2 iTok = points.get(k).sub(points.get(i));
          boolean onLeftSide = iTok.dot(iTojNormal) >= 0;
-         IVector2<?> prevK = points.get(k);
+         IVector2 prevK = points.get(k);
          ++k;
          for (; k <= endK; ++k) {
             final int modK = k % pointsCount;
             iTok = points.get(modK).sub(points.get(i));
             if (onLeftSide != (iTok.dot(iTojNormal) >= 0)) {
-               final IVector2<?> prevKtoK = points.get(modK).sub(prevK);
-               final IVector2<?> prevKtoKNormal = new GVector2D(prevKtoK.y(), -prevKtoK.x());
+               final IVector2 prevKtoK = points.get(modK).sub(prevK);
+               final IVector2 prevKtoKNormal = new GVector2D(prevKtoK.y(), -prevKtoK.x());
                if (((points.get(i).sub(prevK).dot(prevKtoKNormal)) >= 0) != ((points.get(j).sub(prevK).dot(prevKtoKNormal)) >= 0)) {
                   return true;
                }
@@ -242,52 +284,6 @@ public final class GSimplePolygon2D
       }
 
       return false;
-
-      //      return !isSimple();
-   }
-
-
-   @Override
-   public IPolygon2D<?> createSimplified(final double capsRadiansTolerance) {
-      final LinkedList<IVector2<?>> points = new LinkedList<IVector2<?>>(getPoints());
-
-      List<IVector2<?>> previousPoints = new ArrayList<IVector2<?>>(points);
-
-      boolean changed;
-      do {
-         changed = false;
-
-         final int pointsCount = points.size();
-
-         if (pointsCount < 3) {
-            return GShape.createPolygon2(true, previousPoints);
-         }
-
-         for (int i = 0; i < pointsCount; i++) {
-            final int previousI = (i + pointsCount - 1) % pointsCount;
-            final int prePreviousI = (i + pointsCount - 2) % pointsCount;
-
-            final GTriangle2D triangle = new GTriangle2D(points.get(prePreviousI), points.get(previousI), points.get(i));
-            if (triangle.isCaps(capsRadiansTolerance)) {
-               previousPoints = new ArrayList<IVector2<?>>(points);
-
-               final IVector2<?> average = points.get(i).add(points.get(previousI)).div(2);
-               points.set(i, average);
-               points.remove(previousI);
-
-               changed = true;
-               break; // exit for
-            }
-         }
-
-      }
-      while (changed);
-
-      if (points.size() < 3) {
-         return GShape.createPolygon2(true, previousPoints);
-      }
-
-      return GShape.createPolygon2(true, points);
    }
 
 
@@ -306,14 +302,8 @@ public final class GSimplePolygon2D
    }
 
 
-   //   @Override
-   //   public GAxisAlignedBox getAxisAlignedBoundingBox() {
-   //      return getBounds().getAxisAlignedBoundingBox();
-   //   }
-
-
    @Override
-   public double squaredDistance(final IVector2<?> point) {
+   public double squaredDistance(final IVector2 point) {
       if (contains(point)) {
          return 0;
       }
@@ -328,18 +318,6 @@ public final class GSimplePolygon2D
       }
 
       return min;
-   }
-
-
-   @Override
-   public GSimplePolygon2D getHull() {
-      return this;
-   }
-
-
-   @Override
-   public GSimplePolygon2D transformedBy(final IVectorTransformer<IVector2<?>> transformer) {
-      return new GSimplePolygon2D(false, GCollections.collect(_points, transformer));
    }
 
 
@@ -360,10 +338,5 @@ public final class GSimplePolygon2D
       throw new RuntimeException("not yet implemented");
    }
 
-
-   @Override
-   public GRenderType getRenderType() {
-      return GRenderType.POLYGON;
-   }
 
 }

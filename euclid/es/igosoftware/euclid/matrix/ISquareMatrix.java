@@ -39,7 +39,7 @@ package es.igosoftware.euclid.matrix;
 import es.igosoftware.euclid.vector.IVector;
 
 
-public interface ISquareMatrix<MatrixT, VectorT extends IVector<VectorT, ?, ?>>
+public interface ISquareMatrix<MatrixT, VectorT extends IVector<VectorT, ?>>
          extends
             IMatrix<MatrixT, VectorT> {
 

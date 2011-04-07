@@ -68,19 +68,19 @@ import es.igosoftware.util.GMath;
 public class GReliefProcessor
          extends
             GLoggerObject {
-   private final GVectorPrecision       _vectorPrecision;
-   private final GColorPrecision        _colorPrecision;
-   private final GProjection            _projection;
+   private final GVectorPrecision    _vectorPrecision;
+   private final GColorPrecision     _colorPrecision;
+   private final GProjection         _projection;
 
-   private final GFileName              _sourceDirectoryName;
-   private final String                 _extension;
-   private final GFileName              _targetDirectoryName;
+   private final GFileName           _sourceDirectoryName;
+   private final String              _extension;
+   private final GFileName           _targetDirectoryName;
 
-   private int                          _verticesCounter;
-   private GMutableVector2<IVector2<?>> _resolutionAverage;
+   private int                       _verticesCounter;
+   private GMutableVector2<IVector2> _resolutionAverage;
 
-   private final int                    _maxPointsInLeaf;
-   private final boolean                _verbose;
+   private final int                 _maxPointsInLeaf;
+   private final boolean             _verbose;
 
 
    public GReliefProcessor(final GVectorPrecision vectorPrecision,
@@ -140,7 +140,7 @@ public class GReliefProcessor
 
       //      final ExecutorService executor = GConcurrent.createExecutor(Runtime.getRuntime().availableProcessors());
 
-      _resolutionAverage = new GMutableVector2<IVector2<?>>(GVector2D.ZERO);
+      _resolutionAverage = new GMutableVector2<IVector2>(GVector2D.ZERO);
       _verticesCounter = 0;
       for (int i = 0; i < xyzFilesNames.length; i++) {
          final String sourceFileName = xyzFilesNames[i];
@@ -166,7 +166,7 @@ public class GReliefProcessor
       logInfo("Processing " + sourceFileName + " (" + i + "/" + filesCount + ")...");
       logIncreaseIdentationLevel();
 
-      final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices = getVertices(sourceFileName);
+      final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices = getVertices(sourceFileName);
 
       synchronized (this) {
          _verticesCounter += vertices.size();
@@ -178,7 +178,7 @@ public class GReliefProcessor
                _maxPointsInLeaf, _verbose));
 
       for (final GOTLeafNode leaf : gOctree.getAllLeafs()) {
-         final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> leafPoints = leaf.getVertices();
+         final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> leafPoints = leaf.getVertices();
 
          saveVertices(leafPoints);
       }
@@ -187,8 +187,8 @@ public class GReliefProcessor
    }
 
 
-   private IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> getVertices(final GFileName sourceFileName)
-                                                                                                                             throws IOException {
+   private IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> getVertices(final GFileName sourceFileName)
+                                                                                                                       throws IOException {
       final GFileName fullSourceFileName = GFileName.fromParts(_sourceDirectoryName, sourceFileName);
 
       final int flags = GPointsLoader.DEFAULT_FLAGS | GPointsLoader.VERBOSE;
@@ -204,13 +204,13 @@ public class GReliefProcessor
    }
 
 
-   private void calculateResolution(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices) {
+   private void calculateResolution(final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices) {
       final List<Double> xs = new ArrayList<Double>();
       final List<Double> ys = new ArrayList<Double>();
 
-      final Iterator<IVector3<?>> iterator = vertices.pointsIterator();
+      final Iterator<IVector3> iterator = vertices.pointsIterator();
       while (iterator.hasNext()) {
-         final IVector3<?> point = iterator.next();
+         final IVector3 point = iterator.next();
          xs.add(point.x());
          ys.add(point.y());
       }
@@ -218,7 +218,7 @@ public class GReliefProcessor
       final GVector2D xyResolution = new GVector2D(averageDelta(xs), averageDelta(ys));
       logInfo("Resolution=" + xyResolution);
 
-      final IVector2<?> weightResolution = xyResolution.scale(vertices.size());
+      final IVector2 weightResolution = xyResolution.scale(vertices.size());
       synchronized (_resolutionAverage) {
          _resolutionAverage.add(weightResolution);
       }
@@ -246,16 +246,15 @@ public class GReliefProcessor
    }
 
 
-   private void saveVertices(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices)
-                                                                                                                   throws IOException {
+   private void saveVertices(final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices) throws IOException {
       //final GAxisAlignedBox bounds = GAxisAlignedBox.minimumBoundingBox(vertices.pointsIterator());
-      final GAxisAlignedOrthotope<IVector3<?>, ?> bounds = vertices.getBounds();
+      final GAxisAlignedOrthotope<IVector3, ?> bounds = vertices.getBounds();
       logInfo("Bounds: " + bounds);
 
       final String targetFileName = bounds.asParseableString() + ".bp";
       final GFileName targetFullFileName = targetFullName(targetFileName);
 
-      GBinaryPoints3Loader.save((IUnstructuredVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?>) vertices,
+      GBinaryPoints3Loader.save((IUnstructuredVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?>) vertices,
                targetFullFileName);
    }
 

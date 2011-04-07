@@ -4,6 +4,7 @@ package es.igosoftware.euclid.features;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -13,18 +14,17 @@ import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.mutability.GMutableAbstract;
 import es.igosoftware.euclid.projection.GProjection;
-import es.igosoftware.euclid.shape.GLinesStrip;
-import es.igosoftware.euclid.shape.GSegment;
 import es.igosoftware.euclid.shape.IPolygon;
+import es.igosoftware.euclid.shape.IPolygonalChain;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GAssert;
 
 
 public class GListMutableFeatureCollection<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
-FeatureGeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>>
+FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>>
          extends
             GMutableAbstract<GListMutableFeatureCollection<VectorT, FeatureGeometryT>>
          implements
@@ -37,6 +37,7 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<Ve
    private final String                                              _uniqueID;
 
    private GAxisAlignedOrthotope<VectorT, ?>                         _bounds;
+   private EnumSet<GGeometryType>                                    _geometriesTypes;
 
 
    public GListMutableFeatureCollection(final GProjection projection,
@@ -108,6 +109,9 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<Ve
       checkMutable();
 
       _features.add(value);
+
+      _geometriesTypes.add(getShapeType(value.getDefaultGeometry()));
+
       changed();
    }
 
@@ -118,6 +122,7 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<Ve
 
       final IGlobeFeature<VectorT, FeatureGeometryT> result = _features.remove(toInt(index));
       if (result != null) {
+         _geometriesTypes = null;
          changed();
       }
       return result;
@@ -130,6 +135,7 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<Ve
 
       final boolean removed = _features.remove(value);
       if (removed) {
+         _geometriesTypes = null;
          changed();
       }
       return removed;
@@ -145,19 +151,20 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<Ve
       }
 
       _features.clear();
+      _geometriesTypes = null;
       changed();
    }
 
 
-   private static <VectorT extends IVector<VectorT, ?, ?>> GVectorLayerType getShapeType(final IGeometry<VectorT, ?> geometry) {
+   private static <VectorT extends IVector<VectorT, ?>> GGeometryType getShapeType(final IGeometry<VectorT> geometry) {
       if (geometry instanceof IVector) {
-         return GVectorLayerType.POINT;
+         return GGeometryType.POINT;
       }
-      else if ((geometry instanceof GSegment) || (geometry instanceof GLinesStrip)) {
-         return GVectorLayerType.LINE;
+      else if (geometry instanceof IPolygonalChain) {
+         return GGeometryType.CURVE;
       }
       else if (geometry instanceof IPolygon) {
-         return GVectorLayerType.POLYGON;
+         return GGeometryType.SURFACE;
       }
       else {
          throw new RuntimeException("Unsupported geometry type: " + geometry.getClass());
@@ -173,12 +180,26 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<Ve
 
 
    @Override
-   public final GVectorLayerType getShapeType() {
-      if (_features.isEmpty()) {
-         return GVectorLayerType.POLYGON;
+   public final EnumSet<GGeometryType> getGeometriesTypes() {
+      if (_geometriesTypes == null) {
+         _geometriesTypes = calculateGeometriesTypes();
       }
 
-      return getShapeType(_features.get(0).getDefaultGeometry());
+      return _geometriesTypes;
+   }
+
+
+   private EnumSet<GGeometryType> calculateGeometriesTypes() {
+      final EnumSet<GGeometryType> result = EnumSet.noneOf(GGeometryType.class);
+
+      for (final IGlobeFeature<VectorT, FeatureGeometryT> feature : _features) {
+         result.add(getShapeType(feature.getDefaultGeometry()));
+         if (result.containsAll(GGeometryType.ALL)) {
+            return GGeometryType.ALL;
+         }
+      }
+
+      return result;
    }
 
 
@@ -256,6 +277,12 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<Ve
    @Override
    public Iterator<IGlobeFeature<VectorT, FeatureGeometryT>> iterator() {
       return Collections.unmodifiableList(_features).iterator();
+   }
+
+
+   @Override
+   public boolean isEditable() {
+      return true;
    }
 
 

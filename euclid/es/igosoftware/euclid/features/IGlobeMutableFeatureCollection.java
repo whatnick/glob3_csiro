@@ -10,15 +10,15 @@ import es.igosoftware.euclid.vector.IVector;
 
 public interface IGlobeMutableFeatureCollection<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
-FeatureGeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>,
+FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>,
 
 TypeT extends IGlobeMutableFeatureCollection<VectorT, FeatureGeometryT, TypeT>
 
 >
          extends
-            IGlobeFeatureCollection<VectorT, FeatureGeometryT, TypeT>,
+            IGlobeFeatureCollection<VectorT, FeatureGeometryT>,
             IMutable<TypeT> {
 
 

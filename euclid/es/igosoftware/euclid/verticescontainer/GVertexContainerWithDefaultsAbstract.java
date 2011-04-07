@@ -52,7 +52,7 @@ import es.igosoftware.util.ITransformer;
 
 public abstract class GVertexContainerWithDefaultsAbstract<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
 MutableT extends GVertexContainerWithDefaultsAbstract<VectorT, MutableT>
 

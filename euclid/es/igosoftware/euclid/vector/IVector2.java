@@ -42,20 +42,20 @@ import java.util.Comparator;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 
 
-public interface IVector2<GeometryT extends IVector2<GeometryT>>
+public interface IVector2
          extends
-            IVector<IVector2<?>, GeometryT, GAxisAlignedRectangle> {
+            IVector<IVector2, GAxisAlignedRectangle> {
 
    public static class DefaultComparator
             implements
-               Comparator<IVector2<?>>,
+               Comparator<IVector2>,
                Serializable {
       private static final long serialVersionUID = 1L;
 
 
       @Override
-      public int compare(final IVector2<?> p1,
-                         final IVector2<?> p2) {
+      public int compare(final IVector2 p1,
+                         final IVector2 p2) {
          return GVectorUtils.compare(p1, p2);
       }
    }

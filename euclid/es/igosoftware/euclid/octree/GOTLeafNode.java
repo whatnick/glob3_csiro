@@ -113,7 +113,7 @@ public final class GOTLeafNode
       }
 
       for (final int index : _verticesIndexes) {
-         final IVector3<?> point = getOctree().getPoint(index);
+         final IVector3 point = getOctree().getPoint(index);
          if (region.contains(point)) {
             verticesIndexesContainer.add(index);
          }
@@ -133,7 +133,7 @@ public final class GOTLeafNode
 
    protected void validate() {
       for (final int index : _verticesIndexes) {
-         final IVector3<?> point = getOctree().getPoint(index);
+         final IVector3 point = getOctree().getPoint(index);
          if (!_bounds.contains(point)) {
             logSevere("Point " + point + " doesn't fit on " + this);
          }
@@ -148,7 +148,7 @@ public final class GOTLeafNode
 
 
    //   @Override
-   //   protected boolean getNearestLeaf(final IVector3<?> point,
+   //   protected boolean getNearestLeaf(final IVector3 point,
    //                                    final GHolder<GOTLeafNode> nearestLeafHolder,
    //                                    final GHolder<Double> shortestSquaredDistance) {
    //      if (isEmpty()) {
@@ -192,8 +192,8 @@ public final class GOTLeafNode
 
 
    @Override
-   protected WeightedVertex<IVector3<?>> calculateAverageVertex() {
-      final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices = getOctree().getOriginalVertices().asSubContainer(
+   protected WeightedVertex<IVector3> calculateAverageVertex() {
+      final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices = getOctree().getOriginalVertices().asSubContainer(
                _verticesIndexes);
 
       return vertices.getAverage();
@@ -201,7 +201,7 @@ public final class GOTLeafNode
 
 
    @Override
-   protected boolean removeVertex(final Vertex<IVector3<?>> vertex,
+   protected boolean removeVertex(final Vertex<IVector3> vertex,
                                   final int index) {
       if (!_bounds.contains(vertex._point)) {
          return false;
@@ -241,10 +241,10 @@ public final class GOTLeafNode
          return false;
       }
 
-      final IVector3<?> target = hotRegionHolder.get()._center;
+      final IVector3 target = hotRegionHolder.get()._center;
 
       for (final int vertexIndex : _verticesIndexes) {
-         final IVector3<?> currentPoint = octree.getPoint(vertexIndex);
+         final IVector3 currentPoint = octree.getPoint(vertexIndex);
          if (currentPoint.closeTo(target)) {
             candidateIndexHolder.set(vertexIndex);
             return true;

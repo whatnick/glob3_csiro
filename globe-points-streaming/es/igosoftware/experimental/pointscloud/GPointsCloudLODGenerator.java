@@ -91,15 +91,15 @@ public class GPointsCloudLODGenerator
 
 
    private static class Tile {
-      private final String                                                                 _id;
-      private final int                                                                    _pointsCount;
-      private final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> _vertices;
-      private final GProjection                                                            _projection;
+      private final String                                                           _id;
+      private final int                                                              _pointsCount;
+      private final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> _vertices;
+      private final GProjection                                                      _projection;
       //      private final GAxisAlignedBox                  _bounds;
 
-      //      private final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> _sortedVertices;
-      private final List<Integer>                                                          _sortedVertices;
-      private final List<Integer>                                                          _lodIndices;
+      //      private final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> _sortedVertices;
+      private final List<Integer>                                                    _sortedVertices;
+      private final List<Integer>                                                    _lodIndices;
 
 
       private Tile(final GProjection projection,
@@ -112,7 +112,7 @@ public class GPointsCloudLODGenerator
 
          //         _bounds = leaf.getBounds();
 
-         //         final IVector3<?> referencePoint = _vertices.getAverage()._point;
+         //         final IVector3 referencePoint = _vertices.getAverage()._point;
          //         _sortedVertices = _vertices.newEmptyContainer(_pointsCount, referencePoint);
          _sortedVertices = new ArrayList<Integer>(_pointsCount);
          _lodIndices = new ArrayList<Integer>();
@@ -142,7 +142,7 @@ public class GPointsCloudLODGenerator
 
          validate();
 
-         final IVector3<?> referencePoint = _vertices.getAverage()._point;
+         final IVector3 referencePoint = _vertices.getAverage()._point;
          try {
             save(outputDirectoryName, referencePoint);
          }
@@ -167,7 +167,7 @@ public class GPointsCloudLODGenerator
 
 
       private void save(final GFileName outputDirectoryName,
-                        final IVector3<?> referencePoint) throws IOException {
+                        final IVector3 referencePoint) throws IOException {
          final File outputFile = new File(outputDirectoryName.asFile(), "tile-" + _id + ".points");
 
          final String outputFileName = outputFile.getPath();
@@ -184,7 +184,7 @@ public class GPointsCloudLODGenerator
 
             for (final int index : _sortedVertices) {
                final Position pointReprojected = GWWUtils.toPosition(_vertices.getPoint(index), _projection);
-               //            final IVector3<?> point = _vertices.getPoint(index).sub(referencePoint);
+               //            final IVector3 point = _vertices.getPoint(index).sub(referencePoint);
                //            saveVector3F(output, point);
                output.writeFloat((float) (pointReprojected.latitude.radians - referenceReprojected.latitude.radians));
                output.writeFloat((float) (pointReprojected.longitude.radians - referenceReprojected.longitude.radians));
@@ -208,7 +208,7 @@ public class GPointsCloudLODGenerator
 
 
       private void saveVector3F(final DataOutputStream output,
-                                final IVector3<?> vector) throws IOException {
+                                final IVector3 vector) throws IOException {
          output.writeFloat((float) vector.x());
          output.writeFloat((float) vector.y());
          output.writeFloat((float) vector.z());
@@ -244,7 +244,7 @@ public class GPointsCloudLODGenerator
 
 
       //      private void saveVector3D(final DataOutputStream output,
-      //                                final IVector3<?> vector) throws IOException {
+      //                                final IVector3 vector) throws IOException {
       //         output.writeDouble(vector.x());
       //         output.writeDouble(vector.y());
       //         output.writeDouble(vector.z());
@@ -252,37 +252,37 @@ public class GPointsCloudLODGenerator
 
 
       private void sortVertices() {
-         final GKDTree<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>> tree = new GKDTree<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>>(
+         final GKDTree<IVector3, IVertexContainer.Vertex<IVector3>> tree = new GKDTree<IVector3, IVertexContainer.Vertex<IVector3>>(
                   "Tile #" + _id, _vertices, false);
 
 
          //         final List<Integer> toProcessIndices = new LinkedList<Integer>();
          //         //         final List<Integer> toProcessIndices = new ArrayList<Integer>(_pointsCount);
-         //         final IVector3<?>[] points = new IVector3<?>[_pointsCount];
+         //         final IVector3[] points = new IVector3[_pointsCount];
          //         for (int i = 0; i < _pointsCount; i++) {
          //            toProcessIndices.add(i);
          //            points[i] = _vertices.getPoint(i);
          //         }
 
-         tree.breadthFirstAcceptVisitor(new IKDTreeVisitor<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>>() {
+         tree.breadthFirstAcceptVisitor(new IKDTreeVisitor<IVector3, IVertexContainer.Vertex<IVector3>>() {
             private int _lastDepth = 0;
 
 
             @Override
-            public void visitInnerNode(final GKDInnerNode<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>> innerNode) {
+            public void visitInnerNode(final GKDInnerNode<IVector3, IVertexContainer.Vertex<IVector3>> innerNode) {
                //               pushVertex(innerNode);
                pushVertexIndex(innerNode.getVertexIndex(), innerNode.getDepth());
             }
 
 
             @Override
-            public void visitLeafNode(final GKDLeafNode<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>> leafNode) {
+            public void visitLeafNode(final GKDLeafNode<IVector3, IVertexContainer.Vertex<IVector3>> leafNode) {
                //               pushVertex(leafNode);
                pushVertexIndex(leafNode.getVerticesIndexes()[0], leafNode.getDepth());
             }
 
 
-            //            private void pushVertex(final GKDNode<IVector3<?>> node) throws IKDTreeVisitor.AbortVisiting {
+            //            private void pushVertex(final GKDNode<IVector3> node) throws IKDTreeVisitor.AbortVisiting {
             //               if (toProcessIndices.isEmpty()) {
             //                  throw new IKDTreeVisitor.AbortVisiting();
             //               }
@@ -299,12 +299,12 @@ public class GPointsCloudLODGenerator
             //               }
             //
             //
-            //               final IVector3<?> target;
+            //               final IVector3 target;
             //               if (node instanceof GKDInnerNode) {
-            //                  target = ((GKDInnerNode<IVector3<?>>) node).getBounds()._center;
+            //                  target = ((GKDInnerNode<IVector3>) node).getBounds()._center;
             //               }
             //               else if (node instanceof GKDLeafNode) {
-            //                  target = ((GKDLeafNode<IVector3<?>>) node).getAverageVertex()._point;
+            //                  target = ((GKDLeafNode<IVector3>) node).getAverageVertex()._point;
             //               }
             //               else {
             //                  throw new RuntimeException("Invalid node type " + node);
@@ -344,12 +344,12 @@ public class GPointsCloudLODGenerator
 
 
             @Override
-            public void endVisiting(final GKDTree<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>> kdtree) {
+            public void endVisiting(final GKDTree<IVector3, IVertexContainer.Vertex<IVector3>> kdtree) {
             }
 
 
             @Override
-            public void startVisiting(final GKDTree<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>> kdtree) {
+            public void startVisiting(final GKDTree<IVector3, IVertexContainer.Vertex<IVector3>> kdtree) {
             }
 
          });
@@ -360,11 +360,11 @@ public class GPointsCloudLODGenerator
    }
 
 
-   private final double                                                                 _maxLeafSideLength;
-   private final int                                                                    _maxLeafVertices;
-   private final GFileName                                                              _outputDirectoryName;
-   private final GProjection                                                            _projection;
-   private final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> _vertices;
+   private final double                                                           _maxLeafSideLength;
+   private final int                                                              _maxLeafVertices;
+   private final GFileName                                                        _outputDirectoryName;
+   private final GProjection                                                      _projection;
+   private final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> _vertices;
 
 
    public GPointsCloudLODGenerator(final GFileName fileNames,
@@ -384,7 +384,7 @@ public class GPointsCloudLODGenerator
    }
 
 
-   public GPointsCloudLODGenerator(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices,
+   public GPointsCloudLODGenerator(final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices,
                                    final GProjection projection,
                                    final double maxLeafSideLength,
                                    final int maxLeafVertices,
@@ -398,19 +398,19 @@ public class GPointsCloudLODGenerator
    }
 
 
-   private static IVertexContainer<IVector3<?>, Vertex<IVector3<?>>, ?> toRadians(final IVertexContainer<IVector3<?>, Vertex<IVector3<?>>, ?> vertices,
-                                                                                  final GProjection projection) {
+   private static IVertexContainer<IVector3, Vertex<IVector3>, ?> toRadians(final IVertexContainer<IVector3, Vertex<IVector3>, ?> vertices,
+                                                                            final GProjection projection) {
       if (projection.isLatLong()) {
-         final IVertexContainer<IVector3<?>, Vertex<IVector3<?>>, ?> radiansVertices = new GVertex3Container(
+         final IVertexContainer<IVector3, Vertex<IVector3>, ?> radiansVertices = new GVertex3Container(
                   vertices.vectorPrecision(), vertices.colorPrecision(), projection, vertices.hasIntensities(),
                   vertices.hasColors(), vertices.hasNormals());
 
          for (int i = 0; i < vertices.size(); i++) {
-            final IVector3<?> degreePoint = vertices.getPoint(i);
+            final IVector3 degreePoint = vertices.getPoint(i);
             final float intensity = vertices.getIntensity(i);
             final IColor color = vertices.getColor(i);
-            final IVector3<?> normal = vertices.getNormal(i);
-            final IVector3<?> radiansPoint = new GVector3D(Math.toRadians(degreePoint.x()), Math.toRadians(degreePoint.y()),
+            final IVector3 normal = vertices.getNormal(i);
+            final IVector3 radiansPoint = new GVector3D(Math.toRadians(degreePoint.x()), Math.toRadians(degreePoint.y()),
                      degreePoint.z());
             radiansVertices.addPoint(radiansPoint, intensity, normal, color);
          }
@@ -486,17 +486,17 @@ public class GPointsCloudLODGenerator
 
       final GOctree.DuplicatesPolicy duplicatesPolicy = new GOctree.DuplicatesPolicy() {
          @Override
-         public int[] removeDuplicates(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices1,
+         public int[] removeDuplicates(final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices1,
                                        final int[] verticesIndexes) {
-            final Set<IVector3<?>> selectedPoints = new HashSet<IVector3<?>>();
+            final Set<IVector3> selectedPoints = new HashSet<IVector3>();
             final List<Integer> selectedIndices = new ArrayList<Integer>();
 
             for (final int index : verticesIndexes) {
-               final IVector3<?> point = vertices1.getPoint(index);
+               final IVector3 point = vertices1.getPoint(index);
                if (!selectedPoints.contains(point)) {
-                  //                  final boolean anyCloseTo = GCollections.anySatisfy(selectedPoints, new IPredicate<IVector3<?>>() {
+                  //                  final boolean anyCloseTo = GCollections.anySatisfy(selectedPoints, new IPredicate<IVector3>() {
                   //                     @Override
-                  //                     public boolean evaluate(final IVector3<?> element) {
+                  //                     public boolean evaluate(final IVector3 element) {
                   //                        return element.closeTo(point, GMath.DEFAULT_NUMERICAL_PRECISION_FLOAT);
                   //                     }
                   //                  });
@@ -516,14 +516,14 @@ public class GPointsCloudLODGenerator
       final GOctree.Parameters parameters = new GOctree.Parameters(-1, _maxLeafSideLength, _maxLeafVertices, true, true, false,
                true, duplicatesPolicy, new GOctree.DynamicAxisNodesCreationPolicy(true) {
                   @Override
-                  protected IVector3<?> getBoundsExtent(final GAxisAlignedBox bounds) {
+                  protected IVector3 getBoundsExtent(final GAxisAlignedBox bounds) {
                      if (_projection.isLatLong()) {
                         //                        final Earth earth = new Earth();
                         //                        earth.getEquatorialRadius();
                         //                        earth.getPolarRadius();
 
-                        final IVector3<?> lower = bounds._lower;
-                        final IVector3<?> upper = bounds._upper;
+                        final IVector3 lower = bounds._lower;
+                        final IVector3 upper = bounds._upper;
 
                         final UTMCoord lowerUTM = UTMCoord.fromLatLon(Angle.fromRadians(lower.y()), Angle.fromRadians(lower.x()));
                         final UTMCoord upperUTM = UTMCoord.fromLatLon(Angle.fromRadians(upper.y()), Angle.fromRadians(upper.x()));
@@ -571,7 +571,7 @@ public class GPointsCloudLODGenerator
 
       final int verticesCount = _vertices.size();
 
-      final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices = octree.getOriginalVertices();
+      final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices = octree.getOriginalVertices();
 
       float minIntensity = Float.POSITIVE_INFINITY;
       float maxIntensity = Float.NEGATIVE_INFINITY;
@@ -634,11 +634,11 @@ public class GPointsCloudLODGenerator
    //                                             final int[] verticesIndexes,
    //                                             final GAxisAlignedBox innerBounds,
    //                                             final int depth) {
-   //            final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> subVertices = octree.getOriginalVertices().asSubContainer(verticesIndexes);
-   //            final IVector3<?> average = subVertices.getAverage()._point;
+   //            final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> subVertices = octree.getOriginalVertices().asSubContainer(verticesIndexes);
+   //            final IVector3 average = subVertices.getAverage()._point;
    //            final GAxisAlignedBox bounds = (GAxisAlignedBox) subVertices.getBounds();
    //            //            final GAxisAlignedBox bounds = innerBounds;
-   //            final IVector3<?> extents = bounds._extent;
+   //            final IVector3 extents = bounds._extent;
    //
    //            if (splitByOneAxis) {
    //               if ((extents.x() > extents.y()) && (extents.x() > extents.z())) {
@@ -682,7 +682,7 @@ public class GPointsCloudLODGenerator
    //                                final int vertexIndex) {
    //            final GAxisAlignedBox[] bounds = (GAxisAlignedBox[]) auxiliaryObject;
    //
-   //            final IVector3<?> point = octree.getPoint(vertexIndex);
+   //            final IVector3 point = octree.getPoint(vertexIndex);
    //            for (int i = 0; i < bounds.length; i++) {
    //               if (bounds[i].contains(point)) {
    //                  return (byte) i;

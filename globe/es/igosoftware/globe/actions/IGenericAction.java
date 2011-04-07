@@ -36,12 +36,6 @@
 
 package es.igosoftware.globe.actions;
 
-import java.awt.Component;
-
-import javax.swing.JMenuItem;
-
-import es.igosoftware.globe.IGlobeApplication;
-
 
 public interface IGenericAction
          extends
@@ -58,19 +52,7 @@ public interface IGenericAction
    }
 
 
-   public boolean isVisible();
-
-
    public IGenericAction.MenuArea getMenuBarArea();
-
-
-   public void execute();
-
-
-   public JMenuItem createMenuWidget(final IGlobeApplication application);
-
-
-   public Component createToolbarWidget(final IGlobeApplication application);
 
 
 }

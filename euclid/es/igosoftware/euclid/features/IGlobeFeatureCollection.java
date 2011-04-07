@@ -2,6 +2,7 @@
 
 package es.igosoftware.euclid.features;
 
+import java.util.EnumSet;
 import java.util.List;
 
 import es.igosoftware.euclid.IBoundedGeometry;
@@ -13,11 +14,9 @@ import es.igosoftware.euclid.vector.IVector;
 
 public interface IGlobeFeatureCollection<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
-FeatureGeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>,
-
-TypeT extends IGlobeFeatureCollection<VectorT, FeatureGeometryT, TypeT>
+FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
 
 >
          extends
@@ -34,9 +33,9 @@ TypeT extends IGlobeFeatureCollection<VectorT, FeatureGeometryT, TypeT>
 
    public static interface IFeatureVisitor<
 
-   VectorT extends IVector<VectorT, ?, ?>,
+   VectorT extends IVector<VectorT, ?>,
 
-   FeatureGeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>
+   FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
 
    > {
 
@@ -46,7 +45,7 @@ TypeT extends IGlobeFeatureCollection<VectorT, FeatureGeometryT, TypeT>
    }
 
 
-   public GVectorLayerType getShapeType();
+   public EnumSet<GGeometryType> getGeometriesTypes();
 
 
    public List<GField> getFields();
@@ -72,5 +71,7 @@ TypeT extends IGlobeFeatureCollection<VectorT, FeatureGeometryT, TypeT>
 
    public GAxisAlignedOrthotope<VectorT, ?> getBounds();
 
+
+   public boolean isEditable();
 
 }

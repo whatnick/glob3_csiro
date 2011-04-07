@@ -39,6 +39,7 @@ package es.igosoftware.experimental.pointscloud.rendering;
 import java.awt.Color;
 import java.awt.Component;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -48,7 +49,7 @@ import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
 import es.igosoftware.globe.ILayerFactoryModule;
 import es.igosoftware.globe.ILayerInfo;
-import es.igosoftware.globe.actions.GLayerAction;
+import es.igosoftware.globe.actions.GButtonLayerAction;
 import es.igosoftware.globe.actions.IGenericAction;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.GBooleanLayerAttribute;
@@ -57,7 +58,6 @@ import es.igosoftware.globe.attributes.GFloatLayerAttribute;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.io.GFileName;
 import es.igosoftware.io.pointscloud.IPointsCloudLoader;
-import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GPair;
 
 
@@ -136,7 +136,8 @@ public class GPointsCloudModule
    public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application,
                                                        final IGlobeLayer layer) {
 
-      final ILayerAction reload = new GLayerAction("Reload", application.getIcon("reload.png"), true) {
+      final ILayerAction reload = new GButtonLayerAction("Reload", application.getSmallIcon(GFileName.relative("reload.png")),
+               true) {
          @Override
          public void execute() {
             ((GPointsCloudLayer) layer).reload();
@@ -408,8 +409,8 @@ public class GPointsCloudModule
       //      return new ILayerAttribute<?>[] { hasColors, hasNormals, hasIntensities, colorFromElevation, colorFromState, pointsColor,
       //               smooth, pointSize, dynamicPointSize, autoQuality, qualityFactor };
 
-      return GCollections.createList(hasColors, hasNormals, hasIntensities, colorFromElevation, colorFromState, pointsColor,
-               smooth, pointSize, dynamicPointSize, autoQuality, qualityFactor);
+      return Arrays.asList(hasColors, hasNormals, hasIntensities, colorFromElevation, colorFromState, pointsColor, smooth,
+               pointSize, dynamicPointSize, autoQuality, qualityFactor);
    }
 
 
@@ -437,7 +438,7 @@ public class GPointsCloudModule
       //      _layer.setDynamicPointSize(false);
       //      _layer.setColorFromElevation(true);
 
-      application.getLayerList().add(layer);
+      application.addLayer(layer);
 
       return layer;
    }

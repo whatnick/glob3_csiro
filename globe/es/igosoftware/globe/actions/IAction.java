@@ -36,7 +36,12 @@
 
 package es.igosoftware.globe.actions;
 
+import java.awt.Component;
+
 import javax.swing.Icon;
+import javax.swing.JMenuItem;
+
+import es.igosoftware.globe.IGlobeApplication;
 
 
 public interface IAction {
@@ -51,5 +56,17 @@ public interface IAction {
 
 
    public boolean isShowOnToolBar();
+
+
+   public JMenuItem createMenuWidget(final IGlobeApplication application);
+
+
+   public Component createToolbarWidget(final IGlobeApplication application);
+
+
+   public void execute();
+
+
+   public boolean isVisible();
 
 }

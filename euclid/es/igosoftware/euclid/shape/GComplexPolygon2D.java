@@ -41,45 +41,30 @@ import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.vector.IVector2;
-import es.igosoftware.euclid.vector.IVectorTransformer;
-import es.igosoftware.util.GCollections;
-import es.igosoftware.util.ITransformer;
 
 
 public final class GComplexPolygon2D
          extends
-            GComplexPolytope<
-
-            IVector2<?>,
-
-            GSegment2D,
-
-            GComplexPolygon2D,
-
-            GAxisAlignedRectangle,
-
-            IPolygon2D<?>
-
-            >
+            GComplexPolytope<IVector2, GSegment2D, GAxisAlignedRectangle, ISimplePolygon2D>
          implements
-            IPolygon2D<GComplexPolygon2D> {
+            IComplexPolygon2D {
 
    private static final long serialVersionUID = 1L;
 
 
-   public GComplexPolygon2D(final IPolygon2D<?> hull,
-                            final List<IPolygon2D<?>> holes) {
+   public GComplexPolygon2D(final ISimplePolygon2D hull,
+                            final List<ISimplePolygon2D> holes) {
       super(hull, holes);
    }
 
 
    @Override
-   public boolean contains(final IVector2<?> point) {
+   public boolean contains(final IVector2 point) {
       if (!_hull.contains(point)) {
          return false;
       }
 
-      for (final IPolygon2D<?> hole : _holes) {
+      for (final IPolygon2D hole : _holes) {
          if (hole.contains(point)) {
             return false;
          }
@@ -95,27 +80,13 @@ public final class GComplexPolygon2D
          return true;
       }
 
-      for (final IPolygon2D<?> hole : _holes) {
+      for (final IPolygon2D hole : _holes) {
          if (hole.isSelfIntersected()) {
             return true;
          }
       }
 
       return false;
-   }
-
-
-   @Override
-   public GComplexPolygon2D createSimplified(final double capsRadiansTolerance) {
-      final IPolygon2D<?> simplifiedShell = _hull.createSimplified(capsRadiansTolerance);
-
-      final List<IPolygon2D<?>> simplifiedHoles = new ArrayList<IPolygon2D<?>>(_holes.size());
-
-      for (final IPolygon2D<?> hole : _holes) {
-         simplifiedHoles.add(hole.createSimplified(capsRadiansTolerance));
-      }
-
-      return new GComplexPolygon2D(simplifiedShell, simplifiedHoles);
    }
 
 
@@ -131,17 +102,11 @@ public final class GComplexPolygon2D
    }
 
 
-   //   @Override
-   //   public GAxisAlignedBox getAxisAlignedBoundingBox() {
-   //      return _hull.getAxisAlignedBoundingBox();
-   //   }
-
-
    @Override
-   public double squaredDistance(final IVector2<?> point) {
+   public double squaredDistance(final IVector2 point) {
       double min = _hull.squaredDistance(point);
 
-      for (final IPolygon2D<?> hole : _holes) {
+      for (final IPolygon2D hole : _holes) {
          final double current = hole.squaredDistance(point);
          if (current < min) {
             min = current;
@@ -156,23 +121,10 @@ public final class GComplexPolygon2D
    protected List<GSegment2D> initializeEdges() {
       final List<GSegment2D> result = new ArrayList<GSegment2D>();
       result.addAll(_hull.getEdges());
-      for (final IPolygon2D<?> hole : _holes) {
+      for (final IPolygon2D hole : _holes) {
          result.addAll(hole.getEdges());
       }
       return result;
-   }
-
-
-   @Override
-   public GComplexPolygon2D transformedBy(final IVectorTransformer<IVector2<?>> transformer) {
-      final List<IPolygon2D<?>> transformedHoles = GCollections.collect(_holes, new ITransformer<IPolygon2D<?>, IPolygon2D<?>>() {
-         @Override
-         public IPolygon2D<?> transform(final IPolygon2D<?> element) {
-            return (IPolygon2D<?>) element.transformedBy(transformer);
-         }
-      });
-
-      return new GComplexPolygon2D((IPolygon2D<?>) _hull.transformedBy(transformer), transformedHoles);
    }
 
 
@@ -185,12 +137,6 @@ public final class GComplexPolygon2D
    @Override
    public boolean isConvex() {
       return false;
-   }
-
-
-   @Override
-   public GRenderType getRenderType() {
-      return GRenderType.POLYGON;
    }
 
 

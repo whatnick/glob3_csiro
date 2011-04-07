@@ -46,8 +46,8 @@ import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
-import es.igosoftware.euclid.experimental.vectorial.rendering.GPolygon2DRenderer;
-import es.igosoftware.euclid.experimental.vectorial.rendering.GRenderingAttributes;
+import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorial2DRenderer;
+import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorialRenderingAttributes;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.GVectorUtils;
@@ -59,35 +59,32 @@ import es.igosoftware.util.GMath;
 import es.igosoftware.util.GStringUtils;
 
 
-public class GPolygon2DRenderingTest {
+public class GVectorial2DRenderingTest {
    public static void main(final String[] args) throws IOException {
       System.out.println("Shape Loader 0.1");
       System.out.println("----------------\n");
 
-      //      System.out.println("GeoTools version: " + GeoTools.getVersion() + "\n");
 
-
-      //      final GFileName fileName = GFileName.absoluteFromParts("home", "dgd", "Escritorio", "sample-shp", "cartobrutal",
+      //      final GFileName fileName = GFileName.absoluteFromParts("home", "dgd", "Desktop", "sample-shp", "cartobrutal",
       //               "world-modified", "world.shp");
-      //      final GFileName fileName = GFileName.absoluteFromParts("home", "dgd", "Escritorio", "sample-shp", "shp", "argentina.shp",
+      //      final GFileName fileName = GFileName.absoluteFromParts("home", "dgd", "Desktop", "sample-shp", "shp", "argentina.shp",
       //      "roads.shp");
-      final GFileName fileName = GFileName.absolute("home", "dgd", "Escritorio", "sample-shp", "shp", "argentina.shp",
-               "places.shp");
+      final GFileName fileName = GFileName.absolute("home", "dgd", "Desktop", "sample-shp", "shp", "argentina.shp", "roads.shp");
 
       final GProjection projection = GProjection.EPSG_4326;
 
 
-      final IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> features = GShapeLoader.readFeatures(
+      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features = GShapeLoader.readFeatures(
                fileName, projection);
 
       //      System.out.println(">>>>>>>>>> CONNECT PROFILER");
       //      GUtils.delay(20 * 1000); 
 
 
-      final GAxisAlignedOrthotope<IVector2<?>, ?> featuresBounds = features.getBounds();
+      final GAxisAlignedOrthotope<IVector2, ?> featuresBounds = features.getBounds();
 
 
-      final GPolygon2DRenderer renderer = new GPolygon2DRenderer(features);
+      final GVectorial2DRenderer renderer = new GVectorial2DRenderer(features);
 
 
       final GAxisAlignedRectangle region = ((GAxisAlignedRectangle) centerBounds(multipleOfSmallestDimention(featuresBounds),
@@ -102,7 +99,7 @@ public class GPolygon2DRenderingTest {
       final int textureDimension = 256;
       final boolean renderBounds = false;
 
-      final IVector2<?> extent = region.getExtent();
+      final IVector2 extent = region.getExtent();
 
       final int textureWidth;
       final int textureHeight;
@@ -116,8 +113,8 @@ public class GPolygon2DRenderingTest {
          textureHeight = (int) Math.round(extent.y() / extent.x() * textureDimension);
       }
 
-      final GRenderingAttributes attributes = new GRenderingAttributes(renderLODIgnores, borderWidth, fillColor, borderColor,
-               lodMinSize, debugLODRendering, textureWidth, textureHeight, renderBounds);
+      final GVectorialRenderingAttributes attributes = new GVectorialRenderingAttributes(renderLODIgnores, borderWidth,
+               fillColor, borderColor, lodMinSize, debugLODRendering, textureWidth, textureHeight, renderBounds);
 
 
       GIOUtils.assureEmptyDirectory(directoryName, false);
@@ -129,14 +126,14 @@ public class GPolygon2DRenderingTest {
    }
 
 
-   private static <VectorT extends IVector<VectorT, ?, ?>> GAxisAlignedOrthotope<VectorT, ?> centerBounds(final GAxisAlignedOrthotope<VectorT, ?> bounds,
-                                                                                                          final VectorT center) {
+   private static <VectorT extends IVector<VectorT, ?>> GAxisAlignedOrthotope<VectorT, ?> centerBounds(final GAxisAlignedOrthotope<VectorT, ?> bounds,
+                                                                                                       final VectorT center) {
       final VectorT delta = bounds.getCenter().sub(center);
       return bounds.translatedBy(delta.negated());
    }
 
 
-   private static <VectorT extends IVector<VectorT, ?, ?>> GAxisAlignedOrthotope<VectorT, ?> multipleOfSmallestDimention(final GAxisAlignedOrthotope<VectorT, ?> bounds) {
+   private static <VectorT extends IVector<VectorT, ?>> GAxisAlignedOrthotope<VectorT, ?> multipleOfSmallestDimention(final GAxisAlignedOrthotope<VectorT, ?> bounds) {
       final VectorT extent = bounds.getCenter();
 
       double smallestExtension = Double.POSITIVE_INFINITY;
@@ -154,8 +151,8 @@ public class GPolygon2DRenderingTest {
 
 
    @SuppressWarnings("unchecked")
-   private static <VectorT extends IVector<VectorT, ?, ?>> VectorT smallestBiggerMultipleOf(final VectorT lower,
-                                                                                            final double smallestExtension) {
+   private static <VectorT extends IVector<VectorT, ?>> VectorT smallestBiggerMultipleOf(final VectorT lower,
+                                                                                         final double smallestExtension) {
 
       final byte dimensionsCount = lower.dimensions();
 
@@ -192,10 +189,10 @@ public class GPolygon2DRenderingTest {
    }
 
 
-   private static void render(final GPolygon2DRenderer renderer,
+   private static void render(final GVectorial2DRenderer renderer,
                               final GAxisAlignedRectangle region,
                               final GFileName directoryName,
-                              final GRenderingAttributes attributes,
+                              final GVectorialRenderingAttributes attributes,
                               final int depth,
                               final int maxDepth) throws IOException {
 

@@ -211,7 +211,7 @@ public class GGeonamesPanel
             layer.setOverrideMarkerElevation(true);
             layer.setKeepSeparated(false);
             layer.setName(SEARCH_LAYER_NAME);
-            m_Application.getLayerList().add(layer);
+            m_Application.addLayer(layer);
          }
          m_Application.zoomToSector(totalSector);
       }

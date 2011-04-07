@@ -34,15 +34,15 @@
 */
 
 
-package es.igosoftware.globe.layers;
+package es.igosoftware.euclid.shape;
 
-import gov.nasa.worldwind.render.OrderedRenderable;
+import es.igosoftware.euclid.bounding.GAxisAlignedBox;
+import es.igosoftware.euclid.vector.IVector3;
 
 
-public interface IHUDElement
+public interface IPolygonalChain3D
          extends
-            OrderedRenderable {
+            IPolygonalChain<IVector3, GSegment3D, GAxisAlignedBox> {
 
-   public boolean isEnable();
 
 }

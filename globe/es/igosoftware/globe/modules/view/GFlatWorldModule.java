@@ -63,15 +63,12 @@ public class GFlatWorldModule
          extends
             GAbstractGlobeModule {
 
-   private boolean _isActive = false;
-   private View    _oldView;
+   private View _oldView;
 
 
    @Override
    public String getDescription() {
-
       return "View flat world";
-
    }
 
 
@@ -80,14 +77,9 @@ public class GFlatWorldModule
 
       final IGenericAction action = new GCheckBoxGenericAction("View flat world", ' ', null, IGenericAction.MenuArea.VIEW, false,
                false) {
-
-
          @Override
          public void execute() {
-
-            _isActive = !_isActive;
-
-            if (_isActive) {
+            if (isSelected()) {
                application.getModel().setGlobe(new EarthFlat());
                _oldView = application.getWorldWindowGLCanvas().getView();
                if (_oldView instanceof BasicOrbitView) {
@@ -159,10 +151,8 @@ public class GFlatWorldModule
 
       };
 
-      //      return new IGenericAction[] { action };
 
       return Collections.singletonList(action);
-
    }
 
 
@@ -200,7 +190,6 @@ public class GFlatWorldModule
 
    @Override
    public void initializeTranslations(final IGlobeApplication application) {
-      // TODO Auto-generated method stub
 
    }
 

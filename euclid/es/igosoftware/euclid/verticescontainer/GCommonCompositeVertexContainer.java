@@ -53,7 +53,7 @@ import es.igosoftware.util.ITransformer;
 
 public abstract class GCommonCompositeVertexContainer<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
 VertexT extends IVertexContainer.Vertex<VectorT>,
 

@@ -42,20 +42,12 @@ import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.vector.IVector2;
 
 
-public interface IPolygon2D<
-
-GeometryT extends IPolygon<IVector2<?>, GSegment2D, GeometryT, GAxisAlignedRectangle>
-
->
+public interface IPolygon2D
          extends
-            IPolygon<IVector2<?>, GSegment2D, GeometryT, GAxisAlignedRectangle> {
+            IPolygon<IVector2, GSegment2D, GAxisAlignedRectangle> {
 
 
    public List<GTriangle2D> triangulate();
-
-
-   @Override
-   public IPolygon2D<?> createSimplified(final double capsRadiansTolerance);
 
 
 }

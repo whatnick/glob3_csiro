@@ -39,6 +39,8 @@ package es.igosoftware.globe.demo;
 
 import java.awt.Color;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -54,12 +56,15 @@ import es.igosoftware.experimental.ndimensional.GMultidimensionalDataModule;
 import es.igosoftware.experimental.ndimensional.GNetCDFMultidimentionalData;
 import es.igosoftware.experimental.ndimensional.IMultidimensionalData;
 import es.igosoftware.experimental.pointscloud.rendering.GPointsCloudModule;
-import es.igosoftware.experimental.vectorial.GPolygon2DModule;
+import es.igosoftware.experimental.vectorial.GGeotoolsVectorialModule;
+import es.igosoftware.experimental.vectorial.GVectorial2DModule;
 import es.igosoftware.globe.GGlobeApplication;
 import es.igosoftware.globe.GHomePositionModule;
 import es.igosoftware.globe.GLayersManagerModule;
 import es.igosoftware.globe.GStatisticsModule;
 import es.igosoftware.globe.IGlobeModule;
+import es.igosoftware.globe.layers.hud.GHUDIcon;
+import es.igosoftware.globe.layers.hud.GHUDLayer;
 import es.igosoftware.globe.modules.GFullScreenModule;
 import es.igosoftware.globe.modules.view.GAnaglyphViewerModule;
 import es.igosoftware.globe.modules.view.GFlatWorldModule;
@@ -102,6 +107,8 @@ public class GGlobeDemo
          extends
             GGlobeApplication {
    private static final long              serialVersionUID = 1L;
+
+   private GHUDLayer                      _hudLayer;
 
 
    static {
@@ -169,6 +176,7 @@ public class GGlobeDemo
       final GPositionRenderableLayer caceres3DLayer = createCaceres3DModelLayer();
       layers.add(caceres3DLayer);
 
+      createHUDLayer(layers);
 
       /*
       try {
@@ -180,17 +188,26 @@ public class GGlobeDemo
       }
       */
 
-      //      final IconLayer iconLayer = new IconLayer();
-      //      final Position iconPos = new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0.0);
-      //      final UserFacingIcon icon = new UserFacingIcon(
-      //               "/home/oliver/Desktop/GLOB3-Repository/glob3/media/logo/bitmaps/logo32x32.png", iconPos);
-      //      iconLayer.addIcon(icon);
-      //      layers.add(iconLayer);
-
-      //      createVectorialLayer(layers);
-
-
       return layers;
+   }
+
+
+   private void createHUDLayer(final LayerList layers) {
+      final GHUDIcon hudIcon = new GHUDIcon(getImage(GFileName.relative("icons", "earth.png"), 48, 48),
+               GHUDIcon.Position.SOUTHEAST);
+
+      hudIcon.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(final ActionEvent e) {
+            System.out.println("Clicked on the earth icon!");
+            JOptionPane.showConfirmDialog(getFrame(), "Clicked on the earth icon!");
+         }
+      });
+
+      _hudLayer = new GHUDLayer();
+      _hudLayer.addElement(hudIcon);
+
+      layers.add(_hudLayer);
    }
 
 
@@ -219,7 +236,8 @@ public class GGlobeDemo
       try {
          final ILoader loader = new GFileLoader(GFileName.relative("PANOS"));
          panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", loader, GFileName.relative("Barrancos"),
-                  500, new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0)));
+                  100, new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0), _hudLayer));
+
 
          //panoramicLayer.addPanoramic(new GPanoramic(panoramicLayer, "Sample Panoramic", "data/panoramics/barruecos", 500,
          //         new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3910), 0)));
@@ -230,7 +248,8 @@ public class GGlobeDemo
             @Override
             public void picked(final GPanoramic pickedPanoramic) {
                if (pickedPanoramic != null) {
-                  panoramicLayer.enterPanoramic(pickedPanoramic, (GCustomView) getView());
+                  //panoramicLayer.enterPanoramic(pickedPanoramic, (GCustomView) getView());
+                  pickedPanoramic.activate((GCustomView) getView(), GGlobeDemo.this);
                }
             }
          });
@@ -284,10 +303,10 @@ public class GGlobeDemo
       //         e.printStackTrace();
       //      }
 
-      return new IGlobeModule[] { homePositionModule, new GLayersManagerModule(), new GPolygon2DModule(),
-               new GFullScreenModule(), pointsCloudModule, new GAnaglyphViewerModule(false), new GStatisticsModule(),
+      return new IGlobeModule[] { homePositionModule, new GLayersManagerModule(), new GVectorial2DModule(),
+               new GGeotoolsVectorialModule(), pointsCloudModule, new GMultidimensionalDataModule(_multidimentionaldata),
                new GFlatWorldModule(), new GShowLatLonGraticuleModule(), new GShowUTMGraticuleModule(),
-               new GMultidimensionalDataModule(_multidimentionaldata), new GShowMeasureToolModule() };
+               new GShowMeasureToolModule(), new GFullScreenModule(), new GAnaglyphViewerModule(false), new GStatisticsModule() };
    }
 
 

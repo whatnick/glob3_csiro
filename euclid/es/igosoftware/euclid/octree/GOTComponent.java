@@ -72,7 +72,7 @@ public abstract class GOTComponent
    public abstract int[] getVerticesIndexesInRegion(final IBounds3D<?> region);
 
 
-   public abstract IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> getVertices();
+   public abstract IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> getVertices();
 
 
    public abstract void depthFirstAcceptVisitor(final IOctreeVisitorWithFinalization visitor) throws IOctreeVisitor.AbortVisiting;

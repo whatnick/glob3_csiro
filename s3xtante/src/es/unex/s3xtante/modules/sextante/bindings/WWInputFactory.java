@@ -4,11 +4,8 @@ package es.unex.s3xtante.modules.sextante.bindings;
 
 import java.util.ArrayList;
 
-import es.igosoftware.euclid.IBoundedGeometry;
-import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
-import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.globe.IGlobeRasterLayer;
-import es.igosoftware.globe.IGlobeVectorLayer;
+import es.igosoftware.globe.IGlobeVector2Layer;
 import es.igosoftware.util.GAssert;
 import es.unex.s3xtante.tables.Tables;
 import es.unex.sextante.core.AbstractInputFactory;
@@ -50,9 +47,8 @@ public class WWInputFactory
 
       for (int i = 0; i < layerList.size(); i++) {
          final Layer layer = layerList.get(i);
-         if (layer instanceof IGlobeVectorLayer) {
-            @SuppressWarnings("unchecked")
-            final IGlobeVectorLayer<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>> globeVector2Layer = (IGlobeVectorLayer<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>>) layer;
+         if (layer instanceof IGlobeVector2Layer) {
+            final IGlobeVector2Layer globeVector2Layer = (IGlobeVector2Layer) layer;
             obj = new WWVectorLayer(globeVector2Layer.getName(), globeVector2Layer.getFeaturesCollection());
             layers.add(obj);
          }
@@ -123,7 +119,6 @@ public class WWInputFactory
 
    @Override
    public String[] get3DRasterLayerInputExtensions() {
-      // TODO Auto-generated method stub
       return new String[] { "asc3D" };
    }
 

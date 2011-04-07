@@ -45,9 +45,9 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
-import es.igosoftware.globe.layers.GVector2RenderingTheme;
 import es.igosoftware.globe.utils.GAreasEventsLayer;
 import es.igosoftware.globe.utils.GAreasEventsLayer.IAreaEventsListener;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.loading.GDisplayListCache;
 import es.igosoftware.scenegraph.GElevationAnchor;
@@ -131,12 +131,12 @@ public final class GPanoramicLayerOLD
                gl.glBegin(GL.GL_QUAD_STRIP);
 
                for (final Vertex vertex : quadStrip) {
-                  //                  final IVector2<?> texCoord = vertex._texCoord;
+                  //                  final IVector2 texCoord = vertex._texCoord;
                   //                  gl.glTexCoord2f((float) texCoord.x(), (float) texCoord.y());
                   //                  gl.glTexCoord2f(vertex._texCoordS.floatValue(), vertex._texCoordT.floatValue());
                   gl.glTexCoord2f((float) vertex._texCoord.x(), (float) vertex._texCoord.y());
 
-                  final IVector3<?> point = vertex._point;
+                  final IVector3 point = vertex._point;
                   gl.glVertex3f((float) point.x(), (float) point.y(), (float) point.z());
                }
 
@@ -154,18 +154,18 @@ public final class GPanoramicLayerOLD
 
 
    private static class Vertex {
-      private final IVector3<?> _point;
-      private final IVector3<?> _normal;
-      private final IVector2<?> _texCoord;
+      private final IVector3 _point;
+      private final IVector3 _normal;
+      private final IVector2 _texCoord;
 
 
       //      private final double      _texCoordS;
       //      private final double      _texCoordT;
 
 
-      private Vertex(final IVector3<?> point,
-                     final IVector3<?> normal,
-                     final IVector2<?> texCoord) {
+      private Vertex(final IVector3 point,
+                     final IVector3 normal,
+                     final IVector2 texCoord) {
          super();
          _point = point;
          _normal = normal.normalized();
@@ -274,8 +274,8 @@ public final class GPanoramicLayerOLD
 
       private Box                      _extent;
 
-      private final IVector3<?>        _center;
-      private final IVector3<?>        _normal;
+      private final IVector3           _center;
+      private final IVector3           _normal;
 
       private final int                _level;
       private final int                _row;
@@ -302,8 +302,8 @@ public final class GPanoramicLayerOLD
       }
 
 
-      private IVector3<?> initializeCenter() {
-         final List<IVector3<?>> points = new ArrayList<IVector3<?>>();
+      private IVector3 initializeCenter() {
+         final List<IVector3> points = new ArrayList<IVector3>();
          for (final List<Vertex> quadStrip : _quadStrips) {
             for (final Vertex vertex : quadStrip) {
                points.add(vertex._point);
@@ -313,8 +313,8 @@ public final class GPanoramicLayerOLD
       }
 
 
-      private IVector3<?> initializeNormal() {
-         final List<IVector3<?>> normals = new ArrayList<IVector3<?>>();
+      private IVector3 initializeNormal() {
+         final List<IVector3> normals = new ArrayList<IVector3>();
          for (final List<Vertex> quadStrip : _quadStrips) {
             for (final Vertex vertex : quadStrip) {
                normals.add(vertex._normal);
@@ -443,7 +443,7 @@ public final class GPanoramicLayerOLD
          gl.glBegin(GL.GL_LINES);
          gl.glVertex3d(_center.x(), _center.y(), _center.z());
 
-         final IVector3<?> destination = _center.add(_normal.scale(_radius / 5));
+         final IVector3 destination = _center.add(_normal.scale(_radius / 5));
          gl.glVertex3d(destination.x(), destination.y(), destination.z());
          gl.glEnd();
 
@@ -684,12 +684,6 @@ public final class GPanoramicLayerOLD
    }
 
 
-   @Override
-   public GVector2RenderingTheme getRenderingTheme() {
-      return null;
-   }
-
-
    private static double computeSurfaceElevation(final DrawContext dc,
                                                  final LatLon latLon) {
 
@@ -737,7 +731,7 @@ public final class GPanoramicLayerOLD
 
    @Override
    public Icon getIcon(final IGlobeApplication application) {
-      return application.getIcon("panoramic.png");
+      return application.getSmallIcon(GFileName.relative("panoramic.png"));
    }
 
 

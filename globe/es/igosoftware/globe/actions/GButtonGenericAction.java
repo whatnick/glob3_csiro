@@ -51,19 +51,19 @@ public abstract class GButtonGenericAction
          extends
             GGenericAction {
 
-   public GButtonGenericAction(final String label,
-                               final char mnemonic,
-                               final Icon icon,
-                               final IGenericAction.MenuArea menuBarArea,
-                               final boolean showOnToolBar) {
+   protected GButtonGenericAction(final String label,
+                                  final char mnemonic,
+                                  final Icon icon,
+                                  final IGenericAction.MenuArea menuBarArea,
+                                  final boolean showOnToolBar) {
       super(label, mnemonic, icon, menuBarArea, showOnToolBar);
    }
 
 
-   public GButtonGenericAction(final String label,
-                               final Icon icon,
-                               final IGenericAction.MenuArea menuBarArea,
-                               final boolean showOnToolBar) {
+   protected GButtonGenericAction(final String label,
+                                  final Icon icon,
+                                  final IGenericAction.MenuArea menuBarArea,
+                                  final boolean showOnToolBar) {
       super(label, icon, menuBarArea, showOnToolBar);
    }
 

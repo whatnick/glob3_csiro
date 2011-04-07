@@ -56,8 +56,6 @@ public class GShowLatLonGraticuleModule
          extends
             GAbstractGlobeModule {
 
-   private boolean _isActive = false;
-
 
    @Override
    public String getDescription() {
@@ -73,10 +71,9 @@ public class GShowLatLonGraticuleModule
 
          @Override
          public void execute() {
-            _isActive = !_isActive;
             final List<Layer> layers = application.getModel().getLayers().getLayersByClass(LatLonGraticuleLayer.class);
             if (layers.size() != 0) {
-               layers.get(0).setEnabled(_isActive);
+               layers.get(0).setEnabled(isSelected());
             }
          }
 
@@ -130,7 +127,6 @@ public class GShowLatLonGraticuleModule
 
    @Override
    public void initializeTranslations(final IGlobeApplication application) {
-      // TODO Auto-generated method stub
 
    }
 

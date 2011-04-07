@@ -37,7 +37,7 @@
 package es.igosoftware.globe.modules.geonames;
 
 import es.igosoftware.euclid.IBoundedGeometry;
-import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.features.GField;
 import es.igosoftware.euclid.features.GGlobeFeature;
 import es.igosoftware.euclid.features.GListFeatureCollection;
@@ -47,7 +47,7 @@ import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.globe.IGlobeApplication;
-import es.igosoftware.globe.IGlobeVectorLayer;
+import es.igosoftware.globe.IGlobeVector2Layer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.globe.layers.GVector2RenderingTheme;
@@ -71,18 +71,18 @@ public class GSearchResultLayer
          extends
             MarkerLayer
          implements
-            IGlobeVectorLayer<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>> {
+            IGlobeVector2Layer {
 
 
-   private final Sector                                                                                           _extent;
-   private final IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, ?> _features;
+   private final Sector                                                                                              _extent;
+   private final IGlobeFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> _features;
 
 
    public GSearchResultLayer(final String searchText,
                              final List<Marker> markersList) {
       super(markersList);
 
-      final List<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>>> features = new ArrayList<IGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>>>(
+      final List<IGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> features = new ArrayList<IGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>>(
                markersList.size());
 
       double minLongitude = Double.POSITIVE_INFINITY;
@@ -110,7 +110,7 @@ public class GSearchResultLayer
             final Toponym toponym = ((GSearchResultMarker) marker).getToponym();
             try {
                final List<Object> attribs = Arrays.asList(new Object[] { toponym.getName(), toponym.getPopulation() });
-               features.add(new GGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>>(point,
+               features.add(new GGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>(point,
                         attribs));
                added = true;
             }
@@ -120,7 +120,7 @@ public class GSearchResultLayer
          }
 
          if (!added) {
-            features.add(new GGlobeFeature<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>>(point,
+            features.add(new GGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>(point,
                      Arrays.asList(new Object[] { "", Long.valueOf(0) })));
          }
       }
@@ -129,7 +129,7 @@ public class GSearchResultLayer
       final List<GField> fields = Arrays.asList(new GField("Name", String.class), new GField("Population", Integer.class));
       final String uniqueID = null;
       setName("Search result: " + searchText);
-      _features = new GListFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>>(
+      _features = new GListFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>(
                GProjection.EPSG_4326, fields, features, uniqueID);
    }
 
@@ -160,7 +160,7 @@ public class GSearchResultLayer
 
 
    @Override
-   public IGlobeFeatureCollection<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>, ?> getFeaturesCollection() {
+   public IGlobeFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> getFeaturesCollection() {
       return _features;
    }
 

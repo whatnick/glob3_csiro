@@ -153,7 +153,7 @@ public abstract class GMutableNodeAbstract<MutableT extends GMutableNodeAbstract
 
 
    @Override
-   public void setTranslation(final IVector3<?> translation) {
+   public void setTranslation(final IVector3 translation) {
       checkMutable();
 
       _translation = translation;

@@ -41,24 +41,14 @@ import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.vector.IVector2;
-import es.igosoftware.globe.layers.GVector2RenderingTheme;
 
 
-public interface IGlobeVectorLayer<
-
-VectorT extends IVector<VectorT, ?, ?>,
-
-GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>
-
->
+public interface IGlobeVectorLayer<VectorT extends IVector<VectorT, ?>>
          extends
             IGlobeLayer {
 
 
-   public GVector2RenderingTheme getRenderingTheme();
-
-
-   public IGlobeFeatureCollection<IVector2<?>, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>, ?> getFeaturesCollection();
+   public IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> getFeaturesCollection();
 
 
 }

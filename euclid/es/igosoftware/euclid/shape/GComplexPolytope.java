@@ -36,8 +36,6 @@
 
 package es.igosoftware.euclid.shape;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -50,19 +48,19 @@ import es.igosoftware.util.GAssert;
 
 public abstract class GComplexPolytope<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
-SegmentT extends GSegment<VectorT, SegmentT, BoundsT>,
-
-GeometryT extends GComplexPolytope<VectorT, SegmentT, GeometryT, BoundsT, PolytopeT>,
+SegmentT extends GSegment<VectorT, SegmentT, ?>,
 
 BoundsT extends IBounds<VectorT, BoundsT>,
 
-PolytopeT extends IPolytope<VectorT, SegmentT, ?, BoundsT>
+PolytopeT extends ISimplePolytope<VectorT, SegmentT, BoundsT>
 
 >
          extends
-            GPolytopeAbstract<VectorT, SegmentT, GeometryT, BoundsT> {
+            GPolytopeAbstract<VectorT, SegmentT, BoundsT>
+         implements
+            IComplexPolytope<VectorT, SegmentT, BoundsT> {
 
    private static final long       serialVersionUID = 1L;
 
@@ -124,8 +122,8 @@ PolytopeT extends IPolytope<VectorT, SegmentT, ?, BoundsT>
 
 
    @Override
-   public final VectorT getPoint(final int i) {
-      return getPoints().get(i);
+   public final VectorT getPoint(final int index) {
+      return getPoints().get(index);
    }
 
 
@@ -156,20 +154,6 @@ PolytopeT extends IPolytope<VectorT, SegmentT, ?, BoundsT>
 
 
    @Override
-   public final void save(final DataOutputStream output) throws IOException {
-      _hull.save(output);
-      output.writeInt(_holes.size());
-      for (final PolytopeT hole : _holes) {
-         hole.save(output);
-      }
-   }
-
-
-   @Override
-   public abstract boolean isSelfIntersected();
-
-
-   @Override
    public int hashCode() {
       final int prime = 31;
       int result = 1;
@@ -190,7 +174,7 @@ PolytopeT extends IPolytope<VectorT, SegmentT, ?, BoundsT>
       if (getClass() != obj.getClass()) {
          return false;
       }
-      final GComplexPolytope<?, ?, ?, ?, ?> other = (GComplexPolytope<?, ?, ?, ?, ?>) obj;
+      final GComplexPolytope<?, ?, ?, ?> other = (GComplexPolytope<?, ?, ?, ?>) obj;
       if (_holes == null) {
          if (other._holes != null) {
             return false;
@@ -219,30 +203,6 @@ PolytopeT extends IPolytope<VectorT, SegmentT, ?, BoundsT>
 
    public List<PolytopeT> getHoles() {
       return Collections.unmodifiableList(_holes);
-   }
-
-
-   @Override
-   public boolean closeTo(final GeometryT that) {
-
-      if (!_hull.closeTo(that._hull)) {
-         return false;
-      }
-
-      final int holesSize = _holes.size();
-      if (holesSize != that._holes.size()) {
-         return false;
-      }
-
-      for (int i = 0; i < holesSize; i++) {
-         final PolytopeT thisHole = _holes.get(i);
-         final PolytopeT thatHole = that._holes.get(i);
-         if (!thisHole.closeTo(thatHole)) {
-            return false;
-         }
-      }
-
-      return true;
    }
 
 

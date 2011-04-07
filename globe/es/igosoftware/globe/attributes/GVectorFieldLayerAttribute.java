@@ -44,13 +44,10 @@ import java.util.List;
 
 import javax.swing.JComboBox;
 
-import es.igosoftware.euclid.IBoundedGeometry;
-import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.features.GField;
-import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
-import es.igosoftware.globe.IGlobeVectorLayer;
+import es.igosoftware.globe.IGlobeVector2Layer;
 import es.igosoftware.util.GPair;
 
 
@@ -76,9 +73,8 @@ public abstract class GVectorFieldLayerAttribute
    public GPair<Component, EventListener> createWidget(final IGlobeApplication application,
                                                        final IGlobeLayer layer) {
       final String options[];
-      if (layer instanceof IGlobeVectorLayer) {
-         @SuppressWarnings("unchecked")
-         final IGlobeVectorLayer<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>> vectorLayer = (IGlobeVectorLayer<IVector2<?>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>>) layer;
+      if (layer instanceof IGlobeVector2Layer) {
+         final IGlobeVector2Layer vectorLayer = (IGlobeVector2Layer) layer;
 
          final List<GField> fields = vectorLayer.getFeaturesCollection().getFields();
          options = new String[fields.size()];

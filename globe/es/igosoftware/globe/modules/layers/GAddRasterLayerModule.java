@@ -39,6 +39,7 @@ package es.igosoftware.globe.modules.layers;
 import java.awt.Component;
 import java.awt.LinearGradientPaint;
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.JFileChooser;
@@ -62,7 +63,6 @@ import es.igosoftware.globe.layers.ESRIAsciiFileTools;
 import es.igosoftware.globe.layers.GGlobeRasterLayer;
 import es.igosoftware.globe.layers.RasterRenderer;
 import es.igosoftware.io.GGenericFileFilter;
-import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GPair;
 
 
@@ -226,9 +226,8 @@ public class GAddRasterLayerModule
 
       };
 
-      //      return new ILayerAttribute<?>[] { rows, cols, nodata, method, ramp };
 
-      return GCollections.createList(rows, cols, nodata, method, ramp);
+      return Arrays.asList(rows, cols, nodata, method, ramp);
    }
 
 
@@ -267,7 +266,7 @@ public class GAddRasterLayerModule
 
    @Override
    public List<? extends ILayerInfo> getAvailableLayers(final IGlobeApplication application) {
-      return GCollections.createList(new GLayerInfo("ESRI ArcInfo ASCII"));
+      return Arrays.asList(new GLayerInfo("ESRI ArcInfo ASCII"));
    }
 
 

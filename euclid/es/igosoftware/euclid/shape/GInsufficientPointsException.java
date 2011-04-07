@@ -51,7 +51,7 @@ public class GInsufficientPointsException
    private static final long serialVersionUID = 1L;
 
 
-   public GInsufficientPointsException(final IVector<?, ?, ?>... vectors) {
+   public GInsufficientPointsException(final IVector<?, ?>... vectors) {
       super("GInsufficientPointsException, vectors=" + Arrays.toString(vectors));
    }
 
@@ -61,7 +61,7 @@ public class GInsufficientPointsException
    }
 
 
-   public GInsufficientPointsException(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices) {
+   public GInsufficientPointsException(final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices) {
       super("GInsufficientPointsException, vertices=" + vertices);
    }
 

@@ -34,35 +34,70 @@
 */
 
 
-package es.igosoftware.globe.layers;
+package es.igosoftware.globe.actions;
 
-import gov.nasa.worldwind.layers.AbstractLayer;
-import gov.nasa.worldwind.render.DrawContext;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JMenuItem;
+
+import es.igosoftware.globe.IGlobeApplication;
+import es.igosoftware.utils.GSwingUtils;
 
 
-public class GHUDLayer
+public abstract class GButtonLayerAction
          extends
-            AbstractLayer {
+            GLayerAction {
 
 
-   private final List<IHUDElement> _elements = new ArrayList<IHUDElement>();
+   protected GButtonLayerAction(final String label,
+                                final char mnemonic,
+                                final Icon icon,
+                                final boolean showOnToolBar) {
+      super(label, mnemonic, icon, showOnToolBar);
+   }
+
+
+   protected GButtonLayerAction(final String label,
+                                final Icon icon,
+                                final boolean showOnToolBar) {
+      super(label, icon, showOnToolBar);
+   }
 
 
    @Override
-   protected void doRender(final DrawContext dc) {
-      for (final IHUDElement each : _elements) {
-         if (each.isEnable()) {
-            dc.addOrderedRenderable(each);
+   public Component createToolbarWidget(final IGlobeApplication application) {
+      final JButton button = GSwingUtils.createToolbarButton(getIcon(), application.getTranslation(getLabel()),
+               new ActionListener() {
+                  @Override
+                  public void actionPerformed(final ActionEvent e) {
+                     execute();
+                  }
+               });
+
+      button.setEnabled(isEnabled());
+
+      return button;
+   }
+
+
+   @Override
+   public JMenuItem createMenuWidget(final IGlobeApplication application) {
+      final JMenuItem menuItem = new JMenuItem(application.getTranslation(getLabel()), getIcon());
+
+      menuItem.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(final ActionEvent e) {
+            execute();
          }
-      }
+      });
+      menuItem.setEnabled(isEnabled());
+
+      return menuItem;
    }
 
-
-   public void addElement(final IHUDElement orderedRenderable) {
-      _elements.add(orderedRenderable);
-   }
 
 }

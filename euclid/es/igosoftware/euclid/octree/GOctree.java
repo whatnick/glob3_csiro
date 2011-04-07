@@ -65,7 +65,7 @@ public final class GOctree
       public void beforeStart();
 
 
-      public boolean acceptLeafCreation(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices,
+      public boolean acceptLeafCreation(final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices,
                                         final int[] verticesIndexes);
 
 
@@ -74,7 +74,7 @@ public final class GOctree
 
 
    public static interface DuplicatesPolicy {
-      public int[] removeDuplicates(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices,
+      public int[] removeDuplicates(final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices,
                                     final int[] verticesIndexes);
    }
 
@@ -154,12 +154,12 @@ public final class GOctree
                                           final int[] verticesIndexes,
                                           final GAxisAlignedBox innerBounds,
                                           final int depth) {
-         final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> subVertices = octree.getOriginalVertices().asSubContainer(
+         final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> subVertices = octree.getOriginalVertices().asSubContainer(
                   verticesIndexes);
-         final IVector3<?> average = subVertices.getAverage()._point;
+         final IVector3 average = subVertices.getAverage()._point;
          final GAxisAlignedBox bounds = (GAxisAlignedBox) subVertices.getBounds();
          //            final GAxisAlignedBox bounds = innerBounds;
-         final IVector3<?> boundsExtent = getBoundsExtent(bounds);
+         final IVector3 boundsExtent = getBoundsExtent(bounds);
 
          if (_splitByOneAxis) {
             if ((boundsExtent.x() > boundsExtent.y()) && (boundsExtent.x() > boundsExtent.z())) {
@@ -190,7 +190,7 @@ public final class GOctree
       }
 
 
-      protected IVector3<?> getBoundsExtent(final GAxisAlignedBox bounds) {
+      protected IVector3 getBoundsExtent(final GAxisAlignedBox bounds) {
          return bounds._extent;
       }
 
@@ -207,7 +207,7 @@ public final class GOctree
                              final int vertexIndex) {
          final GAxisAlignedBox[] bounds = (GAxisAlignedBox[]) auxiliaryObject;
 
-         final IVector3<?> point = octree.getPoint(vertexIndex);
+         final IVector3 point = octree.getPoint(vertexIndex);
          for (int i = 0; i < bounds.length; i++) {
             if (bounds[i].contains(point)) {
                return (byte) i;
@@ -258,13 +258,13 @@ public final class GOctree
       public GAxisAlignedBox getNodeBounds(final Object auxiliaryObject,
                                            final GAxisAlignedBox innerBounds,
                                            final byte nodeKey) {
-         final IVector3<?> pivot = (IVector3<?>) auxiliaryObject;
+         final IVector3 pivot = (IVector3) auxiliaryObject;
          final int xKey = nodeKey & 1;
          final int yKey = nodeKey & 2;
          final int zKey = nodeKey & 4;
 
-         final IVector3<?> lower = innerBounds._lower;
-         final IVector3<?> upper = innerBounds._upper;
+         final IVector3 lower = innerBounds._lower;
+         final IVector3 upper = innerBounds._upper;
 
          final double nodeLowerX = (xKey == 0) ? lower.x() : pivot.x();
          final double nodeLowerY = (yKey == 0) ? lower.y() : pivot.y();
@@ -293,9 +293,9 @@ public final class GOctree
       public byte getNodeKey(final Object auxiliaryObject,
                              final GOctree octree,
                              final int vertexIndex) {
-         final IVector3<?> pivot = (IVector3<?>) auxiliaryObject;
+         final IVector3 pivot = (IVector3) auxiliaryObject;
 
-         final IVector3<?> point = octree.getPoint(vertexIndex);
+         final IVector3 point = octree.getPoint(vertexIndex);
 
          final int nodeX = (point.x() < pivot.x()) ? 0 : 1;
          final int nodeY = (point.y() < pivot.y()) ? 0 : 2;
@@ -453,29 +453,29 @@ public final class GOctree
    }
 
 
-   private static final Object                                                          STATISTICS_MUTEX   = new Object();
+   private static final Object                                                    STATISTICS_MUTEX   = new Object();
 
 
-   private final String                                                                 _name;
-   private final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> _vertices;
+   private final String                                                           _name;
+   private final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> _vertices;
    //   private final int                              _childrenCounter   = 0;
-   private final GOTInnerNode                                                           _root;
-   private final GAxisAlignedBox                                                        _bounds;
-   private final AtomicInteger                                                          _duplicatesRemoved = new AtomicInteger();
+   private final GOTInnerNode                                                     _root;
+   private final GAxisAlignedBox                                                  _bounds;
+   private final AtomicInteger                                                    _duplicatesRemoved = new AtomicInteger();
    //GProgress                                      _progress;
-   private final GOctree.Parameters                                                     _parameters;
-   private final GAxisAlignedBox                                                        _pointsBounds;
+   private final GOctree.Parameters                                               _parameters;
+   private final GAxisAlignedBox                                                  _pointsBounds;
 
 
    public GOctree(final String name,
-                  final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices,
+                  final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices,
                   final GOctree.Parameters parameters) {
       this(name, vertices, null, null, parameters);
    }
 
 
    public GOctree(final String name,
-                  final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices,
+                  final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices,
                   final GAxisAlignedBox bounds,
                   final Parameters parameters) {
       this(name, vertices, bounds, null, parameters);
@@ -483,7 +483,7 @@ public final class GOctree
 
 
    public GOctree(final String name,
-                  final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices,
+                  final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices,
                   final GAxisAlignedBox bounds,
                   final GOctree.CreateLeafPolicy createLeafPolicy,
                   final GOctree.Parameters parameters) {
@@ -577,7 +577,7 @@ public final class GOctree
    }
 
 
-   public IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> getVerticesInRegion(final IBounds3D<?> region) {
+   public IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> getVerticesInRegion(final IBounds3D<?> region) {
       return _vertices.asSubContainer(getVerticesIndexesInRegion(region));
    }
 
@@ -605,17 +605,17 @@ public final class GOctree
          return _pointsBounds;
       }
 
-      final IVector3<?> pointsBoundsExtent = _pointsBounds._extent;
+      final IVector3 pointsBoundsExtent = _pointsBounds._extent;
 
       final double temp = Math.max(pointsBoundsExtent.x(), Math.max(pointsBoundsExtent.y(), pointsBoundsExtent.z()));
       final double maxSide = roundToDoubles(temp, _parameters._maxLeafSideLength);
       // System.out.println("\n **** temp=" + temp + ", maxSide=" + maxSide + ", multiplo=" + multiplo + "\n");
 
-      final IVector3<?> newUpper = _pointsBounds._lower.add(maxSide);
+      final IVector3 newUpper = _pointsBounds._lower.add(maxSide);
       final GAxisAlignedBox bigBox = new GAxisAlignedBox(_pointsBounds._lower, newUpper);
 
       // center bigBox
-      final IVector3<?> delta = bigBox.getCenter().sub(_pointsBounds.getCenter());
+      final IVector3 delta = bigBox.getCenter().sub(_pointsBounds.getCenter());
       return bigBox.translatedBy(delta.negated());
    }
 
@@ -724,7 +724,7 @@ public final class GOctree
          final AtomicInteger maxDepth = new AtomicInteger(Integer.MIN_VALUE);
          final AtomicInteger minDepth = new AtomicInteger(Integer.MAX_VALUE);
 
-         final IVector3<?> averageLeafExtent = new GMutableVector3<GVector3D>(GVector3D.ZERO);
+         final IVector3 averageLeafExtent = new GMutableVector3<GVector3D>(GVector3D.ZERO);
 
 
          final int[] totalChildrenCount = new int[] { 0 };
@@ -758,7 +758,7 @@ public final class GOctree
                if (leafBounds != null) {
                   averageLeafExtent.add(leafBounds.getExtent());
 
-                  final IVector3<?> leafExtent = leafBounds._extent;
+                  final IVector3 leafExtent = leafBounds._extent;
                   final double leafArea = leafExtent.x() * leafExtent.y() * leafExtent.z();
                   final double leafDensity = leaf.getVerticesIndexesCount() / leafArea;
 
@@ -1051,18 +1051,18 @@ public final class GOctree
    }
 
 
-   public IVector3<?> getPoint(final int index) {
+   public IVector3 getPoint(final int index) {
       return _vertices.getPoint(index);
    }
 
 
    @Override
-   public IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> getVertices() {
+   public IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> getVertices() {
       return _root.getVertices();
    }
 
 
-   public IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> getOriginalVertices() {
+   public IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> getOriginalVertices() {
       return _vertices;
    }
 
@@ -1099,17 +1099,17 @@ public final class GOctree
    }
 
 
-   public int getNearestVertexIndex(final IVector3<?> point) {
+   public int getNearestVertexIndex(final IVector3 point) {
       return _root.getNearestVertexIndex(point);
    }
 
 
-   public Vertex<IVector3<?>> getNearestVertex(final IVector3<?> point) {
+   public Vertex<IVector3> getNearestVertex(final IVector3 point) {
       return _vertices.getVertex(getNearestVertexIndex(point));
    }
 
 
-   public IVector3<?> getNearestPoint(final IVector3<?> point) {
+   public IVector3 getNearestPoint(final IVector3 point) {
       return _vertices.getPoint(getNearestVertexIndex(point));
    }
 
@@ -1131,7 +1131,7 @@ public final class GOctree
 
 
    public boolean removeVertex(final int index) {
-      final Vertex<IVector3<?>> vertex = _vertices.getVertex(index);
+      final Vertex<IVector3> vertex = _vertices.getVertex(index);
       return _root.removeVertex(vertex, index);
    }
 

@@ -89,11 +89,11 @@ public class GProcessingTest
 
       loader.load();
 
-      final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices = loader.getVertices();
+      final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices = loader.getVertices();
 
       //      logInfo("Calculating reference point...");
       System.out.println("Calculating reference point...");
-      final IVector3<?> referencePoint = vertices.getAverage()._point;
+      final IVector3 referencePoint = vertices.getAverage()._point;
       //      logInfo("Reference point: " + referencePoint);
       System.out.println("Reference point: " + referencePoint);
 
@@ -137,8 +137,8 @@ public class GProcessingTest
    }
 
 
-   private static IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> loadVertices(final GFileName sourceFileName)
-                                                                                                                                     throws IOException {
+   private static IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> loadVertices(final GFileName sourceFileName)
+                                                                                                                               throws IOException {
 
 
       final GBinaryPoints3Loader loader = new GBinaryPoints3Loader(GPointsLoader.DEFAULT_FLAGS | GPointsLoader.VERBOSE,
@@ -146,12 +146,12 @@ public class GProcessingTest
 
       loader.load();
 
-      final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices = loader.getVertices();
+      final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices = loader.getVertices();
 
       //      if (_filterBounds != null) {
-      //         final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> filteredVertices = vertices.select(new IPredicate<IVertexContainer.Vertex<IVector3<?>>>() {
+      //         final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> filteredVertices = vertices.select(new IPredicate<IVertexContainer.Vertex<IVector3>>() {
       //            @Override
-      //            public boolean evaluate(final IVertexContainer.Vertex<IVector3<?>> vertex) {
+      //            public boolean evaluate(final IVertexContainer.Vertex<IVector3> vertex) {
       //               return _filterBounds.contains(vertex._point);
       //            }
       //         });
@@ -163,11 +163,11 @@ public class GProcessingTest
    }
 
 
-   private static void processVertices(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices,
+   private static void processVertices(final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices,
                                        final String fileName) {
 
       System.out.println("Processing " + vertices);
-      //final GAxisAlignedOrthotope<IVector3<?>, ?> bounds = vertices.getBounds();
+      //final GAxisAlignedOrthotope<IVector3, ?> bounds = vertices.getBounds();
       //System.out.println("Orthotope Bounds: " + bounds);
       //System.out.println("Orthotope Extent: " + bounds.getExtent());
 
@@ -176,19 +176,19 @@ public class GProcessingTest
 
       final GOctree.DuplicatesPolicy duplicatesPolicy = new GOctree.DuplicatesPolicy() {
          @Override
-         public int[] removeDuplicates(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices1,
+         public int[] removeDuplicates(final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices1,
                                        final int[] verticesIndexes) {
 
 
             final double estimatedResolution = Math.min(resolucion.getAverageResolutions()._x,
                      resolucion.getAverageResolutions()._y);
             final double estimatedRadio = estimatedResolution - (estimatedResolution * 0.2);
-            //final Set<IVector3<?>> selectedPoints = new HashSet<IVector3<?>>();
-            final List<IVector3<?>> selectedPoints = new ArrayList<IVector3<?>>();
+            //final Set<IVector3> selectedPoints = new HashSet<IVector3>();
+            final List<IVector3> selectedPoints = new ArrayList<IVector3>();
             final List<Integer> selectedIndices = new ArrayList<Integer>();
 
             //            for (final int index : verticesIndexes) {
-            //               final IVector3<?> point = vertices1.getPoint(index);
+            //               final IVector3 point = vertices1.getPoint(index);
             //               if (!selectedPoints.contains(point)) {
             //
             //                  selectedPoints.add(point);
@@ -198,13 +198,13 @@ public class GProcessingTest
 
             for (final int index : verticesIndexes) {
 
-               final IVector3<?> point = vertices1.getPoint(index);
+               final IVector3 point = vertices1.getPoint(index);
                final GBall bola = new GBall(point, estimatedRadio);
                boolean skip_point = false;
 
-               final Iterator<IVector3<?>> it = selectedPoints.iterator();
+               final Iterator<IVector3> it = selectedPoints.iterator();
                while (it.hasNext() && !skip_point) {
-                  final IVector3<?> point2 = it.next();
+                  final IVector3 point2 = it.next();
 
                   if (bola.contains(point2)) {
                      skip_point = true;
@@ -236,7 +236,7 @@ public class GProcessingTest
 
 
          private boolean planeComplianceCriteriaFulfilled(final GPlane plane,
-                                                          final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices1,
+                                                          final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices1,
                                                           final int[] verticesIndexes) {
 
 
@@ -274,7 +274,7 @@ public class GProcessingTest
 
 
          @Override
-         public boolean acceptLeafCreation(final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices1,
+         public boolean acceptLeafCreation(final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices1,
                                            final int[] verticesIndexes) {
 
             if (verticesIndexes.length >= 3) {
@@ -343,7 +343,7 @@ public class GProcessingTest
 
          @Override
          public void visitLeafNode(final GOTLeafNode leaf) {
-            //final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices2 = leaf.getVertices();
+            //final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices2 = leaf.getVertices();
 
             //System.out.print(leaf.getId());
             //System.out.println("VisitLeafNode");
@@ -446,7 +446,7 @@ public class GProcessingTest
       }
 
       System.out.println("Loading binary file..");
-      final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> vertices = loadVertices(targetFileName);
+      final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> vertices = loadVertices(targetFileName);
 
       System.out.println("Launched vertices processing..");
       processVertices(vertices, octreeFileName);

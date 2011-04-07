@@ -38,21 +38,20 @@ package es.igosoftware.euclid.bounding;
 
 import es.igosoftware.euclid.shape.GPlane;
 import es.igosoftware.euclid.vector.IVector3;
-import es.igosoftware.euclid.vector.IVectorTransformer;
 import es.igosoftware.util.GMath;
 
 
 public final class GBall
          extends
-            GNBall<IVector3<?>, GBall>
+            GNBall<IVector3, GBall>
          implements
             IBounds3D<GBall>,
-            IFiniteBounds<IVector3<?>, GBall> {
+            IFiniteBounds<IVector3, GBall> {
 
    private static final long serialVersionUID = 1L;
 
 
-   public GBall(final IVector3<?> center,
+   public GBall(final IVector3 center,
                 final double radius) {
       super(center, radius);
    }
@@ -90,45 +89,16 @@ public final class GBall
    }
 
 
-   //   @Override
-   //   public boolean touchesWithDisk(final GDisk disk) {
-   //      double radiusSquared = radius + disk.radius;
-   //      radiusSquared *= radiusSquared;
-   //      final GVector2D center2d = new GVector2D(center.getX(), center.getY());
-   //      return GMath.lessOrEquals(center2d.squaredDistance(disk.center), radiusSquared);
-   //      //return (new GVector2D(center.getX(), center.getY()).squaredDistance(disk.center) <= radiusSquared);
-   //   }
-
-
-   //   @Override
-   //   public boolean touchesWithRectangle(final GAxisAlignedRectangle rectangle) {
-   //      return rectangle.touchesWithBall(this);
-   //   }
-
-
    @Override
    public GBall getBounds() {
       return this;
    }
 
 
-   //   @Override
-   //   public GAxisAlignedBox asBox() {
-   //      return new GAxisAlignedBox(center.sub(radius), center.add(radius));
-   //   }
-
-
    @Override
    public boolean touchesWithPlane(final GPlane plane) {
       final double dist = plane.distance(_center);
       return GMath.lessOrEquals(dist, _radius);
-   }
-
-
-   @Override
-   public GBall transformedBy(final IVectorTransformer<IVector3<?>> transformer) {
-      // TODO: scale/shear radius;
-      return new GBall(_center.transformedBy(transformer), _radius);
    }
 
 
@@ -151,7 +121,7 @@ public final class GBall
 
 
    @Override
-   public boolean touchesBounds(final IBounds<IVector3<?>, ?> that) {
+   public boolean touchesBounds(final IBounds<IVector3, ?> that) {
       return touches((IBounds3D<?>) that);
    }
 

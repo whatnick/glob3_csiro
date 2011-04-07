@@ -72,15 +72,13 @@ public class GBatchPlanarPanoramicCompiler {
 
       //call GPlanarPanoramicCompiler
       for (final String fileName : imagesNames) {
-         System.out.println("first file: " + fileName);
 
          if (!isWorking) {
             isWorking = true;
             if (fileName.endsWith(".jpg")) {
 
-
                try {
-                  System.out.println("calling processImage");
+                  System.out.println("calling GPlanarPanoramicCompiler.processImage");
                   GPlanarPanoramicCompiler.processImage(GFileName.fromParentAndParts(inDir, fileName), outputDirectoryName,
                            Integer.MAX_VALUE);
                }
@@ -88,7 +86,6 @@ public class GBatchPlanarPanoramicCompiler {
                   e.printStackTrace();
                }
                finally {
-                  System.out.println("feddich!");
                   isWorking = false;
                }
             }

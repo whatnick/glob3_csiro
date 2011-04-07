@@ -13,13 +13,13 @@ import es.igosoftware.util.ITransformer;
 
 public class GGeometryQuadtree<ElementT>
          extends
-            GGeometryNTree<IVector2<?>, GAxisAlignedRectangle, ElementT> {
+            GGeometryNTree<IVector2, ElementT> {
 
 
    public GGeometryQuadtree(final String name,
                             final GAxisAlignedRectangle bounds,
                             final Iterable<? extends ElementT> elements,
-                            final ITransformer<ElementT, ? extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>> transformer,
+                            final ITransformer<ElementT, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> transformer,
                             final GGeometryNTreeParameters parameters) {
       super(name, bounds, elements, transformer, parameters);
    }

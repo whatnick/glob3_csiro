@@ -4,9 +4,7 @@ package es.igosoftware.euclid.ntree;
 
 import java.util.Collection;
 
-import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
-import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
@@ -27,59 +25,29 @@ public class GGeometryNTreeParameters {
    }
 
 
-   public static interface AcceptLeafNodeCreationPolicy<
-
-   VectorT extends IVector<VectorT, ?, ?>,
-
-   ElementT,
-
-   GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>
-
-   > {
+   public static interface AcceptLeafNodeCreationPolicy<VectorT extends IVector<VectorT, ?>, ElementT> {
       public boolean accept(final int depth,
                             final GAxisAlignedOrthotope<VectorT, ?> bounds,
                             final Collection<ElementT> elements);
    }
 
 
-   public static interface Accept3DLeafNodeCreationPolicy<
-
-   ElementT,
-
-   GeometryT extends IBoundedGeometry<IVector3<?>, ?, ? extends IFiniteBounds<IVector3<?>, ?>>
-
-   >
+   public static interface Accept3DLeafNodeCreationPolicy<ElementT>
             extends
-               AcceptLeafNodeCreationPolicy<IVector3<?>, ElementT, GeometryT> {
+               AcceptLeafNodeCreationPolicy<IVector3, ElementT> {
+   }
 
+
+   public static interface Accept2DLeafNodeCreationPolicy<ElementT>
+            extends
+               AcceptLeafNodeCreationPolicy<IVector2, ElementT> {
 
    }
 
 
-   public static interface Accept2DLeafNodeCreationPolicy<
-
-   ElementT,
-
-   GeometryT extends IBoundedGeometry<IVector2<?>, ?, ? extends IFiniteBounds<IVector2<?>, ?>>
-
-   >
-            extends
-               AcceptLeafNodeCreationPolicy<IVector2<?>, ElementT, GeometryT> {
-
-   }
-
-
-   private static class DefaultAcceptLeafNodeCreationPolicy<
-
-   VectorT extends IVector<VectorT, ?, ?>,
-
-   ElementT,
-
-   GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>
-
-   >
+   private static class DefaultAcceptLeafNodeCreationPolicy<VectorT extends IVector<VectorT, ?>, ElementT>
             implements
-               AcceptLeafNodeCreationPolicy<VectorT, ElementT, GeometryT> {
+               AcceptLeafNodeCreationPolicy<VectorT, ElementT> {
 
       private final int _maxDepth;
       private final int _maxElementsInLeafs;
@@ -87,6 +55,9 @@ public class GGeometryNTreeParameters {
 
       private DefaultAcceptLeafNodeCreationPolicy(final int maxDepth,
                                                   final int maxElementsInLeafs) {
+         GAssert.isPositive(maxDepth, "maxDepth");
+         GAssert.isPositive(maxElementsInLeafs, "maxElementsInLeafs");
+
          _maxDepth = maxDepth;
          _maxElementsInLeafs = maxElementsInLeafs;
       }
@@ -112,6 +83,15 @@ public class GGeometryNTreeParameters {
 
 
    public GGeometryNTreeParameters(final boolean verbose,
+                                   final int maxDepth,
+                                   final int maxElementsInLeafs,
+                                   final BoundsPolicy boundsPolicy,
+                                   final boolean multiThread) {
+      this(verbose, new DefaultAcceptLeafNodeCreationPolicy(maxDepth, maxElementsInLeafs), boundsPolicy, multiThread);
+   }
+
+
+   public GGeometryNTreeParameters(final boolean verbose,
                                    final AcceptLeafNodeCreationPolicy acceptLeafNodeCreationPolicy,
                                    final BoundsPolicy boundsPolicy,
                                    final boolean multiThread) {
@@ -124,20 +104,5 @@ public class GGeometryNTreeParameters {
       _multiThread = multiThread;
    }
 
-
-   public GGeometryNTreeParameters(final boolean verbose,
-                                   final int maxDepth,
-                                   final int maxElementsInLeafs,
-                                   final BoundsPolicy boundsPolicy,
-                                   final boolean multiThread) {
-      GAssert.isPositive(maxDepth, "maxDepth");
-      GAssert.isPositive(maxElementsInLeafs, "maxElementsInLeafs");
-      GAssert.notNull(boundsPolicy, "boundsPolicy");
-
-      _verbose = verbose;
-      _acceptLeafNodeCreationPolicy = new DefaultAcceptLeafNodeCreationPolicy(maxDepth, maxElementsInLeafs);
-      _boundsPolicy = boundsPolicy;
-      _multiThread = multiThread;
-   }
 
 }

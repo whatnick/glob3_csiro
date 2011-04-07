@@ -42,6 +42,11 @@ import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.globe.GGlobeApplication;
+import es.igosoftware.globe.layers.hud.GHUDIcon;
+import es.igosoftware.globe.layers.hud.GHUDLayer;
+import es.igosoftware.globe.view.GBasicOrbitViewLimits;
+import es.igosoftware.globe.view.GPanoramicViewLimits;
+import es.igosoftware.globe.view.customView.GCustomView;
 import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.io.ILoader;
@@ -71,6 +76,8 @@ import gov.nasa.worldwind.render.OrderedRenderable;
 import gov.nasa.worldwind.util.WWMath;
 
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -90,12 +97,26 @@ public class GPanoramic
          implements
             OrderedRenderable {
 
+
+   public static interface ActivationListener {
+
+      public void activated(final GPanoramic panoramic);
+
+
+      public void deactivated(final GPanoramic panoramic);
+
+   }
+
+
    private static final int                                                  TILE_THETA_SUBDIVISIONS = 2;
    private static final int                                                  TILE_RHO_SUBDIVISIONS   = 1;
-
    private static final double                                               MIN_PROYECTED_SIZE      = 12;
 
+   private static final GFileName                                            DEFAULT_EXIT_ICON_NAME  = GFileName.relative("quit.png");
+
    private static final GDisplayListCache<PanoramicTile>                     QUAD_STRIPS_DISPLAY_LIST_CACHE;
+
+   private List<GPanoramic.ActivationListener>                               _activationListeners;
 
 
    static {
@@ -116,10 +137,10 @@ public class GPanoramic
                gl.glBegin(GL.GL_QUAD_STRIP);
 
                for (final Vertex vertex : quadStrip) {
-                  final IVector2<?> texCoord = vertex._texCoord;
+                  final IVector2 texCoord = vertex._texCoord;
                   gl.glTexCoord2f((float) texCoord.x(), (float) vertex._texCoord.y());
 
-                  final IVector3<?> point = vertex._point;
+                  final IVector3 point = vertex._point;
                   gl.glVertex3f((float) point.x(), (float) point.y(), (float) point.z());
                }
 
@@ -173,9 +194,14 @@ public class GPanoramic
    private int                                                               _currentLevel;
 
    private final Layer                                                       _layer;
+   private final GHUDLayer                                                   _hudLayer;
+   private final GFileName                                                   _exitIconName;
+   private final GHUDIcon                                                    _hudIcon;
    private double                                                            _currentDistanceFromEye;
 
+
    private boolean                                                           _isHidden;
+   private boolean                                                           _isActive               = false;
 
 
    public GPanoramic(final Layer layer,
@@ -183,8 +209,21 @@ public class GPanoramic
                      final ILoader loader,
                      final GFileName panoramicName,
                      final double radius,
-                     final Position position) throws IOException {
-      this(layer, name, loader, panoramicName, radius, position, 0, GElevationAnchor.SURFACE);
+                     final Position position,
+                     final GHUDLayer hudLayer) throws IOException {
+      this(layer, name, loader, panoramicName, radius, position, 0, GElevationAnchor.SURFACE, hudLayer, DEFAULT_EXIT_ICON_NAME);
+   }
+
+
+   public GPanoramic(final Layer layer,
+                     final String name,
+                     final ILoader loader,
+                     final GFileName panoramicName,
+                     final double radius,
+                     final Position position,
+                     final GHUDLayer hudLayer,
+                     final GFileName exitIconName) throws IOException {
+      this(layer, name, loader, panoramicName, radius, position, 0, GElevationAnchor.SURFACE, hudLayer, exitIconName);
    }
 
 
@@ -195,12 +234,15 @@ public class GPanoramic
                      final double radius,
                      final Position position,
                      final double headingInDegrees,
-                     final GElevationAnchor anchor) throws IOException {
+                     final GElevationAnchor anchor,
+                     final GHUDLayer hudLayer,
+                     final GFileName exitIconName) throws IOException {
       GAssert.notNull(name, "name");
       GAssert.notNull(loader, "loader");
       GAssert.isPositive(radius, "radius");
       GAssert.notNull(position, "position");
       GAssert.notNull(anchor, "anchor");
+      GAssert.notNull(exitIconName, "exitIconName");
 
       _layer = layer;
 
@@ -211,12 +253,38 @@ public class GPanoramic
       _position = position;
       _headingInDegrees = headingInDegrees;
       _anchor = anchor;
+      _hudLayer = hudLayer;
+      _exitIconName = exitIconName;
 
       _tiles = createTopTiles();
 
       _zoomLevels = readZoomLevels();
 
       _maxResolutionInPanoramic = _zoomLevels.getLevels().size() - 1;
+
+      final GGlobeApplication application = GGlobeApplication.instance();
+      _hudIcon = new GHUDIcon(application.getImage(_exitIconName, 48, 48), GHUDIcon.Position.NORTHEAST);
+
+      _hudIcon.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(final ActionEvent e) {
+            deactivate((GCustomView) GGlobeApplication.instance().getView());
+         }
+      });
+
+      _hudLayer.setEnabled(false);
+      _hudIcon.setEnable(false);
+      _hudLayer.addElement(_hudIcon);
+   }
+
+
+   public boolean isActive() {
+      return _isActive;
+   }
+
+
+   public GHUDLayer getHUDLayer() {
+      return _hudLayer;
    }
 
 
@@ -609,6 +677,56 @@ public class GPanoramic
    }
 
 
+   public void activate(final GCustomView view,
+                        final GGlobeApplication application) {
+      _hudLayer.setEnabled(true);
+      _hudIcon.setEnable(true);
+      _isActive = true;
+
+      if (!view.hasCameraState()) {
+         view.saveCameraState();
+      }
+
+      application.jumpTo(getPosition(), 0);
+      //      view.setInputState(GInputState.PANORAMICS);
+      view.enterPanoramic(this);
+      //final GPanoramicViewLimits viewLimits = new GPanoramicViewLimits();
+      view.setOrbitViewLimits(new GPanoramicViewLimits());
+
+
+      //      hideOtherLayers(application, this._layer);
+      //      hideOtherPanoramics(this);
+
+      view.setFieldOfView(Angle.fromDegrees(120));
+
+      if (_activationListeners != null) {
+         for (final GPanoramic.ActivationListener listener : _activationListeners) {
+            listener.activated(this);
+         }
+      }
+
+   }
+
+
+   public void deactivate(final GCustomView view) {
+
+      _hudLayer.setEnabled(false);
+      _hudIcon.setEnable(false);
+      _isActive = false;
+
+      view.exitPanoramic(this);
+      view.setOrbitViewLimits(new GBasicOrbitViewLimits());
+      view.restoreCameraState();
+
+      if (_activationListeners != null) {
+         for (final GPanoramic.ActivationListener listener : _activationListeners) {
+            listener.deactivated(this);
+         }
+      }
+
+   }
+
+
    @Override
    public void render(final DrawContext dc) {
       final GL gl = dc.getGL();
@@ -683,8 +801,8 @@ public class GPanoramic
 
       private Box                      _extent;
 
-      private final IVector3<?>        _center;
-      private final IVector3<?>        _normal;
+      private final IVector3           _center;
+      private final IVector3           _normal;
 
       private final int                _level;
       private final int                _row;
@@ -710,8 +828,8 @@ public class GPanoramic
       }
 
 
-      private IVector3<?> initializeCenter() {
-         final List<IVector3<?>> points = new ArrayList<IVector3<?>>();
+      private IVector3 initializeCenter() {
+         final List<IVector3> points = new ArrayList<IVector3>();
          for (final List<Vertex> quadStrip : _quadStrips) {
             for (final Vertex vertex : quadStrip) {
                points.add(vertex._point);
@@ -721,8 +839,8 @@ public class GPanoramic
       }
 
 
-      private IVector3<?> initializeNormal() {
-         final List<IVector3<?>> normals = new ArrayList<IVector3<?>>();
+      private IVector3 initializeNormal() {
+         final List<IVector3> normals = new ArrayList<IVector3>();
          for (final List<Vertex> quadStrip : _quadStrips) {
             for (final Vertex vertex : quadStrip) {
                normals.add(vertex._normal);
@@ -837,6 +955,15 @@ public class GPanoramic
          }
 
          final GL gl = dc.getGL();
+
+         if (!_isActive) {
+
+            _layer.setOpacity(0.75);
+
+         }
+         else {
+            _layer.setOpacity(1.0);
+         }
          gl.glCallList(_displayList);
 
          if (texture != null) {
@@ -887,7 +1014,7 @@ public class GPanoramic
          gl.glBegin(GL.GL_LINES);
          gl.glVertex3d(_center.x(), _center.y(), _center.z());
 
-         final IVector3<?> destination = _center.add(_normal.scale(_radius / 5));
+         final IVector3 destination = _center.add(_normal.scale(_radius / 5));
          gl.glVertex3d(destination.x(), destination.y(), destination.z());
          gl.glEnd();
 
@@ -1038,17 +1165,39 @@ public class GPanoramic
 
 
    private static class Vertex {
-      private final IVector3<?> _point;
-      private final IVector3<?> _normal;
-      private final IVector2<?> _texCoord;
+      private final IVector3 _point;
+      private final IVector3 _normal;
+      private final IVector2 _texCoord;
 
 
-      private Vertex(final IVector3<?> point,
-                     final IVector3<?> normal,
-                     final IVector2<?> texCoord) {
+      private Vertex(final IVector3 point,
+                     final IVector3 normal,
+                     final IVector2 texCoord) {
          _point = point;
          _normal = normal.normalized();
          _texCoord = texCoord;
+      }
+   }
+
+
+   public void addActivationListener(final GPanoramic.ActivationListener listener) {
+      GAssert.notNull(listener, "listener");
+
+      if (_activationListeners == null) {
+         _activationListeners = new ArrayList<GPanoramic.ActivationListener>();
+      }
+      _activationListeners.add(listener);
+   }
+
+
+   public void removeActivationListener(final GPanoramic.ActivationListener listener) {
+      GAssert.notNull(listener, "listener");
+
+      if (_activationListeners != null) {
+         _activationListeners.remove(listener);
+         if (_activationListeners.isEmpty()) {
+            _activationListeners = null;
+         }
       }
    }
 

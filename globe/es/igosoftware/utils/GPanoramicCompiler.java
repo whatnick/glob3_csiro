@@ -55,6 +55,7 @@ import javax.media.jai.JAI;
 
 import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
+import es.igosoftware.util.GImageUtils;
 import es.igosoftware.util.GLogger;
 import es.igosoftware.util.GProgress;
 
@@ -230,18 +231,6 @@ public class GPanoramicCompiler {
    }
 
 
-   private static BufferedImage getRenderedImage(final Image image) {
-      final BufferedImage renderedImage = new BufferedImage(image.getWidth(null), image.getHeight(null),
-               BufferedImage.TYPE_3BYTE_BGR);
-
-      final Graphics2D g2d = renderedImage.createGraphics();
-      g2d.drawImage(image, 0, 0, null);
-      g2d.dispose();
-
-      return renderedImage;
-   }
-
-
    private static BufferedImage fix(final BufferedImage bi,
                                     final int width,
                                     final int height,
@@ -303,10 +292,13 @@ public class GPanoramicCompiler {
 
 
    public static void process(final GFileName sourceImage,
-                              final GFileName outputDirectoryName,
+                              final GFileName outputBaseDirectoryName,
                               final boolean debug) throws IOException {
-      logInfo("Cleaning directory \"" + outputDirectoryName + "\"");
-      GIOUtils.assureEmptyDirectory(outputDirectoryName, false);
+
+      final GFileName outputDirectory = GFileName.fromParentAndParts(outputBaseDirectoryName, sourceImage.asFile().getName());
+
+      logInfo("Cleaning directory \"" + outputDirectory + "\"");
+      GIOUtils.assureEmptyDirectory(outputDirectory, false);
 
       logInfo("Reading image \"" + sourceImage + "\"");
 
@@ -329,10 +321,10 @@ public class GPanoramicCompiler {
       LOGGER.increaseIdentationLevel();
 
 
-      saveZoomLevels(outputDirectoryName, zoomLevels);
+      saveZoomLevels(outputDirectory, zoomLevels);
 
       for (final ZoomLevel level : zoomLevels._levels) {
-         processLevel(level, image, outputDirectoryName, debug);
+         processLevel(level, image, outputDirectory, debug);
       }
       LOGGER.decreaseIdentationLevel();
 
@@ -353,16 +345,19 @@ public class GPanoramicCompiler {
       }
 
       final Image scaledImage;
+
+
       if ((level._width == image.getWidth()) && (level._height == image.getHeight())) {
          logInfo("No need to scale image");
          scaledImage = image;
       }
       else {
          logInfo("Scaling image...");
+
          scaledImage = image.getScaledInstance(level._width, level._height, Image.SCALE_SMOOTH);
       }
 
-      final BufferedImage scaledRenderedImage = getRenderedImage(scaledImage);
+      final BufferedImage scaledRenderedImage = GImageUtils.asBufferedImage(scaledImage, BufferedImage.TYPE_3BYTE_BGR);
 
       //      logInfo("Saving scaled image...");
       //      final File scaledFile = new File(levelDirectory, "scaled.jpg");

@@ -109,8 +109,8 @@ public abstract class GRendererAbstract
 
 
    @Override
-   public <VectorT extends IVector<VectorT, ?, ?>> int createDisplayList(final float pointSize,
-                                                                         final IVertexContainer<VectorT, IVertexContainer.Vertex<VectorT>, ?> vertices) {
+   public <VectorT extends IVector<VectorT, ?>> int createDisplayList(final float pointSize,
+                                                                      final IVertexContainer<VectorT, IVertexContainer.Vertex<VectorT>, ?> vertices) {
       final int listID = glGenLists(1);
 
       glNewList(listID, GL_COMPILE);

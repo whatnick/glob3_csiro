@@ -51,10 +51,10 @@ public final class GBoundingUtils {
       // from Real-Time Collision Detection - Christer Ericson
       //   page 79
 
-      final IVector3<?> lower1 = box1._lower;
-      final IVector3<?> upper1 = box1._upper;
-      final IVector3<?> lower2 = box2._lower;
-      final IVector3<?> upper2 = box2._upper;
+      final IVector3 lower1 = box1._lower;
+      final IVector3 upper1 = box1._upper;
+      final IVector3 lower2 = box2._lower;
+      final IVector3 upper2 = box2._upper;
 
       // Exit with no intersection if separated along an axis
       if ((upper1.x() < lower2.x()) || (lower1.x() > upper2.x())) {

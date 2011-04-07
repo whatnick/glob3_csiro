@@ -109,7 +109,10 @@ public class GPlanarPanoramicCompiler {
             System.out.println("  Processing zoom level #" + zoomLevel.getLevel());
             System.out.println("    Zoom Level Info: " + zoomLevel);
 
-            final String levelDirectory = outputDirectory.buildPath() + zoomLevel.getLevel() + File.pathSeparator;
+            //final String levelDirectory = outputDirectory.buildPath() + zoomLevel.getLevel() + File.pathSeparator;
+            final GFileName levelDirectoryFileName = GFileName.fromParentAndParts(outputDirectory, zoomLevel.getLevel()
+                                                                                                   + File.pathSeparator);
+            final String levelDirectory = levelDirectoryFileName.buildPath();
             System.out.println("    Zoom Level Directory: " + levelDirectory);
             if (!new File(levelDirectory).mkdirs()) {
                throw new IOException("Can't create directory: " + new File(levelDirectory));
@@ -155,7 +158,11 @@ public class GPlanarPanoramicCompiler {
                   final BufferedImage tileImage = resize(scaledRenderedImage.getSubimage(tileX, tileY, tileWidth, tileHeight),
                            GPlanarPanoramicZoomLevel.TILE_WIDTH, GPlanarPanoramicZoomLevel.TILE_HEIGHT);
 
-                  final File tileFile = new File(levelDirectory + "tile-" + widthIndex + "-" + heightIndex + ".jpg");
+                  //                  final File tileFile = new File(levelDirectory + "tile-" + widthIndex + "-" + heightIndex + ".jpg");
+
+
+                  final File tileFile = new File(GFileName.fromParentAndParts(levelDirectoryFileName,
+                           "tile-" + widthIndex + "-" + heightIndex + ".jpg").buildPath());
                   ImageIO.write(tileImage, "jpeg", tileFile);
                }
             }
@@ -174,7 +181,9 @@ public class GPlanarPanoramicCompiler {
    private static void createZoomLevelsInfo(final GFileName outputDirectory,
                                             final GPlanarPanoramicZoomLevel[] zoomLevels) throws IOException {
 
-      final BufferedWriter info = new BufferedWriter(new FileWriter(outputDirectory + "info.txt"));
+
+      final BufferedWriter info = new BufferedWriter(new FileWriter(
+               GFileName.fromParentAndParts(outputDirectory, "info.txt").buildPath()));
       info.write("[");
       info.newLine();
       boolean first = true;

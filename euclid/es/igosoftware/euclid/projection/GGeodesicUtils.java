@@ -51,8 +51,8 @@ public class GGeodesicUtils {
    /**
     * Computes the arc, in radians, between two WGS-84 positions.
     */
-   public static double arcInRadians(final IVector2<?> from,
-                                     final IVector2<?> to) {
+   public static double arcInRadians(final IVector2 from,
+                                     final IVector2 to) {
       final double fromLatitude = from.y();
       final double fromLongitude = from.x();
       final double toLatitude = to.y();
@@ -75,8 +75,8 @@ public class GGeodesicUtils {
    /**
     * Computes the distance, in meters, between two WGS-84 positions.
     */
-   public static double distanceInMeters(final IVector2<?> from,
-                                         final IVector2<?> to) {
+   public static double distanceInMeters(final IVector2 from,
+                                         final IVector2 to) {
       return EARTH_QUADRATIC_RADIUS_IN_METERS * arcInRadians(from, to);
    }
 
