@@ -17,5 +17,6 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="globe/libs/jogl"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/globe/libs/worldwind.jar" sourcepath="/home/oliver/Desktop/IGO-Repository/ww"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
