@@ -47,10 +47,10 @@ import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.globe.IGlobeApplication;
+import es.igosoftware.globe.IGlobeRenderingTheme;
 import es.igosoftware.globe.IGlobeVector2Layer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
-import es.igosoftware.globe.layers.GVector2RenderingTheme;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Sector;
@@ -166,7 +166,7 @@ public class GSearchResultLayer
 
 
    @Override
-   public GVector2RenderingTheme getRenderingTheme() {
+   public IGlobeRenderingTheme getRenderingTheme() {
       return null;
    }
 
