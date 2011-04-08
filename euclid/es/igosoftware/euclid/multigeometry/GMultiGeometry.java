@@ -5,6 +5,7 @@ package es.igosoftware.euclid.multigeometry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import es.igosoftware.euclid.GGeometryAbstract;
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.features.GGeometryType;
 import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GAssert;
@@ -39,6 +41,8 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
    private static final long             serialVersionUID = 1L;
 
    private final List<ChildrenGeometryT> _children;
+
+   private EnumSet<GGeometryType>        _geometryType;
 
 
    public GMultiGeometry(final ChildrenGeometryT... children) {
@@ -203,6 +207,31 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
    @Override
    public final boolean containsOnBoundary(final VectorT point) {
       return GMath.closeToZero(distanceToBoundary(point));
+   }
+
+
+   public final EnumSet<GGeometryType> getGeometryType() {
+      // lazy initialized to avoid an iteration on _features if GeometriesTypes is not needed
+
+      if (_geometryType == null) {
+         _geometryType = calculateGeometriesTypes();
+      }
+
+      return _geometryType;
+   }
+
+
+   private EnumSet<GGeometryType> calculateGeometriesTypes() {
+      final EnumSet<GGeometryType> result = EnumSet.noneOf(GGeometryType.class);
+
+      for (final ChildrenGeometryT child : _children) {
+         result.addAll(GGeometryType.getGeometryType(child));
+         if (result.containsAll(GGeometryType.ALL)) {
+            return GGeometryType.ALL;
+         }
+      }
+
+      return result;
    }
 
 

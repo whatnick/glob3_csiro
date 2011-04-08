@@ -9,9 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import es.igosoftware.euclid.IBoundedGeometry;
-import es.igosoftware.euclid.ICurve;
-import es.igosoftware.euclid.IGeometry;
-import es.igosoftware.euclid.ISurface;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.projection.GProjection;
@@ -68,7 +65,7 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<Vecto
 
    private GAxisAlignedOrthotope<VectorT, ?>                    _bounds;
 
-   private EnumSet<GGeometryType>                               _geometriesTypes;
+   private EnumSet<GGeometryType>                               _geometryType;
 
 
    public GListFeatureCollection(final GProjection projection,
@@ -152,14 +149,14 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<Vecto
 
 
    @Override
-   public EnumSet<GGeometryType> getGeometriesTypes() {
+   public EnumSet<GGeometryType> getGeometryType() {
       // lazy initialized to avoid an iteration on _features if GeometriesTypes is not needed
 
-      if (_geometriesTypes == null) {
-         _geometriesTypes = calculateGeometriesTypes();
+      if (_geometryType == null) {
+         _geometryType = calculateGeometriesTypes();
       }
 
-      return _geometriesTypes;
+      return _geometryType;
    }
 
 
@@ -167,29 +164,13 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<Vecto
       final EnumSet<GGeometryType> result = EnumSet.noneOf(GGeometryType.class);
 
       for (final IGlobeFeature<VectorT, FeatureGeometryT> feature : _features) {
-         result.add(getShapeType(feature.getDefaultGeometry()));
+         result.addAll(GGeometryType.getGeometryType(feature.getDefaultGeometry()));
          if (result.containsAll(GGeometryType.ALL)) {
             return GGeometryType.ALL;
          }
       }
 
       return result;
-   }
-
-
-   private static <VectorT extends IVector<VectorT, ?>> GGeometryType getShapeType(final IGeometry<VectorT> geometry) {
-      if (geometry instanceof IVector) {
-         return GGeometryType.POINT;
-      }
-      else if (geometry instanceof ICurve) {
-         return GGeometryType.CURVE;
-      }
-      else if (geometry instanceof ISurface) {
-         return GGeometryType.SURFACE;
-      }
-      else {
-         throw new RuntimeException("Unsupported geometry type: " + geometry.getClass());
-      }
    }
 
 

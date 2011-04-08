@@ -41,7 +41,7 @@ import java.util.List;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 
 
-public interface IGlobeRenderingTheme {
+public interface IGlobeRenderingStyle {
 
 
    public List<? extends ILayerAttribute<?>> getLayerAttributes(final IGlobeApplication application,

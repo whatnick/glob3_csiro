@@ -1403,8 +1403,8 @@ public class GVectorial2DLayer
 
 
    @Override
-   public GGloveVectorial2DRenderingTheme getRenderingTheme() {
-      return new GGloveVectorial2DRenderingTheme();
+   public GGloveVectorial2DRenderingStyle getRenderingStyle() {
+      return new GGloveVectorial2DRenderingStyle();
    }
 
 

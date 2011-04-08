@@ -39,7 +39,7 @@ package es.igosoftware.globe.layers;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeRasterLayer;
-import es.igosoftware.globe.IGlobeRenderingTheme;
+import es.igosoftware.globe.IGlobeRenderingStyle;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import gov.nasa.worldwind.geom.Sector;
@@ -170,7 +170,7 @@ public class GGlobeRasterLayer
 
 
    @Override
-   public IGlobeRenderingTheme getRenderingTheme() {
+   public IGlobeRenderingStyle getRenderingStyle() {
       // TODO Auto-generated method stub
       return null;
    }

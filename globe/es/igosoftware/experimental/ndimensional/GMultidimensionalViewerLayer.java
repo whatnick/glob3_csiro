@@ -41,7 +41,7 @@ import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.globe.GGlobeApplication;
 import es.igosoftware.globe.IGlobeApplication;
-import es.igosoftware.globe.IGlobeRenderingTheme;
+import es.igosoftware.globe.IGlobeRenderingStyle;
 import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.GBooleanLayerAttribute;
@@ -1177,7 +1177,7 @@ public class GMultidimensionalViewerLayer
 
 
    @Override
-   public IGlobeRenderingTheme getRenderingTheme() {
+   public IGlobeRenderingStyle getRenderingStyle() {
       return null;
    }
 
