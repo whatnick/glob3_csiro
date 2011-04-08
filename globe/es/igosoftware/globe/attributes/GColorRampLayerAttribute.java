@@ -69,8 +69,8 @@ public abstract class GColorRampLayerAttribute
 
 
    @Override
-   public GPair<Component, EventListener> createWidget(final IGlobeApplication application,
-                                                       final IGlobeLayer layer) {
+   public final GPair<Component, EventListener> createWidget(final IGlobeApplication application,
+                                                             final IGlobeLayer layer) {
       final JButton widget = new JButton(" ");
       if (isReadOnly()) {
          widget.setEnabled(false);
@@ -103,8 +103,8 @@ public abstract class GColorRampLayerAttribute
 
 
    @Override
-   public void cleanupWidget(final IGlobeLayer layer,
-                             final GPair<Component, EventListener> widget) {
+   public final void cleanupWidget(final IGlobeLayer layer,
+                                   final GPair<Component, EventListener> widget) {
       setListener(null);
 
       unsubscribeFromEvents(layer, widget._second);

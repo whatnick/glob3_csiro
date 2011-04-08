@@ -79,8 +79,8 @@ public abstract class GStringLayerAttribute
 
 
    @Override
-   public GPair<Component, EventListener> createWidget(final IGlobeApplication application,
-                                                       final IGlobeLayer layer) {
+   public final GPair<Component, EventListener> createWidget(final IGlobeApplication application,
+                                                             final IGlobeLayer layer) {
       final JTextField widget = new JTextField();
       widget.setMinimumSize(new Dimension(100, 20));
       widget.setText(get());
@@ -111,39 +111,12 @@ public abstract class GStringLayerAttribute
 
 
    @Override
-   public void cleanupWidget(final IGlobeLayer layer,
-                             final GPair<Component, EventListener> widget) {
+   public final void cleanupWidget(final IGlobeLayer layer,
+                                   final GPair<Component, EventListener> widget) {
       setListener(null);
 
       unsubscribeFromEvents(layer, widget._second);
    }
 
-
-   //   private final EventListener subscribeToEvents(final IGlobeLayer _layer) {
-   //      final String propertyName = getPropertyName();
-   //      if (propertyName == null) {
-   //         return null;
-   //      }
-   //
-   //      final PropertyChangeListener listener = new PropertyChangeListener() {
-   //         @Override
-   //         public void propertyChange(final PropertyChangeEvent evt) {
-   //            changed();
-   //         }
-   //      };
-   //      _layer.addPropertyChangeListener(propertyName, listener);
-   //      return listener;
-   //   }
-   //
-   //
-   //   private final void unsubscribeFromEvents(final IGlobeLayer _layer,
-   //                                            final EventListener listener) {
-   //      final String propertyName = getPropertyName();
-   //      if ((listener == null) || (propertyName == null)) {
-   //         return;
-   //      }
-   //
-   //      _layer.removePropertyChangeListener(propertyName, (PropertyChangeListener) listener);
-   //   }
 
 }

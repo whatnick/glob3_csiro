@@ -77,8 +77,8 @@ public abstract class GSelectionLayerAttribute<T>
 
 
    @Override
-   public GPair<Component, EventListener> createWidget(final IGlobeApplication application,
-                                                       final IGlobeLayer layer) {
+   public final GPair<Component, EventListener> createWidget(final IGlobeApplication application,
+                                                             final IGlobeLayer layer) {
       final JComboBox widget = new JComboBox(_options);
       widget.setSelectedItem(get());
       if (isReadOnly()) {
@@ -109,8 +109,8 @@ public abstract class GSelectionLayerAttribute<T>
 
 
    @Override
-   public void cleanupWidget(final IGlobeLayer layer,
-                             final GPair<Component, EventListener> widget) {
+   public final void cleanupWidget(final IGlobeLayer layer,
+                                   final GPair<Component, EventListener> widget) {
       setListener(null);
 
       unsubscribeFromEvents(layer, widget._second);

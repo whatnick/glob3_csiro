@@ -70,8 +70,8 @@ public abstract class GVectorFieldLayerAttribute
 
 
    @Override
-   public GPair<Component, EventListener> createWidget(final IGlobeApplication application,
-                                                       final IGlobeLayer layer) {
+   public final GPair<Component, EventListener> createWidget(final IGlobeApplication application,
+                                                             final IGlobeLayer layer) {
       final String options[];
       if (layer instanceof IGlobeVector2Layer) {
          final IGlobeVector2Layer vectorLayer = (IGlobeVector2Layer) layer;
@@ -106,8 +106,8 @@ public abstract class GVectorFieldLayerAttribute
 
 
    @Override
-   public void cleanupWidget(final IGlobeLayer layer,
-                             final GPair<Component, EventListener> widget) {
+   public final void cleanupWidget(final IGlobeLayer layer,
+                                   final GPair<Component, EventListener> widget) {
       unsubscribeFromEvents(layer, widget._second);
    }
 }

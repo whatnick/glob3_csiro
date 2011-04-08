@@ -91,7 +91,7 @@ public class GGroupAttribute
 
 
    @Override
-   public String getLabel() {
+   public final String getLabel() {
       return null;
    }
 
@@ -99,8 +99,8 @@ public class GGroupAttribute
 
 
    @Override
-   public GPair<Component, EventListener> createWidget(final IGlobeApplication application,
-                                                       final IGlobeLayer layer) {
+   public final GPair<Component, EventListener> createWidget(final IGlobeApplication application,
+                                                             final IGlobeLayer layer) {
       final JPanel panel = new JPanel(new MigLayout("fillx, insets 0 0 0 0"));
       panel.setBackground(Color.WHITE);
 
@@ -145,8 +145,8 @@ public class GGroupAttribute
 
 
    @Override
-   public void cleanupWidget(final IGlobeLayer layer2,
-                             final GPair<Component, EventListener> widget2) {
+   public final void cleanupWidget(final IGlobeLayer layer2,
+                                   final GPair<Component, EventListener> widget2) {
       for (final GTriplet<IGlobeLayer, ILayerAttribute<?>, GPair<Component, EventListener>> layerAttributeAndWidget : _widgetsInLayerPropertiesPanel) {
          final IGlobeLayer layer = layerAttributeAndWidget._first;
          final ILayerAttribute<?> attribute = layerAttributeAndWidget._second;
@@ -159,31 +159,31 @@ public class GGroupAttribute
 
 
    @Override
-   public Object get() {
+   public final Object get() {
       return null;
    }
 
 
    @Override
-   public void set(final Object value) {
+   public final void set(final Object value) {
 
    }
 
 
    @Override
-   public boolean isReadOnly() {
+   public final boolean isReadOnly() {
       return true;
    }
 
 
    @Override
-   public void setListener(final ILayerAttribute.IChangeListener listener) {
+   public final void setListener(final ILayerAttribute.IChangeListener listener) {
 
    }
 
 
    @Override
-   public void changed() {
+   public final void changed() {
 
    }
 

@@ -52,10 +52,10 @@ public abstract class GAbstractLayerAttribute<T>
             ILayerAttribute<T> {
 
 
-   private final String    _label;
-   private final boolean   _readOnly;
-   private IChangeListener _listener;
-   private String          _propertyName;
+   private final String                    _label;
+   private final boolean                   _readOnly;
+   private ILayerAttribute.IChangeListener _listener;
+   private String                          _propertyName;
 
 
    public GAbstractLayerAttribute(final String label) {
@@ -87,7 +87,7 @@ public abstract class GAbstractLayerAttribute<T>
 
 
    @Override
-   public String getLabel() {
+   public final String getLabel() {
       return _label;
    }
 
@@ -99,7 +99,7 @@ public abstract class GAbstractLayerAttribute<T>
 
 
    @Override
-   public void setListener(final IChangeListener listener) {
+   public final void setListener(final ILayerAttribute.IChangeListener listener) {
       if ((_listener != null) && (listener != null)) {
          throw new IllegalArgumentException("Listener already set");
       }
@@ -109,7 +109,7 @@ public abstract class GAbstractLayerAttribute<T>
 
 
    @Override
-   public void changed() {
+   public final void changed() {
       if (_listener != null) {
          _listener.changed();
       }

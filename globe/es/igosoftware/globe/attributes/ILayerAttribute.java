@@ -74,9 +74,10 @@ public interface ILayerAttribute<T> {
    public boolean isReadOnly();
 
 
-   public void setListener(final IChangeListener listener);
+   public void setListener(final ILayerAttribute.IChangeListener listener);
 
 
    public void changed();
+
 
 }
