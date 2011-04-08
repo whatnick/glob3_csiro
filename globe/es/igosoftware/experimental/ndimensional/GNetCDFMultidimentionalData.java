@@ -158,9 +158,9 @@ public class GNetCDFMultidimentionalData
    /** Default arrow angle. */
    public static final Angle      DEFAULT_ARROW_ANGLE     = Angle.fromDegrees(45.0);
    /** Default arrow length, in meters. */
-   public static final double     DEFAULT_ARROW_LENGTH    = 300;
+   public static final double     DEFAULT_ARROW_LENGTH    = 5;
    /** Default arrow base, in meters. */
-   public static final double     DEFAULT_ARROW_BASE      = 150;
+   public static final double     DEFAULT_ARROW_BASE      = 2;
    /** Default maximum screen size of the arrowheads, in pixels. */
    public static final double     DEFAULT_MAX_SCREEN_SIZE = 20.0;
    /** The angle of the arrowhead tip. */
@@ -518,9 +518,19 @@ public class GNetCDFMultidimentionalData
    }
 
 
+   /**
+    * This method serves as a data cube accessor for a given netCDF variable
+    * 
+    * @param variable
+    * @param valueDimensions
+    * @param indices
+    * @return
+    * @throws IOException
+    * @throws InvalidRangeException
+    */
    private double get(final Variable variable,
                       final List<Dimension> valueDimensions,
-                      final List<Integer> indices) throws IOException, InvalidRangeException {
+                      final List<Integer> indices) throws IOException {
 
       final StringBuffer section = new StringBuffer();
       final List<Dimension> dimensions = variable.getDimensions();
@@ -528,16 +538,30 @@ public class GNetCDFMultidimentionalData
          final String dimensionName = dimension.getName();
          for (int i = 0; i < valueDimensions.size(); i++) {
             final Dimension valueDimension = valueDimensions.get(i);
-            if (valueDimension.getName().equals(dimensionName)) {
+
+            // Require that dimensions simply start with i_,j_,k_
+            if (valueDimension.getName().equals(dimensionName)
+                || ((dimensionName.length() > 1) && valueDimension.getName().startsWith(dimensionName.substring(0, 2)))) {
                if (section.length() != 0) {
                   section.append(",");
                }
+               valueDimension.getLength();
+               //TODO: Make sure the extra plus 1 in the fudged dimensions
+               //does not cause trouble
+               //valueDimension.getLength() , dimension.getLength();
                section.append(indices.get(i));
             }
          }
       }
 
-      return variable.read(section.toString()).getDouble(0);
+      try {
+         final Double var = variable.read(section.toString()).getDouble(0);
+         return var;
+      }
+      catch (final InvalidRangeException ex) {
+         return Double.NaN;
+      }
+
    }
 
 
@@ -690,6 +714,9 @@ public class GNetCDFMultidimentionalData
                final String section = indices.toString().substring(1, indices.toString().length() - 1);
                final double value = valueVariable._variable.read(section).getDouble(0);
 
+               if (Double.isNaN(value)) {
+                  return;
+               }
                if (!Double.isNaN(valueVariable._missingValue) && GMath.closeTo(value, valueVariable._missingValue)) {
                   return;
                }
@@ -863,8 +890,18 @@ public class GNetCDFMultidimentionalData
             try {
 
                final String section = indices.toString().substring(1, indices.toString().length() - 1);
-               final double uValue = vectorVariable._uVariable.read(section).getDouble(0);
-               final double vValue = vectorVariable._vVariable.read(section).getDouble(0);
+               final double uValue, vValue;
+
+               try {
+                  final double uValue_temp = vectorVariable._uVariable.read(section).getDouble(0);
+                  final double vValue_temp = vectorVariable._vVariable.read(section).getDouble(0);
+                  uValue = uValue_temp;
+                  vValue = vValue_temp;
+               }
+               catch (final InvalidRangeException ex) {
+                  return;
+               }
+
 
                if (Double.isNaN(uValue) || Double.isNaN(vValue)) {
                   return;
@@ -942,9 +979,6 @@ public class GNetCDFMultidimentionalData
 
                computeArrowheadGeometry(pointFrom, pointTo, arrowVertexContainer);
 
-            }
-            catch (final InvalidRangeException e) {
-               e.printStackTrace();
             }
             catch (final IOException e) {
                e.printStackTrace();
@@ -1087,8 +1121,8 @@ public class GNetCDFMultidimentionalData
          return;
       }
 
-      perpendicular = perpendicular.normalize3().multiply3(arrowBase);
-      parallel = parallel.normalize3().multiply3(arrowLength);
+      perpendicular = perpendicular.normalize3().multiply3(arrowBase * poleDistance * 0.01);
+      parallel = parallel.normalize3().multiply3(arrowLength * poleDistance * 0.01);
 
 
       // Compute geometry of direction arrow
