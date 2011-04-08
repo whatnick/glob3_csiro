@@ -45,6 +45,7 @@ import javax.swing.JComboBox;
 
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
+import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GPair;
 
 
@@ -53,7 +54,7 @@ public abstract class GSelectionLayerAttribute<T>
             GAbstractLayerAttribute<T> {
 
 
-   private final Object[] _options;
+   private final T[] _options;
 
 
    public GSelectionLayerAttribute(final String label,
@@ -61,8 +62,9 @@ public abstract class GSelectionLayerAttribute<T>
                                    final T[] options) {
       super(label, propertyName);
 
-      _options = options;
+      GAssert.notEmpty(options, "options");
 
+      _options = options;
    }
 
 
@@ -71,6 +73,8 @@ public abstract class GSelectionLayerAttribute<T>
                                    final boolean readOnly,
                                    final T[] options) {
       super(label, propertyName, readOnly);
+
+      GAssert.notEmpty(options, "options");
 
       _options = options;
    }
