@@ -77,4 +77,7 @@ public interface IGlobeLayer
    public void doDefaultAction(final IGlobeApplication application);
 
 
+   public IGlobeRenderingTheme getRenderingTheme();
+
+
 }

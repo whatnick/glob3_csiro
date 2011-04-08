@@ -36,7 +36,16 @@
 
 package es.igosoftware.globe;
 
+import java.util.List;
+
+import es.igosoftware.globe.attributes.ILayerAttribute;
+
 
 public interface IGlobeRenderingTheme {
+
+
+   public List<? extends ILayerAttribute<?>> getLayerAttributes(final IGlobeApplication application,
+                                                                final IGlobeLayer layer);
+
 
 }

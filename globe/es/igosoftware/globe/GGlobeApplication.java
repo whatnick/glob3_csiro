@@ -1504,6 +1504,18 @@ public abstract class GGlobeApplication
          }
       }
 
+
+      // attributes from the rendering theme
+      final IGlobeRenderingTheme renderingTheme = layer.getRenderingTheme();
+      if (renderingTheme != null) {
+         final List<? extends ILayerAttribute<?>> renderingThemeAttributes = GCollections.selectNotNull(renderingTheme.getLayerAttributes(
+                  this, layer));
+         if ((renderingThemeAttributes != null) && !renderingThemeAttributes.isEmpty()) {
+            result.add(renderingThemeAttributes);
+         }
+      }
+
+
       // attributes from the layer itself
       final List<? extends ILayerAttribute<?>> layerAttributes = GCollections.selectNotNull(layer.getLayerAttributes(this));
       if ((layerAttributes != null) && !layerAttributes.isEmpty()) {

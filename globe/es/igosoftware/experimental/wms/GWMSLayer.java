@@ -39,6 +39,7 @@ package es.igosoftware.experimental.wms;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
+import es.igosoftware.globe.IGlobeRenderingTheme;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.io.GFileName;
@@ -218,6 +219,13 @@ public class GWMSLayer
 
    @Override
    public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application) {
+      return null;
+   }
+
+
+   @Override
+   public IGlobeRenderingTheme getRenderingTheme() {
+      // TODO Auto-generated method stub
       return null;
    }
 

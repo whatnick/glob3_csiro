@@ -50,7 +50,6 @@ import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.globe.IGlobeApplication;
-import es.igosoftware.globe.IGlobeRenderingTheme;
 import es.igosoftware.globe.IGlobeVector2Layer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.GBooleanLayerAttribute;
@@ -1404,8 +1403,8 @@ public class GVectorial2DLayer
 
 
    @Override
-   public IGlobeRenderingTheme getRenderingTheme() {
-      return null;
+   public GGloveVectorial2DRenderingTheme getRenderingTheme() {
+      return new GGloveVectorial2DRenderingTheme();
    }
 
 

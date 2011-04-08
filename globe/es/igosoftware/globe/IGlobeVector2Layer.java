@@ -3,6 +3,7 @@
 package es.igosoftware.globe;
 
 import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.experimental.vectorial.GGloveVectorial2DRenderingTheme;
 
 
 public interface IGlobeVector2Layer
@@ -10,7 +11,8 @@ public interface IGlobeVector2Layer
             IGlobeVectorLayer<IVector2> {
 
 
-   public IGlobeRenderingTheme getRenderingTheme();
+   @Override
+   public GGloveVectorial2DRenderingTheme getRenderingTheme();
 
 
 }

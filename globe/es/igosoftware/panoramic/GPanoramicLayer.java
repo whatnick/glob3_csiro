@@ -40,6 +40,7 @@ import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.globe.GGlobeApplication;
 import es.igosoftware.globe.IGlobeApplication;
+import es.igosoftware.globe.IGlobeRenderingTheme;
 import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
@@ -330,6 +331,12 @@ public class GPanoramicLayer
       for (final Layer layer : _hiddenLayers) {
          layer.setEnabled(true);
       }
+   }
+
+
+   @Override
+   public IGlobeRenderingTheme getRenderingTheme() {
+      return null;
    }
 
 
