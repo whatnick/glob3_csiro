@@ -124,12 +124,10 @@ public class GVectorial2DLayer
 
       private RenderingKey(final GVectorial2DLayer layer,
                            final GAxisAlignedRectangle tileSectorBounds,
-                           //                           final Sector tileSector,
                            final GVectorialRenderingAttributes renderingAttributes,
                            final String id) {
          _layer = layer;
          _tileBounds = tileSectorBounds;
-         //         _tileSector = tileSector;
          _renderingAttributes = renderingAttributes;
          _id = id;
       }
@@ -261,13 +259,13 @@ public class GVectorial2DLayer
                final BufferedImage renderedImage = renderer.render(key._tileBounds, key._renderingAttributes);
                layer.redraw();
 
-               saveImageIntoDiskoCache(renderedImage);
+               saveImageIntoDiskCache(renderedImage);
 
                return renderedImage;
             }
 
 
-            private void saveImageIntoDiskoCache(final BufferedImage renderedImage) {
+            private void saveImageIntoDiskCache(final BufferedImage renderedImage) {
                if (renderedImage == null) {
                   return;
                }
@@ -307,7 +305,6 @@ public class GVectorial2DLayer
          });
 
          _priority = priority;
-         //         _tileSector = key._tileSector;
          _tileBounds = key._tileBounds;
          _layer = key._layer;
       }
@@ -485,8 +482,6 @@ public class GVectorial2DLayer
          _tileBoundsExtent = _tileBounds.getExtent();
 
          _layer = layer;
-
-         //         _tileSector = GWWUtils.toSector(tileBounds, GProjection.EPSG_4326);
       }
 
 
@@ -625,48 +620,12 @@ public class GVectorial2DLayer
          final int y = (int) -(topLeft.y() + height - _layer._attributes._imageHeight); // flip y
 
          try {
-            final BufferedImage subimage = ancestorImage.getSubimage(x, y, width, height);
-            return markImageAsWorkInProgress(subimage);
+            return ancestorImage.getSubimage(x, y, width, height);
          }
          catch (final RasterFormatException e) {}
 
 
          return null;
-      }
-
-
-      //      private final Image workingIcon = GGlobeApplication.instance().getImage("working.png");
-
-
-      private BufferedImage markImageAsWorkInProgress(final BufferedImage image) {
-         final int TODO_flag_the_image_as_work_in_progress;
-
-         return image;
-
-         //         if (image == null) {
-         //            return null;
-         //         }
-         //
-         //         final int width = _attributes._imageWidth;
-         //         final int height = _attributes._imageHeight;
-         //
-         //         final BufferedImage result = new BufferedImage(width, height,
-         //                  image.getColorModel().hasAlpha() ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR);
-         //         final Graphics2D g2d = result.createGraphics();
-         //
-         //         g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-         //         g2d.drawImage(image, 0, 0, width, height, null);
-         //
-         //         if (workingIcon != null) {
-         //            //            final int iconWidth = workingIcon.getWidth(null);
-         //            //            final int iconHeight = workingIcon.getHeight(null);
-         //            //g2d.drawImage(workingIcon, (width - iconWidth) / 2, (height - iconHeight) / 2, iconWidth, iconHeight, null);
-         //            g2d.drawImage(workingIcon, 0, 0, width, height, null);
-         //         }
-         //
-         //         g2d.dispose();
-         //
-         //         return result;
       }
 
 

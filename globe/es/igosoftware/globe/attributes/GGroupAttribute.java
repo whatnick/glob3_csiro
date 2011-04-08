@@ -50,8 +50,10 @@ import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
+import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GPair;
 import es.igosoftware.util.GTriplet;
+import es.igosoftware.util.IPredicate;
 
 
 public class GGroupAttribute
@@ -71,7 +73,7 @@ public class GGroupAttribute
 
 
    public GGroupAttribute(final String label,
-                          final List<ILayerAttribute<?>> children) {
+                          final List<? extends ILayerAttribute<?>> children) {
       _label = label;
       _children = new ArrayList<ILayerAttribute<?>>(children);
    }
@@ -79,7 +81,12 @@ public class GGroupAttribute
 
    @Override
    public boolean isVisible() {
-      return true;
+      return GCollections.allSatisfy(_children, new IPredicate<ILayerAttribute<?>>() {
+         @Override
+         public boolean evaluate(final ILayerAttribute<?> element) {
+            return element.isVisible();
+         }
+      });
    }
 
 
@@ -100,8 +107,6 @@ public class GGroupAttribute
       panel.add(makeBold(new JLabel(_label)), "growx, wrap, span 2");
 
 
-      //      boolean firstAttributeOnPanel = true;
-
       for (final ILayerAttribute<?> attribute : _children) {
          if (!attribute.isVisible()) {
             continue;
@@ -112,19 +117,11 @@ public class GGroupAttribute
             continue;
          }
 
-
-         //         if (firstAttributeOnPanel) {
-         //            firstAttributeOnPanel = false;
-         //            if (panel.getComponents().length > 0) {
-         //               panel.add(new JSeparator(SwingConstants.HORIZONTAL), "growx, wrap, span 2");
-         //            }
-         //         }
-
          _widgetsInLayerPropertiesPanel.add(new GTriplet<IGlobeLayer, ILayerAttribute<?>, GPair<Component, EventListener>>(layer,
                   attribute, widget));
+
          final String label = attribute.getLabel();
          if (label == null) {
-            //            _layerPropertiesPanel.add(widget._first, "wrap, gap 3, span 2");
             panel.add(widget._first, "growx, wrap, span 2");
          }
          else {
@@ -134,8 +131,6 @@ public class GGroupAttribute
       }
 
 
-      //      final JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
-      //      //      final JLabel separator = new JLabel(" ");
       return new GPair<Component, EventListener>(panel, null);
    }
 
@@ -152,11 +147,6 @@ public class GGroupAttribute
    @Override
    public void cleanupWidget(final IGlobeLayer layer2,
                              final GPair<Component, EventListener> widget2) {
-      //      for (final ILayerAttribute<?> attribute : _children) {
-      //         attribute.cleanupWidget(layer, widget);
-      //      }
-
-
       for (final GTriplet<IGlobeLayer, ILayerAttribute<?>, GPair<Component, EventListener>> layerAttributeAndWidget : _widgetsInLayerPropertiesPanel) {
          final IGlobeLayer layer = layerAttributeAndWidget._first;
          final ILayerAttribute<?> attribute = layerAttributeAndWidget._second;
@@ -176,6 +166,7 @@ public class GGroupAttribute
 
    @Override
    public void set(final Object value) {
+
    }
 
 
@@ -195,4 +186,6 @@ public class GGroupAttribute
    public void changed() {
 
    }
+
+
 }
