@@ -62,6 +62,7 @@ import es.igosoftware.util.GAssert;
 public class GIOUtils {
 
    private static final String ILLEGAL_FILE_NAME_CHARACTERS = "[" + "?/\\\\=+<>:;\\,\"\\|^\\[\\]" + "]";
+   private static File         CURRENT_DIRECTORY            = null;
 
 
    private GIOUtils() {
@@ -577,5 +578,23 @@ public class GIOUtils {
                                       final String extension) {
       return fileName.getName().toLowerCase().endsWith("." + extension.toLowerCase());
    }
+
+
+   /**
+    * Answer the last visited directory, or the user-home
+    */
+   public static File getCurrentDirectory() {
+      return (CURRENT_DIRECTORY == null) ? new File(System.getProperty("user.home")) : CURRENT_DIRECTORY;
+   }
+
+
+   public static void setCurrentDirectory(final File currentDirectory) {
+      if (currentDirectory != null) {
+         if (currentDirectory.isDirectory() && currentDirectory.exists()) {
+            CURRENT_DIRECTORY = currentDirectory;
+         }
+      }
+   }
+
 
 }
