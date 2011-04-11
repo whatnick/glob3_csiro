@@ -135,7 +135,7 @@ public class GGroupAttribute
    }
 
 
-   private JLabel makeBold(final JLabel label) {
+   private static JLabel makeBold(final JLabel label) {
       final Font font = label.getFont();
 
       label.setFont(font.deriveFont(font.getStyle() ^ Font.BOLD));
