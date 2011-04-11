@@ -188,6 +188,7 @@ public class GVectorial2DModule
       if (returnVal == JFileChooser.APPROVE_OPTION) {
          final File selectedFile = fileChooser.getSelectedFile();
          if (selectedFile != null) {
+            GIOUtils.setCurrentDirectory(selectedFile.getParentFile());
             openFile(selectedFile, application);
          }
       }
@@ -234,7 +235,10 @@ public class GVectorial2DModule
 
 
    private JFileChooser createFileChooser(final IGlobeApplication application) {
-      final JFileChooser fileChooser = new JFileChooser(System.getProperty("user.home")) {
+
+      final File currentDirectory = GIOUtils.getCurrentDirectory();
+
+      final JFileChooser fileChooser = new JFileChooser(currentDirectory) {
          private static final long serialVersionUID = 1L;
 
 
