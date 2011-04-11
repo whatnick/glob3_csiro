@@ -68,7 +68,6 @@ VectorT extends IVector<VectorT, ?>
 
       }
 
-
       return output;
    }
 
@@ -87,6 +86,7 @@ VectorT extends IVector<VectorT, ?>
 
       System.out.println();
 
+
       final GLinesToEquispacedPoints<IVector3> alg3 = new GLinesToEquispacedPoints<IVector3>();
 
       final IPolygonalChain3D line3 = new GSegment3D(new GVector3D(0, 0, 0), new GVector3D(0, 10, 0));
@@ -96,6 +96,8 @@ VectorT extends IVector<VectorT, ?>
       for (final IVector3 point : points3) {
          System.out.println(" " + point);
       }
+
+
    }
 
 }
