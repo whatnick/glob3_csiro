@@ -231,7 +231,6 @@ public abstract class GFloatLayerAttribute
       slider.setMinorTickSpacing((intMax - intMin) / 25);
       slider.setPaintTicks(true);
       slider.setPaintLabels(false);
-      //      slider.setLabelTable(createSliderLabels(_minimum, _maximum, _stepSize));
       slider.setSnapToTicks(true);
 
       if (isReadOnly()) {
@@ -260,35 +259,6 @@ public abstract class GFloatLayerAttribute
 
       return slider;
    }
-
-
-   //   private static final DecimalFormat LABEL_FORMAT = new DecimalFormat("##0.#");
-   //
-   //
-   //   private static Dictionary<Integer, JLabel> createSliderLabels(final float minimum,
-   //                                                                 final float maximum,
-   //                                                                 final float stepSize) {
-   //
-   //      final Dictionary<Integer, JLabel> result = new Hashtable<Integer, JLabel>();
-   //
-   //      for (float value = minimum; value <= maximum; value += stepSize) {
-   //         final int intValue = toInt(value, stepSize);
-   //
-   //         final String text = LABEL_FORMAT.format(GMath.roundTo(value, stepSize));
-   //         result.put(intValue, makeFontSmaller(new JLabel(text)));
-   //      }
-   //
-   //      return result;
-   //   }
-   //
-   //
-   //   private static JLabel makeFontSmaller(final JLabel label) {
-   //      final Font font = label.getFont();
-   //
-   //      label.setFont(font.deriveFont(font.getSize2D() * 0.75f));
-   //
-   //      return label;
-   //   }
 
 
    private static int toInt(final float value,

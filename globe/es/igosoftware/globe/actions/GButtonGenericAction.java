@@ -44,7 +44,6 @@ import javax.swing.Icon;
 import javax.swing.JMenuItem;
 
 import es.igosoftware.globe.IGlobeApplication;
-import es.igosoftware.utils.GSwingUtils;
 
 
 public abstract class GButtonGenericAction
@@ -90,7 +89,7 @@ public abstract class GButtonGenericAction
 
    @Override
    public Component createToolbarWidget(final IGlobeApplication application) {
-      return GSwingUtils.createToolbarButton(getIcon(), application.getTranslation(getLabel()), new ActionListener() {
+      return GSwingFactory.createToolbarButton(getIcon(), application.getTranslation(getLabel()), new ActionListener() {
          @Override
          public void actionPerformed(final ActionEvent e) {
             execute();

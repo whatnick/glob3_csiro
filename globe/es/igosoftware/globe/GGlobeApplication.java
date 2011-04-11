@@ -88,6 +88,7 @@ import org.pushingpixels.substance.api.fonts.FontPolicy;
 import org.pushingpixels.substance.api.fonts.FontSet;
 import org.pushingpixels.substance.api.skin.SubstanceMistAquaLookAndFeel;
 
+import es.igosoftware.globe.actions.GSwingFactory;
 import es.igosoftware.globe.actions.IGenericAction;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
@@ -104,7 +105,6 @@ import es.igosoftware.util.GPair;
 import es.igosoftware.util.GUtils;
 import es.igosoftware.util.IPredicate;
 import es.igosoftware.util.LRUCache;
-import es.igosoftware.utils.GSwingUtils;
 import es.igosoftware.utils.GWrapperFontSet;
 import gov.nasa.worldwind.BasicModel;
 import gov.nasa.worldwind.Configuration;
@@ -643,8 +643,8 @@ public abstract class GGlobeApplication
          return;
       }
 
-      final JMenuItem exitItem = GSwingUtils.createMenuItem(getTranslation("Exit"), getSmallIcon(GFileName.relative("quit.png")),
-               'x', new ActionListener() {
+      final JMenuItem exitItem = GSwingFactory.createMenuItem(getTranslation("Exit"),
+               getSmallIcon(GFileName.relative("quit.png")), 'x', new ActionListener() {
                   @Override
                   public void actionPerformed(final ActionEvent e) {
                      exit();
