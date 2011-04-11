@@ -37,12 +37,14 @@
 package es.igosoftware.globe.attributes;
 
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.util.EventListener;
 
+import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
@@ -144,7 +146,8 @@ public abstract class GFloatLayerAttribute
       Component widget = null;
       switch (_widgetType) {
          case SLIDER:
-            // TODO: create slider, now just pass trought to spinner
+            widget = createSlider();
+            break;
 
          case SPINNER:
             widget = createSpinner();
@@ -203,6 +206,100 @@ public abstract class GFloatLayerAttribute
       });
 
       return text;
+   }
+
+
+   private JSlider createSlider() {
+
+      final int intMin = toInt(_minimum, _stepSize);
+      final int intMax = toInt(_maximum, _stepSize);
+      final int intValue = toInt(get(), _stepSize);
+
+      final JSlider slider = new JSlider(JSlider.HORIZONTAL, intMin, intMax, intValue) {
+         private static final long serialVersionUID = 1L;
+
+
+         @Override
+         public Dimension getPreferredSize() {
+            final Dimension superPreferredSize = super.getPreferredSize();
+            return new Dimension(superPreferredSize.width / 2, superPreferredSize.height);
+         }
+      };
+
+      slider.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+      slider.setMajorTickSpacing((intMax - intMin) / 5);
+      slider.setMinorTickSpacing((intMax - intMin) / 25);
+      slider.setPaintTicks(true);
+      slider.setPaintLabels(false);
+      //      slider.setLabelTable(createSliderLabels(_minimum, _maximum, _stepSize));
+      slider.setSnapToTicks(true);
+
+      if (isReadOnly()) {
+         slider.setEnabled(false);
+      }
+      else {
+         slider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(final ChangeEvent e) {
+               if (slider.getValueIsAdjusting()) {
+                  return;
+               }
+
+               final float floatValue = toFloat(slider.getValue(), _stepSize);
+               set(floatValue);
+            }
+         });
+      }
+
+      setListener(new IChangeListener() {
+         @Override
+         public void changed() {
+            slider.setValue(toInt(get(), _stepSize));
+         }
+      });
+
+      return slider;
+   }
+
+
+   //   private static final DecimalFormat LABEL_FORMAT = new DecimalFormat("##0.#");
+   //
+   //
+   //   private static Dictionary<Integer, JLabel> createSliderLabels(final float minimum,
+   //                                                                 final float maximum,
+   //                                                                 final float stepSize) {
+   //
+   //      final Dictionary<Integer, JLabel> result = new Hashtable<Integer, JLabel>();
+   //
+   //      for (float value = minimum; value <= maximum; value += stepSize) {
+   //         final int intValue = toInt(value, stepSize);
+   //
+   //         final String text = LABEL_FORMAT.format(GMath.roundTo(value, stepSize));
+   //         result.put(intValue, makeFontSmaller(new JLabel(text)));
+   //      }
+   //
+   //      return result;
+   //   }
+   //
+   //
+   //   private static JLabel makeFontSmaller(final JLabel label) {
+   //      final Font font = label.getFont();
+   //
+   //      label.setFont(font.deriveFont(font.getSize2D() * 0.75f));
+   //
+   //      return label;
+   //   }
+
+
+   private static int toInt(final float value,
+                            final float stepSize) {
+      return (int) (value / stepSize);
+   }
+
+
+   private static float toFloat(final int value,
+                                final float stepSize) {
+      return (value * stepSize);
    }
 
 
