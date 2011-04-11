@@ -30,7 +30,6 @@ VectorT extends IVector<VectorT, ?>
    public List<VectorT> process(final IPolygonalChain<VectorT, ?, ?> geom,
                                 final double distance) {
 
-
       final List<VectorT> coords = geom.getPoints();
       if (coords.isEmpty()) {
          throw new RuntimeException("Invalid geometry: " + geom);
