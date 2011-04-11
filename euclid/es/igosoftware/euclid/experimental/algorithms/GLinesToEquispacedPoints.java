@@ -36,27 +36,26 @@ VectorT extends IVector<VectorT, ?>
          throw new RuntimeException("Invalid geometry: " + geom);
       }
 
-      final List<VectorT> output = new ArrayList<VectorT>(coords.size());
+      final ArrayList<VectorT> output = new ArrayList<VectorT>(coords.size());
 
       output.add(coords.get(0));
+
+      double remainingDistFromLastSegment = 0;
       for (int i = 0; i < coords.size() - 1; i++) {
          final VectorT current = coords.get(i);
          final VectorT next = coords.get(i + 1);
+
          final double distToNextPoint = next.distance(current);
 
-         double remainingDistFromLastSegment = 0;
-         final int iPoints = (int) ((remainingDistFromLastSegment + distToNextPoint) / distance);
-         if (iPoints > 0) {
-            double dDist = distance - remainingDistFromLastSegment;
+         final VectorT direction = next.sub(current).normalized();
 
-            final VectorT direction = next.sub(current).normalized();
-
+         final int pointsToAdd = (int) ((remainingDistFromLastSegment + distToNextPoint) / distance);
+         if (pointsToAdd > 0) {
             VectorT addedPoint = null;
-            for (int j = 0; j < iPoints; j++) {
-               dDist = distance - remainingDistFromLastSegment;
-               dDist += j * distance;
+            for (int j = 0; j < pointsToAdd; j++) {
+               final double dist = (distance - remainingDistFromLastSegment) + (j * distance);
 
-               addedPoint = current.add(direction.scale(dDist));
+               addedPoint = current.add(direction.scale(dist));
                output.add(addedPoint);
             }
 
@@ -67,6 +66,8 @@ VectorT extends IVector<VectorT, ?>
          }
 
       }
+
+      output.trimToSize(); // release some memory
 
       return output;
    }
