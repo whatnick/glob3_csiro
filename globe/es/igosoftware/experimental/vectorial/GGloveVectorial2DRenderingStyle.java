@@ -75,7 +75,7 @@ public class GGloveVectorial2DRenderingStyle
    private ILayerAttribute<?> createPointsLayerAttributes(final IGlobeApplication application) {
 
       final GFloatLayerAttribute pointSize = new GFloatLayerAttribute("Size", "Set the point size", "PointsSize", 0, 10,
-               GFloatLayerAttribute.WidgetType.SLIDER, 0.1f) {
+               GFloatLayerAttribute.WidgetType.SPINNER, 0.1f) {
          @Override
          public void set(final Float value) {
          }
@@ -101,7 +101,7 @@ public class GGloveVectorial2DRenderingStyle
    private ILayerAttribute<?> createCurveLayerAttributes(final IGlobeApplication application) {
 
       final GFloatLayerAttribute thickness = new GFloatLayerAttribute("Thickness", "Set the curves thickness", "CurveThickness",
-               0, 10, GFloatLayerAttribute.WidgetType.SLIDER, 0.1f) {
+               0, 10, GFloatLayerAttribute.WidgetType.SPINNER, 0.1f) {
          @Override
          public void set(final Float value) {
          }
@@ -128,7 +128,7 @@ public class GGloveVectorial2DRenderingStyle
    private ILayerAttribute<?> createSurfaceLayerAttributes(final IGlobeApplication application) {
 
       final GFloatLayerAttribute thickness = new GFloatLayerAttribute("Border Thickness", "Set the border thickness",
-               "SurfaceBorderThickness", 0, 10, GFloatLayerAttribute.WidgetType.SLIDER, 0.1f) {
+               "SurfaceBorderThickness", 0, 10, GFloatLayerAttribute.WidgetType.SPINNER, 0.1f) {
          @Override
          public void set(final Float value) {
          }
