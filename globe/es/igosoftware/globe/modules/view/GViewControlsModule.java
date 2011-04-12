@@ -63,7 +63,7 @@ public class GViewControlsModule
 
 
    @Override
-   public List<IGenericAction> getGenericActions(final IGlobeApplication application) {
+   public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application) {
 
       final IGenericAction action = new GButtonGenericAction("View configuration...", ' ', null, IGenericAction.MenuArea.VIEW,
                false) {
@@ -83,8 +83,8 @@ public class GViewControlsModule
 
 
    @Override
-   public List<ILayerAction> getLayerActions(final IGlobeApplication application,
-                                             final IGlobeLayer layer) {
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application,
+                                                       final IGlobeLayer layer) {
       return null;
    }
 
@@ -116,7 +116,6 @@ public class GViewControlsModule
 
    @Override
    public void initializeTranslations(final IGlobeApplication application) {
-      // TODO Auto-generated method stub
 
    }
 

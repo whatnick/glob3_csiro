@@ -36,29 +36,15 @@
 
 package es.igosoftware.euclid;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
 
 import es.igosoftware.euclid.vector.IVector;
-import es.igosoftware.euclid.vector.IVectorTransformer;
 
 
-public interface IGeometry<
-
-VectorT extends IVector<VectorT, ?, ?>,
-
-GeometryT extends IGeometry<VectorT, GeometryT>
-
->
+public interface IGeometry<VectorT extends IVector<VectorT, ?>>
          extends
             Serializable,
             Cloneable {
-
-   public void save(final String fileName) throws IOException;
-
-
-   public abstract void save(final DataOutputStream output) throws IOException;
 
 
    public abstract byte dimensions();
@@ -79,15 +65,10 @@ GeometryT extends IGeometry<VectorT, GeometryT>
    public abstract Object clone();
 
 
-   public GeometryT transformedBy(final IVectorTransformer<VectorT> transformer);
-
-
    public double precision();
 
 
-   public boolean closeTo(final GeometryT that);
-
-
    public VectorT getCentroid();
+
 
 }

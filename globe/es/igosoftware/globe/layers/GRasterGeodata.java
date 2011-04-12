@@ -70,8 +70,8 @@ public class GRasterGeodata {
 
    public Sector getAsSector() {
 
-      final IVector2<?> min = _projection.transformPoint(GProjection.EPSG_4326, new GVector2D(_xllcorner, _yllcorner));
-      final IVector2<?> max = _projection.transformPoint(GProjection.EPSG_4326, new GVector2D(_xllcorner + _cols * _cellsize,
+      final IVector2 min = _projection.transformPoint(GProjection.EPSG_4326, new GVector2D(_xllcorner, _yllcorner));
+      final IVector2 max = _projection.transformPoint(GProjection.EPSG_4326, new GVector2D(_xllcorner + _cols * _cellsize,
                _yllcorner + _rows * _cellsize));
 
       final Sector sector = new Sector(Angle.fromRadians(min.y()), Angle.fromRadians(max.y()), Angle.fromRadians(min.x()),

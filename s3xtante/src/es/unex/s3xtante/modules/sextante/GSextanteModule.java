@@ -3,6 +3,7 @@
 package es.unex.s3xtante.modules.sextante;
 
 import java.awt.Component;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -15,7 +16,6 @@ import es.igosoftware.globe.actions.GGenericAction;
 import es.igosoftware.globe.actions.IGenericAction;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
-import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GPair;
 import es.unex.s3xtante.modules.sextante.bindings.WWGUIFactory;
 import es.unex.s3xtante.modules.sextante.bindings.WWInputFactory;
@@ -58,7 +58,7 @@ public class GSextanteModule
 
 
    @Override
-   public List<IGenericAction> getGenericActions(final IGlobeApplication application) {
+   public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application) {
 
       final GGenericAction toolbox = new GButtonGenericAction("SEXTANTE Toolbox", 'T', new ImageIcon("images/sextante.gif"),
                IGenericAction.MenuArea.ANALYSIS, false) {
@@ -128,13 +128,13 @@ public class GSextanteModule
 
       };
 
-      return GCollections.createList(toolbox, modeler, commandline, history, results, explorer);
+      return Arrays.asList(toolbox, modeler, commandline, history, results, explorer);
    }
 
 
    @Override
-   public List<ILayerAction> getLayerActions(final IGlobeApplication application,
-                                             final IGlobeLayer layer) {
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application,
+                                                       final IGlobeLayer layer) {
       return null;
    }
 
@@ -185,7 +185,6 @@ public class GSextanteModule
 
    @Override
    public void initializeTranslations(final IGlobeApplication application) {
-      // TODO Auto-generated method stub
 
    }
 

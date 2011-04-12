@@ -123,8 +123,8 @@ public enum GProjection {
    }
 
 
-   public IVector3<?> transformPoint(final GProjection targetProjection,
-                                     final IVector3<?> point) {
+   public IVector3 transformPoint(final GProjection targetProjection,
+                                  final IVector3 point) {
       if (this == targetProjection) {
          return point;
       }
@@ -166,8 +166,8 @@ public enum GProjection {
    }
 
 
-   public IVector2<?> transformPoint(final GProjection targetProjection,
-                                     final IVector2<?> point) {
+   public IVector2 transformPoint(final GProjection targetProjection,
+                                  final IVector2 point) {
       if (this == targetProjection) {
          return point;
       }
@@ -236,11 +236,11 @@ public enum GProjection {
       final GProjection targetProjection = EPSG_4326;
       //final GProjection targetProjection = EPSG_23030;
 
-      final IVector3<?> reprojected = point.reproject(sourceProjection, targetProjection);
+      final IVector3 reprojected = point.reproject(sourceProjection, targetProjection);
       System.out.println("   reprojected=" + reprojected);
       System.out.println("           lat: " + Math.toDegrees(reprojected.y()) + " lon:" + Math.toDegrees(reprojected.x()));
 
-      final IVector3<?> rereprojected = reprojected.reproject(targetProjection, sourceProjection);
+      final IVector3 rereprojected = reprojected.reproject(targetProjection, sourceProjection);
       System.out.println("re-reprojected=" + rereprojected);
       System.out.println("delta= " + rereprojected.sub(point));
    }

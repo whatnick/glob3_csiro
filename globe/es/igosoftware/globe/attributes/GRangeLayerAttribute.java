@@ -36,10 +36,12 @@
 
 package es.igosoftware.globe.attributes;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.util.EventListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -63,11 +65,12 @@ public abstract class GRangeLayerAttribute<T extends Number & Comparable<T>>
 
 
    public GRangeLayerAttribute(final String label,
+                               final String description,
                                final String propertyName,
                                final boolean readOnly,
                                final GRange<T> minimumMaximum,
                                final T stepSize) {
-      super(label, propertyName, readOnly);
+      super(label, description, propertyName, readOnly);
 
       _minimumMaximum = minimumMaximum;
       _stepSize = stepSize;
@@ -75,8 +78,8 @@ public abstract class GRangeLayerAttribute<T extends Number & Comparable<T>>
 
 
    @Override
-   public GPair<Component, EventListener> createWidget(final IGlobeApplication application,
-                                                       final IGlobeLayer layer) {
+   public final GPair<Component, EventListener> createWidget(final IGlobeApplication application,
+                                                             final IGlobeLayer layer) {
 
       final GRange<T> value = get();
 
@@ -84,6 +87,9 @@ public abstract class GRangeLayerAttribute<T extends Number & Comparable<T>>
                _minimumMaximum._upper, _stepSize));
       final JSpinner toWidget = new JSpinner(new SpinnerNumberModel(value._upper, _minimumMaximum._lower, _minimumMaximum._upper,
                _stepSize));
+
+      setTooltip(application, fromWidget);
+      setTooltip(application, toWidget);
 
       if (isReadOnly()) {
          fromWidget.setEnabled(false);
@@ -136,6 +142,8 @@ public abstract class GRangeLayerAttribute<T extends Number & Comparable<T>>
       final EventListener listener = subscribeToEvents(layer);
 
       final JPanel row = new JPanel(new FlowLayout());
+      row.setBackground(Color.WHITE);
+      row.setBorder(BorderFactory.createEmptyBorder());
       row.add(fromWidget);
       row.add(new JLabel("-"));
       row.add(toWidget);
@@ -145,8 +153,8 @@ public abstract class GRangeLayerAttribute<T extends Number & Comparable<T>>
 
 
    @Override
-   public void cleanupWidget(final IGlobeLayer layer,
-                             final GPair<Component, EventListener> widget) {
+   public final void cleanupWidget(final IGlobeLayer layer,
+                                   final GPair<Component, EventListener> widget) {
       setListener(null);
 
       unsubscribeFromEvents(layer, widget._second);

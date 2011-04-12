@@ -57,6 +57,9 @@ public interface ILayerAttribute<T> {
    public String getLabel();
 
 
+   public String getDescription();
+
+
    public GPair<Component, EventListener> createWidget(final IGlobeApplication application,
                                                        final IGlobeLayer layer);
 
@@ -74,9 +77,10 @@ public interface ILayerAttribute<T> {
    public boolean isReadOnly();
 
 
-   public void setListener(final IChangeListener listener);
+   public void setListener(final ILayerAttribute.IChangeListener listener);
 
 
    public void changed();
+
 
 }

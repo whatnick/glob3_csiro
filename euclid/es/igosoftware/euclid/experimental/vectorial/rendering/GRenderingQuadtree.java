@@ -3,7 +3,7 @@
 package es.igosoftware.euclid.experimental.vectorial.rendering;
 
 import es.igosoftware.euclid.IBoundedGeometry;
-import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.ntree.GGeometryNTreeParameters;
 import es.igosoftware.euclid.ntree.quadtree.GGeometryQuadtree;
@@ -11,16 +11,21 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.util.ITransformer;
 
 
-public class GRenderingQuadtree
+public class GRenderingQuadtree<FeatureT extends IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>>
          extends
-            GGeometryQuadtree<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>> {
+            GGeometryQuadtree<FeatureT> {
+
 
    public GRenderingQuadtree(final String name,
-                             final GAxisAlignedRectangle bounds,
-                             final Iterable<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>> elements,
-                             final ITransformer<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>, IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle>> transformer,
+                             final Iterable<? extends FeatureT> elements,
                              final GGeometryNTreeParameters parameters) {
-      super(name, bounds, elements, transformer, parameters);
+      super(name, null, elements, new ITransformer<FeatureT, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>() {
+         @Override
+         public IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> transform(final FeatureT feature) {
+            return feature.getDefaultGeometry();
+         }
+      }, parameters);
    }
+
 
 }

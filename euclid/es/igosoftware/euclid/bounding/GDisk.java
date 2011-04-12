@@ -37,21 +37,19 @@
 package es.igosoftware.euclid.bounding;
 
 import es.igosoftware.euclid.vector.IVector2;
-import es.igosoftware.euclid.vector.IVectorTransformer;
 import es.igosoftware.util.GMath;
 
 
 public final class GDisk
          extends
-            GNBall<IVector2<?>, GDisk>
+            GNBall<IVector2, GDisk>
          implements
-            IBounds2D<GDisk>,
-            IFiniteBounds<IVector2<?>, GDisk> {
+            IBounds2D<GDisk> {
 
    private static final long serialVersionUID = 1L;
 
 
-   public GDisk(final IVector2<?> center,
+   public GDisk(final IVector2 center,
                 final double radius) {
       super(center, radius);
    }
@@ -75,12 +73,6 @@ public final class GDisk
    }
 
 
-   //   @Override
-   //   public boolean touchesWithBall(final GBall ball) {
-   //      return ball.touchesWithDisk(this);
-   //   }
-
-
    @Override
    public boolean touchesWithDisk(final GDisk disk) {
       final double radius = _radius + disk._radius;
@@ -95,34 +87,9 @@ public final class GDisk
    }
 
 
-   //   @Override
-   //   public boolean touchesWithBox(final GAxisAlignedBox box) {
-   //      return box.touchesWithDisk(this);
-   //   }
-
-
    @Override
    public GDisk getBounds() {
       return this;
-   }
-
-
-   //   @Override
-   //   public GAxisAlignedBox asBox() {
-   //      return new GAxisAlignedRectangle(center.sub(radius), center.add(radius)).asBox();
-   //   }
-
-
-   //   @Override
-   //   public boolean touchesWithPlane(final GPlane plane) {
-   //      return plane.touchesWithDisk(this);
-   //   }
-
-
-   @Override
-   public GDisk transformedBy(final IVectorTransformer<IVector2<?>> transformer) {
-      // TODO: scale/shear radius;
-      return new GDisk(_center.transformedBy(transformer), _radius);
    }
 
 
@@ -145,7 +112,7 @@ public final class GDisk
 
 
    @Override
-   public boolean touchesBounds(final IBounds<IVector2<?>, ?> that) {
+   public boolean touchesBounds(final IBounds<IVector2, ?> that) {
       return touches((IBounds2D<?>) that);
    }
 

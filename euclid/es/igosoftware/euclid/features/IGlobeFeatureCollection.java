@@ -2,8 +2,10 @@
 
 package es.igosoftware.euclid.features;
 
+import java.util.EnumSet;
 import java.util.List;
 
+import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.projection.GProjection;
@@ -12,15 +14,13 @@ import es.igosoftware.euclid.vector.IVector;
 
 public interface IGlobeFeatureCollection<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
-FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>,
-
-TypeT extends IGlobeFeatureCollection<VectorT, FeatureBoundsT, TypeT>
+FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
 
 >
          extends
-            Iterable<IGlobeFeature<VectorT, FeatureBoundsT>> {
+            Iterable<IGlobeFeature<VectorT, FeatureGeometryT>> {
 
 
    public static class AbortVisiting
@@ -33,19 +33,16 @@ TypeT extends IGlobeFeatureCollection<VectorT, FeatureBoundsT, TypeT>
 
    public static interface IFeatureVisitor<
 
-   VectorT extends IVector<VectorT, ?, ?>,
+   VectorT extends IVector<VectorT, ?>,
 
-   FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
+   FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
 
    > {
 
-      public void visit(final IGlobeFeature<VectorT, FeatureBoundsT> feature,
+      public void visit(final IGlobeFeature<VectorT, FeatureGeometryT> feature,
                         final long index) throws IGlobeFeatureCollection.AbortVisiting;
 
    }
-
-
-   public GVectorLayerType getShapeType();
 
 
    public List<GField> getFields();
@@ -54,10 +51,10 @@ TypeT extends IGlobeFeatureCollection<VectorT, FeatureBoundsT, TypeT>
    public GProjection getProjection();
 
 
-   public void acceptVisitor(final IGlobeFeatureCollection.IFeatureVisitor<VectorT, FeatureBoundsT> visitor);
+   public void acceptVisitor(final IGlobeFeatureCollection.IFeatureVisitor<VectorT, FeatureGeometryT> visitor);
 
 
-   public IGlobeFeature<VectorT, FeatureBoundsT> get(final long index);
+   public IGlobeFeature<VectorT, FeatureGeometryT> get(final long index);
 
 
    public boolean isEmpty();
@@ -71,5 +68,10 @@ TypeT extends IGlobeFeatureCollection<VectorT, FeatureBoundsT, TypeT>
 
    public GAxisAlignedOrthotope<VectorT, ?> getBounds();
 
+
+   public boolean isEditable();
+
+
+   public EnumSet<GGeometryType> getGeometryType();
 
 }

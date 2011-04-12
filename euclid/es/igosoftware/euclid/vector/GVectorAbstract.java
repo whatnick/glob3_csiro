@@ -38,23 +38,20 @@ package es.igosoftware.euclid.vector;
 
 import es.igosoftware.euclid.GGeometryAbstract;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
-import es.igosoftware.euclid.shape.GRenderType;
 import es.igosoftware.util.GMath;
 
 
 public abstract class GVectorAbstract<
 
-VectorT extends IVector<VectorT, ?, BoundsT>,
-
-GeometryT extends GVectorAbstract<VectorT, GeometryT, BoundsT>,
+VectorT extends IVector<VectorT, BoundsT>,
 
 BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
 
 >
          extends
-            GGeometryAbstract<VectorT, GeometryT>
+            GGeometryAbstract<VectorT>
          implements
-            IVector<VectorT, GeometryT, BoundsT> {
+            IVector<VectorT, BoundsT> {
 
    private static final long serialVersionUID = 1L;
 
@@ -81,7 +78,7 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
    public final double angle(final VectorT that) {
       final double normProduct = length() * that.length();
       if (GMath.closeToZero(normProduct)) {
-         throw new RuntimeException("the product of the lenght() of the vectors is zero");
+         throw new RuntimeException("the product of the length() of the vectors is zero");
       }
 
       final double dot = dot(that) / normProduct;
@@ -107,6 +104,10 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
    public abstract boolean equals(final Object that);
 
 
+   @Override
+   public abstract int hashCode();
+
+
    @SuppressWarnings("unchecked")
    @Override
    public VectorT getCentroid() {
@@ -114,9 +115,29 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
    }
 
 
+   @SuppressWarnings("unchecked")
    @Override
-   public GRenderType getRenderType() {
-      return GRenderType.POINT;
+   public VectorT closestPointOnBoundary(final VectorT point) {
+      return (VectorT) this;
    }
+
+
+   @Override
+   public double squaredDistanceToBoundary(final VectorT point) {
+      return squaredDistance(point);
+   }
+
+
+   @Override
+   public double distanceToBoundary(final VectorT point) {
+      return distance(point);
+   }
+
+
+   @Override
+   public final boolean containsOnBoundary(final VectorT point) {
+      return closeTo(point);
+   }
+
 
 }

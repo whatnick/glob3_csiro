@@ -4,55 +4,59 @@ package es.igosoftware.euclid.features;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 
-import es.igosoftware.euclid.IGeometry;
+import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.mutability.GMutableAbstract;
 import es.igosoftware.euclid.projection.GProjection;
-import es.igosoftware.euclid.shape.GLinesStrip;
-import es.igosoftware.euclid.shape.GSegment;
-import es.igosoftware.euclid.shape.IPolygon;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GAssert;
 
 
 public class GListMutableFeatureCollection<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
-FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
-
->
+FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>>
          extends
-            GMutableAbstract<GListMutableFeatureCollection<VectorT, FeatureBoundsT>>
+            GMutableAbstract<GListMutableFeatureCollection<VectorT, FeatureGeometryT>>
          implements
-            IGlobeMutableFeatureCollection<VectorT, FeatureBoundsT, GListMutableFeatureCollection<VectorT, FeatureBoundsT>> {
+            IGlobeMutableFeatureCollection<VectorT, FeatureGeometryT, GListMutableFeatureCollection<VectorT, FeatureGeometryT>> {
 
 
-   private final GProjection                                       _projection;
-   private final ArrayList<GField>                                 _fields;
-   private final ArrayList<IGlobeFeature<VectorT, FeatureBoundsT>> _features;
-   private final String                                            _uniqueID;
+   private final GProjection                                         _projection;
+   private final ArrayList<GField>                                   _fields;
+   private final ArrayList<IGlobeFeature<VectorT, FeatureGeometryT>> _features;
+   private final String                                              _uniqueID;
 
-   private GAxisAlignedOrthotope<VectorT, ?>                       _bounds;
+   private GAxisAlignedOrthotope<VectorT, ?>                         _bounds;
+   private EnumSet<GGeometryType>                                    _geometryType;
 
 
    public GListMutableFeatureCollection(final GProjection projection,
                                         final List<GField> fields,
-                                        final List<IGlobeFeature<VectorT, FeatureBoundsT>> features,
+                                        final String uniqueID) {
+      this(projection, fields, null, uniqueID);
+   }
+
+
+   public GListMutableFeatureCollection(final GProjection projection,
+                                        final List<GField> fields,
+                                        final List<IGlobeFeature<VectorT, FeatureGeometryT>> features,
                                         final String uniqueID) {
       GAssert.notNull(projection, "projection");
       GAssert.notNull(fields, "fields");
-      GAssert.notEmpty(features, "features");
 
       _projection = projection;
 
       // creates copies of the lists to protect the modifications from outside
       _fields = new ArrayList<GField>(fields);
-      _features = new ArrayList<IGlobeFeature<VectorT, FeatureBoundsT>>(features);
+      _features = (features == null) ? new ArrayList<IGlobeFeature<VectorT, FeatureGeometryT>>(0)
+                                    : new ArrayList<IGlobeFeature<VectorT, FeatureGeometryT>>(features);
 
       _uniqueID = uniqueID; // can be null, it means no disk-cache is possible
    }
@@ -81,7 +85,7 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
 
    @Override
    public void set(final long index,
-                   final IGlobeFeature<VectorT, FeatureBoundsT> value) {
+                   final IGlobeFeature<VectorT, FeatureGeometryT> value) {
       checkMutable();
 
       _features.set(toInt(index), value);
@@ -98,20 +102,24 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
 
 
    @Override
-   public void add(final IGlobeFeature<VectorT, FeatureBoundsT> value) {
+   public void add(final IGlobeFeature<VectorT, FeatureGeometryT> value) {
       checkMutable();
 
       _features.add(value);
+
+      _geometryType.addAll(GGeometryType.getGeometryType(value.getDefaultGeometry()));
+
       changed();
    }
 
 
    @Override
-   public IGlobeFeature<VectorT, FeatureBoundsT> remove(final long index) {
+   public IGlobeFeature<VectorT, FeatureGeometryT> remove(final long index) {
       checkMutable();
 
-      final IGlobeFeature<VectorT, FeatureBoundsT> result = _features.remove(toInt(index));
+      final IGlobeFeature<VectorT, FeatureGeometryT> result = _features.remove(toInt(index));
       if (result != null) {
+         _geometryType = null;
          changed();
       }
       return result;
@@ -119,11 +127,12 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
 
 
    @Override
-   public boolean remove(final IGlobeFeature<VectorT, FeatureBoundsT> value) {
+   public boolean remove(final IGlobeFeature<VectorT, FeatureGeometryT> value) {
       checkMutable();
 
       final boolean removed = _features.remove(value);
       if (removed) {
+         _geometryType = null;
          changed();
       }
       return removed;
@@ -139,23 +148,8 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
       }
 
       _features.clear();
+      _geometryType = null;
       changed();
-   }
-
-
-   private static <VectorT extends IVector<VectorT, ?, ?>> GVectorLayerType getShapeType(final IGeometry<VectorT, ?> geometry) {
-      if (geometry instanceof IVector) {
-         return GVectorLayerType.POINT;
-      }
-      else if ((geometry instanceof GSegment) || (geometry instanceof GLinesStrip)) {
-         return GVectorLayerType.LINE;
-      }
-      else if (geometry instanceof IPolygon) {
-         return GVectorLayerType.POLYGON;
-      }
-      else {
-         throw new RuntimeException("Unsupported geometry type: " + geometry.getClass());
-      }
    }
 
 
@@ -167,12 +161,26 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
 
 
    @Override
-   public final GVectorLayerType getShapeType() {
-      if (_features.isEmpty()) {
-         return GVectorLayerType.POLYGON;
+   public final EnumSet<GGeometryType> getGeometryType() {
+      if (_geometryType == null) {
+         _geometryType = calculateGeometriesTypes();
       }
 
-      return getShapeType(_features.get(0).getDefaultGeometry());
+      return _geometryType;
+   }
+
+
+   private EnumSet<GGeometryType> calculateGeometriesTypes() {
+      final EnumSet<GGeometryType> result = EnumSet.noneOf(GGeometryType.class);
+
+      for (final IGlobeFeature<VectorT, FeatureGeometryT> feature : _features) {
+         result.addAll(GGeometryType.getGeometryType(feature.getDefaultGeometry()));
+         if (result.containsAll(GGeometryType.ALL)) {
+            return GGeometryType.ALL;
+         }
+      }
+
+      return result;
    }
 
 
@@ -189,7 +197,7 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
 
 
    @Override
-   public void acceptVisitor(final IGlobeFeatureCollection.IFeatureVisitor<VectorT, FeatureBoundsT> visitor) {
+   public void acceptVisitor(final IGlobeFeatureCollection.IFeatureVisitor<VectorT, FeatureGeometryT> visitor) {
       try {
          for (int i = 0; i < _features.size(); i++) {
             visitor.visit(_features.get(i), i);
@@ -202,7 +210,7 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
 
 
    @Override
-   public IGlobeFeature<VectorT, FeatureBoundsT> get(final long index) {
+   public IGlobeFeature<VectorT, FeatureGeometryT> get(final long index) {
       return _features.get(toInt(index));
    }
 
@@ -248,8 +256,14 @@ FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>
 
 
    @Override
-   public Iterator<IGlobeFeature<VectorT, FeatureBoundsT>> iterator() {
+   public Iterator<IGlobeFeature<VectorT, FeatureGeometryT>> iterator() {
       return Collections.unmodifiableList(_features).iterator();
+   }
+
+
+   @Override
+   public boolean isEditable() {
+      return true;
    }
 
 

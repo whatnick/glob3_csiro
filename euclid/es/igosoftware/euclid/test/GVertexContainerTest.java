@@ -57,11 +57,11 @@ import es.igosoftware.euclid.verticescontainer.IVertexContainer;
 
 
 public class GVertexContainerTest {
-   final private static float         DEFAULT_INTENSITY = 1f;
-   final private static GVector3D     DEFAULT_NORMAL    = GVector3D.X_UP;
-   final private static GColorI       DEFAULT_COLOR     = GColorI.WHITE;
+   final private static float      DEFAULT_INTENSITY = 1f;
+   final private static GVector3D  DEFAULT_NORMAL    = GVector3D.X_UP;
+   final private static GColorI    DEFAULT_COLOR     = GColorI.WHITE;
 
-   final private static IVector3<?>[] points            = { GVector3D.ZERO, //
+   final private static IVector3[] points            = { GVector3D.ZERO, //
             new GVector3D(1, 0, 0), //
             new GVector3D(1, 1, 0), //
             new GVector3D(1, 1, 1), //
@@ -69,9 +69,9 @@ public class GVertexContainerTest {
             new GVector3D(1, 2, 2), //
             new GVector3D(2, 2, 2), //
             new GVector3D(3, 3, 3), //
-            new GVector3D(3, 2, 1)                     };
+            new GVector3D(3, 2, 1)                  };
 
-   final private static float[]       intensities       = { GVertexContainerTest.DEFAULT_INTENSITY, //
+   final private static float[]    intensities       = { GVertexContainerTest.DEFAULT_INTENSITY, //
             GVertexContainerTest.DEFAULT_INTENSITY, //
             GVertexContainerTest.DEFAULT_INTENSITY, //
             0.5f, //
@@ -79,9 +79,9 @@ public class GVertexContainerTest {
             GVertexContainerTest.DEFAULT_INTENSITY, //
             GVertexContainerTest.DEFAULT_INTENSITY, //
             GVertexContainerTest.DEFAULT_INTENSITY, //
-            GVertexContainerTest.DEFAULT_INTENSITY     };
+            GVertexContainerTest.DEFAULT_INTENSITY  };
 
-   final private static IVector3<?>[] normals           = { GVertexContainerTest.DEFAULT_NORMAL, //
+   final private static IVector3[] normals           = { GVertexContainerTest.DEFAULT_NORMAL, //
             GVertexContainerTest.DEFAULT_NORMAL, //
             GVertexContainerTest.DEFAULT_NORMAL, //
             GVertexContainerTest.DEFAULT_NORMAL, //
@@ -89,9 +89,9 @@ public class GVertexContainerTest {
             GVector3D.Z_UP, //
             new GVector3D(1, 1, 1).normalized(), //
             GVertexContainerTest.DEFAULT_NORMAL, //
-            GVertexContainerTest.DEFAULT_NORMAL        };
+            GVertexContainerTest.DEFAULT_NORMAL     };
 
-   final private static IColor[]      colors            = { GVertexContainerTest.DEFAULT_COLOR, //
+   final private static IColor[]   colors            = { GVertexContainerTest.DEFAULT_COLOR, //
             GVertexContainerTest.DEFAULT_COLOR, //
             GVertexContainerTest.DEFAULT_COLOR, //
             GVertexContainerTest.DEFAULT_COLOR, //
@@ -99,19 +99,19 @@ public class GVertexContainerTest {
             GVertexContainerTest.DEFAULT_COLOR, //
             GVertexContainerTest.DEFAULT_COLOR, //
             GColorI.newRGB(0.1f, 0.2f, 0.3f), //
-            GColorI.newRGB(0.11f, 0.22f, 0.33f)        };
+            GColorI.newRGB(0.11f, 0.22f, 0.33f)     };
 
-   final private static IVector3<?>[] sortedPoints      = { new GVector3D(3, 2, 1), new GVector3D(1, 0, 0),
-            new GVector3D(1, 1, 2), new GVector3D(3, 3, 3), new GVector3D(2, 2, 2), new GVector3D(1, 1, 1),
-            new GVector3D(0, 0, 0), new GVector3D(1, 2, 2), new GVector3D(1, 1, 0) };
+   final private static IVector3[] sortedPoints      = { new GVector3D(3, 2, 1), new GVector3D(1, 0, 0), new GVector3D(1, 1, 2),
+            new GVector3D(3, 3, 3), new GVector3D(2, 2, 2), new GVector3D(1, 1, 1), new GVector3D(0, 0, 0),
+            new GVector3D(1, 2, 2), new GVector3D(1, 1, 0) };
 
-   final private static IVector3<?>[] sortedSubPoints   = { new GVector3D(1, 0, 0), new GVector3D(1, 1, 2),
-            new GVector3D(1, 1, 1), new GVector3D(3, 3, 3), };
+   final private static IVector3[] sortedSubPoints   = { new GVector3D(1, 0, 0), new GVector3D(1, 1, 2), new GVector3D(1, 1, 1),
+            new GVector3D(3, 3, 3),                 };
 
 
    private static void assertCloseTo(final String description,
-                                     final IVector3<?> expected,
-                                     final IVector3<?> current) {
+                                     final IVector3 expected,
+                                     final IVector3 current) {
       if (expected.closeTo(current)) {
          return;
       }
@@ -132,7 +132,7 @@ public class GVertexContainerTest {
 
 
    private static void testAddVertex(final GVertex3Container container,
-                                     final IVector3<?> point) {
+                                     final IVector3 point) {
       final int previousSize = container.size();
 
       container.addPoint(point);
@@ -146,7 +146,7 @@ public class GVertexContainerTest {
 
 
    private static void testAddVertex(final GVertex3Container container,
-                                     final IVector3<?> point,
+                                     final IVector3 point,
                                      final float intensity) {
       final int previousSize = container.size();
 
@@ -161,8 +161,8 @@ public class GVertexContainerTest {
 
 
    private static void testAddVertex(final GVertex3Container container,
-                                     final IVector3<?> point,
-                                     final IVector3<?> normal) {
+                                     final IVector3 point,
+                                     final IVector3 normal) {
       final int previousSize = container.size();
 
       container.addPoint(point, normal);
@@ -176,7 +176,7 @@ public class GVertexContainerTest {
 
 
    private static void testAddVertex(final GVertex3Container container,
-                                     final IVector3<?> point,
+                                     final IVector3 point,
                                      final IColor color) {
       final int previousSize = container.size();
 
@@ -192,17 +192,17 @@ public class GVertexContainerTest {
 
    private static void testAsSortedContainer(final GVertex3Container container) {
 
-      final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> newContainer;
+      final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> newContainer;
 
 
-      final Comparator<IVertexContainer.Vertex<IVector3<?>>> comparador = new Comparator<IVertexContainer.Vertex<IVector3<?>>>() {
+      final Comparator<IVertexContainer.Vertex<IVector3>> comparador = new Comparator<IVertexContainer.Vertex<IVector3>>() {
 
          @Override
-         public int compare(final IVertexContainer.Vertex<IVector3<?>> vertex1,
-                            final IVertexContainer.Vertex<IVector3<?>> vertex2) {
-            final IVector3<?> p1 = vertex1._point;
-            final IVector3<?> p2 = vertex2._point;
-            final IVector3<?> center = container.getAverage()._point;
+         public int compare(final IVertexContainer.Vertex<IVector3> vertex1,
+                            final IVertexContainer.Vertex<IVector3> vertex2) {
+            final IVector3 p1 = vertex1._point;
+            final IVector3 p2 = vertex2._point;
+            final IVector3 center = container.getAverage()._point;
 
             final double angle = GVectorUtils.getSignedAngle(center, p1, p2);
 
@@ -233,8 +233,8 @@ public class GVertexContainerTest {
       //-- Subcontainer tests
 
       final int[] subIndices = { 4, 1, 7, 3 };
-      final GSubVertexContainer<IVector3<?>> subContainer = container.asSubContainer(subIndices);
-      final GSubVertexContainer<IVector3<?>> newSubContainer = subContainer.asSortedSubContainer(comparador);
+      final GSubVertexContainer<IVector3> subContainer = container.asSubContainer(subIndices);
+      final GSubVertexContainer<IVector3> newSubContainer = subContainer.asSortedSubContainer(comparador);
       Assert.assertEquals("size", subContainer.size(), newSubContainer.size());
 
       //      System.out.println("SUBCONTAINER DATA: ");
@@ -295,9 +295,9 @@ public class GVertexContainerTest {
       }
 
       int i = 0;
-      final Iterator<IVector3<?>> iterator = container.pointsIterator();
+      final Iterator<IVector3> iterator = container.pointsIterator();
       while (iterator.hasNext()) {
-         final IVector3<?> point = iterator.next();
+         final IVector3 point = iterator.next();
          assertCloseTo("point #" + i, points[i], point);
          i++;
       }
@@ -321,7 +321,7 @@ public class GVertexContainerTest {
    //
    //      container.addPoint(new GVector3D(0, 0, 0));
    //
-   //      final Iterator<IVector3<?>> iterator = container.pointsIterator();
+   //      final Iterator<IVector3> iterator = container.pointsIterator();
    //      while (iterator.hasNext()) {
    //         System.out.println(iterator.next());
    //      }

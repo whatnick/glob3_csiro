@@ -26,16 +26,22 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="libs/jogl/jogl.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/worldwind.jar" sourcepath="/home/dgd/Escritorio/worldwind-0.6.651.14101"/>
+	<classpathentry exported="true" kind="lib" path="libs/worldwind.jar" sourcepath="/home/oliver/Desktop/worldwind-0.6.786.15221"/>
 	<classpathentry kind="lib" path="libs/netcdf/netcdf-4.2.jar"/>
 	<classpathentry kind="lib" path="libs/netcdf/slf4j-api-1.5.6.jar"/>
 	<classpathentry kind="lib" path="libs/netcdf/slf4j-jdk14-1.5.6.jar"/>
-	<classpathentry kind="lib" path="libs/gt/gt-api-2.7-M3.jar" sourcepath="/home/dgd/Escritorio/geotools/geotools-2.7-M3-SOURCES"/>
+	<classpathentry kind="lib" path="libs/gt/gt-api-2.7-M3.jar" sourcepath="/home/fpulido/Escritorio/Tools/geotools-2.7-M3-project.zip"/>
 	<classpathentry kind="lib" path="libs/gt/gt-epsg-hsql-2.7-M3.jar"/>
 	<classpathentry kind="lib" path="libs/gt/gt-main-2.7-M3.jar" sourcepath="/home/dgd/Escritorio/geotools/geotools-2.7-M3-project.zip"/>
 	<classpathentry kind="lib" path="libs/gt/gt-metadata-2.7-M3.jar"/>
 	<classpathentry kind="lib" path="libs/gt/gt-referencing-2.7-M3.jar"/>
 	<classpathentry kind="lib" path="libs/gt/gt-shapefile-2.7-M3.jar"/>
+	<classpathentry kind="lib" path="libs/postgresql-9.0-801.jdbc4.jar"/>
+	<classpathentry kind="lib" path="libs/commons-dbcp-1.4.jar"/>
+	<classpathentry kind="lib" path="libs/commons-pool-1.5.5.jar"/>
+	<classpathentry kind="lib" path="libs/hsqldb-1.8.0.1.jar"/>
+	<classpathentry kind="lib" path="libs/gt/gt-jdbc-2.7-M3.jar"/>
+	<classpathentry kind="lib" path="libs/gt/gt-jdbc-postgis-2.7-M3.jar" sourcepath="/home/fpulido/Escritorio/Tools/geotools-2.7-M3-project.zip"/>
 	<classpathentry kind="lib" path="libs/gt/jts-1.11.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="libs/gson-1.6/gson-1.6.jar" sourcepath="libs/gson-1.6/gson-1.6-sources.jar">
@@ -43,5 +49,8 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/globe/libs/gson-1.6/gson-1.6-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="libs/gt/gt-swing-2.7-M3.jar" sourcepath="/home/fpulido/Escritorio/Tools/geotools-2.7-M3-project.zip"/>
+	<classpathentry kind="lib" path="libs/gt/gt-oracle-spatial-2.7-M3.jar"/>
+	<classpathentry kind="lib" path="libs/gt/gt-jdbc-oracle-2.7-M3.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

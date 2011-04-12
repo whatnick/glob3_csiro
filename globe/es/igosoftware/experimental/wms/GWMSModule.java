@@ -3,6 +3,7 @@
 package es.igosoftware.experimental.wms;
 
 import java.awt.Component;
+import java.util.Arrays;
 import java.util.List;
 
 import es.igosoftware.globe.GAbstractGlobeModule;
@@ -12,7 +13,7 @@ import es.igosoftware.globe.actions.GButtonGenericAction;
 import es.igosoftware.globe.actions.IGenericAction;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
-import es.igosoftware.util.GCollections;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GPair;
 
 
@@ -39,10 +40,10 @@ public class GWMSModule
 
 
    @Override
-   public List<IGenericAction> getGenericActions(final IGlobeApplication application) {
+   public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application) {
 
-      final IGenericAction addWMSLayer = new GButtonGenericAction("Add WMS layer", 'W', application.getIcon("earth-add.png"),
-               IGenericAction.MenuArea.FILE, true) {
+      final IGenericAction addWMSLayer = new GButtonGenericAction("Add WMS layer", 'W',
+               application.getSmallIcon(GFileName.relative("earth-add.png")), IGenericAction.MenuArea.FILE, true) {
 
          @Override
          public boolean isVisible() {
@@ -56,7 +57,7 @@ public class GWMSModule
          }
       };
 
-      return GCollections.createList(addWMSLayer);
+      return Arrays.asList(addWMSLayer);
    }
 
 
@@ -83,8 +84,8 @@ public class GWMSModule
 
 
    @Override
-   public List<ILayerAction> getLayerActions(final IGlobeApplication application,
-                                             final IGlobeLayer layer) {
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application,
+                                                       final IGlobeLayer layer) {
       return null;
    }
 
@@ -104,7 +105,6 @@ public class GWMSModule
 
    @Override
    public void initializeTranslations(final IGlobeApplication application) {
-      // TODO Auto-generated method stub
 
    }
 

@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GLogger;
 
 
@@ -49,7 +50,7 @@ public class GStatisticsUnit {
    private static final GLogger                                             LOGGER        = GLogger.instance();
    private static final String                                              LINE          = "-------------------------------------------------------------------------------";
 
-   private final String                                                     _targetDirectory;
+   private final GFileName                                                  _targetDirectory;
    private final String                                                     _name;
    //private final GStatisticsVariableAbstract<? extends Number>[]            _variables;
    private final List<GStatisticsVariableAbstract<? extends Number>>        _variables    = new ArrayList<GStatisticsVariableAbstract<? extends Number>>();
@@ -58,12 +59,12 @@ public class GStatisticsUnit {
 
    public GStatisticsUnit(final String name) {
       //_name = name;
-      this(name, "");
+      this(name, GFileName.CURRENT_DIRECTORY);
    }
 
 
    public GStatisticsUnit(final String name,
-                          final String directory) {
+                          final GFileName directory) {
       _name = name;
       _targetDirectory = directory;
    }

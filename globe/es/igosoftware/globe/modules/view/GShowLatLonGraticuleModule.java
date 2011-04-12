@@ -56,8 +56,6 @@ public class GShowLatLonGraticuleModule
          extends
             GAbstractGlobeModule {
 
-   private boolean _isActive = false;
-
 
    @Override
    public String getDescription() {
@@ -66,17 +64,16 @@ public class GShowLatLonGraticuleModule
 
 
    @Override
-   public List<IGenericAction> getGenericActions(final IGlobeApplication application) {
+   public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application) {
 
       final IGenericAction graticule = new GCheckBoxGenericAction("Show Lat-Lon Graticule", ' ', null,
                IGenericAction.MenuArea.VIEW, false, false) {
 
          @Override
          public void execute() {
-            _isActive = !_isActive;
             final List<Layer> layers = application.getModel().getLayers().getLayersByClass(LatLonGraticuleLayer.class);
             if (layers.size() != 0) {
-               layers.get(0).setEnabled(_isActive);
+               layers.get(0).setEnabled(isSelected());
             }
          }
 
@@ -94,8 +91,8 @@ public class GShowLatLonGraticuleModule
 
 
    @Override
-   public List<ILayerAction> getLayerActions(final IGlobeApplication application,
-                                             final IGlobeLayer layer) {
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application,
+                                                       final IGlobeLayer layer) {
       return null;
    }
 
@@ -130,7 +127,6 @@ public class GShowLatLonGraticuleModule
 
    @Override
    public void initializeTranslations(final IGlobeApplication application) {
-      // TODO Auto-generated method stub
 
    }
 

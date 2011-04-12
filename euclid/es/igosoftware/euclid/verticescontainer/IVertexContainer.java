@@ -57,7 +57,7 @@ import es.igosoftware.util.ITransformer;
 
 public interface IVertexContainer<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
 VertexT extends IVertexContainer.Vertex<VectorT>,
 
@@ -73,7 +73,7 @@ MutableT extends IMutable<MutableT>
     * 
     * @param <VectorT>
     */
-   public static class Vertex<VectorT extends IVector<VectorT, ?, ?>> {
+   public static class Vertex<VectorT extends IVector<VectorT, ?>> {
       public final VectorT _point;
       public final float   _intensity;
       public final VectorT _normal;
@@ -106,7 +106,7 @@ MutableT extends IMutable<MutableT>
    ///////////////////////////////////////////////////////////////////////////////
    public static interface VertexEvaluator<
 
-   VectorT extends IVector<VectorT, ?, ?>,
+   VectorT extends IVector<VectorT, ?>,
 
    VertexT extends IVertexContainer.Vertex<VectorT>
 
@@ -117,20 +117,20 @@ MutableT extends IMutable<MutableT>
 
 
    ///////////////////////////////////////////////////////////////////////////////
-   public static class WeightedVertex<VectorT extends IVector<VectorT, ?, ?>>
+   public static class WeightedVertex<VectorT extends IVector<VectorT, ?>>
             extends
                Vertex<VectorT> {
-      private static IColor asColor(final IVector3<?> vector) {
+      private static IColor asColor(final IVector3 vector) {
          return GColorF.newRGB((float) vector.x(), (float) vector.y(), (float) vector.z());
       }
 
 
-      private static IVector3<?> asVector(final IColor color) {
+      private static IVector3 asVector(final IColor color) {
          return new GVector3D(color.getRed(), color.getGreen(), color.getBlue());
       }
 
 
-      public static <VectorT extends IVector<VectorT, ?, ?>> WeightedVertex<VectorT> getAverage(final WeightedVertex<VectorT>... values) {
+      public static <VectorT extends IVector<VectorT, ?>> WeightedVertex<VectorT> getAverage(final WeightedVertex<VectorT>... values) {
          if ((values == null) || (values.length == 0)) {
             return null;
          }
@@ -142,7 +142,7 @@ MutableT extends IMutable<MutableT>
          VectorT pointSum = first._point.scale(firstWeight);
          VectorT normalSum = first._normal == null ? null : first._normal.scale(firstWeight);
          float intensitySum = first._intensity * firstWeight;
-         IVector3<?> colorSum = (first._color == null) ? null : asVector(first._color).scale(firstWeight); // use a vector to sum the colors, to avoid the clamp to [0..1] while adding
+         IVector3 colorSum = (first._color == null) ? null : asVector(first._color).scale(firstWeight); // use a vector to sum the colors, to avoid the clamp to [0..1] while adding
          long userDataSum = first._userData * firstWeight;
          int weightSum = firstWeight;
 
@@ -179,7 +179,7 @@ MutableT extends IMutable<MutableT>
       }
 
 
-      public static <VectorT extends IVector<VectorT, ?, ?>> WeightedVertex<VectorT> getAverage(final Collection<WeightedVertex<VectorT>> values) {
+      public static <VectorT extends IVector<VectorT, ?>> WeightedVertex<VectorT> getAverage(final Collection<WeightedVertex<VectorT>> values) {
          if ((values == null) || values.isEmpty()) {
             return null;
          }
@@ -192,7 +192,7 @@ MutableT extends IMutable<MutableT>
          VectorT normalSum = first._normal == null ? null : first._normal.scale(firstWeight);
          float intensitySum = first._intensity * firstWeight;
          long userDataSum = first._userData * firstWeight;
-         IVector3<?> colorSum = (first._color == null) ? null : asVector(first._color).scale(firstWeight); // use a vector to sum the colors, to avoid the clamp to [0..1] while adding
+         IVector3 colorSum = (first._color == null) ? null : asVector(first._color).scale(firstWeight); // use a vector to sum the colors, to avoid the clamp to [0..1] while adding
          int weightSum = firstWeight;
 
          while (iterator.hasNext()) {

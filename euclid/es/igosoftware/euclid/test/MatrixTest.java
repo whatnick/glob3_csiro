@@ -274,15 +274,15 @@ public class MatrixTest {
    @Test
    public void testTranslation() {
       final GMatrix44D translation = GMatrix44D.createTranslationMatrix(new GVector3D(1, 10, 100));
-      final IVector3<?> vector3 = new GVector3D(2, 20, 200);
+      final IVector3 vector3 = new GVector3D(2, 20, 200);
 
-      final IVector3<?> translated3 = translation.transform(vector3);
+      final IVector3 translated3 = translation.transform(vector3);
       Assert.assertTrue(translated3.closeTo(new GVector3D(3, 30, 300)));
 
 
-      //      final IVector2<?> vector2 = new GVector2D(2, 20);
+      //      final IVector2 vector2 = new GVector2D(2, 20);
       //
-      //      final IVector2<?> translated2 = translation.transform(vector2);
+      //      final IVector2 translated2 = translation.transform(vector2);
       //      Assert.assertTrue(translated2.closeTo(new GVector2D(3, 30)));
    }
 

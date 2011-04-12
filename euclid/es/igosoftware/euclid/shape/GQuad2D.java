@@ -45,48 +45,47 @@ import es.igosoftware.euclid.utils.GTriangulate;
 import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector2;
-import es.igosoftware.euclid.vector.IVectorTransformer;
 
 
 public final class GQuad2D
          extends
-            GQuad<IVector2<?>, GSegment2D, GQuad2D, GAxisAlignedRectangle>
+            GQuad<IVector2, GSegment2D, GAxisAlignedRectangle>
          implements
-            IPolygon2D<GQuad2D> {
+            ISimplePolygon2D {
 
    private static final long serialVersionUID = 1L;
 
 
-   public GQuad2D(final IVector2<?> pV0,
-                  final IVector2<?> pV1,
-                  final IVector2<?> pV2,
-                  final IVector2<?> pV3) {
+   public GQuad2D(final IVector2 pV0,
+                  final IVector2 pV1,
+                  final IVector2 pV2,
+                  final IVector2 pV3) {
       super(pV0, pV1, pV2, pV3);
    }
 
 
    @Override
    public GAxisAlignedRectangle getBounds() {
-      final IVector2<?> lower = GVectorUtils.min(_v0, _v1, _v2, _v3);
-      final IVector2<?> upper = GVectorUtils.max(_v0, _v1, _v2, _v3);
+      final IVector2 lower = GVectorUtils.min(_v0, _v1, _v2, _v3);
+      final IVector2 upper = GVectorUtils.max(_v0, _v1, _v2, _v3);
       return new GAxisAlignedRectangle(lower, upper);
    }
 
 
    @Override
-   public boolean contains(final IVector2<?> point) {
+   public boolean contains(final IVector2 point) {
       if (!getBounds().contains(point)) {
          return false;
       }
 
-      final List<IVector2<?>> points = getPoints();
+      final List<IVector2> points = getPoints();
 
       final double x = point.x();
       final double y = point.y();
 
       int hits = 0;
 
-      final IVector2<?> last = points.get(points.size() - 1);
+      final IVector2 last = points.get(points.size() - 1);
 
       double lastX = last.x();
       double lastY = last.y();
@@ -95,7 +94,7 @@ public final class GQuad2D
 
       // Walk the edges of the polygon
       for (int i = 0; i < points.size(); lastX = curX, lastY = curY, i++) {
-         final IVector2<?> cur = points.get(i);
+         final IVector2 cur = points.get(i);
          curX = cur.x();
          curY = cur.y();
 
@@ -152,35 +151,14 @@ public final class GQuad2D
 
 
    @Override
-   public GQuad2D createSimplified(final double capsRadiansTolerance) {
-      return this;
-   }
-
-
-   @Override
-   public GQuad2D getHull() {
-      return this;
-   }
-
-
-   @Override
    public boolean isSelfIntersected() {
       return false;
    }
 
 
-   //   @Override
-   //   protected List<GSegment2D> initializeEdges() {
-   //      final List<GSegment2D> result = new ArrayList<GSegment2D>(3);
-   //      result.add(new GSegment2D(_v2, _v1));
-   //      result.add(new GSegment2D(_v0, _v2));
-   //      result.add(new GSegment2D(_v1, _v0));
-   //      return result;
-   //   }
-
    @Override
    protected List<GSegment2D> initializeEdges() {
-      final List<IVector2<?>> points = getPoints();
+      final List<IVector2> points = getPoints();
       final int pointsCount = points.size();
 
       final GSegment2D[] edges = new GSegment2D[pointsCount];
@@ -195,20 +173,6 @@ public final class GQuad2D
 
 
    @Override
-   public GQuad2D transformedBy(final IVectorTransformer<IVector2<?>> transformer) {
-      final IVector2<?> tv0 = _v0.transformedBy(transformer);
-      final IVector2<?> tv1 = _v1.transformedBy(transformer);
-      final IVector2<?> tv2 = _v2.transformedBy(transformer);
-      final IVector2<?> tv3 = _v3.transformedBy(transformer);
-
-      return new GQuad2D(tv0, tv1, tv2, tv3);
-
-      //      return new GQuad2D(_v0.transformedBy(transformer), _v1.transformedBy(transformer), _v2.transformedBy(transformer),
-      //               _v3.transformedBy(transformer));
-   }
-
-
-   @Override
    public boolean isConvex() {
       return GShape.isConvexQuad(new GVector3D(_v0, 0), new GVector3D(_v1, 0), new GVector3D(_v2, 0), new GVector3D(_v3, 0));
    }
@@ -216,7 +180,7 @@ public final class GQuad2D
 
    @Override
    public List<GTriangle2D> triangulate() {
-      //      final List<IVector2<?>> points = getPoints();
+      //      final List<IVector2> points = getPoints();
       final GTriangulate.IndexedTriangle[] iTriangles = GTriangulate.triangulate(_v0, _v1, _v2, _v3);
 
       final List<GTriangle2D> result = new ArrayList<GTriangle2D>(iTriangles.length);
@@ -226,10 +190,5 @@ public final class GQuad2D
       return result;
    }
 
-
-   @Override
-   public GRenderType getRenderType() {
-      return GRenderType.POLYGON;
-   }
 
 }

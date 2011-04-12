@@ -39,8 +39,10 @@ package es.igosoftware.experimental.wms;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
+import es.igosoftware.globe.IGlobeRenderingStyle;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.avlist.AVList;
@@ -181,7 +183,7 @@ public class GWMSLayer
 
    @Override
    public Icon getIcon(final IGlobeApplication application) {
-      return application.getIcon("earth.png");
+      return application.getSmallIcon(GFileName.relative("earth.png"));
    }
 
 
@@ -216,7 +218,14 @@ public class GWMSLayer
 
 
    @Override
-   public List<ILayerAction> getLayerActions(final IGlobeApplication application) {
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application) {
+      return null;
+   }
+
+
+   @Override
+   public IGlobeRenderingStyle getRenderingStyle() {
+      // TODO Auto-generated method stub
       return null;
    }
 

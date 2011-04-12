@@ -58,52 +58,57 @@ public class GSeparatorAttribute
 
 
    @Override
-   public String getLabel() {
+   public final String getLabel() {
       return null;
    }
 
 
    @Override
-   public GPair<Component, EventListener> createWidget(final IGlobeApplication application,
-                                                       final IGlobeLayer layer) {
+   public final String getDescription() {
+      return null;
+   }
+
+
+   @Override
+   public final GPair<Component, EventListener> createWidget(final IGlobeApplication application,
+                                                             final IGlobeLayer layer) {
       final JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
-      //      final JLabel separator = new JLabel(" ");
       return new GPair<Component, EventListener>(separator, null);
    }
 
 
    @Override
-   public void cleanupWidget(final IGlobeLayer layer,
-                             final GPair<Component, EventListener> widget) {
+   public final void cleanupWidget(final IGlobeLayer layer,
+                                   final GPair<Component, EventListener> widget) {
 
    }
 
 
    @Override
-   public Object get() {
+   public final Object get() {
       return null;
    }
 
 
    @Override
-   public void set(final Object value) {
+   public final void set(final Object value) {
    }
 
 
    @Override
-   public boolean isReadOnly() {
+   public final boolean isReadOnly() {
       return true;
    }
 
 
    @Override
-   public void setListener(final es.igosoftware.globe.attributes.ILayerAttribute.IChangeListener listener) {
+   public final void setListener(final ILayerAttribute.IChangeListener listener) {
 
    }
 
 
    @Override
-   public void changed() {
+   public final void changed() {
 
    }
 }

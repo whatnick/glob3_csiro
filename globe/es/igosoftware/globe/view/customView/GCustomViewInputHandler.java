@@ -37,7 +37,6 @@
 package es.igosoftware.globe.view.customView;
 
 import es.igosoftware.globe.GGlobeApplication;
-import es.igosoftware.globe.layers.I3DContentCollectionLayer;
 import es.igosoftware.globe.view.GInputState;
 import es.igosoftware.util.GMath;
 import gov.nasa.worldwind.View;
@@ -61,7 +60,6 @@ import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.LatLon;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Vec4;
-import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.util.Logging;
 import gov.nasa.worldwind.util.PropertyAccessor;
 import gov.nasa.worldwind.view.BasicViewPropertyLimits;
@@ -93,6 +91,9 @@ public class GCustomViewInputHandler
 
    private final AnimationController _gotoAnimControl        = new AnimationController();
    private final AnimationController _uiAnimControl          = new AnimationController();
+
+   private final double              _panoramicMaxFOV        = 120;
+   private final double              _panoramicMinFOV        = 5;
 
 
    public GCustomViewInputHandler() {
@@ -321,11 +322,14 @@ public class GCustomViewInputHandler
       }
 
       if (view instanceof GCustomView) {
+         final GCustomView customView = (GCustomView) view;
+         final GInputState inputState = customView.getInputState();
          if (!headingChange.equals(Angle.ZERO)) {
-            final GCustomView customView = (GCustomView) view;
-            final GInputState inputState = customView.getInputState();
+
             if (inputState == GInputState.PANORAMICS) {
-               changeHeading((GCustomView) view, _uiAnimControl, headingChange.multiply(-1.0), actionAttribs);
+               changeHeading((GCustomView) view, _uiAnimControl,
+                        (headingChange.multiply(-1.0)).multiply((view.getFieldOfView().divide(_panoramicMaxFOV)).degrees),
+                        actionAttribs);
             }
             else {
                changeHeading((GCustomView) view, _uiAnimControl, headingChange, actionAttribs);
@@ -333,7 +337,16 @@ public class GCustomViewInputHandler
          }
 
          if (!pitchChange.equals(Angle.ZERO)) {
-            changePitch((GCustomView) view, _uiAnimControl, pitchChange, actionAttribs);
+            //changePitch((GCustomView) view, _uiAnimControl, pitchChange, actionAttribs);
+
+
+            if (inputState == GInputState.PANORAMICS) {
+               changePitch((GCustomView) view, _uiAnimControl,
+                        pitchChange.multiply((view.getFieldOfView().divide(_panoramicMaxFOV)).degrees), actionAttribs);
+            }
+            else {
+               changePitch((GCustomView) view, _uiAnimControl, pitchChange, actionAttribs);
+            }
          }
       }
    }
@@ -1152,9 +1165,9 @@ public class GCustomViewInputHandler
 
 
       final double oldFov = view.getFieldOfView().degrees;
-      final double newFov = oldFov + (e.getWheelRotation() * 1.25);
+      final double newFov = oldFov + (e.getWheelRotation() * 5) * view.getFieldOfView().degrees / _panoramicMaxFOV;
 
-      view.setFieldOfView(Angle.fromDegrees(GMath.clamp(newFov, 10, 110)));
+      view.setFieldOfView(Angle.fromDegrees(GMath.clamp(newFov, _panoramicMinFOV, _panoramicMaxFOV)));
       e.consume();
 
       return true;
@@ -1164,18 +1177,19 @@ public class GCustomViewInputHandler
    public boolean onExitPanoramic(final View view) {
       final GCustomView customView = (GCustomView) view;
       final GGlobeApplication application = GGlobeApplication.instance();
-      //final I3DContentCollectionLayer panoramicLayer = application.getContentCollectionLayer();
-
-      for (final Layer layer : application.getLayerList()) {
-         if ((layer instanceof I3DContentCollectionLayer) && layer.isEnabled()) {
-            final I3DContentCollectionLayer panoramicLayer = (I3DContentCollectionLayer) layer;
-            panoramicLayer.exitContent(customView);
-         }
+      //         //final I3DContentCollectionLayer panoramicLayer = application.getContentCollectionLayer();
+      //   
+      //         for (final Layer layer : application.getLayerList()) {
+      //            if ((layer instanceof I3DContentCollectionLayer) && layer.isEnabled()) {
+      //               final I3DContentCollectionLayer panoramicLayer = (I3DContentCollectionLayer) layer;
+      //               panoramicLayer.exitContent(customView);
+      //            }
+      //         }
+      if (customView.getPanoramic() != null) {
+         customView.getPanoramic().deactivate(customView);
       }
       application.redraw();
 
-      //System.out.println(customView.getRestorableState());
-      //customView.goTo(new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710), 270000), 270000);
 
       return true;
    }

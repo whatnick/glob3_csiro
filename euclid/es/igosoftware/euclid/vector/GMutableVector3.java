@@ -36,27 +36,24 @@
 
 package es.igosoftware.euclid.vector;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-
 import es.igosoftware.euclid.GGeometryAbstract;
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
+import es.igosoftware.euclid.matrix.GMatrix33D;
 import es.igosoftware.euclid.matrix.GMatrix44D;
 import es.igosoftware.euclid.projection.GProjection;
-import es.igosoftware.euclid.shape.GRenderType;
 import es.igosoftware.util.GAssert;
 
 
-public final class GMutableVector3<T extends IVector3<?>>
+public final class GMutableVector3<T extends IVector3>
          extends
-            GGeometryAbstract<IVector3<?>, GMutableVector3<T>>
+            GGeometryAbstract<IVector3>
          implements
-            IVector3<GMutableVector3<T>> {
+            IVector3 {
 
    private static final long serialVersionUID = 1L;
 
 
-   private IVector3<?>       _value;
+   private IVector3          _value;
 
 
    public GMutableVector3(final T value) {
@@ -79,14 +76,14 @@ public final class GMutableVector3<T extends IVector3<?>>
 
 
    @Override
-   public synchronized GMutableVector3<T> add(final IVector3<?> that) {
+   public synchronized GMutableVector3<T> add(final IVector3 that) {
       _value = _value.add(that);
       return this;
    }
 
 
    @Override
-   public synchronized double angle(final IVector3<?> that) {
+   public synchronized double angle(final IVector3 that) {
       return _value.angle(that);
    }
 
@@ -104,40 +101,40 @@ public final class GMutableVector3<T extends IVector3<?>>
 
 
    @Override
-   public IVector2<?> asVector2() {
+   public IVector2 asVector2() {
       return _value.asVector2();
    }
 
 
    @Override
-   public boolean between(final IVector3<?> min,
-                          final IVector3<?> max) {
+   public boolean between(final IVector3 min,
+                          final IVector3 max) {
       return _value.between(min, max);
    }
 
 
    @Override
-   public IVector3<?> clamp(final IVector3<?> lower,
-                            final IVector3<?> upper) {
+   public IVector3 clamp(final IVector3 lower,
+                         final IVector3 upper) {
       _value = _value.clamp(lower, upper);
       return _value;
    }
 
 
    @Override
-   public IVector3<?> closestPoint(final IVector3<?> point) {
+   public IVector3 closestPoint(final IVector3 point) {
       return _value.closestPoint(point);
    }
 
 
    @Override
-   public boolean closeTo(final IVector3<?> that) {
+   public boolean closeTo(final IVector3 that) {
       return _value.closeTo(that);
    }
 
 
    @Override
-   public boolean closeTo(final IVector3<?> that,
+   public boolean closeTo(final IVector3 that,
                           final double precision) {
       return _value.closeTo(that, precision);
    }
@@ -150,13 +147,13 @@ public final class GMutableVector3<T extends IVector3<?>>
 
 
    @Override
-   public boolean contains(final IVector3<?> point) {
+   public boolean contains(final IVector3 point) {
       return _value.contains(point);
    }
 
 
    @Override
-   public synchronized GMutableVector3<T> cross(final IVector3<?> that) {
+   public synchronized GMutableVector3<T> cross(final IVector3 that) {
       _value = _value.cross(that);
       return this;
    }
@@ -169,7 +166,7 @@ public final class GMutableVector3<T extends IVector3<?>>
 
 
    @Override
-   public synchronized double distance(final IVector3<?> that) {
+   public synchronized double distance(final IVector3 that) {
       return _value.distance(that);
    }
 
@@ -182,14 +179,14 @@ public final class GMutableVector3<T extends IVector3<?>>
 
 
    @Override
-   public synchronized GMutableVector3<T> div(final IVector3<?> that) {
+   public synchronized GMutableVector3<T> div(final IVector3 that) {
       _value = _value.div(that);
       return this;
    }
 
 
    @Override
-   public synchronized double dot(final IVector3<?> that) {
+   public synchronized double dot(final IVector3 that) {
       return _value.dot(that);
    }
 
@@ -231,7 +228,7 @@ public final class GMutableVector3<T extends IVector3<?>>
 
 
    @Override
-   public synchronized GMutableVector3<T> interpolatedTo(final IVector3<?> that,
+   public synchronized GMutableVector3<T> interpolatedTo(final IVector3 that,
                                                          final double alpha) {
       _value = _value.interpolatedTo(that, alpha);
       return this;
@@ -251,14 +248,14 @@ public final class GMutableVector3<T extends IVector3<?>>
 
 
    @Override
-   public synchronized GMutableVector3<T> max(final IVector3<?> that) {
+   public synchronized GMutableVector3<T> max(final IVector3 that) {
       _value = _value.max(that);
       return this;
    }
 
 
    @Override
-   public synchronized GMutableVector3<T> min(final IVector3<?> that) {
+   public synchronized GMutableVector3<T> min(final IVector3 that) {
       _value = _value.min(that);
       return this;
    }
@@ -272,7 +269,7 @@ public final class GMutableVector3<T extends IVector3<?>>
 
 
    //   @Override
-   //   public IBounds<IVector3<?>> getBounds() {
+   //   public IBounds<IVector3> getBounds() {
    //      return _value.getBounds();
    //   }
 
@@ -311,32 +308,20 @@ public final class GMutableVector3<T extends IVector3<?>>
 
 
    @Override
-   public synchronized void save(final DataOutputStream output) throws IOException {
-      _value.save(output);
-   }
-
-
-   @Override
    public synchronized GMutableVector3<T> scale(final double scale) {
       _value = _value.scale(scale);
       return this;
    }
 
 
-   //   @Override
-   //   public IVector3<?> closestPointOnBoundary(final IVector3<?> point) {
-   //      return _value.closestPointOnBoundary(point);
-   //   }
-
-
    @Override
-   public synchronized GMutableVector3<T> scale(final IVector3<?> that) {
+   public synchronized GMutableVector3<T> scale(final IVector3 that) {
       _value = _value.scale(that);
       return this;
    }
 
 
-   public void set(final IVector3<?> value) {
+   public void set(final IVector3 value) {
       GAssert.notNull(value, "value");
 
       _value = value;
@@ -344,7 +329,7 @@ public final class GMutableVector3<T extends IVector3<?>>
 
 
    @Override
-   public synchronized double squaredDistance(final IVector3<?> that) {
+   public synchronized double squaredDistance(final IVector3 that) {
       return _value.squaredDistance(that);
    }
 
@@ -363,7 +348,7 @@ public final class GMutableVector3<T extends IVector3<?>>
 
 
    @Override
-   public synchronized GMutableVector3<T> sub(final IVector3<?> that) {
+   public synchronized GMutableVector3<T> sub(final IVector3 that) {
       _value = _value.sub(that);
       return this;
    }
@@ -376,68 +361,62 @@ public final class GMutableVector3<T extends IVector3<?>>
 
 
    @Override
-   public IVector3<?> transformedBy(final GMatrix44D matrix) {
+   public IVector3 transformedBy(final GMatrix44D matrix) {
       _value = _value.transformedBy(matrix);
       return _value;
    }
 
 
    @Override
-   public GMutableVector3<T> transformedBy(final IVectorTransformer<IVector3<?>> transformer) {
-      set(_value.transformedBy(transformer));
-      return this;
+   public IVector3 transformedBy(final GMatrix33D matrix) {
+      _value = _value.transformedBy(matrix);
+      return _value;
    }
 
 
    @Override
-   public IVector3<?> nextUp() {
+   public IVector3 nextUp() {
       _value = _value.nextUp();
       return _value;
    }
 
 
    @Override
-   public IVector3<?> previousDown() {
+   public IVector3 previousDown() {
       _value = _value.previousDown();
       return _value;
    }
 
 
    @Override
-   public IVector3<?> asDouble() {
+   public IVector3 asDouble() {
       _value = _value.asDouble();
       return _value;
    }
 
 
    @Override
-   public boolean greaterOrEquals(final IVector3<?> that) {
+   public boolean greaterOrEquals(final IVector3 that) {
       return _value.greaterOrEquals(that);
    }
 
 
    @Override
-   public boolean lessOrEquals(final IVector3<?> that) {
+   public boolean lessOrEquals(final IVector3 that) {
       return _value.lessOrEquals(that);
    }
 
 
    @Override
-   public IVector3<?> reproject(final GProjection sourceProjection,
-                                final GProjection targetProjection) {
+   public IVector3 reproject(final GProjection sourceProjection,
+                             final GProjection targetProjection) {
       _value = _value.reproject(sourceProjection, targetProjection);
       return _value;
    }
 
 
    @Override
-   public boolean closeTo(final GMutableVector3<T> that) {
-      return closeTo((IVector3<?>) that);
-   }
-
-
-   @Override
-   public IVector3<?> getCentroid() {
+   public IVector3 getCentroid() {
       return _value.getCentroid();
    }
 
@@ -449,8 +428,26 @@ public final class GMutableVector3<T extends IVector3<?>>
 
 
    @Override
-   public GRenderType getRenderType() {
-      return _value.getRenderType();
+   public IVector3 closestPointOnBoundary(final IVector3 point) {
+      return this;
+   }
+
+
+   @Override
+   public double squaredDistanceToBoundary(final IVector3 point) {
+      return _value.squaredDistance(point);
+   }
+
+
+   @Override
+   public double distanceToBoundary(final IVector3 point) {
+      return _value.distance(point);
+   }
+
+
+   @Override
+   public boolean containsOnBoundary(final IVector3 point) {
+      return _value.containsOnBoundary(point);
    }
 
 

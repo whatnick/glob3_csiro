@@ -47,10 +47,11 @@ import javax.swing.JFrame;
 import es.igosoftware.globe.GAbstractGlobeModule;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
-import es.igosoftware.globe.actions.GButtonGenericAction;
+import es.igosoftware.globe.actions.GCheckBoxGenericAction;
 import es.igosoftware.globe.actions.IGenericAction;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GPair;
 
 
@@ -93,10 +94,7 @@ public class GFullScreenModule
 
 
    @Override
-   public List<IGenericAction> getGenericActions(final IGlobeApplication application) {
-      //      if (_frame == null) {
-      //         return null;
-      //      }
+   public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application) {
 
       if (!isFullScreenSupported()) {
          System.out.println("FULLSCREEN not supported");
@@ -104,10 +102,8 @@ public class GFullScreenModule
       }
 
 
-      final IGenericAction switchFullScreen = new GButtonGenericAction(_label, 'F', application.getIcon("fullscreen.png"),
-               IGenericAction.MenuArea.VIEW, true) {
-
-         private boolean _isInFullScreen = false;
+      final IGenericAction switchFullScreen = new GCheckBoxGenericAction(_label, 'F',
+               application.getSmallIcon(GFileName.relative("fullscreen.png")), IGenericAction.MenuArea.VIEW, true, false) {
 
 
          @Override
@@ -119,23 +115,16 @@ public class GFullScreenModule
 
             final GraphicsDevice gs = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
             if (gs.isFullScreenSupported()) {
-               if (_isInFullScreen) {
-                  //                  frame.removeNotify();
-                  //                  frame.setUndecorated(false);
-                  //                  frame.setVisible(true);
-                  gs.setFullScreenWindow(null);
-               }
-               else {
-                  //                  frame.removeNotify();
-                  //                  frame.setUndecorated(true);
-                  //                  frame.setVisible(true);
+               if (isSelected()) {
                   gs.setFullScreenWindow(frame);
                   frame.validate();
                }
-               _isInFullScreen = !_isInFullScreen;
+               else {
+                  gs.setFullScreenWindow(null);
+               }
             }
             else {
-               // Full-screen mode will be simulated 
+               // TODO: Full-screen mode will be simulated 
             }
          }
       };
@@ -151,8 +140,8 @@ public class GFullScreenModule
 
 
    @Override
-   public List<ILayerAction> getLayerActions(final IGlobeApplication application,
-                                             final IGlobeLayer layer) {
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application,
+                                                       final IGlobeLayer layer) {
       return null;
    }
 
@@ -174,6 +163,7 @@ public class GFullScreenModule
    public void initializeTranslations(final IGlobeApplication application) {
       application.addTranslation("es", DEFAULT_LABEL, "Pantalla Completa");
       application.addTranslation("de", DEFAULT_LABEL, "Vollbild");
+      application.addTranslation("pt", DEFAULT_LABEL, "Ecrã Completo");
    }
 
 

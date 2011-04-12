@@ -40,10 +40,10 @@ import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.globe.GGlobeApplication;
 import es.igosoftware.globe.IGlobeApplication;
+import es.igosoftware.globe.IGlobeRenderingStyle;
 import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
-import es.igosoftware.globe.layers.GVector2RenderingTheme;
 import es.igosoftware.io.GFileLoader;
 import es.igosoftware.io.GFileName;
 import es.igosoftware.loading.G3DModel;
@@ -88,7 +88,7 @@ public class GPositionRenderableLayer
          implements
             IGlobeVectorLayer {
 
-   private static final String DEFAULT_ICON_NAME = "3d.png";
+   private static final GFileName DEFAULT_ICON_NAME = GFileName.relative("3d.png");
 
 
    ////////////////////////////////////////////////////////////////////////////////////////////
@@ -260,7 +260,7 @@ public class GPositionRenderableLayer
 
    private final boolean               _dumpSceneGraph;
 
-   private final String                _iconName;
+   private final GFileName             _iconName;
 
 
    public GPositionRenderableLayer(final String name,
@@ -270,7 +270,7 @@ public class GPositionRenderableLayer
 
 
    public GPositionRenderableLayer(final String name,
-                                   final String iconName,
+                                   final GFileName iconName,
                                    final boolean dumpSceneGraph) {
       _name = name;
       _iconName = iconName;
@@ -562,7 +562,7 @@ public class GPositionRenderableLayer
 
    @Override
    public Icon getIcon(final IGlobeApplication application) {
-      return application.getIcon(_iconName);
+      return application.getSmallIcon(_iconName);
    }
 
 
@@ -634,12 +634,6 @@ public class GPositionRenderableLayer
    }
 
 
-   @Override
-   public GVector2RenderingTheme getRenderingTheme() {
-      return null;
-   }
-
-
    public boolean isPushOffsetHack() {
       return _pushOffsetHack;
    }
@@ -678,8 +672,15 @@ public class GPositionRenderableLayer
 
 
    @Override
-   public List<ILayerAction> getLayerActions(final IGlobeApplication application) {
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application) {
       return null;
    }
+
+
+   @Override
+   public IGlobeRenderingStyle getRenderingStyle() {
+      return null;
+   }
+
 
 }

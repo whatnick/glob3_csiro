@@ -62,6 +62,7 @@ import es.igosoftware.util.GAssert;
 public class GIOUtils {
 
    private static final String ILLEGAL_FILE_NAME_CHARACTERS = "[" + "?/\\\\=+<>:;\\,\"\\|^\\[\\]" + "]";
+   private static File         CURRENT_DIRECTORY            = null;
 
 
    private GIOUtils() {
@@ -338,9 +339,9 @@ public class GIOUtils {
    }
 
 
-   public static void assureEmptyDirectory(final String directoryName,
+   public static void assureEmptyDirectory(final GFileName directoryName,
                                            final boolean verbose) throws IOException {
-      final File directory = new File(directoryName);
+      final File directory = directoryName.asFile();
 
       if (!directory.exists()) {
          if (verbose) {
@@ -385,9 +386,9 @@ public class GIOUtils {
    }
 
 
-   public static void cleanDirectory(final String directoryName,
+   public static void cleanDirectory(final GFileName directoryName,
                                      final boolean verbose) throws IOException {
-      final File directory = new File(directoryName);
+      final File directory = directoryName.asFile();
       cleanDirectory(directory, verbose);
    }
 
@@ -571,5 +572,29 @@ public class GIOUtils {
    public static String getUniqueID(final File file) {
       return file.getName() + Long.toHexString(file.lastModified()) + Long.toHexString(file.length());
    }
+
+
+   public static boolean hasExtension(final GFileName fileName,
+                                      final String extension) {
+      return fileName.getName().toLowerCase().endsWith("." + extension.toLowerCase());
+   }
+
+
+   /**
+    * Answer the last visited directory, or the user-home
+    */
+   public static File getCurrentDirectory() {
+      return (CURRENT_DIRECTORY == null) ? new File(System.getProperty("user.home")) : CURRENT_DIRECTORY;
+   }
+
+
+   public static void setCurrentDirectory(final File currentDirectory) {
+      if (currentDirectory != null) {
+         if (currentDirectory.isDirectory() && currentDirectory.exists()) {
+            CURRENT_DIRECTORY = currentDirectory;
+         }
+      }
+   }
+
 
 }

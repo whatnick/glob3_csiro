@@ -39,6 +39,7 @@ package es.igosoftware.globe.modules.layers;
 import java.awt.Component;
 import java.awt.LinearGradientPaint;
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.JFileChooser;
@@ -62,7 +63,6 @@ import es.igosoftware.globe.layers.ESRIAsciiFileTools;
 import es.igosoftware.globe.layers.GGlobeRasterLayer;
 import es.igosoftware.globe.layers.RasterRenderer;
 import es.igosoftware.io.GGenericFileFilter;
-import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GPair;
 
 
@@ -95,14 +95,14 @@ public class GAddRasterLayerModule
 
 
    @Override
-   public List<IGenericAction> getGenericActions(final IGlobeApplication application) {
+   public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application) {
       return null;
    }
 
 
    @Override
-   public List<ILayerAction> getLayerActions(final IGlobeApplication application,
-                                             final IGlobeLayer layer) {
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application,
+                                                       final IGlobeLayer layer) {
       return null;
    }
 
@@ -112,7 +112,7 @@ public class GAddRasterLayerModule
    public List<ILayerAttribute<?>> getLayerAttributes(final IGlobeApplication application,
                                                       final IGlobeLayer layer) {
 
-      final ILayerAttribute<?> rows = new GStringLayerAttribute("Rows", true) {
+      final ILayerAttribute<?> rows = new GStringLayerAttribute("Rows", null, null, true) {
          @Override
          public boolean isVisible() {
             return layer instanceof GGlobeRasterLayer;
@@ -131,7 +131,7 @@ public class GAddRasterLayerModule
 
       };
 
-      final ILayerAttribute<?> cols = new GStringLayerAttribute("Cols", true) {
+      final ILayerAttribute<?> cols = new GStringLayerAttribute("Cols", null, null, true) {
          @Override
          public boolean isVisible() {
             return layer instanceof GGlobeRasterLayer;
@@ -150,7 +150,7 @@ public class GAddRasterLayerModule
 
       };
 
-      final ILayerAttribute<?> nodata = new GFloatLayerAttribute("No-data value", false, Float.NEGATIVE_INFINITY,
+      final ILayerAttribute<?> nodata = new GFloatLayerAttribute("No-data value", null, null, false, Float.NEGATIVE_INFINITY,
                Float.POSITIVE_INFINITY, GFloatLayerAttribute.WidgetType.TEXTBOX, Float.MIN_VALUE) {
          @Override
          public boolean isVisible() {
@@ -173,7 +173,8 @@ public class GAddRasterLayerModule
       };
 
       final String[] coloringMethods = new String[] { "RGB", "Color ramp", "Lookup table" };
-      final ILayerAttribute<?> method = new GSelectionLayerAttribute<String>("Coloring method", COLORING_METHOD, coloringMethods) {
+      final ILayerAttribute<?> method = new GSelectionLayerAttribute<String>("Coloring method", null, COLORING_METHOD,
+               coloringMethods) {
          @Override
          public boolean isVisible() {
             return layer instanceof GGlobeRasterLayer;
@@ -204,7 +205,7 @@ public class GAddRasterLayerModule
 
       };
 
-      final ILayerAttribute<?> ramp = new GColorRampLayerAttribute("Color ramp", COLOR_RAMP) {
+      final ILayerAttribute<?> ramp = new GColorRampLayerAttribute("Color ramp", null, COLOR_RAMP) {
          @Override
          public boolean isVisible() {
             return layer instanceof GGlobeRasterLayer;
@@ -226,9 +227,8 @@ public class GAddRasterLayerModule
 
       };
 
-      //      return new ILayerAttribute<?>[] { rows, cols, nodata, method, ramp };
 
-      return GCollections.createList(rows, cols, nodata, method, ramp);
+      return Arrays.asList(rows, cols, nodata, method, ramp);
    }
 
 
@@ -266,8 +266,8 @@ public class GAddRasterLayerModule
 
 
    @Override
-   public List<ILayerInfo> getAvailableLayers(final IGlobeApplication application) {
-      return GCollections.createList(new GLayerInfo("ESRI ArcInfo ASCII"));
+   public List<? extends ILayerInfo> getAvailableLayers(final IGlobeApplication application) {
+      return Arrays.asList(new GLayerInfo("ESRI ArcInfo ASCII"));
    }
 
 

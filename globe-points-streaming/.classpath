@@ -6,7 +6,16 @@
 	<classpathentry kind="lib" path="/dmvc/libs/netty-3.1.5.GA/netty-3.1.5.GA.jar" sourcepath="/dmvc/libs/netty-3.1.5.GA/netty-3.1.5.GA-sources.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/igolibs"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/globe"/>
-	<classpathentry kind="lib" path="/globe/libs/jogl/gluegen-rt.jar"/>
-	<classpathentry kind="lib" path="/globe/libs/jogl/jogl.jar"/>
+	<classpathentry kind="lib" path="/globe/libs/jogl/gluegen-rt.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="globe/libs"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/globe/libs/jogl/jogl.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="globe/libs"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/globe/libs/worldwind.jar" sourcepath="/home/fpulido/Escritorio/IGO-Repository/ww"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

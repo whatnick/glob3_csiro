@@ -56,7 +56,6 @@ public class GInfoToolModule
          extends
             GAbstractGlobeModule {
 
-   private boolean           _isActive = false;
    private GInfoToolListener _listener;
 
 
@@ -67,15 +66,14 @@ public class GInfoToolModule
 
 
    @Override
-   public List<IGenericAction> getGenericActions(final IGlobeApplication application) {
+   public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application) {
 
       final IGenericAction action = new GCheckBoxGenericAction("Info tool", ' ', new ImageIcon("images/icon-16-_info.png"),
                IGenericAction.MenuArea.VIEW, true, false) {
 
          @Override
          public void execute() {
-            _isActive = !_isActive;
-            if (!_isActive) {
+            if (isSelected()) {
                application.getWorldWindowGLCanvas().removeMouseListener(_listener);
             }
             else {
@@ -90,8 +88,8 @@ public class GInfoToolModule
 
 
    @Override
-   public List<ILayerAction> getLayerActions(final IGlobeApplication application,
-                                             final IGlobeLayer layer) {
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application,
+                                                       final IGlobeLayer layer) {
       return null;
    }
 
@@ -129,7 +127,6 @@ public class GInfoToolModule
 
    @Override
    public void initializeTranslations(final IGlobeApplication application) {
-      // TODO Auto-generated method stub
 
    }
 

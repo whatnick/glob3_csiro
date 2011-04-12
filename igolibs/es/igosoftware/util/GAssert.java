@@ -269,4 +269,13 @@ public final class GAssert {
    }
 
 
+   public static void isInstanceOf(final Object object,
+                                   final Class<?> klass,
+                                   final String description) {
+      if (!klass.isInstance(object)) {
+         throwError(description + ": is not instance of " + klass);
+      }
+   }
+
+
 }

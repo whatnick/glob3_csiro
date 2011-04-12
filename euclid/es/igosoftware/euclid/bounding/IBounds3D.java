@@ -8,11 +8,11 @@ import es.igosoftware.euclid.vector.IVector3;
 
 public interface IBounds3D<
 
-GeometryT extends IBounds<IVector3<?>, GeometryT>
+GeometryT extends IBounds<IVector3, GeometryT>
 
 >
          extends
-            IBounds<IVector3<?>, GeometryT> {
+            IBounds<IVector3, GeometryT> {
 
 
    public boolean touches(final IBounds3D<?> that);

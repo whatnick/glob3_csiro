@@ -36,32 +36,39 @@
 
 package es.igosoftware.euclid.shape;
 
+import es.igosoftware.euclid.ISurface;
 import es.igosoftware.euclid.bounding.IBounds;
 import es.igosoftware.euclid.vector.IVector;
 
 
+/**
+ * In geometry a polygon is traditionally a plane figure that is bounded by a closed path or circuit, composed of a finite
+ * sequence of straight line segments (i.e., by a closed polygonal chain).<br/>
+ * <br/>
+ * See http://en.wikipedia.org/wiki/Polygon
+ * 
+ * @author dgd
+ * 
+ * @param <VectorT>
+ * @param <SegmentT>
+ * @param <BoundsT>
+ */
 public interface IPolygon<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
-SegmentT extends GSegment<VectorT, SegmentT, BoundsT>,
-
-GeometryT extends IPolytope<VectorT, SegmentT, GeometryT, BoundsT>,
+SegmentT extends GSegment<VectorT, SegmentT, ?>,
 
 BoundsT extends IBounds<VectorT, BoundsT>
 
 >
          extends
-            IPolytope<VectorT, SegmentT, GeometryT, BoundsT> {
-
-
-   //   @Override
-   //   public IPolygon<VectorT, SegmentT, ?, BoundsT> createSimplified(final double capsRadiansTolerance);
-
-
-   //   @Override
-   //   public IPolygon<VectorT, SegmentT, ?, BoundsT> getHull();
+            IPolytope<VectorT, SegmentT, BoundsT>,
+            ISurface<VectorT, BoundsT> {
 
    public boolean isConvex();
+
+
+   //   public double getArea();
 
 }

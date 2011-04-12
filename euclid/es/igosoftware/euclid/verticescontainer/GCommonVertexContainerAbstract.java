@@ -54,7 +54,7 @@ import es.igosoftware.util.GAssert;
 
 public abstract class GCommonVertexContainerAbstract<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
 VertexT extends IVertexContainer.Vertex<VectorT>,
 
@@ -163,7 +163,7 @@ MutableT extends GCommonVertexContainerAbstract<VectorT, VertexT, MutableT>
 
    //----------------------------------------------------------------------------
    // Strategy-pattern classes to handle 2d/3d float/double vectors
-   protected static interface VectorHandler<VectorT extends IVector<VectorT, ?, ?>> {
+   protected static interface VectorHandler<VectorT extends IVector<VectorT, ?>> {
       public VectorT getVector(final int index);
 
 
@@ -181,7 +181,7 @@ MutableT extends GCommonVertexContainerAbstract<VectorT, VertexT, MutableT>
    // Strategy-pattern classes to handle float/double vectors
    protected static final class Vector3HandlerD
             implements
-               VectorHandler<IVector3<?>> {
+               VectorHandler<IVector3> {
       private static final int ELEMENT_SIZE = 3;
 
       private DoubleBuffer     _buffer;
@@ -193,7 +193,7 @@ MutableT extends GCommonVertexContainerAbstract<VectorT, VertexT, MutableT>
 
 
       @Override
-      public IVector3<?> getVector(final int index) {
+      public IVector3 getVector(final int index) {
          return GBufferUtils.getVector3(_buffer, index);
       }
 
@@ -206,7 +206,7 @@ MutableT extends GCommonVertexContainerAbstract<VectorT, VertexT, MutableT>
 
       @Override
       public void putVector(final int index,
-                            final IVector3<?> vector) {
+                            final IVector3 vector) {
          GBufferUtils.putVector(_buffer, index, vector);
       }
 
@@ -220,7 +220,7 @@ MutableT extends GCommonVertexContainerAbstract<VectorT, VertexT, MutableT>
 
    protected static final class Vector3HandlerF
             implements
-               VectorHandler<IVector3<?>> {
+               VectorHandler<IVector3> {
       private static final int ELEMENT_SIZE = 3;
       private FloatBuffer      _buffer;
 
@@ -231,7 +231,7 @@ MutableT extends GCommonVertexContainerAbstract<VectorT, VertexT, MutableT>
 
 
       @Override
-      public IVector3<?> getVector(final int index) {
+      public IVector3 getVector(final int index) {
          return GBufferUtils.getVector3(_buffer, index);
       }
 
@@ -244,7 +244,7 @@ MutableT extends GCommonVertexContainerAbstract<VectorT, VertexT, MutableT>
 
       @Override
       public void putVector(final int index,
-                            final IVector3<?> vector) {
+                            final IVector3 vector) {
          GBufferUtils.putVector(_buffer, index, vector);
       }
 
@@ -260,7 +260,7 @@ MutableT extends GCommonVertexContainerAbstract<VectorT, VertexT, MutableT>
    // Strategy-pattern classes to handle float/double vectors
    protected static final class Vector2HandlerD
             implements
-               VectorHandler<IVector2<?>> {
+               VectorHandler<IVector2> {
       private static final int ELEMENT_SIZE = 2;
 
       private DoubleBuffer     _buffer;
@@ -272,7 +272,7 @@ MutableT extends GCommonVertexContainerAbstract<VectorT, VertexT, MutableT>
 
 
       @Override
-      public IVector2<?> getVector(final int index) {
+      public IVector2 getVector(final int index) {
          return GBufferUtils.getVector2(_buffer, index);
       }
 
@@ -285,7 +285,7 @@ MutableT extends GCommonVertexContainerAbstract<VectorT, VertexT, MutableT>
 
       @Override
       public void putVector(final int index,
-                            final IVector2<?> vector) {
+                            final IVector2 vector) {
          GBufferUtils.putVector(_buffer, index, vector);
       }
 
@@ -299,7 +299,7 @@ MutableT extends GCommonVertexContainerAbstract<VectorT, VertexT, MutableT>
 
    protected static final class Vector2HandlerF
             implements
-               VectorHandler<IVector2<?>> {
+               VectorHandler<IVector2> {
       private static final int ELEMENT_SIZE = 2;
 
       private FloatBuffer      _buffer;
@@ -311,7 +311,7 @@ MutableT extends GCommonVertexContainerAbstract<VectorT, VertexT, MutableT>
 
 
       @Override
-      public IVector2<?> getVector(final int index) {
+      public IVector2 getVector(final int index) {
          return GBufferUtils.getVector2(_buffer, index);
       }
 
@@ -324,7 +324,7 @@ MutableT extends GCommonVertexContainerAbstract<VectorT, VertexT, MutableT>
 
       @Override
       public void putVector(final int index,
-                            final IVector2<?> vector) {
+                            final IVector2 vector) {
          GBufferUtils.putVector(_buffer, index, vector);
       }
 

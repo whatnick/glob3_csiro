@@ -305,16 +305,16 @@ public final class GWWUtils {
    }
 
 
-   public static String geodesicString(final IVector3<?> point) {
+   public static String geodesicString(final IVector3 point) {
       return "(" + Angle.fromRadians(point.y()) + ", " + Angle.fromRadians(point.x()) + ", " + point.z() + ")";
    }
 
 
    public static Sector toSector(final Rectangle2D boundingRectangle,
                                  final GProjection projection) {
-      final IVector2<?> min = new GVector2D(boundingRectangle.getMinX(), boundingRectangle.getMinY()).reproject(projection,
+      final IVector2 min = new GVector2D(boundingRectangle.getMinX(), boundingRectangle.getMinY()).reproject(projection,
                GProjection.EPSG_4326);
-      final IVector2<?> max = new GVector2D(boundingRectangle.getMaxX(), boundingRectangle.getMaxY()).reproject(projection,
+      final IVector2 max = new GVector2D(boundingRectangle.getMaxX(), boundingRectangle.getMaxY()).reproject(projection,
                GProjection.EPSG_4326);
 
       final Angle minLatitude = Angle.fromRadiansLatitude(min.y());
@@ -333,14 +333,14 @@ public final class GWWUtils {
    }
 
 
-   public static Sector toSector(final GAxisAlignedOrthotope<IVector2<?>, ?> boundingRectangle,
+   public static Sector toSector(final GAxisAlignedOrthotope<IVector2, ?> boundingRectangle,
                                  final GProjection projection) {
       if (boundingRectangle == null) {
          return null;
       }
 
-      final IVector2<?> lower = boundingRectangle._lower.reproject(projection, GProjection.EPSG_4326);
-      final IVector2<?> upper = boundingRectangle._upper.reproject(projection, GProjection.EPSG_4326);
+      final IVector2 lower = boundingRectangle._lower.reproject(projection, GProjection.EPSG_4326);
+      final IVector2 upper = boundingRectangle._upper.reproject(projection, GProjection.EPSG_4326);
 
       final Angle minLatitude = Angle.fromRadiansLatitude(lower.y());
       final Angle maxLatitude = Angle.fromRadiansLatitude(upper.y());
@@ -361,8 +361,8 @@ public final class GWWUtils {
       final GVector2D lower = new GVector2D(sector.getMinLongitude().radians, sector.getMinLatitude().radians);
       final GVector2D upper = new GVector2D(sector.getMaxLongitude().radians, sector.getMaxLatitude().radians);
 
-      final IVector2<?> reprojectedLower = lower.reproject(GProjection.EPSG_4326, projection);
-      final IVector2<?> reprojectedUpper = upper.reproject(GProjection.EPSG_4326, projection);
+      final IVector2 reprojectedLower = lower.reproject(GProjection.EPSG_4326, projection);
+      final IVector2 reprojectedUpper = upper.reproject(GProjection.EPSG_4326, projection);
 
       return new GAxisAlignedRectangle(reprojectedLower, reprojectedUpper);
    }
@@ -377,7 +377,7 @@ public final class GWWUtils {
    }
 
 
-   public static Vec4 toVec4(final IVector3<?> point) {
+   public static Vec4 toVec4(final IVector3 point) {
       return new Vec4(point.x(), point.y(), point.z());
    }
 
@@ -387,9 +387,9 @@ public final class GWWUtils {
          return null;
       }
 
-      final List<Vec4> points = GCollections.collect(aaBox.getVertices(), new ITransformer<IVector3<?>, Vec4>() {
+      final List<Vec4> points = GCollections.collect(aaBox.getVertices(), new ITransformer<IVector3, Vec4>() {
          @Override
-         public Vec4 transform(final IVector3<?> element) {
+         public Vec4 transform(final IVector3 element) {
             return GWWUtils.toVec4(element);
          }
       });
@@ -584,14 +584,14 @@ public final class GWWUtils {
 
 
    public static Vec4 getScreenPoint(final DrawContext dc,
-                                     final IVector2<?> location) {
+                                     final IVector2 location) {
       return getScreenPoint(dc, new LatLon(Angle.fromRadians(location.y()), Angle.fromRadians(location.x())));
    }
 
 
-   public static Position toPosition(final IVector3<?> point,
+   public static Position toPosition(final IVector3 point,
                                      final GProjection projection) {
-      final IVector3<?> geodesicPoint = point.reproject(projection, GProjection.EPSG_4326);
+      final IVector3 geodesicPoint = point.reproject(projection, GProjection.EPSG_4326);
       return Position.fromRadians(geodesicPoint.y(), geodesicPoint.x(), geodesicPoint.z());
    }
 

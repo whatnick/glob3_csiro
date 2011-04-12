@@ -41,12 +41,12 @@ public class GFileName
    }
 
 
-   public static GFileName relativeFromParts(final String... parts) {
+   public static GFileName relative(final String... parts) {
       return new GFileName(false, parts);
    }
 
 
-   public static GFileName absoluteFromParts(final String... parts) {
+   public static GFileName absolute(final String... parts) {
       return new GFileName(true, parts);
    }
 
@@ -189,7 +189,7 @@ public class GFileName
       System.out.println("-------------\n");
 
 
-      final GFileName fromParts1 = GFileName.relativeFromParts("dir1", "dir2", "dir3");
+      final GFileName fromParts1 = GFileName.relative("dir1", "dir2", "dir3");
       showFileNameInfo(fromParts1);
 
       final GFileName fromParentAndParts = GFileName.fromParentAndParts(fromParts1, "fileName.ext");
@@ -197,7 +197,7 @@ public class GFileName
 
       showFileNameInfo(GFileName.fromParts(fromParts1, fromParentAndParts));
 
-      showFileNameInfo(GFileName.relativeFromParts("fileName.ext"));
+      showFileNameInfo(GFileName.relative("fileName.ext"));
 
       showFileNameInfo(GFileName.fromFile(new File("/pepe")));
 
@@ -211,6 +211,16 @@ public class GFileName
       System.out.println(fileName);
       System.out.println("  Parent: " + fileName.getParent());
       System.out.println();
+   }
+
+
+   public boolean exists() {
+      return asFile().exists();
+   }
+
+
+   public GFileName withPrefixedName(final String prefix) {
+      return GFileName.fromParentAndParts(getParent(), prefix + getName());
    }
 
 

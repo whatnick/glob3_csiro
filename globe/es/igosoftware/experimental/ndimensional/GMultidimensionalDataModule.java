@@ -90,7 +90,7 @@ public class GMultidimensionalDataModule
 
 
    @Override
-   public List<IGenericAction> getGenericActions(final IGlobeApplication application) {
+   public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application) {
 
 
       //      final Icon icon = null;
@@ -112,8 +112,8 @@ public class GMultidimensionalDataModule
 
 
    @Override
-   public List<ILayerAction> getLayerActions(final IGlobeApplication application,
-                                             final IGlobeLayer layer) {
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application,
+                                                       final IGlobeLayer layer) {
       return null;
    }
 
@@ -138,7 +138,7 @@ public class GMultidimensionalDataModule
 
 
    @Override
-   public List<ILayerInfo> getAvailableLayers(final IGlobeApplication application) {
+   public List<? extends ILayerInfo> getAvailableLayers(final IGlobeApplication application) {
       final String[] names = new String[_multidimentionalDatas.length];
 
       for (int i = 0; i < _multidimentionalDatas.length; i++) {
@@ -168,7 +168,7 @@ public class GMultidimensionalDataModule
 
 
       final GMultidimensionalViewerLayer layer = new GMultidimensionalViewerLayer(data);
-      application.getLayerList().add(layer);
+      application.addLayer(layer);
       return layer;
    }
 

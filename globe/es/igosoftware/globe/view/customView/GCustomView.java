@@ -38,6 +38,7 @@ package es.igosoftware.globe.view.customView;
 
 import es.igosoftware.globe.GCameraState;
 import es.igosoftware.globe.view.GInputState;
+import es.igosoftware.panoramic.GPanoramic;
 import gov.nasa.worldwind.Configuration;
 import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.avlist.AVKey;
@@ -75,6 +76,8 @@ public class GCustomView
    private GInputState                         _inputState;
    protected GCameraState                      _savedCameraState = null;
 
+   private GPanoramic                          _panoramica       = null;
+
 
    /**
     * Custom View Class. So far it is mostly a copy of NASA's BasicOrbitView Class with some custom tweaks added
@@ -90,6 +93,27 @@ public class GCustomView
       _collisionSupport.setNumIterations(COLLISION_NUM_ITERATIONS);
       getViewInputHandler().setStopOnFocusLost(false);
       loadConfigurationValues();
+   }
+
+
+   public void enterPanoramic(final GPanoramic panoramic) {
+      _panoramica = panoramic;
+      setInputState(GInputState.PANORAMICS);
+   }
+
+
+   public void exitPanoramic(final GPanoramic panoramic) {
+
+      if (panoramic != _panoramica) {
+         System.out.println("This is not the same panoramic that you entered...");
+      }
+      setInputState(GInputState.ORBIT);
+      _panoramica = null;
+   }
+
+
+   public GPanoramic getPanoramic() {
+      return _panoramica;
    }
 
 
@@ -954,11 +978,12 @@ public class GCustomView
       //      stopMovement();
       //      stopMovementOnCenter();
 
-      setPitch(_savedCameraState.getPitch());
+
       setFieldOfView(_savedCameraState.getFov());
       setCenterPosition(_savedCameraState.getCenterPosition());
       setZoom(_savedCameraState.getZoom());
       setHeading(_savedCameraState.getHeading());
+      setPitch(_savedCameraState.getPitch());
 
       _savedCameraState = null;
 

@@ -36,42 +36,14 @@
 
 package es.igosoftware.euclid;
 
-import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 import es.igosoftware.euclid.vector.IVector;
 
 
-public abstract class GGeometryAbstract<
-
-VectorT extends IVector<VectorT, ?, ?>,
-
-GeometryT extends GGeometryAbstract<VectorT, GeometryT>
-
->
+public abstract class GGeometryAbstract<VectorT extends IVector<VectorT, ?>>
          implements
-            IGeometry<VectorT, GeometryT> {
+            IGeometry<VectorT> {
 
    private static final long serialVersionUID = 1L;
-
-
-   @Override
-   public final void save(final String fileName) throws IOException {
-      DataOutputStream output = null;
-
-      try {
-         output = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)));
-
-         save(output);
-      }
-      finally {
-         if (output != null) {
-            output.close();
-         }
-      }
-   }
 
 
    @Override
@@ -81,7 +53,7 @@ GeometryT extends GGeometryAbstract<VectorT, GeometryT>
 
 
    @Override
-   public final Object clone() {
+   public GGeometryAbstract<VectorT> clone() {
       return this;
    }
 

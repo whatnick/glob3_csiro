@@ -63,28 +63,28 @@ public class GModelData
    }
 
 
-   private static final long       serialVersionUID   = 1L;
+   private static final long      serialVersionUID   = 1L;
 
-   private final GFileName         _fileName;
+   private final GFileName        _fileName;
 
-   private final List<IVector3<?>> _vertices          = new ArrayList<IVector3<?>>();
-   private final List<IVector3<?>> _normals           = new ArrayList<IVector3<?>>();
-   private final List<IVector2<?>> _texCoords         = new ArrayList<IVector2<?>>();
+   private final List<IVector3>   _vertices          = new ArrayList<IVector3>();
+   private final List<IVector3>   _normals           = new ArrayList<IVector3>();
+   private final List<IVector2>   _texCoords         = new ArrayList<IVector2>();
 
-   private final List<GMaterial>   _materials         = new ArrayList<GMaterial>();
-   private final List<GModelMesh>  _meshes            = new ArrayList<GModelMesh>();
+   private final List<GMaterial>  _materials         = new ArrayList<GMaterial>();
+   private final List<GModelMesh> _meshes            = new ArrayList<GModelMesh>();
 
    //   private final List<GModelMesh>  _transparentMeshes = new ArrayList<GModelMesh>();
 
-   private GAxisAlignedBox         _bounds            = null;
+   private GAxisAlignedBox        _bounds            = null;
 
-   private boolean                 _useTexture        = true;
-   private boolean                 _renderAsWireframe = false;
-   private boolean                 _useLighting       = true;
+   private boolean                _useTexture        = false;
+   private boolean                _renderAsWireframe = false;
+   private boolean                _useLighting       = true;
 
-   private Boolean                 _isOpaque          = null;
+   private Boolean                _isOpaque          = null;
 
-   private FaceCullingMode         _faceCullingMode   = FaceCullingMode.BACK;
+   private FaceCullingMode        _faceCullingMode   = FaceCullingMode.BACK;
 
 
    // Constructor
@@ -147,18 +147,18 @@ public class GModelData
    //   }
 
 
-   public void addVertex(final IVector3<?> vertex) {
+   public void addVertex(final IVector3 vertex) {
       _bounds = null; // invalidate bounds to force recalculation
       _vertices.add(vertex);
    }
 
 
-   public void addNormal(final IVector3<?> normal) {
+   public void addNormal(final IVector3 normal) {
       _normals.add(normal);
    }
 
 
-   public void addTexCoord(final IVector2<?> uv) {
+   public void addTexCoord(final IVector2 uv) {
       _texCoords.add(uv);
    }
 
@@ -206,17 +206,17 @@ public class GModelData
    }
 
 
-   public List<IVector3<?>> getVertices() {
+   public List<IVector3> getVertices() {
       return Collections.unmodifiableList(_vertices);
    }
 
 
-   public List<IVector3<?>> getNormals() {
+   public List<IVector3> getNormals() {
       return Collections.unmodifiableList(_normals);
    }
 
 
-   public List<IVector2<?>> getTexCoords() {
+   public List<IVector2> getTexCoords() {
       return Collections.unmodifiableList(_texCoords);
    }
 

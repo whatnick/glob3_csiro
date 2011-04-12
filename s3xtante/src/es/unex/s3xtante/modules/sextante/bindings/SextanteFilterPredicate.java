@@ -7,7 +7,7 @@ import java.util.List;
 import com.vividsolutions.jts.geom.Geometry;
 
 import es.igosoftware.euclid.IBoundedGeometry;
-import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.util.IPredicate;
@@ -19,7 +19,7 @@ import es.unex.sextante.dataObjects.vectorFilters.IVectorLayerFilter;
 
 public class SextanteFilterPredicate
          implements
-            IPredicate<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>> {
+            IPredicate<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> {
 
    private final IVectorLayerFilter _filter;
 
@@ -32,9 +32,9 @@ public class SextanteFilterPredicate
 
 
    @Override
-   public boolean evaluate(final IGlobeFeature<IVector2<?>, GAxisAlignedRectangle> globeFeature) {
+   public boolean evaluate(final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> globeFeature) {
 
-      final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> euclidGeom = globeFeature.getDefaultGeometry();
+      final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> euclidGeom = globeFeature.getDefaultGeometry();
       final List<Object> record = globeFeature.getAttributes();
       final Geometry jtsGeom = GJTSUtils.toJTS(euclidGeom);
       final IFeature sextanteFeature = new FeatureImpl(jtsGeom, record.toArray());

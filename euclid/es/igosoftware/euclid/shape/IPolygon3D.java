@@ -38,23 +38,18 @@ package es.igosoftware.euclid.shape;
 
 import java.util.List;
 
+import es.igosoftware.euclid.ISurface3D;
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 import es.igosoftware.euclid.vector.IVector3;
 
 
-public interface IPolygon3D<
-
-GeometryT extends IPolygon<IVector3<?>, GSegment3D, GeometryT, GAxisAlignedBox>
-
->
+public interface IPolygon3D
          extends
-            IPolygon<IVector3<?>, GSegment3D, GeometryT, GAxisAlignedBox> {
+            IPolygon<IVector3, GSegment3D, GAxisAlignedBox>,
+            ISurface3D<GAxisAlignedBox> {
 
 
    public List<GTriangle3D> triangulate();
 
-
-   @Override
-   public IPolygon3D<?> createSimplified(final double capsRadiansTolerance);
 
 }

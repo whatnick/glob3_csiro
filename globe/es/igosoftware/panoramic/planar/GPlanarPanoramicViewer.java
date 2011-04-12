@@ -416,12 +416,20 @@ public class GPlanarPanoramicViewer {
 
 
    public void open() {
-      open(800, 600);
+      open(800, 600, 0);
    }
 
 
    public void open(final int width,
                     final int height) {
+      open(width, height, 0);
+
+   }
+
+
+   public void open(final int width,
+                    final int height,
+                    final int initialZoomLevelIncrement) {
       final JFrame frame = createFrame(width, height);
 
       final Container container = frame.getContentPane();
@@ -446,7 +454,12 @@ public class GPlanarPanoramicViewer {
       frame.setVisible(true);
 
       final Dimension containerSize = container.getSize();
-      _currentLevel = calculateInitialLevel(containerSize);
+      if ((initialZoomLevelIncrement > 0)) {
+         _currentLevel = Math.min(calculateInitialLevel(containerSize) + initialZoomLevelIncrement, _maxLevel);
+      }
+      else {
+         _currentLevel = calculateInitialLevel(containerSize);
+      }
 
       final GPlanarPanoramicZoomLevel currentZoomLevel = getCurrentZoomLevel();
       _offset.x = (containerSize.width - currentZoomLevel.getWidth()) / 2;
@@ -991,7 +1004,7 @@ public class GPlanarPanoramicViewer {
       // final int workersCount = GConcurrent.AVAILABLE_PROCESSORS;
       final ILoader loader = new GHttpLoader(url, workersCount, true, false, false);
 
-      final GFileName path = GFileName.relativeFromParts("gigapixel", "PlazaSanJorge-Caceres-Espana");
+      final GFileName path = GFileName.relative("gigapixel", "PlazaSanJorge-Caceres-Espana");
 
       final GPlanarPanoramicViewer viewer = new GPlanarPanoramicViewer(loader, path, "Sample Gigapixel Picture", false);
 

@@ -5,35 +5,23 @@ package es.igosoftware.euclid.ntree;
 import java.util.Collection;
 import java.util.Collections;
 
-import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
-import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GLoggerObject;
 
 
-public abstract class GGTNode<
-
-VectorT extends IVector<VectorT, ?, ?>,
-
-BoundsT extends GAxisAlignedOrthotope<VectorT, ?>,
-
-ElementT,
-
-GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, ?>>
-
->
+public abstract class GGTNode<VectorT extends IVector<VectorT, ?>, ElementT>
          extends
             GLoggerObject {
 
 
-   protected final GGTInnerNode<VectorT, BoundsT, ElementT, GeometryT> _parent;
-   protected final BoundsT                                             _bounds;
-   protected final Collection<ElementT>                                _elements;
+   protected final GGTInnerNode<VectorT, ElementT>   _parent;
+   protected final GAxisAlignedOrthotope<VectorT, ?> _bounds;
+   protected final Collection<ElementT>              _elements;
 
 
-   protected GGTNode(final GGTInnerNode<VectorT, BoundsT, ElementT, GeometryT> parent,
-                     final BoundsT bounds,
+   protected GGTNode(final GGTInnerNode<VectorT, ElementT> parent,
+                     final GAxisAlignedOrthotope<VectorT, ?> bounds,
                      final Collection<ElementT> elements) {
       _parent = parent;
       _bounds = bounds;
@@ -41,12 +29,12 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
    }
 
 
-   public final GGTInnerNode<VectorT, BoundsT, ElementT, GeometryT> getParent() {
+   public final GGTInnerNode<VectorT, ElementT> getParent() {
       return _parent;
    }
 
 
-   public final BoundsT getBounds() {
+   public final GAxisAlignedOrthotope<VectorT, ?> getBounds() {
       return _bounds;
    }
 
@@ -59,9 +47,9 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
    }
 
 
-   public final GGTInnerNode<VectorT, BoundsT, ElementT, GeometryT> getRoot() {
+   public final GGTInnerNode<VectorT, ElementT> getRoot() {
       if (_parent == null) {
-         return (GGTInnerNode<VectorT, BoundsT, ElementT, GeometryT>) this;
+         return (GGTInnerNode<VectorT, ElementT>) this;
       }
       return _parent.getRoot();
    }
@@ -73,7 +61,7 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
    }
 
 
-   public GGeometryNTree<VectorT, BoundsT, ElementT, GeometryT> getNTree() {
+   public GGeometryNTree<VectorT, ElementT> getNTree() {
       return _parent.getNTree();
    }
 
@@ -94,8 +82,8 @@ GeometryT extends IBoundedGeometry<VectorT, ?, ? extends IFiniteBounds<VectorT, 
    }
 
 
-   public abstract void depthFirstAcceptVisitor(final IGTDepthFirstVisitor<VectorT, BoundsT, ElementT, GeometryT> visitor)
-                                                                                                                          throws IGTBreadFirstVisitor.AbortVisiting;
+   public abstract void depthFirstAcceptVisitor(final IGTDepthFirstVisitor<VectorT, ElementT> visitor)
+                                                                                                      throws IGTBreadFirstVisitor.AbortVisiting;
 
 
    public abstract int getLeafNodesCount();

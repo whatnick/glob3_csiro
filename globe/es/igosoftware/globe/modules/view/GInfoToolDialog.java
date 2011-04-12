@@ -167,7 +167,6 @@ public class GInfoToolDialog
 
    @Override
    public void windowActivated(final WindowEvent e) {
-      // TODO Auto-generated method stub
 
    }
 

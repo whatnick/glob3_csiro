@@ -39,6 +39,7 @@ package es.igosoftware.globe.layers;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeRasterLayer;
+import es.igosoftware.globe.IGlobeRenderingStyle;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import gov.nasa.worldwind.geom.Sector;
@@ -163,7 +164,14 @@ public class GGlobeRasterLayer
 
 
    @Override
-   public List<ILayerAction> getLayerActions(final IGlobeApplication application) {
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application) {
+      return null;
+   }
+
+
+   @Override
+   public IGlobeRenderingStyle getRenderingStyle() {
+      // TODO Auto-generated method stub
       return null;
    }
 

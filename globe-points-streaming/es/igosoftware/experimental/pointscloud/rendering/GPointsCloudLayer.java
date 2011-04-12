@@ -43,10 +43,10 @@ import es.igosoftware.experimental.pointscloud.rendering.scenegraph.GSGGroupNode
 import es.igosoftware.experimental.pointscloud.rendering.scenegraph.GSGPointsNode;
 import es.igosoftware.globe.GGlobeApplication;
 import es.igosoftware.globe.IGlobeApplication;
+import es.igosoftware.globe.IGlobeRenderingStyle;
 import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
-import es.igosoftware.globe.layers.GVector2RenderingTheme;
 import es.igosoftware.io.GFileName;
 import es.igosoftware.io.ILoader;
 import es.igosoftware.io.pointscloud.IPointsCloudLoader;
@@ -611,7 +611,7 @@ public final class GPointsCloudLayer
 
    @Override
    public Icon getIcon(final IGlobeApplication application) {
-      return application.getIcon("pointscloud.png");
+      return application.getSmallIcon(GFileName.relative("pointscloud.png"));
    }
 
 
@@ -640,12 +640,6 @@ public final class GPointsCloudLayer
 
 
    @Override
-   public GVector2RenderingTheme getRenderingTheme() {
-      return null;
-   }
-
-
-   @Override
    public List<ILayerAttribute<?>> getLayerAttributes(final IGlobeApplication application) {
       return null;
    }
@@ -658,8 +652,15 @@ public final class GPointsCloudLayer
 
 
    @Override
-   public List<ILayerAction> getLayerActions(final IGlobeApplication application) {
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application) {
       return null;
    }
+
+
+   @Override
+   public IGlobeRenderingStyle getRenderingStyle() {
+      return null;
+   }
+
 
 }

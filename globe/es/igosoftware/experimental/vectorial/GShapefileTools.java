@@ -56,11 +56,12 @@ import org.opengis.filter.Filter;
 import com.vividsolutions.jts.geom.Geometry;
 
 import es.igosoftware.euclid.IBoundedGeometry;
-import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.features.GField;
 import es.igosoftware.euclid.features.GGlobeFeature;
 import es.igosoftware.euclid.features.GListFeatureCollection;
 import es.igosoftware.euclid.features.IGlobeFeature;
+import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.io.GIOUtils;
@@ -73,7 +74,8 @@ public class GShapefileTools {
    }
 
 
-   public static GListFeatureCollection<IVector2<?>, GAxisAlignedRectangle> readFile(final File file) throws IOException {
+   public static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> readFile(final File file)
+                                                                                                                                                        throws IOException {
 
       final HashMap<String, URL> connect = new HashMap<String, URL>();
       connect.put("url", file.toURI().toURL());
@@ -84,15 +86,14 @@ public class GShapefileTools {
       final FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = dataStore.getFeatureSource(query.getTypeName());
       final FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = featureSource.getFeatures(query);
       final FeatureIterator<SimpleFeature> iterator = featureCollection.features();
-      final List<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>> features = new ArrayList<IGlobeFeature<IVector2<?>, GAxisAlignedRectangle>>(
+      final List<IGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> features = new ArrayList<IGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>>(
                featureCollection.size());
 
       while (iterator.hasNext()) {
          final SimpleFeature feature = iterator.next();
          final Geometry jtsGeometry = (Geometry) feature.getDefaultGeometry();
-         for (final IBoundedGeometry<IVector2<?>, ?, GAxisAlignedRectangle> euclidGeometry : GJTSUtils.toEuclid(jtsGeometry)) {
-            features.add(new GGlobeFeature<IVector2<?>, GAxisAlignedRectangle>(euclidGeometry, feature.getAttributes()));
-         }
+         features.add(new GGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>(
+                  GJTSUtils.toEuclid(jtsGeometry), feature.getAttributes()));
       }
 
       final SimpleFeatureType schema = featureSource.getSchema();
@@ -109,8 +110,8 @@ public class GShapefileTools {
       final GProjection projection = GProjection.EPSG_4326;
 
       final String uniqueID = GIOUtils.getUniqueID(file);
-      return new GListFeatureCollection<IVector2<?>, GAxisAlignedRectangle>(projection, fields, features, uniqueID);
+      return new GListFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>(projection,
+               fields, features, uniqueID);
    }
-
 
 }

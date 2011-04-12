@@ -40,15 +40,13 @@ import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.globe.GGlobeApplication;
 import es.igosoftware.globe.IGlobeApplication;
+import es.igosoftware.globe.IGlobeRenderingStyle;
 import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
-import es.igosoftware.globe.layers.GVector2RenderingTheme;
-import es.igosoftware.globe.layers.I3DContentCollectionLayer;
-import es.igosoftware.globe.view.GBasicOrbitViewLimits;
-import es.igosoftware.globe.view.GInputState;
-import es.igosoftware.globe.view.GPanoramicViewLimits;
+import es.igosoftware.globe.layers.hud.GHUDLayer;
 import es.igosoftware.globe.view.customView.GCustomView;
+import es.igosoftware.io.GFileName;
 import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
@@ -76,34 +74,21 @@ public class GPanoramicLayer
          extends
             AbstractLayer
          implements
-            IGlobeVectorLayer,
-            I3DContentCollectionLayer {
+            IGlobeVectorLayer {
 
 
    private final String           _name;
-   private final List<GPanoramic> _panoramics     = new ArrayList<GPanoramic>();
+   private final List<GPanoramic> _panoramics    = new ArrayList<GPanoramic>();
 
-   //private final List<Sphere>     _panoramicsBounds = new ArrayList<Sphere>();
-
-   //private final GElevationAnchor _anchor;
-   //   private Globe                  _lastGlobe;
-   //   private double                 _lastVerticalExaggeration;
-   //   private Frustum                _lastFrustum;
    private List<PickListener>     _pickListeners;
 
-   private final Set<Layer>       _hiddenLayers   = new HashSet<Layer>();
+   private final Set<Layer>       _hiddenLayers  = new HashSet<Layer>();
    private boolean                _hasHiddenLayers;
-   private boolean                _isInitialized  = false;
-
-   private static final double    DEFAULT_OPACITY = 0.75;
+   private boolean                _isInitialized = false;
 
 
    public GPanoramicLayer(final String name) {
-      //      GAssert.notNull(anchor, "anchor");
-
       _name = name;
-      //      _anchor = anchor;
-      setOpacity(DEFAULT_OPACITY);
    }
 
 
@@ -113,21 +98,28 @@ public class GPanoramicLayer
    }
 
 
-   //   public GElevationAnchor getElevationAnchor() {
-   //      return _anchor;
-   //   }
-   //
-   //
-   //   public Globe getGlobe() {
-   //      return _lastGlobe;
-   //   }
-
-
-   public void addPanoramic(final GPanoramic panoramic) {
-      if (isDuplicateName(panoramic.getName())) {
-         throw new RuntimeException("A Panoramic with the name " + panoramic.getName() + " already exists!!");
+   public void addPanoramic(final GPanoramic panoramica) {
+      if (isDuplicateName(panoramica.getName())) {
+         throw new RuntimeException("A Panoramic with the name " + panoramica.getName() + " already exists!!");
       }
-      _panoramics.add(panoramic);
+      _panoramics.add(panoramica);
+      panoramica.addActivationListener(new GPanoramic.ActivationListener() {
+
+         @Override
+         public void deactivated(final GPanoramic panoramic) {
+            unhideHiddenPanoramics();
+            unhideHiddenLayers();
+
+         }
+
+
+         @Override
+         public void activated(final GPanoramic panoramic) {
+            hideOtherLayers(GPanoramicLayer.this, panoramic.getHUDLayer());
+            hideOtherPanoramics(panoramic);
+
+         }
+      });
 
    }
 
@@ -144,7 +136,7 @@ public class GPanoramicLayer
 
    @Override
    public Icon getIcon(final IGlobeApplication application) {
-      return application.getIcon("panoramic.png");
+      return application.getSmallIcon(GFileName.relative("panoramic.png"));
    }
 
 
@@ -174,7 +166,6 @@ public class GPanoramicLayer
    @Override
    public void redraw() {
       firePropertyChange(AVKey.LAYER, null, this);
-
    }
 
 
@@ -196,13 +187,7 @@ public class GPanoramicLayer
 
 
    @Override
-   public List<ILayerAction> getLayerActions(final IGlobeApplication application) {
-      return null;
-   }
-
-
-   @Override
-   public GVector2RenderingTheme getRenderingTheme() {
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application) {
       return null;
    }
 
@@ -297,35 +282,6 @@ public class GPanoramicLayer
    }
 
 
-   public void enterPanoramic(final GPanoramic panoramic,
-                              final GCustomView view) {
-      final GGlobeApplication application = GGlobeApplication.instance();
-      if (!view.hasCameraState()) {
-         view.saveCameraState();
-      }
-
-      application.jumpTo(panoramic.getPosition(), 0);
-      view.setInputState(GInputState.PANORAMICS);
-      final GPanoramicViewLimits viewLimits = new GPanoramicViewLimits();
-      view.setOrbitViewLimits(viewLimits);
-      hideOtherLayers(this);
-      hideOtherPanoramics(panoramic);
-
-      view.setFieldOfView(Angle.fromDegrees(120));
-   }
-
-
-   @Override
-   public void exitContent(final GCustomView view) {
-      view.setInputState(GInputState.ORBIT);
-      view.setOrbitViewLimits(new GBasicOrbitViewLimits());
-      view.restoreCameraState();
-
-      unhideHiddenPanoramics();
-      unhideHiddenLayers();
-   }
-
-
    private void hideOtherPanoramics(final GPanoramic visiblePanoramic) {
       if (_panoramics.size() <= 1) {
          return;
@@ -349,12 +305,13 @@ public class GPanoramicLayer
    }
 
 
-   private void hideOtherLayers(final Layer visibleLayer) {
+   private void hideOtherLayers(final Layer visibleLayer,
+                                final GHUDLayer hudLayer) {
       _hasHiddenLayers = true;
 
       final GGlobeApplication application = GGlobeApplication.instance();
       for (final Layer layer : application.getLayerList()) {
-         if (layer == visibleLayer) {
+         if ((layer == visibleLayer) || (layer == hudLayer)) {
             continue;
          }
 
@@ -374,6 +331,12 @@ public class GPanoramicLayer
       for (final Layer layer : _hiddenLayers) {
          layer.setEnabled(true);
       }
+   }
+
+
+   @Override
+   public IGlobeRenderingStyle getRenderingStyle() {
+      return null;
    }
 
 

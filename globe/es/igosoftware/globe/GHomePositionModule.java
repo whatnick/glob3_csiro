@@ -36,19 +36,20 @@
 
 package es.igosoftware.globe;
 
+import java.awt.Component;
+import java.util.Collections;
+import java.util.List;
+
 import es.igosoftware.globe.actions.GButtonGenericAction;
 import es.igosoftware.globe.actions.IGenericAction;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.globe.utils.GOnFirstRenderLayer;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GPair;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.DrawContext;
-
-import java.awt.Component;
-import java.util.Collections;
-import java.util.List;
 
 
 public class GHomePositionModule
@@ -56,16 +57,16 @@ public class GHomePositionModule
             GAbstractGlobeModule {
 
 
-   private static final String DEFAULT_ICON_NAME = "home.png";
-   private static final String DEFAULT_LABEL     = "Go to home";
+   private static final GFileName DEFAULT_ICON_NAME = GFileName.relative("home.png");
+   private static final String    DEFAULT_LABEL     = "Go to home";
 
-   private boolean             _gotoToHomeOnStartup;
-   private final Position      _position;
-   private final double        _elevation;
-   private final Angle         _heading;
-   private final Angle         _pitch;
-   private final String        _iconName;
-   private final String        _label;
+   private boolean                _gotoToHomeOnStartup;
+   private final Position         _position;
+   private final double           _elevation;
+   private final Angle            _heading;
+   private final Angle            _pitch;
+   private final GFileName        _iconName;
+   private final String           _label;
 
 
    public GHomePositionModule(final Position position,
@@ -73,7 +74,7 @@ public class GHomePositionModule
                               final Angle pitch,
                               final double elevation,
                               final boolean gotoToHomeOnStartup,
-                              final String iconName,
+                              final GFileName iconName,
                               final String label) {
       _position = position;
       _heading = heading;
@@ -97,7 +98,7 @@ public class GHomePositionModule
    public GHomePositionModule(final Position position,
                               final double elevation,
                               final boolean gotoToHomeOnStartup,
-                              final String iconName) {
+                              final GFileName iconName) {
       this(position, Angle.ZERO, Angle.ZERO, elevation, gotoToHomeOnStartup, iconName, DEFAULT_LABEL);
    }
 
@@ -105,7 +106,7 @@ public class GHomePositionModule
    public GHomePositionModule(final Position position,
                               final double elevation,
                               final boolean gotoToHomeOnStartup,
-                              final String iconName,
+                              final GFileName iconName,
                               final String label) {
       this(position, Angle.ZERO, Angle.ZERO, elevation, gotoToHomeOnStartup, iconName, label);
    }
@@ -135,8 +136,8 @@ public class GHomePositionModule
 
 
    @Override
-   public List<IGenericAction> getGenericActions(final IGlobeApplication application) {
-      final IGenericAction gotoHome = new GButtonGenericAction(_label, application.getIcon(_iconName),
+   public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application) {
+      final IGenericAction gotoHome = new GButtonGenericAction(_label, application.getSmallIcon(_iconName),
                IGenericAction.MenuArea.NAVIGATION, true) {
 
          @Override
@@ -154,7 +155,7 @@ public class GHomePositionModule
       super.initialize(application);
 
       if (_gotoToHomeOnStartup) {
-         application.getLayerList().add(new GOnFirstRenderLayer() {
+         application.addLayer(new GOnFirstRenderLayer() {
             @Override
             protected void execute(final DrawContext dc) {
                doIt(application);
@@ -166,8 +167,8 @@ public class GHomePositionModule
 
 
    @Override
-   public List<ILayerAction> getLayerActions(final IGlobeApplication application,
-                                             final IGlobeLayer layer) {
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application,
+                                                       final IGlobeLayer layer) {
       return null;
    }
 
@@ -211,6 +212,7 @@ public class GHomePositionModule
    public void initializeTranslations(final IGlobeApplication application) {
       application.addTranslation("es", "Go to home", "Ir a casa");
       application.addTranslation("de", "Go to home", "Nach Hause gehen");
+      application.addTranslation("pt", "Go to home", "Home");
    }
 
 }

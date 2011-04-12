@@ -44,26 +44,25 @@ import javax.swing.Icon;
 import javax.swing.JMenuItem;
 
 import es.igosoftware.globe.IGlobeApplication;
-import es.igosoftware.utils.GSwingUtils;
 
 
 public abstract class GButtonGenericAction
          extends
             GGenericAction {
 
-   public GButtonGenericAction(final String label,
-                               final char mnemonic,
-                               final Icon icon,
-                               final IGenericAction.MenuArea menuBarArea,
-                               final boolean showOnToolBar) {
+   protected GButtonGenericAction(final String label,
+                                  final char mnemonic,
+                                  final Icon icon,
+                                  final IGenericAction.MenuArea menuBarArea,
+                                  final boolean showOnToolBar) {
       super(label, mnemonic, icon, menuBarArea, showOnToolBar);
    }
 
 
-   public GButtonGenericAction(final String label,
-                               final Icon icon,
-                               final IGenericAction.MenuArea menuBarArea,
-                               final boolean showOnToolBar) {
+   protected GButtonGenericAction(final String label,
+                                  final Icon icon,
+                                  final IGenericAction.MenuArea menuBarArea,
+                                  final boolean showOnToolBar) {
       super(label, icon, menuBarArea, showOnToolBar);
    }
 
@@ -90,7 +89,7 @@ public abstract class GButtonGenericAction
 
    @Override
    public Component createToolbarWidget(final IGlobeApplication application) {
-      return GSwingUtils.createToolbarButton(getIcon(), application.getTranslation(getLabel()), new ActionListener() {
+      return GSwingFactory.createToolbarButton(getIcon(), application.getTranslation(getLabel()), new ActionListener() {
          @Override
          public void actionPerformed(final ActionEvent e) {
             execute();

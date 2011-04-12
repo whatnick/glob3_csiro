@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import es.igosoftware.io.GFileName;
 import es.igosoftware.panoramic.planar.GPlanarPanoramicCompiler;
 
 
@@ -23,8 +24,8 @@ public class GBatchPlanarPanoramicCompiler {
          System.exit(1);
       }
 
-      final String sourceImageDirectoryName = args[0];
-      final String outputDirectoryName = args[1];
+      final GFileName sourceImageDirectoryName = GFileName.fromFile(new File(args[0]));
+      final GFileName outputDirectoryName = GFileName.fromFile(new File(args[1]));
 
       //      final boolean debug;
       //      if (args.length == 3) {
@@ -35,7 +36,7 @@ public class GBatchPlanarPanoramicCompiler {
       //         debug = false;
       //      }
 
-      final File sourceDir = new File(sourceImageDirectoryName);
+      final File sourceDir = sourceImageDirectoryName.asFile();
 
       if (!sourceDir.exists()) {
          //logSevere("\tSourceDir (" + sourceDir + ") doesn't exist");
@@ -48,8 +49,8 @@ public class GBatchPlanarPanoramicCompiler {
 
 
    private static void process(final File sourceDir,
-                               final String inDir,
-                               final String outputDirectoryName) {
+                               final GFileName inDir,
+                               final GFileName outputDirectoryName) {
 
       boolean isWorking = false;
 
@@ -71,27 +72,23 @@ public class GBatchPlanarPanoramicCompiler {
 
       //call GPlanarPanoramicCompiler
       for (final String fileName : imagesNames) {
-         System.out.println("first file: " + fileName);
 
          if (!isWorking) {
             isWorking = true;
             if (fileName.endsWith(".jpg")) {
 
-
                try {
-                  System.out.println("calling processImage");
-                  GPlanarPanoramicCompiler.processImage(inDir + "/" + fileName, outputDirectoryName, Integer.MAX_VALUE);
+                  System.out.println("calling GPlanarPanoramicCompiler.processImage");
+                  GPlanarPanoramicCompiler.processImage(GFileName.fromParentAndParts(inDir, fileName), outputDirectoryName,
+                           Integer.MAX_VALUE);
                }
                catch (final IOException e) {
-                  // TODO Auto-generated catch block
                   e.printStackTrace();
                }
                finally {
-                  System.out.println("feddich!");
                   isWorking = false;
                }
             }
-
             else {
                System.out.println("ignoring " + fileName + "...");
                isWorking = false;

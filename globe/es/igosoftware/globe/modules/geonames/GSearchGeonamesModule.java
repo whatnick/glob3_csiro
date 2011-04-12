@@ -93,14 +93,14 @@ public class GSearchGeonamesModule
 
 
    @Override
-   public List<IGenericAction> getGenericActions(final IGlobeApplication application) {
+   public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application) {
       return null;
    }
 
 
    @Override
-   public List<ILayerAction> getLayerActions(final IGlobeApplication application,
-                                             final IGlobeLayer layer) {
+   public List<? extends ILayerAction> getLayerActions(final IGlobeApplication application,
+                                                       final IGlobeLayer layer) {
       return null;
    }
 
@@ -144,7 +144,7 @@ public class GSearchGeonamesModule
                lastHighlit = null;
                final Layer layer = application.getLayerList().getLayerByName(SEARCH_ANNOTATION_LAYER_NAME);
                if (layer != null) {
-                  application.getLayerList().remove(layer);
+                  application.removeLayer(layer);
                }
             }
 
@@ -193,7 +193,7 @@ public class GSearchGeonamesModule
                annotationsLayer.setName(SEARCH_ANNOTATION_LAYER_NAME);
                //annotationsLayer.setMaxActiveAltitude(30000d);
 
-               application.getLayerList().add(annotationsLayer);
+               application.addLayer(annotationsLayer);
 
             }
          }
@@ -204,7 +204,6 @@ public class GSearchGeonamesModule
 
    @Override
    public void initializeTranslations(final IGlobeApplication application) {
-      // TODO Auto-generated method stub
 
    }
 

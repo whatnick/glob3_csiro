@@ -2,6 +2,7 @@
 
 package es.igosoftware.euclid.features;
 
+import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.mutability.IMutable;
 import es.igosoftware.euclid.vector.IVector;
@@ -9,29 +10,29 @@ import es.igosoftware.euclid.vector.IVector;
 
 public interface IGlobeMutableFeatureCollection<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
-FeatureBoundsT extends IFiniteBounds<VectorT, FeatureBoundsT>,
+FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>,
 
-TypeT extends IGlobeMutableFeatureCollection<VectorT, FeatureBoundsT, TypeT>
+TypeT extends IGlobeMutableFeatureCollection<VectorT, FeatureGeometryT, TypeT>
 
 >
          extends
-            IGlobeFeatureCollection<VectorT, FeatureBoundsT, TypeT>,
+            IGlobeFeatureCollection<VectorT, FeatureGeometryT>,
             IMutable<TypeT> {
 
 
    public void set(final long index,
-                   final IGlobeFeature<VectorT, FeatureBoundsT> value);
+                   final IGlobeFeature<VectorT, FeatureGeometryT> value);
 
 
-   public void add(final IGlobeFeature<VectorT, FeatureBoundsT> value);
+   public void add(final IGlobeFeature<VectorT, FeatureGeometryT> value);
 
 
-   public IGlobeFeature<VectorT, FeatureBoundsT> remove(final long index);
+   public IGlobeFeature<VectorT, FeatureGeometryT> remove(final long index);
 
 
-   public boolean remove(final IGlobeFeature<VectorT, FeatureBoundsT> value);
+   public boolean remove(final IGlobeFeature<VectorT, FeatureGeometryT> value);
 
 
    public void clear();

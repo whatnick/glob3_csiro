@@ -13,6 +13,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
 
 
@@ -61,9 +62,9 @@ public class GPlanarPanoramicCompiler {
 
       System.out.println("------------------------------------------------------------------");
       System.out.println("Running parameters");
-      final String imageFullName = args[0];
+      final GFileName imageFullName = GFileName.fromFile(new File(args[0]));
       System.out.println("  Source Image    : " + imageFullName);
-      final String outputDirectoryName = args[1];
+      final GFileName outputDirectoryName = GFileName.fromFile(new File((args[1])));
       System.out.println("  Output Directory: " + outputDirectoryName);
 
       final int maxLevel;
@@ -81,19 +82,19 @@ public class GPlanarPanoramicCompiler {
    }
 
 
-   public static void processImage(final String imageFullName,
-                                   final String outputDirectoryName,
+   public static void processImage(final GFileName imageFullName,
+                                   final GFileName outputDirectoryName,
                                    final int maxLevel) throws IOException {
       final long started = System.currentTimeMillis();
       System.out.println("Processing " + imageFullName + "...");
 
-      final File file = new File(imageFullName);
+      final File file = imageFullName.asFile();
 
       final BufferedImage bi = ImageIO.read(file);
 
       final String imageName = file.getName();
 
-      final String outputDirectory = outputDirectoryName + "/" + imageName + "/";
+      final GFileName outputDirectory = GFileName.fromParentAndParts(outputDirectoryName, imageName);
 
       final GPlanarPanoramicZoomLevel[] zoomLevels = getZoomLevels(bi);
 
@@ -108,7 +109,10 @@ public class GPlanarPanoramicCompiler {
             System.out.println("  Processing zoom level #" + zoomLevel.getLevel());
             System.out.println("    Zoom Level Info: " + zoomLevel);
 
-            final String levelDirectory = outputDirectory + zoomLevel.getLevel() + "/";
+            //final String levelDirectory = outputDirectory.buildPath() + zoomLevel.getLevel() + File.pathSeparator;
+            final GFileName levelDirectoryFileName = GFileName.fromParentAndParts(outputDirectory, zoomLevel.getLevel()
+                                                                                                   + File.pathSeparator);
+            final String levelDirectory = levelDirectoryFileName.buildPath();
             System.out.println("    Zoom Level Directory: " + levelDirectory);
             if (!new File(levelDirectory).mkdirs()) {
                throw new IOException("Can't create directory: " + new File(levelDirectory));
@@ -154,7 +158,11 @@ public class GPlanarPanoramicCompiler {
                   final BufferedImage tileImage = resize(scaledRenderedImage.getSubimage(tileX, tileY, tileWidth, tileHeight),
                            GPlanarPanoramicZoomLevel.TILE_WIDTH, GPlanarPanoramicZoomLevel.TILE_HEIGHT);
 
-                  final File tileFile = new File(levelDirectory + "tile-" + widthIndex + "-" + heightIndex + ".jpg");
+                  //                  final File tileFile = new File(levelDirectory + "tile-" + widthIndex + "-" + heightIndex + ".jpg");
+
+
+                  final File tileFile = new File(GFileName.fromParentAndParts(levelDirectoryFileName,
+                           "tile-" + widthIndex + "-" + heightIndex + ".jpg").buildPath());
                   ImageIO.write(tileImage, "jpeg", tileFile);
                }
             }
@@ -170,10 +178,12 @@ public class GPlanarPanoramicCompiler {
    }
 
 
-   private static void createZoomLevelsInfo(final String outputDirectory,
+   private static void createZoomLevelsInfo(final GFileName outputDirectory,
                                             final GPlanarPanoramicZoomLevel[] zoomLevels) throws IOException {
 
-      final BufferedWriter info = new BufferedWriter(new FileWriter(outputDirectory + "info.txt"));
+
+      final BufferedWriter info = new BufferedWriter(new FileWriter(
+               GFileName.fromParentAndParts(outputDirectory, "info.txt").buildPath()));
       info.write("[");
       info.newLine();
       boolean first = true;

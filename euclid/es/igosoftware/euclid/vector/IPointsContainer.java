@@ -36,34 +36,24 @@
 
 package es.igosoftware.euclid.vector;
 
-import java.util.Iterator;
 import java.util.List;
 
 import es.igosoftware.euclid.IGeometry;
 
 
-public interface IPointsContainer<
-
-VectorT extends IVector<VectorT, ?, ?>,
-
-GeometryT extends IPointsContainer<VectorT, GeometryT>
-
->
+public interface IPointsContainer<VectorT extends IVector<VectorT, ?>>
          extends
-            IGeometry<VectorT, GeometryT>,
+            IGeometry<VectorT>,
             Iterable<VectorT> {
 
 
    public List<VectorT> getPoints();
 
 
-   public VectorT getPoint(final int i);
+   public VectorT getPoint(final int index);
 
 
    public int getPointsCount();
 
-
-   @Override
-   public Iterator<VectorT> iterator();
 
 }

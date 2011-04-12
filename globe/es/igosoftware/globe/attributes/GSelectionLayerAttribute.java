@@ -45,6 +45,7 @@ import javax.swing.JComboBox;
 
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
+import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GPair;
 
 
@@ -53,33 +54,40 @@ public abstract class GSelectionLayerAttribute<T>
             GAbstractLayerAttribute<T> {
 
 
-   private final Object[] _options;
+   private final T[] _options;
 
 
    public GSelectionLayerAttribute(final String label,
+                                   final String description,
                                    final String propertyName,
                                    final T[] options) {
-      super(label, propertyName);
+      super(label, description, propertyName);
+
+      GAssert.notEmpty(options, "options");
 
       _options = options;
-
    }
 
 
    public GSelectionLayerAttribute(final String label,
+                                   final String description,
                                    final String propertyName,
                                    final boolean readOnly,
                                    final T[] options) {
-      super(label, propertyName, readOnly);
+      super(label, description, propertyName, readOnly);
+
+      GAssert.notEmpty(options, "options");
 
       _options = options;
    }
 
 
    @Override
-   public GPair<Component, EventListener> createWidget(final IGlobeApplication application,
-                                                       final IGlobeLayer layer) {
+   public final GPair<Component, EventListener> createWidget(final IGlobeApplication application,
+                                                             final IGlobeLayer layer) {
       final JComboBox widget = new JComboBox(_options);
+      setTooltip(application, widget);
+
       widget.setSelectedItem(get());
       if (isReadOnly()) {
          widget.setEnabled(false);
@@ -109,8 +117,8 @@ public abstract class GSelectionLayerAttribute<T>
 
 
    @Override
-   public void cleanupWidget(final IGlobeLayer layer,
-                             final GPair<Component, EventListener> widget) {
+   public final void cleanupWidget(final IGlobeLayer layer,
+                                   final GPair<Component, EventListener> widget) {
       setListener(null);
 
       unsubscribeFromEvents(layer, widget._second);

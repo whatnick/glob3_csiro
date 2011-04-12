@@ -36,8 +36,6 @@
 
 package es.igosoftware.euclid.shape;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -51,17 +49,15 @@ import es.igosoftware.util.GAssert;
 
 public abstract class GSimplePolytope<
 
-VectorT extends IVector<VectorT, ?, ?>,
+VectorT extends IVector<VectorT, ?>,
 
-SegmentT extends GSegment<VectorT, SegmentT, BoundsT>,
-
-GeometryT extends GSimplePolytope<VectorT, SegmentT, GeometryT, BoundsT>,
+SegmentT extends GSegment<VectorT, SegmentT, ?>,
 
 BoundsT extends IBounds<VectorT, BoundsT>
 
 >
          extends
-            GPolytopeAbstract<VectorT, SegmentT, GeometryT, BoundsT> {
+            GPolytopeAbstract<VectorT, SegmentT, BoundsT> {
 
 
    private static final long  serialVersionUID = 1L;
@@ -143,8 +139,8 @@ BoundsT extends IBounds<VectorT, BoundsT>
 
 
    @Override
-   public final VectorT getPoint(final int i) {
-      return _points.get(i);
+   public final VectorT getPoint(final int index) {
+      return _points.get(index);
    }
 
 
@@ -180,7 +176,7 @@ BoundsT extends IBounds<VectorT, BoundsT>
       if (getClass() != obj.getClass()) {
          return false;
       }
-      final GSimplePolytope<?, ?, ?, ?> other = (GSimplePolytope<?, ?, ?, ?>) obj;
+      final GSimplePolytope<?, ?, ?> other = (GSimplePolytope<?, ?, ?>) obj;
       if (_points == null) {
          if (other._points != null) {
             return false;
@@ -200,35 +196,6 @@ BoundsT extends IBounds<VectorT, BoundsT>
 
 
    protected abstract String getStringName();
-
-
-   @Override
-   public final void save(final DataOutputStream output) throws IOException {
-      output.writeInt(_points.size());
-      for (final VectorT point : _points) {
-         point.save(output);
-      }
-   }
-
-
-   @Override
-   public boolean closeTo(final GeometryT that) {
-      final int pointsSize = _points.size();
-
-      if (pointsSize != that._points.size()) {
-         return false;
-      }
-
-      for (int i = 0; i < pointsSize; i++) {
-         final VectorT thisP = _points.get(i);
-         final VectorT thatP = that._points.get(i);
-         if (!thisP.closeTo(thatP)) {
-            return false;
-         }
-      }
-
-      return true;
-   }
 
 
    @Override

@@ -61,6 +61,7 @@ import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.euclid.verticescontainer.IVertexContainer;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GLoggerObject;
 import es.igosoftware.util.GMath;
@@ -123,17 +124,17 @@ public class GRelief
                                                final GAxisAlignedBox bounds,
                                                final boolean verbose) {
       final GPoint2I gridExtent = new GRelief.GPoint2I(image.getWidth(), image.getHeight());
-      final IVector2<?> resolution = bounds._extent.asVector2().div(new GVector2D(gridExtent.x, gridExtent.y));
+      final IVector2 resolution = bounds._extent.asVector2().div(new GVector2D(gridExtent.x, gridExtent.y));
 
-      final Iterable<IVector3<?>> points = initializePointsFromImage(image, gridExtent, bounds);
+      final Iterable<IVector3> points = initializePointsFromImage(image, gridExtent, bounds);
 
       return new GRelief(name, points.iterator(), resolution, verbose);
    }
 
 
-   private static Iterable<IVector3<?>> initializePointsFromImage(final BufferedImage image,
-                                                                  final GPoint2I gridExtent,
-                                                                  final GAxisAlignedBox bounds) {
+   private static Iterable<IVector3> initializePointsFromImage(final BufferedImage image,
+                                                               final GPoint2I gridExtent,
+                                                               final GAxisAlignedBox bounds) {
       final int width = gridExtent.x;
       final int height = gridExtent.y;
 
@@ -144,7 +145,7 @@ public class GRelief
       final double lowerZ = bounds._lower.z();
       final double upperZ = bounds._upper.z();
 
-      final ArrayList<IVector3<?>> result = new ArrayList<IVector3<?>>(width * height);
+      final ArrayList<IVector3> result = new ArrayList<IVector3>(width * height);
 
       for (int column = 0; column < width; column++) {
          final double x = GMath.interpolate(lowerX, upperX, (double) column / (width - 1));
@@ -171,21 +172,21 @@ public class GRelief
    }
 
 
-   private final String                                _name;
+   private final String                             _name;
    //private final Iterable<? extends T> _points;
-   private final IVector2<?>                           _resolution;
+   private final IVector2                           _resolution;
 
-   private final GAxisAlignedOrthotope<IVector3<?>, ?> _bounds;
+   private final GAxisAlignedOrthotope<IVector3, ?> _bounds;
 
-   private final GRelief.GPoint2I                      _gridExtent;
-   private final Set<IVector3<?>>[][]                  _grid;
+   private final GRelief.GPoint2I                   _gridExtent;
+   private final Set<IVector3>[][]                  _grid;
 
-   private final boolean                               _verbose;
+   private final boolean                            _verbose;
 
 
    public GRelief(final String name,
-                  final GPointsLoader<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>> loader,
-                  final IVector2<?> resolution,
+                  final GPointsLoader<IVector3, IVertexContainer.Vertex<IVector3>> loader,
+                  final IVector2 resolution,
                   final boolean verbose) throws IOException {
       _name = name;
       _verbose = verbose;
@@ -195,7 +196,7 @@ public class GRelief
       logInfo("Loading points...");
       loader.load();
 
-      final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> points = loader.getVertices();
+      final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> points = loader.getVertices();
       _resolution = resolution;
 
       //_bounds = GAxisAlignedBox.minimumBoundingBox(points.pointsIterator());
@@ -210,8 +211,8 @@ public class GRelief
 
 
    public GRelief(final String name,
-                  final Iterator<IVector3<?>> points,
-                  final IVector2<?> resolution,
+                  final Iterator<IVector3> points,
+                  final IVector2 resolution,
                   final boolean verbose) {
       _name = name;
       _verbose = verbose;
@@ -266,10 +267,10 @@ public class GRelief
          return Double.NaN;
       }
 
-      final Set<IVector3<?>> leafPoints = _grid[x][y];
+      final Set<IVector3> leafPoints = _grid[x][y];
 
       double totalZ = 0;
-      for (final IVector3<?> point : leafPoints) {
+      for (final IVector3 point : leafPoints) {
          totalZ += point.z();
       }
 
@@ -277,7 +278,7 @@ public class GRelief
    }
 
 
-   public GAxisAlignedOrthotope<IVector3<?>, ?> getBounds() {
+   public GAxisAlignedOrthotope<IVector3, ?> getBounds() {
       return _bounds;
    }
 
@@ -287,8 +288,8 @@ public class GRelief
    }
 
 
-   private GRelief.GPoint2I getKey(final IVector3<?> point) {
-      final IVector3<?> lower = _bounds._lower;
+   private GRelief.GPoint2I getKey(final IVector3 point) {
+      final IVector3 lower = _bounds._lower;
 
       final int keyX = (int) ((point.x() - lower.x()) / _resolution.x());
       final int keyY = (int) ((point.y() - lower.y()) / _resolution.y());
@@ -297,8 +298,8 @@ public class GRelief
    }
 
 
-   private GRelief.GPoint2I getKey(final IVector2<?> point) {
-      final IVector3<?> lower = _bounds._lower;
+   private GRelief.GPoint2I getKey(final IVector2 point) {
+      final IVector3 lower = _bounds._lower;
 
       final int keyX = (int) ((point.x() - lower.x()) / _resolution.x());
       final int keyY = (int) ((point.y() - lower.y()) / _resolution.y());
@@ -307,8 +308,8 @@ public class GRelief
    }
 
 
-   private IVector2<?> getPositionOfKey(final GRelief.GPoint2I key) {
-      final IVector3<?> lower = _bounds._lower;
+   private IVector2 getPositionOfKey(final GRelief.GPoint2I key) {
+      final IVector3 lower = _bounds._lower;
 
       final double x = key.x * _resolution.x() + lower.x();
       final double y = key.y * _resolution.y() + lower.y();
@@ -316,18 +317,18 @@ public class GRelief
    }
 
 
-   private Set<IVector3<?>>[][] initializeGrid(final Iterator<IVector3<?>> pointsIterator) {
+   private Set<IVector3>[][] initializeGrid(final Iterator<IVector3> pointsIterator) {
       @SuppressWarnings("unchecked")
-      final Set<IVector3<?>>[][] result = new HashSet[_gridExtent.x][_gridExtent.y];
+      final Set<IVector3>[][] result = new HashSet[_gridExtent.x][_gridExtent.y];
 
       for (int x = 0; x < _gridExtent.x; x++) {
          for (int y = 0; y < _gridExtent.y; y++) {
-            result[x][y] = new HashSet<IVector3<?>>(1);
+            result[x][y] = new HashSet<IVector3>(1);
          }
       }
 
       while (pointsIterator.hasNext()) {
-         final IVector3<?> point = pointsIterator.next();
+         final IVector3 point = pointsIterator.next();
          final GRelief.GPoint2I key = getKey(point);
          result[key.x][key.y].add(point);
       }
@@ -337,43 +338,43 @@ public class GRelief
 
 
    private GRelief.GPoint2I initializeGridExtent() {
-      final IVector3<?> extent = _bounds._extent;
+      final IVector3 extent = _bounds._extent;
       final int columnsCount = (int) (extent.x() / _resolution.x()) + 1;
       final int rowsCount = (int) (extent.y() / _resolution.y()) + 1;
       return new GRelief.GPoint2I(columnsCount, rowsCount);
    }
 
 
-   public Collection<IVector3<?>> getPoints(final int x,
-                                            final int y) {
+   public Collection<IVector3> getPoints(final int x,
+                                         final int y) {
       return Collections.unmodifiableSet(_grid[x][y]);
    }
 
 
-   public Collection<IVector3<?>> getPointsFromArea(final int xCenter,
-                                                    final int yCenter,
-                                                    final int outset) {
+   public Collection<IVector3> getPointsFromArea(final int xCenter,
+                                                 final int yCenter,
+                                                 final int outset) {
       return getPointsFromArea(xCenter - outset, yCenter - outset, xCenter + outset, yCenter + outset);
    }
 
 
-   public Collection<IVector3<?>> getPoints(final GRelief.GPoint2I center,
-                                            final int outset) {
+   public Collection<IVector3> getPoints(final GRelief.GPoint2I center,
+                                         final int outset) {
       return getPointsFromArea(center.x - outset, center.y - outset, center.x + outset, center.y + outset);
    }
 
 
-   public Collection<IVector3<?>> getPointsFromArea(final int xFrom,
-                                                    final int yFrom,
-                                                    final int xTo,
-                                                    final int yTo) {
+   public Collection<IVector3> getPointsFromArea(final int xFrom,
+                                                 final int yFrom,
+                                                 final int xTo,
+                                                 final int yTo) {
 
       final int campledXFrom = GMath.clamp(xFrom, 0, _gridExtent.x - 1);
       final int campledYFrom = GMath.clamp(yFrom, 0, _gridExtent.y - 1);
       final int campledXTo = GMath.clamp(xTo, 0, _gridExtent.x - 1);
       final int campledYTo = GMath.clamp(yTo, 0, _gridExtent.y - 1);
 
-      final Set<IVector3<?>> result = new HashSet<IVector3<?>>();
+      final Set<IVector3> result = new HashSet<IVector3>();
       for (int x = campledXFrom; x <= campledXTo; x++) {
          for (int y = campledYFrom; y <= campledYTo; y++) {
             result.addAll(_grid[x][y]);
@@ -384,7 +385,7 @@ public class GRelief
    }
 
 
-   public IVector2<?> getResolution() {
+   public IVector2 getResolution() {
       return _resolution;
    }
 
@@ -396,9 +397,9 @@ public class GRelief
 
    public Collection<Double> getZs(final int x,
                                    final int y) {
-      final Collection<Double> zs = GCollections.collect(_grid[x][y], new ITransformer<IVector3<?>, Double>() {
+      final Collection<Double> zs = GCollections.collect(_grid[x][y], new ITransformer<IVector3, Double>() {
          @Override
-         public Double transform(final IVector3<?> element) {
+         public Double transform(final IVector3 element) {
             return element.z();
          }
       });
@@ -407,10 +408,10 @@ public class GRelief
    }
 
 
-   public double getZ(final IVector2<?> position) {
+   public double getZ(final IVector2 position) {
       final GRelief.GPoint2I key = getKey(position);
 
-      final IVector2<?> keyPosition = getPositionOfKey(key);
+      final IVector2 keyPosition = getPositionOfKey(key);
 
       if (keyPosition.equals(position)) {
          // the leaf at key represent the exact position, no need to interpolate
@@ -421,7 +422,7 @@ public class GRelief
    }
 
 
-   private double getInterpolatedZ(final IVector2<?> position) {
+   private double getInterpolatedZ(final IVector2 position) {
       final GRelief.GPoint2I key = getKey(position);
 
       final int campledXFrom = GMath.clamp(key.x - 1, 0, _gridExtent.x - 1);
@@ -455,7 +456,7 @@ public class GRelief
       final double from = getAverageZ(key.x, key.y);
       final double to = getAverageZ(nearestNeighborKey.x, nearestNeighborKey.y);
 
-      final IVector2<?> positionOfKey = getPositionOfKey(key);
+      final IVector2 positionOfKey = getPositionOfKey(key);
       final double alpha = positionOfKey.distance(position) / getPositionOfKey(nearestNeighborKey).distance(positionOfKey);
 
       return GMath.interpolate(from, to, alpha);
@@ -463,7 +464,7 @@ public class GRelief
 
 
    //   public GRelief<IVector3> resampleTo(final String name,
-   //                                       final IVector2<?> resolution) {
+   //                                       final IVector2 resolution) {
    //      //      final ArrayList<IVector3> points = new ArrayList<IVector3>();
    //      //
    //      //      for (double x = _bounds.lower.getX(); x <= _bounds.upper.getX(); x += resolution.getX()) {
@@ -498,11 +499,11 @@ public class GRelief
       int downsizedPoints = 0;
       for (int x = 0; x < _gridExtent.x; x++) {
          for (int y = 0; y < _gridExtent.y; y++) {
-            final Set<IVector3<?>> points = _grid[x][y];
+            final Set<IVector3> points = _grid[x][y];
             final int pointsCount = points.size();
             previousPoints += pointsCount;
             if (pointsCount > 1) {
-               final Set<IVector3<?>> newSet = new HashSet<IVector3<?>>(1);
+               final Set<IVector3> newSet = new HashSet<IVector3>(1);
                newSet.add(getAverage(points));
 
                //               final Set<T> newSet = Collections.singleton(getAverage(points));
@@ -522,10 +523,10 @@ public class GRelief
    }
 
 
-   private IVector3<?> getAverage(final Collection<IVector3<?>> points) {
-      final Iterator<IVector3<?>> iterator = points.iterator();
+   private IVector3 getAverage(final Collection<IVector3> points) {
+      final Iterator<IVector3> iterator = points.iterator();
 
-      final GMutableVector3<IVector3<?>> sum = new GMutableVector3<IVector3<?>>(iterator.next());
+      final GMutableVector3<IVector3> sum = new GMutableVector3<IVector3>(iterator.next());
 
       while (iterator.hasNext()) {
          sum.add(iterator.next());
@@ -550,7 +551,7 @@ public class GRelief
       int emptyleafs = 0;
       for (int x = 0; x < _gridExtent.x; x++) {
          for (int y = 0; y < _gridExtent.y; y++) {
-            final Set<IVector3<?>> leafPoints = _grid[x][y];
+            final Set<IVector3> leafPoints = _grid[x][y];
             final int pointsCount = leafPoints.size();
             pointsCounter += pointsCount;
             if (pointsCount == 0) {
@@ -576,19 +577,15 @@ public class GRelief
       System.out.println("GRelief 0.1");
       System.out.println("-----------\n");
 
-      //final String fileName = "/home/dgd/Escritorio/IGO-Repository/globe-caceres/data/mdt/PNOA_EXT_NW_2006_30K_EL_mdtgint_h10_0678_2-2_huso29.bp";
-      final String fileName = "../globe-caceres/data/mdt/PNOA_EXT_NW_2006_30K_EL_mdtgint_h10_0677_3-4_huso29.bp";
-      //final String fileName = "../globe-caceres/data/mdt/PNOA_EXT_NW_2006_30K_EL_mdtgint_h10_0677_4-2_huso29.bp";
+      final GFileName fileName = GFileName.relative("..", "globe-caceres", "data", "mdt",
+               "PNOA_EXT_NW_2006_30K_EL_mdtgint_h10_0677_3-4_huso29.bp");
       final GVector2D resolution = new GVector2D(5, 5);
 
-      //      // final String fileName = "/home/dgd/Escritorio/IGO-Repository/globe-caceres/data/lidar/dsm_728_4370.bp";
-      //      final String fileName = "/home/dgd/Escritorio/IGO-Repository/globe-caceres/data/lidar/dsm_728_4372.bp";
-      //      final GVector2D resolution = new GVector2D(1, 1);
 
-      final GBinaryPoints3Loader loader = new GBinaryPoints3Loader(fileName, GPointsLoader.DEFAULT_FLAGS | GPointsLoader.VERBOSE);
+      final GBinaryPoints3Loader loader = new GBinaryPoints3Loader(GPointsLoader.DEFAULT_FLAGS | GPointsLoader.VERBOSE, fileName);
 
       loader.load();
-      final IVertexContainer<IVector3<?>, IVertexContainer.Vertex<IVector3<?>>, ?> points = loader.getVertices();
+      final IVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> points = loader.getVertices();
       final GRelief relief = new GRelief("GConcurrentTest", points.pointsIterator(), resolution, true);
 
       //final GRelief<IVector3> relief = new GRelief<IVector3>("GConcurrentTest", loader, resolution, true);
