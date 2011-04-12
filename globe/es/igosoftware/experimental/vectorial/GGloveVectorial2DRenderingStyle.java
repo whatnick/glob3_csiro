@@ -20,6 +20,7 @@ import es.igosoftware.globe.IGlobeVector2Layer;
 import es.igosoftware.globe.attributes.GFloatLayerAttribute;
 import es.igosoftware.globe.attributes.GGroupAttribute;
 import es.igosoftware.globe.attributes.ILayerAttribute;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GAssert;
 
 
@@ -56,22 +57,22 @@ public class GGloveVectorial2DRenderingStyle
       final List<ILayerAttribute<?>> result = new ArrayList<ILayerAttribute<?>>();
 
       if (geometriesTypes.contains(GGeometryType.POINT)) {
-         result.add(createPointsLayerAttributes());
+         result.add(createPointsLayerAttributes(application));
       }
 
       if (geometriesTypes.contains(GGeometryType.CURVE)) {
-         result.add(createCurveLayerAttributes());
+         result.add(createCurveLayerAttributes(application));
       }
 
       if (geometriesTypes.contains(GGeometryType.SURFACE)) {
-         result.add(createSurfaceLayerAttributes());
+         result.add(createSurfaceLayerAttributes(application));
       }
 
       return result;
    }
 
 
-   private ILayerAttribute<?> createPointsLayerAttributes() {
+   private ILayerAttribute<?> createPointsLayerAttributes(final IGlobeApplication application) {
 
       final GFloatLayerAttribute pointSize = new GFloatLayerAttribute("Size", "Set the point size", "PointsSize", 0, 10,
                GFloatLayerAttribute.WidgetType.SLIDER, 0.1f) {
@@ -92,11 +93,12 @@ public class GGloveVectorial2DRenderingStyle
          }
       };
 
-      return new GGroupAttribute("Points Style", "Points rendering settings", pointSize);
+      return new GGroupAttribute("Points Style", application.getSmallIcon(GFileName.relative("points-style.png")),
+               "Points rendering settings", pointSize);
    }
 
 
-   private ILayerAttribute<?> createCurveLayerAttributes() {
+   private ILayerAttribute<?> createCurveLayerAttributes(final IGlobeApplication application) {
 
       final GFloatLayerAttribute thickness = new GFloatLayerAttribute("Thickness", "Set the curves thickness", "CurveThickness",
                0, 10, GFloatLayerAttribute.WidgetType.SLIDER, 0.1f) {
@@ -118,11 +120,12 @@ public class GGloveVectorial2DRenderingStyle
       };
 
 
-      return new GGroupAttribute("Curves Style", "Set the curves style settings", thickness);
+      return new GGroupAttribute("Curves Style", application.getSmallIcon(GFileName.relative("curves-style.png")),
+               "Set the curves style settings", thickness);
    }
 
 
-   private ILayerAttribute<?> createSurfaceLayerAttributes() {
+   private ILayerAttribute<?> createSurfaceLayerAttributes(final IGlobeApplication application) {
 
       final GFloatLayerAttribute thickness = new GFloatLayerAttribute("Border Thickness", "Set the border thickness",
                "SurfaceBorderThickness", 0, 10, GFloatLayerAttribute.WidgetType.SLIDER, 0.1f) {
@@ -143,7 +146,8 @@ public class GGloveVectorial2DRenderingStyle
          }
       };
 
-      return new GGroupAttribute("Surfaces Style", "Set the surfaces style settings", thickness);
+      return new GGroupAttribute("Surfaces Style", application.getSmallIcon(GFileName.relative("surfaces-style.png")),
+               "Set the surfaces style settings", thickness);
    }
 
 
