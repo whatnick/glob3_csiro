@@ -84,6 +84,7 @@ import es.igosoftware.scenegraph.GGroupNode;
 import es.igosoftware.scenegraph.GPositionRenderableLayer;
 import es.igosoftware.scenegraph.GTransformationOrder;
 import es.igosoftware.util.GUtils;
+import es.igosoftware.utils.GPNOAWMSLayer;
 import gov.nasa.worldwind.AnaglyphSceneController;
 import gov.nasa.worldwind.Configuration;
 import gov.nasa.worldwind.avlist.AVKey;
@@ -139,7 +140,7 @@ public class GGlobeDemo
 
       // layers.add(new TerrainProfileLayer());
 
-      //      layers.add(new GPNOAWMSLayer(GPNOAWMSLayer.ImageFormat.JPEG));
+      layers.add(new GPNOAWMSLayer(GPNOAWMSLayer.ImageFormat.JPEG));
 
       //      layers.add(new GDielmoWMSLayer(GDielmoWMSLayer.ImageFormat.PNG));
 
@@ -248,19 +249,18 @@ public class GGlobeDemo
       final double homeElevation = 2000;
       final GHomePositionModule homePositionModule = new GHomePositionModule(homePosition, heading, pitch, homeElevation, true);
 
-<<<<<<< HEAD
+
       //      final IPointsCloudLoader loader = new GPointsCloudFileLoader("data/pointsclouds");
       //      final GPointsCloudModule pointsCloudModule = new GPointsCloudModule(loader);
 
-      GPointsCloudModule pointsCloudModule = null;
+      //      final GPointsCloudModule pointsCloudModule = null;
       //      try {
       //      final IPointsCloudLoader loader = new GPointsCloudStreamingLoader("127.0.0.1", 8000);
 
 
-      final IPointsCloudLoader loader = new GPointsCloudFileLoader("data/pointsclouds");
-      pointsCloudModule = new GPointsCloudModule(loader);
+      //   final IPointsCloudLoader loader = new GPointsCloudFileLoader("data/pointsclouds");
+      // pointsCloudModule = new GPointsCloudModule(loader);
       //     }
-=======
       final IPointsCloudLoader loader = new GPointsCloudFileLoader(GFileName.relativeFromParts("data", "pointsclouds"));
       final GPointsCloudModule pointsCloudModule = new GPointsCloudModule(loader);
 
@@ -270,7 +270,6 @@ public class GGlobeDemo
       //
       //         pointsCloudModule = new GPointsCloudModule(loader);
       //      }
->>>>>>> b62602747a654153aa5b5e154a5ac84e1a77d35e
       //      catch (final IOException e) {
       //         e.printStackTrace();
       //      }

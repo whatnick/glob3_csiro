@@ -61,6 +61,7 @@ import java.awt.event.MouseWheelListener;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -91,12 +92,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import es.igosoftware.concurrent.GConcurrent;
-<<<<<<< HEAD
-import es.igosoftware.io.GFileLoader;
-=======
 import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GHttpLoader;
->>>>>>> b62602747a654153aa5b5e154a5ac84e1a77d35e
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.io.ILoader;
 import es.igosoftware.io.ILoader.IHandler;
@@ -961,7 +958,7 @@ public class GPlanarPanoramicViewer {
       });
 
 
-      final ILoader loader = new GFileLoader("panoramics/giga_alburquerque_retablo/giga_alburquerque_retablo.tif/");
+      //    final ILoader loader = new GFileLoader("panoramics/giga_alburquerque_retablo/giga_alburquerque_retablo.tif/");
 
 
       //      final URL url = new URL("file:///home/dgd/Desktop/PruebaPanoramicas/PLANAR/PANOS/cantabria1.jpg/");
@@ -991,7 +988,7 @@ public class GPlanarPanoramicViewer {
       final URL url = new URL("http://213.165.81.201:8080/");
 
 
-      final int workersCount = GConcurrent.AVAILABLE_PROCESSORS;
+      // final int workersCount = GConcurrent.AVAILABLE_PROCESSORS;
       final ILoader loader = new GHttpLoader(url, workersCount, true, false, false);
 
       final GFileName path = GFileName.relativeFromParts("gigapixel", "PlazaSanJorge-Caceres-Espana");
