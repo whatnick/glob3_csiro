@@ -64,6 +64,7 @@ public class GShapeLoaderDropHandler
 
                final GVectorial2DLayer layer = new GVectorial2DLayer(droppedFile.getName(), featuresCollection);
                _application.addLayer(layer);
+               layer.doDefaultAction(_application);
             }
             catch (final IOException e) {
                _application.logSevere("Error trying to load: " + droppedFile, e);
