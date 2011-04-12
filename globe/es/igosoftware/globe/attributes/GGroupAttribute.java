@@ -44,6 +44,7 @@ import java.util.EventListener;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -66,6 +67,7 @@ public class GGroupAttribute
 
 
    private final String                   _label;
+   private final Icon                     _icon;
    private final String                   _description;
    private final List<ILayerAttribute<?>> _children;
 
@@ -73,7 +75,16 @@ public class GGroupAttribute
    public GGroupAttribute(final String label,
                           final String description,
                           final ILayerAttribute<?>... children) {
+      this(label, null, description, children);
+   }
+
+
+   public GGroupAttribute(final String label,
+                          final Icon icon,
+                          final String description,
+                          final ILayerAttribute<?>... children) {
       _label = label;
+      _icon = icon;
       _description = description;
       _children = Arrays.asList(children);
    }
@@ -82,7 +93,16 @@ public class GGroupAttribute
    public GGroupAttribute(final String label,
                           final String description,
                           final List<? extends ILayerAttribute<?>> children) {
+      this(label, null, description, children);
+   }
+
+
+   public GGroupAttribute(final String label,
+                          final Icon icon,
+                          final String description,
+                          final List<? extends ILayerAttribute<?>> children) {
       _label = label;
+      _icon = icon;
       _description = description;
       _children = new ArrayList<ILayerAttribute<?>>(children);
    }
@@ -154,7 +174,15 @@ public class GGroupAttribute
 
    private Border createTitledBorder(final IGlobeApplication application,
                                      final JComponent container) {
-      final JLabel label = GSwingUtils.makeBold(new JLabel(" " + application.getTranslation(_label) + " "));
+      final JLabel l;
+      if (_icon == null) {
+         l = new JLabel(" " + application.getTranslation(_label) + " ");
+      }
+      else {
+         l = new JLabel(application.getTranslation(_label));
+         l.setIcon(_icon);
+      }
+      final JLabel label = GSwingUtils.makeBold(l);
       label.setOpaque(true);
       label.setBackground(Color.WHITE);
 
