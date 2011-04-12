@@ -486,7 +486,27 @@ public class GNetCDFMultidimentionalData
       if (setsCount == 1) {
          final List<T> head = sets[0];
 
+         /*
+          * FIXME: Properly allow concurrent calculations and accumulation
+          * of vertices
+          */
+         /*
+         final List<Integer> stackList = GCollections.rangeList(0, head.size() - 1);
 
+         GCollections.concurrentEvaluate(stackList, new IRangeEvaluator() {
+            @Override
+            public void evaluate(final int start,
+                                 final int finish) {
+               for (int index = start; index <= finish; index++) {
+                  final T each = head.get(index);
+                  final List<T> newStack = new ArrayList<T>(stack.size() + 1);
+                  newStack.addAll(stack);
+                  newStack.add(each);
+                  processor.process(newStack);
+               }
+            }
+         });
+         */
          for (final T each : head) {
             final List<T> newStack = new ArrayList<T>(stack.size() + 1);
             newStack.addAll(stack);
@@ -965,8 +985,10 @@ public class GNetCDFMultidimentionalData
                   }
                }
 
-               vertexContainer.addPoint(pointFrom, color);
-               vertexContainer.addPoint(pointTo, color);
+               synchronized (vertexContainer) {
+                  vertexContainer.addPoint(pointFrom, color);
+                  vertexContainer.addPoint(pointTo, color);
+               }
 
 
                //Geometry of Arrowhead
@@ -977,7 +999,9 @@ public class GNetCDFMultidimentionalData
                //arrowVertexContainer.addPoint(pointTo.add(new GVector3D(arrowSize, arrowSize, 0.0)), color);
                //arrowVertexContainer.addPoint(pointTo.add(new GVector3D(-arrowSize, arrowSize, 0.0)), color);
 
-               computeArrowheadGeometry(pointFrom, pointTo, arrowVertexContainer);
+               synchronized (arrowVertexContainer) {
+                  computeArrowheadGeometry(pointFrom, pointTo, arrowVertexContainer);
+               }
 
             }
             catch (final IOException e) {
