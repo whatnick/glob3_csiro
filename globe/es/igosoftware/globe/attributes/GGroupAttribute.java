@@ -117,7 +117,7 @@ public class GGroupAttribute
    @Override
    public final GPair<Component, EventListener> createWidget(final IGlobeApplication application,
                                                              final IGlobeLayer layer) {
-      final JPanel panel = new JPanel(new MigLayout("fillx, insets 0 0 0 0"));
+      final JPanel panel = new JPanel(new MigLayout("fillx, insets 0 0 0 0, gap 0 1"));
       panel.setBackground(Color.WHITE);
       panel.setBorder(createTitledBorder(application, panel));
 
@@ -142,7 +142,7 @@ public class GGroupAttribute
             panel.add(widget._first, "growx, wrap, span 2");
          }
          else {
-            panel.add(new JLabel(application.getTranslation(label)), "gap 1");
+            panel.add(new JLabel(application.getTranslation(label)), "gap 3");
             panel.add(widget._first, "left, wrap");
          }
       }

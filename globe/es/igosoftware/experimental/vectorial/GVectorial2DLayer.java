@@ -906,7 +906,7 @@ public class GVectorial2DLayer
       };
 
       final ILayerAttribute<?> fillAlpha = new GFloatLayerAttribute("Alpha", "Set the alpha (transparency) of the fill color",
-               "FillColorAlpha", 0, 255, GFloatLayerAttribute.WidgetType.SPINNER, 1) {
+               "FillColorAlpha", 0, 255, GFloatLayerAttribute.WidgetType.SLIDER, 1) {
          @Override
          public boolean isVisible() {
             return true;
@@ -931,7 +931,7 @@ public class GVectorial2DLayer
 
    private void addBorderAttributes(final List<ILayerAttribute<?>> result) {
       final ILayerAttribute<?> borderWidth = new GFloatLayerAttribute("Width", "Set the border width", "BorderWidth", 0, 5,
-               GFloatLayerAttribute.WidgetType.SPINNER, 0.25f) {
+               GFloatLayerAttribute.WidgetType.SLIDER, 0.25f) {
          @Override
          public boolean isVisible() {
             return true;
@@ -970,7 +970,7 @@ public class GVectorial2DLayer
       };
 
       final ILayerAttribute<?> borderAlpha = new GFloatLayerAttribute("Alpha", "Set the border alpha (transparency)",
-               "BorderColorAlpha", 0, 255, GFloatLayerAttribute.WidgetType.SPINNER, 1) {
+               "BorderColorAlpha", 0, 255, GFloatLayerAttribute.WidgetType.SLIDER, 1) {
          @Override
          public boolean isVisible() {
             return true;

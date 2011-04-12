@@ -80,6 +80,7 @@ public abstract class GColorLayerAttribute
       widget.setBackground(get());
 
       widget.putClientProperty(SubstanceLookAndFeel.COLORIZATION_FACTOR, Double.valueOf(1));
+      //      widget.putClientProperty(SubstanceLookAndFeel.CORNER_RADIUS, Float.valueOf(0));
 
       if (isReadOnly()) {
          widget.setEnabled(false);

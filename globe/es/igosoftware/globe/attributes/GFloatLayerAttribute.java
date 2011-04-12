@@ -202,7 +202,7 @@ public abstract class GFloatLayerAttribute
          @Override
          public Dimension getPreferredSize() {
             final Dimension superPreferredSize = super.getPreferredSize();
-            return new Dimension(superPreferredSize.width / 2, superPreferredSize.height);
+            return new Dimension(superPreferredSize.width / 2, superPreferredSize.height * 2 / 3);
          }
       };
 
