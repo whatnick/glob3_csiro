@@ -5,6 +5,8 @@ package es.igosoftware.experimental.vectorial;
 import java.io.File;
 import java.io.IOException;
 
+import javax.swing.JOptionPane;
+
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
@@ -48,13 +50,29 @@ public class GShapeLoaderDropHandler
    }
 
 
+   private boolean confirmOpenFile(final File file) {
+      final String[] options = { _application.getTranslation("Yes"), _application.getTranslation("No") };
+      final String title = _application.getTranslation("Are you sure to open the file?");
+      final String message = file.toString();
+
+      final int answer = JOptionPane.showOptionDialog(_application.getFrame(), message, title, JOptionPane.YES_NO_OPTION,
+               JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+
+      return (answer == 0);
+   }
+
+
    @Override
    public boolean processFile(final File droppedFile) {
+
+      if (!confirmOpenFile(droppedFile)) {
+         return false;
+      }
+
+
       final Thread worker = new Thread() {
          @Override
          public void run() {
-            System.out.println("Processing file: " + droppedFile);
-
             final int TODO_read_projection_or_ask_user;
             final GProjection projection = GProjection.EPSG_4326;
 
