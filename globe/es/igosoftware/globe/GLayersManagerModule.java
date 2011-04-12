@@ -105,7 +105,7 @@ public class GLayersManagerModule
 
 
    public GLayersManagerModule(final boolean autoAddSingleLayer) {
-      _layerPropertiesPanel = new JPanel(new MigLayout("fillx, insets 0 0 0 0"));
+      _layerPropertiesPanel = new JPanel(new MigLayout("fillx, insets 0 0 0 0, gap 0 1"));
       _layerPropertiesPanel.setBackground(Color.WHITE);
 
       _layerPropertiesPanel.putClientProperty(SubstanceLookAndFeel.COLORIZATION_FACTOR, Double.valueOf(1));

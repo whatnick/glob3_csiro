@@ -179,7 +179,7 @@ public class GGroupAttribute
          l = new JLabel(" " + application.getTranslation(_label) + " ");
       }
       else {
-         l = new JLabel(application.getTranslation(_label));
+         l = new JLabel(application.getTranslation(_label) + " ");
          l.setIcon(_icon);
       }
       final JLabel label = GSwingUtils.makeBold(l);
