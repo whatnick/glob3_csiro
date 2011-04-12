@@ -75,12 +75,13 @@ public abstract class GColorLayerAttribute
    @Override
    public final GPair<Component, EventListener> createWidget(final IGlobeApplication application,
                                                              final IGlobeLayer layer) {
-      final JButton widget = new JButton(" ");
+      final JButton widget = new JButton("...");
       setTooltip(application, widget);
       widget.setBackground(get());
 
       widget.putClientProperty(SubstanceLookAndFeel.COLORIZATION_FACTOR, Double.valueOf(1));
-      //      widget.putClientProperty(SubstanceLookAndFeel.CORNER_RADIUS, Float.valueOf(0));
+      widget.putClientProperty(SubstanceLookAndFeel.BUTTON_NO_MIN_SIZE_PROPERTY, Boolean.TRUE);
+      widget.putClientProperty(SubstanceLookAndFeel.CORNER_RADIUS, Float.valueOf(1)); // currently is ignored
 
       if (isReadOnly()) {
          widget.setEnabled(false);

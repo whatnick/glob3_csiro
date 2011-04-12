@@ -2,9 +2,9 @@
 
 package es.igosoftware.globe.actions;
 
-import java.awt.Component;
 import java.awt.event.ActionListener;
 
+import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
@@ -24,12 +24,12 @@ public class GSwingFactory {
                                           final Icon icon,
                                           final char mnemonic,
                                           final ActionListener actionListener) {
-      final JMenuItem item = new JMenuItem(label, icon);
+      final JMenuItem widget = new JMenuItem(label, icon);
       if (mnemonic != ' ') {
-         item.setMnemonic(mnemonic);
+         widget.setMnemonic(mnemonic);
       }
-      item.addActionListener(actionListener);
-      return item;
+      widget.addActionListener(actionListener);
+      return widget;
    }
 
 
@@ -37,51 +37,61 @@ public class GSwingFactory {
                                              final String label,
                                              final ActionListener actionListener) {
 
-      final JButton button;
+      final JButton widget;
       if (icon == null) {
-         button = new JButton(label);
+         widget = new JButton(label);
       }
       else {
-         button = new JButton(icon);
-         button.setToolTipText(label);
+         widget = new JButton(icon);
+         widget.setToolTipText(label);
       }
 
-      button.putClientProperty(SubstanceLookAndFeel.FLAT_PROPERTY, Boolean.TRUE);
+      widget.putClientProperty(SubstanceLookAndFeel.FLAT_PROPERTY, Boolean.TRUE);
+      widget.putClientProperty(SubstanceLookAndFeel.BUTTON_NO_MIN_SIZE_PROPERTY, Boolean.TRUE);
+
       if (actionListener != null) {
-         button.addActionListener(actionListener);
+         widget.addActionListener(actionListener);
       }
 
-      return button;
+      return widget;
    }
 
 
-   public static Component createToolbarCheckBox(final Icon icon,
-                                                 final String label,
-                                                 final boolean initState,
-                                                 final ActionListener actionListener) {
+   public static JToggleButton createToolbarCheckBox(final Action action) {
+      final JToggleButton widget = new JToggleButton(action);
 
-      final JToggleButton button;
+      widget.putClientProperty(SubstanceLookAndFeel.FLAT_PROPERTY, Boolean.TRUE);
+      widget.putClientProperty(SubstanceLookAndFeel.BUTTON_NO_MIN_SIZE_PROPERTY, Boolean.TRUE);
+
+      return widget;
+   }
+
+
+   public static JToggleButton createToolbarCheckBox(final Icon icon,
+                                                     final String label,
+                                                     final boolean initState,
+                                                     final ActionListener actionListener) {
+
+      final JToggleButton widget;
       if (icon == null) {
-         button = new JToggleButton(label);
+         widget = new JToggleButton(label);
       }
       else {
-         button = new JToggleButton(icon);
-         button.setToolTipText(label);
+         widget = new JToggleButton(icon);
+         widget.setToolTipText(label);
       }
 
-      button.putClientProperty(SubstanceLookAndFeel.FLAT_PROPERTY, Boolean.TRUE);
-      button.addActionListener(actionListener);
+      widget.putClientProperty(SubstanceLookAndFeel.FLAT_PROPERTY, Boolean.TRUE);
+      widget.putClientProperty(SubstanceLookAndFeel.BUTTON_NO_MIN_SIZE_PROPERTY, Boolean.TRUE);
 
-      button.setSelected(initState);
+      if (actionListener != null) {
+         widget.addActionListener(actionListener);
+      }
 
-      return button;
+      widget.setSelected(initState);
 
-      //
-      //      final JCheckBoxMenuItem result = new JCheckBoxMenuItem(label, icon, initState);
-      //
-      //      result.addActionListener(actionListener);
-      //
-      //      return result;
+      return widget;
    }
+
 
 }

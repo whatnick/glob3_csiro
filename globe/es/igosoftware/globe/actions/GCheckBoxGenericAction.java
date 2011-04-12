@@ -44,7 +44,6 @@ import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
-import javax.swing.JToggleButton;
 
 import es.igosoftware.globe.IGlobeApplication;
 
@@ -120,7 +119,7 @@ public abstract class GCheckBoxGenericAction
 
    @Override
    public Component createToolbarWidget(final IGlobeApplication application) {
-      return new JToggleButton(getAction(application));
+      return GSwingFactory.createToolbarCheckBox(getAction(application));
    }
 
 
