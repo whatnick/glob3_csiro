@@ -5,7 +5,6 @@ package es.igosoftware.util;
 import java.awt.Component;
 import java.awt.Font;
 
-import javax.swing.JLabel;
 import javax.swing.JList;
 
 
@@ -22,9 +21,9 @@ public class GSwingUtils {
    }
 
 
-   public static JLabel makeBold(final JLabel label) {
-      label.setFont(makeBold(label.getFont()));
-      return label;
+   public static <ComponentT extends Component> ComponentT makeBold(final ComponentT component) {
+      component.setFont(makeBold(component.getFont()));
+      return component;
    }
 
 
