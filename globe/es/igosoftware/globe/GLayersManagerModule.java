@@ -293,16 +293,7 @@ public class GLayersManagerModule
 
          @Override
          public void execute() {
-            final String[] options = { application.getTranslation("Yes"), application.getTranslation("No") };
-            final String title = application.getTranslation("Layer: ") + layer.getName();
-            final String message = application.getTranslation("Are you sure to remove the layer?");
-
-            final int answer = JOptionPane.showOptionDialog(application.getFrame(), message, title, JOptionPane.YES_NO_OPTION,
-                     JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
-
-            if (answer == 0) {
-               application.removeLayer(layer);
-            }
+            removeLayer(application, layer);
          }
       };
 
@@ -762,5 +753,21 @@ public class GLayersManagerModule
       application.addTranslation("es", "CRS", "CRS");
       application.addTranslation("es", "Select a layer", "Elija una capa");
    }
+
+
+   private void removeLayer(final IGlobeApplication application,
+                            final IGlobeLayer layer) {
+      final String[] options = { application.getTranslation("Yes"), application.getTranslation("No") };
+      final String title = application.getTranslation("Layer: ") + layer.getName();
+      final String message = application.getTranslation("Are you sure to remove the layer?");
+
+      final int answer = JOptionPane.showOptionDialog(application.getFrame(), message, title, JOptionPane.YES_NO_OPTION,
+               JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+
+      if (answer == 0) {
+         application.removeLayer(layer);
+      }
+   }
+
 
 }
