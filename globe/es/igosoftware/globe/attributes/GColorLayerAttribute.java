@@ -45,6 +45,8 @@ import java.util.EventListener;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 
+import org.pushingpixels.substance.api.SubstanceLookAndFeel;
+
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
 import es.igosoftware.util.GPair;
@@ -56,15 +58,17 @@ public abstract class GColorLayerAttribute
 
 
    public GColorLayerAttribute(final String label,
+                               final String description,
                                final String propertyName) {
-      super(label, propertyName);
+      super(label, description, propertyName);
    }
 
 
    public GColorLayerAttribute(final String label,
+                               final String description,
                                final String propertyName,
                                final boolean readOnly) {
-      super(label, propertyName, readOnly);
+      super(label, description, propertyName, readOnly);
    }
 
 
@@ -72,7 +76,10 @@ public abstract class GColorLayerAttribute
    public final GPair<Component, EventListener> createWidget(final IGlobeApplication application,
                                                              final IGlobeLayer layer) {
       final JButton widget = new JButton(" ");
+      setTooltip(application, widget);
       widget.setBackground(get());
+
+      widget.putClientProperty(SubstanceLookAndFeel.COLORIZATION_FACTOR, Double.valueOf(1));
 
       if (isReadOnly()) {
          widget.setEnabled(false);

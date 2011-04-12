@@ -64,6 +64,12 @@ public class GSeparatorAttribute
 
 
    @Override
+   public final String getDescription() {
+      return null;
+   }
+
+
+   @Override
    public final GPair<Component, EventListener> createWidget(final IGlobeApplication application,
                                                              final IGlobeLayer layer) {
       final JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);

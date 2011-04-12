@@ -46,9 +46,9 @@ import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.GBooleanLayerAttribute;
 import es.igosoftware.globe.attributes.GFloatLayerAttribute;
+import es.igosoftware.globe.attributes.GGroupAttribute;
 import es.igosoftware.globe.attributes.GRangeLayerAttribute;
 import es.igosoftware.globe.attributes.GSelectionLayerAttribute;
-import es.igosoftware.globe.attributes.GSeparatorAttribute;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GAssert;
@@ -425,20 +425,16 @@ public class GMultidimensionalViewerLayer
       //      result.add(new GSeparatorAttribute());
 
       createPointsCloudLayerAttributes(result);
-      result.add(new GSeparatorAttribute());
 
       if (_data.getAvailableVectorVariablesNames() != null) {
          createVectorsCloudLayerAttributes(result);
-         result.add(new GSeparatorAttribute());
       }
 
       if (_data.getTimeDimensionName() != null) {
          createTimeLayerAttributes(result);
-         result.add(new GSeparatorAttribute());
       }
 
       createDimensionsRangesLayerAttributes(result);
-      result.add(new GSeparatorAttribute());
 
       return result;
    }
@@ -451,13 +447,14 @@ public class GMultidimensionalViewerLayer
          return;
       }
 
+      final List<ILayerAttribute<?>> attributes = new ArrayList<ILayerAttribute<?>>();
       for (final String dimensionName : dimensionsNames) {
          final int dimensionLenght = _data.getDimensionLenght(dimensionName);
          final int dimensionMaxValue = dimensionLenght - 1;
 
          final GRange<Integer> minimumMaximum = new GRange<Integer>(0, dimensionMaxValue);
-         final ILayerAttribute<?> dimensionRangeAttribute = new GRangeLayerAttribute<Integer>("Dimension " + dimensionName,
-                  "dimension_" + dimensionName, false, minimumMaximum, 1) {
+         final ILayerAttribute<?> dimensionRangeAttribute = new GRangeLayerAttribute<Integer>(dimensionName,
+                  "Range for dimension " + dimensionName, "dimension_" + dimensionName, false, minimumMaximum, 1) {
 
             @Override
             public boolean isVisible() {
@@ -476,9 +473,10 @@ public class GMultidimensionalViewerLayer
                setDimensionRange(dimensionName, value);
             }
          };
-         layerAttributes.add(dimensionRangeAttribute);
-
+         attributes.add(dimensionRangeAttribute);
       }
+
+      layerAttributes.add(new GGroupAttribute("Dimensions", "Dimensions ranges", attributes));
    }
 
 
@@ -506,8 +504,11 @@ public class GMultidimensionalViewerLayer
 
 
    private void createTimeLayerAttributes(final List<ILayerAttribute<?>> layerAttributes) {
-      final ILayerAttribute<?> time = new GFloatLayerAttribute("Time", "Time", 0, _data.getTimeDimensionLength() - 1,
-               GFloatLayerAttribute.WidgetType.SPINNER, 1) {
+
+      final List<ILayerAttribute<?>> attributes = new ArrayList<ILayerAttribute<?>>();
+
+      final ILayerAttribute<?> time = new GFloatLayerAttribute("Time", "Set the time", "Time", 0,
+               _data.getTimeDimensionLength() - 1, GFloatLayerAttribute.WidgetType.SLIDER, 1) {
 
          @Override
          public boolean isVisible() {
@@ -526,10 +527,11 @@ public class GMultidimensionalViewerLayer
             setTime(value.intValue());
          }
       };
-      layerAttributes.add(time);
+      attributes.add(time);
 
 
-      final GBooleanLayerAttribute animateTime = new GBooleanLayerAttribute("Animate Time") {
+      final GBooleanLayerAttribute animateTime = new GBooleanLayerAttribute("Animate Time",
+               "Iterate over the time dimension to get a type of animation", null) {
          @Override
          public void set(final Boolean value) {
             setAnimatingTime(value);
@@ -547,7 +549,9 @@ public class GMultidimensionalViewerLayer
             return isAnimatingTime();
          }
       };
-      layerAttributes.add(animateTime);
+      attributes.add(animateTime);
+
+      layerAttributes.add(new GGroupAttribute("Time", "Time settings", attributes));
    }
 
 
@@ -567,31 +571,38 @@ public class GMultidimensionalViewerLayer
          vectorOptions[i++] = availableVectorVariable;
       }
 
+      final List<ILayerAttribute<?>> attributes = new ArrayList<ILayerAttribute<?>>();
 
-      final GSelectionLayerAttribute<String> vectorVariable = new GSelectionLayerAttribute<String>("Vector Variable", "",
-               vectorOptions) {
-         @Override
-         public void set(final String value) {
-            _vectorVariableName = value.equals(NONE) ? null : value;
-            redraw();
-         }
-
-
-         @Override
-         public boolean isVisible() {
-            return true;
-         }
-
-
-         @Override
-         public String get() {
-            return (_vectorVariableName == null) ? NONE : _vectorVariableName;
-         }
-      };
-      layerAttributes.add(vectorVariable);
+      final GSelectionLayerAttribute<String> vectorVariable;
+      if (vectorOptions.length == 1) {
+         vectorVariable = null;
+      }
+      else {
+         vectorVariable = new GSelectionLayerAttribute<String>("Variable", "Select the variable to represent as vectors", "",
+                  vectorOptions) {
+            @Override
+            public void set(final String value) {
+               _vectorVariableName = value.equals(NONE) ? null : value;
+               redraw();
+            }
 
 
-      final ILayerAttribute<?> smoothVectors = new GBooleanLayerAttribute("Smooth Vectors") {
+            @Override
+            public boolean isVisible() {
+               return true;
+            }
+
+
+            @Override
+            public String get() {
+               return (_vectorVariableName == null) ? NONE : _vectorVariableName;
+            }
+         };
+      }
+      attributes.add(vectorVariable);
+
+
+      final ILayerAttribute<?> smoothVectors = new GBooleanLayerAttribute("Smooth", "Render smooth vectors", null) {
          @Override
          public final boolean isVisible() {
             return true;
@@ -609,11 +620,11 @@ public class GMultidimensionalViewerLayer
             setSmoothVectors(value);
          }
       };
-      layerAttributes.add(smoothVectors);
+      attributes.add(smoothVectors);
 
 
-      final ILayerAttribute<?> vectorsFactor = new GFloatLayerAttribute("Vectors Factor", null, 1, 50000,
-               GFloatLayerAttribute.WidgetType.SPINNER, 1000) {
+      final ILayerAttribute<?> vectorsFactor = new GFloatLayerAttribute("Factor",
+               "Factor to change the size of rendered vectors", null, 1, 50000, GFloatLayerAttribute.WidgetType.SLIDER, 1000) {
          @Override
          public boolean isVisible() {
             return true;
@@ -631,11 +642,11 @@ public class GMultidimensionalViewerLayer
             setVectorsFactor(value);
          }
       };
-      layerAttributes.add(vectorsFactor);
+      attributes.add(vectorsFactor);
 
 
       final ILayerAttribute<?> colorization = new GSelectionLayerAttribute<IMultidimensionalData.VectorColorization>(
-               "Colorization", null, IMultidimensionalData.VectorColorization.values()) {
+               "Colorization", "Set the colorization method for vectors", null, IMultidimensionalData.VectorColorization.values()) {
 
          @Override
          public boolean isVisible() {
@@ -654,11 +665,11 @@ public class GMultidimensionalViewerLayer
             setVectorsColorization(value);
          }
       };
-      layerAttributes.add(colorization);
+      attributes.add(colorization);
 
 
-      final ILayerAttribute<?> vectorsAlpha = new GFloatLayerAttribute("Vectors Alpha", "VectorsAlpha", 0.1f, 1f,
-               GFloatLayerAttribute.WidgetType.SPINNER, 0.1f) {
+      final ILayerAttribute<?> vectorsAlpha = new GFloatLayerAttribute("Alpha", "Set the alpha (transparency) of vectors",
+               "VectorsAlpha", 0.1f, 1f, GFloatLayerAttribute.WidgetType.SLIDER, 0.1f) {
 
          @Override
          public boolean isVisible() {
@@ -677,9 +688,9 @@ public class GMultidimensionalViewerLayer
             setVectorsAlpha(value);
          }
       };
-      layerAttributes.add(vectorsAlpha);
+      attributes.add(vectorsAlpha);
 
-
+      layerAttributes.add(new GGroupAttribute("Vectors", "Vectors settings", attributes));
    }
 
 
@@ -693,9 +704,9 @@ public class GMultidimensionalViewerLayer
          valuesOptions[i++] = availableValueVariable;
       }
 
-
-      final GSelectionLayerAttribute<String> valueVariable = new GSelectionLayerAttribute<String>("Points Variable", "",
-               valuesOptions) {
+      final List<ILayerAttribute<?>> attributes = new ArrayList<ILayerAttribute<?>>();
+      final GSelectionLayerAttribute<String> valueVariable = new GSelectionLayerAttribute<String>("Variable",
+               "Select the variable to draw as points", "", valuesOptions) {
          @Override
          public void set(final String value) {
             _valueVariableName = value.equals(NONE) ? null : value;
@@ -714,10 +725,10 @@ public class GMultidimensionalViewerLayer
             return (_valueVariableName == null) ? NONE : _valueVariableName;
          }
       };
-      layerAttributes.add(valueVariable);
+      attributes.add(valueVariable);
 
 
-      final ILayerAttribute<?> smoothPoints = new GBooleanLayerAttribute("Smooth Points") {
+      final ILayerAttribute<?> smoothPoints = new GBooleanLayerAttribute("Smooth", "Render smooth points", null) {
          @Override
          public final boolean isVisible() {
             return true;
@@ -735,11 +746,11 @@ public class GMultidimensionalViewerLayer
             setSmoothPoints(value);
          }
       };
-      layerAttributes.add(smoothPoints);
+      attributes.add(smoothPoints);
 
 
-      final ILayerAttribute<?> pointsSize = new GFloatLayerAttribute("Points Size", "PointSize", 1, 24,
-               GFloatLayerAttribute.WidgetType.SPINNER, 0.5f) {
+      final ILayerAttribute<?> pointsSize = new GFloatLayerAttribute("Size", "Set the points size", "PointSize", 1, 24,
+               GFloatLayerAttribute.WidgetType.SLIDER, 0.5f) {
 
          @Override
          public boolean isVisible() {
@@ -758,11 +769,11 @@ public class GMultidimensionalViewerLayer
             setPointSize(value);
          }
       };
-      layerAttributes.add(pointsSize);
+      attributes.add(pointsSize);
 
 
-      final ILayerAttribute<?> pointsAlpha = new GFloatLayerAttribute("Points Alpha", "PointsAlpha", 0.1f, 1f,
-               GFloatLayerAttribute.WidgetType.SPINNER, 0.1f) {
+      final ILayerAttribute<?> pointsAlpha = new GFloatLayerAttribute("Alpha", "Set the alpha (transparency) of the points",
+               "PointsAlpha", 0.1f, 1f, GFloatLayerAttribute.WidgetType.SLIDER, 0.1f) {
 
          @Override
          public boolean isVisible() {
@@ -781,8 +792,9 @@ public class GMultidimensionalViewerLayer
             setPointsAlpha(value);
          }
       };
-      layerAttributes.add(pointsAlpha);
+      attributes.add(pointsAlpha);
 
+      layerAttributes.add(new GGroupAttribute("Points", "Points variables settings", attributes));
    }
 
 

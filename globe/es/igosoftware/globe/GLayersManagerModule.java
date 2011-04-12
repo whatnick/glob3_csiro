@@ -71,6 +71,9 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import net.miginfocom.swing.MigLayout;
+
+import org.pushingpixels.substance.api.SubstanceLookAndFeel;
+
 import es.igosoftware.globe.actions.GButtonGenericAction;
 import es.igosoftware.globe.actions.GButtonLayerAction;
 import es.igosoftware.globe.actions.IGenericAction;
@@ -104,6 +107,9 @@ public class GLayersManagerModule
    public GLayersManagerModule(final boolean autoAddSingleLayer) {
       _layerPropertiesPanel = new JPanel(new MigLayout("fillx, insets 0 0 0 0"));
       _layerPropertiesPanel.setBackground(Color.WHITE);
+
+      _layerPropertiesPanel.putClientProperty(SubstanceLookAndFeel.COLORIZATION_FACTOR, Double.valueOf(1));
+
       _widgetsInLayerPropertiesPanel = new ArrayList<GTriplet<IGlobeLayer, ILayerAttribute<?>, GPair<Component, EventListener>>>();
 
       _autoAddSingleLayer = autoAddSingleLayer;
@@ -473,6 +479,8 @@ public class GLayersManagerModule
 
       _layersJList = new JList(new GlobeLayersListModel(application.getGlobeLayers()));
       _layersJList.setBackground(Color.WHITE);
+      _layersJList.putClientProperty(SubstanceLookAndFeel.COLORIZATION_FACTOR, Double.valueOf(1));
+
 
       layerList.addPropertyChangeListener(AVKey.LAYERS, new PropertyChangeListener() {
          @Override
@@ -687,7 +695,6 @@ public class GLayersManagerModule
                continue;
             }
 
-
             if (firstAttributeOnPanel) {
                firstAttributeOnPanel = false;
                final Component[] components = _layerPropertiesPanel.getComponents();
@@ -704,7 +711,11 @@ public class GLayersManagerModule
                _layerPropertiesPanel.add(widget._first, "growx, wrap, span 2");
             }
             else {
-               _layerPropertiesPanel.add(new JLabel(application.getTranslation(label)), "gap 3");
+               final JLabel labelWidget = new JLabel(application.getTranslation(label));
+               _layerPropertiesPanel.add(labelWidget, "gap 3");
+               if (attribute.getDescription() != null) {
+                  labelWidget.setToolTipText(application.getTranslation(attribute.getDescription()));
+               }
                _layerPropertiesPanel.add(widget._first, "left, wrap");
             }
          }
@@ -715,7 +726,7 @@ public class GLayersManagerModule
    @Override
    public List<? extends ILayerAttribute<?>> getLayerAttributes(final IGlobeApplication application,
                                                                 final IGlobeLayer layer) {
-      final GBooleanLayerAttribute visible = new GBooleanLayerAttribute("Visible", "Enabled") {
+      final GBooleanLayerAttribute visible = new GBooleanLayerAttribute("Visible", "Make the layer visible/invisible", "Enabled") {
          @Override
          public boolean isVisible() {
             return true;

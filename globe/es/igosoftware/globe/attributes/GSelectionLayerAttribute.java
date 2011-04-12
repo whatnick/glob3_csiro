@@ -58,9 +58,10 @@ public abstract class GSelectionLayerAttribute<T>
 
 
    public GSelectionLayerAttribute(final String label,
+                                   final String description,
                                    final String propertyName,
                                    final T[] options) {
-      super(label, propertyName);
+      super(label, description, propertyName);
 
       GAssert.notEmpty(options, "options");
 
@@ -69,10 +70,11 @@ public abstract class GSelectionLayerAttribute<T>
 
 
    public GSelectionLayerAttribute(final String label,
+                                   final String description,
                                    final String propertyName,
                                    final boolean readOnly,
                                    final T[] options) {
-      super(label, propertyName, readOnly);
+      super(label, description, propertyName, readOnly);
 
       GAssert.notEmpty(options, "options");
 
@@ -84,6 +86,8 @@ public abstract class GSelectionLayerAttribute<T>
    public final GPair<Component, EventListener> createWidget(final IGlobeApplication application,
                                                              final IGlobeLayer layer) {
       final JComboBox widget = new JComboBox(_options);
+      setTooltip(application, widget);
+
       widget.setSelectedItem(get());
       if (isReadOnly()) {
          widget.setEnabled(false);

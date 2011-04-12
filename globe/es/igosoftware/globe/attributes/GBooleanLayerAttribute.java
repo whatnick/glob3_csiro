@@ -53,27 +53,18 @@ public abstract class GBooleanLayerAttribute
             GAbstractLayerAttribute<Boolean> {
 
 
-   public GBooleanLayerAttribute(final String label) {
-      this(label, false);
-   }
-
-
    public GBooleanLayerAttribute(final String label,
-                                 final boolean readOnly) {
-      super(label, readOnly);
-   }
-
-
-   public GBooleanLayerAttribute(final String label,
+                                 final String description,
                                  final String propertyName) {
-      super(label, propertyName);
+      super(label, description, propertyName);
    }
 
 
    public GBooleanLayerAttribute(final String label,
+                                 final String description,
                                  final String propertyName,
                                  final boolean readOnly) {
-      super(label, propertyName, readOnly);
+      super(label, description, propertyName, readOnly);
    }
 
 
@@ -81,6 +72,7 @@ public abstract class GBooleanLayerAttribute
    public final GPair<Component, EventListener> createWidget(final IGlobeApplication application,
                                                              final IGlobeLayer layer) {
       final JCheckBox widget = new JCheckBox();
+      setTooltip(application, widget);
       widget.setSelected(get());
 
       if (isReadOnly()) {

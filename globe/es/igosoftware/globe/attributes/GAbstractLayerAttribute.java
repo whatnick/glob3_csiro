@@ -40,7 +40,10 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.EventListener;
 
+import javax.swing.JComponent;
+
 import es.igosoftware.globe.GGlobeComponent;
+import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
 import es.igosoftware.util.GAssert;
 
@@ -53,34 +56,41 @@ public abstract class GAbstractLayerAttribute<T>
 
 
    private final String                    _label;
+   private final String                    _description;
    private final boolean                   _readOnly;
+   private final String                    _propertyName;
+
    private ILayerAttribute.IChangeListener _listener;
-   private String                          _propertyName;
 
 
-   public GAbstractLayerAttribute(final String label) {
-      this(label, null, false);
+   protected GAbstractLayerAttribute(final String label,
+                                     final String description) {
+      this(label, description, null, false);
    }
 
 
-   public GAbstractLayerAttribute(final String label,
-                                  final boolean readOnly) {
-      this(label, null, readOnly);
+   protected GAbstractLayerAttribute(final String label,
+                                     final String description,
+                                     final boolean readOnly) {
+      this(label, description, null, readOnly);
    }
 
 
-   public GAbstractLayerAttribute(final String label,
-                                  final String propertyName) {
-      this(label, propertyName, false);
+   protected GAbstractLayerAttribute(final String label,
+                                     final String description,
+                                     final String propertyName) {
+      this(label, description, propertyName, false);
    }
 
 
-   public GAbstractLayerAttribute(final String label,
-                                  final String propertyName,
-                                  final boolean readOnly) {
+   protected GAbstractLayerAttribute(final String label,
+                                     final String description,
+                                     final String propertyName,
+                                     final boolean readOnly) {
       GAssert.notNull(label, "label");
 
       _label = label;
+      _description = description;
       _propertyName = propertyName;
       _readOnly = readOnly;
    }
@@ -147,4 +157,19 @@ public abstract class GAbstractLayerAttribute<T>
 
       layer.removePropertyChangeListener(propertyName, (PropertyChangeListener) listener);
    }
+
+
+   @Override
+   public String getDescription() {
+      return _description;
+   }
+
+
+   protected void setTooltip(final IGlobeApplication application,
+                             final JComponent widget) {
+      if (_description != null) {
+         widget.setToolTipText(application.getTranslation(_description));
+      }
+   }
+
 }

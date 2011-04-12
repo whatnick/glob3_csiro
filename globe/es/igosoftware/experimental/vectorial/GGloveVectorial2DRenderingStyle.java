@@ -73,8 +73,8 @@ public class GGloveVectorial2DRenderingStyle
 
    private ILayerAttribute<?> createPointsLayerAttributes() {
 
-      final GFloatLayerAttribute pointSize = new GFloatLayerAttribute("Size", "PointsSize", 0, 50,
-               GFloatLayerAttribute.WidgetType.SLIDER, 1) {
+      final GFloatLayerAttribute pointSize = new GFloatLayerAttribute("Size", "Set the point size", "PointsSize", 0, 10,
+               GFloatLayerAttribute.WidgetType.SLIDER, 0.1f) {
          @Override
          public void set(final Float value) {
          }
@@ -88,18 +88,18 @@ public class GGloveVectorial2DRenderingStyle
 
          @Override
          public Float get() {
-            return 0f;
+            return 1.5f;
          }
       };
 
-      return new GGroupAttribute("Points Style", pointSize);
+      return new GGroupAttribute("Points Style", "Points rendering settings", pointSize);
    }
 
 
    private ILayerAttribute<?> createCurveLayerAttributes() {
 
-      final GFloatLayerAttribute thickness = new GFloatLayerAttribute("Thickness", "CurveThickness", 0, 50,
-               GFloatLayerAttribute.WidgetType.SLIDER, 1) {
+      final GFloatLayerAttribute thickness = new GFloatLayerAttribute("Thickness", "Set the curves thickness", "CurveThickness",
+               0, 10, GFloatLayerAttribute.WidgetType.SLIDER, 0.1f) {
          @Override
          public void set(final Float value) {
          }
@@ -113,19 +113,19 @@ public class GGloveVectorial2DRenderingStyle
 
          @Override
          public Float get() {
-            return 0f;
+            return 1.5f;
          }
       };
 
 
-      return new GGroupAttribute("Curves Style", thickness);
+      return new GGroupAttribute("Curves Style", "Set the curves style settings", thickness);
    }
 
 
    private ILayerAttribute<?> createSurfaceLayerAttributes() {
 
-      final GFloatLayerAttribute thickness = new GFloatLayerAttribute("Border Thickness", "SurfaceBorderThickness", 0, 50,
-               GFloatLayerAttribute.WidgetType.SLIDER, 1) {
+      final GFloatLayerAttribute thickness = new GFloatLayerAttribute("Border Thickness", "Set the border thickness",
+               "SurfaceBorderThickness", 0, 10, GFloatLayerAttribute.WidgetType.SLIDER, 0.1f) {
          @Override
          public void set(final Float value) {
          }
@@ -139,11 +139,11 @@ public class GGloveVectorial2DRenderingStyle
 
          @Override
          public Float get() {
-            return 0f;
+            return 1.5f;
          }
       };
 
-      return new GGroupAttribute("Surfaces Style", thickness);
+      return new GGroupAttribute("Surfaces Style", "Set the surfaces style settings", thickness);
    }
 
 

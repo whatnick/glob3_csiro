@@ -57,15 +57,17 @@ public abstract class GVectorFieldLayerAttribute
 
 
    public GVectorFieldLayerAttribute(final String label,
+                                     final String description,
                                      final String propertyName) {
-      super(label, propertyName);
+      super(label, description, propertyName);
    }
 
 
    public GVectorFieldLayerAttribute(final String label,
+                                     final String description,
                                      final String propertyName,
                                      final boolean readOnly) {
-      super(label, propertyName, readOnly);
+      super(label, description, propertyName, readOnly);
    }
 
 
@@ -87,6 +89,8 @@ public abstract class GVectorFieldLayerAttribute
       }
 
       final JComboBox widget = new JComboBox(options);
+      setTooltip(application, widget);
+
       if (isReadOnly()) {
          widget.setEnabled(false);
       }

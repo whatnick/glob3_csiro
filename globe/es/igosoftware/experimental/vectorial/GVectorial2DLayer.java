@@ -861,7 +861,8 @@ public class GVectorial2DLayer
 
 
    private void addAdvancedAttributes(final List<ILayerAttribute<?>> result) {
-      final ILayerAttribute<?> debugRendering = new GBooleanLayerAttribute("Debug Rendering", "DebugRendering") {
+      final ILayerAttribute<?> debugRendering = new GBooleanLayerAttribute("Debug Rendering", "Set the debug rendering setting",
+               "DebugRendering") {
          @Override
          public boolean isVisible() {
             return true;
@@ -880,12 +881,12 @@ public class GVectorial2DLayer
          }
       };
 
-      result.add(new GGroupAttribute("Advanced", debugRendering));
+      result.add(new GGroupAttribute("Advanced", "Settings for advanced users", debugRendering));
    }
 
 
    private void addFillAttributes(final List<ILayerAttribute<?>> result) {
-      final ILayerAttribute<?> fillColor = new GColorLayerAttribute("Color", "FillColor") {
+      final ILayerAttribute<?> fillColor = new GColorLayerAttribute("Color", "Set the fill color", "FillColor") {
          @Override
          public boolean isVisible() {
             return true;
@@ -904,8 +905,8 @@ public class GVectorial2DLayer
          }
       };
 
-      final ILayerAttribute<?> fillAlpha = new GFloatLayerAttribute("Alpha", "FillColorAlpha", 0, 255,
-               GFloatLayerAttribute.WidgetType.SPINNER, 1) {
+      final ILayerAttribute<?> fillAlpha = new GFloatLayerAttribute("Alpha", "Set the alpha (transparency) of the fill color",
+               "FillColorAlpha", 0, 255, GFloatLayerAttribute.WidgetType.SPINNER, 1) {
          @Override
          public boolean isVisible() {
             return true;
@@ -924,12 +925,12 @@ public class GVectorial2DLayer
          }
       };
 
-      result.add(new GGroupAttribute("Fill", fillColor, fillAlpha));
+      result.add(new GGroupAttribute("Fill", "Fill related settings", fillColor, fillAlpha));
    }
 
 
    private void addBorderAttributes(final List<ILayerAttribute<?>> result) {
-      final ILayerAttribute<?> borderWidth = new GFloatLayerAttribute("Width", "BorderWidth", 0, 5,
+      final ILayerAttribute<?> borderWidth = new GFloatLayerAttribute("Width", "Set the border width", "BorderWidth", 0, 5,
                GFloatLayerAttribute.WidgetType.SPINNER, 0.25f) {
          @Override
          public boolean isVisible() {
@@ -949,7 +950,7 @@ public class GVectorial2DLayer
          }
       };
 
-      final ILayerAttribute<?> borderColor = new GColorLayerAttribute("Color", "BorderColor") {
+      final ILayerAttribute<?> borderColor = new GColorLayerAttribute("Color", "Set the border color", "BorderColor") {
          @Override
          public boolean isVisible() {
             return true;
@@ -968,8 +969,8 @@ public class GVectorial2DLayer
          }
       };
 
-      final ILayerAttribute<?> borderAlpha = new GFloatLayerAttribute("Alpha", "BorderColorAlpha", 0, 255,
-               GFloatLayerAttribute.WidgetType.SPINNER, 1) {
+      final ILayerAttribute<?> borderAlpha = new GFloatLayerAttribute("Alpha", "Set the border alpha (transparency)",
+               "BorderColorAlpha", 0, 255, GFloatLayerAttribute.WidgetType.SPINNER, 1) {
          @Override
          public boolean isVisible() {
             return true;
@@ -988,7 +989,7 @@ public class GVectorial2DLayer
          }
       };
 
-      result.add(new GGroupAttribute("Border", borderWidth, borderColor, borderAlpha));
+      result.add(new GGroupAttribute("Border", "Border related settings", borderWidth, borderColor, borderAlpha));
    }
 
 

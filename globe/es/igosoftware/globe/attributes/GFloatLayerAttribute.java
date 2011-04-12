@@ -44,6 +44,7 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.util.EventListener;
 
+import javax.swing.JComponent;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
@@ -75,26 +76,13 @@ public abstract class GFloatLayerAttribute
 
 
    public GFloatLayerAttribute(final String label,
-                               final boolean readOnly,
-                               final float minimum,
-                               final float maximum,
-                               final GFloatLayerAttribute.WidgetType widgetType,
-                               final float stepSize) {
-      super(label, readOnly);
-      _minimum = minimum;
-      _maximum = maximum;
-      _stepSize = stepSize;
-      _widgetType = widgetType;
-   }
-
-
-   public GFloatLayerAttribute(final String label,
+                               final String description,
                                final String propertyName,
                                final float minimum,
                                final float maximum,
                                final GFloatLayerAttribute.WidgetType widgetType,
                                final float stepSize) {
-      super(label, propertyName);
+      super(label, description, propertyName);
       _minimum = minimum;
       _maximum = maximum;
       _stepSize = stepSize;
@@ -103,26 +91,14 @@ public abstract class GFloatLayerAttribute
 
 
    public GFloatLayerAttribute(final String label,
-                               final float minimum,
-                               final float maximum,
-                               final GFloatLayerAttribute.WidgetType widgetType,
-                               final float stepSize) {
-      super(label);
-      _minimum = minimum;
-      _maximum = maximum;
-      _stepSize = stepSize;
-      _widgetType = widgetType;
-   }
-
-
-   public GFloatLayerAttribute(final String label,
+                               final String description,
                                final String propertyName,
                                final boolean readOnly,
                                final float minimum,
                                final float maximum,
                                final GFloatLayerAttribute.WidgetType widgetType,
                                final float stepSize) {
-      super(label, propertyName, readOnly);
+      super(label, description, propertyName, readOnly);
       _minimum = minimum;
       _maximum = maximum;
       _stepSize = stepSize;
@@ -143,7 +119,7 @@ public abstract class GFloatLayerAttribute
    public final GPair<Component, EventListener> createWidget(final IGlobeApplication application,
                                                              final IGlobeLayer layer) {
 
-      Component widget = null;
+      final JComponent widget;
       switch (_widgetType) {
          case SLIDER:
             widget = createSlider();
@@ -156,8 +132,12 @@ public abstract class GFloatLayerAttribute
          case TEXTBOX:
             widget = createTextBox();
             break;
+
+         default:
+            return null;
       }
 
+      setTooltip(application, widget);
 
       final EventListener listener = subscribeToEvents(layer);
       return new GPair<Component, EventListener>(widget, listener);

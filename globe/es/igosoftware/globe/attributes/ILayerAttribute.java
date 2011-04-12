@@ -57,6 +57,9 @@ public interface ILayerAttribute<T> {
    public String getLabel();
 
 
+   public String getDescription();
+
+
    public GPair<Component, EventListener> createWidget(final IGlobeApplication application,
                                                        final IGlobeLayer layer);
 

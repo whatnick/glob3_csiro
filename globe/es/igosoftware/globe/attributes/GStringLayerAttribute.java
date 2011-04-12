@@ -54,27 +54,18 @@ public abstract class GStringLayerAttribute
             GAbstractLayerAttribute<String> {
 
 
-   public GStringLayerAttribute(final String label) {
-      this(label, false);
-   }
-
-
    public GStringLayerAttribute(final String label,
-                                final boolean readOnly) {
-      super(label, readOnly);
-   }
-
-
-   public GStringLayerAttribute(final String label,
+                                final String description,
                                 final String propertyName) {
-      super(label, propertyName);
+      super(label, description, propertyName);
    }
 
 
    public GStringLayerAttribute(final String label,
+                                final String description,
                                 final String propertyName,
                                 final boolean readOnly) {
-      super(label, propertyName, readOnly);
+      super(label, description, propertyName, readOnly);
    }
 
 
@@ -84,6 +75,8 @@ public abstract class GStringLayerAttribute
       final JTextField widget = new JTextField();
       widget.setMinimumSize(new Dimension(100, 20));
       widget.setText(get());
+
+      setTooltip(application, widget);
 
       if (isReadOnly()) {
          widget.setEnabled(false);
