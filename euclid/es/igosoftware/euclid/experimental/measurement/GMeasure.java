@@ -133,4 +133,43 @@ public class GMeasure<UnitT extends IUnit<UnitT>>
    }
 
 
+   @Override
+   public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + ((_unit == null) ? 0 : _unit.hashCode());
+      long temp;
+      temp = Double.doubleToLongBits(_value);
+      result = prime * result + (int) (temp ^ (temp >>> 32));
+      return result;
+   }
+
+
+   @Override
+   public boolean equals(final Object obj) {
+      if (this == obj) {
+         return true;
+      }
+      if (obj == null) {
+         return false;
+      }
+      if (getClass() != obj.getClass()) {
+         return false;
+      }
+      final GMeasure other = (GMeasure) obj;
+      if (_unit == null) {
+         if (other._unit != null) {
+            return false;
+         }
+      }
+      else if (!_unit.equals(other._unit)) {
+         return false;
+      }
+      if (Double.doubleToLongBits(_value) != Double.doubleToLongBits(other._value)) {
+         return false;
+      }
+      return true;
+   }
+
+
 }

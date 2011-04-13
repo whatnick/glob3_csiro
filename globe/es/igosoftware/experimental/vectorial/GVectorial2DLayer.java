@@ -712,6 +712,10 @@ public class GVectorial2DLayer
    private boolean                                                                                                             _debugRendering             = false;
 
 
+   private final GGloveVectorial2DRenderingStyle                                                                               _renderingStyle             = new GGloveVectorial2DRenderingStyle(
+                                                                                                                                                                    this);
+
+
    public GVectorial2DLayer(final String name,
                             final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features) {
       GAssert.notNull(name, "name");
@@ -1405,7 +1409,7 @@ public class GVectorial2DLayer
 
    @Override
    public GGloveVectorial2DRenderingStyle getRenderingStyle() {
-      return new GGloveVectorial2DRenderingStyle();
+      return _renderingStyle;
    }
 
 
