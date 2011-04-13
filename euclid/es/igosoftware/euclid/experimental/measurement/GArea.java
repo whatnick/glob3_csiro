@@ -39,6 +39,12 @@ public enum GArea implements IUnit<GArea> {
    }
 
 
+   @Override
+   public String toString() {
+      return getName();
+   }
+
+
    public static void main(final String[] args) {
       final IMeasure<GArea> m2 = GArea.SquareMeter.value(1);
       System.out.println(m2);

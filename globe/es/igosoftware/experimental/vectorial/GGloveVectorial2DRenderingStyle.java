@@ -8,6 +8,8 @@ import java.util.List;
 
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.experimental.measurement.GLength;
+import es.igosoftware.euclid.experimental.measurement.IMeasure;
 import es.igosoftware.euclid.features.GGeometryType;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.features.IGlobeMutableFeatureCollection;
@@ -17,8 +19,8 @@ import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
 import es.igosoftware.globe.IGlobeRenderingStyle;
 import es.igosoftware.globe.IGlobeVector2Layer;
-import es.igosoftware.globe.attributes.GFloatLayerAttribute;
 import es.igosoftware.globe.attributes.GGroupAttribute;
+import es.igosoftware.globe.attributes.GLengthLayerAttribute;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GAssert;
@@ -74,10 +76,10 @@ public class GGloveVectorial2DRenderingStyle
 
    private ILayerAttribute<?> createPointsLayerAttributes(final IGlobeApplication application) {
 
-      final GFloatLayerAttribute pointSize = new GFloatLayerAttribute("Size", "Set the point size", "PointsSize", 0, 10,
-               GFloatLayerAttribute.WidgetType.SPINNER, 0.1f) {
+      final GLengthLayerAttribute pointSize = new GLengthLayerAttribute("Size", "Set the point size", "PointsSize", 0, 10, 1) {
          @Override
-         public void set(final Float value) {
+         public void set(final IMeasure<GLength> value) {
+            System.out.println(value);
          }
 
 
@@ -88,8 +90,8 @@ public class GGloveVectorial2DRenderingStyle
 
 
          @Override
-         public Float get() {
-            return 1.5f;
+         public IMeasure<GLength> get() {
+            return GLength.Meter.value(1);
          }
       };
 
@@ -100,10 +102,11 @@ public class GGloveVectorial2DRenderingStyle
 
    private ILayerAttribute<?> createCurveLayerAttributes(final IGlobeApplication application) {
 
-      final GFloatLayerAttribute thickness = new GFloatLayerAttribute("Thickness", "Set the curves thickness", "CurveThickness",
-               0, 10, GFloatLayerAttribute.WidgetType.SPINNER, 0.1f) {
+      final GLengthLayerAttribute thickness = new GLengthLayerAttribute("Width", "Set the curves thickness", "CurveWidth", 0, 10,
+               1) {
          @Override
-         public void set(final Float value) {
+         public void set(final IMeasure<GLength> value) {
+            System.out.println(value);
          }
 
 
@@ -114,8 +117,8 @@ public class GGloveVectorial2DRenderingStyle
 
 
          @Override
-         public Float get() {
-            return 1.5f;
+         public IMeasure<GLength> get() {
+            return GLength.Meter.value(1);
          }
       };
 
@@ -127,10 +130,11 @@ public class GGloveVectorial2DRenderingStyle
 
    private ILayerAttribute<?> createSurfaceLayerAttributes(final IGlobeApplication application) {
 
-      final GFloatLayerAttribute thickness = new GFloatLayerAttribute("Border Thickness", "Set the border thickness",
-               "SurfaceBorderThickness", 0, 10, GFloatLayerAttribute.WidgetType.SPINNER, 0.1f) {
+      final GLengthLayerAttribute thickness = new GLengthLayerAttribute("Border Width", "Set the border thickness",
+               "SurfaceBorderWidth", 0, 10, 1) {
          @Override
-         public void set(final Float value) {
+         public void set(final IMeasure<GLength> value) {
+            System.out.println(value);
          }
 
 
@@ -141,8 +145,8 @@ public class GGloveVectorial2DRenderingStyle
 
 
          @Override
-         public Float get() {
-            return 1.5f;
+         public IMeasure<GLength> get() {
+            return GLength.Meter.value(1);
          }
       };
 

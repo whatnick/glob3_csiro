@@ -354,7 +354,7 @@ public class GMultidimensionalViewerLayer
 
       _dimensionsRanges = new HashMap<String, GRange<Integer>>();
       for (final String dimensionName : _data.getNonTimeDimensionsNames()) {
-         _dimensionsRanges.put(dimensionName, new GRange<Integer>(0, _data.getDimensionLenght(dimensionName) - 1));
+         _dimensionsRanges.put(dimensionName, new GRange<Integer>(0, _data.getDimensionLength(dimensionName) - 1));
       }
 
 
@@ -449,8 +449,8 @@ public class GMultidimensionalViewerLayer
 
       final List<ILayerAttribute<?>> attributes = new ArrayList<ILayerAttribute<?>>();
       for (final String dimensionName : dimensionsNames) {
-         final int dimensionLenght = _data.getDimensionLenght(dimensionName);
-         final int dimensionMaxValue = dimensionLenght - 1;
+         final int dimensionLength = _data.getDimensionLength(dimensionName);
+         final int dimensionMaxValue = dimensionLength - 1;
 
          final GRange<Integer> minimumMaximum = new GRange<Integer>(0, dimensionMaxValue);
          final ILayerAttribute<?> dimensionRangeAttribute = new GRangeLayerAttribute<Integer>(dimensionName,

@@ -39,6 +39,12 @@ public enum GLength implements IUnit<GLength> {
    }
 
 
+   @Override
+   public String toString() {
+      return getName();
+   }
+
+
    public static void main(final String[] args) {
       final IMeasure<GLength> cm10 = GLength.Centimeter.value(10);
       System.out.println(cm10);
