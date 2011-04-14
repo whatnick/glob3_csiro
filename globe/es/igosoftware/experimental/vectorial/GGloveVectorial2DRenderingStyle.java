@@ -30,6 +30,7 @@ import es.igosoftware.globe.attributes.GLengthLayerAttribute;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GAssert;
+import es.igosoftware.util.GMath;
 import es.igosoftware.util.GUtils;
 
 
@@ -275,7 +276,7 @@ public class GGloveVectorial2DRenderingStyle
 
 
    public void setPointOpacity(final float newPointOpacity) {
-      if (GUtils.equals(newPointOpacity, _pointOpacity)) {
+      if (GMath.closeTo(newPointOpacity, _pointOpacity)) {
          return;
       }
 
