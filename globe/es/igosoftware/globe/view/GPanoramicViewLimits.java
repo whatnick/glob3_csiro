@@ -50,8 +50,8 @@ public class GPanoramicViewLimits
       minHeading = Angle.NEG180;
       maxHeading = Angle.POS180;
 
-      minPitch = Angle.ZERO;
-      maxPitch = Angle.fromDegrees(170);
+      minPitch = Angle.fromDegrees(20);
+      maxPitch = Angle.fromDegrees(160);
 
       setCenterLocationLimits(Sector.FULL_SPHERE);
 

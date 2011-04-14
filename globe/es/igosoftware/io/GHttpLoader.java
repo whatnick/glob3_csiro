@@ -32,7 +32,7 @@ public class GHttpLoader
 
    private static final GLogger LOGGER                       = GLogger.instance();
 
-   private static final String  DEFAULT_CACHE_DIRECTORY_NAME = ".http-cache";
+   private static final String  DEFAULT_CACHE_DIRECTORY_NAME = GUtils.isWindows() ? "http-cache" : ".http-cache";
    private static final File    DEFAULT_CACHE_DIRECTORY      = new File(DEFAULT_CACHE_DIRECTORY_NAME);
 
 
