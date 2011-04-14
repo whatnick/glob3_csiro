@@ -1081,18 +1081,18 @@ public final class GCollections {
    public static <T> T[] rtrim(final T[] array) {
       final int length = array.length;
 
-      int newLenght = length;
+      int newLength = length;
       for (int i = length - 1; i >= 0; i--) {
          if (array[i] != null) {
-            newLenght = i + 1;
+            newLength = i + 1;
             break;
          }
       }
 
-      if (newLenght == length) {
+      if (newLength == length) {
          return array;
       }
-      return Arrays.copyOf(array, newLenght);
+      return Arrays.copyOf(array, newLength);
    }
 
 

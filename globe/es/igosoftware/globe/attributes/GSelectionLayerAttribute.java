@@ -39,6 +39,7 @@ package es.igosoftware.globe.attributes;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 import java.util.EventListener;
 
 import javax.swing.JComboBox;
@@ -61,11 +62,7 @@ public abstract class GSelectionLayerAttribute<T>
                                    final String description,
                                    final String propertyName,
                                    final T[] options) {
-      super(label, description, propertyName);
-
-      GAssert.notEmpty(options, "options");
-
-      _options = options;
+      this(label, description, propertyName, false, options);
    }
 
 
@@ -78,7 +75,7 @@ public abstract class GSelectionLayerAttribute<T>
 
       GAssert.notEmpty(options, "options");
 
-      _options = options;
+      _options = Arrays.copyOf(options, options.length); // copy to avoid external modifications
    }
 
 

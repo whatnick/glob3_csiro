@@ -910,7 +910,7 @@ public class GNetCDFMultidimentionalData
 
 
    @Override
-   public int getDimensionLenght(final String dimensionName) {
+   public int getDimensionLength(final String dimensionName) {
       return _ncFile.findDimension(dimensionName).getLength();
    }
 
