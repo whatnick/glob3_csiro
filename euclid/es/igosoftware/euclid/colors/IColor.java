@@ -166,4 +166,8 @@ public interface IColor {
 
    public IColor muchLighter();
 
+
+   public java.awt.Color asAWTColor();
+
+
 }

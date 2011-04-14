@@ -126,6 +126,12 @@ public final class GColorF
       return newRGB((float) clampedRed / 255, (float) clampedGreen / 255, (float) clampedBlue / 255);
    }
 
+
+   public static GColorF fromAWTColor(final java.awt.Color awtColor) {
+      return newRGB256(awtColor.getRed(), awtColor.getGreen(), awtColor.getBlue());
+   }
+
+
    private final float _red;
    private final float _green;
    private final float _blue;
