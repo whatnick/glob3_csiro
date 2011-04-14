@@ -2,14 +2,18 @@
 
 package es.igosoftware.experimental.vectorial;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.colors.GColorF;
+import es.igosoftware.euclid.colors.IColor;
 import es.igosoftware.euclid.experimental.measurement.GLength;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
+import es.igosoftware.euclid.experimental.vectorial.rendering.IRenderingStyle;
 import es.igosoftware.euclid.features.GGeometryType;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.features.IGlobeMutableFeatureCollection;
@@ -19,26 +23,39 @@ import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
 import es.igosoftware.globe.IGlobeRenderingStyle;
 import es.igosoftware.globe.IGlobeVector2Layer;
+import es.igosoftware.globe.attributes.GColorLayerAttribute;
+import es.igosoftware.globe.attributes.GFloatLayerAttribute;
 import es.igosoftware.globe.attributes.GGroupAttribute;
 import es.igosoftware.globe.attributes.GLengthLayerAttribute;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.io.GFileName;
+import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GUtils;
 
 
 public class GGloveVectorial2DRenderingStyle
          implements
-            IGlobeRenderingStyle {
+            IGlobeRenderingStyle,
+            IRenderingStyle {
 
 
    private final IGlobeVector2Layer _layer;
 
+   // point style
    private IMeasure<GLength>        _pointSize          = GLength.Meter.value(1);
+   private IColor                   _pointColor         = GColorF.WHITE;
+   private float                    _pointOpacity       = 1;
+
+   // curve style
    private IMeasure<GLength>        _curveWidth         = GLength.Meter.value(1);
+
+   // surface style
    private IMeasure<GLength>        _surfaceBorderWidth = GLength.Meter.value(1);
 
 
    public GGloveVectorial2DRenderingStyle(final IGlobeVector2Layer layer) {
+      GAssert.notNull(layer, "layer");
+
       _layer = layer;
    }
 
@@ -106,8 +123,49 @@ public class GGloveVectorial2DRenderingStyle
       };
 
 
+      final GColorLayerAttribute pointColor = new GColorLayerAttribute("Color", "Set the point color", "PointColor") {
+
+         @Override
+         public void set(final Color value) {
+            setPointColor(GColorF.fromAWTColor(value));
+         }
+
+
+         @Override
+         public boolean isVisible() {
+            return true;
+         }
+
+
+         @Override
+         public Color get() {
+            return getPointColor().asAWTColor();
+         }
+      };
+
+
+      final ILayerAttribute<?> pointOpacity = new GFloatLayerAttribute("Opacity", "Set the point color opacity", "PointOpacity",
+               0, 1, GFloatLayerAttribute.WidgetType.SLIDER, 0.1f) {
+         @Override
+         public boolean isVisible() {
+            return true;
+         }
+
+
+         @Override
+         public Float get() {
+            return getPointOpacity();
+         }
+
+
+         @Override
+         public void set(final Float value) {
+            setPointOpacity(value);
+         }
+      };
+
       return new GGroupAttribute("Points Style", application.getSmallIcon(GFileName.relative("points-style.png")),
-               "Points rendering settings", pointSize);
+               "Points rendering settings", pointSize, pointColor, pointOpacity);
    }
 
 
@@ -167,10 +225,12 @@ public class GGloveVectorial2DRenderingStyle
 
 
    private void styleChanged() {
+      System.out.println("Style changed!");
       final int __________Diego_at_work____Inform_the_layer_the_style_has_changed;
    }
 
 
+   @Override
    public IMeasure<GLength> getPointSize() {
       return _pointSize;
    }
@@ -189,6 +249,45 @@ public class GGloveVectorial2DRenderingStyle
    }
 
 
+   @Override
+   public IColor getPointColor() {
+      return _pointColor;
+   }
+
+
+   public void setPointColor(final IColor newPointColor) {
+      if (GUtils.equals(newPointColor, _pointColor)) {
+         return;
+      }
+
+      final IColor oldPointColor = _pointColor;
+      _pointColor = newPointColor;
+      _layer.firePropertyChange("PointColor", oldPointColor, newPointColor);
+
+      styleChanged();
+   }
+
+
+   @Override
+   public float getPointOpacity() {
+      return _pointOpacity;
+   }
+
+
+   public void setPointOpacity(final float newPointOpacity) {
+      if (GUtils.equals(newPointOpacity, _pointOpacity)) {
+         return;
+      }
+
+      final float oldPointOpacity = _pointOpacity;
+      _pointOpacity = newPointOpacity;
+      _layer.firePropertyChange("PointOpacity", oldPointOpacity, newPointOpacity);
+
+      styleChanged();
+   }
+
+
+   @Override
    public IMeasure<GLength> getCurveWidth() {
       return _curveWidth;
    }
@@ -207,6 +306,7 @@ public class GGloveVectorial2DRenderingStyle
    }
 
 
+   @Override
    public IMeasure<GLength> getSurfaceBorderWidth() {
       return _surfaceBorderWidth;
    }

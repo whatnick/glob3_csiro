@@ -151,39 +151,44 @@ public abstract class GColorAbstract
 
 
    @Override
-   public IColor darker() {
+   public final IColor darker() {
       return adjustBrightness(-0.08f);
    }
 
 
    @Override
-   public IColor twiceDarker() {
+   public final IColor twiceDarker() {
       return adjustBrightness(-0.15f);
    }
 
 
    @Override
-   public IColor muchDarker() {
+   public final IColor muchDarker() {
       return interpolatedTo(GColorF.BLACK, 0.5f);
    }
 
 
    @Override
-   public IColor lighter() {
+   public final IColor lighter() {
       return adjustSaturationBrightness(-0.03f, 0.08f);
    }
 
 
    @Override
-   public IColor twiceLighter() {
+   public final IColor twiceLighter() {
       return adjustSaturationBrightness(-0.06f, 0.15f);
    }
 
 
    @Override
-   public IColor muchLighter() {
+   public final IColor muchLighter() {
       return interpolatedTo(GColorF.WHITE, 0.233f);
    }
 
+
+   @Override
+   public final java.awt.Color asAWTColor() {
+      return new java.awt.Color(getRed(), getGreen(), getBlue());
+   }
 
 }

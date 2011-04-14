@@ -288,8 +288,10 @@ public class GGeotoolsVectorialLoader {
       final SimpleFeatureType schema = featureSource.getSchema();
       final int fieldsCount = schema.getAttributeCount() - 1;
       final List<GField> fields = new ArrayList<GField>(fieldsCount);
+      System.out.println("** fieldsCount: " + fieldsCount);
       for (int i = 0; i < fieldsCount; i++) {
          final String fieldName = schema.getType(i + 1).getName().getLocalPart();
+         System.out.println("** fieldName: " + fieldName);
          final Class<?> fieldType = schema.getType(i + 1).getBinding();
 
          fields.add(new GField(fieldName, fieldType));

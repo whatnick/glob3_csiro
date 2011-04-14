@@ -137,6 +137,11 @@ public final class GColorI
    }
 
 
+   public static GColorI fromAWTColor(final java.awt.Color awtColor) {
+      return newRGB256(awtColor.getRed(), awtColor.getGreen(), awtColor.getBlue());
+   }
+
+
    private final int _rgb;
 
 
