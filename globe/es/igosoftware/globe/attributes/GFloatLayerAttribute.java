@@ -54,6 +54,7 @@ import javax.swing.event.ChangeListener;
 
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
+import es.igosoftware.util.GMath;
 import es.igosoftware.util.GPair;
 
 
@@ -167,7 +168,7 @@ public abstract class GFloatLayerAttribute
                      if (f < _minimum) {
                         textField.setText(Float.toString(_minimum));
                      }
-                     set(Float.parseFloat(textField.getText()));
+                     set(GMath.roundTo(Float.parseFloat(textField.getText()), _stepSize));
                   }
                   catch (final NumberFormatException nfe) {
                      Toolkit.getDefaultToolkit().beep();
@@ -207,11 +208,14 @@ public abstract class GFloatLayerAttribute
       };
 
       slider.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-      slider.setMajorTickSpacing((intMax - intMin) / 5);
-      slider.setMinorTickSpacing((intMax - intMin) / 25);
+      final int intRange = intMax - intMin;
+      final int majorTickSpacing = GMath.integerDivisionBy(intRange, new int[] { 5, 4, 3 }, intRange / 2);
+      final int minorTickSpacing = GMath.integerDivisionBy(majorTickSpacing, new int[] { 4, 3, 2 }, 1);
+      slider.setMajorTickSpacing(majorTickSpacing);
+      slider.setMinorTickSpacing(minorTickSpacing);
       slider.setPaintTicks(true);
       slider.setPaintLabels(false);
-      slider.setSnapToTicks(true);
+      slider.setSnapToTicks(false);
 
       if (isReadOnly()) {
          slider.setEnabled(false);
@@ -225,7 +229,7 @@ public abstract class GFloatLayerAttribute
                }
 
                final float floatValue = toFloat(slider.getValue(), _stepSize);
-               set(floatValue);
+               set(GMath.roundTo(floatValue, _stepSize));
             }
          });
       }
@@ -266,7 +270,7 @@ public abstract class GFloatLayerAttribute
          spinner.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(final ChangeEvent e) {
-               set((Float) spinner.getValue());
+               set(GMath.roundTo((Float) spinner.getValue(), _stepSize));
             }
          });
       }

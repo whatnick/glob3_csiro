@@ -54,6 +54,7 @@ import javax.swing.event.ChangeListener;
 
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
+import es.igosoftware.util.GMath;
 import es.igosoftware.util.GPair;
 
 
@@ -167,7 +168,7 @@ public abstract class GDoubleLayerAttribute
                      if (f < _minimum) {
                         textField.setText(Double.toString(_minimum));
                      }
-                     set(Double.parseDouble(textField.getText()));
+                     set(GMath.roundTo(Double.parseDouble(textField.getText()), _stepSize));
                   }
                   catch (final NumberFormatException nfe) {
                      Toolkit.getDefaultToolkit().beep();
@@ -207,11 +208,14 @@ public abstract class GDoubleLayerAttribute
       };
 
       slider.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-      slider.setMajorTickSpacing((intMax - intMin) / 5);
-      slider.setMinorTickSpacing((intMax - intMin) / 25);
+      final int intRange = intMax - intMin;
+      final int majorTickSpacing = GMath.integerDivisionBy(intRange, new int[] { 5, 4, 3 }, intRange / 2);
+      final int minorTickSpacing = GMath.integerDivisionBy(majorTickSpacing, new int[] { 4, 3, 2 }, 1);
+      slider.setMajorTickSpacing(majorTickSpacing);
+      slider.setMinorTickSpacing(minorTickSpacing);
       slider.setPaintTicks(true);
       slider.setPaintLabels(false);
-      slider.setSnapToTicks(true);
+      slider.setSnapToTicks(false);
 
       if (isReadOnly()) {
          slider.setEnabled(false);
@@ -225,7 +229,7 @@ public abstract class GDoubleLayerAttribute
                }
 
                final double doubleValue = toDouble(slider.getValue(), _stepSize);
-               set(doubleValue);
+               set(GMath.roundTo(doubleValue, _stepSize));
             }
          });
       }
@@ -266,7 +270,7 @@ public abstract class GDoubleLayerAttribute
          spinner.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(final ChangeEvent e) {
-               set((Double) spinner.getValue());
+               set(GMath.roundTo((Double) spinner.getValue(), _stepSize));
             }
          });
       }
