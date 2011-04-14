@@ -26,13 +26,13 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="libs/jogl/jogl.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/worldwind.jar" sourcepath="/home/oliver/Desktop/worldwind-0.6.786.15221"/>
+	<classpathentry exported="true" kind="lib" path="libs/worldwind.jar" sourcepath="/home/dgd/Escritorio/worldwind-0.6.651.14101"/>
 	<classpathentry kind="lib" path="libs/netcdf/netcdf-4.2.jar"/>
 	<classpathentry kind="lib" path="libs/netcdf/slf4j-api-1.5.6.jar"/>
 	<classpathentry kind="lib" path="libs/netcdf/slf4j-jdk14-1.5.6.jar"/>
 	<classpathentry kind="lib" path="libs/gt/gt-api-2.7-M3.jar" sourcepath="/home/fpulido/Escritorio/Tools/geotools-2.7-M3-project.zip"/>
 	<classpathentry kind="lib" path="libs/gt/gt-epsg-hsql-2.7-M3.jar"/>
-	<classpathentry kind="lib" path="libs/gt/gt-main-2.7-M3.jar" sourcepath="/home/dgd/Escritorio/geotools/geotools-2.7-M3-project.zip"/>
+	<classpathentry kind="lib" path="libs/gt/gt-main-2.7-M3.jar" sourcepath="/home/fpulido/Escritorio/Tools/geotools-2.7-M3-project.zip"/>
 	<classpathentry kind="lib" path="libs/gt/gt-metadata-2.7-M3.jar"/>
 	<classpathentry kind="lib" path="libs/gt/gt-referencing-2.7-M3.jar"/>
 	<classpathentry kind="lib" path="libs/gt/gt-shapefile-2.7-M3.jar"/>
@@ -52,5 +52,12 @@
 	<classpathentry kind="lib" path="libs/gt/gt-swing-2.7-M3.jar" sourcepath="/home/fpulido/Escritorio/Tools/geotools-2.7-M3-project.zip"/>
 	<classpathentry kind="lib" path="libs/gt/gt-oracle-spatial-2.7-M3.jar"/>
 	<classpathentry kind="lib" path="libs/gt/gt-jdbc-oracle-2.7-M3.jar"/>
+	<classpathentry kind="lib" path="libs/gt/gt-xsd-core-2.7-M3.jar" sourcepath="/home/fpulido/Escritorio/Tools/geotools-2.7-M3-project.zip"/>
+	<classpathentry kind="lib" path="libs/gt/gt-xsd-kml-2.7-M3.jar" sourcepath="/home/fpulido/Escritorio/Tools/geotools-2.7-M3-project.zip"/>
+	<classpathentry kind="lib" path="libs/gt/picocontainer-1.2.jar"/>
+	<classpathentry kind="lib" path="libs/gt/xsd-2.2.2.jar"/>
+	<classpathentry kind="lib" path="libs/gt/ecore-2.2.2.jar"/>
+	<classpathentry kind="lib" path="libs/gt/common-2.2.1.jar"/>
+	<classpathentry kind="lib" path="libs/gt/commons-collections-3.1.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
