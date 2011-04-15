@@ -236,10 +236,25 @@ class GVectorial2DRenderUnit
 
 
          if (geometry instanceof IPolygonalChain2D) {
-            renderPolyline((IPolygonalChain2D) geometry, scale, g2d, region, attributes);
+            drawPolyline(g2d, attributes, getPoints((IPolygonalChain2D) geometry, scale, region));
          }
          else if (geometry instanceof IPolygon2D) {
-            renderPolygon((IPolygon2D) geometry, scale, g2d, region, attributes);
+            final IPolygon2D polygon = (IPolygon2D) geometry;
+            if (polygon instanceof IComplexPolygon2D) {
+               final IComplexPolygon2D complexPolygon = (IComplexPolygon2D) polygon;
+
+               final Area complexShape = getPoints(complexPolygon.getHull(), scale, region).asArea();
+
+               for (final ISimplePolygon2D hole : complexPolygon.getHoles()) {
+                  // complexShape.exclusiveOr(getPoints(hole, scale, region).asArea());
+                  complexShape.subtract(getPoints(hole, scale, region).asArea());
+               }
+
+               drawShape(g2d, attributes, complexShape);
+            }
+            else {
+               drawShape(g2d, attributes, getPoints(polygon, scale, region).asShape());
+            }
          }
          else {
             System.out.println("Warning: geometry type " + geometry.getClass() + " not supported");
@@ -310,47 +325,6 @@ class GVectorial2DRenderUnit
    }
 
 
-   private static void renderPolyline(final IPolygonalChain2D geometry,
-                                      final IVector2 scale,
-                                      final Graphics2D g2d,
-                                      final GAxisAlignedRectangle region,
-                                      final GVectorialRenderingAttributes attributes) {
-      drawPolyline(g2d, attributes, getPoints(geometry, scale, region));
-   }
-
-
-   private static void renderPolygon(final IPolygon2D geometry,
-                                     final IVector2 scale,
-                                     final Graphics2D g2d,
-                                     final GAxisAlignedRectangle region,
-                                     final GVectorialRenderingAttributes attributes) {
-
-      if (geometry instanceof IComplexPolygon2D) {
-         renderComplexPolygon((IComplexPolygon2D) geometry, scale, g2d, region, attributes);
-      }
-      else {
-         drawPolygon(g2d, attributes, getPoints(geometry, scale, region));
-      }
-
-   }
-
-
-   private static void renderComplexPolygon(final IComplexPolygon2D geometry,
-                                            final IVector2 scale,
-                                            final Graphics2D g2d,
-                                            final GAxisAlignedRectangle region,
-                                            final GVectorialRenderingAttributes attributes) {
-      final Area shape = getPoints(geometry.getHull(), scale, region).asArea();
-
-      for (final ISimplePolygon2D hole : geometry.getHoles()) {
-         // shape.exclusiveOr(getPoints(hole, scale, region).asArea());
-         shape.subtract(getPoints(hole, scale, region).asArea());
-      }
-
-      drawShape(g2d, attributes, shape);
-   }
-
-
    private static void drawPoint(final Graphics2D g2d,
                                  final GVectorialRenderingAttributes attributes,
                                  final int x,
@@ -385,30 +359,6 @@ class GVectorial2DRenderUnit
             g2d.drawPolyline(points._xPoints, points._yPoints, points._xPoints.length);
          }
       }
-   }
-
-
-   private static void drawPolygon(final Graphics2D g2d,
-                                   final GVectorialRenderingAttributes attributes,
-                                   final Points points) {
-      //      // fill polygon
-      //      g2d.setColor(attributes._fillColor);
-      //      g2d.fillPolygon(points._xPoints, points._yPoints, points._xPoints.length);
-      //
-      //
-      //      // render border
-      //      if (attributes._borderWidth > 0) {
-      //         //final float borderWidth = (float) (attributes._borderWidth / ((scale.x() + scale.y()) / 2));
-      //         final float borderWidth = attributes._borderWidth;
-      //         if (borderWidth > 0) {
-      //            final BasicStroke borderStroke = new BasicStroke(borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-      //
-      //            g2d.setStroke(borderStroke);
-      //            g2d.setColor(attributes._borderColor);
-      //            g2d.drawPolygon(points._xPoints, points._yPoints, points._xPoints.length);
-      //         }
-      //      }
-      drawShape(g2d, attributes, points.asShape());
    }
 
 
