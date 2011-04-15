@@ -699,6 +699,7 @@ public class GKmlLoader {
          }
          else if (geometryAttribute.getValue().getClass() == com.vividsolutions.jts.geom.GeometryCollection.class) {
 
+            final int TODO_handling_GeometryCollection;
             final com.vividsolutions.jts.geom.GeometryCollection geometryCollection = (com.vividsolutions.jts.geom.GeometryCollection) geometryAttribute.getValue();
             final int geometriesCount = geometryCollection.getNumGeometries();
 
@@ -707,7 +708,7 @@ public class GKmlLoader {
 
 
             for (int i = 0; i < geometriesCount; i++) {
-               System.out.println("Geometry: " + geometryCollection.getGeometryN(i));
+               System.out.println("Geometry: " + geometryCollection.getGeometryN(i).getGeometryType());
                // proccess depending on the geometry type
             }
 
@@ -720,7 +721,6 @@ public class GKmlLoader {
 
          progress.stepDone();
       }
-
 
       //store.dispose();
 
