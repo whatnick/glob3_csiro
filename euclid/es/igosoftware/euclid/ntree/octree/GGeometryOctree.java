@@ -2,6 +2,8 @@
 
 package es.igosoftware.euclid.ntree.octree;
 
+import java.util.Collection;
+
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
@@ -19,7 +21,7 @@ public class GGeometryOctree<ElementT>
    public GGeometryOctree(final String name,
                           final GAxisAlignedBox bounds,
                           final Iterable<? extends ElementT> elements,
-                          final ITransformer<ElementT, ? extends IBoundedGeometry<IVector3, ? extends IFiniteBounds<IVector3, ?>>> transformer,
+                          final ITransformer<ElementT, Collection<? extends IBoundedGeometry<IVector3, ? extends IFiniteBounds<IVector3, ?>>>> transformer,
                           final GGeometryNTreeParameters parameters) {
       super(name, bounds, elements, transformer, parameters);
    }

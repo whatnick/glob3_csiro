@@ -2,6 +2,8 @@
 
 package es.igosoftware.euclid.ntree.quadtree;
 
+import java.util.Collection;
+
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
@@ -19,7 +21,7 @@ public class GGeometryQuadtree<ElementT>
    public GGeometryQuadtree(final String name,
                             final GAxisAlignedRectangle bounds,
                             final Iterable<? extends ElementT> elements,
-                            final ITransformer<ElementT, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> transformer,
+                            final ITransformer<ElementT, Collection<? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> transformer,
                             final GGeometryNTreeParameters parameters) {
       super(name, bounds, elements, transformer, parameters);
    }

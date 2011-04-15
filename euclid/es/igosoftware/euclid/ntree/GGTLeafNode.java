@@ -15,7 +15,7 @@ public class GGTLeafNode<VectorT extends IVector<VectorT, ?>, ElementT>
 
    GGTLeafNode(final GGTInnerNode<VectorT, ElementT> parent,
                final GAxisAlignedOrthotope<VectorT, ?> bounds,
-               final Collection<ElementT> elements) {
+               final Collection<GElementGeometryPair<VectorT, ElementT>> elements) {
       super(parent, bounds, elements);
    }
 
@@ -40,7 +40,7 @@ public class GGTLeafNode<VectorT extends IVector<VectorT, ?>, ElementT>
 
 
    @Override
-   public final Collection<ElementT> getAllElements() {
+   public final Collection<GElementGeometryPair<VectorT, ElementT>> getAllElements() {
       return getElements();
    }
 

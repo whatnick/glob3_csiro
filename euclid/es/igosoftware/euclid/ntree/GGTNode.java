@@ -15,14 +15,14 @@ public abstract class GGTNode<VectorT extends IVector<VectorT, ?>, ElementT>
             GLoggerObject {
 
 
-   protected final GGTInnerNode<VectorT, ElementT>   _parent;
-   protected final GAxisAlignedOrthotope<VectorT, ?> _bounds;
-   protected final Collection<ElementT>              _elements;
+   protected final GGTInnerNode<VectorT, ElementT>                     _parent;
+   protected final GAxisAlignedOrthotope<VectorT, ?>                   _bounds;
+   protected final Collection<GElementGeometryPair<VectorT, ElementT>> _elements;
 
 
    protected GGTNode(final GGTInnerNode<VectorT, ElementT> parent,
                      final GAxisAlignedOrthotope<VectorT, ?> bounds,
-                     final Collection<ElementT> elements) {
+                     final Collection<GElementGeometryPair<VectorT, ElementT>> elements) {
       _parent = parent;
       _bounds = bounds;
       _elements = elements;
@@ -92,7 +92,7 @@ public abstract class GGTNode<VectorT extends IVector<VectorT, ?>, ElementT>
    public abstract int getInnerNodesCount();
 
 
-   public final Collection<ElementT> getElements() {
+   public final Collection<GElementGeometryPair<VectorT, ElementT>> getElements() {
       if (_elements == null) {
          return Collections.emptyList();
       }
@@ -106,7 +106,7 @@ public abstract class GGTNode<VectorT extends IVector<VectorT, ?>, ElementT>
    }
 
 
-   public abstract Collection<? extends ElementT> getAllElements();
+   public abstract Collection<GElementGeometryPair<VectorT, ElementT>> getAllElements();
 
 
    public abstract int getAllElementsCount();

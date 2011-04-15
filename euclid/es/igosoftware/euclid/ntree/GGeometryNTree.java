@@ -2,6 +2,7 @@
 
 package es.igosoftware.euclid.ntree;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import es.igosoftware.euclid.IBoundedGeometry;
@@ -10,7 +11,6 @@ import es.igosoftware.euclid.bounding.IBounds;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.ntree.GGTInnerNode.GeometriesDistribution;
-import es.igosoftware.euclid.shape.GShape;
 import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GHolder;
@@ -43,7 +43,7 @@ public abstract class GGeometryNTree<VectorT extends IVector<VectorT, ?>, Elemen
    protected GGeometryNTree(final String name,
                             final GAxisAlignedOrthotope<VectorT, ?> bounds,
                             final Iterable<? extends ElementT> elements,
-                            final ITransformer<ElementT, ? extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>> transformer,
+                            final ITransformer<ElementT, Collection<? extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>>> transformer,
                             final GGeometryNTreeParameters parameters) {
       _name = name;
       _elements = elements;
@@ -52,7 +52,23 @@ public abstract class GGeometryNTree<VectorT extends IVector<VectorT, ?>, Elemen
       final String nameMsg = (_name == null) ? "" : "\"" + _name + "\" ";
       logInfo("Creating " + getTreeName() + " " + nameMsg);
 
-      _elementsCount = countElements(elements);
+      VectorT geometriesLower = null;
+      VectorT geometrisUpper = null;
+      final ArrayList<GElementGeometryPair<VectorT, ElementT>> pairs = new ArrayList<GElementGeometryPair<VectorT, ElementT>>();
+      for (final ElementT element : elements) {
+         final Collection<? extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>> geometries = transformer.transform(element);
+         for (final IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>> geometry : geometries) {
+            pairs.add(new GElementGeometryPair<VectorT, ElementT>(element, geometry));
+            final GAxisAlignedOrthotope<VectorT, ?> geometryBounds = geometry.getBounds().asAxisAlignedOrthotope();
+
+            geometriesLower = (geometriesLower == null) ? geometryBounds._lower : geometriesLower.min(geometryBounds._lower);
+            geometrisUpper = (geometrisUpper == null) ? geometryBounds._upper : geometrisUpper.max(geometryBounds._upper);
+         }
+      }
+      pairs.trimToSize();
+
+
+      _elementsCount = pairs.size();
 
       final GProgress progress = new GProgress(_elementsCount) {
          @Override
@@ -65,17 +81,17 @@ public abstract class GGeometryNTree<VectorT extends IVector<VectorT, ?>, Elemen
          }
       };
 
-      _geometriesBounds = GShape.getBounds(elements, transformer);
+      _geometriesBounds = GAxisAlignedOrthotope.create(geometriesLower, geometrisUpper);
+      //      _geometriesBounds = GShape.getBounds(pairs, transformer);
       _dimensions = _geometriesBounds._extent.dimensions();
 
       _bounds = initializeBounds(bounds);
 
 
-      final GeometriesDistribution<VectorT, ElementT> distribution = GGTInnerNode.distributeGeometries(_bounds, elements,
-               transformer);
+      final GeometriesDistribution<VectorT, ElementT> distribution = GGTInnerNode.distributeGeometries(_bounds, pairs);
 
       _root = new GGTInnerNode<VectorT, ElementT>(null, _bounds, distribution.getOwnGeometries(),
-               distribution.getGeometriesToDistribute(), transformer, 0, parameters, progress) {
+               distribution.getGeometriesToDistribute(), 0, parameters, progress) {
          @Override
          public GGeometryNTree<VectorT, ElementT> getNTree() {
             return GGeometryNTree.this;
