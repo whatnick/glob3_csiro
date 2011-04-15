@@ -5,9 +5,13 @@ package es.igosoftware.euclid.experimental.vectorial.rendering;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Polygon;
 import java.awt.RenderingHints;
+import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
@@ -20,6 +24,7 @@ import es.igosoftware.euclid.ntree.GGTNode;
 import es.igosoftware.euclid.shape.IComplexPolygon2D;
 import es.igosoftware.euclid.shape.IPolygon2D;
 import es.igosoftware.euclid.shape.IPolygonalChain2D;
+import es.igosoftware.euclid.shape.ISimplePolygon2D;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector2;
@@ -268,6 +273,22 @@ class GVectorial2DRenderUnit
          _xPoints = xPoints;
          _yPoints = yPoints;
       }
+
+
+      @Override
+      public String toString() {
+         return "Points [_xPoints=" + Arrays.toString(_xPoints) + ", _yPoints=" + Arrays.toString(_yPoints) + "]";
+      }
+
+
+      private Shape asShape() {
+         return new Polygon(_xPoints, _yPoints, _xPoints.length);
+      }
+
+
+      private Area asArea() {
+         return new Area(asShape());
+      }
    }
 
 
@@ -304,16 +325,29 @@ class GVectorial2DRenderUnit
                                      final GAxisAlignedRectangle region,
                                      final GVectorialRenderingAttributes attributes) {
 
-      final IPolygon2D geometryToDraw;
       if (geometry instanceof IComplexPolygon2D) {
-         // TODO: tesselate complex polygon 
-         geometryToDraw = ((IComplexPolygon2D) geometry).getHull();
+         renderComplexPolygon((IComplexPolygon2D) geometry, scale, g2d, region, attributes);
       }
       else {
-         geometryToDraw = geometry;
+         drawPolygon(g2d, attributes, getPoints(geometry, scale, region));
       }
 
-      drawPolygon(g2d, attributes, getPoints(geometryToDraw, scale, region));
+   }
+
+
+   private static void renderComplexPolygon(final IComplexPolygon2D geometry,
+                                            final IVector2 scale,
+                                            final Graphics2D g2d,
+                                            final GAxisAlignedRectangle region,
+                                            final GVectorialRenderingAttributes attributes) {
+      final Area shape = getPoints(geometry.getHull(), scale, region).asArea();
+
+      for (final ISimplePolygon2D hole : geometry.getHoles()) {
+         // shape.exclusiveOr(getPoints(hole, scale, region).asArea());
+         shape.subtract(getPoints(hole, scale, region).asArea());
+      }
+
+      drawShape(g2d, attributes, shape);
    }
 
 
@@ -357,9 +391,33 @@ class GVectorial2DRenderUnit
    private static void drawPolygon(final Graphics2D g2d,
                                    final GVectorialRenderingAttributes attributes,
                                    final Points points) {
+      //      // fill polygon
+      //      g2d.setColor(attributes._fillColor);
+      //      g2d.fillPolygon(points._xPoints, points._yPoints, points._xPoints.length);
+      //
+      //
+      //      // render border
+      //      if (attributes._borderWidth > 0) {
+      //         //final float borderWidth = (float) (attributes._borderWidth / ((scale.x() + scale.y()) / 2));
+      //         final float borderWidth = attributes._borderWidth;
+      //         if (borderWidth > 0) {
+      //            final BasicStroke borderStroke = new BasicStroke(borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+      //
+      //            g2d.setStroke(borderStroke);
+      //            g2d.setColor(attributes._borderColor);
+      //            g2d.drawPolygon(points._xPoints, points._yPoints, points._xPoints.length);
+      //         }
+      //      }
+      drawShape(g2d, attributes, points.asShape());
+   }
+
+
+   private static void drawShape(final Graphics2D g2d,
+                                 final GVectorialRenderingAttributes attributes,
+                                 final Shape shape) {
       // fill polygon
       g2d.setColor(attributes._fillColor);
-      g2d.fillPolygon(points._xPoints, points._yPoints, points._xPoints.length);
+      g2d.fill(shape);
 
 
       // render border
@@ -371,8 +429,10 @@ class GVectorial2DRenderUnit
 
             g2d.setStroke(borderStroke);
             g2d.setColor(attributes._borderColor);
-            g2d.drawPolygon(points._xPoints, points._yPoints, points._xPoints.length);
+            g2d.draw(shape);
          }
       }
    }
+
+
 }

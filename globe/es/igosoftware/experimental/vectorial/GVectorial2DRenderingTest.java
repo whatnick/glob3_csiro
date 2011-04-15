@@ -69,16 +69,16 @@ public class GVectorial2DRenderingTest {
       //               "world-modified", "world.shp");
       //      final GFileName fileName = GFileName.absoluteFromParts("home", "dgd", "Desktop", "sample-shp", "shp", "argentina.shp",
       //      "roads.shp");
+      //      final GFileName fileName = GFileName.absolute("home", "dgd", "Desktop", "sample-shp", "shp", "argentina.shp", "roads.shp");
       final GFileName fileName = GFileName.absolute("home", "dgd", "Desktop", "sample-shp", "shp", "argentina.shp", "roads.shp");
+      //      final GFileName fileName = GFileName.absolute("home", "dgd", "Desktop", "sample-shp", "cartobrutal", "world-modified",
+      //               "world4326.shp");
 
       final GProjection projection = GProjection.EPSG_4326;
 
 
       final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features = GShapeLoader.readFeatures(
                fileName, projection);
-
-      //      System.out.println(">>>>>>>>>> CONNECT PROFILER");
-      //      GUtils.delay(20 * 1000); 
 
 
       final GAxisAlignedOrthotope<IVector2, ?> featuresBounds = features.getBounds();
@@ -89,14 +89,22 @@ public class GVectorial2DRenderingTest {
 
       final GAxisAlignedRectangle region = ((GAxisAlignedRectangle) centerBounds(multipleOfSmallestDimention(featuresBounds),
                featuresBounds.getCenter()));
+
+      //      // south Africa centered
+      //      final Sector sector = Sector.fromDegrees(-35.265239262942075, -21.36546519870571, 15.529599777907615, 34.09720589668197);
+      //      final GAxisAlignedRectangle region = GWWUtils.toAxisAlignedRectangle(sector, GProjection.EPSG_4326);
+      //      //      (-35.265239262942075°, 15.529599777907615°), (-21.36546519870571°, 34.09720589668197°)
+
+
       final GFileName directoryName = GFileName.relative("render");
       final boolean renderLODIgnores = true;
-      final float borderWidth = 0.0001f;
-      final Color fillColor = new Color(borderWidth, borderWidth, 1, 0.75f);
-      final Color borderColor = Color.BLACK;
+      final float borderWidth = 1.5f;
+      final Color fillColor = new Color(0.5f, 0.5f, 1, 0.75f);
+      //      final Color fillColor = new Color(0.5f, 0.5f, 1);
+      final Color borderColor = fillColor.darker().darker().darker().darker().darker();
       final double lodMinSize = 5;
       final boolean debugLODRendering = true;
-      final int textureDimension = 256;
+      final int textureDimension = 1024;
       final boolean renderBounds = false;
 
       final IVector2 extent = region.getExtent();
