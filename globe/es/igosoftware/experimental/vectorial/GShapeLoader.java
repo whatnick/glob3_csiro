@@ -300,7 +300,7 @@ public class GShapeLoader {
 
    private static IPolygon2D createEuclidPolygon(final GProjection projection,
                                                  final com.vividsolutions.jts.geom.Polygon jtsPolygon) {
-      final ISimplePolygon2D outerEuclidPolygon = createPolygon(jtsPolygon.getCoordinates(), projection);
+      final ISimplePolygon2D outerEuclidPolygon = createPolygon(jtsPolygon.getExteriorRing().getCoordinates(), projection);
 
       final int holesCount = jtsPolygon.getNumInteriorRing();
       if (holesCount == 0) {
@@ -321,16 +321,9 @@ public class GShapeLoader {
          }
       }
 
-      final IPolygon2D euclidPolygon;
-      if (euclidHoles.isEmpty()) {
-         euclidPolygon = outerEuclidPolygon;
-      }
-      else {
-         euclidPolygon = new GComplexPolygon2D(outerEuclidPolygon, euclidHoles);
-      }
-      // System.out.println("Found polygon with " + holesCount + " holes");
-
-      return euclidPolygon;
+      return euclidHoles.isEmpty() ? //
+                                  outerEuclidPolygon : //
+                                  new GComplexPolygon2D(outerEuclidPolygon, euclidHoles);
 
    }
 
