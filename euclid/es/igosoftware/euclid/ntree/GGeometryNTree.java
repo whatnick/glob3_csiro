@@ -9,7 +9,6 @@ import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.IBounds;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
-import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.ntree.GGTInnerNode.GeometriesDistribution;
 import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector;
@@ -28,7 +27,6 @@ public abstract class GGeometryNTree<VectorT extends IVector<VectorT, ?>, Elemen
 
 
    private final String                            _name;
-   private final Iterable<? extends ElementT>      _elements;
    private final long                              _elementsCount;
 
    private final GGeometryNTreeParameters          _parameters;
@@ -46,23 +44,23 @@ public abstract class GGeometryNTree<VectorT extends IVector<VectorT, ?>, Elemen
                             final ITransformer<ElementT, Collection<? extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>>> transformer,
                             final GGeometryNTreeParameters parameters) {
       _name = name;
-      _elements = elements;
       _parameters = parameters;
 
       final String nameMsg = (_name == null) ? "" : "\"" + _name + "\" ";
       logInfo("Creating " + getTreeName() + " " + nameMsg);
 
+
       VectorT geometriesLower = null;
-      VectorT geometrisUpper = null;
+      VectorT geometriesUpper = null;
       final ArrayList<GElementGeometryPair<VectorT, ElementT>> pairs = new ArrayList<GElementGeometryPair<VectorT, ElementT>>();
       for (final ElementT element : elements) {
          final Collection<? extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>> geometries = transformer.transform(element);
          for (final IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>> geometry : geometries) {
             pairs.add(new GElementGeometryPair<VectorT, ElementT>(element, geometry));
-            final GAxisAlignedOrthotope<VectorT, ?> geometryBounds = geometry.getBounds().asAxisAlignedOrthotope();
 
+            final GAxisAlignedOrthotope<VectorT, ?> geometryBounds = geometry.getBounds().asAxisAlignedOrthotope();
             geometriesLower = (geometriesLower == null) ? geometryBounds._lower : geometriesLower.min(geometryBounds._lower);
-            geometrisUpper = (geometrisUpper == null) ? geometryBounds._upper : geometrisUpper.max(geometryBounds._upper);
+            geometriesUpper = (geometriesUpper == null) ? geometryBounds._upper : geometriesUpper.max(geometryBounds._upper);
          }
       }
       pairs.trimToSize();
@@ -81,8 +79,7 @@ public abstract class GGeometryNTree<VectorT extends IVector<VectorT, ?>, Elemen
          }
       };
 
-      _geometriesBounds = GAxisAlignedOrthotope.create(geometriesLower, geometrisUpper);
-      //      _geometriesBounds = GShape.getBounds(pairs, transformer);
+      _geometriesBounds = GAxisAlignedOrthotope.create(geometriesLower, geometriesUpper);
       _dimensions = _geometriesBounds._extent.dimensions();
 
       _bounds = initializeBounds(bounds);
@@ -96,30 +93,18 @@ public abstract class GGeometryNTree<VectorT extends IVector<VectorT, ?>, Elemen
          public GGeometryNTree<VectorT, ElementT> getNTree() {
             return GGeometryNTree.this;
          }
+
+
+         @Override
+         public boolean isRoot() {
+            return true;
+         }
       };
 
       validate();
 
       if (_parameters._verbose) {
          showStatistics();
-      }
-   }
-
-
-   static long countElements(final Iterable<?> elements) {
-      if (elements instanceof IGlobeFeatureCollection) {
-         return ((IGlobeFeatureCollection) elements).size();
-      }
-      else if (elements instanceof Collection) {
-         return ((Collection) elements).size();
-      }
-      else {
-         long counter = 0;
-         for (@SuppressWarnings("unused")
-         final Object element : elements) {
-            counter++;
-         }
-         return counter;
       }
    }
 
@@ -294,12 +279,10 @@ public abstract class GGeometryNTree<VectorT extends IVector<VectorT, ?>, Elemen
             final int elementsCount = inner.getElementsCount();
             elementsInInnerNodesCounter.increment(elementsCount);
 
-            if (elementsCount > maxElementsCountInInnerNodes.get()) {
-               maxElementsCountInInnerNodes.set(elementsCount);
-            }
-            if (elementsCount < minElementsCountInInnerNodes.get()) {
-               minElementsCountInInnerNodes.set(elementsCount);
-            }
+            maxElementsCountInInnerNodes.max(elementsCount);
+            minElementsCountInInnerNodes.min(elementsCount);
+
+
          }
 
 
@@ -310,21 +293,13 @@ public abstract class GGeometryNTree<VectorT extends IVector<VectorT, ?>, Elemen
             final int elementsCount = leaf.getElementsCount();
             elementsInLeafNodesCounter.increment(elementsCount);
 
-            if (elementsCount > maxElementsCountInLeafNodes.get()) {
-               maxElementsCountInLeafNodes.set(elementsCount);
-            }
-            if (elementsCount < minElementsCountInLeafNodes.get()) {
-               minElementsCountInLeafNodes.set(elementsCount);
-            }
+            maxElementsCountInLeafNodes.max(elementsCount);
+            minElementsCountInLeafNodes.min(elementsCount);
 
             final int depth = leaf.getDepth();
             totalDepth.increment(depth);
-            if (depth > maxDepth.get()) {
-               maxDepth.set(depth);
-            }
-            if (depth < minDepth.get()) {
-               minDepth.set(depth);
-            }
+            minDepth.min(depth);
+            maxDepth.max(depth);
 
 
             final VectorT leafExtent = leaf.getBounds().getExtent();
@@ -445,30 +420,9 @@ public abstract class GGeometryNTree<VectorT extends IVector<VectorT, ?>, Elemen
    }
 
 
-   public Iterable<? extends ElementT> getElements() {
-      return _elements;
-   }
-
-
    public GGTInnerNode<VectorT, ElementT> getRoot() {
       return _root;
    }
-
-   //   public static void main(final String[] args) {
-   //      System.out.println("GeometryNTree 0.1");
-   //      System.out.println("-----------------\n");
-   //
-   //
-   //      final Collection<IPolygon2D> elements = new ArrayList<IPolygon2D>();
-   //
-   //      elements.add(new GTriangle2D(new GVector2D(0, 0), new GVector2D(1, 0), new GVector2D(0, 1)));
-   //      elements.add(new GQuad2D(new GVector2D(10, 10), new GVector2D(11, 10), new GVector2D(10, 11), new GVector2D(20, 11)));
-   //
-   //      //final GAxisAlignedRectangle bounds = new GAxisAlignedRectangle(GVector2D.ZERO, GVector2D.X_UP);
-   //      final GAxisAlignedRectangle bounds = null;
-   //      final GGeometryQuadtree<IPolygon2D> quadtree = new GGeometryQuadtree<IPolygon2D>("test tree", bounds, elements,
-   //               new GGeometryNTreeParameters(true, 10, 10, GGeometryNTreeParameters.BoundsPolicy.MINIMUM));
-   //   }
 
 
 }

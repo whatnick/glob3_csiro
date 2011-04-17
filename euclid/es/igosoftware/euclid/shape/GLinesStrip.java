@@ -185,4 +185,15 @@ BoundsT extends IBounds<VectorT, BoundsT>
    }
 
 
+   @Override
+   public String toString() {
+      return "GLinesStrip [points=" + _points.size() + "]";
+   }
+
+
+   @Override
+   public int getVerticesCount() {
+      return _points.size();
+   }
+
 }

@@ -46,23 +46,25 @@ import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.colors.GColorI;
+import es.igosoftware.euclid.colors.IColor;
+import es.igosoftware.euclid.experimental.measurement.GLength;
+import es.igosoftware.euclid.experimental.measurement.IMeasure;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorial2DRenderer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorialRenderingAttributes;
+import es.igosoftware.euclid.experimental.vectorial.rendering.IRenderingStyle;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
-import es.igosoftware.euclid.vector.GVectorUtils;
-import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
-import es.igosoftware.util.GMath;
 import es.igosoftware.util.GStringUtils;
 
 
 public class GVectorial2DRenderingTest {
    public static void main(final String[] args) throws IOException {
-      System.out.println("Shape Loader 0.1");
-      System.out.println("----------------\n");
+      System.out.println("Vectorial2D Rendering Test 0.1");
+      System.out.println("------------------------------\n");
 
 
       //      final GFileName fileName = GFileName.absoluteFromParts("home", "dgd", "Desktop", "sample-shp", "cartobrutal",
@@ -70,30 +72,27 @@ public class GVectorial2DRenderingTest {
       //      final GFileName fileName = GFileName.absoluteFromParts("home", "dgd", "Desktop", "sample-shp", "shp", "argentina.shp",
       //      "roads.shp");
       //      final GFileName fileName = GFileName.absolute("home", "dgd", "Desktop", "sample-shp", "shp", "argentina.shp", "roads.shp");
-      final GFileName fileName = GFileName.absolute("home", "dgd", "Desktop", "sample-shp", "shp", "argentina.shp", "roads.shp");
+      //      final GFileName fileName = GFileName.absolute("home", "dgd", "Desktop", "sample-shp", "shp", "argentina.shp", "roads.shp");
+      final GFileName fileName = GFileName.absolute("home", "dgd", "Desktop", "sample-shp", "shp", "argentina.shp", "places.shp");
       //      final GFileName fileName = GFileName.absolute("home", "dgd", "Desktop", "sample-shp", "cartobrutal", "world-modified",
       //               "world4326.shp");
 
       final GProjection projection = GProjection.EPSG_4326;
 
 
-      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features = GShapeLoader.readFeatures(
+      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features = loadFeatures(
                fileName, projection);
 
 
       final GAxisAlignedOrthotope<IVector2, ?> featuresBounds = features.getBounds();
 
 
-      final GVectorial2DRenderer renderer = new GVectorial2DRenderer(features);
+      final GVectorial2DRenderer renderer = createRenderer(features);
 
 
-      final GAxisAlignedRectangle region = ((GAxisAlignedRectangle) centerBounds(multipleOfSmallestDimention(featuresBounds),
-               featuresBounds.getCenter()));
-
-      //      // south Africa centered
-      //      final Sector sector = Sector.fromDegrees(-35.265239262942075, -21.36546519870571, 15.529599777907615, 34.09720589668197);
-      //      final GAxisAlignedRectangle region = GWWUtils.toAxisAlignedRectangle(sector, GProjection.EPSG_4326);
-      //      //      (-35.265239262942075°, 15.529599777907615°), (-21.36546519870571°, 34.09720589668197°)
+      //      final GAxisAlignedRectangle region = ((GAxisAlignedRectangle) centerBounds(multipleOfSmallestDimention(featuresBounds),
+      //               featuresBounds.getCenter()));
+      final GAxisAlignedRectangle region = featuresBounds.asRectangle();
 
 
       final GFileName directoryName = GFileName.relative("render");
@@ -103,122 +102,137 @@ public class GVectorial2DRenderingTest {
       //      final Color fillColor = new Color(0.5f, 0.5f, 1);
       final Color borderColor = fillColor.darker().darker().darker().darker().darker();
       final double lodMinSize = 5;
-      final boolean debugLODRendering = true;
-      final int textureDimension = 1024;
-      final boolean renderBounds = false;
+      final int textureDimension = 256;
+      final boolean debugRendering = false;
 
       final IVector2 extent = region.getExtent();
 
-      final int textureWidth;
-      final int textureHeight;
-
+      final int imageWidth;
+      final int imageHeight;
       if (extent.x() > extent.y()) {
-         textureHeight = textureDimension;
-         textureWidth = (int) Math.round(extent.x() / extent.y() * textureDimension);
+         imageHeight = textureDimension;
+         imageWidth = (int) Math.round(extent.x() / extent.y() * textureDimension);
       }
       else {
-         textureWidth = textureDimension;
-         textureHeight = (int) Math.round(extent.y() / extent.x() * textureDimension);
+         imageWidth = textureDimension;
+         imageHeight = (int) Math.round(extent.y() / extent.x() * textureDimension);
       }
 
-      final GVectorialRenderingAttributes attributes = new GVectorialRenderingAttributes(renderLODIgnores, borderWidth,
-               fillColor, borderColor, lodMinSize, debugLODRendering, textureWidth, textureHeight, renderBounds);
+      final GVectorialRenderingAttributes attributes = new GVectorialRenderingAttributes(borderWidth, fillColor, borderColor);
 
 
       GIOUtils.assureEmptyDirectory(directoryName, false);
 
+      System.out.println();
 
       final int depth = 0;
-      final int maxDepth = 2;
-      render(renderer, region, directoryName, attributes, depth, maxDepth);
-   }
-
-
-   private static <VectorT extends IVector<VectorT, ?>> GAxisAlignedOrthotope<VectorT, ?> centerBounds(final GAxisAlignedOrthotope<VectorT, ?> bounds,
-                                                                                                       final VectorT center) {
-      final VectorT delta = bounds.getCenter().sub(center);
-      return bounds.translatedBy(delta.negated());
-   }
-
-
-   private static <VectorT extends IVector<VectorT, ?>> GAxisAlignedOrthotope<VectorT, ?> multipleOfSmallestDimention(final GAxisAlignedOrthotope<VectorT, ?> bounds) {
-      final VectorT extent = bounds.getCenter();
-
-      double smallestExtension = Double.POSITIVE_INFINITY;
-      for (byte i = 0; i < bounds.dimensions(); i++) {
-         final double ext = extent.get(i);
-         if (ext < smallestExtension) {
-            smallestExtension = ext;
+      final int maxDepth = 3;
+      final IRenderingStyle renderingStyle = new IRenderingStyle() {
+         @Override
+         public String uniqueName() {
+            return null;
          }
-      }
 
-      final VectorT newExtent = smallestBiggerMultipleOf(extent, smallestExtension);
-      final VectorT newUpper = bounds._lower.add(newExtent);
-      return GAxisAlignedOrthotope.create(bounds._lower, newUpper);
+
+         @Override
+         public boolean isRenderLODIgnores() {
+            return renderLODIgnores;
+         }
+
+
+         @Override
+         public boolean isDebugRendering() {
+            return debugRendering;
+         }
+
+
+         @Override
+         public IMeasure<GLength> getPointSize() {
+            return null;
+         }
+
+
+         @Override
+         public float getPointOpacity() {
+            return 0;
+         }
+
+
+         @Override
+         public IColor getPointColor() {
+            return null;
+         }
+
+
+         @Override
+         public IColor getLODColor() {
+            return GColorI.MAGENTA;
+         }
+
+
+         @Override
+         public double getLODMinSize() {
+            return lodMinSize;
+         }
+      };
+
+      render(renderer, region, imageWidth, imageHeight, directoryName, attributes, renderingStyle, depth, maxDepth);
    }
 
 
-   @SuppressWarnings("unchecked")
-   private static <VectorT extends IVector<VectorT, ?>> VectorT smallestBiggerMultipleOf(final VectorT lower,
-                                                                                         final double smallestExtension) {
-
-      final byte dimensionsCount = lower.dimensions();
-
-      final double[] dimensionsValues = new double[dimensionsCount];
-      for (byte i = 0; i < dimensionsCount; i++) {
-         dimensionsValues[i] = smallestBiggerMultipleOf(lower.get(i), smallestExtension);
-      }
-
-      return (VectorT) GVectorUtils.createD(dimensionsValues);
+   private static GVectorial2DRenderer createRenderer(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features) {
+      final long start = System.currentTimeMillis();
+      final GVectorial2DRenderer renderer = new GVectorial2DRenderer(features, true);
+      System.out.println();
+      System.out.println("- Created renderer in " + GStringUtils.getTimeMessage(System.currentTimeMillis() - start, false));
+      return renderer;
    }
 
 
-   private static double smallestBiggerMultipleOf(final double value,
-                                                  final double multiple) {
-      if (GMath.closeTo(value, multiple)) {
-         return multiple;
-      }
+   private static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> loadFeatures(final GFileName fileName,
+                                                                                                                                             final GProjection projection)
+                                                                                                                                                                          throws IOException {
 
-      final int times = (int) (value / multiple);
-
-      double result = times * multiple;
-      if (value < 0) {
-         if (result > value) {
-            result -= multiple;
-         }
-      }
-      else {
-         if (result < value) {
-            result += multiple;
-         }
-      }
-
-      return result;
+      final long start = System.currentTimeMillis();
+      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features = GShapeLoader.readFeatures(
+               fileName, projection);
+      System.out.println("- Features loaded in " + GStringUtils.getTimeMessage(System.currentTimeMillis() - start, false));
+      System.out.println();
+      return features;
    }
 
 
    private static void render(final GVectorial2DRenderer renderer,
                               final GAxisAlignedRectangle region,
+                              final int imageWidth,
+                              final int imageHeight,
                               final GFileName directoryName,
                               final GVectorialRenderingAttributes attributes,
+                              final IRenderingStyle renderingStyle,
                               final int depth,
                               final int maxDepth) throws IOException {
 
       final long start = System.currentTimeMillis();
-      final BufferedImage renderedImage = renderer.render(region, attributes);
 
-      final String imageName = depth + "_" + region.asParseableString();
+      final BufferedImage renderedImage = renderer.render(region, imageWidth, imageHeight, attributes, renderingStyle);
+
+      final String imageName = "" + depth;
       final GFileName fileName = GFileName.fromParentAndParts(directoryName, imageName + ".png");
       ImageIO.write(renderedImage, "png", fileName.asFile());
 
-      System.out.println(GStringUtils.spaces(depth * 2) + "Rendered " + imageName + " in "
-                         + GStringUtils.getTimeMessage(System.currentTimeMillis() - start));
+      System.out.println("- Rendered \"" + imageName + ".png\" (" + imageWidth + "x" + imageHeight + ") in "
+                         + GStringUtils.getTimeMessage(System.currentTimeMillis() - start, false));
 
       if (depth < maxDepth) {
-         final GAxisAlignedRectangle[] subRegions = region.subdivideAtCenter();
-         for (final GAxisAlignedRectangle subRegion : subRegions) {
-            render(renderer, subRegion, directoryName, attributes, depth + 1, maxDepth);
-         }
+         final GVectorialRenderingAttributes newAttributes = new GVectorialRenderingAttributes( //
+                  attributes._borderWidth, //
+                  attributes._fillColor, //
+                  attributes._borderColor);
+
+         render(renderer, region, imageWidth * 2, imageHeight * 2, directoryName, newAttributes, renderingStyle, depth + 1,
+                  maxDepth);
       }
    }
+
+
 }

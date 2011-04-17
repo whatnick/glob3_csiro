@@ -23,6 +23,7 @@ import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
 import es.igosoftware.globe.IGlobeRenderingStyle;
 import es.igosoftware.globe.IGlobeVector2Layer;
+import es.igosoftware.globe.attributes.GBooleanLayerAttribute;
 import es.igosoftware.globe.attributes.GColorLayerAttribute;
 import es.igosoftware.globe.attributes.GFloatLayerAttribute;
 import es.igosoftware.globe.attributes.GGroupAttribute;
@@ -42,16 +43,22 @@ public class GGloveVectorial2DRenderingStyle
 
    private final IGlobeVector2Layer _layer;
 
+
+   // general
+   private boolean                  _debugRendering   = false;
+   private boolean                  _renderLODIgnores = true;
+
    // point style
-   private IMeasure<GLength>        _pointSize          = GLength.Meter.value(1);
-   private IColor                   _pointColor         = GColorF.WHITE;
-   private float                    _pointOpacity       = 1;
+   private IMeasure<GLength>        _pointSize        = GLength.Meter.value(1);
+   private IColor                   _pointColor       = GColorF.WHITE;
+   private float                    _pointOpacity     = 1;
 
-   // curve style
-   private IMeasure<GLength>        _curveWidth         = GLength.Meter.value(1);
 
-   // surface style
-   private IMeasure<GLength>        _surfaceBorderWidth = GLength.Meter.value(1);
+   //   // curve style
+   //   private final IMeasure<GLength>  _curveWidth         = GLength.Meter.value(1);
+   //
+   //   // surface style
+   //   private final IMeasure<GLength>  _surfaceBorderWidth = GLength.Meter.value(1);
 
 
    public GGloveVectorial2DRenderingStyle(final IGlobeVector2Layer layer) {
@@ -90,15 +97,67 @@ public class GGloveVectorial2DRenderingStyle
          result.add(createPointsLayerAttributes(application));
       }
 
-      if (geometriesTypes.contains(GGeometryType.CURVE)) {
-         result.add(createCurveLayerAttributes(application));
-      }
+      //      if (geometriesTypes.contains(GGeometryType.CURVE)) {
+      //         result.add(createCurveLayerAttributes(application));
+      //      }
+      //
+      //      if (geometriesTypes.contains(GGeometryType.SURFACE)) {
+      //         result.add(createSurfaceLayerAttributes(application));
+      //      }
 
-      if (geometriesTypes.contains(GGeometryType.SURFACE)) {
-         result.add(createSurfaceLayerAttributes(application));
-      }
+      result.add(createAdvancedLayerAttributes(application));
 
       return result;
+   }
+
+
+   private ILayerAttribute<?> createAdvancedLayerAttributes(@SuppressWarnings("unused") final IGlobeApplication application) {
+
+      final GBooleanLayerAttribute renderLODIgnores = new GBooleanLayerAttribute("Render LOD Ignores",
+               "Set the RenderLODIgnores option", "RenderLODIgnores") {
+
+         @Override
+         public boolean isVisible() {
+            return true;
+         }
+
+
+         @Override
+         public void set(final Boolean value) {
+            setRenderLODIgnores(value);
+         }
+
+
+         @Override
+         public Boolean get() {
+            return isRenderLODIgnores();
+         }
+      };
+
+
+      final GBooleanLayerAttribute debugRendering = new GBooleanLayerAttribute("Debug Rendering", "Set the debug rendering mode",
+               "DebugRendering") {
+
+         @Override
+         public boolean isVisible() {
+            return true;
+         }
+
+
+         @Override
+         public void set(final Boolean value) {
+            setDebugRendering(value);
+         }
+
+
+         @Override
+         public Boolean get() {
+            return isDebugRendering();
+         }
+      };
+
+
+      return new GGroupAttribute("Advanced", "Advanced settings", renderLODIgnores, debugRendering);
    }
 
 
@@ -170,64 +229,63 @@ public class GGloveVectorial2DRenderingStyle
    }
 
 
-   private ILayerAttribute<?> createCurveLayerAttributes(final IGlobeApplication application) {
-
-      final GLengthLayerAttribute width = new GLengthLayerAttribute("Width", "Set the curves width", "CurveWidth", 0, 10, 1) {
-         @Override
-         public void set(final IMeasure<GLength> value) {
-            setCurveWidth(value);
-         }
-
-
-         @Override
-         public boolean isVisible() {
-            return true;
-         }
-
-
-         @Override
-         public IMeasure<GLength> get() {
-            return getCurveWidth();
-         }
-      };
-
-
-      return new GGroupAttribute("Curves Style", application.getSmallIcon(GFileName.relative("curves-style.png")),
-               "Set the curves style settings", width);
-   }
-
-
-   private ILayerAttribute<?> createSurfaceLayerAttributes(final IGlobeApplication application) {
-
-      final GLengthLayerAttribute borderWidth = new GLengthLayerAttribute("Border Width", "Set the border width",
-               "SurfaceBorderWidth", 0, 10, 1) {
-         @Override
-         public void set(final IMeasure<GLength> value) {
-            setSurfaceBorderWidth(value);
-         }
+   //   private ILayerAttribute<?> createCurveLayerAttributes(final IGlobeApplication application) {
+   //
+   //      final GLengthLayerAttribute width = new GLengthLayerAttribute("Width", "Set the curves width", "CurveWidth", 0, 10, 1) {
+   //         @Override
+   //         public void set(final IMeasure<GLength> value) {
+   //            setCurveWidth(value);
+   //         }
+   //
+   //
+   //         @Override
+   //         public boolean isVisible() {
+   //            return true;
+   //         }
+   //
+   //
+   //         @Override
+   //         public IMeasure<GLength> get() {
+   //            return getCurveWidth();
+   //         }
+   //      };
+   //
+   //
+   //      return new GGroupAttribute("Curves Style", application.getSmallIcon(GFileName.relative("curves-style.png")),
+   //               "Set the curves style settings", width);
+   //   }
 
 
-         @Override
-         public boolean isVisible() {
-            return true;
-         }
-
-
-         @Override
-         public IMeasure<GLength> get() {
-            return getSurfaceBorderWidth();
-         }
-      };
-
-
-      return new GGroupAttribute("Surfaces Style", application.getSmallIcon(GFileName.relative("surfaces-style.png")),
-               "Set the surfaces style settings", borderWidth);
-   }
+   //   private ILayerAttribute<?> createSurfaceLayerAttributes(final IGlobeApplication application) {
+   //
+   //      final GLengthLayerAttribute borderWidth = new GLengthLayerAttribute("Border Width", "Set the border width",
+   //               "SurfaceBorderWidth", 0, 10, 1) {
+   //         @Override
+   //         public void set(final IMeasure<GLength> value) {
+   //            setSurfaceBorderWidth(value);
+   //         }
+   //
+   //
+   //         @Override
+   //         public boolean isVisible() {
+   //            return true;
+   //         }
+   //
+   //
+   //         @Override
+   //         public IMeasure<GLength> get() {
+   //            return getSurfaceBorderWidth();
+   //         }
+   //      };
+   //
+   //
+   //      return new GGroupAttribute("Surfaces Style", application.getSmallIcon(GFileName.relative("surfaces-style.png")),
+   //               "Set the surfaces style settings", borderWidth);
+   //   }
 
 
    private void styleChanged() {
-      System.out.println("Style changed!");
-      final int __________Diego_at_work____Inform_the_layer_the_style_has_changed;
+      _layer.clearCache();
    }
 
 
@@ -289,41 +347,98 @@ public class GGloveVectorial2DRenderingStyle
 
 
    @Override
-   public IMeasure<GLength> getCurveWidth() {
-      return _curveWidth;
+   public boolean isDebugRendering() {
+      return _debugRendering;
    }
 
 
-   public void setCurveWidth(final IMeasure<GLength> newCurveWidth) {
-      if (GUtils.equals(newCurveWidth, _curveWidth)) {
+   public void setDebugRendering(final boolean debugRendering) {
+      if (debugRendering == _debugRendering) {
          return;
       }
 
-      final IMeasure<GLength> oldCurveWidth = _curveWidth;
-      _curveWidth = newCurveWidth;
-      _layer.firePropertyChange("CurveWidth", oldCurveWidth, newCurveWidth);
+      _debugRendering = debugRendering;
+      _layer.firePropertyChange("DebugRendering", !debugRendering, debugRendering);
 
       styleChanged();
    }
 
 
    @Override
-   public IMeasure<GLength> getSurfaceBorderWidth() {
-      return _surfaceBorderWidth;
+   public String uniqueName() {
+      final int TODO_PUT_ALL_DATA_ON_UNIQUE_NAME;
+      return (_debugRendering ? "t" : "f") + //
+             _pointColor.toHexString() + //
+             Float.toHexString(_pointOpacity) + //
+             _pointSize;
    }
 
 
-   public void setSurfaceBorderWidth(final IMeasure<GLength> newSurfaceBorderWidth) {
-      if (GUtils.equals(newSurfaceBorderWidth, _surfaceBorderWidth)) {
+   @Override
+   public boolean isRenderLODIgnores() {
+      return _renderLODIgnores;
+   }
+
+
+   public void setRenderLODIgnores(final boolean renderLODIgnores) {
+      if (renderLODIgnores == _renderLODIgnores) {
          return;
       }
 
-      final IMeasure<GLength> oldSurfaceBorderWidth = _surfaceBorderWidth;
-      _surfaceBorderWidth = newSurfaceBorderWidth;
-      _layer.firePropertyChange("SurfaceBorderWidth", oldSurfaceBorderWidth, newSurfaceBorderWidth);
+      _renderLODIgnores = renderLODIgnores;
+      _layer.firePropertyChange("RenderLODIgnores", !renderLODIgnores, renderLODIgnores);
 
       styleChanged();
    }
+
+
+   @Override
+   public IColor getLODColor() {
+      return _pointColor;
+   }
+
+
+   @Override
+   public double getLODMinSize() {
+      return 5;
+   }
+
+   //   @Override
+   //   public IMeasure<GLength> getCurveWidth() {
+   //      return _curveWidth;
+   //   }
+   //
+   //
+   //   public void setCurveWidth(final IMeasure<GLength> newCurveWidth) {
+   //      if (GUtils.equals(newCurveWidth, _curveWidth)) {
+   //         return;
+   //      }
+   //
+   //      final IMeasure<GLength> oldCurveWidth = _curveWidth;
+   //      _curveWidth = newCurveWidth;
+   //      _layer.firePropertyChange("CurveWidth", oldCurveWidth, newCurveWidth);
+   //
+   //      styleChanged();
+   //   }
+
+
+   //   @Override
+   //   public IMeasure<GLength> getSurfaceBorderWidth() {
+   //      return _surfaceBorderWidth;
+   //   }
+   //
+   //
+   //   public void setSurfaceBorderWidth(final IMeasure<GLength> newSurfaceBorderWidth) {
+   //      if (GUtils.equals(newSurfaceBorderWidth, _surfaceBorderWidth)) {
+   //         return;
+   //      }
+   //
+   //      final IMeasure<GLength> oldSurfaceBorderWidth = _surfaceBorderWidth;
+   //      _surfaceBorderWidth = newSurfaceBorderWidth;
+   //      _layer.firePropertyChange("SurfaceBorderWidth", oldSurfaceBorderWidth, newSurfaceBorderWidth);
+   //
+   //      styleChanged();
+   //   }
 
 
 }

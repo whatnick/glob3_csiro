@@ -185,7 +185,7 @@ public final class GOctree
          }
 
          _xyzSubdivisions++;
-         return bounds.subdividedByXYZ(average);
+         return bounds.subdividedAt(average);
 
       }
 

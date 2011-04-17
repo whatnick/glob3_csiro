@@ -23,12 +23,15 @@ public class GShapeLoaderDropHandler
 
 
    private final IGlobeApplication _application;
+   private final boolean           _confirmOpen;
 
 
-   public GShapeLoaderDropHandler(final IGlobeApplication application) {
+   public GShapeLoaderDropHandler(final IGlobeApplication application,
+                                  final boolean confirmOpen) {
       GAssert.notNull(application, "application");
 
       _application = application;
+      _confirmOpen = confirmOpen;
    }
 
 
@@ -65,7 +68,7 @@ public class GShapeLoaderDropHandler
    @Override
    public boolean processFile(final File droppedFile) {
 
-      if (!confirmOpenFile(droppedFile)) {
+      if (_confirmOpen && !confirmOpenFile(droppedFile)) {
          return false;
       }
 

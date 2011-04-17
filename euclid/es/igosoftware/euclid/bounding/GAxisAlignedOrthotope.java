@@ -352,10 +352,13 @@ GeometryT extends GAxisAlignedOrthotope<VectorT, GeometryT>
    }
 
 
-   public abstract GAxisAlignedOrthotope<VectorT, GeometryT>[] subdivideByAxis(final byte axis);
+   public abstract GAxisAlignedOrthotope<VectorT, GeometryT>[] subdividedByAxis(final byte axis);
 
 
-   public abstract GAxisAlignedOrthotope<VectorT, GeometryT>[] subdivideAtCenter();
+   public abstract GAxisAlignedOrthotope<VectorT, GeometryT>[] subdividedAtCenter();
+
+
+   public abstract GAxisAlignedOrthotope<VectorT, GeometryT>[] subdividedAt(final VectorT pivot);
 
 
    public abstract boolean touches(final GAxisAlignedOrthotope<VectorT, ?> that);

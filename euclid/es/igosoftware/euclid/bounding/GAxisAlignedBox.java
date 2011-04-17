@@ -614,12 +614,13 @@ public final class GAxisAlignedBox
 
 
    @Override
-   public GAxisAlignedBox[] subdivideAtCenter() {
-      return subdividedByXYZ(_center);
+   public GAxisAlignedBox[] subdividedAtCenter() {
+      return subdividedAt(_center);
    }
 
 
-   public GAxisAlignedBox[] subdividedByXYZ(final IVector3 pivot) {
+   @Override
+   public GAxisAlignedBox[] subdividedAt(final IVector3 pivot) {
       final GAxisAlignedBox[] result = new GAxisAlignedBox[8];
 
       for (int i = 0; i < 8; i++) {
@@ -690,7 +691,7 @@ public final class GAxisAlignedBox
 
 
    @Override
-   public GAxisAlignedBox[] subdivideByAxis(final byte axis) {
+   public GAxisAlignedBox[] subdividedByAxis(final byte axis) {
       switch (axis) {
          case 0:
             return subdividedByX();
@@ -700,17 +701,6 @@ public final class GAxisAlignedBox
             return subdividedByZ();
          default:
             throw new IllegalArgumentException("Invalid axis=" + axis);
-      }
-   }
-
-
-   public static void main(final String[] args) {
-      final GAxisAlignedBox box = new GAxisAlignedBox(GVector3D.ZERO, GVector3D.UNIT);
-
-      final GAxisAlignedBox[] subdivisions = box.subdivideAtCenter();
-
-      for (final GAxisAlignedBox subdivision : subdivisions) {
-         System.out.println(subdivision);
       }
    }
 

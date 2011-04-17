@@ -188,4 +188,10 @@ public class GSearchResultLayer
       return null;
    }
 
+
+   @Override
+   public void clearCache() {
+
+   }
+
 }

@@ -115,4 +115,7 @@ public abstract class GGTNode<VectorT extends IVector<VectorT, ?>, ElementT>
    protected abstract void validate();
 
 
+   @Override
+   public abstract String toString();
+
 }

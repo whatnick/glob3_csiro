@@ -191,4 +191,29 @@ public abstract class GColorAbstract
       return new java.awt.Color(getRed(), getGreen(), getBlue());
    }
 
+
+   @Override
+   public String toHexString() {
+      final int iRed = Math.round(255 * getRed());
+      final int iGreen = Math.round(255 * getGreen());
+      final int iBlue = Math.round(255 * getBlue());
+
+      return toHexString(iRed) + toHexString(iGreen) + toHexString(iBlue);
+   }
+
+
+   private static String toHexString(final int value) {
+      final String hex = Integer.toHexString(value).toUpperCase();
+      if (hex.length() == 1) {
+         return "0" + hex;
+      }
+      return hex;
+   }
+
+
+   public static void main(final String[] args) {
+      System.out.println(GColorI.BLUE.toHexString());
+   }
+
+
 }

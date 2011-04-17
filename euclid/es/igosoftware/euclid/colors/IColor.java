@@ -170,4 +170,7 @@ public interface IColor {
    public java.awt.Color asAWTColor();
 
 
+   public String toHexString();
+
+
 }

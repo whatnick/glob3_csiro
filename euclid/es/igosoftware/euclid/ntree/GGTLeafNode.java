@@ -58,4 +58,12 @@ public class GGTLeafNode<VectorT extends IVector<VectorT, ?>, ElementT>
       }
    }
 
+
+   @Override
+   public String toString() {
+      return "GGTLeafNode [id=" + getId() + ", depth=" + getDepth() + ", bounds=" + getBounds() + ", elements="
+             + getElementsCount() + "]";
+   }
+
+
 }

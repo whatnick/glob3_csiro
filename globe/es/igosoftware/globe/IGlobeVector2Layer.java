@@ -15,4 +15,7 @@ public interface IGlobeVector2Layer
    public GGloveVectorial2DRenderingStyle getRenderingStyle();
 
 
+   public void clearCache();
+
+
 }

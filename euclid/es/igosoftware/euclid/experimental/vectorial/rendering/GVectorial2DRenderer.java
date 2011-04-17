@@ -11,8 +11,10 @@ import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
+import es.igosoftware.euclid.ntree.GElementGeometryPair;
 import es.igosoftware.euclid.ntree.GGeometryNTreeParameters;
 import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.util.GAssert;
 
 
 public class GVectorial2DRenderer {
@@ -21,39 +23,78 @@ public class GVectorial2DRenderer {
    private final GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> _quadtree;
 
 
-   public GVectorial2DRenderer(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features) {
+   public GVectorial2DRenderer(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features,
+                               final boolean verbose) {
       _features = features;
 
-      _quadtree = createQuadtree();
+      _quadtree = createQuadtree(verbose);
    }
 
 
-   private GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> createQuadtree() {
+   private GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> createQuadtree(final boolean verbose) {
       final GGeometryNTreeParameters.AcceptLeafNodeCreationPolicy acceptLeafNodeCreationPolicy;
       acceptLeafNodeCreationPolicy = new GGeometryNTreeParameters.Accept2DLeafNodeCreationPolicy<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>>() {
+
          @Override
-         public boolean accept(final int depth,
-                               final GAxisAlignedOrthotope<IVector2, ?> bounds,
-                               final Collection<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> elements) {
-            return (depth >= 10) || (elements.size() <= 2);
+         public boolean acceptLeafNodeCreation(final int depth,
+                                               final GAxisAlignedOrthotope<IVector2, ?> bounds,
+                                               final Collection<GElementGeometryPair<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>>> elements) {
+            if (depth >= 12) {
+               return true;
+            }
+
+            //            int verticesCounter = 0;
+            //            for (final GElementGeometryPair<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> pair : elements) {
+            //               final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> geometry = pair.getGeometry();
+            //
+            //               if (geometry instanceof IVector2) {
+            //                  verticesCounter++;
+            //               }
+            //               else if (geometry instanceof IPointsContainer) {
+            //                  verticesCounter += ((IPointsContainer) geometry).getPointsCount();
+            //               }
+            //               else if (geometry instanceof ICurve) {
+            //                  verticesCounter += ((ICurve) geometry).getVerticesCount();
+            //               }
+            //               else if (geometry instanceof ISurface) {
+            //                  verticesCounter += ((ISurface) geometry).getVerticesCount();
+            //               }
+            //               else {
+            //                  verticesCounter += 5; // estimation
+            //               }
+            //            }
+            //
+            //            return (verticesCounter <= 400);
+            return (elements.size() <= 50);
          }
       };
 
 
-      final GGeometryNTreeParameters parameters = new GGeometryNTreeParameters(true, acceptLeafNodeCreationPolicy,
+      final GGeometryNTreeParameters parameters = new GGeometryNTreeParameters(verbose, acceptLeafNodeCreationPolicy,
                GGeometryNTreeParameters.BoundsPolicy.MINIMUM, true);
 
-      // TODO: evaluate_if_multigeometries_must_go_into_the_quadtree;
       return new GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>>(
                "Rendering", _features, parameters);
 
    }
 
 
+   public GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> getQuadtree() {
+      return _quadtree;
+   }
+
+
    public BufferedImage render(final GAxisAlignedRectangle region,
-                               final GVectorialRenderingAttributes attributes) {
+                               final int imageWidth,
+                               final int imageHeight,
+                               final GVectorialRenderingAttributes attributes,
+                               final IRenderingStyle renderingStyle) {
+      GAssert.isPositive(imageWidth, "imageWidth");
+      GAssert.isPositive(imageHeight, "imageHeight");
+
       final IVectorial2DRenderUnit renderUnit = new GVectorial2DRenderUnit();
-      return renderUnit.render(_quadtree, region, attributes);
+
+      return renderUnit.render(_quadtree, region, imageWidth, imageHeight, attributes, renderingStyle);
    }
 
 

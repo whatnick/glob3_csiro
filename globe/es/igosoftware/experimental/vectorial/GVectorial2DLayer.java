@@ -43,6 +43,7 @@ import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorial2DRenderer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorialRenderingAttributes;
+import es.igosoftware.euclid.experimental.vectorial.rendering.IRenderingStyle;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.features.IGlobeMutableFeatureCollection;
 import es.igosoftware.euclid.mutability.IMutable;
@@ -79,9 +80,10 @@ import gov.nasa.worldwind.layers.AbstractLayer;
 import gov.nasa.worldwind.render.DrawContext;
 import gov.nasa.worldwind.render.SurfaceImage;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.RasterFormatException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -103,6 +105,9 @@ public class GVectorial2DLayer
          implements
             IGlobeVector2Layer {
 
+   private static final int    TEXTURE_WIDTH                  = 256;
+   private static final int    TEXTURE_HEIGHT                 = 256;
+
 
    private static final int    TIMEOUT_FOR_CACHED_RESULTS     = 200;
 
@@ -112,22 +117,24 @@ public class GVectorial2DLayer
 
    private static final int    BYTES_PER_PIXEL                = 4 /* rgba */
                                                               * 4 /* 4 bytes x integer*/;
+   private static final int    TEXTURE_SIZE_IN_BYTES          = TEXTURE_WIDTH * TEXTURE_HEIGHT * BYTES_PER_PIXEL;
 
 
    private static final class RenderingKey {
       private final GVectorial2DLayer             _layer;
       private final GAxisAlignedRectangle         _tileBounds;
       private final GVectorialRenderingAttributes _renderingAttributes;
+      private final IRenderingStyle               _renderingStyle;
       private final String                        _id;
 
 
       private RenderingKey(final GVectorial2DLayer layer,
                            final GAxisAlignedRectangle tileSectorBounds,
-                           final GVectorialRenderingAttributes renderingAttributes,
                            final String id) {
          _layer = layer;
          _tileBounds = tileSectorBounds;
-         _renderingAttributes = renderingAttributes;
+         _renderingAttributes = layer._renderingAttributes;
+         _renderingStyle = layer._renderingStyle;
          _id = id;
       }
 
@@ -136,8 +143,9 @@ public class GVectorial2DLayer
       public int hashCode() {
          final int prime = 31;
          int result = 1;
-         result = prime * result + ((_renderingAttributes == null) ? 0 : _renderingAttributes.hashCode());
          result = prime * result + ((_layer == null) ? 0 : _layer.hashCode());
+         result = prime * result + ((_renderingAttributes == null) ? 0 : _renderingAttributes.hashCode());
+         result = prime * result + ((_renderingStyle == null) ? 0 : _renderingStyle.hashCode());
          result = prime * result + ((_tileBounds == null) ? 0 : _tileBounds.hashCode());
          return result;
       }
@@ -155,6 +163,14 @@ public class GVectorial2DLayer
             return false;
          }
          final RenderingKey other = (RenderingKey) obj;
+         if (_layer == null) {
+            if (other._layer != null) {
+               return false;
+            }
+         }
+         else if (!_layer.equals(other._layer)) {
+            return false;
+         }
          if (_renderingAttributes == null) {
             if (other._renderingAttributes != null) {
                return false;
@@ -163,12 +179,12 @@ public class GVectorial2DLayer
          else if (!_renderingAttributes.equals(other._renderingAttributes)) {
             return false;
          }
-         if (_layer == null) {
-            if (other._layer != null) {
+         if (_renderingStyle == null) {
+            if (other._renderingStyle != null) {
                return false;
             }
          }
-         else if (!_layer.equals(other._layer)) {
+         else if (!_renderingStyle.equals(other._renderingStyle)) {
             return false;
          }
          if (_tileBounds == null) {
@@ -196,7 +212,7 @@ public class GVectorial2DLayer
             // it means no disk cache
             return null;
          }
-         return featuresUniqueID + _id + _renderingAttributes.uniqueName();
+         return featuresUniqueID + _id + _renderingAttributes.uniqueName() + _renderingStyle.uniqueName();
       }
    }
 
@@ -204,7 +220,9 @@ public class GVectorial2DLayer
    private static final LRUCache<RenderingKey, Future<BufferedImage>, RuntimeException> IMAGES_CACHE;
 
 
-   private static final LinkedList<RendererFutureTask>                                  RENDERING_TASKS = new LinkedList<RendererFutureTask>();
+   private static final LinkedList<RendererFutureTask>                                  RENDERING_TASKS      = new LinkedList<RendererFutureTask>();
+
+   private static boolean                                                               cacheRenderingOnDisk = false;
 
 
    private static class RendererFutureTask
@@ -255,10 +273,13 @@ public class GVectorial2DLayer
 
                final GVectorial2DLayer layer = key._layer;
                final GVectorial2DRenderer renderer = layer._renderer;
-               final BufferedImage renderedImage = renderer.render(key._tileBounds, key._renderingAttributes);
+               final BufferedImage renderedImage = renderer.render(key._tileBounds, TEXTURE_WIDTH, TEXTURE_HEIGHT,
+                        key._renderingAttributes, key._renderingStyle);
                layer.redraw();
 
-               saveImageIntoDiskCache(renderedImage);
+               if (cacheRenderingOnDisk) {
+                  saveImageIntoDiskCache(renderedImage);
+               }
 
                return renderedImage;
             }
@@ -408,16 +429,7 @@ public class GVectorial2DLayer
 
          @Override
          public boolean isOversized(final List<Entry<RenderingKey, Future<BufferedImage>, RuntimeException>> entries) {
-            long totalBytes = 0;
-
-            for (final Entry<RenderingKey, Future<BufferedImage>, RuntimeException> entry : entries) {
-               final GVectorialRenderingAttributes renderingAttributes = entry.getKey()._renderingAttributes;
-               totalBytes += renderingAttributes._imageWidth * renderingAttributes._imageHeight * BYTES_PER_PIXEL;
-
-               if (totalBytes > _maxImageCacheSizeInBytes) {
-                  return true;
-               }
-            }
+            final long totalBytes = entries.size() * TEXTURE_SIZE_IN_BYTES;
 
             return (totalBytes > _maxImageCacheSizeInBytes);
          }
@@ -436,7 +448,8 @@ public class GVectorial2DLayer
       };
 
 
-      final LRUCache.ValueFactory<RenderingKey, Future<BufferedImage>, RuntimeException> factory = new LRUCache.ValueFactory<RenderingKey, Future<BufferedImage>, RuntimeException>() {
+      final LRUCache.ValueFactory<RenderingKey, Future<BufferedImage>, RuntimeException> factory;
+      factory = new LRUCache.ValueFactory<RenderingKey, Future<BufferedImage>, RuntimeException>() {
          @Override
          public Future<BufferedImage> create(final RenderingKey key) {
             final double priority = key._tileBounds.area();
@@ -454,7 +467,12 @@ public class GVectorial2DLayer
    }
 
 
+   private boolean _showRenderingInProcess;
+
+
    private static final class Tile {
+
+      private static final BufferedImage  NO_ANCESTOR_CONTRIBUTION = new BufferedImage(1, 1, BufferedImage.TYPE_3BYTE_BGR);
 
       private final Tile                  _parent;
       private final GAxisAlignedRectangle _tileBounds;
@@ -529,12 +547,12 @@ public class GVectorial2DLayer
 
 
       private boolean needToSplit(final DrawContext dc) {
-         return computeProjectedPixels(dc) > (_layer._attributes._imageWidth * _layer._attributes._imageHeight);
+         return computeProjectedPixels(dc) > (TEXTURE_WIDTH * TEXTURE_HEIGHT);
       }
 
 
       private Tile[] slit() {
-         final GAxisAlignedRectangle[] sectors = _tileBounds.subdivideAtCenter();
+         final GAxisAlignedRectangle[] sectors = _tileBounds.subdividedAtCenter();
 
          final Tile[] subTiles = new GVectorial2DLayer.Tile[4];
          subTiles[0] = new Tile(this, 0, sectors[0], _layer);
@@ -563,7 +581,9 @@ public class GVectorial2DLayer
 
          if ((_surfaceImage == null) && (_ancestorContribution == null)) {
             _ancestorContribution = calculateAncestorContribution();
-            setImageToSurfaceImage(_ancestorContribution);
+            if (_ancestorContribution != NO_ANCESTOR_CONTRIBUTION) {
+               setImageToSurfaceImage(_ancestorContribution);
+            }
          }
 
 
@@ -593,12 +613,12 @@ public class GVectorial2DLayer
          final GPair<Tile, BufferedImage> ancestorAndImage = findNearestAncestorWithImage();
 
          if (ancestorAndImage == null) {
-            return null;
+            return NO_ANCESTOR_CONTRIBUTION;
          }
 
          final BufferedImage ancestorImage = ancestorAndImage._second;
          if (ancestorImage == null) {
-            return null;
+            return NO_ANCESTOR_CONTRIBUTION;
          }
 
          final Tile ancestor = ancestorAndImage._first;
@@ -606,30 +626,66 @@ public class GVectorial2DLayer
 
          final IVector2 scale = _tileBoundsExtent.div(ancestor._tileBoundsExtent);
 
-         final GVector2D imageExtent = new GVector2D(_layer._attributes._imageWidth, _layer._attributes._imageHeight);
+         final GVector2D imageExtent = new GVector2D(TEXTURE_WIDTH, TEXTURE_HEIGHT);
 
          final IVector2 topLeft = _tileBounds._lower.sub(ancestor._tileBounds._lower).scale(scale).div(_tileBoundsExtent).scale(
                   imageExtent);
 
          final IVector2 widthAndHeight = imageExtent.scale(scale);
 
-         final int width = (int) widthAndHeight.x();
-         final int height = (int) widthAndHeight.y();
-         final int x = (int) topLeft.x();
-         final int y = (int) -(topLeft.y() + height - _layer._attributes._imageHeight); // flip y
+         final int width = Math.round((float) widthAndHeight.x());
+         final int height = Math.round((float) widthAndHeight.y());
+         final int x = Math.round((float) topLeft.x());
+         final int y = Math.round((float) -(topLeft.y() + widthAndHeight.y() - TEXTURE_HEIGHT)); // flip y
 
-         try {
-            return ancestorImage.getSubimage(x, y, width, height);
+
+         //         final BufferedImage calculatedImage = new BufferedImage(_layer._attributes._imageWidth, _layer._attributes._imageHeight,
+         //                  BufferedImage.TYPE_4BYTE_ABGR);
+         //         final Graphics2D g2d = calculatedImage.createGraphics();
+         //
+         //         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+         //         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+         //         g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+         //
+         //         // destination
+         //         final int dx1 = 0;
+         //         final int dy1 = 0;
+         //         final int dx2 = _layer._attributes._imageWidth;
+         //         final int dy2 = _layer._attributes._imageHeight;
+         //
+         //         // source
+         //         final int sx1 = x;
+         //         final int sy1 = y;
+         //         final int sx2 = x + width;
+         //         final int sy2 = y + height;
+         //         g2d.drawImage(ancestorImage, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, null);
+         //         g2d.dispose();
+         //
+         //         return calculatedImage;
+
+         final BufferedImage gray = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
+         final Graphics2D g2d = gray.createGraphics();
+         if (_layer._showRenderingInProcess) {
+            g2d.setBackground(new Color(0, 0, 0, 0.4f));
+            g2d.clearRect(0, 0, width, height);
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_IN));
          }
-         catch (final RasterFormatException e) {}
+         g2d.drawImage(ancestorImage, 0, 0, width, height, x, y, x + width, y + height, null);
+         g2d.dispose();
+         return gray;
 
-
-         return null;
+         //         try {
+         //            return ancestorImage.getSubimage(x, y, width, height);
+         //         }
+         //         catch (final RasterFormatException e) {}
+         //
+         //
+         //         return NO_ANCESTOR_CONTRIBUTION;
       }
 
 
       private RenderingKey createRenderingKey() {
-         return new RenderingKey(_layer, _tileBounds, _layer._attributes, _id);
+         return new RenderingKey(_layer, _tileBounds, _id);
       }
 
 
@@ -695,8 +751,6 @@ public class GVectorial2DLayer
    private final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> _features;
 
 
-   private GVectorialRenderingAttributes                                                                                       _attributes;
-
    private List<Tile>                                                                                                          _topTiles;
    private final List<Tile>                                                                                                    _currentTiles               = new ArrayList<Tile>();
 
@@ -709,9 +763,8 @@ public class GVectorial2DLayer
 
    private long                                                                                                                _lastCurrentTilesCalculated = -1;
 
-   private boolean                                                                                                             _debugRendering             = false;
 
-
+   private GVectorialRenderingAttributes                                                                                       _renderingAttributes;
    private final GGloveVectorial2DRenderingStyle                                                                               _renderingStyle             = new GGloveVectorial2DRenderingStyle(
                                                                                                                                                                     this);
 
@@ -743,7 +796,7 @@ public class GVectorial2DLayer
 
       featuresChanged(); // force initial calculation of features related info
 
-      _attributes = createRenderingAttributes();
+      _renderingAttributes = createRenderingAttributes();
    }
 
 
@@ -755,7 +808,7 @@ public class GVectorial2DLayer
          _polygonsSector = Sector.FULL_SPHERE;
       }
 
-      _renderer = _features.isEmpty() ? null : new GVectorial2DRenderer(_features);
+      _renderer = _features.isEmpty() ? null : new GVectorial2DRenderer(_features, true);
    }
 
 
@@ -766,18 +819,11 @@ public class GVectorial2DLayer
 
 
    private GVectorialRenderingAttributes createRenderingAttributes() {
-      final boolean renderLODIgnores = true;
       final float borderWidth = 1f;
       final Color fillColor = createColor(new Color(1, 1, 0), _fillColorAlpha);
       final Color borderColor = createColor(Color.WHITE, _borderColorAlpha);
-      final double lodMinSize = 5;
-      final boolean debugLODRendering = _debugRendering;
-      final int imageWidth = 256;
-      final int imageHeight = 256;
-      final boolean renderBounds = _debugRendering;
 
-      return new GVectorialRenderingAttributes(renderLODIgnores, borderWidth, fillColor, borderColor, lodMinSize,
-               debugLODRendering, imageWidth, imageHeight, renderBounds);
+      return new GVectorialRenderingAttributes(borderWidth, fillColor, borderColor);
    }
 
 
@@ -802,7 +848,7 @@ public class GVectorial2DLayer
 
          private GAxisAlignedRectangle tryToReduce(final GAxisAlignedRectangle sector) {
             if (polygonsSector.isFullInside(sector)) {
-               final GAxisAlignedRectangle[] subdivisions = sector.subdivideAtCenter();
+               final GAxisAlignedRectangle[] subdivisions = sector.subdividedAtCenter();
 
                GAxisAlignedRectangle lastTouchedSubdivision = null;
                for (final GAxisAlignedRectangle subdivision : subdivisions) {
@@ -865,8 +911,8 @@ public class GVectorial2DLayer
 
 
    private void addAdvancedAttributes(final List<ILayerAttribute<?>> result) {
-      final ILayerAttribute<?> debugRendering = new GBooleanLayerAttribute("Debug Rendering", "Set the debug rendering setting",
-               "DebugRendering") {
+      final ILayerAttribute<?> showRenderingInProcess = new GBooleanLayerAttribute("Show Rendering In Process",
+               "Visualize when the rendering is not yet done", "ShowRenderingInProcess") {
          @Override
          public boolean isVisible() {
             return true;
@@ -875,17 +921,37 @@ public class GVectorial2DLayer
 
          @Override
          public Boolean get() {
-            return isDebugRendering();
+            return isShowRenderingInProcess();
          }
 
 
          @Override
          public void set(final Boolean value) {
-            setDebugRendering(value);
+            setShowRenderingInProcess(value);
          }
       };
 
-      result.add(new GGroupAttribute("Advanced", "Settings for advanced users", debugRendering));
+      //      final ILayerAttribute<?> debugRendering = new GBooleanLayerAttribute("Debug Rendering", "Set the debug rendering setting",
+      //               "DebugRendering") {
+      //         @Override
+      //         public boolean isVisible() {
+      //            return true;
+      //         }
+      //
+      //
+      //         @Override
+      //         public Boolean get() {
+      //            return isDebugRendering();
+      //         }
+      //
+      //
+      //         @Override
+      //         public void set(final Boolean value) {
+      //            setDebugRendering(value);
+      //         }
+      //      };
+
+      result.add(new GGroupAttribute("Advanced", "Settings for advanced users", showRenderingInProcess));
    }
 
 
@@ -1010,17 +1076,16 @@ public class GVectorial2DLayer
    public void setBorderColorAlpha(final int newValue) {
       final Color newColor = createColor(getBorderColor(), newValue);
 
-      if (_attributes._borderColor.equals(newColor)) {
+      if (_renderingAttributes._borderColor.equals(newColor)) {
          return;
       }
 
       _borderColorAlpha = newValue;
 
-      final Color oldValue = _attributes._borderColor;
+      final Color oldValue = _renderingAttributes._borderColor;
 
-      _attributes = new GVectorialRenderingAttributes(_attributes._renderLODIgnores, _attributes._borderWidth,
-               _attributes._fillColor, newColor, _attributes._lodMinSize, _attributes._debugLODRendering,
-               _attributes._imageWidth, _attributes._imageHeight, _attributes._renderBounds);
+      _renderingAttributes = new GVectorialRenderingAttributes(_renderingAttributes._borderWidth,
+               _renderingAttributes._fillColor, newColor);
 
       clearCache();
 
@@ -1032,17 +1097,16 @@ public class GVectorial2DLayer
    public void setFillColorAlpha(final int newValue) {
       final Color newColor = createColor(getFillColor(), newValue);
 
-      if (_attributes._fillColor.equals(newColor)) {
+      if (_renderingAttributes._fillColor.equals(newColor)) {
          return;
       }
 
       _fillColorAlpha = newValue;
 
-      final Color oldValue = _attributes._fillColor;
+      final Color oldValue = _renderingAttributes._fillColor;
 
-      _attributes = new GVectorialRenderingAttributes(_attributes._renderLODIgnores, _attributes._borderWidth, newColor,
-               _attributes._borderColor, _attributes._lodMinSize, _attributes._debugLODRendering, _attributes._imageWidth,
-               _attributes._imageHeight, _attributes._renderBounds);
+      _renderingAttributes = new GVectorialRenderingAttributes(_renderingAttributes._borderWidth, newColor,
+               _renderingAttributes._borderColor);
 
       clearCache();
 
@@ -1052,12 +1116,12 @@ public class GVectorial2DLayer
 
 
    private Color getBorderColor() {
-      return _attributes._borderColor;
+      return _renderingAttributes._borderColor;
    }
 
 
    private Color getFillColor() {
-      return _attributes._fillColor;
+      return _renderingAttributes._fillColor;
    }
 
 
@@ -1070,15 +1134,14 @@ public class GVectorial2DLayer
    public void setFillColor(final Color newOpaqueColor) {
       final Color newValue = createColor(newOpaqueColor, _fillColorAlpha);
 
-      if (_attributes._fillColor.equals(newValue)) {
+      if (_renderingAttributes._fillColor.equals(newValue)) {
          return;
       }
 
-      final Color oldValue = _attributes._fillColor;
+      final Color oldValue = _renderingAttributes._fillColor;
 
-      _attributes = new GVectorialRenderingAttributes(_attributes._renderLODIgnores, _attributes._borderWidth, newValue,
-               _attributes._borderColor, _attributes._lodMinSize, _attributes._debugLODRendering, _attributes._imageWidth,
-               _attributes._imageHeight, _attributes._renderBounds);
+      _renderingAttributes = new GVectorialRenderingAttributes(_renderingAttributes._borderWidth, newValue,
+               _renderingAttributes._borderColor);
 
       clearCache();
 
@@ -1089,15 +1152,14 @@ public class GVectorial2DLayer
    public void setBorderColor(final Color newOpaqueColor) {
       final Color newValue = createColor(newOpaqueColor, _borderColorAlpha);
 
-      if (_attributes._borderColor.equals(newValue)) {
+      if (_renderingAttributes._borderColor.equals(newValue)) {
          return;
       }
 
-      final Color oldValue = _attributes._borderColor;
+      final Color oldValue = _renderingAttributes._borderColor;
 
-      _attributes = new GVectorialRenderingAttributes(_attributes._renderLODIgnores, _attributes._borderWidth,
-               _attributes._fillColor, newValue, _attributes._lodMinSize, _attributes._debugLODRendering,
-               _attributes._imageWidth, _attributes._imageHeight, _attributes._renderBounds);
+      _renderingAttributes = new GVectorialRenderingAttributes(_renderingAttributes._borderWidth,
+               _renderingAttributes._fillColor, newValue);
 
       clearCache();
 
@@ -1106,20 +1168,19 @@ public class GVectorial2DLayer
 
 
    public float getBorderWidth() {
-      return _attributes._borderWidth;
+      return _renderingAttributes._borderWidth;
    }
 
 
    public void setBorderWidth(final float newValue) {
-      if (_attributes._borderWidth == newValue) {
+      if (_renderingAttributes._borderWidth == newValue) {
          return;
       }
 
-      final float oldValue = _attributes._borderWidth;
+      final float oldValue = _renderingAttributes._borderWidth;
 
-      _attributes = new GVectorialRenderingAttributes(_attributes._renderLODIgnores, newValue, _attributes._fillColor,
-               _attributes._borderColor, _attributes._lodMinSize, _attributes._debugLODRendering, _attributes._imageWidth,
-               _attributes._imageHeight, _attributes._renderBounds);
+      _renderingAttributes = new GVectorialRenderingAttributes(newValue, _renderingAttributes._fillColor,
+               _renderingAttributes._borderColor);
 
       clearCache();
 
@@ -1127,7 +1188,8 @@ public class GVectorial2DLayer
    }
 
 
-   private void clearCache() {
+   @Override
+   public void clearCache() {
       //      _topTiles = null;
       if (_topTiles != null) {
          for (final Tile topTile : _topTiles) {
@@ -1345,28 +1407,6 @@ public class GVectorial2DLayer
    //   }
 
 
-   public boolean isDebugRendering() {
-      return _debugRendering;
-   }
-
-
-   public void setDebugRendering(final boolean newValue) {
-      if (newValue == _debugRendering) {
-         return;
-      }
-
-      _debugRendering = newValue;
-
-      _attributes = new GVectorialRenderingAttributes(_attributes._renderLODIgnores, _attributes._borderWidth,
-               _attributes._fillColor, _attributes._borderColor, _attributes._lodMinSize, newValue, _attributes._imageWidth,
-               _attributes._imageHeight, newValue);
-
-      clearCache();
-
-      firePropertyChange("DebugRendering", !newValue, newValue);
-   }
-
-
    private static GAxisAlignedRectangle[] createWordQuadrants() {
       final GAxisAlignedRectangle wholeWorld = new GAxisAlignedRectangle(new GVector2D(-Math.PI, -Math.PI / 2), new GVector2D(
                Math.PI, Math.PI / 2));
@@ -1422,6 +1462,32 @@ public class GVectorial2DLayer
    @Override
    public String toString() {
       return "GPolygon2DLayer [name=" + _name + ", features=" + _features + "]";
+   }
+
+
+   public static boolean isCacheRenderingOnDisk() {
+      return cacheRenderingOnDisk;
+   }
+
+
+   public static void setCacheRenderingOnDisk(final boolean enable) {
+      cacheRenderingOnDisk = enable;
+   }
+
+
+   public boolean isShowRenderingInProcess() {
+      return _showRenderingInProcess;
+   }
+
+
+   public void setShowRenderingInProcess(final boolean newValue) {
+      if (newValue == _showRenderingInProcess) {
+         return;
+      }
+
+      _showRenderingInProcess = newValue;
+
+      firePropertyChange("ShowRenderingInProcess", !newValue, newValue);
    }
 
 

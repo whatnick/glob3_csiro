@@ -136,4 +136,9 @@ public final class GCapsule2D
       return touches((IBounds2D<?>) that);
    }
 
+
+   @Override
+   public int getVerticesCount() {
+      return 2;
+   }
 }

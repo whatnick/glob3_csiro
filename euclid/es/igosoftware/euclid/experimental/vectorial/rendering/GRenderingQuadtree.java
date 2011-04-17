@@ -29,6 +29,7 @@ public class GRenderingQuadtree<FeatureT extends IGlobeFeature<IVector2, ? exten
                @Override
                public Collection<? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> transform(final FeatureT feature) {
                   final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> geometry = feature.getDefaultGeometry();
+
                   if (geometry instanceof GMultiGeometry2D) {
                      @SuppressWarnings("unchecked")
                      final GMultiGeometry2D<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> multigeometry = (GMultiGeometry2D<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) geometry;
@@ -36,6 +37,7 @@ public class GRenderingQuadtree<FeatureT extends IGlobeFeature<IVector2, ? exten
                      final List<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> children = multigeometry.getChildren();
                      return children;
                   }
+
                   return Collections.singleton(geometry);
                }
             }, parameters);

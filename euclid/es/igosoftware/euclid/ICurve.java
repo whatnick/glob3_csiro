@@ -28,4 +28,6 @@ BoundsT extends IBounds<VectorT, BoundsT>
          extends
             IBoundedGeometry<VectorT, BoundsT> {
 
+   public int getVerticesCount();
+
 }

@@ -26,9 +26,9 @@ public class GGeometryNTreeParameters {
 
 
    public static interface AcceptLeafNodeCreationPolicy<VectorT extends IVector<VectorT, ?>, ElementT> {
-      public boolean accept(final int depth,
-                            final GAxisAlignedOrthotope<VectorT, ?> bounds,
-                            final Collection<ElementT> elements);
+      public boolean acceptLeafNodeCreation(final int depth,
+                                            final GAxisAlignedOrthotope<VectorT, ?> bounds,
+                                            final Collection<GElementGeometryPair<VectorT, ElementT>> elements);
    }
 
 
@@ -64,14 +64,14 @@ public class GGeometryNTreeParameters {
 
 
       @Override
-      public boolean accept(final int depth,
-                            final GAxisAlignedOrthotope<VectorT, ?> bounds,
-                            final Collection<ElementT> elements) {
-         if ((elements.size() <= _maxElementsInLeafs) || (depth >= _maxDepth + 1)) {
+      public boolean acceptLeafNodeCreation(final int depth,
+                                            final GAxisAlignedOrthotope<VectorT, ?> bounds,
+                                            final Collection<GElementGeometryPair<VectorT, ElementT>> elements) {
+         if (depth >= _maxDepth) {
             return true;
          }
 
-         return false;
+         return (elements.size() <= _maxElementsInLeafs);
       }
    }
 

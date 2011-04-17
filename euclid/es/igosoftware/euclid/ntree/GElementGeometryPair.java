@@ -3,6 +3,7 @@
 package es.igosoftware.euclid.ntree;
 
 import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.vector.IVector;
 
@@ -12,12 +13,15 @@ public class GElementGeometryPair<VectorT extends IVector<VectorT, ?>, ElementT>
 
    private final ElementT                                                       _element;
    private final IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>> _geometry;
+   private final GAxisAlignedOrthotope<VectorT, ?>                              _bounds;
 
 
    GElementGeometryPair(final ElementT element,
                         final IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>> geometry) {
       _element = element;
       _geometry = geometry;
+
+      _bounds = geometry.getBounds().asAxisAlignedOrthotope();
    }
 
 
@@ -77,5 +81,11 @@ public class GElementGeometryPair<VectorT extends IVector<VectorT, ?>, ElementT>
    public IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>> getGeometry() {
       return _geometry;
    }
+
+
+   public GAxisAlignedOrthotope<VectorT, ?> getBounds() {
+      return _bounds;
+   }
+
 
 }

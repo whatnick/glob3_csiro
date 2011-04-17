@@ -116,4 +116,9 @@ public final class GDisk
       return touches((IBounds2D<?>) that);
    }
 
+
+   @Override
+   public int getVerticesCount() {
+      return 1;
+   }
 }
