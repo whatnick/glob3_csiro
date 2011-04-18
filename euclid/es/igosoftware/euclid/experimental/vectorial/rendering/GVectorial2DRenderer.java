@@ -94,7 +94,18 @@ public class GVectorial2DRenderer {
 
       final IVectorial2DRenderUnit renderUnit = new GVectorial2DRenderUnit();
 
-      return renderUnit.render(_quadtree, region, imageWidth, imageHeight, attributes, renderingStyle);
+      renderingStyle.preprocessFeatures(_features);
+
+      final BufferedImage renderedImage = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_4BYTE_ABGR);
+      renderedImage.setAccelerationPriority(1);
+
+      renderingStyle.preRenderImage(renderedImage);
+
+      renderUnit.render(renderedImage, _quadtree, _features.getProjection(), region, attributes, renderingStyle);
+
+      renderingStyle.postRenderImage(renderedImage);
+
+      return renderedImage;
    }
 
 

@@ -37,6 +37,7 @@
 package es.igosoftware.euclid.colors;
 
 
+
 public interface IColor {
 
    /**
@@ -168,6 +169,9 @@ public interface IColor {
 
 
    public java.awt.Color asAWTColor();
+
+
+   public java.awt.Color asAWTColor(final float opacity);
 
 
    public String toHexString();

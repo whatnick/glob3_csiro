@@ -373,4 +373,6 @@ GeometryT extends GAxisAlignedOrthotope<VectorT, GeometryT>
    public abstract GeometryT mergedWith(final GAxisAlignedOrthotope<VectorT, ?> that);
 
 
+   public abstract GeometryT clamp(final GAxisAlignedOrthotope<VectorT, ?> that);
+
 }

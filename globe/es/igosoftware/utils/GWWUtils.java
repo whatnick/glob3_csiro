@@ -589,11 +589,29 @@ public final class GWWUtils {
    }
 
 
+   public static LatLon toLatLon(final IVector2 point,
+                                 final GProjection projection) {
+      final IVector2 geodesicPoint = point.reproject(projection, GProjection.EPSG_4326);
+      return LatLon.fromRadians(geodesicPoint.y(), geodesicPoint.x());
+   }
+
+
    public static Position toPosition(final IVector3 point,
                                      final GProjection projection) {
       final IVector3 geodesicPoint = point.reproject(projection, GProjection.EPSG_4326);
       return Position.fromRadians(geodesicPoint.y(), geodesicPoint.x(), geodesicPoint.z());
    }
 
+
+   public static IVector2 increment(final IVector2 position,
+                                    final GProjection projection,
+                                    final double deltaEasting,
+                                    final double deltaNorthing) {
+      final LatLon latLon = GWWUtils.toLatLon(position, projection);
+
+      final LatLon newUTM = GWWUtils.increment(latLon, deltaEasting, deltaNorthing);
+
+      return new GVector2D(newUTM.getLongitude().radians, newUTM.getLatitude().radians);
+   }
 
 }

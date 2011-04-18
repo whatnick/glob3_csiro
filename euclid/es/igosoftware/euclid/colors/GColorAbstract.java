@@ -193,6 +193,12 @@ public abstract class GColorAbstract
 
 
    @Override
+   public final java.awt.Color asAWTColor(final float opacity) {
+      return new java.awt.Color(getRed(), getGreen(), getBlue(), opacity);
+   }
+
+
+   @Override
    public String toHexString() {
       final int iRed = Math.round(255 * getRed());
       final int iGreen = Math.round(255 * getGreen());

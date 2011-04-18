@@ -3,6 +3,7 @@
 package es.igosoftware.experimental.vectorial;
 
 import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -11,34 +12,38 @@ import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.colors.GColorF;
 import es.igosoftware.euclid.colors.IColor;
-import es.igosoftware.euclid.experimental.measurement.GLength;
+import es.igosoftware.euclid.experimental.measurement.GArea;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
-import es.igosoftware.euclid.experimental.vectorial.rendering.IRenderingStyle;
+import es.igosoftware.euclid.experimental.vectorial.rendering.GRenderingStyleAbstract;
 import es.igosoftware.euclid.features.GGeometryType;
+import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.features.IGlobeMutableFeatureCollection;
 import es.igosoftware.euclid.mutability.IMutable;
+import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
 import es.igosoftware.globe.IGlobeRenderingStyle;
 import es.igosoftware.globe.IGlobeVector2Layer;
+import es.igosoftware.globe.attributes.GAreaLayerAttribute;
 import es.igosoftware.globe.attributes.GBooleanLayerAttribute;
 import es.igosoftware.globe.attributes.GColorLayerAttribute;
 import es.igosoftware.globe.attributes.GFloatLayerAttribute;
 import es.igosoftware.globe.attributes.GGroupAttribute;
-import es.igosoftware.globe.attributes.GLengthLayerAttribute;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.GUtils;
+import es.igosoftware.utils.GWWUtils;
 
 
 public class GGloveVectorial2DRenderingStyle
+         extends
+            GRenderingStyleAbstract
          implements
-            IGlobeRenderingStyle,
-            IRenderingStyle {
+            IGlobeRenderingStyle {
 
 
    private final IGlobeVector2Layer _layer;
@@ -48,17 +53,10 @@ public class GGloveVectorial2DRenderingStyle
    private boolean                  _debugRendering   = false;
    private boolean                  _renderLODIgnores = true;
 
-   // point style
-   private IMeasure<GLength>        _pointSize        = GLength.Meter.value(1);
+   // point style 
+   private IMeasure<GArea>          _pointSize        = GArea.SquareKilometer.value(10);
    private IColor                   _pointColor       = GColorF.WHITE;
    private float                    _pointOpacity     = 1;
-
-
-   //   // curve style
-   //   private final IMeasure<GLength>  _curveWidth         = GLength.Meter.value(1);
-   //
-   //   // surface style
-   //   private final IMeasure<GLength>  _surfaceBorderWidth = GLength.Meter.value(1);
 
 
    public GGloveVectorial2DRenderingStyle(final IGlobeVector2Layer layer) {
@@ -163,9 +161,9 @@ public class GGloveVectorial2DRenderingStyle
 
    private ILayerAttribute<?> createPointsLayerAttributes(final IGlobeApplication application) {
 
-      final GLengthLayerAttribute pointSize = new GLengthLayerAttribute("Size", "Set the point size", "PointSize", 0, 10, 1) {
+      final GAreaLayerAttribute pointSize = new GAreaLayerAttribute("Size", "Set the point size", "PointSize", 0, 1000, 1) {
          @Override
-         public void set(final IMeasure<GLength> value) {
+         public void set(final IMeasure<GArea> value) {
             setPointSize(value);
          }
 
@@ -177,7 +175,7 @@ public class GGloveVectorial2DRenderingStyle
 
 
          @Override
-         public IMeasure<GLength> get() {
+         public IMeasure<GArea> get() {
             return getPointSize();
          }
       };
@@ -229,78 +227,22 @@ public class GGloveVectorial2DRenderingStyle
    }
 
 
-   //   private ILayerAttribute<?> createCurveLayerAttributes(final IGlobeApplication application) {
-   //
-   //      final GLengthLayerAttribute width = new GLengthLayerAttribute("Width", "Set the curves width", "CurveWidth", 0, 10, 1) {
-   //         @Override
-   //         public void set(final IMeasure<GLength> value) {
-   //            setCurveWidth(value);
-   //         }
-   //
-   //
-   //         @Override
-   //         public boolean isVisible() {
-   //            return true;
-   //         }
-   //
-   //
-   //         @Override
-   //         public IMeasure<GLength> get() {
-   //            return getCurveWidth();
-   //         }
-   //      };
-   //
-   //
-   //      return new GGroupAttribute("Curves Style", application.getSmallIcon(GFileName.relative("curves-style.png")),
-   //               "Set the curves style settings", width);
-   //   }
-
-
-   //   private ILayerAttribute<?> createSurfaceLayerAttributes(final IGlobeApplication application) {
-   //
-   //      final GLengthLayerAttribute borderWidth = new GLengthLayerAttribute("Border Width", "Set the border width",
-   //               "SurfaceBorderWidth", 0, 10, 1) {
-   //         @Override
-   //         public void set(final IMeasure<GLength> value) {
-   //            setSurfaceBorderWidth(value);
-   //         }
-   //
-   //
-   //         @Override
-   //         public boolean isVisible() {
-   //            return true;
-   //         }
-   //
-   //
-   //         @Override
-   //         public IMeasure<GLength> get() {
-   //            return getSurfaceBorderWidth();
-   //         }
-   //      };
-   //
-   //
-   //      return new GGroupAttribute("Surfaces Style", application.getSmallIcon(GFileName.relative("surfaces-style.png")),
-   //               "Set the surfaces style settings", borderWidth);
-   //   }
-
-
    private void styleChanged() {
       _layer.clearCache();
    }
 
 
-   @Override
-   public IMeasure<GLength> getPointSize() {
+   public IMeasure<GArea> getPointSize() {
       return _pointSize;
    }
 
 
-   public void setPointSize(final IMeasure<GLength> newPointSize) {
+   public void setPointSize(final IMeasure<GArea> newPointSize) {
       if (GUtils.equals(newPointSize, _pointSize)) {
          return;
       }
 
-      final IMeasure<GLength> oldPointSize = _pointSize;
+      final IMeasure<GArea> oldPointSize = _pointSize;
       _pointSize = newPointSize;
       _layer.firePropertyChange("PointSize", oldPointSize, newPointSize);
 
@@ -308,7 +250,6 @@ public class GGloveVectorial2DRenderingStyle
    }
 
 
-   @Override
    public IColor getPointColor() {
       return _pointColor;
    }
@@ -327,7 +268,6 @@ public class GGloveVectorial2DRenderingStyle
    }
 
 
-   @Override
    public float getPointOpacity() {
       return _pointOpacity;
    }
@@ -403,42 +343,55 @@ public class GGloveVectorial2DRenderingStyle
       return 5;
    }
 
-   //   @Override
-   //   public IMeasure<GLength> getCurveWidth() {
-   //      return _curveWidth;
-   //   }
-   //
-   //
-   //   public void setCurveWidth(final IMeasure<GLength> newCurveWidth) {
-   //      if (GUtils.equals(newCurveWidth, _curveWidth)) {
-   //         return;
-   //      }
-   //
-   //      final IMeasure<GLength> oldCurveWidth = _curveWidth;
-   //      _curveWidth = newCurveWidth;
-   //      _layer.firePropertyChange("CurveWidth", oldCurveWidth, newCurveWidth);
-   //
-   //      styleChanged();
-   //   }
+
+   @Override
+   public IVector2 increment(final IVector2 position,
+                             final GProjection projection,
+                             final double deltaEasting,
+                             final double deltaNorthing) {
+      return GWWUtils.increment(position, projection, deltaEasting, deltaNorthing);
+   }
 
 
-   //   @Override
-   //   public IMeasure<GLength> getSurfaceBorderWidth() {
-   //      return _surfaceBorderWidth;
-   //   }
-   //
-   //
-   //   public void setSurfaceBorderWidth(final IMeasure<GLength> newSurfaceBorderWidth) {
-   //      if (GUtils.equals(newSurfaceBorderWidth, _surfaceBorderWidth)) {
-   //         return;
-   //      }
-   //
-   //      final IMeasure<GLength> oldSurfaceBorderWidth = _surfaceBorderWidth;
-   //      _surfaceBorderWidth = newSurfaceBorderWidth;
-   //      _layer.firePropertyChange("SurfaceBorderWidth", oldSurfaceBorderWidth, newSurfaceBorderWidth);
-   //
-   //      styleChanged();
-   //   }
+   @Override
+   public void preRenderImage(final BufferedImage renderedImage) {
 
+   }
+
+
+   @Override
+   public void postRenderImage(final BufferedImage renderedImage) {
+
+   }
+
+
+   @Override
+   public void preprocessFeatures(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features) {
+
+   }
+
+
+   @Override
+   public IMeasure<GArea> getPointSize(final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature) {
+      return getPointSize();
+   }
+
+
+   @Override
+   public IColor getPointColor(final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature) {
+      return getPointColor();
+   }
+
+
+   @Override
+   public float getPointOpacity(final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature) {
+      return getPointOpacity();
+   }
+
+
+   @Override
+   public IMeasure<GArea> getMaximumSize() {
+      return getPointSize();
+   }
 
 }

@@ -223,4 +223,27 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<Vecto
    }
 
 
+   @Override
+   public int getFieldIndex(final String fieldName) {
+      for (int i = 0; i < _fields.size(); i++) {
+         if (_fields.get(i).getName().equals(fieldName)) {
+            return i;
+         }
+      }
+      return -1;
+   }
+
+
+   @Override
+   public GField getField(final String fieldName) {
+      return _fields.get(getFieldIndex(fieldName));
+   }
+
+
+   @Override
+   public GField getField(final int index) {
+      return _fields.get(index);
+   }
+
+
 }

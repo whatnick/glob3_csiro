@@ -18,6 +18,7 @@ public abstract class GGTNode<VectorT extends IVector<VectorT, ?>, ElementT>
    protected final GGTInnerNode<VectorT, ElementT>                     _parent;
    protected final GAxisAlignedOrthotope<VectorT, ?>                   _bounds;
    protected final Collection<GElementGeometryPair<VectorT, ElementT>> _elements;
+   private GAxisAlignedOrthotope<VectorT, ?>                           _minimumBounds;
 
 
    protected GGTNode(final GGTInnerNode<VectorT, ElementT> parent,
@@ -36,6 +37,30 @@ public abstract class GGTNode<VectorT extends IVector<VectorT, ?>, ElementT>
 
    public final GAxisAlignedOrthotope<VectorT, ?> getBounds() {
       return _bounds;
+   }
+
+
+   public final GAxisAlignedOrthotope<VectorT, ?> getMinimumBounds() {
+      if (_minimumBounds == null) {
+         _minimumBounds = calculateMinimumBounds().clamp(_bounds);
+      }
+      return _minimumBounds;
+   }
+
+
+   private GAxisAlignedOrthotope<VectorT, ?> calculateMinimumBounds() {
+      VectorT lower = null;
+      VectorT upper = null;
+
+      for (final GElementGeometryPair<VectorT, ElementT> pair : getAllElements()) {
+         final GAxisAlignedOrthotope<VectorT, ?> geometryBounds = pair.getGeometry().getBounds().asAxisAlignedOrthotope();
+         final VectorT geometryLower = geometryBounds._lower;
+         final VectorT geometryUpper = geometryBounds._upper;
+         lower = (lower == null) ? geometryLower : lower.min(geometryLower);
+         upper = (upper == null) ? geometryUpper : upper.max(geometryUpper);
+      }
+
+      return GAxisAlignedOrthotope.create(lower, upper);
    }
 
 

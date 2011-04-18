@@ -17,16 +17,20 @@ import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.experimental.measurement.GArea;
+import es.igosoftware.euclid.experimental.measurement.IMeasure;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.multigeometry.GMultiGeometry2D;
 import es.igosoftware.euclid.ntree.GElementGeometryPair;
 import es.igosoftware.euclid.ntree.GGTInnerNode;
 import es.igosoftware.euclid.ntree.GGTNode;
+import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.shape.IComplexPolygon2D;
 import es.igosoftware.euclid.shape.IPolygon2D;
 import es.igosoftware.euclid.shape.IPolygonalChain2D;
 import es.igosoftware.euclid.shape.ISimplePolygon2D;
 import es.igosoftware.euclid.vector.GVector2D;
+import es.igosoftware.euclid.vector.GVector2I;
 import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector2;
 
@@ -37,19 +41,19 @@ class GVectorial2DRenderUnit
 
 
    @Override
-   public BufferedImage render(final GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> quadtree,
-                               final GAxisAlignedRectangle region,
-                               final int imageWidth,
-                               final int imageHeight,
-                               final GVectorialRenderingAttributes attributes,
-                               final IRenderingStyle renderingStyle) {
+   public void render(final BufferedImage renderedImage,
+                      final GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> quadtree,
+                      final GProjection projection,
+                      final GAxisAlignedRectangle region,
+                      final GVectorialRenderingAttributes attributes,
+                      final IRenderingStyle renderingStyle) {
 
       final IVector2 extent = region.getExtent();
 
-      final IVector2 scale = new GVector2D(imageWidth, imageHeight).div(extent);
+      final int imageWidth = renderedImage.getWidth();
+      final int imageHeight = renderedImage.getHeight();
 
-      final BufferedImage renderedImage = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_4BYTE_ABGR);
-      renderedImage.setAccelerationPriority(1);
+      final IVector2 scale = new GVector2D(imageWidth, imageHeight).div(extent);
 
       final Graphics2D g2d = renderedImage.createGraphics();
       g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -71,30 +75,41 @@ class GVectorial2DRenderUnit
 
       g2d.setTransform(transformFlipY);
 
-      processNode(quadtree.getRoot(), region, attributes, renderingStyle, scale, g2d, renderedImage);
 
-      return renderedImage;
+      final IMeasure<GArea> pointSize = renderingStyle.getMaximumSize();
+
+      final double area = pointSize.getValue() * pointSize.getUnit().convertionFactor();
+      final double radiusD = Math.sqrt(area / Math.PI);
+      final IVector2 lower = renderingStyle.increment(region._lower, projection, -radiusD, -radiusD);
+      final IVector2 upper = renderingStyle.increment(region._upper, projection, radiusD, radiusD);
+
+      final GAxisAlignedRectangle extendedRegion = new GAxisAlignedRectangle(lower, upper);
+
+      processNode(quadtree.getRoot(), region, extendedRegion, attributes, renderingStyle, projection, scale, g2d, renderedImage);
+
    }
 
 
    private void processNode(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> node,
                             final GAxisAlignedRectangle region,
+                            final GAxisAlignedRectangle extendedRegion,
                             final GVectorialRenderingAttributes attributes,
                             final IRenderingStyle renderingStyle,
+                            final GProjection projection,
                             final IVector2 scale,
                             final Graphics2D g2d,
                             final BufferedImage renderedImage) {
 
-      final GAxisAlignedRectangle nodeBounds = node.getBounds().asRectangle();
+      final GAxisAlignedRectangle nodeBounds = node.getMinimumBounds().asRectangle();
 
-      if (!nodeBounds.touches(region)) {
+      if (!nodeBounds.touches(extendedRegion)) {
          return;
       }
 
 
       final IVector2 scaledNodeExtent = nodeBounds.getExtent().scale(scale);
       final double projectedSize = scaledNodeExtent.x() * scaledNodeExtent.y();
-      if (projectedSize <= renderingStyle.getLODMinSize()) {
+      if (projectedSize < renderingStyle.getLODMinSize()) {
          if (renderingStyle.isRenderLODIgnores() || renderingStyle.isDebugRendering()) {
             final Color color = renderingStyle.isDebugRendering() ? Color.RED : renderingStyle.getLODColor().asAWTColor();
 
@@ -111,18 +126,20 @@ class GVectorial2DRenderUnit
          inner = (GGTInnerNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>>) node;
 
          for (final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> child : inner.getChildren()) {
-            processNode(child, region, attributes, renderingStyle, scale, g2d, renderedImage);
+            processNode(child, region, extendedRegion, attributes, renderingStyle, projection, scale, g2d, renderedImage);
          }
       }
 
-      renderNodeGeometries(node, region, attributes, renderingStyle, scale, g2d, renderedImage);
+      renderNodeGeometries(node, region, extendedRegion, attributes, renderingStyle, projection, scale, g2d, renderedImage);
    }
 
 
    private void renderNodeGeometries(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> node,
                                      final GAxisAlignedRectangle region,
+                                     final GAxisAlignedRectangle extendedRegion,
                                      final GVectorialRenderingAttributes attributes,
                                      final IRenderingStyle renderingStyle,
+                                     final GProjection projection,
                                      final IVector2 scale,
                                      final Graphics2D g2d,
                                      final BufferedImage renderedImage) {
@@ -151,9 +168,8 @@ class GVectorial2DRenderUnit
 
       for (final GElementGeometryPair<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> pair : node.getElements()) {
          final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> geometry = pair.getGeometry();
-         if (geometry.getBounds().asAxisAlignedOrthotope().touches(region)) {
-            renderGeometry(geometry, scale, renderedImage, g2d, region, attributes, renderingStyle);
-         }
+         renderGeometry(geometry, pair.getElement(), projection, scale, renderedImage, g2d, region, extendedRegion, attributes,
+                  renderingStyle);
       }
 
    }
@@ -207,31 +223,49 @@ class GVectorial2DRenderUnit
 
 
    private void renderGeometry(final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> geometry,
+                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                               final GProjection projection,
                                final IVector2 scale,
                                final BufferedImage renderedImage,
                                final Graphics2D g2d,
                                final GAxisAlignedRectangle region,
+                               final GAxisAlignedRectangle extendedRegion,
                                final GVectorialRenderingAttributes attributes,
                                final IRenderingStyle renderingStyle) {
+
+
+      if (!geometry.getBounds().asAxisAlignedOrthotope().touches(extendedRegion)) {
+         return;
+      }
 
       if (geometry instanceof GMultiGeometry2D) {
          @SuppressWarnings("unchecked")
          final GMultiGeometry2D<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> multigeometry = (GMultiGeometry2D<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) geometry;
          for (final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> child : multigeometry) {
-            if (child.getBounds().asAxisAlignedOrthotope().touches(region)) {
-               renderGeometry(child, scale, renderedImage, g2d, region, attributes, renderingStyle);
-            }
+            renderGeometry(child, feature, projection, scale, renderedImage, g2d, region, extendedRegion, attributes,
+                     renderingStyle);
          }
       }
       else if (geometry instanceof IVector2) {
-         renderPoint((IVector2) geometry, scale, g2d, region, attributes);
+         final IVector2 point = (IVector2) geometry;
+         //         final IMeasure<GArea> pointSize = renderingStyle.getPointSize(feature);
+         //
+         //         final double area = pointSize.getValue() * pointSize.getUnit().convertionFactor();
+         //         final double radiusD = Math.sqrt(area / Math.PI);
+         //         final IVector2 lower = renderingStyle.increment(point, projection, -radiusD, -radiusD);
+         //         final IVector2 upper = renderingStyle.increment(point, projection, radiusD, radiusD);
+         //
+         //         final GAxisAlignedRectangle extentedGeometryBounds = new GAxisAlignedRectangle(lower, upper);
+         //         if (extentedGeometryBounds.touches(region)) {
+         renderPoint(point, feature, projection, scale, g2d, renderedImage, region, renderingStyle);
+         //         }
       }
       else {
          // size validation only for non-points
          final GAxisAlignedOrthotope<IVector2, ?> geometryBounds = geometry.getBounds().asAxisAlignedOrthotope();
          final IVector2 scaledGeometryExtent = geometryBounds.getExtent().scale(scale);
          final double projectedSize = scaledGeometryExtent.x() * scaledGeometryExtent.y();
-         if (projectedSize <= renderingStyle.getLODMinSize()) {
+         if (projectedSize < renderingStyle.getLODMinSize()) {
             if (renderingStyle.isRenderLODIgnores() || renderingStyle.isDebugRendering()) {
                final Color color = renderingStyle.isDebugRendering() ? Color.MAGENTA : renderingStyle.getLODColor().asAWTColor();
 
@@ -273,16 +307,20 @@ class GVectorial2DRenderUnit
 
 
    private static void renderPoint(final IVector2 point,
+                                   final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                   final GProjection projection,
                                    final IVector2 scale,
                                    final Graphics2D g2d,
+                                   final BufferedImage renderedImage,
                                    final GAxisAlignedRectangle region,
-                                   final GVectorialRenderingAttributes attributes) {
+                                   final IRenderingStyle renderingStyle) {
       final IVector2 projectedPoint = point.sub(region._lower).scale(scale);
 
       final int x = Math.round((float) projectedPoint.x());
       final int y = Math.round((float) projectedPoint.y());
 
-      drawPoint(g2d, attributes, x, y);
+
+      renderingStyle.drawPoint(g2d, renderedImage, new GVector2I(x, y), point, feature, region, scale, projection);
    }
 
 
@@ -330,25 +368,6 @@ class GVectorial2DRenderUnit
       }
 
       return new Points(xPoints, yPoints);
-   }
-
-
-   private static void drawPoint(final Graphics2D g2d,
-                                 final GVectorialRenderingAttributes attributes,
-                                 final int x,
-                                 final int y) {
-      final int width = Math.max(1, Math.round(attributes._borderWidth) * 2);
-      final int height = width;
-
-      // fill point
-      g2d.setColor(attributes._fillColor);
-      g2d.fillOval(x, y, width, height);
-
-      // render border
-      if (attributes._borderWidth > 0) {
-         g2d.setColor(attributes._borderColor);
-         g2d.drawOval(x, y, width, height);
-      }
    }
 
 

@@ -48,17 +48,23 @@ import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.colors.GColorI;
 import es.igosoftware.euclid.colors.IColor;
-import es.igosoftware.euclid.experimental.measurement.GLength;
+import es.igosoftware.euclid.experimental.measurement.GArea;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
+import es.igosoftware.euclid.experimental.vectorial.rendering.GRenderingStyleAbstract;
+import es.igosoftware.euclid.experimental.vectorial.rendering.GUniqueValuesColorizer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorial2DRenderer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorialRenderingAttributes;
+import es.igosoftware.euclid.experimental.vectorial.rendering.IColorizer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.IRenderingStyle;
+import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.util.GStringUtils;
+import es.igosoftware.util.ITransformer;
+import es.igosoftware.utils.GWWUtils;
 
 
 public class GVectorial2DRenderingTest {
@@ -125,9 +131,44 @@ public class GVectorial2DRenderingTest {
 
       System.out.println();
 
+      final IRenderingStyle renderingStyle = createRenderingStyle(renderLODIgnores, lodMinSize, debugRendering);
+
       final int depth = 0;
       final int maxDepth = 3;
-      final IRenderingStyle renderingStyle = new IRenderingStyle() {
+      render(renderer, region, imageWidth, imageHeight, directoryName, attributes, renderingStyle, depth, maxDepth);
+   }
+
+
+   private static GRenderingStyleAbstract createRenderingStyle(final boolean renderLODIgnores,
+                                                               final double lodMinSize,
+                                                               final boolean debugRendering) {
+      return new GRenderingStyleAbstract() {
+         private final IColorizer _pointColorizer = new GUniqueValuesColorizer("type", GColorI.CYAN, GColorI.WHITE, true,
+                                                           new ITransformer<Object, String>() {
+                                                              @Override
+                                                              public String transform(final Object element) {
+                                                                 if (element == null) {
+                                                                    return "";
+                                                                 }
+
+                                                                 return element.toString().trim().toUpperCase();
+                                                              }
+                                                           });
+
+
+         @Override
+         public void preprocessFeatures(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features) {
+            _pointColorizer.preprocessFeatures(features);
+
+            /*
+               GField [name=osm_id, type=class java.lang.Long]
+               GField [name=name, type=class java.lang.String]
+               GField [name=type, type=class java.lang.String]
+               GField [name=population, type=class java.lang.Integer]
+            */
+         }
+
+
          @Override
          public String uniqueName() {
             return null;
@@ -147,20 +188,20 @@ public class GVectorial2DRenderingTest {
 
 
          @Override
-         public IMeasure<GLength> getPointSize() {
-            return null;
+         public IMeasure<GArea> getPointSize(final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature) {
+            return GArea.SquareKilometer.value(500);
          }
 
 
          @Override
-         public float getPointOpacity() {
-            return 0;
+         public float getPointOpacity(final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature) {
+            return 0.75f;
          }
 
 
          @Override
-         public IColor getPointColor() {
-            return null;
+         public IColor getPointColor(final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature) {
+            return _pointColorizer.getColor(feature);
          }
 
 
@@ -174,9 +215,44 @@ public class GVectorial2DRenderingTest {
          public double getLODMinSize() {
             return lodMinSize;
          }
+
+
+         @Override
+         public IVector2 increment(final IVector2 position,
+                                   final GProjection projection1,
+                                   final double deltaEasting,
+                                   final double deltaNorthing) {
+            return GWWUtils.increment(position, projection1, deltaEasting, deltaNorthing);
+         }
+
+
+         @Override
+         public void preRenderImage(final BufferedImage renderedImage) {
+            _pointColorizer.preRenderImage(renderedImage);
+            //            final Graphics2D g2d = renderedImage.createGraphics();
+            //            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            //            g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+            //
+            //            g2d.setBackground(Color.WHITE);
+            //            g2d.clearRect(0, 0, renderedImage.getWidth(), renderedImage.getHeight());
+            //
+            //            g2d.dispose();
+         }
+
+
+         @Override
+         public void postRenderImage(final BufferedImage renderedImage) {
+            _pointColorizer.postRenderImage(renderedImage);
+         }
+
+
+         @Override
+         public IMeasure<GArea> getMaximumSize() {
+            return getPointSize(null);
+         }
+
       };
 
-      render(renderer, region, imageWidth, imageHeight, directoryName, attributes, renderingStyle, depth, maxDepth);
    }
 
 

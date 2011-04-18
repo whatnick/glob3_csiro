@@ -723,4 +723,11 @@ public final class GAxisAlignedBox
    }
 
 
+   @Override
+   public GAxisAlignedBox clamp(final GAxisAlignedOrthotope<IVector3, ?> that) {
+      return new GAxisAlignedBox(_lower.clamp(that._lower, that._upper), _upper.clamp(that._lower, that._upper));
+
+   }
+
+
 }

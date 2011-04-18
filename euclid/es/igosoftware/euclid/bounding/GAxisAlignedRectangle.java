@@ -605,4 +605,10 @@ public final class GAxisAlignedRectangle
    }
 
 
+   @Override
+   public GAxisAlignedRectangle clamp(final GAxisAlignedOrthotope<IVector2, ?> that) {
+      return new GAxisAlignedRectangle(_lower.clamp(that._lower, that._upper), _upper.clamp(that._lower, that._upper));
+   }
+
+
 }

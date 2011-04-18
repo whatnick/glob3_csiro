@@ -350,8 +350,9 @@ public class GShapeLoader {
 
    private static IGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> createFeature(final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> geometry,
                                                                                                                           final SimpleFeature feature) {
+      final List<Object> featureAttributes = feature.getAttributes();
       return new GGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>(geometry,
-               feature.getAttributes());
+               featureAttributes.subList(1, featureAttributes.size()));
    }
 
 
