@@ -3,6 +3,7 @@
 package es.igosoftware.euclid.experimental.algorithms;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import es.igosoftware.euclid.shape.GLinesStrip2D;
@@ -15,6 +16,7 @@ import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
+import es.igosoftware.util.GAssert;
 
 
 public class GLinesToEquispacedPoints<
@@ -23,16 +25,59 @@ VectorT extends IVector<VectorT, ?>
 
 >
          implements
-            IAlgorithm<VectorT> {
+            IAlgorithm<
+
+            VectorT, GLinesToEquispacedPoints.Parameters<VectorT>,
+
+            VectorT, GLinesToEquispacedPoints.Result<VectorT>
+
+            > {
+
+
+   public static class Parameters<VectorT extends IVector<VectorT, ?>>
+            implements
+               IAlgorithmParameters<VectorT> {
+      private final IPolygonalChain<VectorT, ?, ?> _geometry;
+      private final double                         _distance;
+
+
+      private Parameters(final IPolygonalChain<VectorT, ?, ?> geometry,
+                         final double distance) {
+         GAssert.notNull(geometry, "geometry");
+         GAssert.isPositive(distance, "distance");
+
+         _geometry = geometry;
+         _distance = distance;
+      }
+   }
+
+
+   public static class Result<VectorT extends IVector<VectorT, ?>>
+            implements
+               IAlgorithmResult<VectorT> {
+
+
+      private final List<VectorT> _result;
+
+
+      private Result(final List<VectorT> result) {
+         _result = result;
+      }
+
+
+      public List<VectorT> getResult() {
+         return Collections.unmodifiableList(_result);
+      }
+
+   }
 
 
    @SuppressWarnings("null")
-   public List<VectorT> process(final IPolygonalChain<VectorT, ?, ?> geom,
-                                final double distance) {
-
-      final List<VectorT> coords = geom.getPoints();
+   @Override
+   public GLinesToEquispacedPoints.Result<VectorT> process(final GLinesToEquispacedPoints.Parameters<VectorT> parameters) {
+      final List<VectorT> coords = parameters._geometry.getPoints();
       if (coords.isEmpty()) {
-         throw new RuntimeException("Invalid geometry: " + geom);
+         throw new RuntimeException("Invalid geometry: " + parameters._geometry);
       }
 
       final ArrayList<VectorT> output = new ArrayList<VectorT>(coords.size());
@@ -48,11 +93,11 @@ VectorT extends IVector<VectorT, ?>
 
          final VectorT direction = next.sub(current).normalized();
 
-         final int pointsToAdd = (int) ((remainingDistFromLastSegment + distToNextPoint) / distance);
+         final int pointsToAdd = (int) ((remainingDistFromLastSegment + distToNextPoint) / parameters._distance);
          if (pointsToAdd > 0) {
             VectorT addedPoint = null;
             for (int j = 0; j < pointsToAdd; j++) {
-               final double dist = (distance - remainingDistFromLastSegment) + (j * distance);
+               final double dist = (parameters._distance - remainingDistFromLastSegment) + (j * parameters._distance);
 
                addedPoint = current.add(direction.scale(dist));
                output.add(addedPoint);
@@ -68,7 +113,7 @@ VectorT extends IVector<VectorT, ?>
 
       output.trimToSize(); // release some memory
 
-      return output;
+      return new GLinesToEquispacedPoints.Result<VectorT>(output);
    }
 
 
@@ -77,10 +122,11 @@ VectorT extends IVector<VectorT, ?>
       final GLinesToEquispacedPoints<IVector2> alg2 = new GLinesToEquispacedPoints<IVector2>();
 
       final IPolygonalChain2D line2 = new GLinesStrip2D(false, new GVector2D(0, 0), new GVector2D(0, 10), new GVector2D(10, 10));
-      final List<IVector2> points2 = alg2.process(line2, 1);
+      final GLinesToEquispacedPoints.Result<IVector2> points2 = alg2.process(new GLinesToEquispacedPoints.Parameters<IVector2>(
+               line2, 1));
 
-      System.out.println("Points: " + points2.size());
-      for (final IVector2 point : points2) {
+      System.out.println("Points: " + points2.getResult().size());
+      for (final IVector2 point : points2.getResult()) {
          System.out.println(" " + point);
       }
 
@@ -90,10 +136,11 @@ VectorT extends IVector<VectorT, ?>
       final GLinesToEquispacedPoints<IVector3> alg3 = new GLinesToEquispacedPoints<IVector3>();
 
       final IPolygonalChain3D line3 = new GSegment3D(new GVector3D(0, 0, 0), new GVector3D(0, 10, 0));
-      final List<IVector3> points3 = alg3.process(line3, 1);
+      final GLinesToEquispacedPoints.Result<IVector3> points3 = alg3.process(new GLinesToEquispacedPoints.Parameters<IVector3>(
+               line3, 1));
 
-      System.out.println("Points: " + points3.size());
-      for (final IVector3 point : points3) {
+      System.out.println("Points: " + points3.getResult().size());
+      for (final IVector3 point : points3.getResult()) {
          System.out.println(" " + point);
       }
 
