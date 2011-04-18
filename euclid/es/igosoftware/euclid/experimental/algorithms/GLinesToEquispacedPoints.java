@@ -37,12 +37,13 @@ VectorT extends IVector<VectorT, ?>
    public static class Parameters<VectorT extends IVector<VectorT, ?>>
             implements
                IAlgorithmParameters<VectorT> {
+
       private final IPolygonalChain<VectorT, ?, ?> _geometry;
       private final double                         _distance;
 
 
-      private Parameters(final IPolygonalChain<VectorT, ?, ?> geometry,
-                         final double distance) {
+      public Parameters(final IPolygonalChain<VectorT, ?, ?> geometry,
+                        final double distance) {
          GAssert.notNull(geometry, "geometry");
          GAssert.isPositive(distance, "distance");
 
@@ -56,7 +57,6 @@ VectorT extends IVector<VectorT, ?>
             implements
                IAlgorithmResult<VectorT> {
 
-
       private final List<VectorT> _result;
 
 
@@ -68,7 +68,6 @@ VectorT extends IVector<VectorT, ?>
       public List<VectorT> getResult() {
          return Collections.unmodifiableList(_result);
       }
-
    }
 
 
