@@ -323,6 +323,20 @@ public final class GAxisAlignedRectangle
 
 
    @Override
+   public GAxisAlignedRectangle expandedByPercent(final double percent) {
+      final IVector2 delta = _extent.scale(percent);
+      return expandedByDistance(delta);
+   }
+
+
+   @Override
+   public GAxisAlignedRectangle expandedByPercent(final IVector2 percent) {
+      final IVector2 delta = _extent.scale(percent);
+      return expandedByDistance(delta);
+   }
+
+
+   @Override
    public List<IVector2> getVertices() {
       final List<IVector2> v = new ArrayList<IVector2>(4);
 

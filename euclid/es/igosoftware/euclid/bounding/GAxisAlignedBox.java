@@ -277,6 +277,20 @@ public final class GAxisAlignedBox
 
 
    @Override
+   public GAxisAlignedBox expandedByPercent(final double percent) {
+      final IVector3 delta = _extent.scale(percent);
+      return expandedByDistance(delta);
+   }
+
+
+   @Override
+   public GAxisAlignedBox expandedByPercent(final IVector3 percent) {
+      final IVector3 delta = _extent.scale(percent);
+      return expandedByDistance(delta);
+   }
+
+
+   @Override
    public GAxisAlignedBox getBounds() {
       return this;
    }

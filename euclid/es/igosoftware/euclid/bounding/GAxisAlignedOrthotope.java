@@ -273,6 +273,12 @@ GeometryT extends GAxisAlignedOrthotope<VectorT, GeometryT>
    protected abstract String getStringName();
 
 
+   public abstract GAxisAlignedOrthotope<VectorT, GeometryT> expandedByPercent(final double percent);
+
+
+   public abstract GAxisAlignedOrthotope<VectorT, GeometryT> expandedByPercent(final VectorT percent);
+
+
    public abstract GAxisAlignedOrthotope<VectorT, GeometryT> expandedByDistance(final double delta);
 
 
