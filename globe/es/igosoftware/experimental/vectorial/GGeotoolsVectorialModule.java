@@ -157,7 +157,7 @@ public class GGeotoolsVectorialModule
     */
    private void connectoToDataSource(final IGlobeApplication application) {
 
-      //final int TODO_read_projection_or_ask_user;
+      //// TODO: read projection or ask user
       final GProjection projection = GProjection.EPSG_4326;
 
       //final JDataStoreWizard wizard = new JDataStoreWizard(new ShapefileDataStoreFactory());

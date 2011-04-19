@@ -160,7 +160,7 @@ public class GKmlModule
       final Thread worker = new Thread("KML vectorial layer loader") {
          @Override
          public void run() {
-            final int TODO_read_projection_or_ask_user;
+            // TODO: read projection or ask user
             final GProjection projection = GProjection.EPSG_4326;
 
             try {

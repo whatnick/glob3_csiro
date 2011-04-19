@@ -76,7 +76,7 @@ public class GShapeLoaderDropHandler
       final Thread worker = new Thread() {
          @Override
          public void run() {
-            final int TODO_read_projection_or_ask_user;
+            // TODO: read projection or ask user
             final GProjection projection = GProjection.EPSG_4326;
 
             try {
