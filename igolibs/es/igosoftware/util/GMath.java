@@ -871,4 +871,13 @@ public final class GMath {
    }
 
 
+   public static double sqrt(final double value) {
+      if (closeToZero(value)) {
+         return 0;
+      }
+
+      return Math.sqrt(value);
+   }
+
+
 }
