@@ -7,8 +7,12 @@ import java.util.List;
 import junit.framework.TestCase;
 import es.igosoftware.euclid.shape.GLinesStrip2D;
 import es.igosoftware.euclid.shape.GSegment2D;
+import es.igosoftware.euclid.shape.GSegment3D;
 import es.igosoftware.euclid.shape.IPolygonalChain2D;
+import es.igosoftware.euclid.shape.IPolygonalChain3D;
 import es.igosoftware.euclid.vector.GVector2D;
+import es.igosoftware.euclid.vector.GVector3D;
+import es.igosoftware.util.GMath;
 
 
 public class EuclidTest
@@ -26,5 +30,13 @@ public class EuclidTest
       assertTrue(edges.get(0)._to.equals(p2));
       assertTrue(edges.get(1)._from.equals(p2));
       assertTrue(edges.get(1)._to.equals(p3));
+   }
+
+
+   public void testSegment3DDistance() throws Exception {
+      final IPolygonalChain3D segment = new GSegment3D(new GVector3D(0, 0, 0), new GVector3D(0, 10, 5));
+      final GVector3D p = new GVector3D(0.0, 0.8944271909999159, 0.4472135954999579);
+      System.out.println(segment.distance(p));
+      assertTrue(GMath.closeToZero(segment.distance(p)));
    }
 }

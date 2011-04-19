@@ -17,6 +17,7 @@ import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
+import es.igosoftware.util.GMath;
 
 
 public class GLinesToEquispacedPointsTest
@@ -97,9 +98,8 @@ public class GLinesToEquispacedPointsTest
          }
          realDistance += p2.sub(lastPoint).length();
 
-
-         assertTrue(Math.abs(realDistance - distance) < DELTA);
-         assertTrue(geom.distance(p2) < DELTA);
+         assertTrue(GMath.closeTo(realDistance, distance));
+         assertTrue(GMath.closeToZero(geom.distance(p2)));
       }
    }
 
