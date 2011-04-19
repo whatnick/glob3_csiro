@@ -71,7 +71,6 @@ VectorT extends IVector<VectorT, ?>
    }
 
 
-   @SuppressWarnings("null")
    @Override
    public GLinesToEquispacedPoints.Result<VectorT> process(final GLinesToEquispacedPoints.Parameters<VectorT> parameters) {
       final List<VectorT> coords = parameters._geometry.getPoints();
@@ -93,15 +92,15 @@ VectorT extends IVector<VectorT, ?>
          final VectorT direction = next.sub(current).normalized();
 
          final int pointsToAdd = (int) ((remainingDistFromLastSegment + distToNextPoint) / parameters._distance);
-         if (pointsToAdd > 0) {
-            VectorT addedPoint = null;
-            for (int j = 0; j < pointsToAdd; j++) {
-               final double dist = (parameters._distance - remainingDistFromLastSegment) + (j * parameters._distance);
+         VectorT addedPoint = null;
+         for (int j = 0; j < pointsToAdd; j++) {
+            final double dist = (parameters._distance - remainingDistFromLastSegment) + (j * parameters._distance);
 
-               addedPoint = current.add(direction.scale(dist));
-               output.add(addedPoint);
-            }
+            addedPoint = current.add(direction.scale(dist));
+            output.add(addedPoint);
+         }
 
+         if (addedPoint != null) {
             remainingDistFromLastSegment = addedPoint.distance(next);
          }
          else {
