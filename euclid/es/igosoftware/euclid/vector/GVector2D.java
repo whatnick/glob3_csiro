@@ -252,12 +252,6 @@ public class GVector2D
    }
 
 
-   //   @Override
-   //   public double length() {
-   //      return Math.sqrt(squaredLength());
-   //   }
-
-
    @Override
    public double squaredLength() {
       return (_x * _x + _y * _y);

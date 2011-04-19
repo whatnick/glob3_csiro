@@ -171,6 +171,7 @@ public class GVectorial2DRenderingTest {
 
          @Override
          public String uniqueName() {
+            final int TODO_PUT_ALL_DATA_ON_UNIQUE_NAME;
             return null;
          }
 

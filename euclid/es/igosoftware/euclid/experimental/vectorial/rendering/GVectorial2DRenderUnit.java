@@ -33,6 +33,7 @@ import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.GVector2I;
 import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.util.GMath;
 
 
 class GVectorial2DRenderUnit
@@ -79,7 +80,7 @@ class GVectorial2DRenderUnit
       final IMeasure<GArea> pointSize = renderingStyle.getMaximumSize();
 
       final double area = pointSize.getValue() * pointSize.getUnit().convertionFactor();
-      final double radiusD = Math.sqrt(area / Math.PI);
+      final double radiusD = GMath.sqrt(area / Math.PI);
       final IVector2 lower = renderingStyle.increment(region._lower, projection, -radiusD, -radiusD);
       final IVector2 upper = renderingStyle.increment(region._upper, projection, radiusD, radiusD);
 
@@ -251,7 +252,7 @@ class GVectorial2DRenderUnit
          //         final IMeasure<GArea> pointSize = renderingStyle.getPointSize(feature);
          //
          //         final double area = pointSize.getValue() * pointSize.getUnit().convertionFactor();
-         //         final double radiusD = Math.sqrt(area / Math.PI);
+         //         final double radiusD = GMath.sqrt(area / Math.PI);
          //         final IVector2 lower = renderingStyle.increment(point, projection, -radiusD, -radiusD);
          //         final IVector2 upper = renderingStyle.increment(point, projection, radiusD, radiusD);
          //

@@ -245,7 +245,7 @@ public final class GResolution
          previous = current;
       }
 
-      final double standardDeviation = Math.sqrt(sumatorio / numbers.length);
+      final double standardDeviation = GMath.sqrt(sumatorio / numbers.length);
 
       return new StatisticsData(maxCoordenate, minCoordenate, maxDelta, minDelta, average, standardDeviation);
 

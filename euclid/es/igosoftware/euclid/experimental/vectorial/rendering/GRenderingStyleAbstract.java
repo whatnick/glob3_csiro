@@ -17,6 +17,7 @@ import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVectorI2;
+import es.igosoftware.util.GMath;
 
 
 public abstract class GRenderingStyleAbstract
@@ -84,7 +85,7 @@ public abstract class GRenderingStyleAbstract
 
       final IMeasure<GArea> pointSize = getPointSize(feature);
       final double area = pointSize.getValue() * pointSize.getUnit().convertionFactor();
-      final double radiusD = Math.sqrt(area / Math.PI);
+      final double radiusD = GMath.sqrt(area / Math.PI);
       final IVector2 pointPlusRadius = increment(point, projection, radiusD, radiusD);
       final IVector2 radius = pointPlusRadius.sub(point).scale(scale);
 

@@ -44,6 +44,7 @@ import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.experimental.pointscloud.rendering.GPointsCloudLayer;
 import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GAssert;
+import es.igosoftware.util.GMath;
 import es.igosoftware.utils.GPositionBox;
 import es.igosoftware.utils.GWWUtils;
 import gov.nasa.worldwind.View;
@@ -164,7 +165,7 @@ public final class GSGPointsNode
          return 0;
       }
 
-      //      final int pointsToDrawBasedOnProjectedPixels = (int) Math.round(projectedPixels * Math.sqrt(_layer.getQualityFactor()));
+      //      final int pointsToDrawBasedOnProjectedPixels = (int) Math.round(projectedPixels * GMath.sqrt(_layer.getQualityFactor()));
       final int pointsToDrawBasedOnProjectedPixels = Math.round(projectedPixels * _layer.getQualityFactor()
                                                                 * _layer.getQualityFactor());
 
@@ -315,7 +316,7 @@ public final class GSGPointsNode
                                     final int pointsToDraw) {
       if (_layer.getDynamicPointSize()) {
          final double representedPoints = ((double) projectedPixels / pointsToDraw);
-         final float pointSize = (float) Math.sqrt(representedPoints) * _layer.getPointSize();
+         final float pointSize = (float) GMath.sqrt(representedPoints) * _layer.getPointSize();
          if (pointSize < 0.01) {
             return 0.01f;
          }

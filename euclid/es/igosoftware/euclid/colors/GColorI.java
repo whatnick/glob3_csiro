@@ -52,6 +52,7 @@ public final class GColorI
 
 
    public static final GColorI BLACK       = new GColorI(0, 0, 0);
+   public static final IColor  GRAY        = new GColorI(0.5f, 0.5f, 0.5f);
    public static final GColorI WHITE       = new GColorI(1, 1, 1);
    public static final GColorI RED         = new GColorI(1, 0, 0);
    public static final GColorI GREEN       = new GColorI(0, 1, 0);
@@ -230,11 +231,13 @@ public final class GColorI
 
 
    @Override
-   public GColorI interpolatedTo(final IColor that,
-                                 final float alpha) {
-      final float newRed = GMath.interpolate(getRed(), that.getRed(), alpha);
-      final float newGreen = GMath.interpolate(getGreen(), that.getGreen(), alpha);
-      final float newBlue = GMath.interpolate(getBlue(), that.getBlue(), alpha);
+   public GColorI mixedWidth(final IColor that,
+                             final float alpha) {
+      final float frac1 = GMath.clamp(alpha, 0, 1);
+      final float frac2 = 1f - frac1;
+      final float newRed = (getRed() * frac2) + (that.getRed() * frac1);
+      final float newGreen = (getGreen() * frac2) + (that.getGreen() * frac1);
+      final float newBlue = (getBlue() * frac2) + (that.getBlue() * frac1);
 
       return newRGB(newRed, newGreen, newBlue);
    }

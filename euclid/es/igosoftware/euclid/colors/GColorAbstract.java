@@ -164,7 +164,7 @@ public abstract class GColorAbstract
 
    @Override
    public final IColor muchDarker() {
-      return interpolatedTo(GColorF.BLACK, 0.5f);
+      return GColorF.BLACK.mixedWidth(this, 0.5f);
    }
 
 
@@ -182,7 +182,7 @@ public abstract class GColorAbstract
 
    @Override
    public final IColor muchLighter() {
-      return interpolatedTo(GColorF.WHITE, 0.233f);
+      return GColorF.WHITE.mixedWidth(this, 0.233f);
    }
 
 

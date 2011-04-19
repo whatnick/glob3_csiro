@@ -37,7 +37,6 @@
 package es.igosoftware.euclid.colors;
 
 
-
 public interface IColor {
 
    /**
@@ -106,8 +105,8 @@ public interface IColor {
    public boolean closeTo(final IColor that);
 
 
-   public IColor interpolatedTo(final IColor that,
-                                final float alpha);
+   public IColor mixedWidth(final IColor that,
+                            final float alpha);
 
 
    public IColor max(final IColor that);

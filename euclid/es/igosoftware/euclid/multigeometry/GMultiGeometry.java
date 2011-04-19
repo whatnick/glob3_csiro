@@ -200,7 +200,7 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
 
    @Override
    public double distanceToBoundary(final VectorT point) {
-      return Math.sqrt(squaredDistance(point));
+      return GMath.sqrt(squaredDistance(point));
    }
 
 

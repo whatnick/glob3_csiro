@@ -209,7 +209,7 @@ public class GCustomViewInputHandler
 
       if (actionAttributes.getMouseActions() != null) {
          // Normalize the forward and right magnitudes.
-         final double length = Math.sqrt(forwardInput * forwardInput + sideInput * sideInput);
+         final double length = GMath.sqrt(forwardInput * forwardInput + sideInput * sideInput);
          if (length > 0.0) {
             forwardInput /= length;
             sideInput /= length;
@@ -373,7 +373,7 @@ public class GCustomViewInputHandler
          //         }
       }
       else {
-         final double length = Math.sqrt(headingInput * headingInput + pitchInput * pitchInput);
+         final double length = GMath.sqrt(headingInput * headingInput + pitchInput * pitchInput);
          if (length > 0.0) {
             headingInput /= length;
             pitchInput /= length;

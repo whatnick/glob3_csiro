@@ -498,7 +498,7 @@ public class GNetCDFMultidimentionalData
       }
 
       final float colorAlpha = (alpha % rampStep) / rampStep;
-      return from.interpolatedTo(ramp[toI], colorAlpha);
+      return from.mixedWidth(ramp[toI], colorAlpha);
    }
 
 

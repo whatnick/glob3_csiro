@@ -138,7 +138,7 @@ public class GHistogram<T>
          final double delta = eachQuantity - _average;
          standardDeviationAccumulator += delta * delta;
       }
-      _standardDeviation = Math.sqrt(standardDeviationAccumulator / _dataSize);
+      _standardDeviation = GMath.sqrt(standardDeviationAccumulator / _dataSize);
 
       final double categoryStep = (maxQuantity - minQuantity) / intervals;
 
@@ -212,7 +212,7 @@ public class GHistogram<T>
          final double delta = eachQuantity - _average;
          standardDeviationAccumulator += delta * delta;
       }
-      _standardDeviation = Math.sqrt(standardDeviationAccumulator / _dataSize);
+      _standardDeviation = GMath.sqrt(standardDeviationAccumulator / _dataSize);
 
       _averages = new double[intervals];
 

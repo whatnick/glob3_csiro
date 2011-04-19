@@ -49,6 +49,7 @@ import es.igosoftware.euclid.verticescontainer.IVertexContainer.WeightedVertex;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GHolder;
 import es.igosoftware.util.GIntHolder;
+import es.igosoftware.util.GMath;
 import es.igosoftware.util.GProgress;
 
 
@@ -256,7 +257,7 @@ public final class GOTLeafNode
          if (currentDistance < squaredRadius) {
             candidateIndexHolder.set(vertexIndex);
 
-            final GBall newHotRegion = new GBall(target, Math.sqrt(currentDistance));
+            final GBall newHotRegion = new GBall(target, GMath.sqrt(currentDistance));
             hotRegionHolder.set(newHotRegion);
          }
       }

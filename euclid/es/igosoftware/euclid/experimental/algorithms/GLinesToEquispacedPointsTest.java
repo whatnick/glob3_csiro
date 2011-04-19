@@ -24,8 +24,6 @@ public class GLinesToEquispacedPointsTest
          extends
             TestCase {
 
-   private static final double DELTA = 0.00000001;
-
 
    public void test2D() throws Exception {
       final GLinesToEquispacedPoints<IVector2> alg2 = new GLinesToEquispacedPoints<IVector2>();

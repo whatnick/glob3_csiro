@@ -44,6 +44,7 @@ import java.util.List;
 
 import es.igosoftware.statistics.GHistogram.DataQuantityCalculator;
 import es.igosoftware.util.GLogger;
+import es.igosoftware.util.GMath;
 
 
 public class GStatisticsVariableD
@@ -123,7 +124,7 @@ public class GStatisticsVariableD
             summatory += (value - _average) * (value - _average);
          }
 
-         _standardDeviation = Math.sqrt(summatory / _counter);
+         _standardDeviation = GMath.sqrt(summatory / _counter);
          output += "; standard deviation: " + _standardDeviation;
       }
 

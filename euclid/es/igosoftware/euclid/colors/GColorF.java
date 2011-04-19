@@ -257,11 +257,13 @@ public final class GColorF
 
 
    @Override
-   public GColorF interpolatedTo(final IColor that,
-                                 final float alpha) {
-      final float newRed = GMath.interpolate(getRed(), that.getRed(), alpha);
-      final float newGreen = GMath.interpolate(getGreen(), that.getGreen(), alpha);
-      final float newBlue = GMath.interpolate(getBlue(), that.getBlue(), alpha);
+   public GColorF mixedWidth(final IColor that,
+                             final float alpha) {
+      final float frac1 = GMath.clamp(alpha, 0, 1);
+      final float frac2 = 1f - frac1;
+      final float newRed = (getRed() * frac2) + (that.getRed() * frac1);
+      final float newGreen = (getGreen() * frac2) + (that.getGreen() * frac1);
+      final float newBlue = (getBlue() * frac2) + (that.getBlue() * frac1);
 
       return newRGB(newRed, newGreen, newBlue);
    }

@@ -258,12 +258,6 @@ public class GVector3D
    }
 
 
-   //   @Override
-   //   public double length() {
-   //      return Math.sqrt(squaredLength());
-   //   }
-
-
    @Override
    public double squaredLength() {
       return (_x * _x + _y * _y + _z * _z);

@@ -404,7 +404,7 @@ public class GOTInnerNode
       //         }
       //      }
       //
-      //      final GBall candidatesRegion = new GBall(point, Math.sqrt(minDistance));
+      //      final GBall candidatesRegion = new GBall(point, GMath.sqrt(minDistance));
       //      if (candidatesRegion.isFullInside(nearestLeaf._bounds)) {
       //         return closestVertexIndex;
       //      }
@@ -509,7 +509,7 @@ public class GOTInnerNode
    //               hotRegion = null;
    //            }
    //            else {
-   //               hotRegion = new GBall(point, Math.sqrt(shortestSquaredDistance.get()));
+   //               hotRegion = new GBall(point, GMath.sqrt(shortestSquaredDistance.get()));
    //            }
    //
    //            if ((hotRegion == null) || hotRegion.touches(node._bounds)) {
@@ -518,7 +518,7 @@ public class GOTInnerNode
    //                  return true;
    //               }
    //
-   //               hotRegion = new GBall(point, Math.sqrt(shortestSquaredDistance.get()));
+   //               hotRegion = new GBall(point, GMath.sqrt(shortestSquaredDistance.get()));
    //            }
    //         }
    //      }
