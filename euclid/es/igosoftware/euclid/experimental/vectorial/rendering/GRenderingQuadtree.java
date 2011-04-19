@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.multigeometry.GMultiGeometry2D;
@@ -23,8 +24,9 @@ public class GRenderingQuadtree<FeatureT extends IGlobeFeature<IVector2, ? exten
 
    public GRenderingQuadtree(final String name,
                              final Iterable<? extends FeatureT> elements,
-                             final GGeometryNTreeParameters parameters) {
-      super(name, null, elements,
+                             final GGeometryNTreeParameters parameters,
+                             final GAxisAlignedRectangle bounds) {
+      super(name, bounds, elements,
             new ITransformer<FeatureT, Collection<? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>>() {
                @Override
                public Collection<? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> transform(final FeatureT feature) {

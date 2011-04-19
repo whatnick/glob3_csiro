@@ -5,13 +5,11 @@ package es.igosoftware.euclid.experimental.vectorial.rendering;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Polygon;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
-import java.util.Arrays;
 
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
@@ -30,8 +28,6 @@ import es.igosoftware.euclid.shape.IPolygon2D;
 import es.igosoftware.euclid.shape.IPolygonalChain2D;
 import es.igosoftware.euclid.shape.ISimplePolygon2D;
 import es.igosoftware.euclid.vector.GVector2D;
-import es.igosoftware.euclid.vector.GVector2I;
-import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.util.GMath;
 
@@ -86,36 +82,31 @@ class GVectorial2DRenderUnit
 
       final GAxisAlignedRectangle extendedRegion = new GAxisAlignedRectangle(lower, upper);
 
-      processNode(quadtree.getRoot(), region, extendedRegion, attributes, renderingStyle, projection, scale, g2d, renderedImage);
+      final GVectorialRenderingContext rc = new GVectorialRenderingContext(scale, region, extendedRegion, attributes,
+               renderingStyle, projection, g2d, renderedImage);
+      processNode(quadtree.getRoot(), rc);
 
    }
 
 
    private void processNode(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> node,
-                            final GAxisAlignedRectangle region,
-                            final GAxisAlignedRectangle extendedRegion,
-                            final GVectorialRenderingAttributes attributes,
-                            final IRenderingStyle renderingStyle,
-                            final GProjection projection,
-                            final IVector2 scale,
-                            final Graphics2D g2d,
-                            final BufferedImage renderedImage) {
+                            final GVectorialRenderingContext rc) {
 
       final GAxisAlignedRectangle nodeBounds = node.getMinimumBounds().asRectangle();
 
-      if (!nodeBounds.touches(extendedRegion)) {
+      if (!nodeBounds.touches(rc._extendedRegion)) {
          return;
       }
 
 
-      final IVector2 scaledNodeExtent = nodeBounds.getExtent().scale(scale);
+      final IVector2 scaledNodeExtent = rc.scaleExtent(nodeBounds.getExtent());
       final double projectedSize = scaledNodeExtent.x() * scaledNodeExtent.y();
-      if (projectedSize < renderingStyle.getLODMinSize()) {
-         if (renderingStyle.isRenderLODIgnores() || renderingStyle.isDebugRendering()) {
-            final Color color = renderingStyle.isDebugRendering() ? Color.RED : renderingStyle.getLODColor().asAWTColor();
+      if (projectedSize < rc._renderingStyle.getLODMinSize()) {
+         if (rc._renderingStyle.isRenderLODIgnores() || rc._renderingStyle.isDebugRendering()) {
+            final Color color = rc._renderingStyle.isDebugRendering() ? Color.RED : rc._renderingStyle.getLODColor().asAWTColor();
 
-            final IVector2 projectedCenter = nodeBounds.getCenter().sub(region._lower).scale(scale);
-            setPixel(renderedImage, projectedCenter, color);
+            final IVector2 projectedCenter = rc.scaleAndTranslatePoint(nodeBounds.getCenter());
+            rc.setPixel(projectedCenter, color);
          }
 
          return;
@@ -127,35 +118,28 @@ class GVectorial2DRenderUnit
          inner = (GGTInnerNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>>) node;
 
          for (final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> child : inner.getChildren()) {
-            processNode(child, region, extendedRegion, attributes, renderingStyle, projection, scale, g2d, renderedImage);
+            processNode(child, rc);
          }
       }
 
-      renderNodeGeometries(node, region, extendedRegion, attributes, renderingStyle, projection, scale, g2d, renderedImage);
+      renderNodeGeometries(node, rc);
    }
 
 
    private void renderNodeGeometries(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> node,
-                                     final GAxisAlignedRectangle region,
-                                     final GAxisAlignedRectangle extendedRegion,
-                                     final GVectorialRenderingAttributes attributes,
-                                     final IRenderingStyle renderingStyle,
-                                     final GProjection projection,
-                                     final IVector2 scale,
-                                     final Graphics2D g2d,
-                                     final BufferedImage renderedImage) {
+                                     final GVectorialRenderingContext rc) {
 
 
-      if (renderingStyle.isDebugRendering()) {
+      if (rc._renderingStyle.isDebugRendering()) {
          final GAxisAlignedOrthotope<IVector2, ?> nodeBounds = node.getBounds();
 
-         final IVector2 nodeLower = nodeBounds._lower.sub(region._lower).scale(scale);
-         final IVector2 nodeUpper = nodeBounds._upper.sub(region._lower).scale(scale);
+         final IVector2 nodeLower = rc.scaleAndTranslatePoint(nodeBounds._lower);
+         final IVector2 nodeUpper = rc.scaleAndTranslatePoint(nodeBounds._upper);
 
          //         g2d.setStroke(new BasicStroke(0.25f));
          final boolean isInner = (node instanceof GGTInnerNode);
-         g2d.setStroke(new BasicStroke(1));
-         g2d.setColor(isInner ? Color.GREEN.darker().darker().darker().darker().darker() : Color.GREEN);
+         rc._g2d.setStroke(new BasicStroke(1));
+         rc._g2d.setColor(isInner ? Color.GREEN.darker().darker().darker().darker().darker() : Color.GREEN);
 
          final int x = Math.round((float) nodeLower.x());
          final int y = Math.round((float) nodeLower.y());
@@ -163,79 +147,24 @@ class GVectorial2DRenderUnit
          //         final int height = Math.round((float) (nodeUpper.y() - nodeLower.y()));
          final int width = (int) (nodeUpper.x() - nodeLower.x());
          final int height = (int) (nodeUpper.y() - nodeLower.y());
-         g2d.drawRect(x, y, width, height);
+         rc._g2d.drawRect(x, y, width, height);
       }
 
 
       for (final GElementGeometryPair<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> pair : node.getElements()) {
          final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> geometry = pair.getGeometry();
-         renderGeometry(geometry, pair.getElement(), projection, scale, renderedImage, g2d, region, extendedRegion, attributes,
-                  renderingStyle);
+         renderGeometry(geometry, pair.getElement(), rc);
       }
 
-   }
-
-
-   private static void setPixel(final BufferedImage renderedImage,
-                                final IVector2 point,
-                                final Color color) {
-
-      final int imageX = Math.round((float) point.x());
-      final int imageY = Math.round((float) point.y());
-
-      if ((imageX >= 0) && (imageY >= 0)) {
-         final int imageWidth = renderedImage.getWidth();
-         final int imageHeight = renderedImage.getHeight();
-
-         if ((imageX < imageWidth) && (imageY < imageHeight)) {
-            final int rotatedImageY = imageHeight - 1 - imageY;
-
-            final int oldRGB = renderedImage.getRGB(imageX, rotatedImageY);
-            if (oldRGB == 0) {
-               renderedImage.setRGB(imageX, rotatedImageY, color.getRGB());
-            }
-            else {
-               final Color oldColor = new Color(oldRGB);
-               final Color mixed = mix(oldColor, color);
-               renderedImage.setRGB(imageX, rotatedImageY, mixed.getRGB());
-            }
-         }
-      }
-
-   }
-
-
-   private static Color mix(final Color colorA,
-                            final Color colorB) {
-
-      final int r = average(colorA.getRed(), colorB.getRed());
-      final int g = average(colorA.getGreen(), colorB.getGreen());
-      final int b = average(colorA.getBlue(), colorB.getBlue());
-      //      final int a = average(colorA.getAlpha(), colorB.getAlpha());
-      final int a = Math.max(colorA.getAlpha(), colorB.getAlpha());
-      return new Color(r, g, b, a);
-   }
-
-
-   private static int average(final int a,
-                              final int b) {
-      return (a + b) / 2;
    }
 
 
    private void renderGeometry(final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> geometry,
                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                               final GProjection projection,
-                               final IVector2 scale,
-                               final BufferedImage renderedImage,
-                               final Graphics2D g2d,
-                               final GAxisAlignedRectangle region,
-                               final GAxisAlignedRectangle extendedRegion,
-                               final GVectorialRenderingAttributes attributes,
-                               final IRenderingStyle renderingStyle) {
+                               final GVectorialRenderingContext rc) {
 
 
-      if (!geometry.getBounds().asAxisAlignedOrthotope().touches(extendedRegion)) {
+      if (!geometry.getBounds().asAxisAlignedOrthotope().touches(rc._extendedRegion)) {
          return;
       }
 
@@ -243,35 +172,25 @@ class GVectorial2DRenderUnit
          @SuppressWarnings("unchecked")
          final GMultiGeometry2D<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> multigeometry = (GMultiGeometry2D<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) geometry;
          for (final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> child : multigeometry) {
-            renderGeometry(child, feature, projection, scale, renderedImage, g2d, region, extendedRegion, attributes,
-                     renderingStyle);
+            renderGeometry(child, feature, rc);
          }
       }
       else if (geometry instanceof IVector2) {
          final IVector2 point = (IVector2) geometry;
-         //         final IMeasure<GArea> pointSize = renderingStyle.getPointSize(feature);
-         //
-         //         final double area = pointSize.getValue() * pointSize.getUnit().convertionFactor();
-         //         final double radiusD = GMath.sqrt(area / Math.PI);
-         //         final IVector2 lower = renderingStyle.increment(point, projection, -radiusD, -radiusD);
-         //         final IVector2 upper = renderingStyle.increment(point, projection, radiusD, radiusD);
-         //
-         //         final GAxisAlignedRectangle extentedGeometryBounds = new GAxisAlignedRectangle(lower, upper);
-         //         if (extentedGeometryBounds.touches(region)) {
-         renderPoint(point, feature, projection, scale, g2d, renderedImage, region, renderingStyle);
-         //         }
+         renderPoint(point, feature, rc);
       }
       else {
          // size validation only for non-points
          final GAxisAlignedOrthotope<IVector2, ?> geometryBounds = geometry.getBounds().asAxisAlignedOrthotope();
-         final IVector2 scaledGeometryExtent = geometryBounds.getExtent().scale(scale);
+         final IVector2 scaledGeometryExtent = rc.scaleExtent(geometryBounds.getExtent());
          final double projectedSize = scaledGeometryExtent.x() * scaledGeometryExtent.y();
-         if (projectedSize < renderingStyle.getLODMinSize()) {
-            if (renderingStyle.isRenderLODIgnores() || renderingStyle.isDebugRendering()) {
-               final Color color = renderingStyle.isDebugRendering() ? Color.MAGENTA : renderingStyle.getLODColor().asAWTColor();
+         if (projectedSize < rc._renderingStyle.getLODMinSize()) {
+            if (rc._renderingStyle.isRenderLODIgnores() || rc._renderingStyle.isDebugRendering()) {
+               final Color color = rc._renderingStyle.isDebugRendering() ? Color.MAGENTA
+                                                                        : rc._renderingStyle.getLODColor().asAWTColor();
 
-               final IVector2 projectedCenter = geometryBounds.getCenter().sub(region._lower).scale(scale);
-               setPixel(renderedImage, projectedCenter, color);
+               final IVector2 projectedCenter = rc.scaleAndTranslatePoint(geometryBounds.getCenter());
+               rc.setPixel(projectedCenter, color);
             }
 
             return;
@@ -279,24 +198,24 @@ class GVectorial2DRenderUnit
 
 
          if (geometry instanceof IPolygonalChain2D) {
-            drawPolyline(g2d, attributes, getPoints((IPolygonalChain2D) geometry, scale, region));
+            drawPolyline(rc.getPoints((IPolygonalChain2D) geometry), feature, rc);
          }
          else if (geometry instanceof IPolygon2D) {
             final IPolygon2D polygon = (IPolygon2D) geometry;
             if (polygon instanceof IComplexPolygon2D) {
                final IComplexPolygon2D complexPolygon = (IComplexPolygon2D) polygon;
 
-               final Area complexShape = getPoints(complexPolygon.getHull(), scale, region).asArea();
+               final Area complexShape = rc.getPoints(complexPolygon.getHull()).asArea();
 
                for (final ISimplePolygon2D hole : complexPolygon.getHoles()) {
                   // complexShape.exclusiveOr(getPoints(hole, scale, region).asArea());
-                  complexShape.subtract(getPoints(hole, scale, region).asArea());
+                  complexShape.subtract(rc.getPoints(hole).asArea());
                }
 
-               drawShape(g2d, attributes, complexShape);
+               drawShape(complexShape, feature, rc);
             }
             else {
-               drawShape(g2d, attributes, getPoints(polygon, scale, region).asShape());
+               drawShape(rc.getPoints(polygon).asShape(), feature, rc);
             }
          }
          else {
@@ -309,105 +228,47 @@ class GVectorial2DRenderUnit
 
    private static void renderPoint(final IVector2 point,
                                    final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                   final GProjection projection,
-                                   final IVector2 scale,
-                                   final Graphics2D g2d,
-                                   final BufferedImage renderedImage,
-                                   final GAxisAlignedRectangle region,
-                                   final IRenderingStyle renderingStyle) {
-      final IVector2 projectedPoint = point.sub(region._lower).scale(scale);
-
-      final int x = Math.round((float) projectedPoint.x());
-      final int y = Math.round((float) projectedPoint.y());
-
-
-      renderingStyle.drawPoint(g2d, renderedImage, new GVector2I(x, y), point, feature, region, scale, projection);
+                                   final GVectorialRenderingContext rc) {
+      rc._renderingStyle.drawPoint(point, feature, rc);
    }
 
 
-   private static class Points {
-      private final int[] _xPoints;
-      private final int[] _yPoints;
-
-
-      private Points(final int[] xPoints,
-                     final int[] yPoints) {
-         _xPoints = xPoints;
-         _yPoints = yPoints;
-      }
-
-
-      @Override
-      public String toString() {
-         return "Points [_xPoints=" + Arrays.toString(_xPoints) + ", _yPoints=" + Arrays.toString(_yPoints) + "]";
-      }
-
-
-      private Shape asShape() {
-         return new Polygon(_xPoints, _yPoints, _xPoints.length);
-      }
-
-
-      private Area asArea() {
-         return new Area(asShape());
-      }
-   }
-
-
-   private static Points getPoints(final IPointsContainer<IVector2> polygon,
-                                   final IVector2 scale,
-                                   final GAxisAlignedRectangle region) {
-      final int nPoints = polygon.getPointsCount();
-      final int[] xPoints = new int[nPoints];
-      final int[] yPoints = new int[nPoints];
-
-      for (int i = 0; i < nPoints; i++) {
-         final IVector2 point = polygon.getPoint(i).sub(region._lower).scale(scale);
-
-         xPoints[i] = Math.round((float) point.x());
-         yPoints[i] = Math.round((float) point.y());
-      }
-
-      return new Points(xPoints, yPoints);
-   }
-
-
-   private static void drawPolyline(final Graphics2D g2d,
-                                    final GVectorialRenderingAttributes attributes,
-                                    final Points points) {
+   private static void drawPolyline(final GAWTPoints points,
+                                    final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                    final GVectorialRenderingContext rc) {
       // render border
-      if (attributes._borderWidth > 0) {
+      if (rc._attributes._borderWidth > 0) {
          //final float borderWidth = (float) (attributes._borderWidth / ((scale.x() + scale.y()) / 2));
-         final float borderWidth = attributes._borderWidth;
+         final float borderWidth = rc._attributes._borderWidth;
          if (borderWidth > 0) {
             final BasicStroke borderStroke = new BasicStroke(borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
-            g2d.setStroke(borderStroke);
-            g2d.setColor(attributes._borderColor);
-            g2d.drawPolyline(points._xPoints, points._yPoints, points._xPoints.length);
+            rc._g2d.setStroke(borderStroke);
+            rc._g2d.setColor(rc._attributes._borderColor);
+            rc._g2d.drawPolyline(points._xPoints, points._yPoints, points._xPoints.length);
          }
       }
    }
 
 
-   private static void drawShape(final Graphics2D g2d,
-                                 final GVectorialRenderingAttributes attributes,
-                                 final Shape shape) {
+   private static void drawShape(final Shape shape,
+                                 final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                 final GVectorialRenderingContext rc) {
       // fill polygon
-      g2d.setColor(attributes._fillColor);
-      g2d.fill(shape);
+      rc._g2d.setColor(rc._attributes._fillColor);
+      rc._g2d.fill(shape);
 
 
       // render border
-      if (attributes._borderWidth > 0) {
+      if (rc._attributes._borderWidth > 0) {
          //final float borderWidth = (float) (attributes._borderWidth / ((scale.x() + scale.y()) / 2));
-         final float borderWidth = attributes._borderWidth;
+         final float borderWidth = rc._attributes._borderWidth;
          if (borderWidth > 0) {
             final BasicStroke borderStroke = new BasicStroke(borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
-            g2d.setStroke(borderStroke);
-            g2d.setColor(attributes._borderColor);
-            g2d.draw(shape);
+            rc._g2d.setStroke(borderStroke);
+            rc._g2d.setColor(rc._attributes._borderColor);
+            rc._g2d.draw(shape);
          }
       }
    }

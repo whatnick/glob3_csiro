@@ -144,13 +144,13 @@ public class GUniqueValuesColorizer
          final Object value = _sortedLabels.get(i);
          final Color color = _colors.get(value).asAWTColor();
          g2d.setColor(color);
-         final int y = margin + (i * symbolSize);
+         final int y = margin + (i * (symbolSize + 2));
          g2d.fillOval(margin, y, symbolSize, symbolSize);
 
          g2d.setColor(color.darker().darker().darker());
          g2d.drawOval(margin, y, symbolSize, symbolSize);
 
-         drawShadowString(g2d, _labeler.transform(value), margin + symbolSize + (margin / 2), y + symbolSize, Color.GRAY,
+         drawShadowString(g2d, _labeler.transform(value), margin + symbolSize + (margin / 2), y + symbolSize, Color.LIGHT_GRAY,
                   Color.BLACK);
       }
 

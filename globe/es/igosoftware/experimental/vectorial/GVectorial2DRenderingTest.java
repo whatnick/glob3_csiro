@@ -79,9 +79,12 @@ public class GVectorial2DRenderingTest {
       //      "roads.shp");
       //      final GFileName fileName = GFileName.absolute("home", "dgd", "Desktop", "sample-shp", "shp", "argentina.shp", "roads.shp");
       //      final GFileName fileName = GFileName.absolute("home", "dgd", "Desktop", "sample-shp", "shp", "argentina.shp", "roads.shp");
-      final GFileName fileName = GFileName.absolute("home", "dgd", "Desktop", "sample-shp", "shp", "argentina.shp", "places.shp");
+      //      final GFileName fileName = GFileName.absolute("home", "dgd", "Desktop", "sample-shp", "shp", "argentina.shp", "places.shp");
       //      final GFileName fileName = GFileName.absolute("home", "dgd", "Desktop", "sample-shp", "cartobrutal", "world-modified",
       //               "world4326.shp");
+
+      final GFileName fileName = GFileName.absolute("home", "dgd", "Escritorio", "argentina.shapefiles",
+               "americas_south_america_argentina_poi.shp");
 
       final GProjection projection = GProjection.EPSG_4326;
 
@@ -98,7 +101,7 @@ public class GVectorial2DRenderingTest {
 
       //      final GAxisAlignedRectangle region = ((GAxisAlignedRectangle) centerBounds(multipleOfSmallestDimention(featuresBounds),
       //               featuresBounds.getCenter()));
-      final GAxisAlignedRectangle region = featuresBounds.asRectangle();
+      final GAxisAlignedRectangle region = featuresBounds.asRectangle().expandedByPercent(0.05);
 
 
       final GFileName directoryName = GFileName.relative("render");
@@ -143,7 +146,7 @@ public class GVectorial2DRenderingTest {
                                                                final double lodMinSize,
                                                                final boolean debugRendering) {
       return new GRenderingStyleAbstract() {
-         private final IColorizer _pointColorizer = new GUniqueValuesColorizer("type", GColorI.CYAN, GColorI.WHITE, true,
+         private final IColorizer _pointColorizer = new GUniqueValuesColorizer("CATEGORY", GColorI.CYAN, GColorI.WHITE, true,
                                                            new ITransformer<Object, String>() {
                                                               @Override
                                                               public String transform(final Object element) {
@@ -151,13 +154,16 @@ public class GVectorial2DRenderingTest {
                                                                     return "";
                                                                  }
 
-                                                                 return element.toString().trim().toUpperCase();
+                                                                 return element.toString().trim().toLowerCase();
                                                               }
                                                            });
 
 
          @Override
          public void preprocessFeatures(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features) {
+
+            //            System.out.println("FIELDS: " + features.getFields());
+
             _pointColorizer.preprocessFeatures(features);
 
             /*

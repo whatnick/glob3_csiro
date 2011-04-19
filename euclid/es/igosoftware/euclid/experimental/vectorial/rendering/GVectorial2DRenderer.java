@@ -71,11 +71,11 @@ public class GVectorial2DRenderer {
 
 
       final GGeometryNTreeParameters parameters = new GGeometryNTreeParameters(verbose, acceptLeafNodeCreationPolicy,
-               GGeometryNTreeParameters.BoundsPolicy.MINIMUM, true);
+               GGeometryNTreeParameters.BoundsPolicy.GIVEN, true);
 
+      final GAxisAlignedRectangle bounds = _features.getBounds().asRectangle().expandedByPercent(0.05);
       return new GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>>(
-               "Rendering", _features, parameters);
-
+               "Rendering", _features, parameters, bounds);
    }
 
 
