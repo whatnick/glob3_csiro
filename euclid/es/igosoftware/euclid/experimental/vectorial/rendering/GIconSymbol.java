@@ -50,8 +50,8 @@ public class GIconSymbol
 
       for (int x = 0; x < image.getWidth(); x++) {
          for (int y = 0; y < image.getHeight(); y++) {
-            final Color color = new Color(image.getRGB(x, y));
-            acum += step * color.getAlpha() / 255;
+            final int alpha = (image.getRGB(x, y) >>> 24) & 0xFF;
+            acum += step * (alpha / 255d);
          }
       }
 
@@ -73,7 +73,7 @@ public class GIconSymbol
 
       final double areaInSquaredMeters = pointSize.getValueInReferenceUnits();
 
-      final double extent = GMath.sqrt(areaInSquaredMeters * percentFilled);
+      final double extent = GMath.sqrt(areaInSquaredMeters / percentFilled);
       final IVector2 pointPlusExtent = rc._renderingStyle.increment(point, rc._projection, extent, extent);
       _extent = rc.scaleExtent(pointPlusExtent.sub(point)).rounded();
 
