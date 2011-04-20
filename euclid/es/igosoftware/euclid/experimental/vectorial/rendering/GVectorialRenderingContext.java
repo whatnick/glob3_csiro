@@ -89,12 +89,21 @@ public class GVectorialRenderingContext {
                _renderedImage.setRGB(imageX, rotatedImageY, color.getRGB());
             }
             else {
-               final Color oldColor = new Color(oldRGB);
+               final Color oldColor = colorFromRGB(oldRGB);
                final Color mixed = mix(oldColor, color);
                _renderedImage.setRGB(imageX, rotatedImageY, mixed.getRGB());
             }
          }
       }
+   }
+
+
+   private Color colorFromRGB(final int rgb) {
+      final int a = (rgb >>> 24) & 0xFF;
+      final int r = (rgb >>> 16) & 0xFF;
+      final int g = (rgb >>> 8) & 0xFF;
+      final int b = (rgb >>> 0) & 0xFF;
+      return new Color(r, g, b, a);
    }
 
 
