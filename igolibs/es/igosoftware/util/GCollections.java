@@ -174,6 +174,46 @@ public final class GCollections {
    }
 
 
+   public static <T> CharSequence toString(final Collection<? extends T> array,
+                                           final IFunction<T, String> stringizer) {
+      return toString(array, "[", "]", ", ", stringizer);
+   }
+
+
+   public static <T> String toString(final Collection<? extends T> array,
+                                     final String opening,
+                                     final String closing,
+                                     final String delimiter,
+                                     final IFunction<T, String> stringizer) {
+      if (array == null) {
+         return "null";
+      }
+
+      final StringBuffer result = new StringBuffer();
+
+      result.append(opening);
+      boolean first = true;
+      for (final T each : array) {
+         if (first) {
+            first = false;
+         }
+         else {
+            result.append(delimiter);
+         }
+
+         if (each == null) {
+            result.append("null");
+         }
+         else {
+            result.append(stringizer.apply(each));
+         }
+      }
+      result.append(closing);
+
+      return result.toString();
+   }
+
+
    public static double median(final List<Double> a) {
       Collections.sort(a);
       if (a.size() == 0) {
@@ -266,7 +306,7 @@ public final class GCollections {
 
 
    public static <ElementT, ResultT> List<ResultT> collect(final List<ElementT> list,
-                                                           final ITransformer<ElementT, ResultT> transformer) {
+                                                           final IFunction<ElementT, ResultT> transformer) {
       if (list == null) {
          return null;
       }
@@ -276,13 +316,13 @@ public final class GCollections {
       }
 
       if (list.size() == 1) {
-         return Collections.singletonList(transformer.transform(list.get(0)));
+         return Collections.singletonList(transformer.apply(list.get(0)));
       }
 
       final List<ResultT> result = new ArrayList<ResultT>(list.size());
 
       for (final ElementT element : list) {
-         result.add(transformer.transform(element));
+         result.add(transformer.apply(element));
       }
 
       return result;
@@ -322,7 +362,7 @@ public final class GCollections {
 
 
    public static <ElementT, ResultT> Set<ResultT> collect(final Set<ElementT> set,
-                                                          final ITransformer<ElementT, ResultT> transformer) {
+                                                          final IFunction<ElementT, ResultT> transformer) {
       if (set == null) {
          return null;
       }
@@ -334,7 +374,7 @@ public final class GCollections {
       final Set<ResultT> result = new HashSet<ResultT>(set.size());
 
       for (final ElementT element : set) {
-         result.add(transformer.transform(element));
+         result.add(transformer.apply(element));
       }
 
       return result;
@@ -342,8 +382,8 @@ public final class GCollections {
 
 
    public static <ElementK, ElementV, ResultK, ResultV> Map<ResultK, ResultV> collect(final Map<ElementK, ElementV> map,
-                                                                                      final ITransformer<ElementK, ResultK> keyTransformer,
-                                                                                      final ITransformer<ElementV, ResultV> valueTransformer) {
+                                                                                      final IFunction<ElementK, ResultK> keyTransformer,
+                                                                                      final IFunction<ElementV, ResultV> valueTransformer) {
       if (map == null) {
          return null;
       }
@@ -355,7 +395,7 @@ public final class GCollections {
       final Map<ResultK, ResultV> result = new HashMap<ResultK, ResultV>(map.size());
 
       for (final Map.Entry<ElementK, ElementV> entry : map.entrySet()) {
-         result.put(keyTransformer.transform(entry.getKey()), valueTransformer.transform(entry.getValue()));
+         result.put(keyTransformer.apply(entry.getKey()), valueTransformer.apply(entry.getValue()));
       }
 
       return result;
@@ -363,7 +403,7 @@ public final class GCollections {
 
 
    public static <ElementT, ResultT> Collection<ResultT> collect(final Collection<ElementT> collection,
-                                                                 final ITransformer<ElementT, ResultT> transformer) {
+                                                                 final IFunction<ElementT, ResultT> transformer) {
       if (collection == null) {
          return null;
       }
@@ -375,7 +415,7 @@ public final class GCollections {
       final Collection<ResultT> result = new ArrayList<ResultT>(collection.size());
 
       for (final ElementT element : collection) {
-         result.add(transformer.transform(element));
+         result.add(transformer.apply(element));
       }
 
       return result;
@@ -383,7 +423,7 @@ public final class GCollections {
 
 
    public static <ElementT, ResultT> Iterable<ResultT> collect(final Iterable<ElementT> iterable,
-                                                               final ITransformer<ElementT, ResultT> transformer) {
+                                                               final IFunction<ElementT, ResultT> transformer) {
       if (iterable == null) {
          return null;
       }
@@ -399,7 +439,7 @@ public final class GCollections {
 
    @SuppressWarnings("unchecked")
    public static <ElementT, ResultT> ResultT[] concurrentCollect(final ElementT[] array,
-                                                                 final ITransformer<ElementT, ResultT> transformer) {
+                                                                 final IFunction<ElementT, ResultT> transformer) {
       if (array == null) {
          return null;
       }
@@ -416,7 +456,7 @@ public final class GCollections {
 
 
    public static <ElementT, ResultT> List<ResultT> concurrentCollect(final List<ElementT> list,
-                                                                     final ITransformer<ElementT, ResultT> transformer) {
+                                                                     final IFunction<ElementT, ResultT> transformer) {
       if (list == null) {
          return null;
       }
@@ -427,7 +467,7 @@ public final class GCollections {
       }
 
       if (size == 1) {
-         return Collections.singletonList(transformer.transform(list.get(0)));
+         return Collections.singletonList(transformer.apply(list.get(0)));
       }
 
       final ArrayList<ResultT> result = new ArrayList<ResultT>(size);
@@ -441,7 +481,7 @@ public final class GCollections {
                               final int to) {
             //System.out.println("collecting " + from + "->" + to);
             for (int i = from; i <= to; i++) {
-               final ResultT transformed = transformer.transform(list.get(i));
+               final ResultT transformed = transformer.apply(list.get(i));
                synchronized (result) {
                   result.set(i, transformed);
                }

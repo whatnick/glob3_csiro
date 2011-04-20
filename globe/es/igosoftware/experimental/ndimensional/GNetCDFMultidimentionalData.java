@@ -68,8 +68,8 @@ import es.igosoftware.util.GHolder;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.GRange;
 import es.igosoftware.util.GStringUtils;
+import es.igosoftware.util.IFunction;
 import es.igosoftware.util.IPredicate;
-import es.igosoftware.util.ITransformer;
 import es.igosoftware.utils.GPositionBox;
 import es.igosoftware.utils.GWWUtils;
 import gov.nasa.worldwind.geom.Angle;
@@ -889,9 +889,9 @@ public class GNetCDFMultidimentionalData
 
    @Override
    public List<String> getDimensionsNames() {
-      return GCollections.collect(_dimensions, new ITransformer<Dimension, String>() {
+      return GCollections.collect(_dimensions, new IFunction<Dimension, String>() {
          @Override
-         public String transform(final Dimension dimension) {
+         public String apply(final Dimension dimension) {
             return dimension.getName();
          }
       });

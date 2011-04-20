@@ -172,4 +172,10 @@ public class GMeasure<UnitT extends IUnit<UnitT>>
    }
 
 
+   @Override
+   public double getValueInReferenceUnits() {
+      return _value * _unit.convertionFactor();
+   }
+
+
 }

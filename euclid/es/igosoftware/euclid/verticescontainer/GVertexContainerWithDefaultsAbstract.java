@@ -46,8 +46,8 @@ import es.igosoftware.euclid.vector.GVectorPrecision;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.IComparatorInt;
+import es.igosoftware.util.IFunction;
 import es.igosoftware.util.IPredicate;
-import es.igosoftware.util.ITransformer;
 
 
 public abstract class GVertexContainerWithDefaultsAbstract<
@@ -444,13 +444,13 @@ MutableT extends GVertexContainerWithDefaultsAbstract<VectorT, MutableT>
 
 
    @Override
-   public final MutableT collect(final ITransformer<VectorT, VectorT> referencePointTransformer,
-                                 final ITransformer<IVertexContainer.Vertex<VectorT>, IVertexContainer.Vertex<VectorT>> vertexTransformer) {
+   public final MutableT collect(final IFunction<VectorT, VectorT> referencePointTransformer,
+                                 final IFunction<IVertexContainer.Vertex<VectorT>, IVertexContainer.Vertex<VectorT>> vertexTransformer) {
 
-      final MutableT result = newEmptyContainer(size(), referencePointTransformer.transform(_referencePoint));
+      final MutableT result = newEmptyContainer(size(), referencePointTransformer.apply(_referencePoint));
 
       for (int i = 0; i < size(); i++) {
-         final IVertexContainer.Vertex<VectorT> collectedVertex = vertexTransformer.transform(getVertex(i));
+         final IVertexContainer.Vertex<VectorT> collectedVertex = vertexTransformer.apply(getVertex(i));
          result.addPoint(collectedVertex);
       }
 

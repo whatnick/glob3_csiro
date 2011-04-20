@@ -22,7 +22,7 @@ import es.igosoftware.euclid.features.IGlobeMutableFeatureCollection;
 import es.igosoftware.euclid.mutability.IMutable;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.util.GAssert;
-import es.igosoftware.util.ITransformer;
+import es.igosoftware.util.IFunction;
 
 
 public class GUniqueValuesColorizer
@@ -30,10 +30,10 @@ public class GUniqueValuesColorizer
             GColorizerAbstract {
 
    private final String                                                                                                  _fieldName;
-   private final IColor                                                                                                  _startColor;
+   private final GColorScheme                                                                                            _colorScheme;
    private final IColor                                                                                                  _defaultColor;
    private final boolean                                                                                                 _renderLegends;
-   private final ITransformer<Object, String>                                                                            _labeler;
+   private final IFunction<Object, String>                                                                               _labeler;
 
    private int                                                                                                           _fieldIndex;
    private List<String>                                                                                                  _sortedLabels;
@@ -43,22 +43,22 @@ public class GUniqueValuesColorizer
 
 
    public GUniqueValuesColorizer(final String fieldName,
-                                 final IColor startColor,
+                                 final GColorScheme colorScheme,
                                  final IColor defaultColor,
                                  final boolean renderLegends,
-                                 final ITransformer<Object, String> labeler) {
+                                 final IFunction<Object, String> labeler) {
       GAssert.notNull(fieldName, "fieldName");
-      GAssert.notNull(startColor, "startColor");
+      GAssert.notNull(colorScheme, "_colorScheme");
       GAssert.notNull(defaultColor, "defaultColor");
 
       _fieldName = fieldName;
-      _startColor = startColor;
+      _colorScheme = colorScheme;
       _defaultColor = defaultColor;
       _renderLegends = renderLegends;
 
-      _labeler = (labeler != null) ? labeler : new ITransformer<Object, String>() {
+      _labeler = (labeler != null) ? labeler : new IFunction<Object, String>() {
          @Override
-         public String transform(final Object element) {
+         public String apply(final Object element) {
             return (element == null) ? "" : element.toString();
          }
       };
@@ -90,16 +90,16 @@ public class GUniqueValuesColorizer
       final Set<String> labels = new HashSet<String>();
       for (final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature : features) {
          final Object value = feature.getAttribute(_fieldIndex);
-         labels.add(_labeler.transform(value));
+         labels.add(_labeler.apply(value));
       }
 
       _sortedLabels = new ArrayList<String>(labels);
       Collections.sort(_sortedLabels);
 
       _colors = new HashMap<String, IColor>();
-      final IColor[] colors = _startColor.wheel(_sortedLabels.size());
+      final List<IColor> colors = _colorScheme.getColors();
       for (int i = 0; i < _sortedLabels.size(); i++) {
-         _colors.put(_sortedLabels.get(i), colors[i]);
+         _colors.put(_sortedLabels.get(i), colors.get(i));
       }
    }
 
@@ -111,7 +111,7 @@ public class GUniqueValuesColorizer
          return _defaultColor;
       }
 
-      final String value = _labeler.transform(feature.getAttribute(_fieldIndex));
+      final String value = _labeler.apply(feature.getAttribute(_fieldIndex));
       final IColor color = _colors.get(value);
       return (color == null) ? _defaultColor : color;
    }
@@ -150,7 +150,7 @@ public class GUniqueValuesColorizer
          g2d.setColor(color.darker().darker().darker());
          g2d.drawOval(margin, y, symbolSize, symbolSize);
 
-         drawShadowString(g2d, _labeler.transform(value), margin + symbolSize + (margin / 2), y + symbolSize, Color.LIGHT_GRAY,
+         drawShadowString(g2d, _labeler.apply(value), margin + symbolSize + (margin / 2), y + symbolSize, Color.LIGHT_GRAY,
                   Color.BLACK);
       }
 

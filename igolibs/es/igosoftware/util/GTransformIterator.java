@@ -43,12 +43,12 @@ public final class GTransformIterator<ElementT, ResultT>
          implements
             Iterator<ResultT> {
 
-   final private Iterator<ElementT>              _iterator;
-   final private ITransformer<ElementT, ResultT> _transformer;
+   final private Iterator<ElementT>           _iterator;
+   final private IFunction<ElementT, ResultT> _transformer;
 
 
    public GTransformIterator(final Iterator<ElementT> iterator,
-                             final ITransformer<ElementT, ResultT> transformer) {
+                             final IFunction<ElementT, ResultT> transformer) {
       _iterator = iterator;
       _transformer = transformer;
    }
@@ -62,7 +62,7 @@ public final class GTransformIterator<ElementT, ResultT>
 
    @Override
    public ResultT next() {
-      return _transformer.transform(_iterator.next());
+      return _transformer.apply(_iterator.next());
    }
 
 

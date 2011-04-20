@@ -18,7 +18,7 @@ import es.igosoftware.util.GLongHolder;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.GProgress;
 import es.igosoftware.util.GStringUtils;
-import es.igosoftware.util.ITransformer;
+import es.igosoftware.util.IFunction;
 
 
 public abstract class GGeometryNTree<VectorT extends IVector<VectorT, ?>, ElementT>
@@ -41,7 +41,7 @@ public abstract class GGeometryNTree<VectorT extends IVector<VectorT, ?>, Elemen
    protected GGeometryNTree(final String name,
                             final GAxisAlignedOrthotope<VectorT, ?> bounds,
                             final Iterable<? extends ElementT> elements,
-                            final ITransformer<ElementT, Collection<? extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>>> transformer,
+                            final IFunction<ElementT, Collection<? extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>>> transformer,
                             final GGeometryNTreeParameters parameters) {
       _name = name;
       _parameters = parameters;
@@ -54,7 +54,7 @@ public abstract class GGeometryNTree<VectorT extends IVector<VectorT, ?>, Elemen
       VectorT geometriesUpper = null;
       final ArrayList<GElementGeometryPair<VectorT, ElementT>> pairs = new ArrayList<GElementGeometryPair<VectorT, ElementT>>();
       for (final ElementT element : elements) {
-         final Collection<? extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>> geometries = transformer.transform(element);
+         final Collection<? extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>> geometries = transformer.apply(element);
          for (final IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>> geometry : geometries) {
             pairs.add(new GElementGeometryPair<VectorT, ElementT>(element, geometry));
 

@@ -46,7 +46,7 @@ import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GMath;
-import es.igosoftware.util.ITransformer;
+import es.igosoftware.util.IFunction;
 
 
 public abstract class GAxisAlignedOrthotope<
@@ -75,9 +75,9 @@ GeometryT extends GAxisAlignedOrthotope<VectorT, GeometryT>
 
       if (exemplar.dimensions() == 2) {
          final Iterable<GAxisAlignedRectangle> rectangles = GCollections.collect(orthotopes,
-                  new ITransformer<GAxisAlignedOrthotope<VectorT, ?>, GAxisAlignedRectangle>() {
+                  new IFunction<GAxisAlignedOrthotope<VectorT, ?>, GAxisAlignedRectangle>() {
                      @Override
-                     public GAxisAlignedRectangle transform(final GAxisAlignedOrthotope<VectorT, ?> element) {
+                     public GAxisAlignedRectangle apply(final GAxisAlignedOrthotope<VectorT, ?> element) {
                         return (GAxisAlignedRectangle) element;
                      }
                   });
@@ -86,9 +86,9 @@ GeometryT extends GAxisAlignedOrthotope<VectorT, GeometryT>
       }
       else if (exemplar.dimensions() == 3) {
          final Iterable<GAxisAlignedBox> boxes = GCollections.collect(orthotopes,
-                  new ITransformer<GAxisAlignedOrthotope<VectorT, ?>, GAxisAlignedBox>() {
+                  new IFunction<GAxisAlignedOrthotope<VectorT, ?>, GAxisAlignedBox>() {
                      @Override
-                     public GAxisAlignedBox transform(final GAxisAlignedOrthotope<VectorT, ?> element) {
+                     public GAxisAlignedBox apply(final GAxisAlignedOrthotope<VectorT, ?> element) {
                         return (GAxisAlignedBox) element;
                      }
                   });

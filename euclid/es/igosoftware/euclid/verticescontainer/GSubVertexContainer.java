@@ -44,8 +44,8 @@ import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.IComparatorInt;
+import es.igosoftware.util.IFunction;
 import es.igosoftware.util.IPredicate;
-import es.igosoftware.util.ITransformer;
 
 
 public final class GSubVertexContainer<VectorT extends IVector<VectorT, ?>>
@@ -136,8 +136,8 @@ public final class GSubVertexContainer<VectorT extends IVector<VectorT, ?>>
 
 
    @Override
-   public GSubVertexContainer<VectorT> collect(final ITransformer<VectorT, VectorT> referencePointTransformer,
-                                               final ITransformer<IVertexContainer.Vertex<VectorT>, IVertexContainer.Vertex<VectorT>> vertexTransformer) {
+   public GSubVertexContainer<VectorT> collect(final IFunction<VectorT, VectorT> referencePointTransformer,
+                                               final IFunction<IVertexContainer.Vertex<VectorT>, IVertexContainer.Vertex<VectorT>> vertexTransformer) {
 
       final IUnstructuredVertexContainer<VectorT, IVertexContainer.Vertex<VectorT>, ?> result = _outer.collect(
                referencePointTransformer, vertexTransformer);

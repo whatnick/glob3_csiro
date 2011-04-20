@@ -50,10 +50,16 @@ import es.igosoftware.euclid.colors.GColorI;
 import es.igosoftware.euclid.colors.IColor;
 import es.igosoftware.euclid.experimental.measurement.GArea;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
+import es.igosoftware.euclid.experimental.vectorial.rendering.GColorBrewerColorSchemeSet;
+import es.igosoftware.euclid.experimental.vectorial.rendering.GColorScheme;
+import es.igosoftware.euclid.experimental.vectorial.rendering.GIconSymbol;
+import es.igosoftware.euclid.experimental.vectorial.rendering.GRectangleSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GRenderingStyleAbstract;
+import es.igosoftware.euclid.experimental.vectorial.rendering.GSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GUniqueValuesColorizer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorial2DRenderer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorialRenderingAttributes;
+import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorialRenderingContext;
 import es.igosoftware.euclid.experimental.vectorial.rendering.IColorizer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.IRenderingStyle;
 import es.igosoftware.euclid.features.IGlobeFeature;
@@ -63,7 +69,7 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.util.GStringUtils;
-import es.igosoftware.util.ITransformer;
+import es.igosoftware.util.IFunction;
 import es.igosoftware.utils.GWWUtils;
 
 
@@ -144,12 +150,19 @@ public class GVectorial2DRenderingTest {
 
    private static GRenderingStyleAbstract createRenderingStyle(final boolean renderLODIgnores,
                                                                final double lodMinSize,
-                                                               final boolean debugRendering) {
+                                                               final boolean debugRendering) throws IOException {
+
+      final BufferedImage automotiveIcon = ImageIO.read(GFileName.absolute("home", "dgd", "Desktop", "automotive-small.png").asFile());
+
+      final GColorScheme colorScheme = GColorBrewerColorSchemeSet.INSTANCE.getSchemes(9, GColorScheme.Type.Qualitative).get(2);
+
       return new GRenderingStyleAbstract() {
-         private final IColorizer _pointColorizer = new GUniqueValuesColorizer("CATEGORY", GColorI.CYAN, GColorI.WHITE, true,
-                                                           new ITransformer<Object, String>() {
+
+
+         private final IColorizer _pointColorizer = new GUniqueValuesColorizer("CATEGORY", colorScheme, GColorI.WHITE, true,
+                                                           new IFunction<Object, String>() {
                                                               @Override
-                                                              public String transform(final Object element) {
+                                                              public String apply(final Object element) {
                                                                  if (element == null) {
                                                                     return "";
                                                                  }
@@ -157,21 +170,16 @@ public class GVectorial2DRenderingTest {
                                                                  return element.toString().trim().toLowerCase();
                                                               }
                                                            });
+         private int              _categoryIndex  = -1;
 
 
          @Override
          public void preprocessFeatures(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features) {
-
             //            System.out.println("FIELDS: " + features.getFields());
 
             _pointColorizer.preprocessFeatures(features);
 
-            /*
-               GField [name=osm_id, type=class java.lang.Long]
-               GField [name=name, type=class java.lang.String]
-               GField [name=type, type=class java.lang.String]
-               GField [name=population, type=class java.lang.Integer]
-            */
+            _categoryIndex = features.getFieldIndex("CATEGORY");
          }
 
 
@@ -191,6 +199,39 @@ public class GVectorial2DRenderingTest {
          @Override
          public boolean isDebugRendering() {
             return debugRendering;
+         }
+
+
+         private boolean isCategory(final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                    final String category) {
+            if (_categoryIndex >= 0) {
+               final Object categoryO = feature.getAttribute(_categoryIndex);
+               if (categoryO instanceof String) {
+                  if (((String) categoryO).trim().toLowerCase().equals(category.trim().toLowerCase())) {
+                     return true;
+                  }
+               }
+            }
+
+            return false;
+         }
+
+
+         @Override
+         public GSymbol getPointSymbol(final IVector2 point,
+                                       final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                       final GVectorialRenderingContext rc) {
+            if (isCategory(feature, "automotive")) {
+               final IMeasure<GArea> pointSize = getPointSize(feature);
+               return new GIconSymbol(automotiveIcon, point, pointSize, rc);
+            }
+            else if (isCategory(feature, "government and public services")) {
+               final IMeasure<GArea> pointSize = getPointSize(feature);
+               return new GRectangleSymbol(point, pointSize, rc);
+            }
+            else {
+               return super.getPointSymbol(point, feature, rc);
+            }
          }
 
 
@@ -235,7 +276,6 @@ public class GVectorial2DRenderingTest {
 
          @Override
          public void preRenderImage(final BufferedImage renderedImage) {
-            _pointColorizer.preRenderImage(renderedImage);
             //            final Graphics2D g2d = renderedImage.createGraphics();
             //            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             //            g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
@@ -244,6 +284,9 @@ public class GVectorial2DRenderingTest {
             //            g2d.clearRect(0, 0, renderedImage.getWidth(), renderedImage.getHeight());
             //
             //            g2d.dispose();
+
+
+            _pointColorizer.preRenderImage(renderedImage);
          }
 
 

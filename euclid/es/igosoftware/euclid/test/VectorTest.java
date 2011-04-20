@@ -52,7 +52,7 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GMath;
-import es.igosoftware.util.ITransformer;
+import es.igosoftware.util.IFunction;
 
 
 public class VectorTest {
@@ -163,9 +163,9 @@ public class VectorTest {
       }
 
 
-      final List<IVector<?, ?>> mutables = GCollections.collect(result, new ITransformer<IVector<?, ?>, IVector<?, ?>>() {
+      final List<IVector<?, ?>> mutables = GCollections.collect(result, new IFunction<IVector<?, ?>, IVector<?, ?>>() {
          @Override
-         public IVector<?, ?> transform(final IVector<?, ?> element) {
+         public IVector<?, ?> apply(final IVector<?, ?> element) {
             return element.asMutable();
          }
       });
@@ -191,9 +191,9 @@ public class VectorTest {
          result.add(new GVector2F(element, element));
       }
 
-      final List<IVector<?, ?>> mutables = GCollections.collect(result, new ITransformer<IVector<?, ?>, IVector<?, ?>>() {
+      final List<IVector<?, ?>> mutables = GCollections.collect(result, new IFunction<IVector<?, ?>, IVector<?, ?>>() {
          @Override
-         public IVector<?, ?> transform(final IVector<?, ?> element) {
+         public IVector<?, ?> apply(final IVector<?, ?> element) {
             return element.asMutable();
          }
       });
@@ -211,9 +211,9 @@ public class VectorTest {
          result.add(new GVector3F(element, element, element));
       }
 
-      final List<IVector3> mutables = GCollections.collect(result, new ITransformer<IVector3, IVector3>() {
+      final List<IVector3> mutables = GCollections.collect(result, new IFunction<IVector3, IVector3>() {
          @Override
-         public IVector3 transform(final IVector3 element) {
+         public IVector3 apply(final IVector3 element) {
             return element.asMutable();
          }
       });

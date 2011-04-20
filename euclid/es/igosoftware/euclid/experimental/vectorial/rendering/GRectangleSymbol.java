@@ -11,7 +11,7 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.util.GMath;
 
 
-public class GEllipseSymbol
+public class GRectangleSymbol
          extends
             GSymbol {
 
@@ -19,14 +19,14 @@ public class GEllipseSymbol
    private final IVector2 _extent;
 
 
-   public GEllipseSymbol(final IVector2 point,
-                         final IMeasure<GArea> pointSize,
-                         final GVectorialRenderingContext rc) {
+   public GRectangleSymbol(final IVector2 point,
+                           final IMeasure<GArea> pointSize,
+                           final GVectorialRenderingContext rc) {
       final double areaInSquaredMeters = pointSize.getValueInReferenceUnits();
 
-      final double radius = GMath.sqrt(areaInSquaredMeters / Math.PI);
-      final IVector2 pointPlusRadius = rc._renderingStyle.increment(point, rc._projection, radius, radius);
-      _extent = rc.scaleExtent(pointPlusRadius.sub(point)).scale(2); // radius times 2 (for extent)
+      final double extent = GMath.sqrt(areaInSquaredMeters);
+      final IVector2 pointPlusExtent = rc._renderingStyle.increment(point, rc._projection, extent, extent);
+      _extent = rc.scaleExtent(pointPlusExtent.sub(point));
 
       final IVector2 scaledPoint = rc.scaleAndTranslatePoint(point);
       _position = scaledPoint.sub(_extent.div(2));
@@ -46,7 +46,7 @@ public class GEllipseSymbol
                     final GVectorialRenderingContext rc) {
       // fill point
       rc.setColor(fillColor);
-      rc.fillOval(_position.x(), _position.y(), _extent.x(), _extent.y());
+      rc.fillRect(_position.x(), _position.y(), _extent.x(), _extent.y());
 
       // render border
       if (borderWidth > 0) {
@@ -54,7 +54,7 @@ public class GEllipseSymbol
          rc.setStroke(borderStroke);
 
          rc.setColor(borderColor);
-         rc.drawOval(_position.x(), _position.y(), _extent.x(), _extent.y());
+         rc.drawRect(_position.x(), _position.y(), _extent.x(), _extent.y());
       }
    }
 

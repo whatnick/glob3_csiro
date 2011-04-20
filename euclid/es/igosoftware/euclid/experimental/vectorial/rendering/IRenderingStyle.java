@@ -66,4 +66,8 @@ public interface IRenderingStyle {
                          final GVectorialRenderingContext rc);
 
 
+   public GSymbol getPointSymbol(final IVector2 point,
+                                 final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                 final GVectorialRenderingContext rc);
+
 }

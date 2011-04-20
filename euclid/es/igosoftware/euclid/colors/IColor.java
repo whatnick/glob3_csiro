@@ -176,4 +176,7 @@ public interface IColor {
    public String toHexString();
 
 
+   public String toInt256String();
+
+
 }

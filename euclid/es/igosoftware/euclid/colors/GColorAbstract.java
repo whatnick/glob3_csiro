@@ -217,9 +217,9 @@ public abstract class GColorAbstract
    }
 
 
-   public static void main(final String[] args) {
-      System.out.println(GColorI.BLUE.toHexString());
+   @Override
+   public String toInt256String() {
+      return "(" + Math.round(getRed() * 255) + ", " + Math.round(getGreen() * 255) + ", " + Math.round(getBlue() * 255) + ")";
    }
-
 
 }

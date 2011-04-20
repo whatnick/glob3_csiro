@@ -50,9 +50,9 @@ import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.GVectorPrecision;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.vector.IVector3;
+import es.igosoftware.util.IFunction;
 import es.igosoftware.util.IPredicate;
 import es.igosoftware.util.IRangeEvaluator;
-import es.igosoftware.util.ITransformer;
 
 
 public interface IVertexContainer<
@@ -532,8 +532,8 @@ MutableT extends IMutable<MutableT>
    public MutableT select(final IPredicate<VertexT> predicate);
 
 
-   public MutableT collect(final ITransformer<VectorT, VectorT> referencePointPredicate,
-                           final ITransformer<VertexT, VertexT> vertexPredicate);
+   public MutableT collect(final IFunction<VectorT, VectorT> referencePointPredicate,
+                           final IFunction<VertexT, VertexT> vertexPredicate);
 
 
    //public MutableT collect(final ITransformer<VertexT, VertexT> predicate);

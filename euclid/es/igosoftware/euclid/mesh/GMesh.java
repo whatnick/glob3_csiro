@@ -49,7 +49,7 @@ import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.util.GCollections;
-import es.igosoftware.util.ITransformer;
+import es.igosoftware.util.IFunction;
 
 
 public class GMesh<
@@ -78,9 +78,9 @@ EdgeT extends GSegment<VertexT, EdgeT, ?>
 
 
       private void showStatistics() {
-         final List<Integer> indices = GCollections.concurrentCollect(_vertexNodes, new ITransformer<VertexNode, Integer>() {
+         final List<Integer> indices = GCollections.concurrentCollect(_vertexNodes, new IFunction<VertexNode, Integer>() {
             @Override
-            public Integer transform(final VertexNode element) {
+            public Integer apply(final VertexNode element) {
                return element._index;
             }
          });

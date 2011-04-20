@@ -218,6 +218,7 @@ public abstract class GFloatLayerAttribute
       slider.setPaintLabels(false);
       slider.setSnapToTicks(false);
 
+
       if (isReadOnly()) {
          slider.setEnabled(false);
       }

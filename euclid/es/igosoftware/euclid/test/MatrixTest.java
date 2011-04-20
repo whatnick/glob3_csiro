@@ -276,7 +276,7 @@ public class MatrixTest {
       final GMatrix44D translation = GMatrix44D.createTranslationMatrix(new GVector3D(1, 10, 100));
       final IVector3 vector3 = new GVector3D(2, 20, 200);
 
-      final IVector3 translated3 = translation.transform(vector3);
+      final IVector3 translated3 = translation.apply(vector3);
       Assert.assertTrue(translated3.closeTo(new GVector3D(3, 30, 300)));
 
 

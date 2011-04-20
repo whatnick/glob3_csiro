@@ -702,7 +702,7 @@ public abstract class GMatrix33D
 
 
    @Override
-   public final IVector3 transform(final IVector3 vec) {
+   public final IVector3 apply(final IVector3 vec) {
       return vec.transformedBy(this);
    }
 

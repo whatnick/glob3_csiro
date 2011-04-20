@@ -4,6 +4,9 @@ package es.igosoftware.euclid.experimental.vectorial.rendering;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.image.BufferedImage;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
@@ -19,7 +22,7 @@ public class GVectorialRenderingContext {
    final GVectorialRenderingAttributes _attributes;
    final IRenderingStyle               _renderingStyle;
    final GProjection                   _projection;
-   final Graphics2D                    _g2d;
+   private final Graphics2D            _g2d;
    private final BufferedImage         _renderedImage;
 
 
@@ -110,6 +113,112 @@ public class GVectorialRenderingContext {
    private static int average(final int a,
                               final int b) {
       return (a + b) / 2;
+   }
+
+
+   private static int toInt(final double value) {
+      return (int) Math.round(value);
+   }
+
+
+   void setColor(final Color fillColor) {
+      _g2d.setColor(fillColor);
+   }
+
+
+   void setStroke(final Stroke stroke) {
+      _g2d.setStroke(stroke);
+   }
+
+
+   void draw(final Shape shape) {
+      _g2d.draw(shape);
+   }
+
+
+   void fill(final Shape shape) {
+      _g2d.fill(shape);
+   }
+
+
+   void drawOval(final double x,
+                 final double y,
+                 final double width,
+                 final double height) {
+      _g2d.drawOval(toInt(x), toInt(y), toInt(width), toInt(height));
+   }
+
+
+   void fillOval(final double x,
+                 final double y,
+                 final double width,
+                 final double height) {
+      _g2d.fillOval(toInt(x), toInt(y), toInt(width), toInt(height));
+   }
+
+
+   void drawPolyline(final int[] xPoints,
+                     final int[] yPoints,
+                     final int length) {
+      _g2d.drawPolyline(xPoints, yPoints, length);
+   }
+
+
+   void drawPolyline(final GAWTPoints points) {
+      drawPolyline(points._xPoints, points._yPoints, points._xPoints.length);
+   }
+
+
+   void drawRect(final double x,
+                 final double y,
+                 final double width,
+                 final double height) {
+      _g2d.drawRect(toInt(x), toInt(y), toInt(width), toInt(height));
+   }
+
+
+   void fillRect(final double x,
+                 final double y,
+                 final double width,
+                 final double height) {
+      _g2d.fillRect(toInt(x), toInt(y), toInt(width), toInt(height));
+   }
+
+
+   //   void drawImage(final Image image,
+   //                  final double x,
+   //                  final double y,
+   //                  final double width,
+   //                  final double height) {
+   //      _g2d.drawImage(image, toInt(x), toInt(y), toInt(width), toInt(height), null);
+   //   }
+
+
+   void drawFlippedImage(final Image image,
+                         final double x,
+                         final double y,
+                         final double width,
+                         final double height) {
+
+      _g2d.drawImage(//
+               image, // 
+               toInt(x), toInt(y + height), toInt(x + width), toInt(y), //
+               0, 0, toInt(width), toInt(height), //
+               null);
+   }
+
+
+   void drawFlippedImage(final Image image,
+                         final double x,
+                         final double y,
+                         final double width,
+                         final double height,
+                         final Color bgColor) {
+      _g2d.drawImage(//
+               image, // 
+               toInt(x), toInt(y + height), toInt(x + width), toInt(y), //
+               0, 0, toInt(width), toInt(height), //
+               bgColor, null);
    }
 
 

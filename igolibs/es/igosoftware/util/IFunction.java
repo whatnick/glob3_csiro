@@ -34,14 +34,11 @@
 */
 
 
-package es.igosoftware.euclid.vector;
-
-import es.igosoftware.util.ITransformer;
+package es.igosoftware.util;
 
 
-public interface IVectorTransformer<VectorT extends IVector<VectorT, ?>>
-         extends
-            ITransformer<VectorT, VectorT> {
+public interface IFunction<InputT, ResultT> {
 
+   public ResultT apply(final InputT element);
 
 }

@@ -45,12 +45,10 @@ class GVectorial2DRenderUnit
                       final GVectorialRenderingAttributes attributes,
                       final IRenderingStyle renderingStyle) {
 
-      final IVector2 extent = region.getExtent();
-
       final int imageWidth = renderedImage.getWidth();
       final int imageHeight = renderedImage.getHeight();
 
-      final IVector2 scale = new GVector2D(imageWidth, imageHeight).div(extent);
+      final IVector2 scale = new GVector2D(imageWidth, imageHeight).div(region.getExtent());
 
       final Graphics2D g2d = renderedImage.createGraphics();
       g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -73,19 +71,26 @@ class GVectorial2DRenderUnit
       g2d.setTransform(transformFlipY);
 
 
-      final IMeasure<GArea> pointSize = renderingStyle.getMaximumSize();
-
-      final double area = pointSize.getValue() * pointSize.getUnit().convertionFactor();
-      final double radiusD = GMath.sqrt(area / Math.PI);
-      final IVector2 lower = renderingStyle.increment(region._lower, projection, -radiusD, -radiusD);
-      final IVector2 upper = renderingStyle.increment(region._upper, projection, radiusD, radiusD);
-
-      final GAxisAlignedRectangle extendedRegion = new GAxisAlignedRectangle(lower, upper);
-
+      final GAxisAlignedRectangle extendedRegion = calculateExtendedRegion(region, projection, renderingStyle);
       final GVectorialRenderingContext rc = new GVectorialRenderingContext(scale, region, extendedRegion, attributes,
                renderingStyle, projection, g2d, renderedImage);
+
       processNode(quadtree.getRoot(), rc);
 
+   }
+
+
+   private static GAxisAlignedRectangle calculateExtendedRegion(final GAxisAlignedRectangle region,
+                                                                final GProjection projection,
+                                                                final IRenderingStyle renderingStyle) {
+      final IMeasure<GArea> maximumSize = renderingStyle.getMaximumSize();
+
+      final double areaInSquaredMeters = maximumSize.getValueInReferenceUnits();
+      final double extent = GMath.sqrt(areaInSquaredMeters);
+      final IVector2 lower = renderingStyle.increment(region._lower, projection, -extent, -extent);
+      final IVector2 upper = renderingStyle.increment(region._upper, projection, extent, extent);
+
+      return new GAxisAlignedRectangle(lower, upper);
    }
 
 
@@ -138,8 +143,8 @@ class GVectorial2DRenderUnit
 
          //         g2d.setStroke(new BasicStroke(0.25f));
          final boolean isInner = (node instanceof GGTInnerNode);
-         rc._g2d.setStroke(new BasicStroke(1));
-         rc._g2d.setColor(isInner ? Color.GREEN.darker().darker().darker().darker().darker() : Color.GREEN);
+         rc.setStroke(new BasicStroke(1));
+         rc.setColor(isInner ? Color.GREEN.darker().darker().darker().darker().darker() : Color.GREEN);
 
          final int x = Math.round((float) nodeLower.x());
          final int y = Math.round((float) nodeLower.y());
@@ -147,7 +152,7 @@ class GVectorial2DRenderUnit
          //         final int height = Math.round((float) (nodeUpper.y() - nodeLower.y()));
          final int width = (int) (nodeUpper.x() - nodeLower.x());
          final int height = (int) (nodeUpper.y() - nodeLower.y());
-         rc._g2d.drawRect(x, y, width, height);
+         rc.drawRect(x, y, width, height);
       }
 
 
@@ -243,9 +248,9 @@ class GVectorial2DRenderUnit
          if (borderWidth > 0) {
             final BasicStroke borderStroke = new BasicStroke(borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
-            rc._g2d.setStroke(borderStroke);
-            rc._g2d.setColor(rc._attributes._borderColor);
-            rc._g2d.drawPolyline(points._xPoints, points._yPoints, points._xPoints.length);
+            rc.setStroke(borderStroke);
+            rc.setColor(rc._attributes._borderColor);
+            rc.drawPolyline(points);
          }
       }
    }
@@ -255,8 +260,8 @@ class GVectorial2DRenderUnit
                                  final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                  final GVectorialRenderingContext rc) {
       // fill polygon
-      rc._g2d.setColor(rc._attributes._fillColor);
-      rc._g2d.fill(shape);
+      rc.setColor(rc._attributes._fillColor);
+      rc.fill(shape);
 
 
       // render border
@@ -266,9 +271,9 @@ class GVectorial2DRenderUnit
          if (borderWidth > 0) {
             final BasicStroke borderStroke = new BasicStroke(borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
-            rc._g2d.setStroke(borderStroke);
-            rc._g2d.setColor(rc._attributes._borderColor);
-            rc._g2d.draw(shape);
+            rc.setStroke(borderStroke);
+            rc.setColor(rc._attributes._borderColor);
+            rc.draw(shape);
          }
       }
    }

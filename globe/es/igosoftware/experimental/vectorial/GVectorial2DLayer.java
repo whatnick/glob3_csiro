@@ -63,8 +63,8 @@ import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GPair;
 import es.igosoftware.util.GUtils;
+import es.igosoftware.util.IFunction;
 import es.igosoftware.util.IPredicate;
-import es.igosoftware.util.ITransformer;
 import es.igosoftware.util.LRUCache;
 import es.igosoftware.util.LRUCache.Entry;
 import es.igosoftware.utils.GGlobeStateKeyCache;
@@ -839,9 +839,9 @@ public class GVectorial2DLayer
                   }
                });
 
-      return GCollections.collect(intersectingSectors, new ITransformer<GAxisAlignedRectangle, GAxisAlignedRectangle>() {
+      return GCollections.collect(intersectingSectors, new IFunction<GAxisAlignedRectangle, GAxisAlignedRectangle>() {
          @Override
-         public GAxisAlignedRectangle transform(final GAxisAlignedRectangle sector) {
+         public GAxisAlignedRectangle apply(final GAxisAlignedRectangle sector) {
             return tryToReduce(sector);
          }
 

@@ -52,7 +52,7 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GLogger;
-import es.igosoftware.util.ITransformer;
+import es.igosoftware.util.IFunction;
 import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Box;
@@ -387,9 +387,9 @@ public final class GWWUtils {
          return null;
       }
 
-      final List<Vec4> points = GCollections.collect(aaBox.getVertices(), new ITransformer<IVector3, Vec4>() {
+      final List<Vec4> points = GCollections.collect(aaBox.getVertices(), new IFunction<IVector3, Vec4>() {
          @Override
-         public Vec4 transform(final IVector3 element) {
+         public Vec4 apply(final IVector3 element) {
             return GWWUtils.toVec4(element);
          }
       });
