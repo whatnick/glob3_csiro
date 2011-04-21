@@ -19,9 +19,9 @@ import es.igosoftware.util.GPair;
 import es.igosoftware.util.LRUCache;
 
 
-public class GIconSymbol
+public class GIconRenderingSymbol
          extends
-            GSymbol {
+            GRenderingSymbol {
 
 
    private static class ImageData {
@@ -108,10 +108,10 @@ public class GIconSymbol
    private final ImageData     _imageData;
 
 
-   public GIconSymbol(final BufferedImage icon,
-                      final IVector2 point,
-                      final IMeasure<GArea> pointSize,
-                      final GVectorialRenderingContext rc) {
+   public GIconRenderingSymbol(final BufferedImage icon,
+                               final IVector2 point,
+                               final IMeasure<GArea> pointSize,
+                               final GVectorialRenderingContext rc) {
 
       _imageData = imageDataCache.get(icon);
 

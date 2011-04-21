@@ -91,8 +91,15 @@ public class GLocationManagerDialog
    private void initGUI() {
 
       final TableLayout thisLayout = new TableLayout(new double[][] {
-               { 6.0, TableLayoutConstants.FILL, TableLayoutConstants.FILL, TableLayoutConstants.FILL, TableLayoutConstants.FILL,
-                        3.0, TableLayoutConstants.FILL, 6.0 },
+               {
+                        6.0,
+                        TableLayoutConstants.FILL,
+                        TableLayoutConstants.FILL,
+                        TableLayoutConstants.FILL,
+                        TableLayoutConstants.FILL,
+                        3.0,
+                        TableLayoutConstants.FILL,
+                        6.0 },
                { 6.0, TableLayoutConstants.FILL, 6.0, TableLayoutConstants.MINIMUM, 6.0 } });
       thisLayout.setHGap(5);
       thisLayout.setVGap(5);

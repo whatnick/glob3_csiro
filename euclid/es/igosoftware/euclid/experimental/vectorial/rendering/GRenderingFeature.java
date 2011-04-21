@@ -8,32 +8,36 @@ import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.vector.IVector2;
 
 
-public abstract class GSymbol {
+public abstract class GRenderingFeature<
+
+GeometryT extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>
+
+> {
 
 
    public abstract boolean isBiggerThan(final double lodMinSize);
 
 
-   public final void draw(final IVector2 point,
+   public final void draw(final GeometryT geometry,
                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                           final GVectorialRenderingContext rc) {
       if (isBiggerThan(rc._renderingStyle.getLODMinSize())) {
-         rawDraw(point, feature, rc);
+         rawDraw(geometry, feature, rc);
       }
       else {
          if (rc._renderingStyle.isRenderLODIgnores() || rc._renderingStyle.isDebugRendering()) {
-            renderLODIgnore(point, feature, rc);
+            renderLODIgnore(geometry, feature, rc);
          }
       }
    }
 
 
-   protected abstract void renderLODIgnore(final IVector2 point,
+   protected abstract void renderLODIgnore(final GeometryT geometry,
                                            final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                            final GVectorialRenderingContext rc);
 
 
-   protected abstract void rawDraw(final IVector2 point,
+   protected abstract void rawDraw(final GeometryT geometry,
                                    final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                    final GVectorialRenderingContext rc);
 

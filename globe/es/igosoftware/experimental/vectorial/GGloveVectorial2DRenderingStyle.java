@@ -9,6 +9,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.ISurface2D;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.colors.GColorF;
 import es.igosoftware.euclid.colors.IColor;
@@ -422,6 +423,42 @@ public class GGloveVectorial2DRenderingStyle
                                      final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                      final GVectorialRenderingContext rc) {
       return getPointColor(point, feature, rc).muchDarker();
+   }
+
+
+   @Override
+   public IMeasure<GLength> getSurfaceBorderSize(final ISurface2D<?> surface,
+                                                 final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                                 final GVectorialRenderingContext rc) {
+      // TODO Auto-generated method stub
+      return null;
+   }
+
+
+   @Override
+   public IColor getSurfaceColor(final ISurface2D<?> surface,
+                                 final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                 final GVectorialRenderingContext rc) {
+      // TODO Auto-generated method stub
+      return null;
+   }
+
+
+   @Override
+   public IColor getSurfaceBorderColor(final ISurface2D<?> surface,
+                                       final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                       final GVectorialRenderingContext rc) {
+      // TODO Auto-generated method stub
+      return null;
+   }
+
+
+   @Override
+   public float getSurfaceOpacity(final ISurface2D<?> surface,
+                                  final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                  final GVectorialRenderingContext rc) {
+      // TODO Auto-generated method stub
+      return 0;
    }
 
 

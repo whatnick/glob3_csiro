@@ -198,7 +198,7 @@ public final class GPositionBox {
 
    private Position[] initializeVertices() {
       return new Position[] { //
-               new Position(_lower.latitude, _lower.longitude, _lower.elevation), //
+      new Position(_lower.latitude, _lower.longitude, _lower.elevation), //
                new Position(_lower.latitude, _lower.longitude, _upper.elevation), //
                new Position(_lower.latitude, _upper.longitude, _upper.elevation), //
                new Position(_lower.latitude, _upper.longitude, _lower.elevation), //

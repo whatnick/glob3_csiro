@@ -37,15 +37,18 @@
 package es.igosoftware.experimental.vectorial;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
 import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.ISurface2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.colors.GColorF;
 import es.igosoftware.euclid.colors.GColorI;
 import es.igosoftware.euclid.colors.IColor;
 import es.igosoftware.euclid.experimental.measurement.GArea;
@@ -53,16 +56,17 @@ import es.igosoftware.euclid.experimental.measurement.GLength;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GColorBrewerColorSchemeSet;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GColorScheme;
-import es.igosoftware.euclid.experimental.vectorial.rendering.GIconSymbol;
-import es.igosoftware.euclid.experimental.vectorial.rendering.GRectangleSymbol;
+import es.igosoftware.euclid.experimental.vectorial.rendering.GIconRenderingSymbol;
+import es.igosoftware.euclid.experimental.vectorial.rendering.GRectangleRenderingSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GRenderingStyleAbstract;
-import es.igosoftware.euclid.experimental.vectorial.rendering.GSymbol;
+import es.igosoftware.euclid.experimental.vectorial.rendering.GRenderingSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GUniqueValuesColorizer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorial2DRenderer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorialRenderingAttributes;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorialRenderingContext;
 import es.igosoftware.euclid.experimental.vectorial.rendering.IColorizer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.IRenderingStyle;
+import es.igosoftware.euclid.features.GGeometryType;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
@@ -80,16 +84,6 @@ public class GVectorial2DRenderingTest {
       System.out.println("Vectorial2D Rendering Test 0.1");
       System.out.println("------------------------------\n");
 
-
-      //      final GFileName fileName = GFileName.absoluteFromParts("home", "dgd", "Desktop", "sample-shp", "cartobrutal",
-      //               "world-modified", "world.shp");
-      //      final GFileName fileName = GFileName.absoluteFromParts("home", "dgd", "Desktop", "sample-shp", "shp", "argentina.shp",
-      //      "roads.shp");
-      //      final GFileName fileName = GFileName.absolute("home", "dgd", "Desktop", "sample-shp", "shp", "argentina.shp", "roads.shp");
-      //      final GFileName fileName = GFileName.absolute("home", "dgd", "Desktop", "sample-shp", "shp", "argentina.shp", "roads.shp");
-      //      final GFileName fileName = GFileName.absolute("home", "dgd", "Desktop", "sample-shp", "shp", "argentina.shp", "places.shp");
-      //      final GFileName fileName = GFileName.absolute("home", "dgd", "Desktop", "sample-shp", "cartobrutal", "world-modified",
-      //               "world4326.shp");
 
       final GFileName pointsFileName = GFileName.absolute("home", "dgd", "Desktop", "Data For Maps", "argentina.shapefiles",
                "americas_south_america_argentina_poi.shp");
@@ -186,16 +180,27 @@ public class GVectorial2DRenderingTest {
                                                                  return element.toString().trim().toLowerCase();
                                                               }
                                                            });
+
          private int              _categoryIndex  = -1;
+         private int              _countryIndex   = -1;
 
 
          @Override
          public void preprocessFeatures(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features) {
             //            System.out.println("FIELDS: " + features.getFields());
 
-            _pointColorizer.preprocessFeatures(features);
+            if (features.getGeometryType().contains(GGeometryType.POINT)) {
+               _pointColorizer.preprocessFeatures(features);
 
-            _categoryIndex = features.getFieldIndex("CATEGORY");
+               _categoryIndex = features.getFieldIndex("CATEGORY");
+            }
+
+            if (features.getGeometryType().contains(GGeometryType.SURFACE)) {
+               //               _pointColorizer.preprocessFeatures(features);
+
+               _countryIndex = features.getFieldIndex("NEV_Countr");
+            }
+
          }
 
 
@@ -234,21 +239,21 @@ public class GVectorial2DRenderingTest {
 
 
          @Override
-         public GSymbol getPointSymbol(final IVector2 point,
-                                       final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                       final GVectorialRenderingContext rc) {
+         public GRenderingSymbol getPointSymbol(final IVector2 point,
+                                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                                final GVectorialRenderingContext rc) {
             if (isCategory(feature, "automotive")) {
                final IMeasure<GArea> pointSize = getPointSize(point, feature, rc);
-               return new GIconSymbol(automotiveIcon, point, pointSize, rc);
+               return new GIconRenderingSymbol(automotiveIcon, point, pointSize, rc);
             }
             else if (isCategory(feature, "government and public services")) {
                final IMeasure<GArea> pointSize = getPointSize(point, feature, rc);
-               return new GIconSymbol(governmentIcon, point, pointSize, rc);
+               return new GIconRenderingSymbol(governmentIcon, point, pointSize, rc);
             }
             else if (isCategory(feature, "tourism")) {
                final IMeasure<GArea> pointSize = getPointSize(point, feature, rc);
                final IMeasure<GLength> pointBorderSize = getPointBorderSize(point, feature, rc);
-               return new GRectangleSymbol(point, pointSize, pointBorderSize, rc);
+               return new GRectangleRenderingSymbol(point, pointSize, pointBorderSize, rc);
             }
             else {
                return super.getPointSymbol(point, feature, rc);
@@ -319,16 +324,6 @@ public class GVectorial2DRenderingTest {
 
          @Override
          public void preRenderImage(final BufferedImage renderedImage) {
-            //            final Graphics2D g2d = renderedImage.createGraphics();
-            //            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            //            g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-            //
-            //            g2d.setBackground(Color.WHITE);
-            //            g2d.clearRect(0, 0, renderedImage.getWidth(), renderedImage.getHeight());
-            //
-            //            g2d.dispose();
-
-
             _pointColorizer.preRenderImage(renderedImage);
          }
 
@@ -342,6 +337,53 @@ public class GVectorial2DRenderingTest {
          @Override
          public IMeasure<GArea> getMaximumSize() {
             return getPointSize(null, null, null);
+         }
+
+
+         @Override
+         public IMeasure<GLength> getSurfaceBorderSize(final ISurface2D<?> surface,
+                                                       final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                                       final GVectorialRenderingContext rc) {
+            final String country = (String) feature.getAttribute(_countryIndex);
+            if ((country != null) && country.trim().toLowerCase().equals("argentina")) {
+               return GLength.Kilometer.value(2);
+            }
+            return GLength.Kilometer.value(1);
+         }
+
+
+         @Override
+         public IColor getSurfaceColor(final ISurface2D<?> surface,
+                                       final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                       final GVectorialRenderingContext rc) {
+            final String country = (String) feature.getAttribute(_countryIndex);
+            if ((country != null) && country.trim().toLowerCase().equals("argentina")) {
+               //               return GColorI.GREEN.muchLighter();
+               return GColorF.newRGB256(204, 224, 143).lighter();
+            }
+            //            return GColorI.GRAY.lighter();
+            return GColorF.newRGB256(204, 224, 143).muchDarker();
+         }
+
+
+         @Override
+         public float getSurfaceOpacity(final ISurface2D<?> surface,
+                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                        final GVectorialRenderingContext rc) {
+            //            final String country = (String) feature.getAttribute(_countryIndex);
+            //            if ((country != null) && country.trim().toLowerCase().equals("argentina")) {
+            //               return 1;
+            //            }
+            //            return 0.75f;
+            return 1;
+         }
+
+
+         @Override
+         public IColor getSurfaceBorderColor(final ISurface2D<?> surface,
+                                             final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                             final GVectorialRenderingContext rc) {
+            return getSurfaceColor(surface, feature, rc).muchDarker();
          }
 
 
@@ -386,6 +428,9 @@ public class GVectorial2DRenderingTest {
       final BufferedImage image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_4BYTE_ABGR);
       image.setAccelerationPriority(1);
 
+      //      fillImage(image, GColorF.newRGB256(135, 183, 219).asAWTColor());
+      fillImage(image, GColorF.newRGB256(211, 237, 249).darker().asAWTColor());
+
       for (final GPair<GVectorial2DRenderer, IRenderingStyle> renderer : renderers) {
          renderer._first.render(region, image, attributes, renderer._second);
       }
@@ -400,6 +445,19 @@ public class GVectorial2DRenderingTest {
       if (depth < maxDepth) {
          render(renderers, region, imageWidth * 2, imageHeight * 2, directoryName, attributes, depth + 1, maxDepth);
       }
+   }
+
+
+   private static void fillImage(final BufferedImage image,
+                                 final Color color) {
+      final Graphics2D g2d = image.createGraphics();
+      //      g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+      //      g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+
+      g2d.setBackground(color);
+      g2d.clearRect(0, 0, image.getWidth(), image.getHeight());
+
+      g2d.dispose();
    }
 
 

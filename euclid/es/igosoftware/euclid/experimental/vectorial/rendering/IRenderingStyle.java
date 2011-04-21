@@ -5,6 +5,7 @@ package es.igosoftware.euclid.experimental.vectorial.rendering;
 import java.awt.image.BufferedImage;
 
 import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.ISurface2D;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.colors.IColor;
 import es.igosoftware.euclid.experimental.measurement.GArea;
@@ -83,8 +84,45 @@ public interface IRenderingStyle {
                          final GVectorialRenderingContext rc);
 
 
-   public GSymbol getPointSymbol(final IVector2 point,
+   public GRenderingSymbol getPointSymbol(final IVector2 point,
+                                          final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                          final GVectorialRenderingContext rc);
+
+
+   /* surfaces */
+   public IMeasure<GLength> getSurfaceBorderSize(final ISurface2D<?> surface,
+                                                 final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                                 final GVectorialRenderingContext rc);
+
+
+   public IColor getSurfaceColor(final ISurface2D<?> surface,
                                  final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                  final GVectorialRenderingContext rc);
+
+
+   public IColor getSurfaceBorderColor(final ISurface2D<?> surface,
+                                       final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                       final GVectorialRenderingContext rc);
+
+
+   public float getSurfaceOpacity(final ISurface2D<?> surface,
+                                  final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                  final GVectorialRenderingContext rc);
+
+
+   //   public GRenderingShape<? extends ISurface2D<?>> getSurfaceShape(final ISurface2D<?> surface,
+   //                                                                   final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+   //                                                                   final GVectorialRenderingContext rc);
+
+
+   public GRenderingShape<? extends ISurface2D<?>> getSurfaceShape(final ISurface2D<?> surface,
+                                                                   final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                                                   final GVectorialRenderingContext rc);
+
+
+   public void drawSurface(final ISurface2D<?> surface,
+                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                           final GVectorialRenderingContext rc);
+
 
 }

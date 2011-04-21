@@ -44,10 +44,36 @@ public class GJarCleanerExample {
    }
 
 
-   private static final String[] SKIP_WILDCARDS = new String[] { ".svn", "all_contents", "descripciones", "dvd", "imagenes",
-            "modelos3d", "new_data_war", "panoramics", "videos", "documentación", "masters", ".pdf", ".doc", ".flv", ".jar",
-            "http-cache", "3d-icons", "PlanarPanos", "planarPanos", "Documentation", "documentation", "junit", "jtexample",
-            "CHANGES", "geotools", "opengis", "worldwindow", "ucar", "pushpins" };
+   private static final String[] SKIP_WILDCARDS = new String[] {
+            ".svn",
+            "all_contents",
+            "descripciones",
+            "dvd",
+            "imagenes",
+            "modelos3d",
+            "new_data_war",
+            "panoramics",
+            "videos",
+            "documentación",
+            "masters",
+            ".pdf",
+            ".doc",
+            ".flv",
+            ".jar",
+            "http-cache",
+            "3d-icons",
+            "PlanarPanos",
+            "planarPanos",
+            "Documentation",
+            "documentation",
+            "junit",
+            "jtexample",
+            "CHANGES",
+            "geotools",
+            "opengis",
+            "worldwindow",
+            "ucar",
+            "pushpins"                         };
 
 
    private static boolean skipEntry(final JarEntry entry) {

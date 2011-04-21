@@ -6,9 +6,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.Shape;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 
 import es.igosoftware.euclid.IBoundedGeometry;
@@ -23,10 +21,8 @@ import es.igosoftware.euclid.ntree.GElementGeometryPair;
 import es.igosoftware.euclid.ntree.GGTInnerNode;
 import es.igosoftware.euclid.ntree.GGTNode;
 import es.igosoftware.euclid.projection.GProjection;
-import es.igosoftware.euclid.shape.IComplexPolygon2D;
 import es.igosoftware.euclid.shape.IPolygon2D;
 import es.igosoftware.euclid.shape.IPolygonalChain2D;
-import es.igosoftware.euclid.shape.ISimplePolygon2D;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.util.GMath;
@@ -207,21 +203,8 @@ class GVectorial2DRenderUnit
          }
          else if (geometry instanceof IPolygon2D) {
             final IPolygon2D polygon = (IPolygon2D) geometry;
-            if (polygon instanceof IComplexPolygon2D) {
-               final IComplexPolygon2D complexPolygon = (IComplexPolygon2D) polygon;
 
-               final Area complexShape = rc.getPoints(complexPolygon.getHull()).asArea();
-
-               for (final ISimplePolygon2D hole : complexPolygon.getHoles()) {
-                  // complexShape.exclusiveOr(getPoints(hole, scale, region).asArea());
-                  complexShape.subtract(rc.getPoints(hole).asArea());
-               }
-
-               drawShape(complexShape, feature, rc);
-            }
-            else {
-               drawShape(rc.getPoints(polygon).asShape(), feature, rc);
-            }
+            rc._renderingStyle.drawSurface(polygon, feature, rc);
          }
          else {
             System.out.println("Warning: geometry type " + geometry.getClass() + " not supported");
@@ -244,29 +227,6 @@ class GVectorial2DRenderUnit
             rc.setStroke(borderStroke);
             rc.setColor(rc._attributes._borderColor);
             rc.drawPolyline(points);
-         }
-      }
-   }
-
-
-   private static void drawShape(final Shape shape,
-                                 final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                 final GVectorialRenderingContext rc) {
-      // fill polygon
-      rc.setColor(rc._attributes._fillColor);
-      rc.fill(shape);
-
-
-      // render border
-      if (rc._attributes._borderWidth > 0) {
-         //final float borderWidth = (float) (attributes._borderWidth / ((scale.x() + scale.y()) / 2));
-         final float borderWidth = rc._attributes._borderWidth;
-         if (borderWidth > 0) {
-            final BasicStroke borderStroke = new BasicStroke(borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-
-            rc.setStroke(borderStroke);
-            rc.setColor(rc._attributes._borderColor);
-            rc.draw(shape);
          }
       }
    }

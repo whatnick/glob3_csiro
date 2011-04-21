@@ -2,12 +2,18 @@
 
 package es.igosoftware.euclid.experimental.vectorial.rendering;
 
+import java.awt.geom.Area;
+
 import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.ISurface2D;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.experimental.measurement.GArea;
 import es.igosoftware.euclid.experimental.measurement.GLength;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
 import es.igosoftware.euclid.features.IGlobeFeature;
+import es.igosoftware.euclid.shape.IComplexPolygon2D;
+import es.igosoftware.euclid.shape.IPolygon2D;
+import es.igosoftware.euclid.shape.ISimplePolygon2D;
 import es.igosoftware.euclid.vector.IVector2;
 
 
@@ -16,13 +22,14 @@ public abstract class GRenderingStyleAbstract
             IRenderingStyle {
 
 
+   /* points */
    @Override
-   public GSymbol getPointSymbol(final IVector2 point,
-                                 final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                 final GVectorialRenderingContext rc) {
+   public GRenderingSymbol getPointSymbol(final IVector2 point,
+                                          final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                          final GVectorialRenderingContext rc) {
       final IMeasure<GArea> pointSize = getPointSize(point, feature, rc);
       final IMeasure<GLength> pointBorderSize = getPointBorderSize(point, feature, rc);
-      return new GEllipseSymbol(point, pointSize, pointBorderSize, rc);
+      return new GEllipseRenderingSymbol(point, pointSize, pointBorderSize, rc);
    }
 
 
@@ -31,10 +38,65 @@ public abstract class GRenderingStyleAbstract
                          final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                          final GVectorialRenderingContext rc) {
 
-      final GSymbol symbol = getPointSymbol(point, feature, rc);
-
-      symbol.draw(point, feature, rc);
+      final GRenderingSymbol symbol = getPointSymbol(point, feature, rc);
+      if (symbol != null) {
+         symbol.draw(point, feature, rc);
+      }
    }
+
+
+   /* surfaces */
+   @Override
+   public GPolygonRenderingShape getSurfaceShape(final ISurface2D<?> surface,
+                                                 final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                                 final GVectorialRenderingContext rc) {
+
+      final IMeasure<GLength> surfaceBorderSize = getSurfaceBorderSize(surface, feature, rc);
+
+      if (surface instanceof IPolygon2D) {
+         final IPolygon2D polygon = (IPolygon2D) surface;
+         if (polygon instanceof IComplexPolygon2D) {
+            final IComplexPolygon2D complexPolygon = (IComplexPolygon2D) polygon;
+
+            final Area complexShape = rc.getPoints(complexPolygon.getHull()).asArea();
+
+            for (final ISimplePolygon2D hole : complexPolygon.getHoles()) {
+               // complexShape.exclusiveOr(getPoints(hole, scale, region).asArea());
+               complexShape.subtract(rc.getPoints(hole).asArea());
+            }
+
+            return new GPolygonRenderingShape(polygon, complexShape, surfaceBorderSize, rc);
+         }
+
+
+         return new GPolygonRenderingShape(polygon, rc.getPoints(polygon).asShape(), surfaceBorderSize, rc);
+      }
+
+      throw new RuntimeException("Surface type (" + surface.getClass() + ") not supported");
+   }
+
+
+   @Override
+   public void drawSurface(final ISurface2D<?> surface,
+                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                           final GVectorialRenderingContext rc) {
+      final GPolygonRenderingShape shape = getSurfaceShape(surface, feature, rc);
+      if (shape != null) {
+         shape.draw((IPolygon2D) surface, feature, rc);
+      }
+   }
+
+
+   //   @Override
+   //   public void drawSurface(final ISurface2D<?> surface,
+   //                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+   //                           final GVectorialRenderingContext rc) {
+   //
+   //      final GRenderingShape<? extends ISurface2D<?>> shape = getSurfaceShape(surface, feature, rc);
+   //      if (shape != null) {
+   //         shape.draw(surface, feature, rc);
+   //      }
+   //   }
 
 
 }
