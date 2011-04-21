@@ -7,7 +7,10 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImageOp;
+import java.awt.image.RescaleOp;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.projection.GProjection;
@@ -16,14 +19,15 @@ import es.igosoftware.euclid.vector.IVector2;
 
 
 public class GVectorialRenderingContext {
-   private final IVector2              _scale;
-   private final GAxisAlignedRectangle _region;
-   final GAxisAlignedRectangle         _extendedRegion;
-   final GVectorialRenderingAttributes _attributes;
-   final IRenderingStyle               _renderingStyle;
-   final GProjection                   _projection;
-   private final Graphics2D            _g2d;
-   private final BufferedImage         _renderedImage;
+   private static final AffineTransform IDENTITY_TRANSFORM = new AffineTransform();
+   private final IVector2               _scale;
+   private final GAxisAlignedRectangle  _region;
+   final GAxisAlignedRectangle          _extendedRegion;
+   final GVectorialRenderingAttributes  _attributes;
+   final IRenderingStyle                _renderingStyle;
+   final GProjection                    _projection;
+   private final Graphics2D             _g2d;
+   private final BufferedImage          _renderedImage;
 
 
    GVectorialRenderingContext(final IVector2 scale,
@@ -194,26 +198,78 @@ public class GVectorialRenderingContext {
    }
 
 
-   //   void drawImage(final Image image,
-   //                  final double x,
-   //                  final double y,
-   //                  final double width,
-   //                  final double height) {
+   //   void drawFlippedImage(final Image image,
+   //                         final double x,
+   //                         final double y,
+   //                         final double width,
+   //                         final double height) {
    //      _g2d.drawImage(image, toInt(x), toInt(y), toInt(width), toInt(height), null);
    //   }
 
 
-   void drawFlippedImage(final Image image,
-                         final double x,
-                         final double y,
-                         final double width,
-                         final double height) {
+   void drawImage(final Image image,
+                  final double x,
+                  final double y,
+                  final double width,
+                  final double height) {
+      final AffineTransform currentTransform = _g2d.getTransform();
+      _g2d.setTransform(IDENTITY_TRANSFORM);
 
-      _g2d.drawImage(//
-               image, // 
-               toInt(x), toInt(y + height), toInt(x + width), toInt(y), //
-               0, 0, toInt(width), toInt(height), //
-               null);
+      final int imageHeight = _renderedImage.getHeight();
+      _g2d.drawImage(image, toInt(x), imageHeight - toInt(y), toInt(width), toInt(height), null);
+
+      _g2d.setTransform(currentTransform);
+
+
+      //      _g2d.drawImage(//
+      //               image, // 
+      //               toInt(x), toInt(y + height), toInt(x + width), toInt(y), //
+      //               0, 0, toInt(width), toInt(height), //
+      //               null);
+   }
+
+
+   void drawImage(final Image image,
+                  final double x,
+                  final double y) {
+      final AffineTransform currentTransform = _g2d.getTransform();
+      _g2d.setTransform(IDENTITY_TRANSFORM);
+
+      final int imageHeight = _renderedImage.getHeight();
+      _g2d.drawImage(image, toInt(x), imageHeight - toInt(y), null);
+
+      _g2d.setTransform(currentTransform);
+
+
+      //      _g2d.drawImage(//
+      //               image, // 
+      //               toInt(x), toInt(y + height), toInt(x + width), toInt(y), //
+      //               0, 0, toInt(width), toInt(height), //
+      //               null);
+   }
+
+
+   void drawImage(final BufferedImage image,
+                  final double x,
+                  final double y,
+                  final float opacity) {
+
+      if (opacity >= 1) {
+         drawImage(image, x, y);
+      }
+
+      final float[] scales = { 1f, 1f, 1f, opacity };
+      final float[] offsets = new float[4];
+      final BufferedImageOp rop = new RescaleOp(scales, offsets, null);
+
+      final AffineTransform currentTransform = _g2d.getTransform();
+      _g2d.setTransform(IDENTITY_TRANSFORM);
+
+      final int imageHeight = _renderedImage.getHeight();
+
+      _g2d.drawImage(image, rop, toInt(x), imageHeight - toInt(y));
+
+      _g2d.setTransform(currentTransform);
    }
 
 

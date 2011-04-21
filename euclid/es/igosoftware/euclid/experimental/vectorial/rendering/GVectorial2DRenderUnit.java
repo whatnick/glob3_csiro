@@ -182,7 +182,7 @@ class GVectorial2DRenderUnit
       }
       else if (geometry instanceof IVector2) {
          final IVector2 point = (IVector2) geometry;
-         renderPoint(point, feature, rc);
+         rc._renderingStyle.drawPoint(point, feature, rc);
       }
       else {
          // size validation only for non-points
@@ -228,13 +228,6 @@ class GVectorial2DRenderUnit
          }
 
       }
-   }
-
-
-   private static void renderPoint(final IVector2 point,
-                                   final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                   final GVectorialRenderingContext rc) {
-      rc._renderingStyle.drawPoint(point, feature, rc);
    }
 
 

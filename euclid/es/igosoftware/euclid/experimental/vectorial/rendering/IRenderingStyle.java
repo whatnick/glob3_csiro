@@ -8,6 +8,7 @@ import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.colors.IColor;
 import es.igosoftware.euclid.experimental.measurement.GArea;
+import es.igosoftware.euclid.experimental.measurement.GLength;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
@@ -52,13 +53,29 @@ public interface IRenderingStyle {
 
 
    /* point style */
-   public IMeasure<GArea> getPointSize(final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature);
+   public IMeasure<GArea> getPointSize(final IVector2 point,
+                                       final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                       final GVectorialRenderingContext rc);
 
 
-   public IColor getPointColor(final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature);
+   public IMeasure<GLength> getPointBorderSize(final IVector2 point,
+                                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                               final GVectorialRenderingContext rc);
 
 
-   public float getPointOpacity(final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature);
+   public IColor getPointColor(final IVector2 point,
+                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                               final GVectorialRenderingContext rc);
+
+
+   public IColor getPointBorderColor(final IVector2 point,
+                                     final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                     final GVectorialRenderingContext rc);
+
+
+   public float getPointOpacity(final IVector2 point,
+                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                final GVectorialRenderingContext rc);
 
 
    public void drawPoint(final IVector2 point,

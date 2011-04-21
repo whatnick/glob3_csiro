@@ -84,6 +84,27 @@ public class GVectorial2DRenderer {
    }
 
 
+   public void render(final GAxisAlignedRectangle region,
+                      final BufferedImage image,
+                      final GVectorialRenderingAttributes attributes,
+                      final IRenderingStyle renderingStyle) {
+      GAssert.notNull(region, "region");
+      GAssert.notNull(image, "image");
+      GAssert.notNull(attributes, "attributes");
+      GAssert.notNull(renderingStyle, "renderingStyle");
+
+      final IVectorial2DRenderUnit renderUnit = new GVectorial2DRenderUnit();
+
+      renderingStyle.preprocessFeatures(_features);
+
+      renderingStyle.preRenderImage(image);
+
+      renderUnit.render(image, _quadtree, _features.getProjection(), region, attributes, renderingStyle);
+
+      renderingStyle.postRenderImage(image);
+   }
+
+
    public BufferedImage render(final GAxisAlignedRectangle region,
                                final int imageWidth,
                                final int imageHeight,
@@ -92,20 +113,12 @@ public class GVectorial2DRenderer {
       GAssert.isPositive(imageWidth, "imageWidth");
       GAssert.isPositive(imageHeight, "imageHeight");
 
-      final IVectorial2DRenderUnit renderUnit = new GVectorial2DRenderUnit();
+      final BufferedImage image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_4BYTE_ABGR);
+      image.setAccelerationPriority(1);
 
-      renderingStyle.preprocessFeatures(_features);
+      render(region, image, attributes, renderingStyle);
 
-      final BufferedImage renderedImage = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_4BYTE_ABGR);
-      renderedImage.setAccelerationPriority(1);
-
-      renderingStyle.preRenderImage(renderedImage);
-
-      renderUnit.render(renderedImage, _quadtree, _features.getProjection(), region, attributes, renderingStyle);
-
-      renderingStyle.postRenderImage(renderedImage);
-
-      return renderedImage;
+      return image;
    }
 
 

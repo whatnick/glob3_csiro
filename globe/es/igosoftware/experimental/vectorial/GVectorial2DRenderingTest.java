@@ -49,6 +49,7 @@ import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.colors.GColorI;
 import es.igosoftware.euclid.colors.IColor;
 import es.igosoftware.euclid.experimental.measurement.GArea;
+import es.igosoftware.euclid.experimental.measurement.GLength;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GColorBrewerColorSchemeSet;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GColorScheme;
@@ -68,6 +69,7 @@ import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
+import es.igosoftware.util.GPair;
 import es.igosoftware.util.GStringUtils;
 import es.igosoftware.util.IFunction;
 import es.igosoftware.utils.GWWUtils;
@@ -89,25 +91,30 @@ public class GVectorial2DRenderingTest {
       //      final GFileName fileName = GFileName.absolute("home", "dgd", "Desktop", "sample-shp", "cartobrutal", "world-modified",
       //               "world4326.shp");
 
-      final GFileName fileName = GFileName.absolute("home", "dgd", "Escritorio", "argentina.shapefiles",
+      final GFileName pointsFileName = GFileName.absolute("home", "dgd", "Desktop", "Data For Maps", "argentina.shapefiles",
                "americas_south_america_argentina_poi.shp");
+
+      final GFileName surfacesFileName = GFileName.absolute("home", "dgd", "Desktop", "Data For Maps",
+               "10m-admin-1-states-provinces-shp", "10m_admin_1_states_provinces_shp.shp");
 
       final GProjection projection = GProjection.EPSG_4326;
 
+      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> pointsFeatures = loadFeatures(
+               pointsFileName, projection);
 
-      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features = loadFeatures(
-               fileName, projection);
+      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> surfacesFeatures = loadFeatures(
+               surfacesFileName, projection);
+
+      final GAxisAlignedOrthotope<IVector2, ?> pointsFeaturesBounds = pointsFeatures.getBounds();
 
 
-      final GAxisAlignedOrthotope<IVector2, ?> featuresBounds = features.getBounds();
-
-
-      final GVectorial2DRenderer renderer = createRenderer(features);
+      final GVectorial2DRenderer pointsRenderer = createRenderer(pointsFeatures);
+      final GVectorial2DRenderer surfacesRenderer = createRenderer(surfacesFeatures);
 
 
       //      final GAxisAlignedRectangle region = ((GAxisAlignedRectangle) centerBounds(multipleOfSmallestDimention(featuresBounds),
       //               featuresBounds.getCenter()));
-      final GAxisAlignedRectangle region = featuresBounds.asRectangle().expandedByPercent(0.05);
+      final GAxisAlignedRectangle region = pointsFeaturesBounds.asRectangle().expandedByPercent(0.05);
 
 
       final GFileName directoryName = GFileName.relative("render");
@@ -116,7 +123,7 @@ public class GVectorial2DRenderingTest {
       final Color fillColor = new Color(0.5f, 0.5f, 1, 0.75f);
       //      final Color fillColor = new Color(0.5f, 0.5f, 1);
       final Color borderColor = fillColor.darker().darker().darker().darker().darker();
-      final double lodMinSize = 5;
+      final double lodMinSize = 1;
       final int textureDimension = 256;
       final boolean debugRendering = false;
 
@@ -142,9 +149,14 @@ public class GVectorial2DRenderingTest {
 
       final IRenderingStyle renderingStyle = createRenderingStyle(renderLODIgnores, lodMinSize, debugRendering);
 
+      @SuppressWarnings("unchecked")
+      final GPair<GVectorial2DRenderer, IRenderingStyle>[] renderers = (GPair<GVectorial2DRenderer, IRenderingStyle>[]) new GPair<?, ?>[] {
+               new GPair<GVectorial2DRenderer, IRenderingStyle>(surfacesRenderer, renderingStyle),
+               new GPair<GVectorial2DRenderer, IRenderingStyle>(pointsRenderer, renderingStyle) };
+
       final int depth = 0;
       final int maxDepth = 3;
-      render(renderer, region, imageWidth, imageHeight, directoryName, attributes, renderingStyle, depth, maxDepth);
+      render(renderers, region, imageWidth, imageHeight, directoryName, attributes, depth, maxDepth);
    }
 
 
@@ -152,7 +164,11 @@ public class GVectorial2DRenderingTest {
                                                                final double lodMinSize,
                                                                final boolean debugRendering) throws IOException {
 
-      final BufferedImage automotiveIcon = ImageIO.read(GFileName.absolute("home", "dgd", "Desktop", "automotive-small.png").asFile());
+      final GFileName symbologyDirectory = GFileName.absolute("home", "dgd", "Desktop", "GIS Symbology");
+
+      final BufferedImage automotiveIcon = ImageIO.read(GFileName.fromParentAndParts(symbologyDirectory, "automotive-128x128.png").asFile());
+      final BufferedImage governmentIcon = ImageIO.read(GFileName.fromParentAndParts(symbologyDirectory, "government-128x128.png").asFile());
+
 
       final GColorScheme colorScheme = GColorBrewerColorSchemeSet.INSTANCE.getSchemes(9, GColorScheme.Type.Qualitative).get(2);
 
@@ -222,12 +238,17 @@ public class GVectorial2DRenderingTest {
                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                        final GVectorialRenderingContext rc) {
             if (isCategory(feature, "automotive")) {
-               final IMeasure<GArea> pointSize = getPointSize(feature);
+               final IMeasure<GArea> pointSize = getPointSize(point, feature, rc);
                return new GIconSymbol(automotiveIcon, point, pointSize, rc);
             }
             else if (isCategory(feature, "government and public services")) {
-               final IMeasure<GArea> pointSize = getPointSize(feature);
-               return new GRectangleSymbol(point, pointSize, rc);
+               final IMeasure<GArea> pointSize = getPointSize(point, feature, rc);
+               return new GIconSymbol(governmentIcon, point, pointSize, rc);
+            }
+            else if (isCategory(feature, "tourism")) {
+               final IMeasure<GArea> pointSize = getPointSize(point, feature, rc);
+               final IMeasure<GLength> pointBorderSize = getPointBorderSize(point, feature, rc);
+               return new GRectangleSymbol(point, pointSize, pointBorderSize, rc);
             }
             else {
                return super.getPointSymbol(point, feature, rc);
@@ -236,20 +257,42 @@ public class GVectorial2DRenderingTest {
 
 
          @Override
-         public IMeasure<GArea> getPointSize(final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature) {
-            return GArea.SquareKilometer.value(500);
+         public IMeasure<GArea> getPointSize(final IVector2 point,
+                                             final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                             final GVectorialRenderingContext rc) {
+            return GArea.SquareKilometer.value(250);
          }
 
 
          @Override
-         public float getPointOpacity(final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature) {
+         public IMeasure<GLength> getPointBorderSize(final IVector2 point,
+                                                     final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                                     final GVectorialRenderingContext rc) {
+            return GLength.Kilometer.value(2);
+         }
+
+
+         @Override
+         public float getPointOpacity(final IVector2 point,
+                                      final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                      final GVectorialRenderingContext rc) {
             return 0.75f;
          }
 
 
          @Override
-         public IColor getPointColor(final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature) {
+         public IColor getPointColor(final IVector2 point,
+                                     final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                     final GVectorialRenderingContext rc) {
             return _pointColorizer.getColor(feature);
+         }
+
+
+         @Override
+         public IColor getPointBorderColor(final IVector2 point,
+                                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                           final GVectorialRenderingContext rc) {
+            return _pointColorizer.getColor(feature).muchDarker();
          }
 
 
@@ -298,8 +341,9 @@ public class GVectorial2DRenderingTest {
 
          @Override
          public IMeasure<GArea> getMaximumSize() {
-            return getPointSize(null);
+            return getPointSize(null, null, null);
          }
+
 
       };
 
@@ -328,35 +372,33 @@ public class GVectorial2DRenderingTest {
    }
 
 
-   private static void render(final GVectorial2DRenderer renderer,
+   private static void render(final GPair<GVectorial2DRenderer, IRenderingStyle>[] renderers,
                               final GAxisAlignedRectangle region,
                               final int imageWidth,
                               final int imageHeight,
                               final GFileName directoryName,
                               final GVectorialRenderingAttributes attributes,
-                              final IRenderingStyle renderingStyle,
                               final int depth,
                               final int maxDepth) throws IOException {
 
       final long start = System.currentTimeMillis();
 
-      final BufferedImage renderedImage = renderer.render(region, imageWidth, imageHeight, attributes, renderingStyle);
+      final BufferedImage image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_4BYTE_ABGR);
+      image.setAccelerationPriority(1);
+
+      for (final GPair<GVectorial2DRenderer, IRenderingStyle> renderer : renderers) {
+         renderer._first.render(region, image, attributes, renderer._second);
+      }
 
       final String imageName = "" + depth;
       final GFileName fileName = GFileName.fromParentAndParts(directoryName, imageName + ".png");
-      ImageIO.write(renderedImage, "png", fileName.asFile());
+      ImageIO.write(image, "png", fileName.asFile());
 
       System.out.println("- Rendered \"" + imageName + ".png\" (" + imageWidth + "x" + imageHeight + ") in "
                          + GStringUtils.getTimeMessage(System.currentTimeMillis() - start, false));
 
       if (depth < maxDepth) {
-         final GVectorialRenderingAttributes newAttributes = new GVectorialRenderingAttributes( //
-                  attributes._borderWidth, //
-                  attributes._fillColor, //
-                  attributes._borderColor);
-
-         render(renderer, region, imageWidth * 2, imageHeight * 2, directoryName, newAttributes, renderingStyle, depth + 1,
-                  maxDepth);
+         render(renderers, region, imageWidth * 2, imageHeight * 2, directoryName, attributes, depth + 1, maxDepth);
       }
    }
 

@@ -13,8 +13,10 @@ import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.colors.GColorF;
 import es.igosoftware.euclid.colors.IColor;
 import es.igosoftware.euclid.experimental.measurement.GArea;
+import es.igosoftware.euclid.experimental.measurement.GLength;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GRenderingStyleAbstract;
+import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorialRenderingContext;
 import es.igosoftware.euclid.features.GGeometryType;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
@@ -55,6 +57,7 @@ public class GGloveVectorial2DRenderingStyle
 
    // point style 
    private IMeasure<GArea>          _pointSize        = GArea.SquareKilometer.value(10);
+   private final IMeasure<GLength>  _pointBorderSize  = GLength.Kilometer.value(1);
    private IColor                   _pointColor       = GColorF.WHITE;
    private float                    _pointOpacity     = 1;
 
@@ -237,6 +240,11 @@ public class GGloveVectorial2DRenderingStyle
    }
 
 
+   private IMeasure<GLength> getPointBorderSize() {
+      return _pointBorderSize;
+   }
+
+
    public void setPointSize(final IMeasure<GArea> newPointSize) {
       if (GUtils.equals(newPointSize, _pointSize)) {
          return;
@@ -372,19 +380,33 @@ public class GGloveVectorial2DRenderingStyle
 
 
    @Override
-   public IMeasure<GArea> getPointSize(final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature) {
+   public IMeasure<GArea> getPointSize(final IVector2 point,
+                                       final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                       final GVectorialRenderingContext rc) {
       return getPointSize();
    }
 
 
    @Override
-   public IColor getPointColor(final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature) {
+   public IMeasure<GLength> getPointBorderSize(final IVector2 point,
+                                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                               final GVectorialRenderingContext rc) {
+      return getPointBorderSize();
+   }
+
+
+   @Override
+   public IColor getPointColor(final IVector2 point,
+                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                               final GVectorialRenderingContext rc) {
       return getPointColor();
    }
 
 
    @Override
-   public float getPointOpacity(final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature) {
+   public float getPointOpacity(final IVector2 point,
+                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                final GVectorialRenderingContext rc) {
       return getPointOpacity();
    }
 
@@ -393,5 +415,14 @@ public class GGloveVectorial2DRenderingStyle
    public IMeasure<GArea> getMaximumSize() {
       return getPointSize();
    }
+
+
+   @Override
+   public IColor getPointBorderColor(final IVector2 point,
+                                     final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                     final GVectorialRenderingContext rc) {
+      return getPointColor(point, feature, rc).muchDarker();
+   }
+
 
 }

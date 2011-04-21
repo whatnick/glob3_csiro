@@ -101,11 +101,21 @@ public class GVertexContainerTest {
             GColorI.newRGB(0.1f, 0.2f, 0.3f), //
             GColorI.newRGB(0.11f, 0.22f, 0.33f)     };
 
-   final private static IVector3[] sortedPoints      = { new GVector3D(3, 2, 1), new GVector3D(1, 0, 0), new GVector3D(1, 1, 2),
-            new GVector3D(3, 3, 3), new GVector3D(2, 2, 2), new GVector3D(1, 1, 1), new GVector3D(0, 0, 0),
-            new GVector3D(1, 2, 2), new GVector3D(1, 1, 0) };
+   final private static IVector3[] sortedPoints      = {
+            new GVector3D(3, 2, 1),
+            new GVector3D(1, 0, 0),
+            new GVector3D(1, 1, 2),
+            new GVector3D(3, 3, 3),
+            new GVector3D(2, 2, 2),
+            new GVector3D(1, 1, 1),
+            new GVector3D(0, 0, 0),
+            new GVector3D(1, 2, 2),
+            new GVector3D(1, 1, 0)                  };
 
-   final private static IVector3[] sortedSubPoints   = { new GVector3D(1, 0, 0), new GVector3D(1, 1, 2), new GVector3D(1, 1, 1),
+   final private static IVector3[] sortedSubPoints   = {
+            new GVector3D(1, 0, 0),
+            new GVector3D(1, 1, 2),
+            new GVector3D(1, 1, 1),
             new GVector3D(3, 3, 3),                 };
 
 
