@@ -5,6 +5,7 @@ package es.igosoftware.euclid.experimental.vectorial.rendering;
 import java.awt.image.BufferedImage;
 
 import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.ICurve2D;
 import es.igosoftware.euclid.ISurface2D;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.colors.IColor;
@@ -110,11 +111,6 @@ public interface IRenderingStyle {
                                   final GVectorialRenderingContext rc);
 
 
-   //   public GRenderingShape<? extends ISurface2D<?>> getSurfaceShape(final ISurface2D<?> surface,
-   //                                                                   final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-   //                                                                   final GVectorialRenderingContext rc);
-
-
    public GRenderingShape<? extends ISurface2D<?>> getSurfaceShape(final ISurface2D<?> surface,
                                                                    final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                                                    final GVectorialRenderingContext rc);
@@ -123,6 +119,34 @@ public interface IRenderingStyle {
    public void drawSurface(final ISurface2D<?> surface,
                            final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                            final GVectorialRenderingContext rc);
+
+
+   /* curves */
+
+
+   public IMeasure<GLength> getCurveBorderSize(final ICurve2D<?> curve,
+                                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                               final GVectorialRenderingContext rc);
+
+
+   public IColor getCurveColor(final ICurve2D<?> curve,
+                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                               final GVectorialRenderingContext rc);
+
+
+   public float getCurveOpacity(final ICurve2D<?> curve,
+                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                final GVectorialRenderingContext rc);
+
+
+   public GRenderingShape<? extends ICurve2D<?>> getCurveShape(final ICurve2D<?> curve,
+                                                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                                               final GVectorialRenderingContext rc);
+
+
+   public void drawCurve(final ICurve2D<?> curve,
+                         final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                         final GVectorialRenderingContext rc);
 
 
 }

@@ -9,6 +9,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.ICurve2D;
 import es.igosoftware.euclid.ISurface2D;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.colors.GColorF;
@@ -42,7 +43,7 @@ import es.igosoftware.util.GUtils;
 import es.igosoftware.utils.GWWUtils;
 
 
-public class GGloveVectorial2DRenderingStyle
+public class GGlobeVectorial2DRenderingStyle
          extends
             GRenderingStyleAbstract
          implements
@@ -63,7 +64,7 @@ public class GGloveVectorial2DRenderingStyle
    private float                    _pointOpacity     = 1;
 
 
-   public GGloveVectorial2DRenderingStyle(final IGlobeVector2Layer layer) {
+   public GGlobeVectorial2DRenderingStyle(final IGlobeVector2Layer layer) {
       GAssert.notNull(layer, "layer");
 
       _layer = layer;
@@ -457,6 +458,33 @@ public class GGloveVectorial2DRenderingStyle
    public float getSurfaceOpacity(final ISurface2D<?> surface,
                                   final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                   final GVectorialRenderingContext rc) {
+      // TODO Auto-generated method stub
+      return 0;
+   }
+
+
+   @Override
+   public IMeasure<GLength> getCurveBorderSize(final ICurve2D<?> curve,
+                                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                               final GVectorialRenderingContext rc) {
+      // TODO Auto-generated method stub
+      return null;
+   }
+
+
+   @Override
+   public IColor getCurveColor(final ICurve2D<?> curve,
+                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                               final GVectorialRenderingContext rc) {
+      // TODO Auto-generated method stub
+      return null;
+   }
+
+
+   @Override
+   public float getCurveOpacity(final ICurve2D<?> curve,
+                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                final GVectorialRenderingContext rc) {
       // TODO Auto-generated method stub
       return 0;
    }

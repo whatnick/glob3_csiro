@@ -312,10 +312,4 @@ BoundsT extends IBounds<VectorT, BoundsT>
    }
 
 
-   public static void main(final String[] args) {
-      System.out.println(GMath.closeToZero(-3.3306690738754696E-16));
-      System.out.println(Math.sqrt(-3.3306690738754696E-16));
-      System.out.println(Math.sqrt(-1));
-      System.out.println(Math.sqrt(0));
-   }
 }

@@ -23,7 +23,6 @@ public class GVectorialRenderingContext {
    private final IVector2               _scale;
    private final GAxisAlignedRectangle  _region;
    final GAxisAlignedRectangle          _extendedRegion;
-   final GVectorialRenderingAttributes  _attributes;
    final IRenderingStyle                _renderingStyle;
    final GProjection                    _projection;
    private final Graphics2D             _g2d;
@@ -33,7 +32,6 @@ public class GVectorialRenderingContext {
    GVectorialRenderingContext(final IVector2 scale,
                               final GAxisAlignedRectangle region,
                               final GAxisAlignedRectangle extendedRegion,
-                              final GVectorialRenderingAttributes attributes,
                               final IRenderingStyle renderingStyle,
                               final GProjection projection,
                               final Graphics2D g2d,
@@ -41,7 +39,6 @@ public class GVectorialRenderingContext {
       _scale = scale;
       _region = region;
       _extendedRegion = extendedRegion;
-      _attributes = attributes;
       _renderingStyle = renderingStyle;
       _projection = projection;
       _g2d = g2d;
@@ -75,58 +72,59 @@ public class GVectorialRenderingContext {
    }
 
 
-   public void setPixel(final IVector2 scaledPoint,
-                        final Color color) {
-
-      final int imageX = Math.round((float) scaledPoint.x());
-      final int imageY = Math.round((float) scaledPoint.y());
-
-      if ((imageX >= 0) && (imageY >= 0)) {
-         final int imageWidth = _renderedImage.getWidth();
-         final int imageHeight = _renderedImage.getHeight();
-
-         if ((imageX < imageWidth) && (imageY < imageHeight)) {
-            final int rotatedImageY = imageHeight - 1 - imageY;
-
-            final int oldRGB = _renderedImage.getRGB(imageX, rotatedImageY);
-            if (oldRGB == 0) {
-               _renderedImage.setRGB(imageX, rotatedImageY, color.getRGB());
-            }
-            else {
-               final Color oldColor = colorFromRGB(oldRGB);
-               final Color mixed = mix(oldColor, color);
-               _renderedImage.setRGB(imageX, rotatedImageY, mixed.getRGB());
-            }
-         }
-      }
-   }
-
-
-   private Color colorFromRGB(final int rgb) {
-      final int a = (rgb >>> 24) & 0xFF;
-      final int r = (rgb >>> 16) & 0xFF;
-      final int g = (rgb >>> 8) & 0xFF;
-      final int b = (rgb >>> 0) & 0xFF;
-      return new Color(r, g, b, a);
-   }
-
-
-   private static Color mix(final Color colorA,
-                            final Color colorB) {
-
-      final int r = average(colorA.getRed(), colorB.getRed());
-      final int g = average(colorA.getGreen(), colorB.getGreen());
-      final int b = average(colorA.getBlue(), colorB.getBlue());
-      //      final int a = average(colorA.getAlpha(), colorB.getAlpha());
-      final int a = Math.max(colorA.getAlpha(), colorB.getAlpha());
-      return new Color(r, g, b, a);
-   }
-
-
-   private static int average(final int a,
-                              final int b) {
-      return (a + b) / 2;
-   }
+   //
+   //   public void setPixel(final IVector2 scaledPoint,
+   //                        final Color color) {
+   //
+   //      final int imageX = Math.round((float) scaledPoint.x());
+   //      final int imageY = Math.round((float) scaledPoint.y());
+   //
+   //      if ((imageX >= 0) && (imageY >= 0)) {
+   //         final int imageWidth = _renderedImage.getWidth();
+   //         final int imageHeight = _renderedImage.getHeight();
+   //
+   //         if ((imageX < imageWidth) && (imageY < imageHeight)) {
+   //            final int rotatedImageY = imageHeight - 1 - imageY;
+   //
+   //            final int oldRGB = _renderedImage.getRGB(imageX, rotatedImageY);
+   //            if (oldRGB == 0) {
+   //               _renderedImage.setRGB(imageX, rotatedImageY, color.getRGB());
+   //            }
+   //            else {
+   //               final Color oldColor = colorFromRGB(oldRGB);
+   //               final Color mixed = mix(oldColor, color);
+   //               _renderedImage.setRGB(imageX, rotatedImageY, mixed.getRGB());
+   //            }
+   //         }
+   //      }
+   //   }
+   //
+   //
+   //   private Color colorFromRGB(final int rgb) {
+   //      final int a = (rgb >>> 24) & 0xFF;
+   //      final int r = (rgb >>> 16) & 0xFF;
+   //      final int g = (rgb >>> 8) & 0xFF;
+   //      final int b = (rgb >>> 0) & 0xFF;
+   //      return new Color(r, g, b, a);
+   //   }
+   //
+   //
+   //   private static Color mix(final Color colorA,
+   //                            final Color colorB) {
+   //
+   //      final int r = average(colorA.getRed(), colorB.getRed());
+   //      final int g = average(colorA.getGreen(), colorB.getGreen());
+   //      final int b = average(colorA.getBlue(), colorB.getBlue());
+   //      //      final int a = average(colorA.getAlpha(), colorB.getAlpha());
+   //      final int a = Math.max(colorA.getAlpha(), colorB.getAlpha());
+   //      return new Color(r, g, b, a);
+   //   }
+   //
+   //
+   //   private static int average(final int a,
+   //                              final int b) {
+   //      return (a + b) / 2;
+   //   }
 
 
    private static int toInt(final double value) {

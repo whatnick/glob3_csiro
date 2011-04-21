@@ -86,11 +86,9 @@ public class GVectorial2DRenderer {
 
    public void render(final GAxisAlignedRectangle region,
                       final BufferedImage image,
-                      final GVectorialRenderingAttributes attributes,
                       final IRenderingStyle renderingStyle) {
       GAssert.notNull(region, "region");
       GAssert.notNull(image, "image");
-      GAssert.notNull(attributes, "attributes");
       GAssert.notNull(renderingStyle, "renderingStyle");
 
       final IVectorial2DRenderUnit renderUnit = new GVectorial2DRenderUnit();
@@ -99,7 +97,7 @@ public class GVectorial2DRenderer {
 
       renderingStyle.preRenderImage(image);
 
-      renderUnit.render(image, _quadtree, _features.getProjection(), region, attributes, renderingStyle);
+      renderUnit.render(image, _quadtree, _features.getProjection(), region, renderingStyle);
 
       renderingStyle.postRenderImage(image);
    }
@@ -108,7 +106,6 @@ public class GVectorial2DRenderer {
    public BufferedImage render(final GAxisAlignedRectangle region,
                                final int imageWidth,
                                final int imageHeight,
-                               final GVectorialRenderingAttributes attributes,
                                final IRenderingStyle renderingStyle) {
       GAssert.isPositive(imageWidth, "imageWidth");
       GAssert.isPositive(imageHeight, "imageHeight");
@@ -116,7 +113,7 @@ public class GVectorial2DRenderer {
       final BufferedImage image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_4BYTE_ABGR);
       image.setAccelerationPriority(1);
 
-      render(region, image, attributes, renderingStyle);
+      render(region, image, renderingStyle);
 
       return image;
    }

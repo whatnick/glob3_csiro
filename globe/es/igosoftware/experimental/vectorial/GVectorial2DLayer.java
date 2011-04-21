@@ -42,7 +42,6 @@ import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorial2DRenderer;
-import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorialRenderingAttributes;
 import es.igosoftware.euclid.experimental.vectorial.rendering.IRenderingStyle;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.features.IGlobeMutableFeatureCollection;
@@ -54,8 +53,6 @@ import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeVector2Layer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.GBooleanLayerAttribute;
-import es.igosoftware.globe.attributes.GColorLayerAttribute;
-import es.igosoftware.globe.attributes.GFloatLayerAttribute;
 import es.igosoftware.globe.attributes.GGroupAttribute;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.io.GFileName;
@@ -121,11 +118,10 @@ public class GVectorial2DLayer
 
 
    private static final class RenderingKey {
-      private final GVectorial2DLayer             _layer;
-      private final GAxisAlignedRectangle         _tileBounds;
-      private final GVectorialRenderingAttributes _renderingAttributes;
-      private final IRenderingStyle               _renderingStyle;
-      private final String                        _id;
+      private final GVectorial2DLayer     _layer;
+      private final GAxisAlignedRectangle _tileBounds;
+      private final IRenderingStyle       _renderingStyle;
+      private final String                _id;
 
 
       private RenderingKey(final GVectorial2DLayer layer,
@@ -133,7 +129,6 @@ public class GVectorial2DLayer
                            final String id) {
          _layer = layer;
          _tileBounds = tileSectorBounds;
-         _renderingAttributes = layer._renderingAttributes;
          _renderingStyle = layer._renderingStyle;
          _id = id;
       }
@@ -144,7 +139,6 @@ public class GVectorial2DLayer
          final int prime = 31;
          int result = 1;
          result = prime * result + ((_layer == null) ? 0 : _layer.hashCode());
-         result = prime * result + ((_renderingAttributes == null) ? 0 : _renderingAttributes.hashCode());
          result = prime * result + ((_renderingStyle == null) ? 0 : _renderingStyle.hashCode());
          result = prime * result + ((_tileBounds == null) ? 0 : _tileBounds.hashCode());
          return result;
@@ -171,14 +165,6 @@ public class GVectorial2DLayer
          else if (!_layer.equals(other._layer)) {
             return false;
          }
-         if (_renderingAttributes == null) {
-            if (other._renderingAttributes != null) {
-               return false;
-            }
-         }
-         else if (!_renderingAttributes.equals(other._renderingAttributes)) {
-            return false;
-         }
          if (_renderingStyle == null) {
             if (other._renderingStyle != null) {
                return false;
@@ -201,8 +187,7 @@ public class GVectorial2DLayer
 
       @Override
       public String toString() {
-         return "RenderingKey [layer=" + _layer + ", tileBounds=" + _tileBounds + ", renderingAttributes=" + _renderingAttributes
-                + "]";
+         return "RenderingKey [layer=" + _layer + ", tileBounds=" + _tileBounds + ", renderingStyle=" + _renderingStyle + "]";
       }
 
 
@@ -212,7 +197,7 @@ public class GVectorial2DLayer
             // it means no disk cache
             return null;
          }
-         return featuresUniqueID + _id + _renderingAttributes.uniqueName() + _renderingStyle.uniqueName();
+         return featuresUniqueID + _id + _renderingStyle.uniqueName();
       }
    }
 
@@ -274,7 +259,7 @@ public class GVectorial2DLayer
                final GVectorial2DLayer layer = key._layer;
                final GVectorial2DRenderer renderer = layer._renderer;
                final BufferedImage renderedImage = renderer.render(key._tileBounds, TEXTURE_WIDTH, TEXTURE_HEIGHT,
-                        key._renderingAttributes, key._renderingStyle);
+                        key._renderingStyle);
                layer.redraw();
 
                if (cacheRenderingOnDisk) {
@@ -755,8 +740,8 @@ public class GVectorial2DLayer
    private final List<Tile>                                                                                                    _currentTiles               = new ArrayList<Tile>();
 
 
-   private int                                                                                                                 _fillColorAlpha             = 127;
-   private int                                                                                                                 _borderColorAlpha           = 255;
+   private final int                                                                                                           _fillColorAlpha             = 127;
+   private final int                                                                                                           _borderColorAlpha           = 255;
 
    private View                                                                                                                _lastView;
 
@@ -764,8 +749,7 @@ public class GVectorial2DLayer
    private long                                                                                                                _lastCurrentTilesCalculated = -1;
 
 
-   private GVectorialRenderingAttributes                                                                                       _renderingAttributes;
-   private final GGloveVectorial2DRenderingStyle                                                                               _renderingStyle             = new GGloveVectorial2DRenderingStyle(
+   private final GGlobeVectorial2DRenderingStyle                                                                               _renderingStyle             = new GGlobeVectorial2DRenderingStyle(
                                                                                                                                                                     this);
 
 
@@ -796,7 +780,6 @@ public class GVectorial2DLayer
 
       featuresChanged(); // force initial calculation of features related info
 
-      _renderingAttributes = createRenderingAttributes();
    }
 
 
@@ -815,15 +798,6 @@ public class GVectorial2DLayer
    @Override
    public String getName() {
       return _name;
-   }
-
-
-   private GVectorialRenderingAttributes createRenderingAttributes() {
-      final float borderWidth = 1f;
-      final Color fillColor = createColor(new Color(1, 1, 0), _fillColorAlpha);
-      final Color borderColor = createColor(Color.WHITE, _borderColorAlpha);
-
-      return new GVectorialRenderingAttributes(borderWidth, fillColor, borderColor);
    }
 
 
@@ -900,10 +874,6 @@ public class GVectorial2DLayer
    public List<ILayerAttribute<?>> getLayerAttributes(final IGlobeApplication application) {
       final List<ILayerAttribute<?>> result = new ArrayList<ILayerAttribute<?>>();
 
-      addBorderAttributes(result);
-
-      addFillAttributes(result);
-
       addAdvancedAttributes(result);
 
       return result;
@@ -955,114 +925,6 @@ public class GVectorial2DLayer
    }
 
 
-   private void addFillAttributes(final List<ILayerAttribute<?>> result) {
-      final ILayerAttribute<?> fillColor = new GColorLayerAttribute("Color", "Set the fill color", "FillColor") {
-         @Override
-         public boolean isVisible() {
-            return true;
-         }
-
-
-         @Override
-         public Color get() {
-            return getFillColor();
-         }
-
-
-         @Override
-         public void set(final Color value) {
-            setFillColor(value);
-         }
-      };
-
-      final ILayerAttribute<?> fillAlpha = new GFloatLayerAttribute("Alpha", "Set the alpha (transparency) of the fill color",
-               "FillColorAlpha", 0, 255, GFloatLayerAttribute.WidgetType.SLIDER, 1) {
-         @Override
-         public boolean isVisible() {
-            return true;
-         }
-
-
-         @Override
-         public Float get() {
-            return Float.valueOf(getFillColorAlpha());
-         }
-
-
-         @Override
-         public void set(final Float value) {
-            setFillColorAlpha(Math.round(value));
-         }
-      };
-
-      result.add(new GGroupAttribute("Fill", "Fill related settings", fillColor, fillAlpha));
-   }
-
-
-   private void addBorderAttributes(final List<ILayerAttribute<?>> result) {
-      final ILayerAttribute<?> borderWidth = new GFloatLayerAttribute("Width", "Set the border width", "BorderWidth", 0, 5,
-               GFloatLayerAttribute.WidgetType.SLIDER, 0.25f) {
-         @Override
-         public boolean isVisible() {
-            return true;
-         }
-
-
-         @Override
-         public Float get() {
-            return getBorderWidth();
-         }
-
-
-         @Override
-         public void set(final Float value) {
-            setBorderWidth(value);
-         }
-      };
-
-      final ILayerAttribute<?> borderColor = new GColorLayerAttribute("Color", "Set the border color", "BorderColor") {
-         @Override
-         public boolean isVisible() {
-            return true;
-         }
-
-
-         @Override
-         public Color get() {
-            return getBorderColor();
-         }
-
-
-         @Override
-         public void set(final Color value) {
-            setBorderColor(value);
-         }
-      };
-
-      final ILayerAttribute<?> borderAlpha = new GFloatLayerAttribute("Alpha", "Set the border alpha (transparency)",
-               "BorderColorAlpha", 0, 255, GFloatLayerAttribute.WidgetType.SLIDER, 1) {
-         @Override
-         public boolean isVisible() {
-            return true;
-         }
-
-
-         @Override
-         public Float get() {
-            return Float.valueOf(getBorderColorAlpha());
-         }
-
-
-         @Override
-         public void set(final Float value) {
-            setBorderColorAlpha(Math.round(value));
-         }
-      };
-
-      result.add(new GGroupAttribute("Border", "Border related settings", borderWidth, borderColor, borderAlpha));
-   }
-
-
    public int getFillColorAlpha() {
       return _fillColorAlpha;
    }
@@ -1070,121 +932,6 @@ public class GVectorial2DLayer
 
    public int getBorderColorAlpha() {
       return _borderColorAlpha;
-   }
-
-
-   public void setBorderColorAlpha(final int newValue) {
-      final Color newColor = createColor(getBorderColor(), newValue);
-
-      if (_renderingAttributes._borderColor.equals(newColor)) {
-         return;
-      }
-
-      _borderColorAlpha = newValue;
-
-      final Color oldValue = _renderingAttributes._borderColor;
-
-      _renderingAttributes = new GVectorialRenderingAttributes(_renderingAttributes._borderWidth,
-               _renderingAttributes._fillColor, newColor);
-
-      clearCache();
-
-      firePropertyChange("BorderColor", oldValue, newValue);
-      firePropertyChange("BorderColorAlpha", oldValue, newValue);
-   }
-
-
-   public void setFillColorAlpha(final int newValue) {
-      final Color newColor = createColor(getFillColor(), newValue);
-
-      if (_renderingAttributes._fillColor.equals(newColor)) {
-         return;
-      }
-
-      _fillColorAlpha = newValue;
-
-      final Color oldValue = _renderingAttributes._fillColor;
-
-      _renderingAttributes = new GVectorialRenderingAttributes(_renderingAttributes._borderWidth, newColor,
-               _renderingAttributes._borderColor);
-
-      clearCache();
-
-      firePropertyChange("FillColor", oldValue, newValue);
-      firePropertyChange("FillColorAlpha", oldValue, newValue);
-   }
-
-
-   private Color getBorderColor() {
-      return _renderingAttributes._borderColor;
-   }
-
-
-   private Color getFillColor() {
-      return _renderingAttributes._fillColor;
-   }
-
-
-   private static Color createColor(final Color color,
-                                    final int alpha) {
-      return new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
-   }
-
-
-   public void setFillColor(final Color newOpaqueColor) {
-      final Color newValue = createColor(newOpaqueColor, _fillColorAlpha);
-
-      if (_renderingAttributes._fillColor.equals(newValue)) {
-         return;
-      }
-
-      final Color oldValue = _renderingAttributes._fillColor;
-
-      _renderingAttributes = new GVectorialRenderingAttributes(_renderingAttributes._borderWidth, newValue,
-               _renderingAttributes._borderColor);
-
-      clearCache();
-
-      firePropertyChange("FillColor", oldValue, newValue);
-   }
-
-
-   public void setBorderColor(final Color newOpaqueColor) {
-      final Color newValue = createColor(newOpaqueColor, _borderColorAlpha);
-
-      if (_renderingAttributes._borderColor.equals(newValue)) {
-         return;
-      }
-
-      final Color oldValue = _renderingAttributes._borderColor;
-
-      _renderingAttributes = new GVectorialRenderingAttributes(_renderingAttributes._borderWidth,
-               _renderingAttributes._fillColor, newValue);
-
-      clearCache();
-
-      firePropertyChange("BorderColor", oldValue, newValue);
-   }
-
-
-   public float getBorderWidth() {
-      return _renderingAttributes._borderWidth;
-   }
-
-
-   public void setBorderWidth(final float newValue) {
-      if (_renderingAttributes._borderWidth == newValue) {
-         return;
-      }
-
-      final float oldValue = _renderingAttributes._borderWidth;
-
-      _renderingAttributes = new GVectorialRenderingAttributes(newValue, _renderingAttributes._fillColor,
-               _renderingAttributes._borderColor);
-
-      clearCache();
-
-      firePropertyChange("BorderWidth", oldValue, newValue);
    }
 
 
@@ -1448,7 +1195,7 @@ public class GVectorial2DLayer
 
 
    @Override
-   public GGloveVectorial2DRenderingStyle getRenderingStyle() {
+   public GGlobeVectorial2DRenderingStyle getRenderingStyle() {
       return _renderingStyle;
    }
 

@@ -19,7 +19,6 @@ public interface IVectorial2DRenderUnit {
                       final GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> quadtree,
                       final GProjection projection,
                       final GAxisAlignedRectangle region,
-                      final GVectorialRenderingAttributes attributes,
                       final IRenderingStyle renderingStyle);
 
 

@@ -44,6 +44,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.ICurve2D;
 import es.igosoftware.euclid.ISurface2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
@@ -62,7 +63,6 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.GRenderingStyleAbs
 import es.igosoftware.euclid.experimental.vectorial.rendering.GRenderingSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GUniqueValuesColorizer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorial2DRenderer;
-import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorialRenderingAttributes;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorialRenderingContext;
 import es.igosoftware.euclid.experimental.vectorial.rendering.IColorizer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.IRenderingStyle;
@@ -91,6 +91,9 @@ public class GVectorial2DRenderingTest {
       final GFileName surfacesFileName = GFileName.absolute("home", "dgd", "Desktop", "Data For Maps",
                "10m-admin-1-states-provinces-shp", "10m_admin_1_states_provinces_shp.shp");
 
+      final GFileName linesFileName = GFileName.absolute("home", "dgd", "Desktop", "Data For Maps", "argentina.shapefiles",
+               "americas_south_america_argentina_highway.shp");
+
       final GProjection projection = GProjection.EPSG_4326;
 
       final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> pointsFeatures = loadFeatures(
@@ -99,11 +102,15 @@ public class GVectorial2DRenderingTest {
       final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> surfacesFeatures = loadFeatures(
                surfacesFileName, projection);
 
+      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> linesFeatures = loadFeatures(
+               linesFileName, projection);
+
       final GAxisAlignedOrthotope<IVector2, ?> pointsFeaturesBounds = pointsFeatures.getBounds();
 
 
       final GVectorial2DRenderer pointsRenderer = createRenderer(pointsFeatures);
       final GVectorial2DRenderer surfacesRenderer = createRenderer(surfacesFeatures);
+      final GVectorial2DRenderer linesRenderer = createRenderer(linesFeatures);
 
 
       //      final GAxisAlignedRectangle region = ((GAxisAlignedRectangle) centerBounds(multipleOfSmallestDimention(featuresBounds),
@@ -113,11 +120,7 @@ public class GVectorial2DRenderingTest {
 
       final GFileName directoryName = GFileName.relative("render");
       final boolean renderLODIgnores = true;
-      final float borderWidth = 1.5f;
-      final Color fillColor = new Color(0.5f, 0.5f, 1, 0.75f);
-      //      final Color fillColor = new Color(0.5f, 0.5f, 1);
-      final Color borderColor = fillColor.darker().darker().darker().darker().darker();
-      final double lodMinSize = 1;
+      final double lodMinSize = 2;
       final int textureDimension = 256;
       final boolean debugRendering = false;
 
@@ -134,8 +137,6 @@ public class GVectorial2DRenderingTest {
          imageHeight = (int) Math.round(extent.y() / extent.x() * textureDimension);
       }
 
-      final GVectorialRenderingAttributes attributes = new GVectorialRenderingAttributes(borderWidth, fillColor, borderColor);
-
 
       GIOUtils.assureEmptyDirectory(directoryName, false);
 
@@ -146,11 +147,12 @@ public class GVectorial2DRenderingTest {
       @SuppressWarnings("unchecked")
       final GPair<GVectorial2DRenderer, IRenderingStyle>[] renderers = (GPair<GVectorial2DRenderer, IRenderingStyle>[]) new GPair<?, ?>[] {
                new GPair<GVectorial2DRenderer, IRenderingStyle>(surfacesRenderer, renderingStyle),
+               new GPair<GVectorial2DRenderer, IRenderingStyle>(linesRenderer, renderingStyle),
                new GPair<GVectorial2DRenderer, IRenderingStyle>(pointsRenderer, renderingStyle) };
 
       final int depth = 0;
-      final int maxDepth = 3;
-      render(renderers, region, imageWidth, imageHeight, directoryName, attributes, depth, maxDepth);
+      final int maxDepth = 4;
+      render(renderers, region, imageWidth, imageHeight, directoryName, depth, maxDepth);
    }
 
 
@@ -166,8 +168,8 @@ public class GVectorial2DRenderingTest {
 
       final GColorScheme colorScheme = GColorBrewerColorSchemeSet.INSTANCE.getSchemes(9, GColorScheme.Type.Qualitative).get(2);
 
-      return new GRenderingStyleAbstract() {
 
+      return new GRenderingStyleAbstract() {
 
          private final IColorizer _pointColorizer = new GUniqueValuesColorizer("CATEGORY", colorScheme, GColorI.WHITE, true,
                                                            new IFunction<Object, String>() {
@@ -265,7 +267,7 @@ public class GVectorial2DRenderingTest {
          public IMeasure<GArea> getPointSize(final IVector2 point,
                                              final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                              final GVectorialRenderingContext rc) {
-            return GArea.SquareKilometer.value(250);
+            return GArea.SquareKilometer.value(50);
          }
 
 
@@ -273,7 +275,7 @@ public class GVectorial2DRenderingTest {
          public IMeasure<GLength> getPointBorderSize(final IVector2 point,
                                                      final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                                      final GVectorialRenderingContext rc) {
-            return GLength.Kilometer.value(2);
+            return GLength.Kilometer.value(0.5);
          }
 
 
@@ -349,6 +351,8 @@ public class GVectorial2DRenderingTest {
                return GLength.Kilometer.value(2);
             }
             return GLength.Kilometer.value(1);
+
+            //            return GLength.Kilometer.value(2);
          }
 
 
@@ -383,9 +387,56 @@ public class GVectorial2DRenderingTest {
          public IColor getSurfaceBorderColor(final ISurface2D<?> surface,
                                              final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                              final GVectorialRenderingContext rc) {
+            //            final IColor surfaceColor = getSurfaceColor(surface, feature, rc);
+            //
+            //            final String country = (String) feature.getAttribute(_countryIndex);
+            //            if ((country != null) && country.trim().toLowerCase().equals("argentina")) {
+            //               return surfaceColor.muchDarker();
+            //            }
+            //            return surfaceColor;
             return getSurfaceColor(surface, feature, rc).muchDarker();
          }
 
+
+         @Override
+         public IMeasure<GLength> getCurveBorderSize(final ICurve2D<?> curve,
+                                                     final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                                     final GVectorialRenderingContext rc) {
+            return GLength.Kilometer.value(0.5f);
+         }
+
+
+         @Override
+         public IColor getCurveColor(final ICurve2D<?> curve,
+                                     final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                     final GVectorialRenderingContext rc) {
+            return GColorF.GRAY;
+         }
+
+
+         @Override
+         public float getCurveOpacity(final ICurve2D<?> curve,
+                                      final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                      final GVectorialRenderingContext rc) {
+            return 1;
+         }
+
+
+         //         @Override
+         //         public GPolygonalChainRenderingShape getCurveShape(final ICurve2D<?> curve,
+         //                                                            final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+         //                                                            final GVectorialRenderingContext rc) {
+         //            if (curve instanceof IPolygonalChain2D) {
+         //               final IPolygonalChain2D polygonalChain = (IPolygonalChain2D) curve;
+         //
+         //               final double length = polygonalChain.getLength();
+         //               if (length < 0.01) {
+         //                  return null;
+         //               }
+         //            }
+         //
+         //            return super.getCurveShape(curve, feature, rc);
+         //         }
 
       };
 
@@ -419,7 +470,6 @@ public class GVectorial2DRenderingTest {
                               final int imageWidth,
                               final int imageHeight,
                               final GFileName directoryName,
-                              final GVectorialRenderingAttributes attributes,
                               final int depth,
                               final int maxDepth) throws IOException {
 
@@ -432,7 +482,7 @@ public class GVectorial2DRenderingTest {
       fillImage(image, GColorF.newRGB256(211, 237, 249).darker().asAWTColor());
 
       for (final GPair<GVectorial2DRenderer, IRenderingStyle> renderer : renderers) {
-         renderer._first.render(region, image, attributes, renderer._second);
+         renderer._first.render(region, image, renderer._second);
       }
 
       final String imageName = "" + depth;
@@ -443,7 +493,7 @@ public class GVectorial2DRenderingTest {
                          + GStringUtils.getTimeMessage(System.currentTimeMillis() - start, false));
 
       if (depth < maxDepth) {
-         render(renderers, region, imageWidth * 2, imageHeight * 2, directoryName, attributes, depth + 1, maxDepth);
+         render(renderers, region, imageWidth * 2, imageHeight * 2, directoryName, depth + 1, maxDepth);
       }
    }
 

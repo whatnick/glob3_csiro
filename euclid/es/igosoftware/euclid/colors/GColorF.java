@@ -55,6 +55,7 @@ public final class GColorF
    public static final GColorF CYAN    = new GColorF(0, 1, 1);
    public static final GColorF YELLOW  = new GColorF(1, 1, 0);
    public static final GColorF MAGENTA = new GColorF(1, 0, 1);
+   public static final GColorF GRAY    = new GColorF(0.5f, 0.5f, 0.5f);
 
 
    public static GColorF newHueSaturationBrightness(final double hue,
