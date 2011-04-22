@@ -13,7 +13,7 @@ GeometryT extends IBoundedGeometry<IVector2, GAxisAlignedRectangle>
 
 >
          extends
-            GRenderingFeature<GeometryT> {
+            GRenderingFeatureAbstract<GeometryT> {
 
 
 }

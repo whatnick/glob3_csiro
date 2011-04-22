@@ -138,10 +138,10 @@ public class GIconRenderingSymbol
 
 
    @Override
-   protected void rawDraw(final IVector2 point,
-                          final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                          final IRenderingStyle renderingStyle,
-                          final IVectorial2DRenderingContext rc) {
+   public final void rawDraw(final IVector2 point,
+                             final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                             final IRenderingStyle renderingStyle,
+                             final IVectorial2DRenderingContext rc) {
 
       final float pointOpacity = renderingStyle.getPointOpacity(point, feature, rc);
 
@@ -150,10 +150,10 @@ public class GIconRenderingSymbol
 
 
    @Override
-   protected void renderLODIgnore(final IVector2 point,
-                                  final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                  final IRenderingStyle renderingStyle,
-                                  final IVectorial2DRenderingContext rc) {
+   public final void renderLODIgnore(final IVector2 point,
+                                     final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                     final IRenderingStyle renderingStyle,
+                                     final IVectorial2DRenderingContext rc) {
 
       final float pointOpacity = renderingStyle.getPointOpacity(point, feature, rc);
 

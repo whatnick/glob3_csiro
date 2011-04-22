@@ -81,10 +81,10 @@ public abstract class GShapeRenderingSymbol
 
 
    @Override
-   protected final void rawDraw(final IVector2 point,
-                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                final IRenderingStyle renderingStyle,
-                                final IVectorial2DRenderingContext rc) {
+   public final void rawDraw(final IVector2 point,
+                             final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                             final IRenderingStyle renderingStyle,
+                             final IVectorial2DRenderingContext rc) {
 
       final IColor pointColor = renderingStyle.getPointColor(point, feature, rc);
       final IColor pointBorderColor = renderingStyle.getPointBorderColor(point, feature, rc);
@@ -126,10 +126,10 @@ public abstract class GShapeRenderingSymbol
 
 
    @Override
-   protected final void renderLODIgnore(final IVector2 point,
-                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                        final IRenderingStyle renderingStyle,
-                                        final IVectorial2DRenderingContext rc) {
+   public final void renderLODIgnore(final IVector2 point,
+                                     final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                     final IRenderingStyle renderingStyle,
+                                     final IVectorial2DRenderingContext rc) {
       final Color color = getLODIgnoreColor(point, feature, renderingStyle, rc);
 
       final IVector2 scaledPoint = rc.scaleAndTranslatePoint(point);

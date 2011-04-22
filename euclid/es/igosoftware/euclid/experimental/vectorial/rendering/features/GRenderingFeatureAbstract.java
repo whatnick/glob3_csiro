@@ -10,16 +10,15 @@ import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.vector.IVector2;
 
 
-public abstract class GRenderingFeature<
+public abstract class GRenderingFeatureAbstract<
 
 GeometryT extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>
 
-> {
+>
+         implements
+            IRenderingFeature<GeometryT> {
 
-
-   public abstract boolean isBiggerThan(final double lodMinSize);
-
-
+   @Override
    public final void draw(final GeometryT geometry,
                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                           final IRenderingStyle renderingStyle,
@@ -33,18 +32,5 @@ GeometryT extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?
          }
       }
    }
-
-
-   protected abstract void renderLODIgnore(final GeometryT geometry,
-                                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                           final IRenderingStyle renderingStyle,
-                                           final IVectorial2DRenderingContext rc);
-
-
-   protected abstract void rawDraw(final GeometryT geometry,
-                                   final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                   final IRenderingStyle renderingStyle,
-                                   final IVectorial2DRenderingContext rc);
-
 
 }

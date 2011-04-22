@@ -89,10 +89,10 @@ public class GPolygonalChainRenderingShape
 
 
    @Override
-   protected final void renderLODIgnore(final IPolygonalChain2D polygonalChain,
-                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                        final IRenderingStyle renderingStyle,
-                                        final IVectorial2DRenderingContext rc) {
+   public final void renderLODIgnore(final IPolygonalChain2D polygonalChain,
+                                     final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                     final IRenderingStyle renderingStyle,
+                                     final IVectorial2DRenderingContext rc) {
       final Color color = getLODIgnoreColor(polygonalChain, feature, renderingStyle, rc);
 
       final IVector2 scaledPoint = rc.scaleAndTranslatePoint(polygonalChain.getCentroid());
@@ -103,10 +103,10 @@ public class GPolygonalChainRenderingShape
 
 
    @Override
-   protected void rawDraw(final IPolygonalChain2D polygonalChain,
-                          final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                          final IRenderingStyle renderingStyle,
-                          final IVectorial2DRenderingContext rc) {
+   public void rawDraw(final IPolygonalChain2D polygonalChain,
+                       final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                       final IRenderingStyle renderingStyle,
+                       final IVectorial2DRenderingContext rc) {
 
       if (_borderWidth > 0) {
          final IColor polygonColor = renderingStyle.getCurveColor(polygonalChain, feature, rc);

@@ -77,10 +77,10 @@ public class GPolygonRenderingShape
 
 
    @Override
-   protected final void renderLODIgnore(final IPolygon2D polygon,
-                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                        final IRenderingStyle renderingStyle,
-                                        final IVectorial2DRenderingContext rc) {
+   public final void renderLODIgnore(final IPolygon2D polygon,
+                                     final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                     final IRenderingStyle renderingStyle,
+                                     final IVectorial2DRenderingContext rc) {
       final Color color = getLODIgnoreColor(polygon, feature, renderingStyle, rc);
 
       final IVector2 scaledPoint = rc.scaleAndTranslatePoint(polygon.getCentroid());
@@ -91,10 +91,10 @@ public class GPolygonRenderingShape
 
 
    @Override
-   protected void rawDraw(final IPolygon2D polygon,
-                          final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                          final IRenderingStyle renderingStyle,
-                          final IVectorial2DRenderingContext rc) {
+   public final void rawDraw(final IPolygon2D polygon,
+                             final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                             final IRenderingStyle renderingStyle,
+                             final IVectorial2DRenderingContext rc) {
 
 
       final IColor polygonColor = renderingStyle.getSurfaceColor(polygon, feature, rc);
