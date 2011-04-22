@@ -36,12 +36,11 @@ public class GPolygonRenderingShape
    public GPolygonRenderingShape(final IPolygon2D polygon,
                                  final Shape awtShape,
                                  final IMeasure<GLength> surfaceBorderSize,
-                                 final IRenderingStyle renderingStyle,
                                  final IVectorial2DRenderingScaler scaler) {
       final IVector2 point = polygon.getCentroid();
 
       final double borderLenghtInMeters = surfaceBorderSize.getValueInReferenceUnits();
-      final IVector2 pointPlusBorderSize = renderingStyle.increment(point, scaler.getProjection(), borderLenghtInMeters, 0);
+      final IVector2 pointPlusBorderSize = scaler.increment(point, borderLenghtInMeters, 0);
       _borderWidth = (float) scaler.scaleExtent(pointPlusBorderSize.sub(point)).x();
 
       _bounds = awtShape.getBounds2D();
@@ -59,46 +58,45 @@ public class GPolygonRenderingShape
    private Color getLODIgnoreColor(final IPolygon2D polygon,
                                    final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                    final IRenderingStyle renderingStyle,
-                                   final IVectorial2DRenderingScaler scaler,
-                                   final IVectorial2DDrawer drawer) {
+                                   final IVectorial2DRenderingScaler scaler) {
       if (renderingStyle.isDebugRendering()) {
          return renderingStyle.getLODColor().asAWTColor();
       }
 
-      final IColor surfaceColor = renderingStyle.getSurfaceColor(polygon, feature, scaler, drawer);
-      final float surfaceOpacity = renderingStyle.getSurfaceOpacity(polygon, feature, scaler, drawer);
+      final IColor surfaceColor = renderingStyle.getSurfaceColor(polygon, feature, scaler);
+      final float surfaceOpacity = renderingStyle.getSurfaceOpacity(polygon, feature, scaler);
 
       if (_borderWidth <= 0) {
          return surfaceColor.asAWTColor(surfaceOpacity);
       }
 
-      final IColor surfaceBorderColor = renderingStyle.getSurfaceBorderColor(polygon, feature, scaler, drawer);
+      final IColor surfaceBorderColor = renderingStyle.getSurfaceBorderColor(polygon, feature, scaler);
       return GAWTUtils.mix(surfaceColor.asAWTColor(surfaceOpacity), surfaceBorderColor.asAWTColor(surfaceOpacity));
    }
 
 
    @Override
-   public final void renderLODIgnore(final IPolygon2D polygon,
-                                     final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                     final IRenderingStyle renderingStyle,
-                                     final IVectorial2DRenderingScaler scaler,
-                                     final IVectorial2DDrawer drawer) {
-      final Color color = getLODIgnoreColor(polygon, feature, renderingStyle, scaler, drawer);
+   protected final void renderLODIgnore(final IPolygon2D polygon,
+                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                        final IRenderingStyle renderingStyle,
+                                        final IVectorial2DRenderingScaler scaler,
+                                        final IVectorial2DDrawer drawer) {
+      final Color color = getLODIgnoreColor(polygon, feature, renderingStyle, scaler);
 
       drawer.fillRect(_bounds.getX(), _bounds.getY(), _bounds.getWidth(), _bounds.getHeight(), color);
    }
 
 
    @Override
-   public final void rawDraw(final IPolygon2D polygon,
-                             final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                             final IRenderingStyle renderingStyle,
-                             final IVectorial2DRenderingScaler scaler,
-                             final IVectorial2DDrawer drawer) {
+   protected final void rawDraw(final IPolygon2D polygon,
+                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                final IRenderingStyle renderingStyle,
+                                final IVectorial2DRenderingScaler scaler,
+                                final IVectorial2DDrawer drawer) {
 
 
-      final IColor surfaceColor = renderingStyle.getSurfaceColor(polygon, feature, scaler, drawer);
-      final float surfaceOpacity = renderingStyle.getSurfaceOpacity(polygon, feature, scaler, drawer);
+      final IColor surfaceColor = renderingStyle.getSurfaceColor(polygon, feature, scaler);
+      final float surfaceOpacity = renderingStyle.getSurfaceOpacity(polygon, feature, scaler);
 
       // fill polygon
       drawer.fill(_awtShape, surfaceColor.asAWTColor(surfaceOpacity));
@@ -106,7 +104,7 @@ public class GPolygonRenderingShape
 
       // render border 
       if (_borderWidth > 0) {
-         final IColor surfaceBorderColor = renderingStyle.getSurfaceBorderColor(polygon, feature, scaler, drawer);
+         final IColor surfaceBorderColor = renderingStyle.getSurfaceBorderColor(polygon, feature, scaler);
          final BasicStroke borderStroke = new BasicStroke(_borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
          drawer.draw(_awtShape, surfaceBorderColor.asAWTColor(surfaceOpacity), borderStroke);
       }

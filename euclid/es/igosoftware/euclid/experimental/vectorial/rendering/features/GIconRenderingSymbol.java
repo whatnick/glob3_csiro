@@ -116,7 +116,6 @@ public class GIconRenderingSymbol
    public GIconRenderingSymbol(final BufferedImage icon,
                                final IVector2 point,
                                final IMeasure<GArea> pointSize,
-                               final IRenderingStyle renderingStyle,
                                final IVectorial2DRenderingScaler scaler) {
 
       _imageData = imageDataCache.get(icon);
@@ -124,7 +123,7 @@ public class GIconRenderingSymbol
       final double areaInSquaredMeters = pointSize.getValueInReferenceUnits();
 
       final double extent = GMath.sqrt(areaInSquaredMeters / _imageData._percentFilled);
-      final IVector2 pointPlusExtent = renderingStyle.increment(point, scaler.getProjection(), extent, extent);
+      final IVector2 pointPlusExtent = scaler.increment(point, extent, extent);
       _extent = scaler.scaleExtent(pointPlusExtent.sub(point)).rounded();
 
       final IVector2 scaledPoint = scaler.scaleAndTranslatePoint(point);
@@ -141,26 +140,26 @@ public class GIconRenderingSymbol
 
 
    @Override
-   public final void rawDraw(final IVector2 point,
-                             final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                             final IRenderingStyle renderingStyle,
-                             final IVectorial2DRenderingScaler scaler,
-                             final IVectorial2DDrawer drawer) {
+   protected final void rawDraw(final IVector2 point,
+                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                final IRenderingStyle renderingStyle,
+                                final IVectorial2DRenderingScaler scaler,
+                                final IVectorial2DDrawer drawer) {
 
-      final float pointOpacity = renderingStyle.getPointOpacity(point, feature, scaler, drawer);
+      final float pointOpacity = renderingStyle.getPointOpacity(point, feature, scaler);
 
       drawer.drawImage(_scaledIcon, _position.x(), _position.y(), pointOpacity);
    }
 
 
    @Override
-   public final void renderLODIgnore(final IVector2 point,
-                                     final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                     final IRenderingStyle renderingStyle,
-                                     final IVectorial2DRenderingScaler scaler,
-                                     final IVectorial2DDrawer drawer) {
+   protected final void renderLODIgnore(final IVector2 point,
+                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                        final IRenderingStyle renderingStyle,
+                                        final IVectorial2DRenderingScaler scaler,
+                                        final IVectorial2DDrawer drawer) {
 
-      final float pointOpacity = renderingStyle.getPointOpacity(point, feature, scaler, drawer);
+      final float pointOpacity = renderingStyle.getPointOpacity(point, feature, scaler);
 
       final Color color = GAWTUtils.mixAlpha(_imageData._averageColor, pointOpacity);
 

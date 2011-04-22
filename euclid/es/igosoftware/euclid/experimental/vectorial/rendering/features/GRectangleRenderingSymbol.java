@@ -10,7 +10,6 @@ import es.igosoftware.euclid.experimental.measurement.GLength;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
-import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.util.GMath;
 
@@ -23,9 +22,8 @@ public class GRectangleRenderingSymbol
    public GRectangleRenderingSymbol(final IVector2 point,
                                     final IMeasure<GArea> pointSize,
                                     final IMeasure<GLength> pointBorderSize,
-                                    final IRenderingStyle renderingStyle,
                                     final IVectorial2DRenderingScaler scaler) {
-      super(point, pointSize, pointBorderSize, renderingStyle, scaler);
+      super(point, pointSize, pointBorderSize, scaler);
    }
 
 
@@ -33,12 +31,11 @@ public class GRectangleRenderingSymbol
    protected IVector2 calculateExtent(final IVector2 point,
                                       final IMeasure<GArea> pointSize,
                                       final IMeasure<GLength> pointBorderSize,
-                                      final IRenderingStyle renderingStyle,
                                       final IVectorial2DRenderingScaler scaler) {
       final double areaInSquaredMeters = pointSize.getValueInReferenceUnits();
 
       final double extent = GMath.sqrt(areaInSquaredMeters);
-      final IVector2 pointPlusExtent = renderingStyle.increment(point, scaler.getProjection(), extent, extent);
+      final IVector2 pointPlusExtent = scaler.increment(point, extent, extent);
       return scaler.scaleExtent(pointPlusExtent.sub(point));
    }
 

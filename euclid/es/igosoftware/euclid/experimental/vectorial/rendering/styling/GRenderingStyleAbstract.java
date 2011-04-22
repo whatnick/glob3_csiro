@@ -34,11 +34,10 @@ public abstract class GRenderingStyleAbstract
    @Override
    public IRenderingSymbol getPointSymbol(final IVector2 point,
                                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                          final IVectorial2DRenderingScaler scaler,
-                                          final IVectorial2DDrawer drawer) {
-      final IMeasure<GArea> pointSize = getPointSize(point, feature, scaler, drawer);
-      final IMeasure<GLength> pointBorderSize = getPointBorderSize(point, feature, scaler, drawer);
-      return new GEllipseRenderingSymbol(point, pointSize, pointBorderSize, this, scaler);
+                                          final IVectorial2DRenderingScaler scaler) {
+      final IMeasure<GArea> pointSize = getPointSize(point, feature, scaler);
+      final IMeasure<GLength> pointBorderSize = getPointBorderSize(point, feature, scaler);
+      return new GEllipseRenderingSymbol(point, pointSize, pointBorderSize, scaler);
    }
 
 
@@ -48,7 +47,7 @@ public abstract class GRenderingStyleAbstract
                          final IVectorial2DRenderingScaler scaler,
                          final IVectorial2DDrawer drawer) {
 
-      final IRenderingSymbol symbol = getPointSymbol(point, feature, scaler, drawer);
+      final IRenderingSymbol symbol = getPointSymbol(point, feature, scaler);
       if (symbol != null) {
          symbol.draw(point, feature, this, scaler, drawer);
       }
@@ -59,10 +58,9 @@ public abstract class GRenderingStyleAbstract
    @Override
    public GPolygonRenderingShape getSurfaceShape(final ISurface2D<?> surface,
                                                  final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                                 final IVectorial2DRenderingScaler scaler,
-                                                 final IVectorial2DDrawer drawer) {
+                                                 final IVectorial2DRenderingScaler scaler) {
 
-      final IMeasure<GLength> surfaceBorderSize = getSurfaceBorderSize(surface, feature, scaler, drawer);
+      final IMeasure<GLength> surfaceBorderSize = getSurfaceBorderSize(surface, feature, scaler);
 
       if (surface instanceof IPolygon2D) {
          final IPolygon2D polygon = (IPolygon2D) surface;
@@ -77,12 +75,12 @@ public abstract class GRenderingStyleAbstract
                complexShape.subtract(scaler.toScaledAndTranslatedPoints(hole).asPolygonArea());
             }
 
-            return new GPolygonRenderingShape(polygon, complexShape, surfaceBorderSize, this, scaler);
+            return new GPolygonRenderingShape(polygon, complexShape, surfaceBorderSize, scaler);
          }
 
 
          return new GPolygonRenderingShape(polygon, scaler.toScaledAndTranslatedPoints(polygon).asPolygonShape(),
-                  surfaceBorderSize, this, scaler);
+                  surfaceBorderSize, scaler);
       }
 
       throw new RuntimeException("Surface type (" + surface.getClass() + ") not supported");
@@ -94,7 +92,7 @@ public abstract class GRenderingStyleAbstract
                            final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                            final IVectorial2DRenderingScaler scaler,
                            final IVectorial2DDrawer drawer) {
-      final GPolygonRenderingShape shape = getSurfaceShape(surface, feature, scaler, drawer);
+      final GPolygonRenderingShape shape = getSurfaceShape(surface, feature, scaler);
       if (shape != null) {
          shape.draw((IPolygon2D) surface, feature, this, scaler, drawer);
       }
@@ -106,14 +104,13 @@ public abstract class GRenderingStyleAbstract
    @Override
    public GPolygonalChainRenderingShape getCurveShape(final ICurve2D<?> curve,
                                                       final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                                      final IVectorial2DRenderingScaler scaler,
-                                                      final IVectorial2DDrawer drawer) {
+                                                      final IVectorial2DRenderingScaler scaler) {
       if (curve instanceof IPolygonalChain2D) {
          final IPolygonalChain2D polygonalChain = (IPolygonalChain2D) curve;
 
-         final IMeasure<GLength> curveBorderSize = getCurveBorderSize(polygonalChain, feature, scaler, drawer);
+         final IMeasure<GLength> curveBorderSize = getCurveBorderSize(polygonalChain, feature, scaler);
          return new GPolygonalChainRenderingShape(polygonalChain, scaler.toScaledAndTranslatedPoints(polygonalChain),
-                  curveBorderSize, this, scaler);
+                  curveBorderSize, scaler);
       }
 
       throw new RuntimeException("Curve type (" + curve.getClass() + ") not supported");
@@ -125,7 +122,7 @@ public abstract class GRenderingStyleAbstract
                          final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                          final IVectorial2DRenderingScaler scaler,
                          final IVectorial2DDrawer drawer) {
-      final GPolygonalChainRenderingShape shape = getCurveShape(curve, feature, scaler, drawer);
+      final GPolygonalChainRenderingShape shape = getCurveShape(curve, feature, scaler);
       if (shape != null) {
          shape.draw((IPolygonalChain2D) curve, feature, this, scaler, drawer);
       }

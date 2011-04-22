@@ -46,6 +46,10 @@ public class GJava2DVectorial2DDrawer
 
       g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
       g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+      g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+      g2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+      g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+      g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
       final AffineTransform transformFlipY = AffineTransform.getScaleInstance(1, -1);
       transformFlipY.concatenate(AffineTransform.getTranslateInstance(0, -image.getHeight()));
@@ -143,39 +147,6 @@ public class GJava2DVectorial2DDrawer
    }
 
 
-   //   void drawFlippedImage(final Image image,
-   //                         final double x,
-   //                         final double y,
-   //                         final double width,
-   //                         final double height) {
-   //      _g2d.drawImage(image, toInt(x), toInt(y), toInt(width), toInt(height), null);
-   //   }
-
-
-   @Override
-   public final void drawImage(final Image image,
-                               final double x,
-                               final double y,
-                               final double width,
-                               final double height) {
-      final AffineTransform currentTransform = _g2d.getTransform();
-      _g2d.setTransform(IDENTITY_TRANSFORM);
-
-      final int imageHeight = _image.getHeight();
-      _g2d.drawImage(image, GMath.toRoundedInt(x), imageHeight - GMath.toRoundedInt(y), GMath.toRoundedInt(width),
-               GMath.toRoundedInt(height), null);
-
-      _g2d.setTransform(currentTransform);
-
-
-      //      _g2d.drawImage(//
-      //               image, // 
-      //               toInt(x), toInt(y + height), toInt(x + width), toInt(y), //
-      //               0, 0, toInt(width), toInt(height), //
-      //               null);
-   }
-
-
    @Override
    public final void drawImage(final Image image,
                                final double x,
@@ -187,13 +158,6 @@ public class GJava2DVectorial2DDrawer
       _g2d.drawImage(image, GMath.toRoundedInt(x), imageHeight - GMath.toRoundedInt(y), null);
 
       _g2d.setTransform(currentTransform);
-
-
-      //      _g2d.drawImage(//
-      //               image, // 
-      //               toInt(x), toInt(y + height), toInt(x + width), toInt(y), //
-      //               0, 0, toInt(width), toInt(height), //
-      //               null);
    }
 
 
@@ -219,21 +183,6 @@ public class GJava2DVectorial2DDrawer
       _g2d.drawImage(image, rop, GMath.toRoundedInt(x), imageHeight - GMath.toRoundedInt(y));
 
       _g2d.setTransform(currentTransform);
-   }
-
-
-   @Override
-   public final void drawFlippedImage(final Image image,
-                                      final double x,
-                                      final double y,
-                                      final double width,
-                                      final double height,
-                                      final Color bgColor) {
-      _g2d.drawImage(//
-               image, // 
-               GMath.toRoundedInt(x), GMath.toRoundedInt((y + height)), GMath.toRoundedInt((x + width)), GMath.toRoundedInt(y), //
-               0, 0, GMath.toRoundedInt(width), GMath.toRoundedInt(height), //
-               bgColor, null);
    }
 
 

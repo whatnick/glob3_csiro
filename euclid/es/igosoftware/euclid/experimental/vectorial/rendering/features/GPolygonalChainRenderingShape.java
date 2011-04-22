@@ -35,12 +35,11 @@ public class GPolygonalChainRenderingShape
    public GPolygonalChainRenderingShape(final IPolygonalChain2D polygonalChain,
                                         final GAWTPoints points,
                                         final IMeasure<GLength> curveBorderSize,
-                                        final IRenderingStyle renderingStyle,
                                         final IVectorial2DRenderingScaler scaler) {
       final IVector2 point = polygonalChain.getCentroid();
 
       final double borderLenghtInMeters = curveBorderSize.getValueInReferenceUnits();
-      final IVector2 pointPlusBorderSize = renderingStyle.increment(point, scaler.getProjection(), borderLenghtInMeters, 0);
+      final IVector2 pointPlusBorderSize = scaler.increment(point, borderLenghtInMeters, 0);
       _borderWidth = (float) scaler.scaleExtent(pointPlusBorderSize.sub(point)).x();
 
       _bounds = calculateBounds(points);
@@ -79,45 +78,44 @@ public class GPolygonalChainRenderingShape
    private Color getLODIgnoreColor(final IPolygonalChain2D polygonalChain,
                                    final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                    final IRenderingStyle renderingStyle,
-                                   final IVectorial2DRenderingScaler scaler,
-                                   final IVectorial2DDrawer drawer) {
+                                   final IVectorial2DRenderingScaler scaler) {
       if (renderingStyle.isDebugRendering()) {
          return renderingStyle.getLODColor().asAWTColor();
       }
 
-      final IColor pointColor = renderingStyle.getCurveColor(polygonalChain, feature, scaler, drawer);
-      final float pointOpacity = renderingStyle.getCurveOpacity(polygonalChain, feature, scaler, drawer);
+      final IColor pointColor = renderingStyle.getCurveColor(polygonalChain, feature, scaler);
+      final float pointOpacity = renderingStyle.getCurveOpacity(polygonalChain, feature, scaler);
 
       return pointColor.asAWTColor(pointOpacity);
    }
 
 
    @Override
-   public final void renderLODIgnore(final IPolygonalChain2D polygonalChain,
-                                     final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                     final IRenderingStyle renderingStyle,
-                                     final IVectorial2DRenderingScaler scaler,
-                                     final IVectorial2DDrawer drawer) {
-      final Color color = getLODIgnoreColor(polygonalChain, feature, renderingStyle, scaler, drawer);
+   protected final void renderLODIgnore(final IPolygonalChain2D polygonalChain,
+                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                        final IRenderingStyle renderingStyle,
+                                        final IVectorial2DRenderingScaler scaler,
+                                        final IVectorial2DDrawer drawer) {
+      final Color color = getLODIgnoreColor(polygonalChain, feature, renderingStyle, scaler);
 
       drawer.fillRect(_bounds.getX(), _bounds.getY(), _bounds.getWidth(), _bounds.getHeight(), color);
    }
 
 
    @Override
-   public void rawDraw(final IPolygonalChain2D polygonalChain,
-                       final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                       final IRenderingStyle renderingStyle,
-                       final IVectorial2DRenderingScaler scaler,
-                       final IVectorial2DDrawer drawer) {
+   protected void rawDraw(final IPolygonalChain2D polygonalChain,
+                          final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                          final IRenderingStyle renderingStyle,
+                          final IVectorial2DRenderingScaler scaler,
+                          final IVectorial2DDrawer drawer) {
 
       if (_borderWidth <= 0) {
          return;
       }
 
 
-      final IColor curveColor = renderingStyle.getCurveColor(polygonalChain, feature, scaler, drawer);
-      final float curveOpacity = renderingStyle.getCurveOpacity(polygonalChain, feature, scaler, drawer);
+      final IColor curveColor = renderingStyle.getCurveColor(polygonalChain, feature, scaler);
+      final float curveOpacity = renderingStyle.getCurveOpacity(polygonalChain, feature, scaler);
 
       final BasicStroke borderStroke = new BasicStroke(_borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
       //         final int cap = BasicStroke.CAP_ROUND;

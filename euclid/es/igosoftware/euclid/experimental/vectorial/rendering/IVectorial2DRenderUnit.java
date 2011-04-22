@@ -7,6 +7,8 @@ import java.awt.image.BufferedImage;
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle;
 import es.igosoftware.euclid.experimental.vectorial.rendering.utils.GRenderingQuadtree;
 import es.igosoftware.euclid.features.IGlobeFeature;
@@ -20,8 +22,10 @@ public interface IVectorial2DRenderUnit {
    public void render(final BufferedImage renderedImage,
                       final GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> quadtree,
                       final GProjection projection,
+                      final IProjectionTool projectionTool,
                       final GAxisAlignedRectangle region,
-                      final IRenderingStyle renderingStyle);
+                      final IRenderingStyle renderingStyle,
+                      final IVectorial2DDrawer drawer);
 
 
 }

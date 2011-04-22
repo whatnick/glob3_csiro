@@ -14,8 +14,8 @@ import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.experimental.measurement.GArea;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
-import es.igosoftware.euclid.experimental.vectorial.rendering.context.GJava2DVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.GVectorial2DRenderingScaler;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle;
@@ -39,28 +39,29 @@ class GVectorial2DRenderUnit
    public void render(final BufferedImage renderedImage,
                       final GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> quadtree,
                       final GProjection projection,
+                      final IProjectionTool projectionTool,
                       final GAxisAlignedRectangle region,
-                      final IRenderingStyle renderingStyle) {
+                      final IRenderingStyle renderingStyle,
+                      final IVectorial2DDrawer drawer) {
 
+      final IVectorial2DRenderingScaler scaler = new GVectorial2DRenderingScaler(region, projection, projectionTool,
+               renderedImage.getWidth(), renderedImage.getHeight());
 
-      final IVectorial2DDrawer drawer = new GJava2DVectorial2DDrawer(renderedImage);
-      final IVectorial2DRenderingScaler scaler = new GVectorial2DRenderingScaler(region, projection, renderedImage.getWidth(),
-               renderedImage.getHeight());
+      final GAxisAlignedRectangle extendedRegion = calculateExtendedRegion(region, scaler, renderingStyle);
 
-      final GAxisAlignedRectangle extendedRegion = calculateExtendedRegion(region, projection, renderingStyle);
       processNode(quadtree.getRoot(), extendedRegion, renderingStyle, scaler, drawer);
    }
 
 
    private static GAxisAlignedRectangle calculateExtendedRegion(final GAxisAlignedRectangle region,
-                                                                final GProjection projection,
+                                                                final IVectorial2DRenderingScaler scaler,
                                                                 final IRenderingStyle renderingStyle) {
       final IMeasure<GArea> maximumSize = renderingStyle.getMaximumSize();
 
       final double areaInSquaredMeters = maximumSize.getValueInReferenceUnits();
       final double extent = GMath.sqrt(areaInSquaredMeters);
-      final IVector2 lower = renderingStyle.increment(region._lower, projection, -extent, -extent);
-      final IVector2 upper = renderingStyle.increment(region._upper, projection, extent, extent);
+      final IVector2 lower = scaler.increment(region._lower, -extent, -extent);
+      final IVector2 upper = scaler.increment(region._upper, extent, extent);
 
       return new GAxisAlignedRectangle(lower, upper);
    }

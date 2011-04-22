@@ -42,6 +42,7 @@ import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorial2DRenderer;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.features.IGlobeMutableFeatureCollection;
@@ -102,20 +103,30 @@ public class GVectorial2DLayer
          implements
             IGlobeVector2Layer {
 
-   private static final int    TEXTURE_WIDTH                  = 256;
-   private static final int    TEXTURE_HEIGHT                 = 256;
+   private static final int             TEXTURE_WIDTH                  = 256;
+   private static final int             TEXTURE_HEIGHT                 = 256;
 
 
-   private static final int    TIMEOUT_FOR_CACHED_RESULTS     = 200;
+   private static final int             TIMEOUT_FOR_CACHED_RESULTS     = 200;
 
-   private static final String RENDERING_CACHE_DIRECTORY_NAME = ".rendering-cache";
-   private static final File   RENDERING_CACHE_DIRECTORY      = new File(RENDERING_CACHE_DIRECTORY_NAME);
+   private static final String          RENDERING_CACHE_DIRECTORY_NAME = ".rendering-cache";
+   private static final File            RENDERING_CACHE_DIRECTORY      = new File(RENDERING_CACHE_DIRECTORY_NAME);
 
 
-   private static final int    BYTES_PER_PIXEL                = 4 /* rgba */
-                                                              * 4 /* 4 bytes x integer*/;
-   private static final int    TEXTURE_SIZE_IN_BYTES          = TEXTURE_WIDTH * TEXTURE_HEIGHT * BYTES_PER_PIXEL;
+   private static final int             BYTES_PER_PIXEL                = 4 /* rgba */
+                                                                       * 4 /* 4 bytes x integer*/;
+   private static final int             TEXTURE_SIZE_IN_BYTES          = TEXTURE_WIDTH * TEXTURE_HEIGHT * BYTES_PER_PIXEL;
 
+   private static final IProjectionTool PROJECTION_TOOL                = new IProjectionTool() {
+                                                                          @Override
+                                                                          public IVector2 increment(final IVector2 position,
+                                                                                                    final GProjection projection,
+                                                                                                    final double deltaEasting,
+                                                                                                    final double deltaNorthing) {
+                                                                             return GWWUtils.increment(position, projection,
+                                                                                      deltaEasting, deltaNorthing);
+                                                                          }
+                                                                       };
 
    private static final class RenderingKey {
       private final GVectorial2DLayer     _layer;
@@ -258,8 +269,9 @@ public class GVectorial2DLayer
 
                final GVectorial2DLayer layer = key._layer;
                final GVectorial2DRenderer renderer = layer._renderer;
-               final BufferedImage renderedImage = renderer.render(key._tileBounds, TEXTURE_WIDTH, TEXTURE_HEIGHT,
-                        key._renderingStyle);
+
+               final BufferedImage renderedImage = renderer.getRenderedImage(key._tileBounds, TEXTURE_WIDTH, TEXTURE_HEIGHT,
+                        PROJECTION_TOOL, key._renderingStyle);
                layer.redraw();
 
                if (cacheRenderingOnDisk) {

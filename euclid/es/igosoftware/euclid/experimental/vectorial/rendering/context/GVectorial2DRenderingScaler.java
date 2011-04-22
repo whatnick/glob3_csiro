@@ -19,28 +19,33 @@ public class GVectorial2DRenderingScaler
    private final IVector2              _scale;
    private final GAxisAlignedRectangle _region;
    private final GProjection           _projection;
+   private final IProjectionTool       _projectionTool;
 
 
    public GVectorial2DRenderingScaler(final GAxisAlignedRectangle region,
                                       final GProjection projection,
+                                      final IProjectionTool projectionTool,
                                       final int imageWidth,
                                       final int imageHeight) {
       GAssert.notNull(region, "region");
       GAssert.notNull(projection, "projection");
+      GAssert.notNull(projectionTool, "projectionTool");
       GAssert.isPositive(imageWidth, "imageWidth");
       GAssert.isPositive(imageHeight, "imageHeight");
 
       _region = region;
       _projection = projection;
 
+      _projectionTool = projectionTool;
+
       _scale = new GVector2D(imageWidth, imageHeight).div(region.getExtent());
    }
 
 
-   @Override
-   public final GProjection getProjection() {
-      return _projection;
-   }
+   //   @Override
+   //   public GProjection getProjection() {
+   //      return _projection;
+   //   }
 
 
    @Override
@@ -69,6 +74,14 @@ public class GVectorial2DRenderingScaler
       }
 
       return new GAWTPoints(xPoints, yPoints);
+   }
+
+
+   @Override
+   public IVector2 increment(final IVector2 position,
+                             final double deltaEasting,
+                             final double deltaNorthing) {
+      return _projectionTool.increment(position, _projection, deltaEasting, deltaNorthing);
    }
 
 

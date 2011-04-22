@@ -28,18 +28,4 @@ GeometryT extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?
                     final IVectorial2DDrawer drawer);
 
 
-   public void renderLODIgnore(final GeometryT geometry,
-                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                               final IRenderingStyle renderingStyle,
-                               final IVectorial2DRenderingScaler scaler,
-                               final IVectorial2DDrawer drawer);
-
-
-   public void rawDraw(final GeometryT geometry,
-                       final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                       final IRenderingStyle renderingStyle,
-                       final IVectorial2DRenderingScaler scaler,
-                       final IVectorial2DDrawer drawer);
-
-
 }

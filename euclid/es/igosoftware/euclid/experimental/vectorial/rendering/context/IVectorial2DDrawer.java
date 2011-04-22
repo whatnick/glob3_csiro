@@ -67,13 +67,6 @@ public interface IVectorial2DDrawer {
 
    public void drawImage(final Image image,
                          final double x,
-                         final double y,
-                         final double width,
-                         final double height);
-
-
-   public void drawImage(final Image image,
-                         final double x,
                          final double y);
 
 
@@ -81,14 +74,6 @@ public interface IVectorial2DDrawer {
                          final double x,
                          final double y,
                          final float opacity);
-
-
-   public void drawFlippedImage(final Image image,
-                                final double x,
-                                final double y,
-                                final double width,
-                                final double height,
-                                final Color bgColor);
 
 
 }

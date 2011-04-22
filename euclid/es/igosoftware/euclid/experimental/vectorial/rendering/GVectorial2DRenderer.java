@@ -9,6 +9,9 @@ import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.GJava2DVectorial2DDrawer;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle;
 import es.igosoftware.euclid.experimental.vectorial.rendering.utils.GRenderingQuadtree;
 import es.igosoftware.euclid.features.IGlobeFeature;
@@ -88,34 +91,40 @@ public class GVectorial2DRenderer {
 
    public void render(final GAxisAlignedRectangle region,
                       final BufferedImage image,
-                      final IRenderingStyle renderingStyle) {
+                      final IProjectionTool projectionTool,
+                      final IRenderingStyle renderingStyle,
+                      final IVectorial2DDrawer drawer) {
       GAssert.notNull(region, "region");
       GAssert.notNull(image, "image");
       GAssert.notNull(renderingStyle, "renderingStyle");
-
-      final IVectorial2DRenderUnit renderUnit = new GVectorial2DRenderUnit();
 
       renderingStyle.preprocessFeatures(_features);
 
       renderingStyle.preRenderImage(image);
 
-      renderUnit.render(image, _quadtree, _features.getProjection(), region, renderingStyle);
+      final IVectorial2DRenderUnit renderUnit = new GVectorial2DRenderUnit();
+      renderUnit.render(image, _quadtree, _features.getProjection(), projectionTool, region, renderingStyle, drawer);
 
       renderingStyle.postRenderImage(image);
    }
 
 
-   public BufferedImage render(final GAxisAlignedRectangle region,
-                               final int imageWidth,
-                               final int imageHeight,
-                               final IRenderingStyle renderingStyle) {
+   public BufferedImage getRenderedImage(final GAxisAlignedRectangle region,
+                                         final int imageWidth,
+                                         final int imageHeight,
+                                         final IProjectionTool projectionTool,
+                                         final IRenderingStyle renderingStyle) {
+      GAssert.notNull(region, "region");
       GAssert.isPositive(imageWidth, "imageWidth");
       GAssert.isPositive(imageHeight, "imageHeight");
+      GAssert.notNull(renderingStyle, "renderingStyle");
 
       final BufferedImage image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_4BYTE_ABGR);
       image.setAccelerationPriority(1);
 
-      render(region, image, renderingStyle);
+      final IVectorial2DDrawer drawer = new GJava2DVectorial2DDrawer(image);
+
+      render(region, image, projectionTool, renderingStyle, drawer);
 
       return image;
    }
