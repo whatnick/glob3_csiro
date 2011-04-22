@@ -66,7 +66,7 @@ public class GJava2DVectorial2DRenderingContext
 
 
    @Override
-   public GAWTPoints scaleAndTranslatePoints(final IPointsContainer<IVector2> polygon) {
+   public GAWTPoints toScaledAndTranslatedPoints(final IPointsContainer<IVector2> polygon) {
       final int nPoints = polygon.getPointsCount();
       final int[] xPoints = new int[nPoints];
       final int[] yPoints = new int[nPoints];
