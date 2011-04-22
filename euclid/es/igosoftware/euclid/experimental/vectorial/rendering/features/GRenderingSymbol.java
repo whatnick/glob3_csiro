@@ -1,6 +1,6 @@
 
 
-package es.igosoftware.euclid.experimental.vectorial.rendering.feautures;
+package es.igosoftware.euclid.experimental.vectorial.rendering.features;
 
 import es.igosoftware.euclid.vector.IVector2;
 

@@ -1,6 +1,6 @@
 
 
-package es.igosoftware.euclid.experimental.vectorial.rendering;
+package es.igosoftware.euclid.experimental.vectorial.rendering.coloring;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;

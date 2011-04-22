@@ -16,6 +16,8 @@ import java.util.Set;
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.colors.IColor;
+import es.igosoftware.euclid.experimental.vectorial.rendering.coloring.GColorScheme;
+import es.igosoftware.euclid.experimental.vectorial.rendering.coloring.GColorizerAbstract;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.features.IGlobeMutableFeatureCollection;

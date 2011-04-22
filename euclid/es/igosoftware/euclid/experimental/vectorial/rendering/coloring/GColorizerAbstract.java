@@ -1,9 +1,11 @@
 
 
-package es.igosoftware.euclid.experimental.vectorial.rendering;
+package es.igosoftware.euclid.experimental.vectorial.rendering.coloring;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+
+import es.igosoftware.euclid.experimental.vectorial.rendering.IColorizer;
 
 
 public abstract class GColorizerAbstract

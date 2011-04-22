@@ -1,6 +1,6 @@
 
 
-package es.igosoftware.euclid.experimental.vectorial.rendering.feautures;
+package es.igosoftware.euclid.experimental.vectorial.rendering.features;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -14,16 +14,16 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.util.GMath;
 
 
-public class GRectangleRenderingSymbol
+public class GEllipseRenderingSymbol
          extends
             GShapeRenderingSymbol {
 
 
-   public GRectangleRenderingSymbol(final IVector2 point,
-                                    final IMeasure<GArea> pointSize,
-                                    final IMeasure<GLength> pointBorderSize,
-                                    final IRenderingStyle renderingStyle,
-                                    final IVectorial2DRenderingContext rc) {
+   public GEllipseRenderingSymbol(final IVector2 point,
+                                  final IMeasure<GArea> pointSize,
+                                  final IMeasure<GLength> pointBorderSize,
+                                  final IRenderingStyle renderingStyle,
+                                  final IVectorial2DRenderingContext rc) {
       super(point, pointSize, pointBorderSize, renderingStyle, rc);
    }
 
@@ -36,9 +36,9 @@ public class GRectangleRenderingSymbol
                                       final IVectorial2DRenderingContext rc) {
       final double areaInSquaredMeters = pointSize.getValueInReferenceUnits();
 
-      final double extent = GMath.sqrt(areaInSquaredMeters);
-      final IVector2 pointPlusExtent = renderingStyle.increment(point, rc.getProjection(), extent, extent);
-      return rc.scaleExtent(pointPlusExtent.sub(point));
+      final double radius = GMath.sqrt(areaInSquaredMeters / Math.PI);
+      final IVector2 pointPlusRadius = renderingStyle.increment(point, rc.getProjection(), radius, radius);
+      return rc.scaleExtent(pointPlusRadius.sub(point)).scale(2); // radius times 2 (for extent)
    }
 
 
@@ -48,7 +48,7 @@ public class GRectangleRenderingSymbol
                           final IVectorial2DRenderingContext rc) {
       // fill point
       rc.setColor(fillColor);
-      rc.fillRect(_position.x(), _position.y(), _extent.x(), _extent.y());
+      rc.fillOval(_position.x(), _position.y(), _extent.x(), _extent.y());
 
       // render border
       if (_borderWidth > 0) {
@@ -56,7 +56,7 @@ public class GRectangleRenderingSymbol
          rc.setStroke(borderStroke);
 
          rc.setColor(borderColor);
-         rc.drawRect(_position.x(), _position.y(), _extent.x(), _extent.y());
+         rc.drawOval(_position.x(), _position.y(), _extent.x(), _extent.y());
       }
    }
 

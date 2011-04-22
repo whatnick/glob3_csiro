@@ -1,6 +1,6 @@
 
 
-package es.igosoftware.euclid.experimental.vectorial.rendering;
+package es.igosoftware.euclid.experimental.vectorial.rendering.coloring;
 
 import es.igosoftware.euclid.colors.GColorF;
 import es.igosoftware.euclid.colors.IColor;
