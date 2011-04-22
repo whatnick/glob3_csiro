@@ -18,7 +18,7 @@ import es.igosoftware.euclid.experimental.measurement.GArea;
 import es.igosoftware.euclid.experimental.measurement.GLength;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
-import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaleContext;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.GRenderingStyleAbstract;
 import es.igosoftware.euclid.features.GGeometryType;
 import es.igosoftware.euclid.features.IGlobeFeature;
@@ -385,7 +385,7 @@ public class GGlobeVectorial2DRenderingStyle
    @Override
    public IMeasure<GArea> getPointSize(final IVector2 point,
                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                       final IVectorial2DRenderingScaleContext scaler,
+                                       final IVectorial2DRenderingScaler scaler,
                                        final IVectorial2DDrawer drawer) {
       return getPointSize();
    }
@@ -394,7 +394,7 @@ public class GGlobeVectorial2DRenderingStyle
    @Override
    public IMeasure<GLength> getPointBorderSize(final IVector2 point,
                                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                               final IVectorial2DRenderingScaleContext scaler,
+                                               final IVectorial2DRenderingScaler scaler,
                                                final IVectorial2DDrawer drawer) {
       return getPointBorderSize();
    }
@@ -403,7 +403,7 @@ public class GGlobeVectorial2DRenderingStyle
    @Override
    public IColor getPointColor(final IVector2 point,
                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                               final IVectorial2DRenderingScaleContext scaler,
+                               final IVectorial2DRenderingScaler scaler,
                                final IVectorial2DDrawer drawer) {
       return getPointColor();
    }
@@ -412,7 +412,7 @@ public class GGlobeVectorial2DRenderingStyle
    @Override
    public float getPointOpacity(final IVector2 point,
                                 final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                final IVectorial2DRenderingScaleContext scaler,
+                                final IVectorial2DRenderingScaler scaler,
                                 final IVectorial2DDrawer drawer) {
       return getPointOpacity();
    }
@@ -427,7 +427,7 @@ public class GGlobeVectorial2DRenderingStyle
    @Override
    public IColor getPointBorderColor(final IVector2 point,
                                      final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                     final IVectorial2DRenderingScaleContext scaler,
+                                     final IVectorial2DRenderingScaler scaler,
                                      final IVectorial2DDrawer drawer) {
       return getPointColor(point, feature, scaler, drawer).muchDarker();
    }
@@ -436,7 +436,7 @@ public class GGlobeVectorial2DRenderingStyle
    @Override
    public IMeasure<GLength> getSurfaceBorderSize(final ISurface2D<?> surface,
                                                  final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                                 final IVectorial2DRenderingScaleContext scaler,
+                                                 final IVectorial2DRenderingScaler scaler,
                                                  final IVectorial2DDrawer drawer) {
       // TODO Auto-generated method stub
       return null;
@@ -446,7 +446,7 @@ public class GGlobeVectorial2DRenderingStyle
    @Override
    public IColor getSurfaceColor(final ISurface2D<?> surface,
                                  final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                 final IVectorial2DRenderingScaleContext scaler,
+                                 final IVectorial2DRenderingScaler scaler,
                                  final IVectorial2DDrawer drawer) {
       // TODO Auto-generated method stub
       return null;
@@ -456,7 +456,7 @@ public class GGlobeVectorial2DRenderingStyle
    @Override
    public IColor getSurfaceBorderColor(final ISurface2D<?> surface,
                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                       final IVectorial2DRenderingScaleContext scaler,
+                                       final IVectorial2DRenderingScaler scaler,
                                        final IVectorial2DDrawer drawer) {
       // TODO Auto-generated method stub
       return null;
@@ -466,7 +466,7 @@ public class GGlobeVectorial2DRenderingStyle
    @Override
    public float getSurfaceOpacity(final ISurface2D<?> surface,
                                   final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                  final IVectorial2DRenderingScaleContext scaler,
+                                  final IVectorial2DRenderingScaler scaler,
                                   final IVectorial2DDrawer drawer) {
       // TODO Auto-generated method stub
       return 0;
@@ -476,7 +476,7 @@ public class GGlobeVectorial2DRenderingStyle
    @Override
    public IMeasure<GLength> getCurveBorderSize(final ICurve2D<?> curve,
                                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                               final IVectorial2DRenderingScaleContext scaler,
+                                               final IVectorial2DRenderingScaler scaler,
                                                final IVectorial2DDrawer drawer) {
       // TODO Auto-generated method stub
       return null;
@@ -486,7 +486,7 @@ public class GGlobeVectorial2DRenderingStyle
    @Override
    public IColor getCurveColor(final ICurve2D<?> curve,
                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                               final IVectorial2DRenderingScaleContext scaler,
+                               final IVectorial2DRenderingScaler scaler,
                                final IVectorial2DDrawer drawer) {
       // TODO Auto-generated method stub
       return null;
@@ -496,7 +496,7 @@ public class GGlobeVectorial2DRenderingStyle
    @Override
    public float getCurveOpacity(final ICurve2D<?> curve,
                                 final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                final IVectorial2DRenderingScaleContext scaler,
+                                final IVectorial2DRenderingScaler scaler,
                                 final IVectorial2DDrawer drawer) {
       // TODO Auto-generated method stub
       return 0;

@@ -11,9 +11,9 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.util.GAssert;
 
 
-public class GVectorial2DRenderingScaleContext
+public class GVectorial2DRenderingScaler
          implements
-            IVectorial2DRenderingScaleContext {
+            IVectorial2DRenderingScaler {
 
 
    private final IVector2              _scale;
@@ -21,10 +21,10 @@ public class GVectorial2DRenderingScaleContext
    private final GProjection           _projection;
 
 
-   public GVectorial2DRenderingScaleContext(final GAxisAlignedRectangle region,
-                                            final GProjection projection,
-                                            final int imageWidth,
-                                            final int imageHeight) {
+   public GVectorial2DRenderingScaler(final GAxisAlignedRectangle region,
+                                      final GProjection projection,
+                                      final int imageWidth,
+                                      final int imageHeight) {
       GAssert.notNull(region, "region");
       GAssert.notNull(projection, "projection");
       GAssert.isPositive(imageWidth, "imageWidth");

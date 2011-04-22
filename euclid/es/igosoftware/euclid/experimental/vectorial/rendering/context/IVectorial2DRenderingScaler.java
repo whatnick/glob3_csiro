@@ -8,7 +8,7 @@ import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector2;
 
 
-public interface IVectorial2DRenderingScaleContext {
+public interface IVectorial2DRenderingScaler {
 
 
    public GAWTPoints toScaledAndTranslatedPoints(final IPointsContainer<IVector2> pointsContainer);

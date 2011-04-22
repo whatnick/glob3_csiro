@@ -11,7 +11,7 @@ import es.igosoftware.euclid.experimental.measurement.GArea;
 import es.igosoftware.euclid.experimental.measurement.GLength;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
-import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaleContext;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.vector.IVector2;
@@ -35,7 +35,7 @@ public abstract class GShapeRenderingSymbol
                                    final IMeasure<GArea> pointSize,
                                    final IMeasure<GLength> pointBorderSize,
                                    final IRenderingStyle renderingStyle,
-                                   final IVectorial2DRenderingScaleContext scaler) {
+                                   final IVectorial2DRenderingScaler scaler) {
       GAssert.notNull(point, "point");
       GAssert.notNull(pointSize, "pointSize");
       GAssert.notNull(pointBorderSize, "pointBorderSize");
@@ -53,13 +53,13 @@ public abstract class GShapeRenderingSymbol
                                                final IMeasure<GArea> pointSize,
                                                final IMeasure<GLength> pointBorderSize,
                                                final IRenderingStyle renderingStyle,
-                                               final IVectorial2DRenderingScaleContext scaler);
+                                               final IVectorial2DRenderingScaler scaler);
 
 
    private float calculateBorderWidth(final IVector2 point,
                                       final IMeasure<GLength> pointBorderSize,
                                       final IRenderingStyle renderingStyle,
-                                      final IVectorial2DRenderingScaleContext scaler) {
+                                      final IVectorial2DRenderingScaler scaler) {
       final double borderLenghtInMeters = pointBorderSize.getValueInReferenceUnits();
       final IVector2 pointPlusBorderSize = renderingStyle.increment(point, scaler.getProjection(), borderLenghtInMeters, 0);
       return (float) scaler.scaleExtent(pointPlusBorderSize.sub(point)).x();
@@ -67,7 +67,7 @@ public abstract class GShapeRenderingSymbol
 
 
    private IVector2 calculatePosition(final IVector2 point,
-                                      final IVectorial2DRenderingScaleContext scaler) {
+                                      final IVectorial2DRenderingScaler scaler) {
       final IVector2 scaledPoint = scaler.scaleAndTranslatePoint(point);
       return scaledPoint.sub(_extent.div(2));
    }
@@ -83,7 +83,7 @@ public abstract class GShapeRenderingSymbol
    public final void rawDraw(final IVector2 point,
                              final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                              final IRenderingStyle renderingStyle,
-                             final IVectorial2DRenderingScaleContext scaler,
+                             final IVectorial2DRenderingScaler scaler,
                              final IVectorial2DDrawer drawer) {
 
       final IColor pointColor = renderingStyle.getPointColor(point, feature, scaler, drawer);
@@ -96,14 +96,14 @@ public abstract class GShapeRenderingSymbol
 
    protected abstract void rawDraw(final Color fillColor,
                                    final Color borderColor,
-                                   final IVectorial2DRenderingScaleContext scaler,
+                                   final IVectorial2DRenderingScaler scaler,
                                    final IVectorial2DDrawer drawer);
 
 
    private Color getLODIgnoreColor(final IVector2 point,
                                    final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                    final IRenderingStyle renderingStyle,
-                                   final IVectorial2DRenderingScaleContext scaler,
+                                   final IVectorial2DRenderingScaler scaler,
                                    final IVectorial2DDrawer drawer) {
       if (renderingStyle.isDebugRendering()) {
          return renderingStyle.getLODColor().asAWTColor();
@@ -125,7 +125,7 @@ public abstract class GShapeRenderingSymbol
    public final void renderLODIgnore(final IVector2 point,
                                      final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                      final IRenderingStyle renderingStyle,
-                                     final IVectorial2DRenderingScaleContext scaler,
+                                     final IVectorial2DRenderingScaler scaler,
                                      final IVectorial2DDrawer drawer) {
       final Color color = getLODIgnoreColor(point, feature, renderingStyle, scaler, drawer);
 

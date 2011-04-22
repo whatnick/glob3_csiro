@@ -12,7 +12,7 @@ import es.igosoftware.euclid.experimental.measurement.GArea;
 import es.igosoftware.euclid.experimental.measurement.GLength;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
-import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaleContext;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
 import es.igosoftware.euclid.experimental.vectorial.rendering.features.GEllipseRenderingSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.features.GPolygonRenderingShape;
 import es.igosoftware.euclid.experimental.vectorial.rendering.features.GPolygonalChainRenderingShape;
@@ -34,7 +34,7 @@ public abstract class GRenderingStyleAbstract
    @Override
    public IRenderingSymbol getPointSymbol(final IVector2 point,
                                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                          final IVectorial2DRenderingScaleContext scaler,
+                                          final IVectorial2DRenderingScaler scaler,
                                           final IVectorial2DDrawer drawer) {
       final IMeasure<GArea> pointSize = getPointSize(point, feature, scaler, drawer);
       final IMeasure<GLength> pointBorderSize = getPointBorderSize(point, feature, scaler, drawer);
@@ -45,7 +45,7 @@ public abstract class GRenderingStyleAbstract
    @Override
    public void drawPoint(final IVector2 point,
                          final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                         final IVectorial2DRenderingScaleContext scaler,
+                         final IVectorial2DRenderingScaler scaler,
                          final IVectorial2DDrawer drawer) {
 
       final IRenderingSymbol symbol = getPointSymbol(point, feature, scaler, drawer);
@@ -59,7 +59,7 @@ public abstract class GRenderingStyleAbstract
    @Override
    public GPolygonRenderingShape getSurfaceShape(final ISurface2D<?> surface,
                                                  final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                                 final IVectorial2DRenderingScaleContext scaler,
+                                                 final IVectorial2DRenderingScaler scaler,
                                                  final IVectorial2DDrawer drawer) {
 
       final IMeasure<GLength> surfaceBorderSize = getSurfaceBorderSize(surface, feature, scaler, drawer);
@@ -92,7 +92,7 @@ public abstract class GRenderingStyleAbstract
    @Override
    public void drawSurface(final ISurface2D<?> surface,
                            final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                           final IVectorial2DRenderingScaleContext scaler,
+                           final IVectorial2DRenderingScaler scaler,
                            final IVectorial2DDrawer drawer) {
       final GPolygonRenderingShape shape = getSurfaceShape(surface, feature, scaler, drawer);
       if (shape != null) {
@@ -106,7 +106,7 @@ public abstract class GRenderingStyleAbstract
    @Override
    public GPolygonalChainRenderingShape getCurveShape(final ICurve2D<?> curve,
                                                       final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                                      final IVectorial2DRenderingScaleContext scaler,
+                                                      final IVectorial2DRenderingScaler scaler,
                                                       final IVectorial2DDrawer drawer) {
       if (curve instanceof IPolygonalChain2D) {
          final IPolygonalChain2D polygonalChain = (IPolygonalChain2D) curve;
@@ -123,7 +123,7 @@ public abstract class GRenderingStyleAbstract
    @Override
    public void drawCurve(final ICurve2D<?> curve,
                          final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                         final IVectorial2DRenderingScaleContext scaler,
+                         final IVectorial2DRenderingScaler scaler,
                          final IVectorial2DDrawer drawer) {
       final GPolygonalChainRenderingShape shape = getCurveShape(curve, feature, scaler, drawer);
       if (shape != null) {

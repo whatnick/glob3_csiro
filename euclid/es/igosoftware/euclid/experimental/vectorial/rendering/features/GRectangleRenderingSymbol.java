@@ -9,7 +9,7 @@ import es.igosoftware.euclid.experimental.measurement.GArea;
 import es.igosoftware.euclid.experimental.measurement.GLength;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
-import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaleContext;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.util.GMath;
@@ -24,7 +24,7 @@ public class GRectangleRenderingSymbol
                                     final IMeasure<GArea> pointSize,
                                     final IMeasure<GLength> pointBorderSize,
                                     final IRenderingStyle renderingStyle,
-                                    final IVectorial2DRenderingScaleContext scaler) {
+                                    final IVectorial2DRenderingScaler scaler) {
       super(point, pointSize, pointBorderSize, renderingStyle, scaler);
    }
 
@@ -34,7 +34,7 @@ public class GRectangleRenderingSymbol
                                       final IMeasure<GArea> pointSize,
                                       final IMeasure<GLength> pointBorderSize,
                                       final IRenderingStyle renderingStyle,
-                                      final IVectorial2DRenderingScaleContext scaler) {
+                                      final IVectorial2DRenderingScaler scaler) {
       final double areaInSquaredMeters = pointSize.getValueInReferenceUnits();
 
       final double extent = GMath.sqrt(areaInSquaredMeters);
@@ -46,7 +46,7 @@ public class GRectangleRenderingSymbol
    @Override
    protected void rawDraw(final Color fillColor,
                           final Color borderColor,
-                          final IVectorial2DRenderingScaleContext scaler,
+                          final IVectorial2DRenderingScaler scaler,
                           final IVectorial2DDrawer drawer) {
       // fill point
       drawer.fillRect(_position.x(), _position.y(), _extent.x(), _extent.y(), fillColor);

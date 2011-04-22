@@ -13,7 +13,7 @@ import es.igosoftware.euclid.colors.IColor;
 import es.igosoftware.euclid.experimental.measurement.GLength;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
-import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaleContext;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.shape.IPolygon2D;
@@ -37,7 +37,7 @@ public class GPolygonRenderingShape
                                  final Shape awtShape,
                                  final IMeasure<GLength> surfaceBorderSize,
                                  final IRenderingStyle renderingStyle,
-                                 final IVectorial2DRenderingScaleContext scaler) {
+                                 final IVectorial2DRenderingScaler scaler) {
       final IVector2 point = polygon.getCentroid();
 
       final double borderLenghtInMeters = surfaceBorderSize.getValueInReferenceUnits();
@@ -59,7 +59,7 @@ public class GPolygonRenderingShape
    private Color getLODIgnoreColor(final IPolygon2D polygon,
                                    final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                    final IRenderingStyle renderingStyle,
-                                   final IVectorial2DRenderingScaleContext scaler,
+                                   final IVectorial2DRenderingScaler scaler,
                                    final IVectorial2DDrawer drawer) {
       if (renderingStyle.isDebugRendering()) {
          return renderingStyle.getLODColor().asAWTColor();
@@ -81,7 +81,7 @@ public class GPolygonRenderingShape
    public final void renderLODIgnore(final IPolygon2D polygon,
                                      final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                      final IRenderingStyle renderingStyle,
-                                     final IVectorial2DRenderingScaleContext scaler,
+                                     final IVectorial2DRenderingScaler scaler,
                                      final IVectorial2DDrawer drawer) {
       final Color color = getLODIgnoreColor(polygon, feature, renderingStyle, scaler, drawer);
 
@@ -93,7 +93,7 @@ public class GPolygonRenderingShape
    public final void rawDraw(final IPolygon2D polygon,
                              final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                              final IRenderingStyle renderingStyle,
-                             final IVectorial2DRenderingScaleContext scaler,
+                             final IVectorial2DRenderingScaler scaler,
                              final IVectorial2DDrawer drawer) {
 
 

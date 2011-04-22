@@ -12,7 +12,7 @@ import es.igosoftware.euclid.colors.IColor;
 import es.igosoftware.euclid.experimental.measurement.GLength;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
-import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaleContext;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle;
 import es.igosoftware.euclid.experimental.vectorial.rendering.utils.GAWTPoints;
 import es.igosoftware.euclid.features.IGlobeFeature;
@@ -36,7 +36,7 @@ public class GPolygonalChainRenderingShape
                                         final GAWTPoints points,
                                         final IMeasure<GLength> curveBorderSize,
                                         final IRenderingStyle renderingStyle,
-                                        final IVectorial2DRenderingScaleContext scaler) {
+                                        final IVectorial2DRenderingScaler scaler) {
       final IVector2 point = polygonalChain.getCentroid();
 
       final double borderLenghtInMeters = curveBorderSize.getValueInReferenceUnits();
@@ -79,7 +79,7 @@ public class GPolygonalChainRenderingShape
    private Color getLODIgnoreColor(final IPolygonalChain2D polygonalChain,
                                    final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                    final IRenderingStyle renderingStyle,
-                                   final IVectorial2DRenderingScaleContext scaler,
+                                   final IVectorial2DRenderingScaler scaler,
                                    final IVectorial2DDrawer drawer) {
       if (renderingStyle.isDebugRendering()) {
          return renderingStyle.getLODColor().asAWTColor();
@@ -96,7 +96,7 @@ public class GPolygonalChainRenderingShape
    public final void renderLODIgnore(final IPolygonalChain2D polygonalChain,
                                      final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                      final IRenderingStyle renderingStyle,
-                                     final IVectorial2DRenderingScaleContext scaler,
+                                     final IVectorial2DRenderingScaler scaler,
                                      final IVectorial2DDrawer drawer) {
       final Color color = getLODIgnoreColor(polygonalChain, feature, renderingStyle, scaler, drawer);
 
@@ -108,7 +108,7 @@ public class GPolygonalChainRenderingShape
    public void rawDraw(final IPolygonalChain2D polygonalChain,
                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                        final IRenderingStyle renderingStyle,
-                       final IVectorial2DRenderingScaleContext scaler,
+                       final IVectorial2DRenderingScaler scaler,
                        final IVectorial2DDrawer drawer) {
 
       if (_borderWidth <= 0) {

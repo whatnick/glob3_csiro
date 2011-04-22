@@ -61,7 +61,7 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.coloring.GColorSch
 import es.igosoftware.euclid.experimental.vectorial.rendering.coloring.GUniqueValuesColorizer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.coloring.IColorizer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
-import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaleContext;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
 import es.igosoftware.euclid.experimental.vectorial.rendering.features.GIconRenderingSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.features.GRectangleRenderingSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.features.IRenderingSymbol;
@@ -244,7 +244,7 @@ public class GVectorial2DRenderingTest {
          @Override
          public IRenderingSymbol getPointSymbol(final IVector2 point,
                                                 final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                                final IVectorial2DRenderingScaleContext scaler,
+                                                final IVectorial2DRenderingScaler scaler,
                                                 final IVectorial2DDrawer drawer) {
             if (isCategory(feature, "automotive")) {
                final IMeasure<GArea> pointSize = getPointSize(point, feature, scaler, drawer);
@@ -268,7 +268,7 @@ public class GVectorial2DRenderingTest {
          @Override
          public IMeasure<GArea> getPointSize(final IVector2 point,
                                              final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                             final IVectorial2DRenderingScaleContext scaler,
+                                             final IVectorial2DRenderingScaler scaler,
                                              final IVectorial2DDrawer drawer) {
             return GArea.SquareKilometer.value(50);
          }
@@ -277,7 +277,7 @@ public class GVectorial2DRenderingTest {
          @Override
          public IMeasure<GLength> getPointBorderSize(final IVector2 point,
                                                      final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                                     final IVectorial2DRenderingScaleContext scaler,
+                                                     final IVectorial2DRenderingScaler scaler,
                                                      final IVectorial2DDrawer drawer) {
             return GLength.Kilometer.value(0.5);
          }
@@ -286,7 +286,7 @@ public class GVectorial2DRenderingTest {
          @Override
          public float getPointOpacity(final IVector2 point,
                                       final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                      final IVectorial2DRenderingScaleContext scaler,
+                                      final IVectorial2DRenderingScaler scaler,
                                       final IVectorial2DDrawer drawer) {
             return 0.75f;
          }
@@ -295,7 +295,7 @@ public class GVectorial2DRenderingTest {
          @Override
          public IColor getPointColor(final IVector2 point,
                                      final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                     final IVectorial2DRenderingScaleContext scaler,
+                                     final IVectorial2DRenderingScaler scaler,
                                      final IVectorial2DDrawer drawer) {
             return _pointColorizer.getColor(feature);
          }
@@ -304,7 +304,7 @@ public class GVectorial2DRenderingTest {
          @Override
          public IColor getPointBorderColor(final IVector2 point,
                                            final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                           final IVectorial2DRenderingScaleContext scaler,
+                                           final IVectorial2DRenderingScaler scaler,
                                            final IVectorial2DDrawer drawer) {
             return _pointColorizer.getColor(feature).muchDarker();
          }
@@ -352,7 +352,7 @@ public class GVectorial2DRenderingTest {
          @Override
          public IMeasure<GLength> getSurfaceBorderSize(final ISurface2D<?> surface,
                                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                                       final IVectorial2DRenderingScaleContext scaler,
+                                                       final IVectorial2DRenderingScaler scaler,
                                                        final IVectorial2DDrawer drawer) {
             final String country = (String) feature.getAttribute(_countryIndex);
             if ((country != null) && country.trim().toLowerCase().equals("argentina")) {
@@ -367,7 +367,7 @@ public class GVectorial2DRenderingTest {
          @Override
          public IColor getSurfaceColor(final ISurface2D<?> surface,
                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                       final IVectorial2DRenderingScaleContext scaler,
+                                       final IVectorial2DRenderingScaler scaler,
                                        final IVectorial2DDrawer drawer) {
             final String country = (String) feature.getAttribute(_countryIndex);
             if ((country != null) && country.trim().toLowerCase().equals("argentina")) {
@@ -382,7 +382,7 @@ public class GVectorial2DRenderingTest {
          @Override
          public float getSurfaceOpacity(final ISurface2D<?> surface,
                                         final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                        final IVectorial2DRenderingScaleContext scaler,
+                                        final IVectorial2DRenderingScaler scaler,
                                         final IVectorial2DDrawer drawer) {
             //            final String country = (String) feature.getAttribute(_countryIndex);
             //            if ((country != null) && country.trim().toLowerCase().equals("argentina")) {
@@ -396,7 +396,7 @@ public class GVectorial2DRenderingTest {
          @Override
          public IColor getSurfaceBorderColor(final ISurface2D<?> surface,
                                              final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                             final IVectorial2DRenderingScaleContext scaler,
+                                             final IVectorial2DRenderingScaler scaler,
                                              final IVectorial2DDrawer drawer) {
             //            final IColor surfaceColor = getSurfaceColor(surface, feature, scaler, drawer);
             //
@@ -412,7 +412,7 @@ public class GVectorial2DRenderingTest {
          @Override
          public IMeasure<GLength> getCurveBorderSize(final ICurve2D<?> curve,
                                                      final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                                     final IVectorial2DRenderingScaleContext scaler,
+                                                     final IVectorial2DRenderingScaler scaler,
                                                      final IVectorial2DDrawer drawer) {
             return GLength.Kilometer.value(0.5f);
          }
@@ -421,7 +421,7 @@ public class GVectorial2DRenderingTest {
          @Override
          public IColor getCurveColor(final ICurve2D<?> curve,
                                      final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                     final IVectorial2DRenderingScaleContext scaler,
+                                     final IVectorial2DRenderingScaler scaler,
                                      final IVectorial2DDrawer drawer) {
             return GColorF.GRAY;
          }
@@ -430,7 +430,7 @@ public class GVectorial2DRenderingTest {
          @Override
          public float getCurveOpacity(final ICurve2D<?> curve,
                                       final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                      final IVectorial2DRenderingScaleContext scaler,
+                                      final IVectorial2DRenderingScaler scaler,
                                       final IVectorial2DDrawer drawer) {
             return 1;
          }

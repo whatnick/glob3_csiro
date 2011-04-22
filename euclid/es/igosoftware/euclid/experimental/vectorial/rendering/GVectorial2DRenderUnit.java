@@ -15,9 +15,9 @@ import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.experimental.measurement.GArea;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.GJava2DVectorial2DDrawer;
-import es.igosoftware.euclid.experimental.vectorial.rendering.context.GVectorial2DRenderingScaleContext;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.GVectorial2DRenderingScaler;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
-import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaleContext;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle;
 import es.igosoftware.euclid.experimental.vectorial.rendering.utils.GRenderingQuadtree;
 import es.igosoftware.euclid.features.IGlobeFeature;
@@ -44,8 +44,8 @@ class GVectorial2DRenderUnit
 
 
       final IVectorial2DDrawer drawer = new GJava2DVectorial2DDrawer(renderedImage);
-      final IVectorial2DRenderingScaleContext scaler = new GVectorial2DRenderingScaleContext(region, projection,
-               renderedImage.getWidth(), renderedImage.getHeight());
+      final IVectorial2DRenderingScaler scaler = new GVectorial2DRenderingScaler(region, projection, renderedImage.getWidth(),
+               renderedImage.getHeight());
 
       final GAxisAlignedRectangle extendedRegion = calculateExtendedRegion(region, projection, renderingStyle);
       processNode(quadtree.getRoot(), extendedRegion, renderingStyle, scaler, drawer);
@@ -69,7 +69,7 @@ class GVectorial2DRenderUnit
    private void processNode(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> node,
                             final GAxisAlignedRectangle extendedRegion,
                             final IRenderingStyle renderingStyle,
-                            final IVectorial2DRenderingScaleContext scaler,
+                            final IVectorial2DRenderingScaler scaler,
                             final IVectorial2DDrawer drawer) {
 
       final GAxisAlignedRectangle nodeBounds = node.getMinimumBounds().asRectangle();
@@ -115,7 +115,7 @@ class GVectorial2DRenderUnit
    private void renderNodeGeometries(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> node,
                                      final GAxisAlignedRectangle extendedRegion,
                                      final IRenderingStyle renderingStyle,
-                                     final IVectorial2DRenderingScaleContext scaler,
+                                     final IVectorial2DRenderingScaler scaler,
                                      final IVectorial2DDrawer drawer) {
 
 
@@ -146,7 +146,7 @@ class GVectorial2DRenderUnit
                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                final GAxisAlignedRectangle extendedRegion,
                                final IRenderingStyle renderingStyle,
-                               final IVectorial2DRenderingScaleContext scaler,
+                               final IVectorial2DRenderingScaler scaler,
                                final IVectorial2DDrawer drawer) {
 
 
