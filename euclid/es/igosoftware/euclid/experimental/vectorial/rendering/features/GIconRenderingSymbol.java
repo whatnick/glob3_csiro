@@ -123,10 +123,10 @@ public class GIconRenderingSymbol
       final double areaInSquaredMeters = pointSize.getValueInReferenceUnits();
 
       final double extent = GMath.sqrt(areaInSquaredMeters / _imageData._percentFilled);
-      final IVector2 pointPlusExtent = renderingStyle.increment(point, rc.getProjection(), extent, extent);
-      _extent = rc.scaleExtent(pointPlusExtent.sub(point)).rounded();
+      final IVector2 pointPlusExtent = renderingStyle.increment(point, rc.getScaler().getProjection(), extent, extent);
+      _extent = rc.getScaler().scaleExtent(pointPlusExtent.sub(point)).rounded();
 
-      final IVector2 scaledPoint = rc.scaleAndTranslatePoint(point);
+      final IVector2 scaledPoint = rc.getScaler().scaleAndTranslatePoint(point);
       _position = scaledPoint.sub(_extent.div(2)).rounded();
 
       _scaledIcon = scaleCache.get(new GPair<BufferedImage, IVector2>(icon, _extent));
@@ -147,7 +147,7 @@ public class GIconRenderingSymbol
 
       final float pointOpacity = renderingStyle.getPointOpacity(point, feature, rc);
 
-      rc.drawImage(_scaledIcon, _position.x(), _position.y(), pointOpacity);
+      rc.getDrawer().drawImage(_scaledIcon, _position.x(), _position.y(), pointOpacity);
    }
 
 
@@ -159,13 +159,10 @@ public class GIconRenderingSymbol
 
       final float pointOpacity = renderingStyle.getPointOpacity(point, feature, rc);
 
-
       final Color color = GAWTUtils.mixAlpha(_imageData._averageColor, pointOpacity);
 
-      final IVector2 scaledPoint = rc.scaleAndTranslatePoint(point);
-      //            rc.setPixel(scaledPoint, color);
-      rc.setColor(color);
-      rc.fillRect(scaledPoint.x(), scaledPoint.y(), 1, 1);
+      rc.getDrawer().fillRect(_position.x(), _position.y(), _extent.x(), _extent.y(), color);
    }
+
 
 }

@@ -40,8 +40,9 @@ public class GPolygonRenderingShape
       final IVector2 point = polygon.getCentroid();
 
       final double borderLenghtInMeters = surfaceBorderSize.getValueInReferenceUnits();
-      final IVector2 pointPlusBorderSize = renderingStyle.increment(point, rc.getProjection(), borderLenghtInMeters, 0);
-      _borderWidth = (float) rc.scaleExtent(pointPlusBorderSize.sub(point)).x();
+      final IVector2 pointPlusBorderSize = renderingStyle.increment(point, rc.getScaler().getProjection(), borderLenghtInMeters,
+               0);
+      _borderWidth = (float) rc.getScaler().scaleExtent(pointPlusBorderSize.sub(point)).x();
 
       _bounds = awtShape.getBounds2D();
 
@@ -63,18 +64,15 @@ public class GPolygonRenderingShape
          return renderingStyle.getLODColor().asAWTColor();
       }
 
-      final IColor pointColor = renderingStyle.getSurfaceColor(polygon, feature, rc);
-      final float pointOpacity = renderingStyle.getSurfaceOpacity(polygon, feature, rc);
-
-      final Color fillColor = pointColor.asAWTColor(pointOpacity);
+      final IColor surfaceColor = renderingStyle.getSurfaceColor(polygon, feature, rc);
+      final float surfaceOpacity = renderingStyle.getSurfaceOpacity(polygon, feature, rc);
 
       if (_borderWidth <= 0) {
-         return fillColor;
+         return surfaceColor.asAWTColor(surfaceOpacity);
       }
 
-      final IColor pointBorderColor = renderingStyle.getSurfaceBorderColor(polygon, feature, rc);
-      final Color borderColor = pointBorderColor.asAWTColor(pointOpacity);
-      return GAWTUtils.mix(fillColor, borderColor);
+      final IColor surfaceBorderColor = renderingStyle.getSurfaceBorderColor(polygon, feature, rc);
+      return GAWTUtils.mix(surfaceColor.asAWTColor(surfaceOpacity), surfaceBorderColor.asAWTColor(surfaceOpacity));
    }
 
 
@@ -85,10 +83,7 @@ public class GPolygonRenderingShape
                                      final IVectorial2DRenderingContext rc) {
       final Color color = getLODIgnoreColor(polygon, feature, renderingStyle, rc);
 
-      final IVector2 scaledPoint = rc.scaleAndTranslatePoint(polygon.getCentroid());
-      //            rc.setPixel(scaledPoint, color);
-      rc.setColor(color);
-      rc.fillRect(scaledPoint.x(), scaledPoint.y(), 1, 1);
+      rc.getDrawer().fillRect(_bounds.getX(), _bounds.getY(), _bounds.getWidth(), _bounds.getHeight(), color);
    }
 
 
@@ -99,27 +94,18 @@ public class GPolygonRenderingShape
                              final IVectorial2DRenderingContext rc) {
 
 
-      final IColor polygonColor = renderingStyle.getSurfaceColor(polygon, feature, rc);
-      final float polygonOpacity = renderingStyle.getSurfaceOpacity(polygon, feature, rc);
-
-      final Color fillColor = polygonColor.asAWTColor(polygonOpacity);
-
+      final IColor surfaceColor = renderingStyle.getSurfaceColor(polygon, feature, rc);
+      final float surfaceOpacity = renderingStyle.getSurfaceOpacity(polygon, feature, rc);
 
       // fill polygon
-      rc.setColor(fillColor);
-      rc.fill(_awtShape);
+      rc.getDrawer().fill(_awtShape, surfaceColor.asAWTColor(surfaceOpacity));
 
 
       // render border
       if (_borderWidth > 0) {
-         final IColor polygonBorderColor = renderingStyle.getSurfaceBorderColor(polygon, feature, rc);
-         final Color borderColor = polygonBorderColor.asAWTColor(polygonOpacity);
-
+         final IColor surfaceBorderColor = renderingStyle.getSurfaceBorderColor(polygon, feature, rc);
          final BasicStroke borderStroke = new BasicStroke(_borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-
-         rc.setStroke(borderStroke);
-         rc.setColor(borderColor);
-         rc.draw(_awtShape);
+         rc.getDrawer().draw(_awtShape, surfaceBorderColor.asAWTColor(surfaceOpacity), borderStroke);
       }
    }
 

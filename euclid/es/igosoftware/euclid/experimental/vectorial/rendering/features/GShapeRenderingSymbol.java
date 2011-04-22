@@ -61,8 +61,9 @@ public abstract class GShapeRenderingSymbol
                                         final IRenderingStyle renderingStyle,
                                         final IVectorial2DRenderingContext rc) {
       final double borderLenghtInMeters = pointBorderSize.getValueInReferenceUnits();
-      final IVector2 pointPlusBorderSize = renderingStyle.increment(point, rc.getProjection(), borderLenghtInMeters, 0);
-      return (float) rc.scaleExtent(pointPlusBorderSize.sub(point)).x();
+      final IVector2 pointPlusBorderSize = renderingStyle.increment(point, rc.getScaler().getProjection(), borderLenghtInMeters,
+               0);
+      return (float) rc.getScaler().scaleExtent(pointPlusBorderSize.sub(point)).x();
    }
 
 
@@ -71,7 +72,7 @@ public abstract class GShapeRenderingSymbol
                                         @SuppressWarnings("unused") final IMeasure<GLength> pointBorderSize,
                                         @SuppressWarnings("unused") final IRenderingStyle renderingStyle,
                                         final IVectorial2DRenderingContext rc) {
-      final IVector2 scaledPoint = rc.scaleAndTranslatePoint(point);
+      final IVector2 scaledPoint = rc.getScaler().scaleAndTranslatePoint(point);
       return scaledPoint.sub(_extent.div(2));
    }
 
@@ -92,10 +93,7 @@ public abstract class GShapeRenderingSymbol
       final IColor pointBorderColor = renderingStyle.getPointBorderColor(point, feature, rc);
       final float pointOpacity = renderingStyle.getPointOpacity(point, feature, rc);
 
-      final Color fillColor = pointColor.asAWTColor(pointOpacity);
-      final Color borderColor = pointBorderColor.asAWTColor(pointOpacity);
-
-      rawDraw(fillColor, borderColor, rc);
+      rawDraw(pointColor.asAWTColor(pointOpacity), pointBorderColor.asAWTColor(pointOpacity), rc);
    }
 
 
@@ -115,15 +113,12 @@ public abstract class GShapeRenderingSymbol
       final IColor pointColor = renderingStyle.getPointColor(point, feature, rc);
       final float pointOpacity = renderingStyle.getPointOpacity(point, feature, rc);
 
-      final Color fillColor = pointColor.asAWTColor(pointOpacity);
-
       if (_borderWidth <= 0) {
-         return fillColor;
+         return pointColor.asAWTColor(pointOpacity);
       }
 
       final IColor pointBorderColor = renderingStyle.getPointBorderColor(point, feature, rc);
-      final Color borderColor = pointBorderColor.asAWTColor(pointOpacity);
-      return GAWTUtils.mix(fillColor, borderColor);
+      return GAWTUtils.mix(pointColor.asAWTColor(pointOpacity), pointBorderColor.asAWTColor(pointOpacity));
    }
 
 
@@ -134,10 +129,7 @@ public abstract class GShapeRenderingSymbol
                                      final IVectorial2DRenderingContext rc) {
       final Color color = getLODIgnoreColor(point, feature, renderingStyle, rc);
 
-      final IVector2 scaledPoint = rc.scaleAndTranslatePoint(point);
-      //            rc.setPixel(scaledPoint, color);
-      rc.setColor(color);
-      rc.fillRect(scaledPoint.x(), scaledPoint.y(), 1, 1);
+      rc.getDrawer().fillRect(_position.x(), _position.y(), _extent.x(), _extent.y(), color);
    }
 
 }

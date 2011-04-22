@@ -37,8 +37,8 @@ public class GEllipseRenderingSymbol
       final double areaInSquaredMeters = pointSize.getValueInReferenceUnits();
 
       final double radius = GMath.sqrt(areaInSquaredMeters / Math.PI);
-      final IVector2 pointPlusRadius = renderingStyle.increment(point, rc.getProjection(), radius, radius);
-      return rc.scaleExtent(pointPlusRadius.sub(point)).scale(2); // radius times 2 (for extent)
+      final IVector2 pointPlusRadius = renderingStyle.increment(point, rc.getScaler().getProjection(), radius, radius);
+      return rc.getScaler().scaleExtent(pointPlusRadius.sub(point)).scale(2); // radius times 2 (for extent)
    }
 
 
@@ -47,16 +47,12 @@ public class GEllipseRenderingSymbol
                           final Color borderColor,
                           final IVectorial2DRenderingContext rc) {
       // fill point
-      rc.setColor(fillColor);
-      rc.fillOval(_position.x(), _position.y(), _extent.x(), _extent.y());
+      rc.getDrawer().fillOval(_position.x(), _position.y(), _extent.x(), _extent.y(), fillColor);
 
       // render border
       if (_borderWidth > 0) {
          final BasicStroke borderStroke = new BasicStroke(_borderWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
-         rc.setStroke(borderStroke);
-
-         rc.setColor(borderColor);
-         rc.drawOval(_position.x(), _position.y(), _extent.x(), _extent.y());
+         rc.getDrawer().drawOval(_position.x(), _position.y(), _extent.x(), _extent.y(), borderColor, borderStroke);
       }
    }
 

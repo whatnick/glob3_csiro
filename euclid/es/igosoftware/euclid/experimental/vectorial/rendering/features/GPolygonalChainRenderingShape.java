@@ -39,8 +39,9 @@ public class GPolygonalChainRenderingShape
       final IVector2 point = polygonalChain.getCentroid();
 
       final double borderLenghtInMeters = curveBorderSize.getValueInReferenceUnits();
-      final IVector2 pointPlusBorderSize = renderingStyle.increment(point, rc.getProjection(), borderLenghtInMeters, 0);
-      _borderWidth = (float) rc.scaleExtent(pointPlusBorderSize.sub(point)).x();
+      final IVector2 pointPlusBorderSize = renderingStyle.increment(point, rc.getScaler().getProjection(), borderLenghtInMeters,
+               0);
+      _borderWidth = (float) rc.getScaler().scaleExtent(pointPlusBorderSize.sub(point)).x();
 
       _bounds = calculateBounds(points);
 
@@ -97,10 +98,7 @@ public class GPolygonalChainRenderingShape
                                      final IVectorial2DRenderingContext rc) {
       final Color color = getLODIgnoreColor(polygonalChain, feature, renderingStyle, rc);
 
-      final IVector2 scaledPoint = rc.scaleAndTranslatePoint(polygonalChain.getCentroid());
-      //            rc.setPixel(scaledPoint, color);
-      rc.setColor(color);
-      rc.fillRect(scaledPoint.x(), scaledPoint.y(), 1, 1);
+      rc.getDrawer().fillRect(_bounds.getX(), _bounds.getY(), _bounds.getWidth(), _bounds.getHeight(), color);
    }
 
 
@@ -110,24 +108,23 @@ public class GPolygonalChainRenderingShape
                        final IRenderingStyle renderingStyle,
                        final IVectorial2DRenderingContext rc) {
 
-      if (_borderWidth > 0) {
-         final IColor polygonColor = renderingStyle.getCurveColor(polygonalChain, feature, rc);
-         final float polygonOpacity = renderingStyle.getCurveOpacity(polygonalChain, feature, rc);
-
-         final Color fillColor = polygonColor.asAWTColor(polygonOpacity);
-
-         //         final BasicStroke borderStroke = new BasicStroke(_borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-         final int cap = BasicStroke.CAP_ROUND;
-         final int join = BasicStroke.JOIN_ROUND;
-         final float miterlimit = 10;
-         final float[] dash = { 20, 5 };
-         final float dash_phase = 0;
-         final BasicStroke borderStroke = new BasicStroke(_borderWidth, cap, join, miterlimit, dash, dash_phase);
-
-         rc.setStroke(borderStroke);
-         rc.setColor(fillColor);
-         rc.drawPolyline(_points);
+      if (_borderWidth <= 0) {
+         return;
       }
+
+
+      final IColor curveColor = renderingStyle.getCurveColor(polygonalChain, feature, rc);
+      final float curveOpacity = renderingStyle.getCurveOpacity(polygonalChain, feature, rc);
+
+      final BasicStroke borderStroke = new BasicStroke(_borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+      //         final int cap = BasicStroke.CAP_ROUND;
+      //         final int join = BasicStroke.JOIN_ROUND;
+      //         final float miterlimit = 10;
+      //         final float[] dash = { 20, 5 };
+      //         final float dash_phase = 0;
+      //         final BasicStroke borderStroke = new BasicStroke(_borderWidth, cap, join, miterlimit, dash, dash_phase);
+
+      rc.getDrawer().drawPolyline(_points, curveColor.asAWTColor(curveOpacity), borderStroke);
    }
 
 

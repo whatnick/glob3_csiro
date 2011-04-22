@@ -66,19 +66,19 @@ public abstract class GRenderingStyleAbstract
          if (polygon instanceof IComplexPolygon2D) {
             final IComplexPolygon2D complexPolygon = (IComplexPolygon2D) polygon;
 
-            final Area complexShape = rc.toScaledAndTranslatedPoints(complexPolygon.getHull()).asArea();
+            final Area complexShape = rc.getScaler().toScaledAndTranslatedPoints(complexPolygon.getHull()).asPolygonArea();
 
             for (final ISimplePolygon2D hole : complexPolygon.getHoles()) {
                // complexShape.exclusiveOr(getPoints(hole, scale, region).asArea());
-               complexShape.subtract(rc.toScaledAndTranslatedPoints(hole).asArea());
+               complexShape.subtract(rc.getScaler().toScaledAndTranslatedPoints(hole).asPolygonArea());
             }
 
             return new GPolygonRenderingShape(polygon, complexShape, surfaceBorderSize, this, rc);
          }
 
 
-         return new GPolygonRenderingShape(polygon, rc.toScaledAndTranslatedPoints(polygon).asShape(), surfaceBorderSize, this,
-                  rc);
+         return new GPolygonRenderingShape(polygon, rc.getScaler().toScaledAndTranslatedPoints(polygon).asPolygonShape(),
+                  surfaceBorderSize, this, rc);
       }
 
       throw new RuntimeException("Surface type (" + surface.getClass() + ") not supported");
@@ -106,7 +106,7 @@ public abstract class GRenderingStyleAbstract
          final IPolygonalChain2D polygonalChain = (IPolygonalChain2D) curve;
 
          final IMeasure<GLength> curveBorderSize = getCurveBorderSize(polygonalChain, feature, rc);
-         return new GPolygonalChainRenderingShape(polygonalChain, rc.toScaledAndTranslatedPoints(polygonalChain),
+         return new GPolygonalChainRenderingShape(polygonalChain, rc.getScaler().toScaledAndTranslatedPoints(polygonalChain),
                   curveBorderSize, this, rc);
       }
 

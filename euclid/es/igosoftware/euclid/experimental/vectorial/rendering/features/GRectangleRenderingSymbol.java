@@ -37,8 +37,8 @@ public class GRectangleRenderingSymbol
       final double areaInSquaredMeters = pointSize.getValueInReferenceUnits();
 
       final double extent = GMath.sqrt(areaInSquaredMeters);
-      final IVector2 pointPlusExtent = renderingStyle.increment(point, rc.getProjection(), extent, extent);
-      return rc.scaleExtent(pointPlusExtent.sub(point));
+      final IVector2 pointPlusExtent = renderingStyle.increment(point, rc.getScaler().getProjection(), extent, extent);
+      return rc.getScaler().scaleExtent(pointPlusExtent.sub(point));
    }
 
 
@@ -47,16 +47,12 @@ public class GRectangleRenderingSymbol
                           final Color borderColor,
                           final IVectorial2DRenderingContext rc) {
       // fill point
-      rc.setColor(fillColor);
-      rc.fillRect(_position.x(), _position.y(), _extent.x(), _extent.y());
+      rc.getDrawer().fillRect(_position.x(), _position.y(), _extent.x(), _extent.y(), fillColor);
 
       // render border
       if (_borderWidth > 0) {
          final BasicStroke borderStroke = new BasicStroke(_borderWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
-         rc.setStroke(borderStroke);
-
-         rc.setColor(borderColor);
-         rc.drawRect(_position.x(), _position.y(), _extent.x(), _extent.y());
+         rc.getDrawer().drawRect(_position.x(), _position.y(), _extent.x(), _extent.y(), borderColor, borderStroke);
       }
    }
 

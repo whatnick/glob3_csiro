@@ -26,12 +26,13 @@ public class GAWTPoints {
    }
 
 
-   public Shape asShape() {
+   public Shape asPolygonShape() {
       return new Polygon(_xPoints, _yPoints, _xPoints.length);
    }
 
 
-   public Area asArea() {
-      return new Area(asShape());
+   public Area asPolygonArea() {
+      return new Area(asPolygonShape());
    }
+
 }

@@ -4,9 +4,6 @@ package es.igosoftware.euclid.experimental.vectorial.rendering;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 import es.igosoftware.euclid.IBoundedGeometry;
@@ -17,8 +14,12 @@ import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.experimental.measurement.GArea;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.GJava2DVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.GJava2DVectorial2DRenderingContext;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.GVectorial2DRenderingScaleContext;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingContext;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaleContext;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle;
 import es.igosoftware.euclid.experimental.vectorial.rendering.utils.GRenderingQuadtree;
 import es.igosoftware.euclid.features.IGlobeFeature;
@@ -27,7 +28,6 @@ import es.igosoftware.euclid.ntree.GElementGeometryPair;
 import es.igosoftware.euclid.ntree.GGTInnerNode;
 import es.igosoftware.euclid.ntree.GGTNode;
 import es.igosoftware.euclid.projection.GProjection;
-import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.util.GMath;
 
@@ -44,38 +44,15 @@ class GVectorial2DRenderUnit
                       final GAxisAlignedRectangle region,
                       final IRenderingStyle renderingStyle) {
 
-      final int imageWidth = renderedImage.getWidth();
-      final int imageHeight = renderedImage.getHeight();
 
-      final IVector2 scale = new GVector2D(imageWidth, imageHeight).div(region.getExtent());
-
-      final Graphics2D g2d = renderedImage.createGraphics();
-      g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-      g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-      //      g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-
-      if (renderingStyle.isDebugRendering()) {
-         g2d.setColor(Color.YELLOW);
-         g2d.setStroke(new BasicStroke(1));
-
-         g2d.drawRect(0, 0, imageWidth, imageHeight);
-
-         //         g2d.drawString(region._lower.toString(), 10, 10);
-         //         g2d.drawString(" " + region._upper, 10, 20);
-      }
-
-      final AffineTransform transformFlipY = AffineTransform.getScaleInstance(1, -1);
-      transformFlipY.concatenate(AffineTransform.getTranslateInstance(0, -imageHeight));
-
-      g2d.setTransform(transformFlipY);
-
+      //      final IVectorial2DRenderingContext rc = new GJava2DVectorial2DRenderingContext(region, projection, renderedImage);
+      final IVectorial2DDrawer drawer = new GJava2DVectorial2DDrawer(renderedImage);
+      final IVectorial2DRenderingScaleContext scaler = new GVectorial2DRenderingScaleContext(region, projection,
+               renderedImage.getWidth(), renderedImage.getHeight());
+      final IVectorial2DRenderingContext rc = new GJava2DVectorial2DRenderingContext(scaler, drawer);
 
       final GAxisAlignedRectangle extendedRegion = calculateExtendedRegion(region, projection, renderingStyle);
-      final IVectorial2DRenderingContext rc = new GJava2DVectorial2DRenderingContext(scale, region, projection, g2d,
-               renderedImage);
-
       processNode(quadtree.getRoot(), extendedRegion, renderingStyle, rc);
-
    }
 
 
@@ -105,16 +82,22 @@ class GVectorial2DRenderUnit
       }
 
 
-      final IVector2 scaledNodeExtent = rc.scaleExtent(nodeBounds.getExtent());
+      final IVector2 scaledNodeExtent = rc.getScaler().scaleExtent(nodeBounds.getExtent());
       final double projectedSize = scaledNodeExtent.x() * scaledNodeExtent.y();
       if (projectedSize < renderingStyle.getLODMinSize()) {
-         if (renderingStyle.isRenderLODIgnores() || renderingStyle.isDebugRendering()) {
-            final Color color = renderingStyle.isDebugRendering() ? Color.RED : renderingStyle.getLODColor().asAWTColor();
-
-            final IVector2 projectedCenter = rc.scaleAndTranslatePoint(nodeBounds.getCenter());
-            //            rc.setPixel(projectedCenter, color);
-            rc.setColor(color);
-            rc.fillRect(projectedCenter.x(), projectedCenter.y(), 1, 1);
+         //                  if (renderingStyle.isRenderLODIgnores() || renderingStyle.isDebugRendering()) {
+         //                     final Color color = renderingStyle.isDebugRendering() ? Color.RED : renderingStyle.getLODColor().asAWTColor();
+         //         
+         //                     final IVector2 projectedPosition = rc.scaleAndTranslatePoint(nodeBounds.getCenter()).sub(scaledNodeExtent.div(2));
+         //                     rc.setColor(color);
+         //                     rc.fillRect(projectedPosition.x(), projectedPosition.y(), scaledNodeExtent.x(), scaledNodeExtent.y());
+         //                  }
+         if (renderingStyle.isDebugRendering()) {
+            final Color color = renderingStyle.getLODColor().asAWTColor();
+            final IVector2 projectedPosition = rc.getScaler().scaleAndTranslatePoint(nodeBounds.getCenter()).sub(
+                     scaledNodeExtent.div(2));
+            rc.getDrawer().fillRect(projectedPosition.x(), projectedPosition.y(), scaledNodeExtent.x(), scaledNodeExtent.y(),
+                     color);
          }
 
          return;
@@ -143,21 +126,15 @@ class GVectorial2DRenderUnit
       if (renderingStyle.isDebugRendering()) {
          final GAxisAlignedOrthotope<IVector2, ?> nodeBounds = node.getBounds();
 
-         final IVector2 nodeLower = rc.scaleAndTranslatePoint(nodeBounds._lower);
-         final IVector2 nodeUpper = rc.scaleAndTranslatePoint(nodeBounds._upper);
+         final IVector2 nodeLower = rc.getScaler().scaleAndTranslatePoint(nodeBounds._lower);
+         final IVector2 nodeUpper = rc.getScaler().scaleAndTranslatePoint(nodeBounds._upper);
 
-         //         g2d.setStroke(new BasicStroke(0.25f));
          final boolean isInner = (node instanceof GGTInnerNode);
-         rc.setStroke(new BasicStroke(1));
-         rc.setColor(isInner ? Color.GREEN.darker().darker().darker().darker().darker() : Color.GREEN);
 
-         final int x = Math.round((float) nodeLower.x());
-         final int y = Math.round((float) nodeLower.y());
-         //         final int width = Math.round((float) (nodeUpper.x() - nodeLower.x()));
-         //         final int height = Math.round((float) (nodeUpper.y() - nodeLower.y()));
-         final int width = (int) (nodeUpper.x() - nodeLower.x());
-         final int height = (int) (nodeUpper.y() - nodeLower.y());
-         rc.drawRect(x, y, width, height);
+         rc.getDrawer().drawRect(nodeLower.x(), nodeLower.y(),//
+                  (nodeUpper.x() - nodeLower.x()), (nodeUpper.y() - nodeLower.y()), //
+                  isInner ? Color.GREEN.darker().darker().darker().darker().darker() : Color.GREEN, //
+                  new BasicStroke(1));
       }
 
 

@@ -18,6 +18,7 @@ GeometryT extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?
          implements
             IRenderingFeature<GeometryT> {
 
+
    @Override
    public final void draw(final GeometryT geometry,
                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
@@ -32,5 +33,6 @@ GeometryT extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?
          }
       }
    }
+
 
 }
