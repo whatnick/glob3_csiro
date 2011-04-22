@@ -1,6 +1,6 @@
 
 
-package es.igosoftware.euclid.experimental.vectorial.rendering;
+package es.igosoftware.euclid.experimental.vectorial.rendering.context;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -35,11 +35,11 @@ public class GJava2DVectorial2DRenderingContext
    private final BufferedImage          _renderedImage;
 
 
-   GJava2DVectorial2DRenderingContext(final IVector2 scale,
-                                      final GAxisAlignedRectangle region,
-                                      final GProjection projection,
-                                      final Graphics2D g2d,
-                                      final BufferedImage renderedImage) {
+   public GJava2DVectorial2DRenderingContext(final IVector2 scale,
+                                             final GAxisAlignedRectangle region,
+                                             final GProjection projection,
+                                             final Graphics2D g2d,
+                                             final BufferedImage renderedImage) {
       _scale = scale;
       _region = region;
       _projection = projection;
