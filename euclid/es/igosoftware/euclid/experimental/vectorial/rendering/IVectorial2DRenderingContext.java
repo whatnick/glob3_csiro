@@ -16,7 +16,7 @@ import es.igosoftware.euclid.vector.IVector2;
 public interface IVectorial2DRenderingContext {
 
    /* coordinate transformation methods*/
-   public GAWTPoints getPoints(final IPointsContainer<IVector2> pointsContainer);
+   public GAWTPoints scaleAndTranslatePoints(final IPointsContainer<IVector2> pointsContainer);
 
 
    public IVector2 scaleExtent(final IVector2 extent);
