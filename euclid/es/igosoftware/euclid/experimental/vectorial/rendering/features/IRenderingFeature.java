@@ -4,7 +4,8 @@ package es.igosoftware.euclid.experimental.vectorial.rendering.features;
 
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
-import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingContext;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaleContext;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.vector.IVector2;
@@ -23,19 +24,22 @@ GeometryT extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?
    public void draw(final GeometryT geometry,
                     final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                     final IRenderingStyle renderingStyle,
-                    final IVectorial2DRenderingContext rc);
+                    final IVectorial2DRenderingScaleContext scaler,
+                    final IVectorial2DDrawer drawer);
 
 
    public void renderLODIgnore(final GeometryT geometry,
                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                final IRenderingStyle renderingStyle,
-                               final IVectorial2DRenderingContext rc);
+                               final IVectorial2DRenderingScaleContext scaler,
+                               final IVectorial2DDrawer drawer);
 
 
    public void rawDraw(final GeometryT geometry,
                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                        final IRenderingStyle renderingStyle,
-                       final IVectorial2DRenderingContext rc);
+                       final IVectorial2DRenderingScaleContext scaler,
+                       final IVectorial2DDrawer drawer);
 
 
 }

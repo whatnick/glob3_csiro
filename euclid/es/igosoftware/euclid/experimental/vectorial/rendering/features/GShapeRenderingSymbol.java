@@ -10,7 +10,8 @@ import es.igosoftware.euclid.colors.IColor;
 import es.igosoftware.euclid.experimental.measurement.GArea;
 import es.igosoftware.euclid.experimental.measurement.GLength;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
-import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingContext;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaleContext;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.vector.IVector2;
@@ -34,17 +35,17 @@ public abstract class GShapeRenderingSymbol
                                    final IMeasure<GArea> pointSize,
                                    final IMeasure<GLength> pointBorderSize,
                                    final IRenderingStyle renderingStyle,
-                                   final IVectorial2DRenderingContext rc) {
+                                   final IVectorial2DRenderingScaleContext scaler) {
       GAssert.notNull(point, "point");
       GAssert.notNull(pointSize, "pointSize");
       GAssert.notNull(pointBorderSize, "pointBorderSize");
-      GAssert.notNull(rc, "rc");
+      GAssert.notNull(scaler, "scaler");
 
-      _extent = calculateExtent(point, pointSize, pointBorderSize, renderingStyle, rc);
-      _borderWidth = calculateBorderWidth(point, pointSize, pointBorderSize, renderingStyle, rc);
+      _extent = calculateExtent(point, pointSize, pointBorderSize, renderingStyle, scaler);
+      _borderWidth = calculateBorderWidth(point, pointBorderSize, renderingStyle, scaler);
 
       // calculate position last, so _extent is already calculated and can be used to center the symbol
-      _position = calculatePosition(point, pointSize, pointBorderSize, renderingStyle, rc);
+      _position = calculatePosition(point, scaler);
    }
 
 
@@ -52,27 +53,22 @@ public abstract class GShapeRenderingSymbol
                                                final IMeasure<GArea> pointSize,
                                                final IMeasure<GLength> pointBorderSize,
                                                final IRenderingStyle renderingStyle,
-                                               final IVectorial2DRenderingContext rc);
+                                               final IVectorial2DRenderingScaleContext scaler);
 
 
-   protected float calculateBorderWidth(final IVector2 point,
-                                        @SuppressWarnings("unused") final IMeasure<GArea> pointSize,
-                                        final IMeasure<GLength> pointBorderSize,
-                                        final IRenderingStyle renderingStyle,
-                                        final IVectorial2DRenderingContext rc) {
+   private float calculateBorderWidth(final IVector2 point,
+                                      final IMeasure<GLength> pointBorderSize,
+                                      final IRenderingStyle renderingStyle,
+                                      final IVectorial2DRenderingScaleContext scaler) {
       final double borderLenghtInMeters = pointBorderSize.getValueInReferenceUnits();
-      final IVector2 pointPlusBorderSize = renderingStyle.increment(point, rc.getScaler().getProjection(), borderLenghtInMeters,
-               0);
-      return (float) rc.getScaler().scaleExtent(pointPlusBorderSize.sub(point)).x();
+      final IVector2 pointPlusBorderSize = renderingStyle.increment(point, scaler.getProjection(), borderLenghtInMeters, 0);
+      return (float) scaler.scaleExtent(pointPlusBorderSize.sub(point)).x();
    }
 
 
-   protected IVector2 calculatePosition(final IVector2 point,
-                                        @SuppressWarnings("unused") final IMeasure<GArea> pointSize,
-                                        @SuppressWarnings("unused") final IMeasure<GLength> pointBorderSize,
-                                        @SuppressWarnings("unused") final IRenderingStyle renderingStyle,
-                                        final IVectorial2DRenderingContext rc) {
-      final IVector2 scaledPoint = rc.getScaler().scaleAndTranslatePoint(point);
+   private IVector2 calculatePosition(final IVector2 point,
+                                      final IVectorial2DRenderingScaleContext scaler) {
+      final IVector2 scaledPoint = scaler.scaleAndTranslatePoint(point);
       return scaledPoint.sub(_extent.div(2));
    }
 
@@ -87,37 +83,40 @@ public abstract class GShapeRenderingSymbol
    public final void rawDraw(final IVector2 point,
                              final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                              final IRenderingStyle renderingStyle,
-                             final IVectorial2DRenderingContext rc) {
+                             final IVectorial2DRenderingScaleContext scaler,
+                             final IVectorial2DDrawer drawer) {
 
-      final IColor pointColor = renderingStyle.getPointColor(point, feature, rc);
-      final IColor pointBorderColor = renderingStyle.getPointBorderColor(point, feature, rc);
-      final float pointOpacity = renderingStyle.getPointOpacity(point, feature, rc);
+      final IColor pointColor = renderingStyle.getPointColor(point, feature, scaler, drawer);
+      final IColor pointBorderColor = renderingStyle.getPointBorderColor(point, feature, scaler, drawer);
+      final float pointOpacity = renderingStyle.getPointOpacity(point, feature, scaler, drawer);
 
-      rawDraw(pointColor.asAWTColor(pointOpacity), pointBorderColor.asAWTColor(pointOpacity), rc);
+      rawDraw(pointColor.asAWTColor(pointOpacity), pointBorderColor.asAWTColor(pointOpacity), scaler, drawer);
    }
 
 
    protected abstract void rawDraw(final Color fillColor,
                                    final Color borderColor,
-                                   final IVectorial2DRenderingContext rc);
+                                   final IVectorial2DRenderingScaleContext scaler,
+                                   final IVectorial2DDrawer drawer);
 
 
    private Color getLODIgnoreColor(final IVector2 point,
                                    final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                    final IRenderingStyle renderingStyle,
-                                   final IVectorial2DRenderingContext rc) {
+                                   final IVectorial2DRenderingScaleContext scaler,
+                                   final IVectorial2DDrawer drawer) {
       if (renderingStyle.isDebugRendering()) {
          return renderingStyle.getLODColor().asAWTColor();
       }
 
-      final IColor pointColor = renderingStyle.getPointColor(point, feature, rc);
-      final float pointOpacity = renderingStyle.getPointOpacity(point, feature, rc);
+      final IColor pointColor = renderingStyle.getPointColor(point, feature, scaler, drawer);
+      final float pointOpacity = renderingStyle.getPointOpacity(point, feature, scaler, drawer);
 
       if (_borderWidth <= 0) {
          return pointColor.asAWTColor(pointOpacity);
       }
 
-      final IColor pointBorderColor = renderingStyle.getPointBorderColor(point, feature, rc);
+      final IColor pointBorderColor = renderingStyle.getPointBorderColor(point, feature, scaler, drawer);
       return GAWTUtils.mix(pointColor.asAWTColor(pointOpacity), pointBorderColor.asAWTColor(pointOpacity));
    }
 
@@ -126,10 +125,11 @@ public abstract class GShapeRenderingSymbol
    public final void renderLODIgnore(final IVector2 point,
                                      final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                      final IRenderingStyle renderingStyle,
-                                     final IVectorial2DRenderingContext rc) {
-      final Color color = getLODIgnoreColor(point, feature, renderingStyle, rc);
+                                     final IVectorial2DRenderingScaleContext scaler,
+                                     final IVectorial2DDrawer drawer) {
+      final Color color = getLODIgnoreColor(point, feature, renderingStyle, scaler, drawer);
 
-      rc.getDrawer().fillRect(_position.x(), _position.y(), _extent.x(), _extent.y(), color);
+      drawer.fillRect(_position.x(), _position.y(), _extent.x(), _extent.y(), color);
    }
 
 }

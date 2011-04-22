@@ -10,7 +10,8 @@ import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.experimental.measurement.GArea;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
-import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingContext;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaleContext;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.vector.IVector2;
@@ -116,17 +117,17 @@ public class GIconRenderingSymbol
                                final IVector2 point,
                                final IMeasure<GArea> pointSize,
                                final IRenderingStyle renderingStyle,
-                               final IVectorial2DRenderingContext rc) {
+                               final IVectorial2DRenderingScaleContext scaler) {
 
       _imageData = imageDataCache.get(icon);
 
       final double areaInSquaredMeters = pointSize.getValueInReferenceUnits();
 
       final double extent = GMath.sqrt(areaInSquaredMeters / _imageData._percentFilled);
-      final IVector2 pointPlusExtent = renderingStyle.increment(point, rc.getScaler().getProjection(), extent, extent);
-      _extent = rc.getScaler().scaleExtent(pointPlusExtent.sub(point)).rounded();
+      final IVector2 pointPlusExtent = renderingStyle.increment(point, scaler.getProjection(), extent, extent);
+      _extent = scaler.scaleExtent(pointPlusExtent.sub(point)).rounded();
 
-      final IVector2 scaledPoint = rc.getScaler().scaleAndTranslatePoint(point);
+      final IVector2 scaledPoint = scaler.scaleAndTranslatePoint(point);
       _position = scaledPoint.sub(_extent.div(2)).rounded();
 
       _scaledIcon = scaleCache.get(new GPair<BufferedImage, IVector2>(icon, _extent));
@@ -143,11 +144,12 @@ public class GIconRenderingSymbol
    public final void rawDraw(final IVector2 point,
                              final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                              final IRenderingStyle renderingStyle,
-                             final IVectorial2DRenderingContext rc) {
+                             final IVectorial2DRenderingScaleContext scaler,
+                             final IVectorial2DDrawer drawer) {
 
-      final float pointOpacity = renderingStyle.getPointOpacity(point, feature, rc);
+      final float pointOpacity = renderingStyle.getPointOpacity(point, feature, scaler, drawer);
 
-      rc.getDrawer().drawImage(_scaledIcon, _position.x(), _position.y(), pointOpacity);
+      drawer.drawImage(_scaledIcon, _position.x(), _position.y(), pointOpacity);
    }
 
 
@@ -155,13 +157,14 @@ public class GIconRenderingSymbol
    public final void renderLODIgnore(final IVector2 point,
                                      final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                      final IRenderingStyle renderingStyle,
-                                     final IVectorial2DRenderingContext rc) {
+                                     final IVectorial2DRenderingScaleContext scaler,
+                                     final IVectorial2DDrawer drawer) {
 
-      final float pointOpacity = renderingStyle.getPointOpacity(point, feature, rc);
+      final float pointOpacity = renderingStyle.getPointOpacity(point, feature, scaler, drawer);
 
       final Color color = GAWTUtils.mixAlpha(_imageData._averageColor, pointOpacity);
 
-      rc.getDrawer().fillRect(_position.x(), _position.y(), _extent.x(), _extent.y(), color);
+      drawer.fillRect(_position.x(), _position.y(), _extent.x(), _extent.y(), color);
    }
 
 

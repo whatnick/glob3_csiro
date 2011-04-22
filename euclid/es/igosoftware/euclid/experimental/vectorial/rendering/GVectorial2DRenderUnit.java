@@ -15,10 +15,8 @@ import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.experimental.measurement.GArea;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.GJava2DVectorial2DDrawer;
-import es.igosoftware.euclid.experimental.vectorial.rendering.context.GJava2DVectorial2DRenderingContext;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.GVectorial2DRenderingScaleContext;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
-import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingContext;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaleContext;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle;
 import es.igosoftware.euclid.experimental.vectorial.rendering.utils.GRenderingQuadtree;
@@ -45,14 +43,12 @@ class GVectorial2DRenderUnit
                       final IRenderingStyle renderingStyle) {
 
 
-      //      final IVectorial2DRenderingContext rc = new GJava2DVectorial2DRenderingContext(region, projection, renderedImage);
       final IVectorial2DDrawer drawer = new GJava2DVectorial2DDrawer(renderedImage);
       final IVectorial2DRenderingScaleContext scaler = new GVectorial2DRenderingScaleContext(region, projection,
                renderedImage.getWidth(), renderedImage.getHeight());
-      final IVectorial2DRenderingContext rc = new GJava2DVectorial2DRenderingContext(scaler, drawer);
 
       final GAxisAlignedRectangle extendedRegion = calculateExtendedRegion(region, projection, renderingStyle);
-      processNode(quadtree.getRoot(), extendedRegion, renderingStyle, rc);
+      processNode(quadtree.getRoot(), extendedRegion, renderingStyle, scaler, drawer);
    }
 
 
@@ -73,7 +69,8 @@ class GVectorial2DRenderUnit
    private void processNode(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> node,
                             final GAxisAlignedRectangle extendedRegion,
                             final IRenderingStyle renderingStyle,
-                            final IVectorial2DRenderingContext rc) {
+                            final IVectorial2DRenderingScaleContext scaler,
+                            final IVectorial2DDrawer drawer) {
 
       final GAxisAlignedRectangle nodeBounds = node.getMinimumBounds().asRectangle();
 
@@ -82,7 +79,7 @@ class GVectorial2DRenderUnit
       }
 
 
-      final IVector2 scaledNodeExtent = rc.getScaler().scaleExtent(nodeBounds.getExtent());
+      final IVector2 scaledNodeExtent = scaler.scaleExtent(nodeBounds.getExtent());
       final double projectedSize = scaledNodeExtent.x() * scaledNodeExtent.y();
       if (projectedSize < renderingStyle.getLODMinSize()) {
          //                  if (renderingStyle.isRenderLODIgnores() || renderingStyle.isDebugRendering()) {
@@ -94,10 +91,8 @@ class GVectorial2DRenderUnit
          //                  }
          if (renderingStyle.isDebugRendering()) {
             final Color color = renderingStyle.getLODColor().asAWTColor();
-            final IVector2 projectedPosition = rc.getScaler().scaleAndTranslatePoint(nodeBounds.getCenter()).sub(
-                     scaledNodeExtent.div(2));
-            rc.getDrawer().fillRect(projectedPosition.x(), projectedPosition.y(), scaledNodeExtent.x(), scaledNodeExtent.y(),
-                     color);
+            final IVector2 projectedPosition = scaler.scaleAndTranslatePoint(nodeBounds.getCenter()).sub(scaledNodeExtent.div(2));
+            drawer.fillRect(projectedPosition.x(), projectedPosition.y(), scaledNodeExtent.x(), scaledNodeExtent.y(), color);
          }
 
          return;
@@ -109,29 +104,30 @@ class GVectorial2DRenderUnit
          inner = (GGTInnerNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>>) node;
 
          for (final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> child : inner.getChildren()) {
-            processNode(child, extendedRegion, renderingStyle, rc);
+            processNode(child, extendedRegion, renderingStyle, scaler, drawer);
          }
       }
 
-      renderNodeGeometries(node, extendedRegion, renderingStyle, rc);
+      renderNodeGeometries(node, extendedRegion, renderingStyle, scaler, drawer);
    }
 
 
    private void renderNodeGeometries(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> node,
                                      final GAxisAlignedRectangle extendedRegion,
                                      final IRenderingStyle renderingStyle,
-                                     final IVectorial2DRenderingContext rc) {
+                                     final IVectorial2DRenderingScaleContext scaler,
+                                     final IVectorial2DDrawer drawer) {
 
 
       if (renderingStyle.isDebugRendering()) {
          final GAxisAlignedOrthotope<IVector2, ?> nodeBounds = node.getBounds();
 
-         final IVector2 nodeLower = rc.getScaler().scaleAndTranslatePoint(nodeBounds._lower);
-         final IVector2 nodeUpper = rc.getScaler().scaleAndTranslatePoint(nodeBounds._upper);
+         final IVector2 nodeLower = scaler.scaleAndTranslatePoint(nodeBounds._lower);
+         final IVector2 nodeUpper = scaler.scaleAndTranslatePoint(nodeBounds._upper);
 
          final boolean isInner = (node instanceof GGTInnerNode);
 
-         rc.getDrawer().drawRect(nodeLower.x(), nodeLower.y(),//
+         drawer.drawRect(nodeLower.x(), nodeLower.y(),//
                   (nodeUpper.x() - nodeLower.x()), (nodeUpper.y() - nodeLower.y()), //
                   isInner ? Color.GREEN.darker().darker().darker().darker().darker() : Color.GREEN, //
                   new BasicStroke(1));
@@ -140,7 +136,7 @@ class GVectorial2DRenderUnit
 
       for (final GElementGeometryPair<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> pair : node.getElements()) {
          final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> geometry = pair.getGeometry();
-         renderGeometry(geometry, pair.getElement(), extendedRegion, renderingStyle, rc);
+         renderGeometry(geometry, pair.getElement(), extendedRegion, renderingStyle, scaler, drawer);
       }
 
    }
@@ -150,7 +146,8 @@ class GVectorial2DRenderUnit
                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                final GAxisAlignedRectangle extendedRegion,
                                final IRenderingStyle renderingStyle,
-                               final IVectorial2DRenderingContext rc) {
+                               final IVectorial2DRenderingScaleContext scaler,
+                               final IVectorial2DDrawer drawer) {
 
 
       if (!geometry.getBounds().asAxisAlignedOrthotope().touches(extendedRegion)) {
@@ -161,20 +158,20 @@ class GVectorial2DRenderUnit
          @SuppressWarnings("unchecked")
          final GMultiGeometry2D<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> multigeometry = (GMultiGeometry2D<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) geometry;
          for (final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> child : multigeometry) {
-            renderGeometry(child, feature, extendedRegion, renderingStyle, rc);
+            renderGeometry(child, feature, extendedRegion, renderingStyle, scaler, drawer);
          }
       }
       else if (geometry instanceof IVector2) {
          final IVector2 point = (IVector2) geometry;
-         renderingStyle.drawPoint(point, feature, rc);
+         renderingStyle.drawPoint(point, feature, scaler, drawer);
       }
       else if (geometry instanceof ICurve2D<?>) {
          final ICurve2D<?> curve = (ICurve2D<?>) geometry;
-         renderingStyle.drawCurve(curve, feature, rc);
+         renderingStyle.drawCurve(curve, feature, scaler, drawer);
       }
       else if (geometry instanceof ISurface2D<?>) {
          final ISurface2D<?> surface = (ISurface2D<?>) geometry;
-         renderingStyle.drawSurface(surface, feature, rc);
+         renderingStyle.drawSurface(surface, feature, scaler, drawer);
       }
       else {
          System.out.println("Warning: geometry type " + geometry.getClass() + " not supported");
