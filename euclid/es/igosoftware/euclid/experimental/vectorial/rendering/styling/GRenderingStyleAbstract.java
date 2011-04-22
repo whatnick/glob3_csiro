@@ -15,7 +15,7 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.IVectorial2DRender
 import es.igosoftware.euclid.experimental.vectorial.rendering.features.GEllipseRenderingSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.features.GPolygonRenderingShape;
 import es.igosoftware.euclid.experimental.vectorial.rendering.features.GPolygonalChainRenderingShape;
-import es.igosoftware.euclid.experimental.vectorial.rendering.features.GRenderingSymbol;
+import es.igosoftware.euclid.experimental.vectorial.rendering.features.IRenderingSymbol;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.shape.IComplexPolygon2D;
 import es.igosoftware.euclid.shape.IPolygon2D;
@@ -31,7 +31,7 @@ public abstract class GRenderingStyleAbstract
 
    /* points */
    @Override
-   public GRenderingSymbol getPointSymbol(final IVector2 point,
+   public IRenderingSymbol getPointSymbol(final IVector2 point,
                                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                           final IVectorial2DRenderingContext rc) {
       final IMeasure<GArea> pointSize = getPointSize(point, feature, rc);
@@ -45,7 +45,7 @@ public abstract class GRenderingStyleAbstract
                          final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                          final IVectorial2DRenderingContext rc) {
 
-      final GRenderingSymbol symbol = getPointSymbol(point, feature, rc);
+      final IRenderingSymbol symbol = getPointSymbol(point, feature, rc);
       if (symbol != null) {
          symbol.draw(point, feature, this, rc);
       }

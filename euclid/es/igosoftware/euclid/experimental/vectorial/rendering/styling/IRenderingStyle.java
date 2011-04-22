@@ -13,8 +13,8 @@ import es.igosoftware.euclid.experimental.measurement.GArea;
 import es.igosoftware.euclid.experimental.measurement.GLength;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
 import es.igosoftware.euclid.experimental.vectorial.rendering.IVectorial2DRenderingContext;
-import es.igosoftware.euclid.experimental.vectorial.rendering.features.GRenderingShape;
-import es.igosoftware.euclid.experimental.vectorial.rendering.features.GRenderingSymbol;
+import es.igosoftware.euclid.experimental.vectorial.rendering.features.IRenderingShape;
+import es.igosoftware.euclid.experimental.vectorial.rendering.features.IRenderingSymbol;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
@@ -88,7 +88,7 @@ public interface IRenderingStyle {
                          final IVectorial2DRenderingContext rc);
 
 
-   public GRenderingSymbol getPointSymbol(final IVector2 point,
+   public IRenderingSymbol getPointSymbol(final IVector2 point,
                                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                           final IVectorial2DRenderingContext rc);
 
@@ -114,7 +114,7 @@ public interface IRenderingStyle {
                                   final IVectorial2DRenderingContext rc);
 
 
-   public GRenderingShape<? extends ISurface2D<?>> getSurfaceShape(final ISurface2D<?> surface,
+   public IRenderingShape<? extends ISurface2D<?>> getSurfaceShape(final ISurface2D<?> surface,
                                                                    final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                                                    final IVectorial2DRenderingContext rc);
 
@@ -140,7 +140,7 @@ public interface IRenderingStyle {
                                 final IVectorial2DRenderingContext rc);
 
 
-   public GRenderingShape<? extends ICurve2D<?>> getCurveShape(final ICurve2D<?> curve,
+   public IRenderingShape<? extends ICurve2D<?>> getCurveShape(final ICurve2D<?> curve,
                                                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                                                final IVectorial2DRenderingContext rc);
 

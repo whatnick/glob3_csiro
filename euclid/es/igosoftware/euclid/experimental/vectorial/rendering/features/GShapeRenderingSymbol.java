@@ -20,7 +20,9 @@ import es.igosoftware.util.GAssert;
 
 public abstract class GShapeRenderingSymbol
          extends
-            GRenderingSymbol {
+            GRenderingFeatureAbstract<IVector2>
+         implements
+            IRenderingSymbol {
 
 
    protected final IVector2 _position;

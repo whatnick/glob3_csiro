@@ -5,9 +5,9 @@ package es.igosoftware.euclid.experimental.vectorial.rendering.features;
 import es.igosoftware.euclid.vector.IVector2;
 
 
-public abstract class GRenderingSymbol
+public interface IRenderingSymbol
          extends
-            GRenderingFeatureAbstract<IVector2> {
+            IRenderingFeature<IVector2> {
 
 
 }

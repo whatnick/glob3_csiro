@@ -7,13 +7,13 @@ import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.vector.IVector2;
 
 
-public abstract class GRenderingShape<
+public interface IRenderingShape<
 
 GeometryT extends IBoundedGeometry<IVector2, GAxisAlignedRectangle>
 
 >
          extends
-            GRenderingFeatureAbstract<GeometryT> {
+            IRenderingFeature<GeometryT> {
 
 
 }

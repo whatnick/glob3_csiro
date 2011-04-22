@@ -21,7 +21,9 @@ import es.igosoftware.euclid.vector.IVector2;
 
 public class GPolygonalChainRenderingShape
          extends
-            GRenderingShape<IPolygonalChain2D> {
+            GRenderingFeatureAbstract<IPolygonalChain2D>
+         implements
+            IRenderingShape<IPolygonalChain2D> {
 
 
    private final float      _borderWidth;

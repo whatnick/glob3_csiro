@@ -63,7 +63,7 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.coloring.GUniqueVa
 import es.igosoftware.euclid.experimental.vectorial.rendering.coloring.IColorizer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.features.GIconRenderingSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.features.GRectangleRenderingSymbol;
-import es.igosoftware.euclid.experimental.vectorial.rendering.features.GRenderingSymbol;
+import es.igosoftware.euclid.experimental.vectorial.rendering.features.IRenderingSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.GRenderingStyleAbstract;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle;
 import es.igosoftware.euclid.features.GGeometryType;
@@ -241,7 +241,7 @@ public class GVectorial2DRenderingTest {
 
 
          @Override
-         public GRenderingSymbol getPointSymbol(final IVector2 point,
+         public IRenderingSymbol getPointSymbol(final IVector2 point,
                                                 final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                                 final IVectorial2DRenderingContext rc) {
             if (isCategory(feature, "automotive")) {

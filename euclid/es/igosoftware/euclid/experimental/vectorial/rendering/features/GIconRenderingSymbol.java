@@ -23,7 +23,9 @@ import es.igosoftware.util.LRUCache;
 
 public class GIconRenderingSymbol
          extends
-            GRenderingSymbol {
+            GRenderingFeatureAbstract<IVector2>
+         implements
+            IRenderingSymbol {
 
 
    private static class ImageData {

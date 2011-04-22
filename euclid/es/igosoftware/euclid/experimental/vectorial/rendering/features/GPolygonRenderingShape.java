@@ -22,7 +22,9 @@ import es.igosoftware.util.GAWTUtils;
 
 public class GPolygonRenderingShape
          extends
-            GRenderingShape<IPolygon2D> {
+            GRenderingFeatureAbstract<IPolygon2D>
+         implements
+            IRenderingShape<IPolygon2D> {
 
 
    private final float       _borderWidth;
