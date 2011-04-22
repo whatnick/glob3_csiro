@@ -31,11 +31,12 @@ public class GPolygonRenderingShape
    public GPolygonRenderingShape(final IPolygon2D polygon,
                                  final Shape awtShape,
                                  final IMeasure<GLength> surfaceBorderSize,
-                                 final GVectorialRenderingContext rc) {
+                                 final IRenderingStyle renderingStyle,
+                                 final IVectorialRenderingContext rc) {
       final IVector2 point = polygon.getCentroid();
 
       final double borderLenghtInMeters = surfaceBorderSize.getValueInReferenceUnits();
-      final IVector2 pointPlusBorderSize = rc._renderingStyle.increment(point, rc._projection, borderLenghtInMeters, 0);
+      final IVector2 pointPlusBorderSize = renderingStyle.increment(point, rc.getProjection(), borderLenghtInMeters, 0);
       _borderWidth = (float) rc.scaleExtent(pointPlusBorderSize.sub(point)).x();
 
       _bounds = awtShape.getBounds2D();
@@ -52,13 +53,14 @@ public class GPolygonRenderingShape
 
    private Color getLODIgnoreColor(final IPolygon2D polygon,
                                    final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                   final GVectorialRenderingContext rc) {
-      if (rc._renderingStyle.isDebugRendering()) {
-         return rc._renderingStyle.getLODColor().asAWTColor();
+                                   final IRenderingStyle renderingStyle,
+                                   final IVectorialRenderingContext rc) {
+      if (renderingStyle.isDebugRendering()) {
+         return renderingStyle.getLODColor().asAWTColor();
       }
 
-      final IColor pointColor = rc._renderingStyle.getSurfaceColor(polygon, feature, rc);
-      final float pointOpacity = rc._renderingStyle.getSurfaceOpacity(polygon, feature, rc);
+      final IColor pointColor = renderingStyle.getSurfaceColor(polygon, feature, rc);
+      final float pointOpacity = renderingStyle.getSurfaceOpacity(polygon, feature, rc);
 
       final Color fillColor = pointColor.asAWTColor(pointOpacity);
 
@@ -66,7 +68,7 @@ public class GPolygonRenderingShape
          return fillColor;
       }
 
-      final IColor pointBorderColor = rc._renderingStyle.getSurfaceBorderColor(polygon, feature, rc);
+      final IColor pointBorderColor = renderingStyle.getSurfaceBorderColor(polygon, feature, rc);
       final Color borderColor = pointBorderColor.asAWTColor(pointOpacity);
       return GAWTUtils.mix(fillColor, borderColor);
    }
@@ -75,8 +77,9 @@ public class GPolygonRenderingShape
    @Override
    protected final void renderLODIgnore(final IPolygon2D polygon,
                                         final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                        final GVectorialRenderingContext rc) {
-      final Color color = getLODIgnoreColor(polygon, feature, rc);
+                                        final IRenderingStyle renderingStyle,
+                                        final IVectorialRenderingContext rc) {
+      final Color color = getLODIgnoreColor(polygon, feature, renderingStyle, rc);
 
       final IVector2 scaledPoint = rc.scaleAndTranslatePoint(polygon.getCentroid());
       //            rc.setPixel(scaledPoint, color);
@@ -88,11 +91,12 @@ public class GPolygonRenderingShape
    @Override
    protected void rawDraw(final IPolygon2D polygon,
                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                          final GVectorialRenderingContext rc) {
+                          final IRenderingStyle renderingStyle,
+                          final IVectorialRenderingContext rc) {
 
 
-      final IColor polygonColor = rc._renderingStyle.getSurfaceColor(polygon, feature, rc);
-      final float polygonOpacity = rc._renderingStyle.getSurfaceOpacity(polygon, feature, rc);
+      final IColor polygonColor = renderingStyle.getSurfaceColor(polygon, feature, rc);
+      final float polygonOpacity = renderingStyle.getSurfaceOpacity(polygon, feature, rc);
 
       final Color fillColor = polygonColor.asAWTColor(polygonOpacity);
 
@@ -104,7 +108,7 @@ public class GPolygonRenderingShape
 
       // render border
       if (_borderWidth > 0) {
-         final IColor polygonBorderColor = rc._renderingStyle.getSurfaceBorderColor(polygon, feature, rc);
+         final IColor polygonBorderColor = renderingStyle.getSurfaceBorderColor(polygon, feature, rc);
          final Color borderColor = polygonBorderColor.asAWTColor(polygonOpacity);
 
          final BasicStroke borderStroke = new BasicStroke(_borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);

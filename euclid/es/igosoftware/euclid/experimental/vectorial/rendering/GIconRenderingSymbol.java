@@ -111,14 +111,15 @@ public class GIconRenderingSymbol
    public GIconRenderingSymbol(final BufferedImage icon,
                                final IVector2 point,
                                final IMeasure<GArea> pointSize,
-                               final GVectorialRenderingContext rc) {
+                               final IRenderingStyle renderingStyle,
+                               final IVectorialRenderingContext rc) {
 
       _imageData = imageDataCache.get(icon);
 
       final double areaInSquaredMeters = pointSize.getValueInReferenceUnits();
 
       final double extent = GMath.sqrt(areaInSquaredMeters / _imageData._percentFilled);
-      final IVector2 pointPlusExtent = rc._renderingStyle.increment(point, rc._projection, extent, extent);
+      final IVector2 pointPlusExtent = renderingStyle.increment(point, rc.getProjection(), extent, extent);
       _extent = rc.scaleExtent(pointPlusExtent.sub(point)).rounded();
 
       final IVector2 scaledPoint = rc.scaleAndTranslatePoint(point);
@@ -137,9 +138,10 @@ public class GIconRenderingSymbol
    @Override
    protected void rawDraw(final IVector2 point,
                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                          final GVectorialRenderingContext rc) {
+                          final IRenderingStyle renderingStyle,
+                          final IVectorialRenderingContext rc) {
 
-      final float pointOpacity = rc._renderingStyle.getPointOpacity(point, feature, rc);
+      final float pointOpacity = renderingStyle.getPointOpacity(point, feature, rc);
 
       rc.drawImage(_scaledIcon, _position.x(), _position.y(), pointOpacity);
    }
@@ -148,9 +150,10 @@ public class GIconRenderingSymbol
    @Override
    protected void renderLODIgnore(final IVector2 point,
                                   final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                  final GVectorialRenderingContext rc) {
+                                  final IRenderingStyle renderingStyle,
+                                  final IVectorialRenderingContext rc) {
 
-      final float pointOpacity = rc._renderingStyle.getPointOpacity(point, feature, rc);
+      final float pointOpacity = renderingStyle.getPointOpacity(point, feature, rc);
 
 
       final Color color = GAWTUtils.mixAlpha(_imageData._averageColor, pointOpacity);

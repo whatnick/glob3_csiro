@@ -57,96 +57,94 @@ public interface IRenderingStyle {
    /* point style */
    public IMeasure<GArea> getPointSize(final IVector2 point,
                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                       final GVectorialRenderingContext rc);
+                                       final IVectorialRenderingContext rc);
 
 
    public IMeasure<GLength> getPointBorderSize(final IVector2 point,
                                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                               final GVectorialRenderingContext rc);
+                                               final IVectorialRenderingContext rc);
 
 
    public IColor getPointColor(final IVector2 point,
                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                               final GVectorialRenderingContext rc);
+                               final IVectorialRenderingContext rc);
 
 
    public IColor getPointBorderColor(final IVector2 point,
                                      final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                     final GVectorialRenderingContext rc);
+                                     final IVectorialRenderingContext rc);
 
 
    public float getPointOpacity(final IVector2 point,
                                 final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                final GVectorialRenderingContext rc);
+                                final IVectorialRenderingContext rc);
 
 
    public void drawPoint(final IVector2 point,
                          final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                         final GVectorialRenderingContext rc);
+                         final IVectorialRenderingContext rc);
 
 
    public GRenderingSymbol getPointSymbol(final IVector2 point,
                                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                          final GVectorialRenderingContext rc);
+                                          final IVectorialRenderingContext rc);
 
 
    /* surfaces */
    public IMeasure<GLength> getSurfaceBorderSize(final ISurface2D<?> surface,
                                                  final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                                 final GVectorialRenderingContext rc);
+                                                 final IVectorialRenderingContext rc);
 
 
    public IColor getSurfaceColor(final ISurface2D<?> surface,
                                  final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                 final GVectorialRenderingContext rc);
+                                 final IVectorialRenderingContext rc);
 
 
    public IColor getSurfaceBorderColor(final ISurface2D<?> surface,
                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                       final GVectorialRenderingContext rc);
+                                       final IVectorialRenderingContext rc);
 
 
    public float getSurfaceOpacity(final ISurface2D<?> surface,
                                   final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                  final GVectorialRenderingContext rc);
+                                  final IVectorialRenderingContext rc);
 
 
    public GRenderingShape<? extends ISurface2D<?>> getSurfaceShape(final ISurface2D<?> surface,
                                                                    final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                                                   final GVectorialRenderingContext rc);
+                                                                   final IVectorialRenderingContext rc);
 
 
    public void drawSurface(final ISurface2D<?> surface,
                            final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                           final GVectorialRenderingContext rc);
+                           final IVectorialRenderingContext rc);
 
 
    /* curves */
-
-
    public IMeasure<GLength> getCurveBorderSize(final ICurve2D<?> curve,
                                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                               final GVectorialRenderingContext rc);
+                                               final IVectorialRenderingContext rc);
 
 
    public IColor getCurveColor(final ICurve2D<?> curve,
                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                               final GVectorialRenderingContext rc);
+                               final IVectorialRenderingContext rc);
 
 
    public float getCurveOpacity(final ICurve2D<?> curve,
                                 final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                final GVectorialRenderingContext rc);
+                                final IVectorialRenderingContext rc);
 
 
    public GRenderingShape<? extends ICurve2D<?>> getCurveShape(final ICurve2D<?> curve,
                                                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                                               final GVectorialRenderingContext rc);
+                                                               final IVectorialRenderingContext rc);
 
 
    public void drawCurve(final ICurve2D<?> curve,
                          final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                         final GVectorialRenderingContext rc);
+                         final IVectorialRenderingContext rc);
 
 
 }

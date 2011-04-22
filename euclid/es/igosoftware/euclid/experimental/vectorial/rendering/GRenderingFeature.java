@@ -20,13 +20,14 @@ GeometryT extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?
 
    public final void draw(final GeometryT geometry,
                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                          final GVectorialRenderingContext rc) {
-      if (isBiggerThan(rc._renderingStyle.getLODMinSize())) {
-         rawDraw(geometry, feature, rc);
+                          final IRenderingStyle renderingStyle,
+                          final IVectorialRenderingContext rc) {
+      if (isBiggerThan(renderingStyle.getLODMinSize())) {
+         rawDraw(geometry, feature, renderingStyle, rc);
       }
       else {
-         if (rc._renderingStyle.isRenderLODIgnores() || rc._renderingStyle.isDebugRendering()) {
-            renderLODIgnore(geometry, feature, rc);
+         if (renderingStyle.isRenderLODIgnores() || renderingStyle.isDebugRendering()) {
+            renderLODIgnore(geometry, feature, renderingStyle, rc);
          }
       }
    }
@@ -34,12 +35,14 @@ GeometryT extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?
 
    protected abstract void renderLODIgnore(final GeometryT geometry,
                                            final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                           final GVectorialRenderingContext rc);
+                                           final IRenderingStyle renderingStyle,
+                                           final IVectorialRenderingContext rc);
 
 
    protected abstract void rawDraw(final GeometryT geometry,
                                    final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                   final GVectorialRenderingContext rc);
+                                   final IRenderingStyle renderingStyle,
+                                   final IVectorialRenderingContext rc);
 
 
 }

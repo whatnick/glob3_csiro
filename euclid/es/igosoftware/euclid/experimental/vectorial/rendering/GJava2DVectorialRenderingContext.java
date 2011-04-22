@@ -18,45 +18,54 @@ import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector2;
 
 
-public class GVectorialRenderingContext {
+public class GJava2DVectorialRenderingContext
+         implements
+            IVectorialRenderingContext {
+
+
    private static final AffineTransform IDENTITY_TRANSFORM = new AffineTransform();
+
+
    private final IVector2               _scale;
    private final GAxisAlignedRectangle  _region;
-   final GAxisAlignedRectangle          _extendedRegion;
-   final IRenderingStyle                _renderingStyle;
-   final GProjection                    _projection;
+   private final GProjection            _projection;
    private final Graphics2D             _g2d;
    private final BufferedImage          _renderedImage;
 
 
-   GVectorialRenderingContext(final IVector2 scale,
-                              final GAxisAlignedRectangle region,
-                              final GAxisAlignedRectangle extendedRegion,
-                              final IRenderingStyle renderingStyle,
-                              final GProjection projection,
-                              final Graphics2D g2d,
-                              final BufferedImage renderedImage) {
+   GJava2DVectorialRenderingContext(final IVector2 scale,
+                                    final GAxisAlignedRectangle region,
+                                    final GProjection projection,
+                                    final Graphics2D g2d,
+                                    final BufferedImage renderedImage) {
       _scale = scale;
       _region = region;
-      _extendedRegion = extendedRegion;
-      _renderingStyle = renderingStyle;
       _projection = projection;
       _g2d = g2d;
       _renderedImage = renderedImage;
    }
 
 
-   IVector2 scaleExtent(final IVector2 extent) {
+   @Override
+   public GProjection getProjection() {
+      return _projection;
+   }
+
+
+   @Override
+   public IVector2 scaleExtent(final IVector2 extent) {
       return extent.scale(_scale);
    }
 
 
-   IVector2 scaleAndTranslatePoint(final IVector2 point) {
+   @Override
+   public IVector2 scaleAndTranslatePoint(final IVector2 point) {
       return point.sub(_region._lower).scale(_scale);
    }
 
 
-   GAWTPoints getPoints(final IPointsContainer<IVector2> polygon) {
+   @Override
+   public GAWTPoints getPoints(final IPointsContainer<IVector2> polygon) {
       final int nPoints = polygon.getPointsCount();
       final int[] xPoints = new int[nPoints];
       final int[] yPoints = new int[nPoints];
@@ -132,66 +141,76 @@ public class GVectorialRenderingContext {
    }
 
 
-   void setColor(final Color fillColor) {
+   @Override
+   public void setColor(final Color fillColor) {
       _g2d.setColor(fillColor);
    }
 
 
-   void setStroke(final Stroke stroke) {
+   @Override
+   public void setStroke(final Stroke stroke) {
       _g2d.setStroke(stroke);
    }
 
 
-   void draw(final Shape shape) {
+   @Override
+   public void draw(final Shape shape) {
       _g2d.draw(shape);
    }
 
 
-   void fill(final Shape shape) {
+   @Override
+   public void fill(final Shape shape) {
       _g2d.fill(shape);
    }
 
 
-   void drawOval(final double x,
-                 final double y,
-                 final double width,
-                 final double height) {
+   @Override
+   public void drawOval(final double x,
+                        final double y,
+                        final double width,
+                        final double height) {
       _g2d.drawOval(toInt(x), toInt(y), toInt(width), toInt(height));
    }
 
 
-   void fillOval(final double x,
-                 final double y,
-                 final double width,
-                 final double height) {
+   @Override
+   public void fillOval(final double x,
+                        final double y,
+                        final double width,
+                        final double height) {
       _g2d.fillOval(toInt(x), toInt(y), toInt(width), toInt(height));
    }
 
 
-   void drawPolyline(final int[] xPoints,
-                     final int[] yPoints,
-                     final int length) {
+   @Override
+   public void drawPolyline(final int[] xPoints,
+                            final int[] yPoints,
+                            final int length) {
       _g2d.drawPolyline(xPoints, yPoints, length);
    }
 
 
-   void drawPolyline(final GAWTPoints points) {
+   @Override
+   public void drawPolyline(final GAWTPoints points) {
       drawPolyline(points._xPoints, points._yPoints, points._xPoints.length);
    }
 
 
-   void drawRect(final double x,
-                 final double y,
-                 final double width,
-                 final double height) {
+   @Override
+   public void drawRect(final double x,
+                        final double y,
+                        final double width,
+                        final double height) {
       _g2d.drawRect(toInt(x), toInt(y), toInt(width), toInt(height));
    }
 
 
-   void fillRect(final double x,
-                 final double y,
-                 final double width,
-                 final double height) {
+   @Override
+   public void fillRect(final double x,
+                        final double y,
+                        final double width,
+                        final double height) {
       _g2d.fillRect(toInt(x), toInt(y), toInt(width), toInt(height));
    }
 
@@ -205,11 +224,12 @@ public class GVectorialRenderingContext {
    //   }
 
 
-   void drawImage(final Image image,
-                  final double x,
-                  final double y,
-                  final double width,
-                  final double height) {
+   @Override
+   public void drawImage(final Image image,
+                         final double x,
+                         final double y,
+                         final double width,
+                         final double height) {
       final AffineTransform currentTransform = _g2d.getTransform();
       _g2d.setTransform(IDENTITY_TRANSFORM);
 
@@ -227,9 +247,10 @@ public class GVectorialRenderingContext {
    }
 
 
-   void drawImage(final Image image,
-                  final double x,
-                  final double y) {
+   @Override
+   public void drawImage(final Image image,
+                         final double x,
+                         final double y) {
       final AffineTransform currentTransform = _g2d.getTransform();
       _g2d.setTransform(IDENTITY_TRANSFORM);
 
@@ -247,10 +268,11 @@ public class GVectorialRenderingContext {
    }
 
 
-   void drawImage(final BufferedImage image,
-                  final double x,
-                  final double y,
-                  final float opacity) {
+   @Override
+   public void drawImage(final BufferedImage image,
+                         final double x,
+                         final double y,
+                         final float opacity) {
 
       if (opacity >= 1) {
          drawImage(image, x, y);
@@ -271,12 +293,13 @@ public class GVectorialRenderingContext {
    }
 
 
-   void drawFlippedImage(final Image image,
-                         final double x,
-                         final double y,
-                         final double width,
-                         final double height,
-                         final Color bgColor) {
+   @Override
+   public void drawFlippedImage(final Image image,
+                                final double x,
+                                final double y,
+                                final double width,
+                                final double height,
+                                final Color bgColor) {
       _g2d.drawImage(//
                image, // 
                toInt(x), toInt(y + height), toInt(x + width), toInt(y), //

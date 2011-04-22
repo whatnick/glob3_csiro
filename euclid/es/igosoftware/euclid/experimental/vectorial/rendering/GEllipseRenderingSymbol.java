@@ -20,8 +20,9 @@ public class GEllipseRenderingSymbol
    public GEllipseRenderingSymbol(final IVector2 point,
                                   final IMeasure<GArea> pointSize,
                                   final IMeasure<GLength> pointBorderSize,
-                                  final GVectorialRenderingContext rc) {
-      super(point, pointSize, pointBorderSize, rc);
+                                  final IRenderingStyle renderingStyle,
+                                  final IVectorialRenderingContext rc) {
+      super(point, pointSize, pointBorderSize, renderingStyle, rc);
    }
 
 
@@ -29,11 +30,12 @@ public class GEllipseRenderingSymbol
    protected IVector2 calculateExtent(final IVector2 point,
                                       final IMeasure<GArea> pointSize,
                                       final IMeasure<GLength> pointBorderSize,
-                                      final GVectorialRenderingContext rc) {
+                                      final IRenderingStyle renderingStyle,
+                                      final IVectorialRenderingContext rc) {
       final double areaInSquaredMeters = pointSize.getValueInReferenceUnits();
 
       final double radius = GMath.sqrt(areaInSquaredMeters / Math.PI);
-      final IVector2 pointPlusRadius = rc._renderingStyle.increment(point, rc._projection, radius, radius);
+      final IVector2 pointPlusRadius = renderingStyle.increment(point, rc.getProjection(), radius, radius);
       return rc.scaleExtent(pointPlusRadius.sub(point)).scale(2); // radius times 2 (for extent)
    }
 
@@ -41,7 +43,7 @@ public class GEllipseRenderingSymbol
    @Override
    protected void rawDraw(final Color fillColor,
                           final Color borderColor,
-                          final GVectorialRenderingContext rc) {
+                          final IVectorialRenderingContext rc) {
       // fill point
       rc.setColor(fillColor);
       rc.fillOval(_position.x(), _position.y(), _extent.x(), _extent.y());

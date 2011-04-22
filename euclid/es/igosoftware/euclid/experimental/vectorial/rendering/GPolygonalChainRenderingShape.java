@@ -29,11 +29,12 @@ public class GPolygonalChainRenderingShape
    public GPolygonalChainRenderingShape(final IPolygonalChain2D polygonalChain,
                                         final GAWTPoints points,
                                         final IMeasure<GLength> curveBorderSize,
-                                        final GVectorialRenderingContext rc) {
+                                        final IRenderingStyle renderingStyle,
+                                        final IVectorialRenderingContext rc) {
       final IVector2 point = polygonalChain.getCentroid();
 
       final double borderLenghtInMeters = curveBorderSize.getValueInReferenceUnits();
-      final IVector2 pointPlusBorderSize = rc._renderingStyle.increment(point, rc._projection, borderLenghtInMeters, 0);
+      final IVector2 pointPlusBorderSize = renderingStyle.increment(point, rc.getProjection(), borderLenghtInMeters, 0);
       _borderWidth = (float) rc.scaleExtent(pointPlusBorderSize.sub(point)).x();
 
       _bounds = calculateBounds(points);
@@ -71,13 +72,14 @@ public class GPolygonalChainRenderingShape
 
    private Color getLODIgnoreColor(final IPolygonalChain2D polygonalChain,
                                    final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                   final GVectorialRenderingContext rc) {
-      if (rc._renderingStyle.isDebugRendering()) {
-         return rc._renderingStyle.getLODColor().asAWTColor();
+                                   final IRenderingStyle renderingStyle,
+                                   final IVectorialRenderingContext rc) {
+      if (renderingStyle.isDebugRendering()) {
+         return renderingStyle.getLODColor().asAWTColor();
       }
 
-      final IColor pointColor = rc._renderingStyle.getCurveColor(polygonalChain, feature, rc);
-      final float pointOpacity = rc._renderingStyle.getCurveOpacity(polygonalChain, feature, rc);
+      final IColor pointColor = renderingStyle.getCurveColor(polygonalChain, feature, rc);
+      final float pointOpacity = renderingStyle.getCurveOpacity(polygonalChain, feature, rc);
 
       return pointColor.asAWTColor(pointOpacity);
    }
@@ -86,8 +88,9 @@ public class GPolygonalChainRenderingShape
    @Override
    protected final void renderLODIgnore(final IPolygonalChain2D polygonalChain,
                                         final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                        final GVectorialRenderingContext rc) {
-      final Color color = getLODIgnoreColor(polygonalChain, feature, rc);
+                                        final IRenderingStyle renderingStyle,
+                                        final IVectorialRenderingContext rc) {
+      final Color color = getLODIgnoreColor(polygonalChain, feature, renderingStyle, rc);
 
       final IVector2 scaledPoint = rc.scaleAndTranslatePoint(polygonalChain.getCentroid());
       //            rc.setPixel(scaledPoint, color);
@@ -99,11 +102,12 @@ public class GPolygonalChainRenderingShape
    @Override
    protected void rawDraw(final IPolygonalChain2D polygonalChain,
                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                          final GVectorialRenderingContext rc) {
+                          final IRenderingStyle renderingStyle,
+                          final IVectorialRenderingContext rc) {
 
       if (_borderWidth > 0) {
-         final IColor polygonColor = rc._renderingStyle.getCurveColor(polygonalChain, feature, rc);
-         final float polygonOpacity = rc._renderingStyle.getCurveOpacity(polygonalChain, feature, rc);
+         final IColor polygonColor = renderingStyle.getCurveColor(polygonalChain, feature, rc);
+         final float polygonOpacity = renderingStyle.getCurveOpacity(polygonalChain, feature, rc);
 
          final Color fillColor = polygonColor.asAWTColor(polygonOpacity);
 

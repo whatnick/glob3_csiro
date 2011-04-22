@@ -20,8 +20,9 @@ public class GRectangleRenderingSymbol
    public GRectangleRenderingSymbol(final IVector2 point,
                                     final IMeasure<GArea> pointSize,
                                     final IMeasure<GLength> pointBorderSize,
-                                    final GVectorialRenderingContext rc) {
-      super(point, pointSize, pointBorderSize, rc);
+                                    final IRenderingStyle renderingStyle,
+                                    final IVectorialRenderingContext rc) {
+      super(point, pointSize, pointBorderSize, renderingStyle, rc);
    }
 
 
@@ -29,11 +30,12 @@ public class GRectangleRenderingSymbol
    protected IVector2 calculateExtent(final IVector2 point,
                                       final IMeasure<GArea> pointSize,
                                       final IMeasure<GLength> pointBorderSize,
-                                      final GVectorialRenderingContext rc) {
+                                      final IRenderingStyle renderingStyle,
+                                      final IVectorialRenderingContext rc) {
       final double areaInSquaredMeters = pointSize.getValueInReferenceUnits();
 
       final double extent = GMath.sqrt(areaInSquaredMeters);
-      final IVector2 pointPlusExtent = rc._renderingStyle.increment(point, rc._projection, extent, extent);
+      final IVector2 pointPlusExtent = renderingStyle.increment(point, rc.getProjection(), extent, extent);
       return rc.scaleExtent(pointPlusExtent.sub(point));
    }
 
@@ -41,7 +43,7 @@ public class GRectangleRenderingSymbol
    @Override
    protected void rawDraw(final Color fillColor,
                           final Color borderColor,
-                          final GVectorialRenderingContext rc) {
+                          final IVectorialRenderingContext rc) {
       // fill point
       rc.setColor(fillColor);
       rc.fillRect(_position.x(), _position.y(), _extent.x(), _extent.y());

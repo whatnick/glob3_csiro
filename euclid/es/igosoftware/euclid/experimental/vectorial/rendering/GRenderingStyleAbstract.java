@@ -28,21 +28,21 @@ public abstract class GRenderingStyleAbstract
    @Override
    public GRenderingSymbol getPointSymbol(final IVector2 point,
                                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                          final GVectorialRenderingContext rc) {
+                                          final IVectorialRenderingContext rc) {
       final IMeasure<GArea> pointSize = getPointSize(point, feature, rc);
       final IMeasure<GLength> pointBorderSize = getPointBorderSize(point, feature, rc);
-      return new GEllipseRenderingSymbol(point, pointSize, pointBorderSize, rc);
+      return new GEllipseRenderingSymbol(point, pointSize, pointBorderSize, this, rc);
    }
 
 
    @Override
    public void drawPoint(final IVector2 point,
                          final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                         final GVectorialRenderingContext rc) {
+                         final IVectorialRenderingContext rc) {
 
       final GRenderingSymbol symbol = getPointSymbol(point, feature, rc);
       if (symbol != null) {
-         symbol.draw(point, feature, rc);
+         symbol.draw(point, feature, this, rc);
       }
    }
 
@@ -51,7 +51,7 @@ public abstract class GRenderingStyleAbstract
    @Override
    public GPolygonRenderingShape getSurfaceShape(final ISurface2D<?> surface,
                                                  final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                                 final GVectorialRenderingContext rc) {
+                                                 final IVectorialRenderingContext rc) {
 
       final IMeasure<GLength> surfaceBorderSize = getSurfaceBorderSize(surface, feature, rc);
 
@@ -67,11 +67,11 @@ public abstract class GRenderingStyleAbstract
                complexShape.subtract(rc.getPoints(hole).asArea());
             }
 
-            return new GPolygonRenderingShape(polygon, complexShape, surfaceBorderSize, rc);
+            return new GPolygonRenderingShape(polygon, complexShape, surfaceBorderSize, this, rc);
          }
 
 
-         return new GPolygonRenderingShape(polygon, rc.getPoints(polygon).asShape(), surfaceBorderSize, rc);
+         return new GPolygonRenderingShape(polygon, rc.getPoints(polygon).asShape(), surfaceBorderSize, this, rc);
       }
 
       throw new RuntimeException("Surface type (" + surface.getClass() + ") not supported");
@@ -81,10 +81,10 @@ public abstract class GRenderingStyleAbstract
    @Override
    public void drawSurface(final ISurface2D<?> surface,
                            final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                           final GVectorialRenderingContext rc) {
+                           final IVectorialRenderingContext rc) {
       final GPolygonRenderingShape shape = getSurfaceShape(surface, feature, rc);
       if (shape != null) {
-         shape.draw((IPolygon2D) surface, feature, rc);
+         shape.draw((IPolygon2D) surface, feature, this, rc);
       }
    }
 
@@ -94,12 +94,12 @@ public abstract class GRenderingStyleAbstract
    @Override
    public GPolygonalChainRenderingShape getCurveShape(final ICurve2D<?> curve,
                                                       final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                                      final GVectorialRenderingContext rc) {
+                                                      final IVectorialRenderingContext rc) {
       if (curve instanceof IPolygonalChain2D) {
          final IPolygonalChain2D polygonalChain = (IPolygonalChain2D) curve;
 
          final IMeasure<GLength> curveBorderSize = getCurveBorderSize(polygonalChain, feature, rc);
-         return new GPolygonalChainRenderingShape(polygonalChain, rc.getPoints(polygonalChain), curveBorderSize, rc);
+         return new GPolygonalChainRenderingShape(polygonalChain, rc.getPoints(polygonalChain), curveBorderSize, this, rc);
       }
 
       throw new RuntimeException("Curve type (" + curve.getClass() + ") not supported");
@@ -109,10 +109,10 @@ public abstract class GRenderingStyleAbstract
    @Override
    public void drawCurve(final ICurve2D<?> curve,
                          final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                         final GVectorialRenderingContext rc) {
+                         final IVectorialRenderingContext rc) {
       final GPolygonalChainRenderingShape shape = getCurveShape(curve, feature, rc);
       if (shape != null) {
-         shape.draw((IPolygonalChain2D) curve, feature, rc);
+         shape.draw((IPolygonalChain2D) curve, feature, this, rc);
       }
    }
 
