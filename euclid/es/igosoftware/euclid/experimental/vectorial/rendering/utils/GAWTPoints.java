@@ -22,7 +22,7 @@ public class GAWTPoints {
 
    @Override
    public String toString() {
-      return "Points [_xPoints=" + Arrays.toString(_xPoints) + ", _yPoints=" + Arrays.toString(_yPoints) + "]";
+      return "GAWTPoints [_xPoints=" + Arrays.toString(_xPoints) + ", _yPoints=" + Arrays.toString(_yPoints) + "]";
    }
 
 
