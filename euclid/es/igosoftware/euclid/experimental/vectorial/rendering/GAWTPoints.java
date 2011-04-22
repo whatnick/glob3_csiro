@@ -9,8 +9,8 @@ import java.util.Arrays;
 
 
 public class GAWTPoints {
-   final int[] _xPoints;
-   final int[] _yPoints;
+   public final int[] _xPoints;
+   public final int[] _yPoints;
 
 
    GAWTPoints(final int[] xPoints,
