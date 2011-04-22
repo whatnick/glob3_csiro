@@ -8,6 +8,7 @@ import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.image.BufferedImage;
 
+import es.igosoftware.euclid.experimental.vectorial.rendering.utils.GAWTPoints;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector2;

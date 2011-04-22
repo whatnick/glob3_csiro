@@ -1,6 +1,6 @@
 
 
-package es.igosoftware.euclid.experimental.vectorial.rendering;
+package es.igosoftware.euclid.experimental.vectorial.rendering.utils;
 
 import java.awt.Polygon;
 import java.awt.Shape;
@@ -13,8 +13,8 @@ public class GAWTPoints {
    public final int[] _yPoints;
 
 
-   GAWTPoints(final int[] xPoints,
-              final int[] yPoints) {
+   public GAWTPoints(final int[] xPoints,
+                     final int[] yPoints) {
       _xPoints = xPoints;
       _yPoints = yPoints;
    }
@@ -26,12 +26,12 @@ public class GAWTPoints {
    }
 
 
-   Shape asShape() {
+   public Shape asShape() {
       return new Polygon(_xPoints, _yPoints, _xPoints.length);
    }
 
 
-   Area asArea() {
+   public Area asArea() {
       return new Area(asShape());
    }
 }
