@@ -30,7 +30,7 @@ public class GPolygonalChainRenderingShape
                                         final GAWTPoints points,
                                         final IMeasure<GLength> curveBorderSize,
                                         final IRenderingStyle renderingStyle,
-                                        final IVectorialRenderingContext rc) {
+                                        final IVectorial2DRenderingContext rc) {
       final IVector2 point = polygonalChain.getCentroid();
 
       final double borderLenghtInMeters = curveBorderSize.getValueInReferenceUnits();
@@ -73,7 +73,7 @@ public class GPolygonalChainRenderingShape
    private Color getLODIgnoreColor(final IPolygonalChain2D polygonalChain,
                                    final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                    final IRenderingStyle renderingStyle,
-                                   final IVectorialRenderingContext rc) {
+                                   final IVectorial2DRenderingContext rc) {
       if (renderingStyle.isDebugRendering()) {
          return renderingStyle.getLODColor().asAWTColor();
       }
@@ -89,7 +89,7 @@ public class GPolygonalChainRenderingShape
    protected final void renderLODIgnore(final IPolygonalChain2D polygonalChain,
                                         final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                         final IRenderingStyle renderingStyle,
-                                        final IVectorialRenderingContext rc) {
+                                        final IVectorial2DRenderingContext rc) {
       final Color color = getLODIgnoreColor(polygonalChain, feature, renderingStyle, rc);
 
       final IVector2 scaledPoint = rc.scaleAndTranslatePoint(polygonalChain.getCentroid());
@@ -103,7 +103,7 @@ public class GPolygonalChainRenderingShape
    protected void rawDraw(final IPolygonalChain2D polygonalChain,
                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                           final IRenderingStyle renderingStyle,
-                          final IVectorialRenderingContext rc) {
+                          final IVectorial2DRenderingContext rc) {
 
       if (_borderWidth > 0) {
          final IColor polygonColor = renderingStyle.getCurveColor(polygonalChain, feature, rc);
@@ -111,7 +111,13 @@ public class GPolygonalChainRenderingShape
 
          final Color fillColor = polygonColor.asAWTColor(polygonOpacity);
 
-         final BasicStroke borderStroke = new BasicStroke(_borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+         //         final BasicStroke borderStroke = new BasicStroke(_borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+         final int cap = BasicStroke.CAP_ROUND;
+         final int join = BasicStroke.JOIN_ROUND;
+         final float miterlimit = 10;
+         final float[] dash = { 20, 5 };
+         final float dash_phase = 0;
+         final BasicStroke borderStroke = new BasicStroke(_borderWidth, cap, join, miterlimit, dash, dash_phase);
 
          rc.setStroke(borderStroke);
          rc.setColor(fillColor);

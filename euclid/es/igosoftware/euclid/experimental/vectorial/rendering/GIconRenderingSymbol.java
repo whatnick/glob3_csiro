@@ -112,7 +112,7 @@ public class GIconRenderingSymbol
                                final IVector2 point,
                                final IMeasure<GArea> pointSize,
                                final IRenderingStyle renderingStyle,
-                               final IVectorialRenderingContext rc) {
+                               final IVectorial2DRenderingContext rc) {
 
       _imageData = imageDataCache.get(icon);
 
@@ -139,7 +139,7 @@ public class GIconRenderingSymbol
    protected void rawDraw(final IVector2 point,
                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                           final IRenderingStyle renderingStyle,
-                          final IVectorialRenderingContext rc) {
+                          final IVectorial2DRenderingContext rc) {
 
       final float pointOpacity = renderingStyle.getPointOpacity(point, feature, rc);
 
@@ -151,7 +151,7 @@ public class GIconRenderingSymbol
    protected void renderLODIgnore(final IVector2 point,
                                   final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                   final IRenderingStyle renderingStyle,
-                                  final IVectorialRenderingContext rc) {
+                                  final IVectorial2DRenderingContext rc) {
 
       final float pointOpacity = renderingStyle.getPointOpacity(point, feature, rc);
 

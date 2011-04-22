@@ -28,7 +28,7 @@ public abstract class GRenderingStyleAbstract
    @Override
    public GRenderingSymbol getPointSymbol(final IVector2 point,
                                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                          final IVectorialRenderingContext rc) {
+                                          final IVectorial2DRenderingContext rc) {
       final IMeasure<GArea> pointSize = getPointSize(point, feature, rc);
       final IMeasure<GLength> pointBorderSize = getPointBorderSize(point, feature, rc);
       return new GEllipseRenderingSymbol(point, pointSize, pointBorderSize, this, rc);
@@ -38,7 +38,7 @@ public abstract class GRenderingStyleAbstract
    @Override
    public void drawPoint(final IVector2 point,
                          final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                         final IVectorialRenderingContext rc) {
+                         final IVectorial2DRenderingContext rc) {
 
       final GRenderingSymbol symbol = getPointSymbol(point, feature, rc);
       if (symbol != null) {
@@ -51,7 +51,7 @@ public abstract class GRenderingStyleAbstract
    @Override
    public GPolygonRenderingShape getSurfaceShape(final ISurface2D<?> surface,
                                                  final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                                 final IVectorialRenderingContext rc) {
+                                                 final IVectorial2DRenderingContext rc) {
 
       final IMeasure<GLength> surfaceBorderSize = getSurfaceBorderSize(surface, feature, rc);
 
@@ -81,7 +81,7 @@ public abstract class GRenderingStyleAbstract
    @Override
    public void drawSurface(final ISurface2D<?> surface,
                            final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                           final IVectorialRenderingContext rc) {
+                           final IVectorial2DRenderingContext rc) {
       final GPolygonRenderingShape shape = getSurfaceShape(surface, feature, rc);
       if (shape != null) {
          shape.draw((IPolygon2D) surface, feature, this, rc);
@@ -94,7 +94,7 @@ public abstract class GRenderingStyleAbstract
    @Override
    public GPolygonalChainRenderingShape getCurveShape(final ICurve2D<?> curve,
                                                       final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                                      final IVectorialRenderingContext rc) {
+                                                      final IVectorial2DRenderingContext rc) {
       if (curve instanceof IPolygonalChain2D) {
          final IPolygonalChain2D polygonalChain = (IPolygonalChain2D) curve;
 
@@ -109,7 +109,7 @@ public abstract class GRenderingStyleAbstract
    @Override
    public void drawCurve(final ICurve2D<?> curve,
                          final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                         final IVectorialRenderingContext rc) {
+                         final IVectorial2DRenderingContext rc) {
       final GPolygonalChainRenderingShape shape = getCurveShape(curve, feature, rc);
       if (shape != null) {
          shape.draw((IPolygonalChain2D) curve, feature, this, rc);

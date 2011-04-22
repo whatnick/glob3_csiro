@@ -21,7 +21,7 @@ public class GEllipseRenderingSymbol
                                   final IMeasure<GArea> pointSize,
                                   final IMeasure<GLength> pointBorderSize,
                                   final IRenderingStyle renderingStyle,
-                                  final IVectorialRenderingContext rc) {
+                                  final IVectorial2DRenderingContext rc) {
       super(point, pointSize, pointBorderSize, renderingStyle, rc);
    }
 
@@ -31,7 +31,7 @@ public class GEllipseRenderingSymbol
                                       final IMeasure<GArea> pointSize,
                                       final IMeasure<GLength> pointBorderSize,
                                       final IRenderingStyle renderingStyle,
-                                      final IVectorialRenderingContext rc) {
+                                      final IVectorial2DRenderingContext rc) {
       final double areaInSquaredMeters = pointSize.getValueInReferenceUnits();
 
       final double radius = GMath.sqrt(areaInSquaredMeters / Math.PI);
@@ -43,7 +43,7 @@ public class GEllipseRenderingSymbol
    @Override
    protected void rawDraw(final Color fillColor,
                           final Color borderColor,
-                          final IVectorialRenderingContext rc) {
+                          final IVectorial2DRenderingContext rc) {
       // fill point
       rc.setColor(fillColor);
       rc.fillOval(_position.x(), _position.y(), _extent.x(), _extent.y());

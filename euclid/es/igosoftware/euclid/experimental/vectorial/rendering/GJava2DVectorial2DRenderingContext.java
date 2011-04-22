@@ -16,11 +16,12 @@ import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.util.GMath;
 
 
-public class GJava2DVectorialRenderingContext
+public class GJava2DVectorial2DRenderingContext
          implements
-            IVectorialRenderingContext {
+            IVectorial2DRenderingContext {
 
 
    private static final AffineTransform IDENTITY_TRANSFORM = new AffineTransform();
@@ -33,11 +34,11 @@ public class GJava2DVectorialRenderingContext
    private final BufferedImage          _renderedImage;
 
 
-   GJava2DVectorialRenderingContext(final IVector2 scale,
-                                    final GAxisAlignedRectangle region,
-                                    final GProjection projection,
-                                    final Graphics2D g2d,
-                                    final BufferedImage renderedImage) {
+   GJava2DVectorial2DRenderingContext(final IVector2 scale,
+                                      final GAxisAlignedRectangle region,
+                                      final GProjection projection,
+                                      final Graphics2D g2d,
+                                      final BufferedImage renderedImage) {
       _scale = scale;
       _region = region;
       _projection = projection;
@@ -81,7 +82,6 @@ public class GJava2DVectorialRenderingContext
    }
 
 
-   //
    //   public void setPixel(final IVector2 scaledPoint,
    //                        final Color color) {
    //
@@ -136,14 +136,9 @@ public class GJava2DVectorialRenderingContext
    //   }
 
 
-   private static int toInt(final double value) {
-      return (int) Math.round(value);
-   }
-
-
    @Override
-   public void setColor(final Color fillColor) {
-      _g2d.setColor(fillColor);
+   public void setColor(final Color color) {
+      _g2d.setColor(color);
    }
 
 
@@ -170,7 +165,7 @@ public class GJava2DVectorialRenderingContext
                         final double y,
                         final double width,
                         final double height) {
-      _g2d.drawOval(toInt(x), toInt(y), toInt(width), toInt(height));
+      _g2d.drawOval(GMath.toRoundedInt(x), GMath.toRoundedInt(y), GMath.toRoundedInt(width), GMath.toRoundedInt(height));
    }
 
 
@@ -179,7 +174,7 @@ public class GJava2DVectorialRenderingContext
                         final double y,
                         final double width,
                         final double height) {
-      _g2d.fillOval(toInt(x), toInt(y), toInt(width), toInt(height));
+      _g2d.fillOval(GMath.toRoundedInt(x), GMath.toRoundedInt(y), GMath.toRoundedInt(width), GMath.toRoundedInt(height));
    }
 
 
@@ -202,7 +197,7 @@ public class GJava2DVectorialRenderingContext
                         final double y,
                         final double width,
                         final double height) {
-      _g2d.drawRect(toInt(x), toInt(y), toInt(width), toInt(height));
+      _g2d.drawRect(GMath.toRoundedInt(x), GMath.toRoundedInt(y), GMath.toRoundedInt(width), GMath.toRoundedInt(height));
    }
 
 
@@ -211,7 +206,7 @@ public class GJava2DVectorialRenderingContext
                         final double y,
                         final double width,
                         final double height) {
-      _g2d.fillRect(toInt(x), toInt(y), toInt(width), toInt(height));
+      _g2d.fillRect(GMath.toRoundedInt(x), GMath.toRoundedInt(y), GMath.toRoundedInt(width), GMath.toRoundedInt(height));
    }
 
 
@@ -234,7 +229,8 @@ public class GJava2DVectorialRenderingContext
       _g2d.setTransform(IDENTITY_TRANSFORM);
 
       final int imageHeight = _renderedImage.getHeight();
-      _g2d.drawImage(image, toInt(x), imageHeight - toInt(y), toInt(width), toInt(height), null);
+      _g2d.drawImage(image, GMath.toRoundedInt(x), imageHeight - GMath.toRoundedInt(y), GMath.toRoundedInt(width),
+               GMath.toRoundedInt(height), null);
 
       _g2d.setTransform(currentTransform);
 
@@ -255,7 +251,7 @@ public class GJava2DVectorialRenderingContext
       _g2d.setTransform(IDENTITY_TRANSFORM);
 
       final int imageHeight = _renderedImage.getHeight();
-      _g2d.drawImage(image, toInt(x), imageHeight - toInt(y), null);
+      _g2d.drawImage(image, GMath.toRoundedInt(x), imageHeight - GMath.toRoundedInt(y), null);
 
       _g2d.setTransform(currentTransform);
 
@@ -287,7 +283,7 @@ public class GJava2DVectorialRenderingContext
 
       final int imageHeight = _renderedImage.getHeight();
 
-      _g2d.drawImage(image, rop, toInt(x), imageHeight - toInt(y));
+      _g2d.drawImage(image, rop, GMath.toRoundedInt(x), imageHeight - GMath.toRoundedInt(y));
 
       _g2d.setTransform(currentTransform);
    }
@@ -302,8 +298,8 @@ public class GJava2DVectorialRenderingContext
                                 final Color bgColor) {
       _g2d.drawImage(//
                image, // 
-               toInt(x), toInt(y + height), toInt(x + width), toInt(y), //
-               0, 0, toInt(width), toInt(height), //
+               GMath.toRoundedInt(x), GMath.toRoundedInt((y + height)), GMath.toRoundedInt((x + width)), GMath.toRoundedInt(y), //
+               0, 0, GMath.toRoundedInt(width), GMath.toRoundedInt(height), //
                bgColor, null);
    }
 

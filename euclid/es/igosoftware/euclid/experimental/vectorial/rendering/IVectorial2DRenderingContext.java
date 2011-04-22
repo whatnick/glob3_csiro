@@ -13,7 +13,7 @@ import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector2;
 
 
-public interface IVectorialRenderingContext {
+public interface IVectorial2DRenderingContext {
 
    /* coordinate transformation methods*/
    public GAWTPoints getPoints(final IPointsContainer<IVector2> pointsContainer);

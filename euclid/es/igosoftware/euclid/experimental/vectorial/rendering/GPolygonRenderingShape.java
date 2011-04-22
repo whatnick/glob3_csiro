@@ -32,7 +32,7 @@ public class GPolygonRenderingShape
                                  final Shape awtShape,
                                  final IMeasure<GLength> surfaceBorderSize,
                                  final IRenderingStyle renderingStyle,
-                                 final IVectorialRenderingContext rc) {
+                                 final IVectorial2DRenderingContext rc) {
       final IVector2 point = polygon.getCentroid();
 
       final double borderLenghtInMeters = surfaceBorderSize.getValueInReferenceUnits();
@@ -54,7 +54,7 @@ public class GPolygonRenderingShape
    private Color getLODIgnoreColor(final IPolygon2D polygon,
                                    final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                    final IRenderingStyle renderingStyle,
-                                   final IVectorialRenderingContext rc) {
+                                   final IVectorial2DRenderingContext rc) {
       if (renderingStyle.isDebugRendering()) {
          return renderingStyle.getLODColor().asAWTColor();
       }
@@ -78,7 +78,7 @@ public class GPolygonRenderingShape
    protected final void renderLODIgnore(final IPolygon2D polygon,
                                         final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                         final IRenderingStyle renderingStyle,
-                                        final IVectorialRenderingContext rc) {
+                                        final IVectorial2DRenderingContext rc) {
       final Color color = getLODIgnoreColor(polygon, feature, renderingStyle, rc);
 
       final IVector2 scaledPoint = rc.scaleAndTranslatePoint(polygon.getCentroid());
@@ -92,7 +92,7 @@ public class GPolygonRenderingShape
    protected void rawDraw(final IPolygon2D polygon,
                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                           final IRenderingStyle renderingStyle,
-                          final IVectorialRenderingContext rc) {
+                          final IVectorial2DRenderingContext rc) {
 
 
       final IColor polygonColor = renderingStyle.getSurfaceColor(polygon, feature, rc);

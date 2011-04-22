@@ -67,7 +67,8 @@ class GVectorial2DRenderUnit
 
 
       final GAxisAlignedRectangle extendedRegion = calculateExtendedRegion(region, projection, renderingStyle);
-      final IVectorialRenderingContext rc = new GJava2DVectorialRenderingContext(scale, region, projection, g2d, renderedImage);
+      final IVectorial2DRenderingContext rc = new GJava2DVectorial2DRenderingContext(scale, region, projection, g2d,
+               renderedImage);
 
       processNode(quadtree.getRoot(), extendedRegion, renderingStyle, rc);
 
@@ -91,7 +92,7 @@ class GVectorial2DRenderUnit
    private void processNode(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> node,
                             final GAxisAlignedRectangle extendedRegion,
                             final IRenderingStyle renderingStyle,
-                            final IVectorialRenderingContext rc) {
+                            final IVectorial2DRenderingContext rc) {
 
       final GAxisAlignedRectangle nodeBounds = node.getMinimumBounds().asRectangle();
 
@@ -132,7 +133,7 @@ class GVectorial2DRenderUnit
    private void renderNodeGeometries(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> node,
                                      final GAxisAlignedRectangle extendedRegion,
                                      final IRenderingStyle renderingStyle,
-                                     final IVectorialRenderingContext rc) {
+                                     final IVectorial2DRenderingContext rc) {
 
 
       if (renderingStyle.isDebugRendering()) {
@@ -168,7 +169,7 @@ class GVectorial2DRenderUnit
                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                final GAxisAlignedRectangle extendedRegion,
                                final IRenderingStyle renderingStyle,
-                               final IVectorialRenderingContext rc) {
+                               final IVectorial2DRenderingContext rc) {
 
 
       if (!geometry.getBounds().asAxisAlignedOrthotope().touches(extendedRegion)) {

@@ -21,7 +21,7 @@ GeometryT extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?
    public final void draw(final GeometryT geometry,
                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                           final IRenderingStyle renderingStyle,
-                          final IVectorialRenderingContext rc) {
+                          final IVectorial2DRenderingContext rc) {
       if (isBiggerThan(renderingStyle.getLODMinSize())) {
          rawDraw(geometry, feature, renderingStyle, rc);
       }
@@ -36,13 +36,13 @@ GeometryT extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?
    protected abstract void renderLODIgnore(final GeometryT geometry,
                                            final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                            final IRenderingStyle renderingStyle,
-                                           final IVectorialRenderingContext rc);
+                                           final IVectorial2DRenderingContext rc);
 
 
    protected abstract void rawDraw(final GeometryT geometry,
                                    final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                    final IRenderingStyle renderingStyle,
-                                   final IVectorialRenderingContext rc);
+                                   final IVectorial2DRenderingContext rc);
 
 
 }
