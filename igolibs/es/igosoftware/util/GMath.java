@@ -847,6 +847,11 @@ public final class GMath {
    }
 
 
+   public static int toRoundedInt(final double doubleValue) {
+      return toInt(Math.round(doubleValue));
+   }
+
+
    public static boolean isDivisible(final int value,
                                      final int divisor) {
       return (value % divisor) == 0;
