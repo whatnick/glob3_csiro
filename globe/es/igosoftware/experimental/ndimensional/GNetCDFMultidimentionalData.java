@@ -66,10 +66,10 @@ import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GHolder;
 import es.igosoftware.util.GMath;
+import es.igosoftware.util.GPredicate;
 import es.igosoftware.util.GRange;
 import es.igosoftware.util.GStringUtils;
 import es.igosoftware.util.IFunction;
-import es.igosoftware.util.IPredicate;
 import es.igosoftware.utils.GPositionBox;
 import es.igosoftware.utils.GWWUtils;
 import gov.nasa.worldwind.geom.Angle;
@@ -900,7 +900,7 @@ public class GNetCDFMultidimentionalData
 
    @Override
    public List<String> getNonTimeDimensionsNames() {
-      return GCollections.select(getDimensionsNames(), new IPredicate<String>() {
+      return GCollections.select(getDimensionsNames(), new GPredicate<String>() {
          @Override
          public boolean evaluate(final String dimensionName) {
             return !dimensionName.equals(_timeDimension.getName());

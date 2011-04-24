@@ -94,7 +94,7 @@ public class GVectorial2DRenderer {
                       final IProjectionTool projectionTool,
                       final IRenderingStyle renderingStyle,
                       final IVectorial2DDrawer drawer) {
-      GAssert.notNull(viewport, "region");
+      GAssert.notNull(viewport, "viewport");
       GAssert.notNull(image, "image");
       GAssert.notNull(renderingStyle, "renderingStyle");
 
@@ -109,12 +109,12 @@ public class GVectorial2DRenderer {
    }
 
 
-   public BufferedImage getRenderedImage(final GAxisAlignedRectangle region,
+   public BufferedImage getRenderedImage(final GAxisAlignedRectangle viewport,
                                          final int imageWidth,
                                          final int imageHeight,
                                          final IProjectionTool projectionTool,
                                          final IRenderingStyle renderingStyle) {
-      GAssert.notNull(region, "region");
+      GAssert.notNull(viewport, "viewport");
       GAssert.isPositive(imageWidth, "imageWidth");
       GAssert.isPositive(imageHeight, "imageHeight");
       GAssert.notNull(renderingStyle, "renderingStyle");
@@ -124,7 +124,7 @@ public class GVectorial2DRenderer {
 
       final IVectorial2DDrawer drawer = new GJava2DVectorial2DDrawer(image);
 
-      render(region, image, projectionTool, renderingStyle, drawer);
+      render(viewport, image, projectionTool, renderingStyle, drawer);
 
       return image;
    }

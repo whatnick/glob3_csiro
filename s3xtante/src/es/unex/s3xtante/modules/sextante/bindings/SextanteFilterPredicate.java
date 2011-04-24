@@ -10,7 +10,7 @@ import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.vector.IVector2;
-import es.igosoftware.util.IPredicate;
+import es.igosoftware.util.GPredicate;
 import es.igosoftware.utils.GJTSUtils;
 import es.unex.sextante.dataObjects.FeatureImpl;
 import es.unex.sextante.dataObjects.IFeature;
@@ -18,8 +18,8 @@ import es.unex.sextante.dataObjects.vectorFilters.IVectorLayerFilter;
 
 
 public class SextanteFilterPredicate
-         implements
-            IPredicate<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> {
+         extends
+            GPredicate<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> {
 
    private final IVectorLayerFilter _filter;
 

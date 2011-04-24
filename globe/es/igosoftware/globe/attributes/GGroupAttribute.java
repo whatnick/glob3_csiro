@@ -56,9 +56,9 @@ import es.igosoftware.globe.IGlobeLayer;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GComponentTitledBorder;
 import es.igosoftware.util.GPair;
+import es.igosoftware.util.GPredicate;
 import es.igosoftware.util.GSwingUtils;
 import es.igosoftware.util.GTriplet;
-import es.igosoftware.util.IPredicate;
 
 
 public class GGroupAttribute
@@ -110,7 +110,7 @@ public class GGroupAttribute
 
    @Override
    public boolean isVisible() {
-      return GCollections.allSatisfy(_children, new IPredicate<ILayerAttribute<?>>() {
+      return GCollections.allSatisfy(_children, new GPredicate<ILayerAttribute<?>>() {
          @Override
          public boolean evaluate(final ILayerAttribute<?> element) {
             return element.isVisible();

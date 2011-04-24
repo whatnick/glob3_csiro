@@ -60,9 +60,9 @@ import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GPair;
+import es.igosoftware.util.GPredicate;
 import es.igosoftware.util.GUtils;
 import es.igosoftware.util.IFunction;
-import es.igosoftware.util.IPredicate;
 import es.igosoftware.util.LRUCache;
 import es.igosoftware.util.LRUCache.Entry;
 import es.igosoftware.utils.GGlobeStateKeyCache;
@@ -818,7 +818,7 @@ public class GVectorial2DLayer
       final List<GAxisAlignedRectangle> allTopLevelSectors = createTopLevelSectors();
 
       final List<GAxisAlignedRectangle> intersectingSectors = GCollections.select(allTopLevelSectors,
-               new IPredicate<GAxisAlignedRectangle>() {
+               new GPredicate<GAxisAlignedRectangle>() {
                   @Override
                   public boolean evaluate(final GAxisAlignedRectangle sector) {
                      return sector.touches(polygonsSector);
