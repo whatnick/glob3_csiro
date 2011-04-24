@@ -8,6 +8,7 @@ import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 
 import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.ISurface2D;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.colors.IColor;
 import es.igosoftware.euclid.experimental.measurement.GLength;
@@ -23,9 +24,9 @@ import es.igosoftware.util.GAWTUtils;
 
 public class GPolygonRenderingShape
          extends
-            GRenderingFeatureAbstract<IPolygon2D>
+            GRenderingFeatureAbstract<ISurface2D<? extends IFiniteBounds<IVector2, ?>>>
          implements
-            IRenderingShape<IPolygon2D> {
+            ISurfaceRenderingShape<ISurface2D<? extends IFiniteBounds<IVector2, ?>>> {
 
 
    private final float       _borderWidth;
@@ -55,7 +56,7 @@ public class GPolygonRenderingShape
    }
 
 
-   private Color getLODIgnoreColor(final IPolygon2D polygon,
+   private Color getLODIgnoreColor(final ISurface2D<? extends IFiniteBounds<IVector2, ?>> polygon,
                                    final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                    final IRenderingStyle renderingStyle,
                                    final IVectorial2DRenderingScaler scaler) {
@@ -76,7 +77,7 @@ public class GPolygonRenderingShape
 
 
    @Override
-   protected final void renderLODIgnore(final IPolygon2D polygon,
+   protected final void renderLODIgnore(final ISurface2D<? extends IFiniteBounds<IVector2, ?>> polygon,
                                         final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                         final IRenderingStyle renderingStyle,
                                         final IVectorial2DRenderingScaler scaler,
@@ -88,7 +89,7 @@ public class GPolygonRenderingShape
 
 
    @Override
-   protected final void rawDraw(final IPolygon2D polygon,
+   protected final void rawDraw(final ISurface2D<? extends IFiniteBounds<IVector2, ?>> polygon,
                                 final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                 final IRenderingStyle renderingStyle,
                                 final IVectorial2DRenderingScaler scaler,

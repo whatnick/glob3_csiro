@@ -23,7 +23,7 @@ public interface IVectorial2DRenderUnit {
                       final GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> quadtree,
                       final GProjection projection,
                       final IProjectionTool projectionTool,
-                      final GAxisAlignedRectangle region,
+                      final GAxisAlignedRectangle viewport,
                       final IRenderingStyle renderingStyle,
                       final IVectorial2DDrawer drawer);
 

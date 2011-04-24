@@ -89,12 +89,12 @@ public class GVectorial2DRenderer {
    }
 
 
-   public void render(final GAxisAlignedRectangle region,
+   public void render(final GAxisAlignedRectangle viewport,
                       final BufferedImage image,
                       final IProjectionTool projectionTool,
                       final IRenderingStyle renderingStyle,
                       final IVectorial2DDrawer drawer) {
-      GAssert.notNull(region, "region");
+      GAssert.notNull(viewport, "region");
       GAssert.notNull(image, "image");
       GAssert.notNull(renderingStyle, "renderingStyle");
 
@@ -103,7 +103,7 @@ public class GVectorial2DRenderer {
       renderingStyle.preRenderImage(image);
 
       final IVectorial2DRenderUnit renderUnit = new GVectorial2DRenderUnit();
-      renderUnit.render(image, _quadtree, _features.getProjection(), projectionTool, region, renderingStyle, drawer);
+      renderUnit.render(image, _quadtree, _features.getProjection(), projectionTool, viewport, renderingStyle, drawer);
 
       renderingStyle.postRenderImage(image);
    }

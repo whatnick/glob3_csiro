@@ -17,28 +17,28 @@ public class GVectorial2DRenderingScaler
 
 
    private final IVector2              _scale;
-   private final GAxisAlignedRectangle _region;
+   private final GAxisAlignedRectangle _viewport;
    private final GProjection           _projection;
    private final IProjectionTool       _projectionTool;
 
 
-   public GVectorial2DRenderingScaler(final GAxisAlignedRectangle region,
+   public GVectorial2DRenderingScaler(final GAxisAlignedRectangle viewport,
                                       final GProjection projection,
                                       final IProjectionTool projectionTool,
                                       final int imageWidth,
                                       final int imageHeight) {
-      GAssert.notNull(region, "region");
+      GAssert.notNull(viewport, "viewport");
       GAssert.notNull(projection, "projection");
       GAssert.notNull(projectionTool, "projectionTool");
       GAssert.isPositive(imageWidth, "imageWidth");
       GAssert.isPositive(imageHeight, "imageHeight");
 
-      _region = region;
+      _viewport = viewport;
       _projection = projection;
 
       _projectionTool = projectionTool;
 
-      _scale = new GVector2D(imageWidth, imageHeight).div(region.getExtent());
+      _scale = new GVector2D(imageWidth, imageHeight).div(viewport.getExtent());
    }
 
 
@@ -56,7 +56,7 @@ public class GVectorial2DRenderingScaler
 
    @Override
    public final IVector2 scaleAndTranslatePoint(final IVector2 point) {
-      return point.sub(_region._lower).scale(_scale);
+      return point.sub(_viewport._lower).scale(_scale);
    }
 
 

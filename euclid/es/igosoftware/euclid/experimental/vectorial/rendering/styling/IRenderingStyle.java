@@ -12,10 +12,10 @@ import es.igosoftware.euclid.colors.IColor;
 import es.igosoftware.euclid.experimental.measurement.GArea;
 import es.igosoftware.euclid.experimental.measurement.GLength;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
-import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
-import es.igosoftware.euclid.experimental.vectorial.rendering.features.IRenderingShape;
+import es.igosoftware.euclid.experimental.vectorial.rendering.features.ICurveRenderingShape;
 import es.igosoftware.euclid.experimental.vectorial.rendering.features.IRenderingSymbol;
+import es.igosoftware.euclid.experimental.vectorial.rendering.features.ISurfaceRenderingShape;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.vector.IVector2;
@@ -77,12 +77,6 @@ public interface IRenderingStyle {
                                 final IVectorial2DRenderingScaler scaler);
 
 
-   public void drawPoint(final IVector2 point,
-                         final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                         final IVectorial2DRenderingScaler scaler,
-                         final IVectorial2DDrawer drawer);
-
-
    public IRenderingSymbol getPointSymbol(final IVector2 point,
                                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                           final IVectorial2DRenderingScaler scaler);
@@ -109,15 +103,9 @@ public interface IRenderingStyle {
                                   final IVectorial2DRenderingScaler scaler);
 
 
-   public IRenderingShape<? extends ISurface2D<?>> getSurfaceShape(final ISurface2D<?> surface,
-                                                                   final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                                                   final IVectorial2DRenderingScaler scaler);
-
-
-   public void drawSurface(final ISurface2D<?> surface,
-                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                           final IVectorial2DRenderingScaler scaler,
-                           final IVectorial2DDrawer drawer);
+   public ISurfaceRenderingShape<ISurface2D<? extends IFiniteBounds<IVector2, ?>>> getSurfaceShape(final ISurface2D<? extends IFiniteBounds<IVector2, ?>> surface,
+                                                                                                   final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                                                                                   final IVectorial2DRenderingScaler scaler);
 
 
    /* curves */
@@ -136,15 +124,9 @@ public interface IRenderingStyle {
                                 final IVectorial2DRenderingScaler scaler);
 
 
-   public IRenderingShape<? extends ICurve2D<?>> getCurveShape(final ICurve2D<?> curve,
-                                                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                                                               final IVectorial2DRenderingScaler scaler);
-
-
-   public void drawCurve(final ICurve2D<?> curve,
-                         final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                         final IVectorial2DRenderingScaler scaler,
-                         final IVectorial2DDrawer drawer);
+   public ICurveRenderingShape<ICurve2D<? extends IFiniteBounds<IVector2, ?>>> getCurveShape(final ICurve2D<? extends IFiniteBounds<IVector2, ?>> curve,
+                                                                                             final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                                                                             final IVectorial2DRenderingScaler scaler);
 
 
 }

@@ -116,9 +116,9 @@ public class GVectorial2DRenderingTest {
       final GVectorial2DRenderer linesRenderer = createRenderer(linesFeatures);
 
 
-      //      final GAxisAlignedRectangle region = ((GAxisAlignedRectangle) centerBounds(multipleOfSmallestDimention(featuresBounds),
+      //      final GAxisAlignedRectangle viewport = ((GAxisAlignedRectangle) centerBounds(multipleOfSmallestDimention(featuresBounds),
       //               featuresBounds.getCenter()));
-      final GAxisAlignedRectangle region = pointsFeaturesBounds.asRectangle().expandedByPercent(0.05);
+      final GAxisAlignedRectangle viewport = pointsFeaturesBounds.asRectangle().expandedByPercent(0.05);
 
 
       final GFileName directoryName = GFileName.relative("render");
@@ -127,7 +127,7 @@ public class GVectorial2DRenderingTest {
       final int textureDimension = 256;
       final boolean debugRendering = false;
 
-      final IVector2 extent = region.getExtent();
+      final IVector2 extent = viewport.getExtent();
 
       final int imageWidth;
       final int imageHeight;
@@ -156,7 +156,7 @@ public class GVectorial2DRenderingTest {
 
       final int depth = 0;
       final int maxDepth = 4;
-      render(renderers, region, imageWidth, imageHeight, directoryName, depth, maxDepth);
+      render(renderers, viewport, imageWidth, imageHeight, directoryName, depth, maxDepth);
    }
 
 
@@ -461,7 +461,7 @@ public class GVectorial2DRenderingTest {
 
 
    private static void render(final GPair<GVectorial2DRenderer, IRenderingStyle>[] renderers,
-                              final GAxisAlignedRectangle region,
+                              final GAxisAlignedRectangle viewport,
                               final int imageWidth,
                               final int imageHeight,
                               final GFileName directoryName,
@@ -488,7 +488,7 @@ public class GVectorial2DRenderingTest {
                return GWWUtils.increment(position, projection, deltaEasting, deltaNorthing);
             }
          };
-         renderer._first.render(region, image, projectionTool, renderer._second, drawer);
+         renderer._first.render(viewport, image, projectionTool, renderer._second, drawer);
       }
 
       final String imageName = "" + depth;
@@ -499,7 +499,7 @@ public class GVectorial2DRenderingTest {
                          + GStringUtils.getTimeMessage(System.currentTimeMillis() - start, false));
 
       if (depth < maxDepth) {
-         render(renderers, region, imageWidth * 2, imageHeight * 2, directoryName, depth + 1, maxDepth);
+         render(renderers, viewport, imageWidth * 2, imageHeight * 2, directoryName, depth + 1, maxDepth);
       }
    }
 

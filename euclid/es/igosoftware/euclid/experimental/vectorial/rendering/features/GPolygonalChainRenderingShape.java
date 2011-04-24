@@ -7,6 +7,7 @@ import java.awt.Color;
 import java.awt.Rectangle;
 
 import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.ICurve2D;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.colors.IColor;
 import es.igosoftware.euclid.experimental.measurement.GLength;
@@ -22,9 +23,9 @@ import es.igosoftware.euclid.vector.IVector2;
 
 public class GPolygonalChainRenderingShape
          extends
-            GRenderingFeatureAbstract<IPolygonalChain2D>
+            GRenderingFeatureAbstract<ICurve2D<? extends IFiniteBounds<IVector2, ?>>>
          implements
-            IRenderingShape<IPolygonalChain2D> {
+            ICurveRenderingShape<ICurve2D<? extends IFiniteBounds<IVector2, ?>>> {
 
 
    private final float      _borderWidth;
@@ -75,7 +76,7 @@ public class GPolygonalChainRenderingShape
    }
 
 
-   private Color getLODIgnoreColor(final IPolygonalChain2D polygonalChain,
+   private Color getLODIgnoreColor(final ICurve2D<? extends IFiniteBounds<IVector2, ?>> polygonalChain,
                                    final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                    final IRenderingStyle renderingStyle,
                                    final IVectorial2DRenderingScaler scaler) {
@@ -91,7 +92,7 @@ public class GPolygonalChainRenderingShape
 
 
    @Override
-   protected final void renderLODIgnore(final IPolygonalChain2D polygonalChain,
+   protected final void renderLODIgnore(final ICurve2D<? extends IFiniteBounds<IVector2, ?>> polygonalChain,
                                         final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                                         final IRenderingStyle renderingStyle,
                                         final IVectorial2DRenderingScaler scaler,
@@ -103,7 +104,7 @@ public class GPolygonalChainRenderingShape
 
 
    @Override
-   protected void rawDraw(final IPolygonalChain2D polygonalChain,
+   protected void rawDraw(final ICurve2D<? extends IFiniteBounds<IVector2, ?>> polygonalChain,
                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
                           final IRenderingStyle renderingStyle,
                           final IVectorial2DRenderingScaler scaler,
