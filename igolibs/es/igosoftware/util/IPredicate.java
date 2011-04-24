@@ -36,6 +36,10 @@
 
 package es.igosoftware.util;
 
-public interface IPredicate<ElementT> {
+public interface IPredicate<ElementT>
+         extends
+            IFunction<ElementT, Boolean> {
+
    public boolean evaluate(final ElementT element);
+
 }
