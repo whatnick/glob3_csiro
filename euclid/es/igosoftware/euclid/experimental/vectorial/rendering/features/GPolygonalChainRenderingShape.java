@@ -8,7 +8,7 @@ import java.awt.Rectangle;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.ICurve2D;
-import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.colors.IColor;
 import es.igosoftware.euclid.experimental.measurement.GLength;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
@@ -23,9 +23,9 @@ import es.igosoftware.euclid.vector.IVector2;
 
 public class GPolygonalChainRenderingShape
          extends
-            GRenderingFeatureAbstract<ICurve2D<? extends IFiniteBounds<IVector2, ?>>>
+            GRenderingFeatureAbstract<ICurve2D<? extends IFinite2DBounds<?>>>
          implements
-            ICurveRenderingShape<ICurve2D<? extends IFiniteBounds<IVector2, ?>>> {
+            ICurveRenderingShape<ICurve2D<? extends IFinite2DBounds<?>>> {
 
 
    private final float      _borderWidth;
@@ -76,8 +76,8 @@ public class GPolygonalChainRenderingShape
    }
 
 
-   private Color getLODIgnoreColor(final ICurve2D<? extends IFiniteBounds<IVector2, ?>> polygonalChain,
-                                   final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
+   private Color getLODIgnoreColor(final ICurve2D<? extends IFinite2DBounds<?>> polygonalChain,
+                                   final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                    final IRenderingStyle renderingStyle,
                                    final IVectorial2DRenderingScaler scaler) {
       if (renderingStyle.isDebugRendering()) {
@@ -92,8 +92,8 @@ public class GPolygonalChainRenderingShape
 
 
    @Override
-   protected final void renderLODIgnore(final ICurve2D<? extends IFiniteBounds<IVector2, ?>> polygonalChain,
-                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
+   protected final void renderLODIgnore(final ICurve2D<? extends IFinite2DBounds<?>> polygonalChain,
+                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                         final IRenderingStyle renderingStyle,
                                         final IVectorial2DRenderingScaler scaler,
                                         final IVectorial2DDrawer drawer) {
@@ -104,8 +104,8 @@ public class GPolygonalChainRenderingShape
 
 
    @Override
-   protected void rawDraw(final ICurve2D<? extends IFiniteBounds<IVector2, ?>> polygonalChain,
-                          final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
+   protected void rawDraw(final ICurve2D<? extends IFinite2DBounds<?>> polygonalChain,
+                          final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                           final IRenderingStyle renderingStyle,
                           final IVectorial2DRenderingScaler scaler,
                           final IVectorial2DDrawer drawer) {

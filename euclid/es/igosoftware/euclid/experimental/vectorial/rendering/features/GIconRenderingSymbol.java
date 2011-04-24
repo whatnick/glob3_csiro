@@ -7,7 +7,7 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
-import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.experimental.measurement.GArea;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
@@ -141,7 +141,7 @@ public class GIconRenderingSymbol
 
    @Override
    protected final void rawDraw(final IVector2 point,
-                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
+                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                 final IRenderingStyle renderingStyle,
                                 final IVectorial2DRenderingScaler scaler,
                                 final IVectorial2DDrawer drawer) {
@@ -154,7 +154,7 @@ public class GIconRenderingSymbol
 
    @Override
    protected final void renderLODIgnore(final IVector2 point,
-                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
+                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                         final IRenderingStyle renderingStyle,
                                         final IVectorial2DRenderingScaler scaler,
                                         final IVectorial2DDrawer drawer) {

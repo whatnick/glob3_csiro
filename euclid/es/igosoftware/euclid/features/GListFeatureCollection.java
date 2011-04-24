@@ -12,6 +12,7 @@ import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.IBoundedGeometry3D;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
+import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.IVector;
@@ -64,27 +65,27 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<Vecto
 
    public static <
 
-   FeatureGeometryT extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>
+   FeatureGeometryT extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>
 
-   > GListFeatureCollection<IVector2, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> from2DGeometryList(final GProjection projection,
-                                                                                                                   final List<FeatureGeometryT> geometries,
-                                                                                                                   final String uniqueID) {
+   > GListFeatureCollection<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> from2DGeometryList(final GProjection projection,
+                                                                                                           final List<FeatureGeometryT> geometries,
+                                                                                                           final String uniqueID) {
 
       final List<GField> fields = Collections.emptyList();
 
-      final List<IGlobeFeature<IVector2, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>> features = GCollections.collect(
+      final List<IGlobeFeature<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> features = GCollections.collect(
                geometries,
-               new IFunction<FeatureGeometryT, IGlobeFeature<IVector2, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>>() {
+               new IFunction<FeatureGeometryT, IGlobeFeature<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>() {
 
                   @Override
-                  public IGlobeFeature<IVector2, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> apply(final FeatureGeometryT geometry) {
-                     return new GGlobeFeature<IVector2, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>(geometry,
+                  public IGlobeFeature<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> apply(final FeatureGeometryT geometry) {
+                     return new GGlobeFeature<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>>(geometry,
                               Collections.emptyList());
                   }
                });
 
-      return new GListFeatureCollection<IVector2, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>(projection, fields,
-               features, uniqueID);
+      return new GListFeatureCollection<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>>(projection, fields, features,
+               uniqueID);
    }
 
 

@@ -10,7 +10,7 @@ import es.igosoftware.euclid.ICurve2D;
 import es.igosoftware.euclid.ISurface2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
-import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.experimental.measurement.GArea;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.GVectorial2DRenderingScaler;
@@ -40,7 +40,7 @@ class GVectorial2DRenderUnit
 
    @Override
    public void render(final BufferedImage renderedImage,
-                      final GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>> quadtree,
+                      final GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> quadtree,
                       final GProjection projection,
                       final IProjectionTool projectionTool,
                       final GAxisAlignedRectangle viewport,
@@ -70,7 +70,7 @@ class GVectorial2DRenderUnit
    }
 
 
-   private void processNode(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> node,
+   private void processNode(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> node,
                             final GAxisAlignedRectangle extendedRegion,
                             final IRenderingStyle renderingStyle,
                             final IVectorial2DRenderingScaler scaler,
@@ -97,10 +97,10 @@ class GVectorial2DRenderUnit
 
 
       if (node instanceof GGTInnerNode) {
-         final GGTInnerNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> inner;
-         inner = (GGTInnerNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>) node;
+         final GGTInnerNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> inner;
+         inner = (GGTInnerNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>>) node;
 
-         for (final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> child : inner.getChildren()) {
+         for (final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> child : inner.getChildren()) {
             processNode(child, extendedRegion, renderingStyle, scaler, drawer);
          }
       }
@@ -109,7 +109,7 @@ class GVectorial2DRenderUnit
    }
 
 
-   private void drawNode(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> node,
+   private void drawNode(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> node,
                          final GAxisAlignedRectangle extendedRegion,
                          final IRenderingStyle renderingStyle,
                          final IVectorial2DRenderingScaler scaler,
@@ -121,16 +121,16 @@ class GVectorial2DRenderUnit
       }
 
 
-      for (final GElementGeometryPair<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> pair : node.getElements()) {
-         final IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>> geometry = pair.getGeometry();
+      for (final GElementGeometryPair<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> pair : node.getElements()) {
+         final IBoundedGeometry2D<? extends IFinite2DBounds<?>> geometry = pair.getGeometry();
          drawGeometry(geometry, pair.getElement(), extendedRegion, renderingStyle, scaler, drawer);
       }
 
    }
 
 
-   private void drawGeometry(final IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>> geometry,
-                             final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
+   private void drawGeometry(final IBoundedGeometry2D<? extends IFinite2DBounds<?>> geometry,
+                             final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                              final GAxisAlignedRectangle extendedRegion,
                              final IRenderingStyle renderingStyle,
                              final IVectorial2DRenderingScaler scaler,
@@ -142,8 +142,8 @@ class GVectorial2DRenderUnit
 
       if (geometry instanceof GMultiGeometry2D) {
          @SuppressWarnings("unchecked")
-         final GMultiGeometry2D<IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> multigeometry = (GMultiGeometry2D<IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>) geometry;
-         for (final IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>> child : multigeometry) {
+         final GMultiGeometry2D<IBoundedGeometry2D<? extends IFinite2DBounds<?>>> multigeometry = (GMultiGeometry2D<IBoundedGeometry2D<? extends IFinite2DBounds<?>>>) geometry;
+         for (final IBoundedGeometry2D<? extends IFinite2DBounds<?>> child : multigeometry) {
             drawGeometry(child, feature, extendedRegion, renderingStyle, scaler, drawer);
          }
       }
@@ -155,17 +155,17 @@ class GVectorial2DRenderUnit
          }
       }
       else if (geometry instanceof ICurve2D<?>) {
-         final ICurve2D<? extends IFiniteBounds<IVector2, ?>> curve = (ICurve2D<? extends IFiniteBounds<IVector2, ?>>) geometry;
-         final ICurveRenderingShape<ICurve2D<? extends IFiniteBounds<IVector2, ?>>> shape = renderingStyle.getCurveShape(curve,
-                  feature, scaler);
+         final ICurve2D<? extends IFinite2DBounds<?>> curve = (ICurve2D<? extends IFinite2DBounds<?>>) geometry;
+         final ICurveRenderingShape<ICurve2D<? extends IFinite2DBounds<?>>> shape = renderingStyle.getCurveShape(curve, feature,
+                  scaler);
          if (shape != null) {
             shape.draw(curve, feature, renderingStyle, scaler, drawer);
          }
       }
       else if (geometry instanceof ISurface2D<?>) {
-         final ISurface2D<? extends IFiniteBounds<IVector2, ?>> surface = (ISurface2D<? extends IFiniteBounds<IVector2, ?>>) geometry;
-         final ISurfaceRenderingShape<ISurface2D<? extends IFiniteBounds<IVector2, ?>>> shape = renderingStyle.getSurfaceShape(
-                  surface, feature, scaler);
+         final ISurface2D<? extends IFinite2DBounds<?>> surface = (ISurface2D<? extends IFinite2DBounds<?>>) geometry;
+         final ISurfaceRenderingShape<ISurface2D<? extends IFinite2DBounds<?>>> shape = renderingStyle.getSurfaceShape(surface,
+                  feature, scaler);
          if (shape != null) {
             shape.draw(surface, feature, renderingStyle, scaler, drawer);
          }

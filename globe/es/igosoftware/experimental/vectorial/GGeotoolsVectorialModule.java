@@ -50,7 +50,7 @@ import org.geotools.swing.data.JDataStoreWizard;
 import org.geotools.swing.wizard.JWizard;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
-import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.IVector2;
@@ -213,7 +213,7 @@ public class GGeotoolsVectorialModule
 
                   try {
 
-                     final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> features = GGeotoolsVectorialLoader.readFeatures(
+                     final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> features = GGeotoolsVectorialLoader.readFeatures(
                               dataStore, layerName, projection);
 
                      final GVectorial2DLayer layer = new GVectorial2DLayer(layerName, features);

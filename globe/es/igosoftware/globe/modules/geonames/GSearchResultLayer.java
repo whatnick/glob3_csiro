@@ -37,7 +37,7 @@
 package es.igosoftware.globe.modules.geonames;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
-import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.features.GField;
 import es.igosoftware.euclid.features.GGlobeFeature;
 import es.igosoftware.euclid.features.GListFeatureCollection;
@@ -74,15 +74,15 @@ public class GSearchResultLayer
             IGlobeVector2Layer {
 
 
-   private final Sector                                                                                      _extent;
-   private final IGlobeFeatureCollection<IVector2, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> _features;
+   private final Sector                                                                              _extent;
+   private final IGlobeFeatureCollection<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> _features;
 
 
    public GSearchResultLayer(final String searchText,
                              final List<Marker> markersList) {
       super(markersList);
 
-      final List<IGlobeFeature<IVector2, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>> features = new ArrayList<IGlobeFeature<IVector2, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>>(
+      final List<IGlobeFeature<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> features = new ArrayList<IGlobeFeature<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>(
                markersList.size());
 
       double minLongitude = Double.POSITIVE_INFINITY;
@@ -110,7 +110,7 @@ public class GSearchResultLayer
             final Toponym toponym = ((GSearchResultMarker) marker).getToponym();
             try {
                final List<Object> attribs = Arrays.asList(new Object[] { toponym.getName(), toponym.getPopulation() });
-               features.add(new GGlobeFeature<IVector2, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>(point, attribs));
+               features.add(new GGlobeFeature<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>>(point, attribs));
                added = true;
             }
             catch (final InsufficientStyleException e) {
@@ -119,7 +119,7 @@ public class GSearchResultLayer
          }
 
          if (!added) {
-            features.add(new GGlobeFeature<IVector2, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>(point,
+            features.add(new GGlobeFeature<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>>(point,
                      Arrays.asList(new Object[] { "", Long.valueOf(0) })));
          }
       }
@@ -128,8 +128,8 @@ public class GSearchResultLayer
       final List<GField> fields = Arrays.asList(new GField("Name", String.class), new GField("Population", Integer.class));
       final String uniqueID = null;
       setName("Search result: " + searchText);
-      _features = new GListFeatureCollection<IVector2, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>(
-               GProjection.EPSG_4326, fields, features, uniqueID);
+      _features = new GListFeatureCollection<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>>(GProjection.EPSG_4326,
+               fields, features, uniqueID);
    }
 
 
@@ -159,7 +159,7 @@ public class GSearchResultLayer
 
 
    @Override
-   public IGlobeFeatureCollection<IVector2, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> getFeaturesCollection() {
+   public IGlobeFeatureCollection<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> getFeaturesCollection() {
       return _features;
    }
 

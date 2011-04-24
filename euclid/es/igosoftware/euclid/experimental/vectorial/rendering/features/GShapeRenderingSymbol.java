@@ -5,7 +5,7 @@ package es.igosoftware.euclid.experimental.vectorial.rendering.features;
 import java.awt.Color;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
-import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.colors.IColor;
 import es.igosoftware.euclid.experimental.measurement.GArea;
 import es.igosoftware.euclid.experimental.measurement.GLength;
@@ -78,7 +78,7 @@ public abstract class GShapeRenderingSymbol
 
    @Override
    protected final void rawDraw(final IVector2 point,
-                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
+                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                 final IRenderingStyle renderingStyle,
                                 final IVectorial2DRenderingScaler scaler,
                                 final IVectorial2DDrawer drawer) {
@@ -98,7 +98,7 @@ public abstract class GShapeRenderingSymbol
 
 
    private Color getLODIgnoreColor(final IVector2 point,
-                                   final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
+                                   final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                    final IRenderingStyle renderingStyle,
                                    final IVectorial2DRenderingScaler scaler) {
       if (renderingStyle.isDebugRendering()) {
@@ -119,7 +119,7 @@ public abstract class GShapeRenderingSymbol
 
    @Override
    protected final void renderLODIgnore(final IVector2 point,
-                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
+                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                         final IRenderingStyle renderingStyle,
                                         final IVectorial2DRenderingScaler scaler,
                                         final IVectorial2DDrawer drawer) {

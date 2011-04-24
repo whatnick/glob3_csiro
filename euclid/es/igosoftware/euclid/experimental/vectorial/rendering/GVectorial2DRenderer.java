@@ -8,7 +8,7 @@ import java.util.Collection;
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
-import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.GJava2DVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
@@ -24,11 +24,11 @@ import es.igosoftware.util.GAssert;
 
 public class GVectorial2DRenderer {
 
-   private final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>           _features;
-   private final GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>> _quadtree;
+   private final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>           _features;
+   private final GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> _quadtree;
 
 
-   public GVectorial2DRenderer(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> features,
+   public GVectorial2DRenderer(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> features,
                                final boolean verbose) {
       _features = features;
 
@@ -36,27 +36,27 @@ public class GVectorial2DRenderer {
    }
 
 
-   private GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>> createQuadtree(final boolean verbose) {
+   private GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> createQuadtree(final boolean verbose) {
       final GGeometryNTreeParameters.AcceptLeafNodeCreationPolicy acceptLeafNodeCreationPolicy;
       acceptLeafNodeCreationPolicy = new GGeometryNTreeParameters.Accept2DLeafNodeCreationPolicy<
 
-      IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>,
+      IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>,
 
-      IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>
+      IBoundedGeometry2D<? extends IFinite2DBounds<?>>
 
       >() {
 
          @Override
          public boolean acceptLeafNodeCreation(final int depth,
                                                final GAxisAlignedOrthotope<IVector2, ?> bounds,
-                                               final Collection<GElementGeometryPair<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>> elements) {
+                                               final Collection<GElementGeometryPair<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> elements) {
             if (depth >= 12) {
                return true;
             }
 
             //            int verticesCounter = 0;
-            //            for (final GElementGeometryPair<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>> pair : elements) {
-            //               final IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>> geometry = pair.getGeometry();
+            //            for (final GElementGeometryPair<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> pair : elements) {
+            //               final IBoundedGeometry2D<? extends IFinite2DBounds<?>> geometry = pair.getGeometry();
             //
             //               if (geometry instanceof IVector2) {
             //                  verticesCounter++;
@@ -85,12 +85,12 @@ public class GVectorial2DRenderer {
                GGeometryNTreeParameters.BoundsPolicy.GIVEN, true);
 
       final GAxisAlignedRectangle bounds = _features.getBounds().asRectangle().expandedByPercent(0.05);
-      return new GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>>(
+      return new GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>(
                "Rendering", _features, parameters, bounds);
    }
 
 
-   public GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>> getQuadtree() {
+   public GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getQuadtree() {
       return _quadtree;
    }
 

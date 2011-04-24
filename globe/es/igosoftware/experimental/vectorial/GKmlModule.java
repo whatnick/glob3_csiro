@@ -50,7 +50,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
-import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.IVector2;
@@ -164,7 +164,7 @@ public class GKmlModule
             final GProjection projection = GProjection.EPSG_4326;
 
             try {
-               final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> features = GKmlLoader.readFeatures(
+               final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> features = GKmlLoader.readFeatures(
                         file, projection);
 
                final GVectorial2DLayer layer = new GVectorial2DLayer(file.getName(), features);

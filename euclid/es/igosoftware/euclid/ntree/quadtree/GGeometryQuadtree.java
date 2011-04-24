@@ -6,7 +6,7 @@ import java.util.Collection;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
-import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.ntree.GGeometryNTree;
 import es.igosoftware.euclid.ntree.GGeometryNTreeParameters;
 import es.igosoftware.euclid.vector.IVector2;
@@ -17,7 +17,7 @@ public class GGeometryQuadtree<
 
 ElementT,
 
-GeometryT extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>
+GeometryT extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>
 
 >
          extends

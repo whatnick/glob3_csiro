@@ -9,7 +9,7 @@ import java.awt.geom.Rectangle2D;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.ISurface2D;
-import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.colors.IColor;
 import es.igosoftware.euclid.experimental.measurement.GLength;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
@@ -24,9 +24,9 @@ import es.igosoftware.util.GAWTUtils;
 
 public class GPolygonRenderingShape
          extends
-            GRenderingFeatureAbstract<ISurface2D<? extends IFiniteBounds<IVector2, ?>>>
+            GRenderingFeatureAbstract<ISurface2D<? extends IFinite2DBounds<?>>>
          implements
-            ISurfaceRenderingShape<ISurface2D<? extends IFiniteBounds<IVector2, ?>>> {
+            ISurfaceRenderingShape<ISurface2D<? extends IFinite2DBounds<?>>> {
 
 
    private final float       _borderWidth;
@@ -56,8 +56,8 @@ public class GPolygonRenderingShape
    }
 
 
-   private Color getLODIgnoreColor(final ISurface2D<? extends IFiniteBounds<IVector2, ?>> polygon,
-                                   final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
+   private Color getLODIgnoreColor(final ISurface2D<? extends IFinite2DBounds<?>> polygon,
+                                   final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                    final IRenderingStyle renderingStyle,
                                    final IVectorial2DRenderingScaler scaler) {
       if (renderingStyle.isDebugRendering()) {
@@ -77,8 +77,8 @@ public class GPolygonRenderingShape
 
 
    @Override
-   protected final void renderLODIgnore(final ISurface2D<? extends IFiniteBounds<IVector2, ?>> polygon,
-                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
+   protected final void renderLODIgnore(final ISurface2D<? extends IFinite2DBounds<?>> polygon,
+                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                         final IRenderingStyle renderingStyle,
                                         final IVectorial2DRenderingScaler scaler,
                                         final IVectorial2DDrawer drawer) {
@@ -89,8 +89,8 @@ public class GPolygonRenderingShape
 
 
    @Override
-   protected final void rawDraw(final ISurface2D<? extends IFiniteBounds<IVector2, ?>> polygon,
-                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
+   protected final void rawDraw(final ISurface2D<? extends IFinite2DBounds<?>> polygon,
+                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                 final IRenderingStyle renderingStyle,
                                 final IVectorial2DRenderingScaler scaler,
                                 final IVectorial2DDrawer drawer) {

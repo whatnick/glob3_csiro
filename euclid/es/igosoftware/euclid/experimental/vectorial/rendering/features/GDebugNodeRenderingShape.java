@@ -7,7 +7,7 @@ import java.awt.Color;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
-import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle;
@@ -35,7 +35,7 @@ public class GDebugNodeRenderingShape
    private final GAxisAlignedOrthotope<IVector2, ?> _scaledBounds;
 
 
-   public GDebugNodeRenderingShape(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> node,
+   public GDebugNodeRenderingShape(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> node,
                                    final IVectorial2DRenderingScaler scaler) {
       GAssert.notNull(node, "node");
       GAssert.notNull(scaler, "scaler");
@@ -45,7 +45,7 @@ public class GDebugNodeRenderingShape
 
 
    @Override
-   public void draw(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> node,
+   public void draw(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> node,
                     final IRenderingStyle renderingStyle,
                     final IVectorial2DRenderingScaler scaler,
                     final IVectorial2DDrawer drawer) {
