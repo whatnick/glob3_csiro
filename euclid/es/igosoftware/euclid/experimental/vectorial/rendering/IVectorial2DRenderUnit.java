@@ -9,7 +9,7 @@ import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
-import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle2D;
 import es.igosoftware.euclid.experimental.vectorial.rendering.utils.GRenderingQuadtree;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.projection.GProjection;
@@ -24,7 +24,7 @@ public interface IVectorial2DRenderUnit {
                       final GProjection projection,
                       final IProjectionTool projectionTool,
                       final GAxisAlignedRectangle viewport,
-                      final IRenderingStyle renderingStyle,
+                      final IRenderingStyle2D renderingStyle,
                       final IVectorial2DDrawer drawer);
 
 

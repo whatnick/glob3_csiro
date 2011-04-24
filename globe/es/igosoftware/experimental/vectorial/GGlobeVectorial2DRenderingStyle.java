@@ -19,7 +19,7 @@ import es.igosoftware.euclid.experimental.measurement.GArea;
 import es.igosoftware.euclid.experimental.measurement.GLength;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
-import es.igosoftware.euclid.experimental.vectorial.rendering.styling.GRenderingStyleAbstract;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styling.GRenderingStyle2DAbstract;
 import es.igosoftware.euclid.features.GGeometryType;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
@@ -44,7 +44,7 @@ import es.igosoftware.util.GUtils;
 
 public class GGlobeVectorial2DRenderingStyle
          extends
-            GRenderingStyleAbstract
+            GRenderingStyle2DAbstract
          implements
             IGlobeRenderingStyle {
 

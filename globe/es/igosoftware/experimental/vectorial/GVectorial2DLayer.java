@@ -43,7 +43,7 @@ import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorial2DRenderer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
-import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle2D;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.features.IGlobeMutableFeatureCollection;
 import es.igosoftware.euclid.mutability.IMutable;
@@ -131,7 +131,7 @@ public class GVectorial2DLayer
    private static final class RenderingKey {
       private final GVectorial2DLayer     _layer;
       private final GAxisAlignedRectangle _tileBounds;
-      private final IRenderingStyle       _renderingStyle;
+      private final IRenderingStyle2D     _renderingStyle;
       private final String                _id;
 
 

@@ -21,7 +21,7 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.features.ICurveRen
 import es.igosoftware.euclid.experimental.vectorial.rendering.features.INodeRenderingShape;
 import es.igosoftware.euclid.experimental.vectorial.rendering.features.IRenderingSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.features.ISurfaceRenderingShape;
-import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle2D;
 import es.igosoftware.euclid.experimental.vectorial.rendering.utils.GRenderingQuadtree;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.multigeometry.GMultiGeometry2D;
@@ -44,7 +44,7 @@ class GVectorial2DRenderUnit
                       final GProjection projection,
                       final IProjectionTool projectionTool,
                       final GAxisAlignedRectangle viewport,
-                      final IRenderingStyle renderingStyle,
+                      final IRenderingStyle2D renderingStyle,
                       final IVectorial2DDrawer drawer) {
 
       final IVectorial2DRenderingScaler scaler = new GVectorial2DRenderingScaler(viewport, projection, projectionTool,
@@ -58,7 +58,7 @@ class GVectorial2DRenderUnit
 
    private static GAxisAlignedRectangle calculateExtendedRegion(final GAxisAlignedRectangle viewport,
                                                                 final IVectorial2DRenderingScaler scaler,
-                                                                final IRenderingStyle renderingStyle) {
+                                                                final IRenderingStyle2D renderingStyle) {
       final IMeasure<GArea> maximumSize = renderingStyle.getMaximumSize();
 
       final double areaInSquaredMeters = maximumSize.getValueInReferenceUnits();
@@ -72,7 +72,7 @@ class GVectorial2DRenderUnit
 
    private void processNode(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> node,
                             final GAxisAlignedRectangle extendedRegion,
-                            final IRenderingStyle renderingStyle,
+                            final IRenderingStyle2D renderingStyle,
                             final IVectorial2DRenderingScaler scaler,
                             final IVectorial2DDrawer drawer) {
 
@@ -111,7 +111,7 @@ class GVectorial2DRenderUnit
 
    private void drawNode(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> node,
                          final GAxisAlignedRectangle extendedRegion,
-                         final IRenderingStyle renderingStyle,
+                         final IRenderingStyle2D renderingStyle,
                          final IVectorial2DRenderingScaler scaler,
                          final IVectorial2DDrawer drawer) {
 
@@ -132,7 +132,7 @@ class GVectorial2DRenderUnit
    private void drawGeometry(final IBoundedGeometry2D<? extends IFinite2DBounds<?>> geometry,
                              final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                              final GAxisAlignedRectangle extendedRegion,
-                             final IRenderingStyle renderingStyle,
+                             final IRenderingStyle2D renderingStyle,
                              final IVectorial2DRenderingScaler scaler,
                              final IVectorial2DDrawer drawer) {
 

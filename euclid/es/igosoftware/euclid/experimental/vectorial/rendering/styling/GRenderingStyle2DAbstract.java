@@ -29,9 +29,9 @@ import es.igosoftware.euclid.shape.ISimplePolygon2D;
 import es.igosoftware.euclid.vector.IVector2;
 
 
-public abstract class GRenderingStyleAbstract
+public abstract class GRenderingStyle2DAbstract
          implements
-            IRenderingStyle {
+            IRenderingStyle2D {
 
    /* -------------------------------------------------------------------------------------- */
    /* nodes */

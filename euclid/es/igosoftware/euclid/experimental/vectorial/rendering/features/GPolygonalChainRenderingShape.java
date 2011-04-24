@@ -14,7 +14,7 @@ import es.igosoftware.euclid.experimental.measurement.GLength;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
-import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle2D;
 import es.igosoftware.euclid.experimental.vectorial.rendering.utils.GAWTPoints;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.shape.IPolygonalChain2D;
@@ -78,7 +78,7 @@ public class GPolygonalChainRenderingShape
 
    private Color getLODIgnoreColor(final ICurve2D<? extends IFinite2DBounds<?>> polygonalChain,
                                    final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                   final IRenderingStyle renderingStyle,
+                                   final IRenderingStyle2D renderingStyle,
                                    final IVectorial2DRenderingScaler scaler) {
       if (renderingStyle.isDebugRendering()) {
          return renderingStyle.getLODColor().asAWTColor();
@@ -94,7 +94,7 @@ public class GPolygonalChainRenderingShape
    @Override
    protected final void renderLODIgnore(final ICurve2D<? extends IFinite2DBounds<?>> polygonalChain,
                                         final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                        final IRenderingStyle renderingStyle,
+                                        final IRenderingStyle2D renderingStyle,
                                         final IVectorial2DRenderingScaler scaler,
                                         final IVectorial2DDrawer drawer) {
       final Color color = getLODIgnoreColor(polygonalChain, feature, renderingStyle, scaler);
@@ -106,7 +106,7 @@ public class GPolygonalChainRenderingShape
    @Override
    protected void rawDraw(final ICurve2D<? extends IFinite2DBounds<?>> polygonalChain,
                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                          final IRenderingStyle renderingStyle,
+                          final IRenderingStyle2D renderingStyle,
                           final IVectorial2DRenderingScaler scaler,
                           final IVectorial2DDrawer drawer) {
 

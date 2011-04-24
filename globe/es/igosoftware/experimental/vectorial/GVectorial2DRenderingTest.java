@@ -67,8 +67,8 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial
 import es.igosoftware.euclid.experimental.vectorial.rendering.features.GIconRenderingSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.features.GRectangleRenderingSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.features.IRenderingSymbol;
-import es.igosoftware.euclid.experimental.vectorial.rendering.styling.GRenderingStyleAbstract;
-import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styling.GRenderingStyle2DAbstract;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle2D;
 import es.igosoftware.euclid.features.GGeometryType;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
@@ -145,13 +145,13 @@ public class GVectorial2DRenderingTest {
 
       System.out.println();
 
-      final IRenderingStyle renderingStyle = createRenderingStyle(renderLODIgnores, lodMinSize, debugRendering);
+      final IRenderingStyle2D renderingStyle = createRenderingStyle(renderLODIgnores, lodMinSize, debugRendering);
 
       @SuppressWarnings("unchecked")
-      final GPair<GVectorial2DRenderer, IRenderingStyle>[] renderers = (GPair<GVectorial2DRenderer, IRenderingStyle>[]) new GPair<?, ?>[] {
-               new GPair<GVectorial2DRenderer, IRenderingStyle>(surfacesRenderer, renderingStyle),
-               new GPair<GVectorial2DRenderer, IRenderingStyle>(linesRenderer, renderingStyle),
-               new GPair<GVectorial2DRenderer, IRenderingStyle>(pointsRenderer, renderingStyle) };
+      final GPair<GVectorial2DRenderer, IRenderingStyle2D>[] renderers = (GPair<GVectorial2DRenderer, IRenderingStyle2D>[]) new GPair<?, ?>[] {
+               new GPair<GVectorial2DRenderer, IRenderingStyle2D>(surfacesRenderer, renderingStyle),
+               new GPair<GVectorial2DRenderer, IRenderingStyle2D>(linesRenderer, renderingStyle),
+               new GPair<GVectorial2DRenderer, IRenderingStyle2D>(pointsRenderer, renderingStyle) };
 
 
       final int depth = 0;
@@ -160,9 +160,9 @@ public class GVectorial2DRenderingTest {
    }
 
 
-   private static GRenderingStyleAbstract createRenderingStyle(final boolean renderLODIgnores,
-                                                               final double lodMinSize,
-                                                               final boolean debugRendering) throws IOException {
+   private static GRenderingStyle2DAbstract createRenderingStyle(final boolean renderLODIgnores,
+                                                                 final double lodMinSize,
+                                                                 final boolean debugRendering) throws IOException {
 
       final GFileName symbologyDirectory = GFileName.absolute("home", "dgd", "Desktop", "GIS Symbology");
 
@@ -173,7 +173,7 @@ public class GVectorial2DRenderingTest {
       final GColorScheme colorScheme = GColorBrewerColorSchemeSet.INSTANCE.getSchemes(9, GColorScheme.Type.Qualitative).get(2);
 
 
-      return new GRenderingStyleAbstract() {
+      return new GRenderingStyle2DAbstract() {
 
          private final IColorizer _pointColorizer = new GUniqueValuesColorizer("CATEGORY", colorScheme, GColorI.WHITE, true,
                                                            new IFunction<Object, String>() {
@@ -460,7 +460,7 @@ public class GVectorial2DRenderingTest {
    }
 
 
-   private static void render(final GPair<GVectorial2DRenderer, IRenderingStyle>[] renderers,
+   private static void render(final GPair<GVectorial2DRenderer, IRenderingStyle2D>[] renderers,
                               final GAxisAlignedRectangle viewport,
                               final int imageWidth,
                               final int imageHeight,
@@ -478,7 +478,7 @@ public class GVectorial2DRenderingTest {
 
       final IVectorial2DDrawer drawer = new GJava2DVectorial2DDrawer(image);
 
-      for (final GPair<GVectorial2DRenderer, IRenderingStyle> renderer : renderers) {
+      for (final GPair<GVectorial2DRenderer, IRenderingStyle2D> renderer : renderers) {
          final IProjectionTool projectionTool = new IProjectionTool() {
             @Override
             public IVector2 increment(final IVector2 position,

@@ -23,7 +23,7 @@ import es.igosoftware.euclid.ntree.GGTNode;
 import es.igosoftware.euclid.vector.IVector2;
 
 
-public interface IRenderingStyle {
+public interface IRenderingStyle2D {
 
 
    /* -------------------------------------------------------------------------------------- */
