@@ -1449,4 +1449,33 @@ public final class GCollections {
    }
 
 
+   public static <T> T theOnlyOne(final Iterable<T> iterable) {
+      final Iterator<T> iterator = iterable.iterator();
+
+      if (!iterator.hasNext()) {
+         throw new RuntimeException("Iterable is empty");
+      }
+
+      final T neo = iterator.next(); // Neo is the one!
+
+      if (iterator.hasNext()) {
+         throw new RuntimeException("Iterable has more than one element");
+      }
+
+      return neo;
+   }
+
+
+   public static <T> long count(final Iterable<? extends T> iterable,
+                                final IPredicate<T> predicate) {
+      long result = 0;
+      for (final T each : iterable) {
+         if (predicate.evaluate(each)) {
+            result++;
+         }
+      }
+      return result;
+   }
+
+
 }
