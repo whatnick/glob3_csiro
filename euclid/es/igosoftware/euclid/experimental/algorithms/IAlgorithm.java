@@ -3,6 +3,7 @@
 package es.igosoftware.euclid.experimental.algorithms;
 
 import es.igosoftware.euclid.vector.IVector;
+import es.igosoftware.util.IFunction;
 
 
 public interface IAlgorithm<
@@ -15,9 +16,9 @@ ResultVectorT extends IVector<ResultVectorT, ?>,
 
 ResultT extends IAlgorithmResult<ResultVectorT>
 
-> {
+>
+         extends
+            IFunction<ParametersT, ResultT> {
 
-
-   public ResultT process(final ParametersT parameters);
 
 }

@@ -72,7 +72,7 @@ VectorT extends IVector<VectorT, ?>
 
 
    @Override
-   public GLinesToEquispacedPoints.Result<VectorT> process(final GLinesToEquispacedPoints.Parameters<VectorT> parameters) {
+   public GLinesToEquispacedPoints.Result<VectorT> apply(final GLinesToEquispacedPoints.Parameters<VectorT> parameters) {
       final List<VectorT> coords = parameters._geometry.getPoints();
       if (coords.isEmpty()) {
          throw new RuntimeException("Invalid geometry: " + parameters._geometry);
@@ -120,7 +120,7 @@ VectorT extends IVector<VectorT, ?>
       final GLinesToEquispacedPoints<IVector2> alg2 = new GLinesToEquispacedPoints<IVector2>();
 
       final IPolygonalChain2D line2 = new GLinesStrip2D(false, new GVector2D(0, 0), new GVector2D(0, 10), new GVector2D(10, 10));
-      final GLinesToEquispacedPoints.Result<IVector2> points2 = alg2.process(new GLinesToEquispacedPoints.Parameters<IVector2>(
+      final GLinesToEquispacedPoints.Result<IVector2> points2 = alg2.apply(new GLinesToEquispacedPoints.Parameters<IVector2>(
                line2, 1));
 
       System.out.println("Points: " + points2.getResult().size());
@@ -134,7 +134,7 @@ VectorT extends IVector<VectorT, ?>
       final GLinesToEquispacedPoints<IVector3> alg3 = new GLinesToEquispacedPoints<IVector3>();
 
       final IPolygonalChain3D line3 = new GSegment3D(new GVector3D(0, 0, 0), new GVector3D(0, 10, 0));
-      final GLinesToEquispacedPoints.Result<IVector3> points3 = alg3.process(new GLinesToEquispacedPoints.Parameters<IVector3>(
+      final GLinesToEquispacedPoints.Result<IVector3> points3 = alg3.apply(new GLinesToEquispacedPoints.Parameters<IVector3>(
                line3, 1));
 
       System.out.println("Points: " + points3.getResult().size());

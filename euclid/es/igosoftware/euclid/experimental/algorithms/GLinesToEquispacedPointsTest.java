@@ -30,7 +30,7 @@ public class GLinesToEquispacedPointsTest
 
       final IPolygonalChain2D line2 = new GLinesStrip2D(false, new GVector2D(0, 0), new GVector2D(2, 0), new GVector2D(2, 5));
       final int distance = 1;
-      final GLinesToEquispacedPoints.Result<IVector2> points2 = alg2.process(new GLinesToEquispacedPoints.Parameters<IVector2>(
+      final GLinesToEquispacedPoints.Result<IVector2> points2 = alg2.apply(new GLinesToEquispacedPoints.Parameters<IVector2>(
                line2, distance));
 
       final List<IVector2> result = points2.getResult();
@@ -43,7 +43,7 @@ public class GLinesToEquispacedPointsTest
 
       final IPolygonalChain3D line3 = new GSegment3D(new GVector3D(0, 0, 0), new GVector3D(0, 10, 5));
       final int distance = 1;
-      final GLinesToEquispacedPoints.Result<IVector3> points3 = alg3.process(new GLinesToEquispacedPoints.Parameters<IVector3>(
+      final GLinesToEquispacedPoints.Result<IVector3> points3 = alg3.apply(new GLinesToEquispacedPoints.Parameters<IVector3>(
                line3, distance));
 
       final List<IVector3> result = points3.getResult();
@@ -57,7 +57,7 @@ public class GLinesToEquispacedPointsTest
       final IPolygonalChain2D line2 = new GLinesStrip2D(false, new GVector2D(0, 0), new GVector2D(2, 0), new GVector2D(4, 0),
                new GVector2D(6, 0));
       final int distance = 5;
-      final GLinesToEquispacedPoints.Result<IVector2> points2 = alg2.process(new GLinesToEquispacedPoints.Parameters<IVector2>(
+      final GLinesToEquispacedPoints.Result<IVector2> points2 = alg2.apply(new GLinesToEquispacedPoints.Parameters<IVector2>(
                line2, distance));
       final List<IVector2> result = points2.getResult();
       checkResult(result, line2, distance);
