@@ -212,13 +212,4 @@ PolytopeT extends ISimplePolytope<VectorT, SegmentT, BoundsT>
    }
 
 
-   public int getVerticesCount() {
-      int result = _hull.getPointsCount();
-      for (final PolytopeT hole : _holes) {
-         result += hole.getPointsCount();
-      }
-      return result;
-   }
-
-
 }

@@ -54,28 +54,6 @@ public class GVectorial2DRenderer {
                return true;
             }
 
-            //            int verticesCounter = 0;
-            //            for (final GElementGeometryPair<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> pair : elements) {
-            //               final IBoundedGeometry2D<? extends IFinite2DBounds<?>> geometry = pair.getGeometry();
-            //
-            //               if (geometry instanceof IVector2) {
-            //                  verticesCounter++;
-            //               }
-            //               else if (geometry instanceof IPointsContainer) {
-            //                  verticesCounter += ((IPointsContainer) geometry).getPointsCount();
-            //               }
-            //               else if (geometry instanceof ICurve) {
-            //                  verticesCounter += ((ICurve) geometry).getVerticesCount();
-            //               }
-            //               else if (geometry instanceof ISurface) {
-            //                  verticesCounter += ((ISurface) geometry).getVerticesCount();
-            //               }
-            //               else {
-            //                  verticesCounter += 5; // estimation
-            //               }
-            //            }
-            //
-            //            return (verticesCounter <= 400);
             return (elements.size() <= 50);
          }
       };

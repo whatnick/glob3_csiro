@@ -37,18 +37,18 @@ GeometryT extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>
    }
 
 
-   protected abstract void renderLODIgnore(final GeometryT geometry,
-                                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                           final IRenderingStyle2D renderingStyle,
-                                           final IVectorial2DRenderingScaler scaler,
-                                           final IVectorial2DDrawer drawer);
-
-
    protected abstract void rawDraw(final GeometryT geometry,
                                    final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                    final IRenderingStyle2D renderingStyle,
                                    final IVectorial2DRenderingScaler scaler,
                                    final IVectorial2DDrawer drawer);
+
+
+   protected abstract void renderLODIgnore(final GeometryT geometry,
+                                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                           final IRenderingStyle2D renderingStyle,
+                                           final IVectorial2DRenderingScaler scaler,
+                                           final IVectorial2DDrawer drawer);
 
 
 }

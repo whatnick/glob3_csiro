@@ -2,10 +2,9 @@
 
 package es.igosoftware.euclid.experimental.vectorial.rendering.context;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Paint;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
@@ -18,6 +17,7 @@ import java.awt.image.RescaleOp;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.experimental.vectorial.rendering.utils.GAWTPoints;
+import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GMath;
@@ -72,9 +72,9 @@ public class GJava2DVectorial2DDrawer
 
    @Override
    public final void draw(final Shape shape,
-                          final Color color,
+                          final Paint paint,
                           final Stroke stroke) {
-      _g2d.setColor(color);
+      _g2d.setPaint(paint);
       _g2d.setStroke(stroke);
       _g2d.draw(shape);
    }
@@ -82,8 +82,8 @@ public class GJava2DVectorial2DDrawer
 
    @Override
    public final void fill(final Shape shape,
-                          final Color color) {
-      _g2d.setColor(color);
+                          final Paint paint) {
+      _g2d.setPaint(paint);
       _g2d.fill(shape);
    }
 
@@ -93,18 +93,18 @@ public class GJava2DVectorial2DDrawer
                               final double y,
                               final double width,
                               final double height,
-                              final Color color,
+                              final Paint paint,
                               final Stroke stroke) {
-      draw(new Ellipse2D.Double(x, y, width, height), color, stroke);
+      draw(new Ellipse2D.Double(x, y, width, height), paint, stroke);
    }
 
 
    @Override
    public void drawOval(final IVector2 position,
                         final IVector2 extent,
-                        final Color color,
+                        final Paint paint,
                         final Stroke stroke) {
-      drawOval(position.x(), position.y(), extent.x(), extent.y(), color, stroke);
+      drawOval(position.x(), position.y(), extent.x(), extent.y(), paint, stroke);
    }
 
 
@@ -113,16 +113,16 @@ public class GJava2DVectorial2DDrawer
                               final double y,
                               final double width,
                               final double height,
-                              final Color color) {
-      fill(new Ellipse2D.Double(x, y, width, height), color);
+                              final Paint paint) {
+      fill(new Ellipse2D.Double(x, y, width, height), paint);
    }
 
 
    @Override
    public void fillOval(final IVector2 position,
                         final IVector2 extent,
-                        final Color color) {
-      fillOval(position.x(), position.y(), extent.x(), extent.y(), color);
+                        final Paint paint) {
+      fillOval(position.x(), position.y(), extent.x(), extent.y(), paint);
    }
 
 
@@ -130,9 +130,9 @@ public class GJava2DVectorial2DDrawer
    public final void drawPolyline(final int[] xPoints,
                                   final int[] yPoints,
                                   final int length,
-                                  final Color color,
+                                  final Paint paint,
                                   final Stroke stroke) {
-      _g2d.setColor(color);
+      _g2d.setPaint(paint);
       _g2d.setStroke(stroke);
       _g2d.drawPolyline(xPoints, yPoints, length);
    }
@@ -140,9 +140,26 @@ public class GJava2DVectorial2DDrawer
 
    @Override
    public final void drawPolyline(final GAWTPoints points,
-                                  final Color color,
+                                  final Paint paint,
                                   final Stroke stroke) {
-      drawPolyline(points._xPoints, points._yPoints, points._xPoints.length, color, stroke);
+      drawPolyline(points._xPoints, points._yPoints, points._xPoints.length, paint, stroke);
+   }
+
+
+   @Override
+   public void drawPolyline(final IPointsContainer<IVector2> pointsContainer,
+                            final Paint paint,
+                            final Stroke stroke) {
+      final int pointsCount = pointsContainer.getPointsCount();
+      final int[] xPoints = new int[pointsCount];
+      final int[] yPoints = new int[pointsCount];
+      for (int i = 0; i < pointsCount; i++) {
+         final IVector2 point = pointsContainer.getPoint(i);
+         xPoints[i] = GMath.toRoundedInt(point.x());
+         yPoints[i] = GMath.toRoundedInt(point.y());
+      }
+
+      drawPolyline(xPoints, yPoints, pointsCount, paint, stroke);
    }
 
 
@@ -151,34 +168,34 @@ public class GJava2DVectorial2DDrawer
                               final double y,
                               final double width,
                               final double height,
-                              final Color color,
+                              final Paint paint,
                               final Stroke stroke) {
-      draw(new Rectangle2D.Double(x, y, width, height), color, stroke);
+      draw(new Rectangle2D.Double(x, y, width, height), paint, stroke);
    }
 
 
    @Override
    public void drawRect(final IVector2 position,
                         final IVector2 extent,
-                        final Color color,
-                        final BasicStroke stroke) {
-      drawRect(position.x(), position.y(), extent.x(), extent.y(), color, stroke);
+                        final Paint paint,
+                        final Stroke stroke) {
+      drawRect(position.x(), position.y(), extent.x(), extent.y(), paint, stroke);
    }
 
 
    @Override
    public void drawRect(final GAxisAlignedOrthotope<IVector2, ?> rectangle,
-                        final Color color,
-                        final BasicStroke stroke) {
-      drawRect(rectangle._lower, rectangle._extent, color, stroke);
+                        final Paint paint,
+                        final Stroke stroke) {
+      drawRect(rectangle._lower, rectangle._extent, paint, stroke);
    }
 
 
    @Override
    public void drawRect(final Rectangle2D rectangle,
-                        final Color color,
-                        final BasicStroke stroke) {
-      drawRect(rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight(), color, stroke);
+                        final Paint paint,
+                        final Stroke stroke) {
+      drawRect(rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight(), paint, stroke);
    }
 
 
@@ -187,30 +204,30 @@ public class GJava2DVectorial2DDrawer
                               final double y,
                               final double width,
                               final double height,
-                              final Color color) {
-      fill(new Rectangle2D.Double(x, y, width, height), color);
+                              final Paint paint) {
+      fill(new Rectangle2D.Double(x, y, width, height), paint);
    }
 
 
    @Override
    public void fillRect(final IVector2 position,
                         final IVector2 extent,
-                        final Color color) {
-      fillRect(position.x(), position.y(), extent.x(), extent.y(), color);
+                        final Paint paint) {
+      fillRect(position.x(), position.y(), extent.x(), extent.y(), paint);
    }
 
 
    @Override
    public void fillRect(final GAxisAlignedOrthotope<IVector2, ?> rectangle,
-                        final Color color) {
-      fillRect(rectangle._lower, rectangle._extent, color);
+                        final Paint paint) {
+      fillRect(rectangle._lower, rectangle._extent, paint);
    }
 
 
    @Override
    public void fillRect(final Rectangle2D rectangle,
-                        final Color color) {
-      fillRect(rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight(), color);
+                        final Paint paint) {
+      fillRect(rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight(), paint);
    }
 
 
@@ -266,5 +283,6 @@ public class GJava2DVectorial2DDrawer
                          final float opacity) {
       drawImage(image, position.x(), position.y(), opacity);
    }
+
 
 }

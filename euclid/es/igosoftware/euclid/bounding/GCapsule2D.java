@@ -138,8 +138,4 @@ public final class GCapsule2D
    }
 
 
-   @Override
-   public int getVerticesCount() {
-      return 2;
-   }
 }

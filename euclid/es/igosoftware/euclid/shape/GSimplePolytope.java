@@ -204,9 +204,4 @@ BoundsT extends IBounds<VectorT, BoundsT>
    }
 
 
-   public int getVerticesCount() {
-      return _points.size();
-   }
-
-
 }

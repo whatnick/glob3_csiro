@@ -229,10 +229,4 @@ BoundsT extends IBounds<VectorT, BoundsT>
    }
 
 
-   @Override
-   public int getVerticesCount() {
-      return 3;
-   }
-
-
 }

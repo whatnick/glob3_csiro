@@ -118,8 +118,4 @@ public final class GDisk
    }
 
 
-   @Override
-   public int getVerticesCount() {
-      return 1;
-   }
 }
