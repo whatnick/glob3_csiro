@@ -58,7 +58,8 @@ public final class GAxisAlignedRectangle
          extends
             GAxisAlignedOrthotope<IVector2, GAxisAlignedRectangle>
          implements
-            IBounds2D<GAxisAlignedRectangle> {
+            IBounds2D<GAxisAlignedRectangle>,
+            IFinite2DBounds<GAxisAlignedRectangle> {
 
    private static final long                 serialVersionUID = 1L;
 

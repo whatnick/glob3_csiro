@@ -60,7 +60,8 @@ public final class GAxisAlignedBox
          extends
             GAxisAlignedOrthotope<IVector3, GAxisAlignedBox>
          implements
-            IBounds3D<GAxisAlignedBox> {
+            IBounds3D<GAxisAlignedBox>,
+            IFinite3DBounds<GAxisAlignedBox> {
 
    private static final long           serialVersionUID = 1L;
 
