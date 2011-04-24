@@ -38,6 +38,14 @@ class GVectorial2DRenderUnit
             IVectorial2DRenderUnit {
 
 
+   private static final Color       LEAF_NODE_BOUND_COLOR   = new Color(0f, 1f, 0f, 0.5f);
+   private static final Color       INNER_NODES_BOUND_COLOR = LEAF_NODE_BOUND_COLOR.darker().darker();
+
+   private static final BasicStroke LEAF_NODES_STROKE       = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND,
+                                                                     10, new float[] { 2, 2 }, 0);
+   private static final BasicStroke INNER_NODES_STROKE      = new BasicStroke(1);
+
+
    @Override
    public void render(final BufferedImage renderedImage,
                       final GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> quadtree,
@@ -84,12 +92,12 @@ class GVectorial2DRenderUnit
 
 
       final IVector2 scaledNodeExtent = scaler.scaleExtent(nodeBounds.getExtent());
-      final double projectedSize = scaledNodeExtent.x() * scaledNodeExtent.y();
-      if (projectedSize < renderingStyle.getLODMinSize()) {
+      final double scaledNodeSize = scaledNodeExtent.x() * scaledNodeExtent.y();
+      if (scaledNodeSize < renderingStyle.getLODMinSize()) {
          if (renderingStyle.isDebugRendering()) {
+            final GAxisAlignedOrthotope<IVector2, ?> scaledNodeBounds = scaler.scaleAndTranslate(nodeBounds);
             final Color color = renderingStyle.getLODColor().asAWTColor();
-            final IVector2 projectedPosition = scaler.scaleAndTranslatePoint(nodeBounds.getCenter()).sub(scaledNodeExtent.div(2));
-            drawer.fillRect(projectedPosition.x(), projectedPosition.y(), scaledNodeExtent.x(), scaledNodeExtent.y(), color);
+            drawer.fillRect(scaledNodeBounds, color);
          }
 
          return;
@@ -105,47 +113,55 @@ class GVectorial2DRenderUnit
          }
       }
 
-      renderNodeGeometries(node, extendedRegion, renderingStyle, scaler, drawer);
+      drawNode(node, extendedRegion, renderingStyle, scaler, drawer);
    }
 
 
-   private void renderNodeGeometries(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> node,
-                                     final GAxisAlignedRectangle extendedRegion,
-                                     final IRenderingStyle renderingStyle,
-                                     final IVectorial2DRenderingScaler scaler,
-                                     final IVectorial2DDrawer drawer) {
-
+   private void drawNode(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> node,
+                         final GAxisAlignedRectangle extendedRegion,
+                         final IRenderingStyle renderingStyle,
+                         final IVectorial2DRenderingScaler scaler,
+                         final IVectorial2DDrawer drawer) {
 
       if (renderingStyle.isDebugRendering()) {
-         final GAxisAlignedOrthotope<IVector2, ?> nodeBounds = node.getBounds();
+         drawNodeBounds(node, scaler, drawer);
 
-         final IVector2 nodeLower = scaler.scaleAndTranslatePoint(nodeBounds._lower);
-         final IVector2 nodeUpper = scaler.scaleAndTranslatePoint(nodeBounds._upper);
-
-         final boolean isInner = (node instanceof GGTInnerNode);
-
-         drawer.drawRect(nodeLower.x(), nodeLower.y(),//
-                  (nodeUpper.x() - nodeLower.x()), (nodeUpper.y() - nodeLower.y()), //
-                  isInner ? Color.GREEN.darker().darker().darker().darker().darker() : Color.GREEN, //
-                  new BasicStroke(1));
+         final int TODO_CONVERT_TO_RENDERING_SHAPE;
+         //         final ICurveRenderingShape<ICurve2D<? extends IFiniteBounds<IVector2, ?>>> nodeShape = renderingStyle.getNodeShape(node,
+         //                  scaler);
+         //         if (nodeShape != null) {
+         //            nodeShape.draw(node, renderingStyle, scaler, drawer);
+         //         }
       }
 
 
       for (final GElementGeometryPair<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> pair : node.getElements()) {
          final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> geometry = pair.getGeometry();
-         renderGeometry(geometry, pair.getElement(), extendedRegion, renderingStyle, scaler, drawer);
+         drawGeometry(geometry, pair.getElement(), extendedRegion, renderingStyle, scaler, drawer);
       }
 
    }
 
 
-   private void renderGeometry(final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> geometry,
-                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
-                               final GAxisAlignedRectangle extendedRegion,
-                               final IRenderingStyle renderingStyle,
+   private void drawNodeBounds(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> node,
                                final IVectorial2DRenderingScaler scaler,
                                final IVectorial2DDrawer drawer) {
+      final boolean isInner = (node instanceof GGTInnerNode);
 
+      final Color color = isInner ? INNER_NODES_BOUND_COLOR : LEAF_NODE_BOUND_COLOR;
+      final BasicStroke stroke = isInner ? INNER_NODES_STROKE : LEAF_NODES_STROKE;
+
+      final GAxisAlignedOrthotope<IVector2, ?> scaledNodeBounds = scaler.scaleAndTranslate(node.getBounds());
+      drawer.drawRect(scaledNodeBounds, color, stroke);
+   }
+
+
+   private void drawGeometry(final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> geometry,
+                             final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                             final GAxisAlignedRectangle extendedRegion,
+                             final IRenderingStyle renderingStyle,
+                             final IVectorial2DRenderingScaler scaler,
+                             final IVectorial2DDrawer drawer) {
 
       if (!geometry.getBounds().asAxisAlignedOrthotope().touches(extendedRegion)) {
          return;
@@ -155,7 +171,7 @@ class GVectorial2DRenderUnit
          @SuppressWarnings("unchecked")
          final GMultiGeometry2D<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> multigeometry = (GMultiGeometry2D<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) geometry;
          for (final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> child : multigeometry) {
-            renderGeometry(child, feature, extendedRegion, renderingStyle, scaler, drawer);
+            drawGeometry(child, feature, extendedRegion, renderingStyle, scaler, drawer);
          }
       }
       else if (geometry instanceof IVector2) {

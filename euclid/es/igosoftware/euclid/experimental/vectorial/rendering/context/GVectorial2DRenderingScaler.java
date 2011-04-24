@@ -2,6 +2,7 @@
 
 package es.igosoftware.euclid.experimental.vectorial.rendering.context;
 
+import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.experimental.vectorial.rendering.utils.GAWTPoints;
 import es.igosoftware.euclid.projection.GProjection;
@@ -55,7 +56,7 @@ public class GVectorial2DRenderingScaler
 
 
    @Override
-   public final IVector2 scaleAndTranslatePoint(final IVector2 point) {
+   public final IVector2 scaleAndTranslate(final IVector2 point) {
       return point.sub(_viewport._lower).scale(_scale);
    }
 
@@ -67,7 +68,7 @@ public class GVectorial2DRenderingScaler
       final int[] yPoints = new int[nPoints];
 
       for (int i = 0; i < nPoints; i++) {
-         final IVector2 point = scaleAndTranslatePoint(polygon.getPoint(i));
+         final IVector2 point = scaleAndTranslate(polygon.getPoint(i));
 
          xPoints[i] = Math.round((float) point.x());
          yPoints[i] = Math.round((float) point.y());
@@ -82,6 +83,14 @@ public class GVectorial2DRenderingScaler
                              final double deltaEasting,
                              final double deltaNorthing) {
       return _projectionTool.increment(position, _projection, deltaEasting, deltaNorthing);
+   }
+
+
+   @Override
+   public GAxisAlignedOrthotope<IVector2, ?> scaleAndTranslate(final GAxisAlignedOrthotope<IVector2, ?> bounds) {
+      final IVector2 scaledLower = scaleAndTranslate(bounds._lower);
+      final IVector2 scaledUpper = scaleAndTranslate(bounds._upper);
+      return GAxisAlignedOrthotope.create(scaledLower, scaledUpper);
    }
 
 

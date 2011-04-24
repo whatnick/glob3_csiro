@@ -126,7 +126,7 @@ public class GIconRenderingSymbol
       final IVector2 pointPlusExtent = scaler.increment(point, extent, extent);
       _extent = scaler.scaleExtent(pointPlusExtent.sub(point)).rounded();
 
-      final IVector2 scaledPoint = scaler.scaleAndTranslatePoint(point);
+      final IVector2 scaledPoint = scaler.scaleAndTranslate(point);
       _position = scaledPoint.sub(_extent.div(2)).rounded();
 
       _scaledIcon = scaleCache.get(new GPair<BufferedImage, IVector2>(icon, _extent));
@@ -148,7 +148,7 @@ public class GIconRenderingSymbol
 
       final float pointOpacity = renderingStyle.getPointOpacity(point, feature, scaler);
 
-      drawer.drawImage(_scaledIcon, _position.x(), _position.y(), pointOpacity);
+      drawer.drawImage(_scaledIcon, _position, pointOpacity);
    }
 
 
@@ -163,7 +163,7 @@ public class GIconRenderingSymbol
 
       final Color color = GAWTUtils.mixAlpha(_imageData._averageColor, pointOpacity);
 
-      drawer.fillRect(_position.x(), _position.y(), _extent.x(), _extent.y(), color);
+      drawer.fillRect(_position, _extent, color);
    }
 
 

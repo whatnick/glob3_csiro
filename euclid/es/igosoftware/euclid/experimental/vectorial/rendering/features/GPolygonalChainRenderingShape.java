@@ -99,7 +99,7 @@ public class GPolygonalChainRenderingShape
                                         final IVectorial2DDrawer drawer) {
       final Color color = getLODIgnoreColor(polygonalChain, feature, renderingStyle, scaler);
 
-      drawer.fillRect(_bounds.getX(), _bounds.getY(), _bounds.getWidth(), _bounds.getHeight(), color);
+      drawer.fillRect(_bounds, color);
    }
 
 
@@ -119,12 +119,6 @@ public class GPolygonalChainRenderingShape
       final float curveOpacity = renderingStyle.getCurveOpacity(polygonalChain, feature, scaler);
 
       final BasicStroke borderStroke = new BasicStroke(_borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-      //         final int cap = BasicStroke.CAP_ROUND;
-      //         final int join = BasicStroke.JOIN_ROUND;
-      //         final float miterlimit = 10;
-      //         final float[] dash = { 20, 5 };
-      //         final float dash_phase = 0;
-      //         final BasicStroke borderStroke = new BasicStroke(_borderWidth, cap, join, miterlimit, dash, dash_phase);
 
       drawer.drawPolyline(_points, curveColor.asAWTColor(curveOpacity), borderStroke);
    }

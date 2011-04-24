@@ -46,12 +46,13 @@ public class GRectangleRenderingSymbol
                           final IVectorial2DRenderingScaler scaler,
                           final IVectorial2DDrawer drawer) {
       // fill point
-      drawer.fillRect(_position.x(), _position.y(), _extent.x(), _extent.y(), fillColor);
+      drawer.fillRect(_position, _extent, fillColor);
 
       // render border
       if (_borderWidth > 0) {
          final BasicStroke borderStroke = new BasicStroke(_borderWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
-         drawer.drawRect(_position.x(), _position.y(), _extent.x(), _extent.y(), borderColor, borderStroke);
+         //         drawer.drawRect(_position.x(), _position.y(), _extent.x(), _extent.y(), borderColor, borderStroke);
+         drawer.drawRect(_position, _extent, borderColor, borderStroke);
       }
    }
 

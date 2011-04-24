@@ -2,6 +2,7 @@
 
 package es.igosoftware.euclid.experimental.vectorial.rendering.context;
 
+import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.experimental.vectorial.rendering.utils.GAWTPoints;
 import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector2;
@@ -16,14 +17,15 @@ public interface IVectorial2DRenderingScaler {
    public IVector2 scaleExtent(final IVector2 extent);
 
 
-   public IVector2 scaleAndTranslatePoint(final IVector2 point);
+   public IVector2 scaleAndTranslate(final IVector2 point);
 
 
-   //   public GProjection getProjection();
+   public GAxisAlignedOrthotope<IVector2, ?> scaleAndTranslate(GAxisAlignedOrthotope<IVector2, ?> bounds);
 
 
    public IVector2 increment(final IVector2 position,
                              final double deltaEasting,
                              final double deltaNorthing);
+
 
 }

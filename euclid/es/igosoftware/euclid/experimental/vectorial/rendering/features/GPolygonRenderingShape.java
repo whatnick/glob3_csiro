@@ -84,7 +84,7 @@ public class GPolygonRenderingShape
                                         final IVectorial2DDrawer drawer) {
       final Color color = getLODIgnoreColor(polygon, feature, renderingStyle, scaler);
 
-      drawer.fillRect(_bounds.getX(), _bounds.getY(), _bounds.getWidth(), _bounds.getHeight(), color);
+      drawer.fillRect(_bounds, color);
    }
 
 

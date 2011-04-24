@@ -65,7 +65,7 @@ public abstract class GShapeRenderingSymbol
 
    private IVector2 calculatePosition(final IVector2 point,
                                       final IVectorial2DRenderingScaler scaler) {
-      final IVector2 scaledPoint = scaler.scaleAndTranslatePoint(point);
+      final IVector2 scaledPoint = scaler.scaleAndTranslate(point);
       return scaledPoint.sub(_extent.div(2));
    }
 
@@ -125,7 +125,7 @@ public abstract class GShapeRenderingSymbol
                                         final IVectorial2DDrawer drawer) {
       final Color color = getLODIgnoreColor(point, feature, renderingStyle, scaler);
 
-      drawer.fillRect(_position.x(), _position.y(), _extent.x(), _extent.y(), color);
+      drawer.fillRect(_position, _extent, color);
    }
 
 }

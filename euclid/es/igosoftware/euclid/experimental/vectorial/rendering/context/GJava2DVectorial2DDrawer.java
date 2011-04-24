@@ -2,6 +2,7 @@
 
 package es.igosoftware.euclid.experimental.vectorial.rendering.context;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -15,7 +16,9 @@ import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.RescaleOp;
 
+import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.experimental.vectorial.rendering.utils.GAWTPoints;
+import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GMath;
 
@@ -97,12 +100,29 @@ public class GJava2DVectorial2DDrawer
 
 
    @Override
+   public void drawOval(final IVector2 position,
+                        final IVector2 extent,
+                        final Color color,
+                        final Stroke stroke) {
+      drawOval(position.x(), position.y(), extent.x(), extent.y(), color, stroke);
+   }
+
+
+   @Override
    public final void fillOval(final double x,
                               final double y,
                               final double width,
                               final double height,
                               final Color color) {
       fill(new Ellipse2D.Double(x, y, width, height), color);
+   }
+
+
+   @Override
+   public void fillOval(final IVector2 position,
+                        final IVector2 extent,
+                        final Color color) {
+      fillOval(position.x(), position.y(), extent.x(), extent.y(), color);
    }
 
 
@@ -138,12 +158,59 @@ public class GJava2DVectorial2DDrawer
 
 
    @Override
+   public void drawRect(final IVector2 position,
+                        final IVector2 extent,
+                        final Color color,
+                        final BasicStroke stroke) {
+      drawRect(position.x(), position.y(), extent.x(), extent.y(), color, stroke);
+   }
+
+
+   @Override
+   public void drawRect(final GAxisAlignedOrthotope<IVector2, ?> rectangle,
+                        final Color color,
+                        final BasicStroke stroke) {
+      drawRect(rectangle._lower, rectangle._extent, color, stroke);
+   }
+
+
+   @Override
+   public void drawRect(final Rectangle2D rectangle,
+                        final Color color,
+                        final BasicStroke stroke) {
+      drawRect(rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight(), color, stroke);
+   }
+
+
+   @Override
    public final void fillRect(final double x,
                               final double y,
                               final double width,
                               final double height,
                               final Color color) {
       fill(new Rectangle2D.Double(x, y, width, height), color);
+   }
+
+
+   @Override
+   public void fillRect(final IVector2 position,
+                        final IVector2 extent,
+                        final Color color) {
+      fillRect(position.x(), position.y(), extent.x(), extent.y(), color);
+   }
+
+
+   @Override
+   public void fillRect(final GAxisAlignedOrthotope<IVector2, ?> rectangle,
+                        final Color color) {
+      fillRect(rectangle._lower, rectangle._extent, color);
+   }
+
+
+   @Override
+   public void fillRect(final Rectangle2D rectangle,
+                        final Color color) {
+      fillRect(rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight(), color);
    }
 
 
@@ -185,5 +252,19 @@ public class GJava2DVectorial2DDrawer
       _g2d.setTransform(currentTransform);
    }
 
+
+   @Override
+   public void drawImage(final Image image,
+                         final IVector2 position) {
+      drawImage(image, position.x(), position.y());
+   }
+
+
+   @Override
+   public void drawImage(final BufferedImage image,
+                         final IVector2 position,
+                         final float opacity) {
+      drawImage(image, position.x(), position.y(), opacity);
+   }
 
 }

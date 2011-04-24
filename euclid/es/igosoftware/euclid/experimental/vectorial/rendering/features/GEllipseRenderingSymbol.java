@@ -46,12 +46,12 @@ public class GEllipseRenderingSymbol
                           final IVectorial2DRenderingScaler scaler,
                           final IVectorial2DDrawer drawer) {
       // fill point
-      drawer.fillOval(_position.x(), _position.y(), _extent.x(), _extent.y(), fillColor);
+      drawer.fillOval(_position, _extent, fillColor);
 
       // render border
       if (_borderWidth > 0) {
          final BasicStroke borderStroke = new BasicStroke(_borderWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
-         drawer.drawOval(_position.x(), _position.y(), _extent.x(), _extent.y(), borderColor, borderStroke);
+         drawer.drawOval(_position, _extent, borderColor, borderStroke);
       }
    }
 
