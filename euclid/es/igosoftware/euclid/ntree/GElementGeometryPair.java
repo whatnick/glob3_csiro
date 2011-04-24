@@ -8,16 +8,24 @@ import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.vector.IVector;
 
 
-public class GElementGeometryPair<VectorT extends IVector<VectorT, ?>, ElementT> {
+public class GElementGeometryPair<
+
+VectorT extends IVector<VectorT, ?>,
+
+ElementT,
+
+GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
+
+> {
 
 
-   private final ElementT                                                       _element;
-   private final IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>> _geometry;
-   private final GAxisAlignedOrthotope<VectorT, ?>                              _bounds;
+   private final ElementT                          _element;
+   private final GeometryT                         _geometry;
+   private final GAxisAlignedOrthotope<VectorT, ?> _bounds;
 
 
    GElementGeometryPair(final ElementT element,
-                        final IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>> geometry) {
+                        final GeometryT geometry) {
       _element = element;
       _geometry = geometry;
 
@@ -78,7 +86,7 @@ public class GElementGeometryPair<VectorT extends IVector<VectorT, ?>, ElementT>
    }
 
 
-   public IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>> getGeometry() {
+   public GeometryT getGeometry() {
       return _geometry;
    }
 

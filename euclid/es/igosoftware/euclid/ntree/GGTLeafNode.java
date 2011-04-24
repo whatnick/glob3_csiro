@@ -4,25 +4,35 @@ package es.igosoftware.euclid.ntree;
 
 import java.util.Collection;
 
+import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
+import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.vector.IVector;
 
 
-public class GGTLeafNode<VectorT extends IVector<VectorT, ?>, ElementT>
+public class GGTLeafNode<
+
+VectorT extends IVector<VectorT, ?>,
+
+ElementT,
+
+GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
+
+>
          extends
-            GGTNode<VectorT, ElementT> {
+            GGTNode<VectorT, ElementT, GeometryT> {
 
 
-   GGTLeafNode(final GGTInnerNode<VectorT, ElementT> parent,
+   GGTLeafNode(final GGTInnerNode<VectorT, ElementT, GeometryT> parent,
                final GAxisAlignedOrthotope<VectorT, ?> bounds,
-               final Collection<GElementGeometryPair<VectorT, ElementT>> elements) {
+               final Collection<GElementGeometryPair<VectorT, ElementT, GeometryT>> elements) {
       super(parent, bounds, elements);
    }
 
 
    @Override
-   public void depthFirstAcceptVisitor(final IGTDepthFirstVisitor<VectorT, ElementT> visitor)
-                                                                                             throws IGTBreadFirstVisitor.AbortVisiting {
+   public void depthFirstAcceptVisitor(final IGTDepthFirstVisitor<VectorT, ElementT, GeometryT> visitor)
+                                                                                                        throws IGTBreadFirstVisitor.AbortVisiting {
       visitor.visitLeafNode(this);
    }
 
@@ -40,7 +50,7 @@ public class GGTLeafNode<VectorT extends IVector<VectorT, ?>, ElementT>
 
 
    @Override
-   public final Collection<GElementGeometryPair<VectorT, ElementT>> getAllElements() {
+   public final Collection<GElementGeometryPair<VectorT, ElementT, GeometryT>> getAllElements() {
       return getElements();
    }
 

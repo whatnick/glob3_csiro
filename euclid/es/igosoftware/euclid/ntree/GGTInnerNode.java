@@ -23,33 +23,49 @@ import es.igosoftware.util.GPair;
 import es.igosoftware.util.GProgress;
 
 
-public class GGTInnerNode<VectorT extends IVector<VectorT, ?>, ElementT>
+public class GGTInnerNode<
+
+VectorT extends IVector<VectorT, ?>,
+
+ElementT,
+
+GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
+
+>
          extends
-            GGTNode<VectorT, ElementT> {
+            GGTNode<VectorT, ElementT, GeometryT> {
 
 
-   private final GGTNode<VectorT, ElementT>[] _children;
+   private final GGTNode<VectorT, ElementT, GeometryT>[] _children;
 
 
-   static class GeometriesDistribution<VectorT extends IVector<VectorT, ?>, ElementT>
+   static class GeometriesDistribution<
+
+   VectorT extends IVector<VectorT, ?>,
+
+   ElementT,
+
+   GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
+
+   >
             extends
-               GPair<Collection<GElementGeometryPair<VectorT, ElementT>>, Collection<GElementGeometryPair<VectorT, ElementT>>> {
+               GPair<Collection<GElementGeometryPair<VectorT, ElementT, GeometryT>>, Collection<GElementGeometryPair<VectorT, ElementT, GeometryT>>> {
 
       private static final long serialVersionUID = 1L;
 
 
-      private GeometriesDistribution(final Collection<GElementGeometryPair<VectorT, ElementT>> ownElements,
-                                     final Collection<GElementGeometryPair<VectorT, ElementT>> elementsToDistribute) {
+      private GeometriesDistribution(final Collection<GElementGeometryPair<VectorT, ElementT, GeometryT>> ownElements,
+                                     final Collection<GElementGeometryPair<VectorT, ElementT, GeometryT>> elementsToDistribute) {
          super(ownElements, elementsToDistribute);
       }
 
 
-      Collection<GElementGeometryPair<VectorT, ElementT>> getOwnGeometries() {
+      Collection<GElementGeometryPair<VectorT, ElementT, GeometryT>> getOwnGeometries() {
          return _first;
       }
 
 
-      Collection<GElementGeometryPair<VectorT, ElementT>> getGeometriesToDistribute() {
+      Collection<GElementGeometryPair<VectorT, ElementT, GeometryT>> getGeometriesToDistribute() {
          return _second;
       }
    }
@@ -65,16 +81,16 @@ public class GGTInnerNode<VectorT extends IVector<VectorT, ?>, ElementT>
 
    GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
 
-   > GeometriesDistribution<VectorT, ElementT> distributeGeometries(final BoundsT bounds,
-                                                                    final Collection<GElementGeometryPair<VectorT, ElementT>> pairs) {
+   > GeometriesDistribution<VectorT, ElementT, GeometryT> distributeGeometries(final BoundsT bounds,
+                                                                               final Collection<GElementGeometryPair<VectorT, ElementT, GeometryT>> pairs) {
 
       final GAxisAlignedOrthotope<VectorT, ?>[] childrenBounds = bounds.subdividedAtCenter();
 
-      final ArrayList<GElementGeometryPair<VectorT, ElementT>> ownElements = new ArrayList<GElementGeometryPair<VectorT, ElementT>>();
-      final ArrayList<GElementGeometryPair<VectorT, ElementT>> elementsToDistribute = new ArrayList<GElementGeometryPair<VectorT, ElementT>>();
+      final ArrayList<GElementGeometryPair<VectorT, ElementT, GeometryT>> ownElements = new ArrayList<GElementGeometryPair<VectorT, ElementT, GeometryT>>();
+      final ArrayList<GElementGeometryPair<VectorT, ElementT, GeometryT>> elementsToDistribute = new ArrayList<GElementGeometryPair<VectorT, ElementT, GeometryT>>();
 
 
-      for (final GElementGeometryPair<VectorT, ElementT> pair : pairs) {
+      for (final GElementGeometryPair<VectorT, ElementT, GeometryT> pair : pairs) {
          final GAxisAlignedOrthotope<VectorT, ?> geometryBounds = pair.getBounds();
          int geometryInChildrenCounter = 0;
          for (final GAxisAlignedOrthotope<VectorT, ?> childBounds : childrenBounds) {
@@ -102,14 +118,14 @@ public class GGTInnerNode<VectorT extends IVector<VectorT, ?>, ElementT>
       ownElements.trimToSize();
       elementsToDistribute.trimToSize();
 
-      return new GeometriesDistribution<VectorT, ElementT>(ownElements, elementsToDistribute);
+      return new GeometriesDistribution<VectorT, ElementT, GeometryT>(ownElements, elementsToDistribute);
    }
 
 
-   GGTInnerNode(final GGTInnerNode<VectorT, ElementT> parent,
+   GGTInnerNode(final GGTInnerNode<VectorT, ElementT, GeometryT> parent,
                 final GAxisAlignedOrthotope<VectorT, ?> bounds,
-                final Collection<GElementGeometryPair<VectorT, ElementT>> ownGeometries,
-                final Collection<GElementGeometryPair<VectorT, ElementT>> geometriesToDistribute,
+                final Collection<GElementGeometryPair<VectorT, ElementT, GeometryT>> ownGeometries,
+                final Collection<GElementGeometryPair<VectorT, ElementT, GeometryT>> geometriesToDistribute,
                 final int depth,
                 final GGeometryNTreeParameters parameters,
                 final GProgress progress) {
@@ -119,10 +135,18 @@ public class GGTInnerNode<VectorT extends IVector<VectorT, ?>, ElementT>
    }
 
 
-   private static class Division<VectorT extends IVector<VectorT, ?>, ElementT> {
+   private static class Division<
 
-      private final GAxisAlignedOrthotope<VectorT, ?>                  _bounds;
-      private final ArrayList<GElementGeometryPair<VectorT, ElementT>> _elements = new ArrayList<GElementGeometryPair<VectorT, ElementT>>();
+   VectorT extends IVector<VectorT, ?>,
+
+   ElementT,
+
+   GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
+
+   > {
+
+      private final GAxisAlignedOrthotope<VectorT, ?>                             _bounds;
+      private final ArrayList<GElementGeometryPair<VectorT, ElementT, GeometryT>> _elements = new ArrayList<GElementGeometryPair<VectorT, ElementT, GeometryT>>();
 
 
       private Division(final GAxisAlignedOrthotope<VectorT, ?> bounds) {
@@ -130,37 +154,37 @@ public class GGTInnerNode<VectorT extends IVector<VectorT, ?>, ElementT>
       }
 
 
-      private void addElement(final GElementGeometryPair<VectorT, ElementT> element) {
+      private void addElement(final GElementGeometryPair<VectorT, ElementT, GeometryT> element) {
          _elements.add(element);
       }
 
    }
 
 
-   private Division<VectorT, ElementT>[] createDivisionsByBounds(final GAxisAlignedOrthotope<VectorT, ?>[] bounds) {
+   private Division<VectorT, ElementT, GeometryT>[] createDivisionsByBounds(final GAxisAlignedOrthotope<VectorT, ?>[] bounds) {
       @SuppressWarnings({ "unchecked" })
-      final Division<VectorT, ElementT>[] result = (Division<VectorT, ElementT>[]) new Division<?, ?>[bounds.length];
+      final Division<VectorT, ElementT, GeometryT>[] result = (Division<VectorT, ElementT, GeometryT>[]) new Division<?, ?, ?>[bounds.length];
 
       for (int i = 0; i < bounds.length; i++) {
-         result[i] = new Division<VectorT, ElementT>(bounds[i]);
+         result[i] = new Division<VectorT, ElementT, GeometryT>(bounds[i]);
       }
 
       return result;
    }
 
 
-   private GGTNode<VectorT, ElementT>[] initializeChildren(final Collection<GElementGeometryPair<VectorT, ElementT>> elements,
-                                                           final int depth,
-                                                           final GGeometryNTreeParameters parameters,
-                                                           final GProgress progress) {
+   private GGTNode<VectorT, ElementT, GeometryT>[] initializeChildren(final Collection<GElementGeometryPair<VectorT, ElementT, GeometryT>> elements,
+                                                                      final int depth,
+                                                                      final GGeometryNTreeParameters parameters,
+                                                                      final GProgress progress) {
 
-      final Division<VectorT, ElementT>[] divisions = createDivisionsByBounds(_bounds.subdividedAtCenter());
+      final Division<VectorT, ElementT, GeometryT>[] divisions = createDivisionsByBounds(_bounds.subdividedAtCenter());
 
-      for (final GElementGeometryPair<VectorT, ElementT> pair : elements) {
+      for (final GElementGeometryPair<VectorT, ElementT, GeometryT> pair : elements) {
          final GAxisAlignedOrthotope<VectorT, ?> geometryBounds = pair.getBounds();
 
          int geometryAddedCounter = 0;
-         for (final Division<VectorT, ElementT> division : divisions) {
+         for (final Division<VectorT, ElementT, GeometryT> division : divisions) {
             if (division._bounds.touches(geometryBounds)) {
                division.addElement(pair);
                geometryAddedCounter++;
@@ -180,7 +204,7 @@ public class GGTInnerNode<VectorT extends IVector<VectorT, ?>, ElementT>
       elements.clear();
 
 
-      final GGTNode<VectorT, ElementT>[] result;
+      final GGTNode<VectorT, ElementT, GeometryT>[] result;
       if (parameters._multiThread) {
          result = multiThreadChildrenCreation(depth, parameters, progress, divisions);
       }
@@ -192,16 +216,16 @@ public class GGTInnerNode<VectorT extends IVector<VectorT, ?>, ElementT>
    }
 
 
-   private GGTNode<VectorT, ElementT>[] singleThreadChildrenCreation(final int depth,
-                                                                     final GGeometryNTreeParameters parameters,
-                                                                     final GProgress progress,
-                                                                     final Division<VectorT, ElementT>[] divisions) {
+   private GGTNode<VectorT, ElementT, GeometryT>[] singleThreadChildrenCreation(final int depth,
+                                                                                final GGeometryNTreeParameters parameters,
+                                                                                final GProgress progress,
+                                                                                final Division<VectorT, ElementT, GeometryT>[] divisions) {
       @SuppressWarnings({ "unchecked" })
-      final GGTNode<VectorT, ElementT>[] result = (GGTNode<VectorT, ElementT>[]) new GGTNode<?, ?>[divisions.length];
+      final GGTNode<VectorT, ElementT, GeometryT>[] result = (GGTNode<VectorT, ElementT, GeometryT>[]) new GGTNode<?, ?, ?>[divisions.length];
 
       for (int i = 0; i < divisions.length; i++) {
          final GAxisAlignedOrthotope<VectorT, ?> childBounds = divisions[i]._bounds;
-         final ArrayList<GElementGeometryPair<VectorT, ElementT>> childElements = divisions[i]._elements;
+         final ArrayList<GElementGeometryPair<VectorT, ElementT, GeometryT>> childElements = divisions[i]._elements;
          childElements.trimToSize();
 
          result[i] = createChildNode(childBounds, childElements, depth + 1, parameters, progress);
@@ -211,30 +235,30 @@ public class GGTInnerNode<VectorT extends IVector<VectorT, ?>, ElementT>
    }
 
 
-   private GGTNode<VectorT, ElementT>[] multiThreadChildrenCreation(final int depth,
-                                                                    final GGeometryNTreeParameters parameters,
-                                                                    final GProgress progress,
-                                                                    final Division<VectorT, ElementT>[] divisions) {
+   private GGTNode<VectorT, ElementT, GeometryT>[] multiThreadChildrenCreation(final int depth,
+                                                                               final GGeometryNTreeParameters parameters,
+                                                                               final GProgress progress,
+                                                                               final Division<VectorT, ElementT, GeometryT>[] divisions) {
       final ExecutorService executor = GConcurrent.getDefaultExecutor();
 
       @SuppressWarnings("unchecked")
-      final Future<GGTNode<VectorT, ElementT>>[] futures = (Future<GGTNode<VectorT, ElementT>>[]) new Future<?>[divisions.length];
+      final Future<GGTNode<VectorT, ElementT, GeometryT>>[] futures = (Future<GGTNode<VectorT, ElementT, GeometryT>>[]) new Future<?>[divisions.length];
 
       for (int i = 0; i < divisions.length; i++) {
          final GAxisAlignedOrthotope<VectorT, ?> childBounds = divisions[i]._bounds;
-         final ArrayList<GElementGeometryPair<VectorT, ElementT>> childElements = divisions[i]._elements;
+         final ArrayList<GElementGeometryPair<VectorT, ElementT, GeometryT>> childElements = divisions[i]._elements;
          childElements.trimToSize();
 
-         futures[i] = executor.submit(new Callable<GGTNode<VectorT, ElementT>>() {
+         futures[i] = executor.submit(new Callable<GGTNode<VectorT, ElementT, GeometryT>>() {
             @Override
-            public GGTNode<VectorT, ElementT> call() {
+            public GGTNode<VectorT, ElementT, GeometryT> call() {
                return createChildNode(childBounds, childElements, depth + 1, parameters, progress);
             }
          });
       }
 
       @SuppressWarnings({ "unchecked" })
-      final GGTNode<VectorT, ElementT>[] result = (GGTNode<VectorT, ElementT>[]) new GGTNode<?, ?>[futures.length];
+      final GGTNode<VectorT, ElementT, GeometryT>[] result = (GGTNode<VectorT, ElementT, GeometryT>[]) new GGTNode<?, ?, ?>[futures.length];
       for (int i = 0; i < futures.length; i++) {
          try {
             result[i] = futures[i].get();
@@ -251,11 +275,11 @@ public class GGTInnerNode<VectorT extends IVector<VectorT, ?>, ElementT>
    }
 
 
-   private GGTNode<VectorT, ElementT> createChildNode(final GAxisAlignedOrthotope<VectorT, ?> bounds,
-                                                      final Collection<GElementGeometryPair<VectorT, ElementT>> elements,
-                                                      final int depth,
-                                                      final GGeometryNTreeParameters parameters,
-                                                      final GProgress progress) {
+   private GGTNode<VectorT, ElementT, GeometryT> createChildNode(final GAxisAlignedOrthotope<VectorT, ?> bounds,
+                                                                 final Collection<GElementGeometryPair<VectorT, ElementT, GeometryT>> elements,
+                                                                 final int depth,
+                                                                 final GGeometryNTreeParameters parameters,
+                                                                 final GProgress progress) {
 
       if (elements.isEmpty()) {
          return null;
@@ -265,29 +289,29 @@ public class GGTInnerNode<VectorT extends IVector<VectorT, ?>, ElementT>
          return createLeafNode(bounds, elements, progress);
       }
 
-      final GeometriesDistribution<VectorT, ElementT> distribution = distributeGeometries(bounds, elements);
+      final GeometriesDistribution<VectorT, ElementT, GeometryT> distribution = distributeGeometries(bounds, elements);
 
       if (distribution.getGeometriesToDistribute().isEmpty()) {
          return createLeafNode(bounds, elements, progress);
       }
 
-      return new GGTInnerNode<VectorT, ElementT>(this, bounds, distribution.getOwnGeometries(),
+      return new GGTInnerNode<VectorT, ElementT, GeometryT>(this, bounds, distribution.getOwnGeometries(),
                distribution.getGeometriesToDistribute(), depth, parameters, progress);
 
    }
 
 
-   private GGTNode<VectorT, ElementT> createLeafNode(final GAxisAlignedOrthotope<VectorT, ?> bounds,
-                                                     final Collection<GElementGeometryPair<VectorT, ElementT>> elements,
-                                                     final GProgress progress) {
+   private GGTNode<VectorT, ElementT, GeometryT> createLeafNode(final GAxisAlignedOrthotope<VectorT, ?> bounds,
+                                                                final Collection<GElementGeometryPair<VectorT, ElementT, GeometryT>> elements,
+                                                                final GProgress progress) {
       progress.stepsDone(elements.size());
-      return new GGTLeafNode<VectorT, ElementT>(this, bounds, elements);
+      return new GGTLeafNode<VectorT, ElementT, GeometryT>(this, bounds, elements);
    }
 
 
    @SuppressWarnings("unchecked")
    private boolean acceptLeafNodeCreation(final GAxisAlignedOrthotope<VectorT, ?> bounds,
-                                          final Collection<GElementGeometryPair<VectorT, ElementT>> elements,
+                                          final Collection<GElementGeometryPair<VectorT, ElementT, GeometryT>> elements,
                                           final int depth,
                                           final GGeometryNTreeParameters parameters) {
       // if the bounds extent is too small, force a leaf creation to avoid problems trying to subdivide the bounds
@@ -303,32 +327,32 @@ public class GGTInnerNode<VectorT extends IVector<VectorT, ?>, ElementT>
 
 
    public void breadthFirstAcceptVisitor(final IBounds<VectorT, ?> region,
-                                         final IGTBreadFirstVisitor<VectorT, ElementT> visitor)
-                                                                                               throws IGTBreadFirstVisitor.AbortVisiting {
+                                         final IGTBreadFirstVisitor<VectorT, ElementT, GeometryT> visitor)
+                                                                                                          throws IGTBreadFirstVisitor.AbortVisiting {
 
-      final LinkedList<GGTNode<VectorT, ElementT>> queue = new LinkedList<GGTNode<VectorT, ElementT>>();
+      final LinkedList<GGTNode<VectorT, ElementT, GeometryT>> queue = new LinkedList<GGTNode<VectorT, ElementT, GeometryT>>();
       queue.addLast(this);
 
       while (!queue.isEmpty()) {
-         final GGTNode<VectorT, ElementT> current = queue.removeFirst();
+         final GGTNode<VectorT, ElementT, GeometryT> current = queue.removeFirst();
 
          if ((region != null) && !current.getBounds().touchesBounds(region)) {
             continue;
          }
 
          if (current instanceof GGTInnerNode) {
-            final GGTInnerNode<VectorT, ElementT> currentInner = (GGTInnerNode<VectorT, ElementT>) current;
+            final GGTInnerNode<VectorT, ElementT, GeometryT> currentInner = (GGTInnerNode<VectorT, ElementT, GeometryT>) current;
 
             visitor.visitInnerNode(currentInner);
 
-            for (final GGTNode<VectorT, ElementT> child : currentInner._children) {
+            for (final GGTNode<VectorT, ElementT, GeometryT> child : currentInner._children) {
                if (child != null) {
                   queue.addLast(child);
                }
             }
          }
          else if (current instanceof GGTLeafNode) {
-            final GGTLeafNode<VectorT, ElementT> currentLeaf = (GGTLeafNode<VectorT, ElementT>) current;
+            final GGTLeafNode<VectorT, ElementT, GeometryT> currentLeaf = (GGTLeafNode<VectorT, ElementT, GeometryT>) current;
             visitor.visitLeafNode(currentLeaf);
          }
          else {
@@ -338,15 +362,15 @@ public class GGTInnerNode<VectorT extends IVector<VectorT, ?>, ElementT>
    }
 
 
-   public void breadthFirstAcceptVisitor(final IGTBreadFirstVisitor<VectorT, ElementT> visitor)
-                                                                                               throws IGTBreadFirstVisitor.AbortVisiting {
+   public void breadthFirstAcceptVisitor(final IGTBreadFirstVisitor<VectorT, ElementT, GeometryT> visitor)
+                                                                                                          throws IGTBreadFirstVisitor.AbortVisiting {
 
       breadthFirstAcceptVisitor(null, visitor);
 
    }
 
 
-   final byte getChildIndex(final GGTNode<VectorT, ElementT> node) {
+   final byte getChildIndex(final GGTNode<VectorT, ElementT, GeometryT> node) {
       for (byte i = 0; i < _children.length; i++) {
          if (node == _children[i]) {
             return i;
@@ -357,11 +381,11 @@ public class GGTInnerNode<VectorT extends IVector<VectorT, ?>, ElementT>
 
 
    @Override
-   public void depthFirstAcceptVisitor(final IGTDepthFirstVisitor<VectorT, ElementT> visitor)
-                                                                                             throws IGTBreadFirstVisitor.AbortVisiting {
+   public void depthFirstAcceptVisitor(final IGTDepthFirstVisitor<VectorT, ElementT, GeometryT> visitor)
+                                                                                                        throws IGTBreadFirstVisitor.AbortVisiting {
       visitor.visitInnerNode(this);
 
-      for (final GGTNode<VectorT, ElementT> child : _children) {
+      for (final GGTNode<VectorT, ElementT, GeometryT> child : _children) {
          if (child != null) {
             child.depthFirstAcceptVisitor(visitor);
          }
@@ -375,7 +399,7 @@ public class GGTInnerNode<VectorT extends IVector<VectorT, ?>, ElementT>
    @Override
    public final int getLeafNodesCount() {
       int counter = 0;
-      for (final GGTNode<VectorT, ElementT> child : _children) {
+      for (final GGTNode<VectorT, ElementT, GeometryT> child : _children) {
          if (child != null) {
             counter += child.getLeafNodesCount();
          }
@@ -387,7 +411,7 @@ public class GGTInnerNode<VectorT extends IVector<VectorT, ?>, ElementT>
    @Override
    public final int getInnerNodesCount() {
       int counter = 0;
-      for (final GGTNode<VectorT, ElementT> child : _children) {
+      for (final GGTNode<VectorT, ElementT, GeometryT> child : _children) {
          if (child != null) {
             counter += child.getInnerNodesCount();
          }
@@ -399,7 +423,7 @@ public class GGTInnerNode<VectorT extends IVector<VectorT, ?>, ElementT>
    @Override
    public final int getAllElementsCount() {
       int result = 0;
-      for (final GGTNode<VectorT, ElementT> child : _children) {
+      for (final GGTNode<VectorT, ElementT, GeometryT> child : _children) {
          if (child != null) {
             result += child.getAllElementsCount();
          }
@@ -409,11 +433,11 @@ public class GGTInnerNode<VectorT extends IVector<VectorT, ?>, ElementT>
 
 
    @Override
-   public final Collection<GElementGeometryPair<VectorT, ElementT>> getAllElements() {
-      final ArrayList<GElementGeometryPair<VectorT, ElementT>> result = new ArrayList<GElementGeometryPair<VectorT, ElementT>>();
+   public final Collection<GElementGeometryPair<VectorT, ElementT, GeometryT>> getAllElements() {
+      final ArrayList<GElementGeometryPair<VectorT, ElementT, GeometryT>> result = new ArrayList<GElementGeometryPair<VectorT, ElementT, GeometryT>>();
       result.addAll(getElements());
 
-      for (final GGTNode<VectorT, ElementT> child : _children) {
+      for (final GGTNode<VectorT, ElementT, GeometryT> child : _children) {
          if (child != null) {
             result.addAll(child.getAllElements());
          }
@@ -423,9 +447,10 @@ public class GGTInnerNode<VectorT extends IVector<VectorT, ?>, ElementT>
    }
 
 
-   public List<GGTNode<VectorT, ElementT>> getChildren() {
-      final ArrayList<GGTNode<VectorT, ElementT>> result = new ArrayList<GGTNode<VectorT, ElementT>>(_children.length);
-      for (final GGTNode<VectorT, ElementT> child : _children) {
+   public List<GGTNode<VectorT, ElementT, GeometryT>> getChildren() {
+      final ArrayList<GGTNode<VectorT, ElementT, GeometryT>> result = new ArrayList<GGTNode<VectorT, ElementT, GeometryT>>(
+               _children.length);
+      for (final GGTNode<VectorT, ElementT, GeometryT> child : _children) {
          if (child != null) {
             result.add(child);
          }
@@ -447,7 +472,7 @@ public class GGTInnerNode<VectorT extends IVector<VectorT, ?>, ElementT>
          }
       }
 
-      for (final GGTNode<VectorT, ElementT> child : _children) {
+      for (final GGTNode<VectorT, ElementT, GeometryT> child : _children) {
          if (child == null) {
             continue;
          }

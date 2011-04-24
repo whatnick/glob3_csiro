@@ -5,6 +5,7 @@ package es.igosoftware.euclid.multigeometry;
 import java.util.List;
 
 import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.IBoundedGeometry3D;
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.vector.IVector3;
@@ -16,7 +17,9 @@ ChildrenGeometryT extends IBoundedGeometry<IVector3, ? extends IFiniteBounds<IVe
 
 >
          extends
-            GMultiGeometry<IVector3, ChildrenGeometryT, GAxisAlignedBox> {
+            GMultiGeometry<IVector3, ChildrenGeometryT, GAxisAlignedBox>
+         implements
+            IBoundedGeometry3D<GAxisAlignedBox> {
 
 
    private static final long serialVersionUID = 1L;

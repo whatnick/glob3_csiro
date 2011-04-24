@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.features.IGlobeFeature;
@@ -17,9 +17,13 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.util.IFunction;
 
 
-public class GRenderingQuadtree<FeatureT extends IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>>
+public class GRenderingQuadtree<
+
+FeatureT extends IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>
+
+>
          extends
-            GGeometryQuadtree<FeatureT> {
+            GGeometryQuadtree<FeatureT, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> {
 
 
    public GRenderingQuadtree(final String name,
@@ -27,16 +31,17 @@ public class GRenderingQuadtree<FeatureT extends IGlobeFeature<IVector2, ? exten
                              final GGeometryNTreeParameters parameters,
                              final GAxisAlignedRectangle bounds) {
       super(name, bounds, elements,
-            new IFunction<FeatureT, Collection<? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>>() {
+            new IFunction<FeatureT, Collection<? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>>() {
+
                @Override
-               public Collection<? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> apply(final FeatureT feature) {
-                  final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> geometry = feature.getDefaultGeometry();
+               public Collection<? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> apply(final FeatureT feature) {
+                  final IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>> geometry = feature.getDefaultGeometry();
 
                   if (geometry instanceof GMultiGeometry2D) {
                      @SuppressWarnings("unchecked")
-                     final GMultiGeometry2D<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> multigeometry = (GMultiGeometry2D<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) geometry;
+                     final GMultiGeometry2D<IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> multigeometry = (GMultiGeometry2D<IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>) geometry;
 
-                     final List<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> children = multigeometry.getChildren();
+                     final List<IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> children = multigeometry.getChildren();
                      return children;
                   }
 

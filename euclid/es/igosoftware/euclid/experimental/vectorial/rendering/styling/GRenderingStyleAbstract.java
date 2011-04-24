@@ -4,7 +4,7 @@ package es.igosoftware.euclid.experimental.vectorial.rendering.styling;
 
 import java.awt.geom.Area;
 
-import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.ICurve2D;
 import es.igosoftware.euclid.ISurface2D;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
@@ -36,7 +36,7 @@ public abstract class GRenderingStyleAbstract
    /* -------------------------------------------------------------------------------------- */
    /* nodes */
    @Override
-   public INodeRenderingShape getNodeShape(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> node,
+   public INodeRenderingShape getNodeShape(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> node,
                                            final IVectorial2DRenderingScaler scaler) {
       if (!isDebugRendering()) {
          return null;
@@ -50,7 +50,7 @@ public abstract class GRenderingStyleAbstract
    /* points */
    @Override
    public IRenderingSymbol getPointSymbol(final IVector2 point,
-                                          final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                          final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
                                           final IVectorial2DRenderingScaler scaler) {
       final IMeasure<GArea> pointSize = getPointSize(point, feature, scaler);
       final IMeasure<GLength> pointBorderSize = getPointBorderSize(point, feature, scaler);
@@ -62,7 +62,7 @@ public abstract class GRenderingStyleAbstract
    /* surfaces */
    @Override
    public ISurfaceRenderingShape<ISurface2D<? extends IFiniteBounds<IVector2, ?>>> getSurfaceShape(final ISurface2D<? extends IFiniteBounds<IVector2, ?>> surface,
-                                                                                                   final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                                                                                   final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
                                                                                                    final IVectorial2DRenderingScaler scaler) {
 
       final IMeasure<GLength> surfaceBorderSize = getSurfaceBorderSize(surface, feature, scaler);
@@ -96,7 +96,7 @@ public abstract class GRenderingStyleAbstract
    /* curves */
    @Override
    public ICurveRenderingShape<ICurve2D<? extends IFiniteBounds<IVector2, ?>>> getCurveShape(final ICurve2D<? extends IFiniteBounds<IVector2, ?>> curve,
-                                                                                             final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                                                                             final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
                                                                                              final IVectorial2DRenderingScaler scaler) {
       if (curve instanceof IPolygonalChain2D) {
          final IPolygonalChain2D polygonalChain = (IPolygonalChain2D) curve;

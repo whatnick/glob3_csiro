@@ -7,7 +7,7 @@ import java.io.IOException;
 
 import javax.swing.JOptionPane;
 
-import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
@@ -80,7 +80,7 @@ public class GShapeLoaderDropHandler
             final GProjection projection = GProjection.EPSG_4326;
 
             try {
-               final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> featuresCollection = GShapeLoader.readFeatures(
+               final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> featuresCollection = GShapeLoader.readFeatures(
                         droppedFile, projection);
 
                final GVectorial2DLayer layer = new GVectorial2DLayer(droppedFile.getName(), featuresCollection);

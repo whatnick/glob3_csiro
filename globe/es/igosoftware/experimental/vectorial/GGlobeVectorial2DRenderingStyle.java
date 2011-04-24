@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.ICurve2D;
 import es.igosoftware.euclid.ISurface2D;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
@@ -76,7 +76,7 @@ public class GGlobeVectorial2DRenderingStyle
          throw new RuntimeException("Invalid layer");
       }
 
-      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> featuresCollection = _layer.getFeaturesCollection();
+      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> featuresCollection = _layer.getFeaturesCollection();
 
       if (featuresCollection instanceof IGlobeMutableFeatureCollection) {
          @SuppressWarnings("unchecked")
@@ -365,14 +365,14 @@ public class GGlobeVectorial2DRenderingStyle
 
 
    @Override
-   public void preprocessFeatures(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features) {
+   public void preprocessFeatures(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> features) {
 
    }
 
 
    @Override
    public IMeasure<GArea> getPointSize(final IVector2 point,
-                                       final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                       final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
                                        final IVectorial2DRenderingScaler scaler) {
       return getPointSize();
    }
@@ -380,7 +380,7 @@ public class GGlobeVectorial2DRenderingStyle
 
    @Override
    public IMeasure<GLength> getPointBorderSize(final IVector2 point,
-                                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
                                                final IVectorial2DRenderingScaler scaler) {
       return getPointBorderSize();
    }
@@ -388,7 +388,7 @@ public class GGlobeVectorial2DRenderingStyle
 
    @Override
    public IColor getPointColor(final IVector2 point,
-                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
                                final IVectorial2DRenderingScaler scaler) {
       return getPointColor();
    }
@@ -396,7 +396,7 @@ public class GGlobeVectorial2DRenderingStyle
 
    @Override
    public float getPointOpacity(final IVector2 point,
-                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
                                 final IVectorial2DRenderingScaler scaler) {
       return getPointOpacity();
    }
@@ -410,7 +410,7 @@ public class GGlobeVectorial2DRenderingStyle
 
    @Override
    public IColor getPointBorderColor(final IVector2 point,
-                                     final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                     final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
                                      final IVectorial2DRenderingScaler scaler) {
       return getPointColor(point, feature, scaler).muchDarker();
    }
@@ -418,7 +418,7 @@ public class GGlobeVectorial2DRenderingStyle
 
    @Override
    public IMeasure<GLength> getSurfaceBorderSize(final ISurface2D<?> surface,
-                                                 final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                                 final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
                                                  final IVectorial2DRenderingScaler scaler) {
       // TODO Auto-generated method stub
       return null;
@@ -427,7 +427,7 @@ public class GGlobeVectorial2DRenderingStyle
 
    @Override
    public IColor getSurfaceColor(final ISurface2D<?> surface,
-                                 final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                 final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
                                  final IVectorial2DRenderingScaler scaler) {
       // TODO Auto-generated method stub
       return null;
@@ -436,7 +436,7 @@ public class GGlobeVectorial2DRenderingStyle
 
    @Override
    public IColor getSurfaceBorderColor(final ISurface2D<?> surface,
-                                       final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                       final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
                                        final IVectorial2DRenderingScaler scaler) {
       // TODO Auto-generated method stub
       return null;
@@ -445,7 +445,7 @@ public class GGlobeVectorial2DRenderingStyle
 
    @Override
    public float getSurfaceOpacity(final ISurface2D<?> surface,
-                                  final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                  final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
                                   final IVectorial2DRenderingScaler scaler) {
       // TODO Auto-generated method stub
       return 0;
@@ -454,7 +454,7 @@ public class GGlobeVectorial2DRenderingStyle
 
    @Override
    public IMeasure<GLength> getCurveBorderSize(final ICurve2D<?> curve,
-                                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
                                                final IVectorial2DRenderingScaler scaler) {
       // TODO Auto-generated method stub
       return null;
@@ -463,7 +463,7 @@ public class GGlobeVectorial2DRenderingStyle
 
    @Override
    public IColor getCurveColor(final ICurve2D<?> curve,
-                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
                                final IVectorial2DRenderingScaler scaler) {
       // TODO Auto-generated method stub
       return null;
@@ -472,7 +472,7 @@ public class GGlobeVectorial2DRenderingStyle
 
    @Override
    public float getCurveOpacity(final ICurve2D<?> curve,
-                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
                                 final IVectorial2DRenderingScaler scaler) {
       // TODO Auto-generated method stub
       return 0;

@@ -43,7 +43,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.ICurve2D;
 import es.igosoftware.euclid.ISurface2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
@@ -99,13 +99,13 @@ public class GVectorial2DRenderingTest {
 
       final GProjection projection = GProjection.EPSG_4326;
 
-      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> pointsFeatures = loadFeatures(
+      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> pointsFeatures = loadFeatures(
                pointsFileName, projection);
 
-      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> surfacesFeatures = loadFeatures(
+      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> surfacesFeatures = loadFeatures(
                surfacesFileName, projection);
 
-      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> linesFeatures = loadFeatures(
+      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> linesFeatures = loadFeatures(
                linesFileName, projection);
 
       final GAxisAlignedOrthotope<IVector2, ?> pointsFeaturesBounds = pointsFeatures.getBounds();
@@ -192,7 +192,7 @@ public class GVectorial2DRenderingTest {
 
 
          @Override
-         public void preprocessFeatures(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features) {
+         public void preprocessFeatures(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> features) {
             //            System.out.println("FIELDS: " + features.getFields());
 
             if (features.getGeometryType().contains(GGeometryType.POINT)) {
@@ -229,7 +229,7 @@ public class GVectorial2DRenderingTest {
          }
 
 
-         private boolean isCategory(final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+         private boolean isCategory(final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
                                     final String category) {
             if (_categoryIndex >= 0) {
                final Object categoryO = feature.getAttribute(_categoryIndex);
@@ -246,7 +246,7 @@ public class GVectorial2DRenderingTest {
 
          @Override
          public IRenderingSymbol getPointSymbol(final IVector2 point,
-                                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
                                                 final IVectorial2DRenderingScaler scaler) {
             if (isCategory(feature, "automotive")) {
                final IMeasure<GArea> pointSize = getPointSize(point, feature, scaler);
@@ -269,7 +269,7 @@ public class GVectorial2DRenderingTest {
 
          @Override
          public IMeasure<GArea> getPointSize(final IVector2 point,
-                                             final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                             final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
                                              final IVectorial2DRenderingScaler scaler) {
             return GArea.SquareKilometer.value(50);
          }
@@ -277,7 +277,7 @@ public class GVectorial2DRenderingTest {
 
          @Override
          public IMeasure<GLength> getPointBorderSize(final IVector2 point,
-                                                     final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                                     final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
                                                      final IVectorial2DRenderingScaler scaler) {
             return GLength.Kilometer.value(0.5);
          }
@@ -285,7 +285,7 @@ public class GVectorial2DRenderingTest {
 
          @Override
          public float getPointOpacity(final IVector2 point,
-                                      final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                      final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
                                       final IVectorial2DRenderingScaler scaler) {
             return 0.75f;
          }
@@ -293,7 +293,7 @@ public class GVectorial2DRenderingTest {
 
          @Override
          public IColor getPointColor(final IVector2 point,
-                                     final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                     final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
                                      final IVectorial2DRenderingScaler scaler) {
             return _pointColorizer.getColor(feature);
          }
@@ -301,7 +301,7 @@ public class GVectorial2DRenderingTest {
 
          @Override
          public IColor getPointBorderColor(final IVector2 point,
-                                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
                                            final IVectorial2DRenderingScaler scaler) {
             return _pointColorizer.getColor(feature).muchDarker();
          }
@@ -339,7 +339,7 @@ public class GVectorial2DRenderingTest {
 
          @Override
          public IMeasure<GLength> getSurfaceBorderSize(final ISurface2D<?> surface,
-                                                       final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                                       final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
                                                        final IVectorial2DRenderingScaler scaler) {
             final String country = (String) feature.getAttribute(_countryIndex);
             if ((country != null) && country.trim().toLowerCase().equals("argentina")) {
@@ -353,7 +353,7 @@ public class GVectorial2DRenderingTest {
 
          @Override
          public IColor getSurfaceColor(final ISurface2D<?> surface,
-                                       final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                       final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
                                        final IVectorial2DRenderingScaler scaler) {
             final String country = (String) feature.getAttribute(_countryIndex);
             if ((country != null) && country.trim().toLowerCase().equals("argentina")) {
@@ -367,7 +367,7 @@ public class GVectorial2DRenderingTest {
 
          @Override
          public float getSurfaceOpacity(final ISurface2D<?> surface,
-                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
                                         final IVectorial2DRenderingScaler scaler) {
             //            final String country = (String) feature.getAttribute(_countryIndex);
             //            if ((country != null) && country.trim().toLowerCase().equals("argentina")) {
@@ -380,7 +380,7 @@ public class GVectorial2DRenderingTest {
 
          @Override
          public IColor getSurfaceBorderColor(final ISurface2D<?> surface,
-                                             final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                             final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
                                              final IVectorial2DRenderingScaler scaler) {
             //            final IColor surfaceColor = getSurfaceColor(surface, feature, scaler, drawer);
             //
@@ -395,7 +395,7 @@ public class GVectorial2DRenderingTest {
 
          @Override
          public IMeasure<GLength> getCurveBorderSize(final ICurve2D<?> curve,
-                                                     final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                                     final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
                                                      final IVectorial2DRenderingScaler scaler) {
             return GLength.Kilometer.value(0.5f);
          }
@@ -403,7 +403,7 @@ public class GVectorial2DRenderingTest {
 
          @Override
          public IColor getCurveColor(final ICurve2D<?> curve,
-                                     final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                     final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
                                      final IVectorial2DRenderingScaler scaler) {
             return GColorF.GRAY;
          }
@@ -411,7 +411,7 @@ public class GVectorial2DRenderingTest {
 
          @Override
          public float getCurveOpacity(final ICurve2D<?> curve,
-                                      final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                      final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
                                       final IVectorial2DRenderingScaler scaler) {
             return 1;
          }
@@ -419,7 +419,7 @@ public class GVectorial2DRenderingTest {
 
          //         @Override
          //         public GPolygonalChainRenderingShape getCurveShape(final ICurve2D<?> curve,
-         //                                                            final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+         //                                                            final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
          //                                                            final GVectorialRenderingContext rc) {
          //            if (curve instanceof IPolygonalChain2D) {
          //               final IPolygonalChain2D polygonalChain = (IPolygonalChain2D) curve;
@@ -438,7 +438,7 @@ public class GVectorial2DRenderingTest {
    }
 
 
-   private static GVectorial2DRenderer createRenderer(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features) {
+   private static GVectorial2DRenderer createRenderer(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> features) {
       final long start = System.currentTimeMillis();
       final GVectorial2DRenderer renderer = new GVectorial2DRenderer(features, true);
       System.out.println();
@@ -447,12 +447,12 @@ public class GVectorial2DRenderingTest {
    }
 
 
-   private static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> loadFeatures(final GFileName fileName,
-                                                                                                                                             final GProjection projection)
-                                                                                                                                                                          throws IOException {
+   private static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> loadFeatures(final GFileName fileName,
+                                                                                                                                     final GProjection projection)
+                                                                                                                                                                  throws IOException {
 
       final long start = System.currentTimeMillis();
-      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features = GShapeLoader.readFeatures(
+      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> features = GShapeLoader.readFeatures(
                fileName, projection);
       System.out.println("- Features loaded in " + GStringUtils.getTimeMessage(System.currentTimeMillis() - start, false));
       System.out.println();

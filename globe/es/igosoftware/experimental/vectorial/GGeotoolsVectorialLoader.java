@@ -49,7 +49,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.GeometryType;
 
-import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.features.GField;
 import es.igosoftware.euclid.features.GGlobeFeature;
@@ -125,10 +125,10 @@ public class GGeotoolsVectorialLoader {
    }
 
 
-   public static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> readFeatures(final DataStore dataStore,
-                                                                                                                                            final String layerName,
-                                                                                                                                            final GProjection projection)
-                                                                                                                                                                         throws Exception {
+   public static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> readFeatures(final DataStore dataStore,
+                                                                                                                                    final String layerName,
+                                                                                                                                    final GProjection projection)
+                                                                                                                                                                 throws Exception {
 
 
       final SimpleFeatureSource featureSource = dataStore.getFeatureSource(layerName);
@@ -145,7 +145,7 @@ public class GGeotoolsVectorialLoader {
 
 
       final int featuresCount = featuresCollection.size();
-      final ArrayList<IGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> euclidFeatures = new ArrayList<IGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>>(
+      final ArrayList<IGlobeFeature<IVector2, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>> euclidFeatures = new ArrayList<IGlobeFeature<IVector2, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>>(
                featuresCount);
 
       final GProgress progress = new GProgress(featuresCount) {
@@ -248,7 +248,7 @@ public class GGeotoolsVectorialLoader {
             validCounter.increment();
          }
          else if (type.getBinding() == com.vividsolutions.jts.geom.MultiPoint.class) {
-            final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> euclidMultipoint = createEuclidMultiPoint(
+            final IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>> euclidMultipoint = createEuclidMultiPoint(
                      geometryAttribute, projection);
             euclidFeatures.add(createFeature(euclidMultipoint, feature));
 
@@ -298,7 +298,7 @@ public class GGeotoolsVectorialLoader {
       }
 
 
-      return new GListFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>(
+      return new GListFeatureCollection<IVector2, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>(
                GProjection.EPSG_4326, fields, euclidFeatures, "uniqueId_000");
 
    }
@@ -341,8 +341,8 @@ public class GGeotoolsVectorialLoader {
    }
 
 
-   private static IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> createEuclidMultiPoint(final GeometryAttribute geometryAttribute,
-                                                                                                          final GProjection projection) {
+   private static IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>> createEuclidMultiPoint(final GeometryAttribute geometryAttribute,
+                                                                                                  final GProjection projection) {
       final com.vividsolutions.jts.geom.MultiPoint multipoint = (com.vividsolutions.jts.geom.MultiPoint) geometryAttribute.getValue();
 
       if (multipoint.getNumGeometries() == 1) {
@@ -361,9 +361,9 @@ public class GGeotoolsVectorialLoader {
    }
 
 
-   private static IGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> createFeature(final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> geometry,
-                                                                                                                          final SimpleFeature feature) {
-      return new GGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>(geometry,
+   private static IGlobeFeature<IVector2, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> createFeature(final IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>> geometry,
+                                                                                                                  final SimpleFeature feature) {
+      return new GGlobeFeature<IVector2, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>(geometry,
                feature.getAttributes());
    }
 
@@ -407,7 +407,7 @@ public class GGeotoolsVectorialLoader {
       //      final GFileName fileName = GFileName.fromParentAndParts(samplesDirectory, "cartobrutal", "world-modified", "world.shp");
       //      final GFileName fileName = GFileName.fromParentAndParts(samplesDirectory, "shp", "argentina.shp", "places.shp");
 
-      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features = GShapeLoader.readFeatures(
+      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> features = GShapeLoader.readFeatures(
                fileName, GProjection.EPSG_4326);
 
 

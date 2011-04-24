@@ -37,7 +37,7 @@
 package es.igosoftware.experimental.vectorial;
 
 
-import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
@@ -720,7 +720,7 @@ public class GVectorial2DLayer
    }
 
 
-   private static final GGlobeStateKeyCache<GAxisAlignedOrthotope<IVector2, ?>, Box>                                           BOX_CACHE;
+   private static final GGlobeStateKeyCache<GAxisAlignedOrthotope<IVector2, ?>, Box>                                   BOX_CACHE;
 
    static {
       BOX_CACHE = new GGlobeStateKeyCache<GAxisAlignedOrthotope<IVector2, ?>, Box>(
@@ -739,34 +739,34 @@ public class GVectorial2DLayer
    }
 
 
-   private Sector                                                                                                              _polygonsSector;
+   private Sector                                                                                                      _polygonsSector;
 
 
-   private GVectorial2DRenderer                                                                                                _renderer;
-   private final String                                                                                                        _name;
-   private GAxisAlignedOrthotope<IVector2, ?>                                                                                  _polygonsBounds;
-   private final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> _features;
+   private GVectorial2DRenderer                                                                                        _renderer;
+   private final String                                                                                                _name;
+   private GAxisAlignedOrthotope<IVector2, ?>                                                                          _polygonsBounds;
+   private final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> _features;
 
 
-   private List<Tile>                                                                                                          _topTiles;
-   private final List<Tile>                                                                                                    _currentTiles               = new ArrayList<Tile>();
+   private List<Tile>                                                                                                  _topTiles;
+   private final List<Tile>                                                                                            _currentTiles               = new ArrayList<Tile>();
 
 
-   private final int                                                                                                           _fillColorAlpha             = 127;
-   private final int                                                                                                           _borderColorAlpha           = 255;
+   private final int                                                                                                   _fillColorAlpha             = 127;
+   private final int                                                                                                   _borderColorAlpha           = 255;
 
-   private View                                                                                                                _lastView;
-
-
-   private long                                                                                                                _lastCurrentTilesCalculated = -1;
+   private View                                                                                                        _lastView;
 
 
-   private final GGlobeVectorial2DRenderingStyle                                                                               _renderingStyle             = new GGlobeVectorial2DRenderingStyle(
-                                                                                                                                                                    this);
+   private long                                                                                                        _lastCurrentTilesCalculated = -1;
+
+
+   private final GGlobeVectorial2DRenderingStyle                                                                       _renderingStyle             = new GGlobeVectorial2DRenderingStyle(
+                                                                                                                                                            this);
 
 
    public GVectorial2DLayer(final String name,
-                            final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features) {
+                            final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> features) {
       GAssert.notNull(name, "name");
       GAssert.notNull(features, "features");
 
@@ -776,7 +776,7 @@ public class GVectorial2DLayer
       if (_features.isEditable()) {
          if (features instanceof IGlobeMutableFeatureCollection) {
             @SuppressWarnings("unchecked")
-            final IGlobeMutableFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> editableFeatures = (IGlobeMutableFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?>) features;
+            final IGlobeMutableFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>, ?> editableFeatures = (IGlobeMutableFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>, ?>) features;
 
             editableFeatures.addChangeListener(new IMutable.ChangeListener() {
                @Override
@@ -1213,7 +1213,7 @@ public class GVectorial2DLayer
 
 
    @Override
-   public IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> getFeaturesCollection() {
+   public IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> getFeaturesCollection() {
       return _features;
    }
 

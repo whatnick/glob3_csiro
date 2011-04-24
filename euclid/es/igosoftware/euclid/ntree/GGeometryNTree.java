@@ -21,27 +21,35 @@ import es.igosoftware.util.GStringUtils;
 import es.igosoftware.util.IFunction;
 
 
-public abstract class GGeometryNTree<VectorT extends IVector<VectorT, ?>, ElementT>
+public abstract class GGeometryNTree<
+
+VectorT extends IVector<VectorT, ?>,
+
+ElementT,
+
+GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
+
+>
          extends
             GLoggerObject {
 
 
-   private final String                            _name;
-   private final long                              _elementsCount;
+   private final String                               _name;
+   private final long                                 _elementsCount;
 
-   private final GGeometryNTreeParameters          _parameters;
+   private final GGeometryNTreeParameters             _parameters;
 
-   private final byte                              _dimensions;
-   private final GAxisAlignedOrthotope<VectorT, ?> _geometriesBounds;
-   private final GAxisAlignedOrthotope<VectorT, ?> _bounds;
+   private final byte                                 _dimensions;
+   private final GAxisAlignedOrthotope<VectorT, ?>    _geometriesBounds;
+   private final GAxisAlignedOrthotope<VectorT, ?>    _bounds;
 
-   private GGTInnerNode<VectorT, ElementT>         _root;
+   private GGTInnerNode<VectorT, ElementT, GeometryT> _root;
 
 
    protected GGeometryNTree(final String name,
                             final GAxisAlignedOrthotope<VectorT, ?> bounds,
                             final Iterable<? extends ElementT> elements,
-                            final IFunction<ElementT, Collection<? extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>>> transformer,
+                            final IFunction<ElementT, Collection<? extends GeometryT>> transformer,
                             final GGeometryNTreeParameters parameters) {
       _name = name;
       _parameters = parameters;
@@ -52,11 +60,11 @@ public abstract class GGeometryNTree<VectorT extends IVector<VectorT, ?>, Elemen
 
       VectorT geometriesLower = null;
       VectorT geometriesUpper = null;
-      final ArrayList<GElementGeometryPair<VectorT, ElementT>> pairs = new ArrayList<GElementGeometryPair<VectorT, ElementT>>();
+      final ArrayList<GElementGeometryPair<VectorT, ElementT, GeometryT>> pairs = new ArrayList<GElementGeometryPair<VectorT, ElementT, GeometryT>>();
       for (final ElementT element : elements) {
-         final Collection<? extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>> geometries = transformer.apply(element);
-         for (final IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>> geometry : geometries) {
-            pairs.add(new GElementGeometryPair<VectorT, ElementT>(element, geometry));
+         final Collection<? extends GeometryT> geometries = transformer.apply(element);
+         for (final GeometryT geometry : geometries) {
+            pairs.add(new GElementGeometryPair<VectorT, ElementT, GeometryT>(element, geometry));
 
             final GAxisAlignedOrthotope<VectorT, ?> geometryBounds = geometry.getBounds().asAxisAlignedOrthotope();
             geometriesLower = (geometriesLower == null) ? geometryBounds._lower : geometriesLower.min(geometryBounds._lower);
@@ -85,12 +93,12 @@ public abstract class GGeometryNTree<VectorT extends IVector<VectorT, ?>, Elemen
       _bounds = initializeBounds(bounds);
 
 
-      final GeometriesDistribution<VectorT, ElementT> distribution = GGTInnerNode.distributeGeometries(_bounds, pairs);
+      final GeometriesDistribution<VectorT, ElementT, GeometryT> distribution = GGTInnerNode.distributeGeometries(_bounds, pairs);
 
-      _root = new GGTInnerNode<VectorT, ElementT>(null, _bounds, distribution.getOwnGeometries(),
+      _root = new GGTInnerNode<VectorT, ElementT, GeometryT>(null, _bounds, distribution.getOwnGeometries(),
                distribution.getGeometriesToDistribute(), 0, parameters, progress) {
          @Override
-         public GGeometryNTree<VectorT, ElementT> getNTree() {
+         public GGeometryNTree<VectorT, ElementT, GeometryT> getNTree() {
             return GGeometryNTree.this;
          }
 
@@ -265,15 +273,15 @@ public abstract class GGeometryNTree<VectorT extends IVector<VectorT, ?>, Elemen
 
       final GHolder<VectorT> totalLeafExtentHolder = new GHolder<VectorT>(null);
 
-      breadthFirstAcceptVisitor(new IGTBreadFirstVisitor<VectorT, ElementT>() {
+      breadthFirstAcceptVisitor(new IGTBreadFirstVisitor<VectorT, ElementT, GeometryT>() {
 
          @Override
-         public void visitOctree(final GGeometryNTree<VectorT, ElementT> octree) {
+         public void visitOctree(final GGeometryNTree<VectorT, ElementT, GeometryT> octree) {
          }
 
 
          @Override
-         public void visitInnerNode(final GGTInnerNode<VectorT, ElementT> inner) {
+         public void visitInnerNode(final GGTInnerNode<VectorT, ElementT, GeometryT> inner) {
             innerNodesCounter.increment();
 
             final int elementsCount = inner.getElementsCount();
@@ -287,7 +295,7 @@ public abstract class GGeometryNTree<VectorT extends IVector<VectorT, ?>, Elemen
 
 
          @Override
-         public void visitLeafNode(final GGTLeafNode<VectorT, ElementT> leaf) {
+         public void visitLeafNode(final GGTLeafNode<VectorT, ElementT, GeometryT> leaf) {
             leafNodesCounter.increment();
 
             final int elementsCount = leaf.getElementsCount();
@@ -362,7 +370,7 @@ public abstract class GGeometryNTree<VectorT extends IVector<VectorT, ?>, Elemen
    }
 
 
-   public void breadthFirstAcceptVisitor(final IGTBreadFirstVisitor<VectorT, ElementT> visitor) {
+   public void breadthFirstAcceptVisitor(final IGTBreadFirstVisitor<VectorT, ElementT, GeometryT> visitor) {
       try {
          visitor.visitOctree(this);
 
@@ -375,7 +383,7 @@ public abstract class GGeometryNTree<VectorT extends IVector<VectorT, ?>, Elemen
 
 
    public void breadthFirstAcceptVisitor(final IBounds<VectorT, ?> region,
-                                         final IGTBreadFirstVisitor<VectorT, ElementT> visitor) {
+                                         final IGTBreadFirstVisitor<VectorT, ElementT, GeometryT> visitor) {
       if (!_bounds.touchesBounds(region)) {
          return;
       }
@@ -391,7 +399,7 @@ public abstract class GGeometryNTree<VectorT extends IVector<VectorT, ?>, Elemen
    }
 
 
-   public void depthFirstAcceptVisitor(final IGTDepthFirstVisitor<VectorT, ElementT> visitor) {
+   public void depthFirstAcceptVisitor(final IGTDepthFirstVisitor<VectorT, ElementT, GeometryT> visitor) {
       try {
          visitor.visitOctree(this);
 
@@ -420,7 +428,7 @@ public abstract class GGeometryNTree<VectorT extends IVector<VectorT, ?>, Elemen
    }
 
 
-   public GGTInnerNode<VectorT, ElementT> getRoot() {
+   public GGTInnerNode<VectorT, ElementT, GeometryT> getRoot() {
       return _root;
    }
 

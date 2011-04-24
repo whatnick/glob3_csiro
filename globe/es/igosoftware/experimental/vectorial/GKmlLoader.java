@@ -55,7 +55,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.xml.sax.SAXException;
 
-import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.features.GField;
 import es.igosoftware.euclid.features.GGlobeFeature;
@@ -130,16 +130,16 @@ public class GKmlLoader {
    }
 
 
-   public static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> readFeatures(final GFileName fileName,
-                                                                                                                                            final GProjection projection)
-                                                                                                                                                                         throws IOException,
-                                                                                                                                                                         SAXException,
-                                                                                                                                                                         ParserConfigurationException {
+   public static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> readFeatures(final GFileName fileName,
+                                                                                                                                    final GProjection projection)
+                                                                                                                                                                 throws IOException,
+                                                                                                                                                                 SAXException,
+                                                                                                                                                                 ParserConfigurationException {
       return readFeatures(fileName.asFile(), projection);
    }
 
 
-   //   public static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> readFeatures(final File file,
+   //   public static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> readFeatures(final File file,
    //                                                                                                                                            final GProjection projection)
    //                                                                                                                                                                         throws IOException,
    //                                                                                                                                                                         SAXException,
@@ -242,7 +242,7 @@ public class GKmlLoader {
    //      final GIntHolder invalidCounter = new GIntHolder(0);
    //
    //      final int featuresCount = featuresCollection.size();
-   //      final ArrayList<IGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> euclidFeatures = new ArrayList<IGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>>(
+   //      final ArrayList<IGlobeFeature<IVector2, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>> euclidFeatures = new ArrayList<IGlobeFeature<IVector2, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>>(
    //               featuresCount);
    //
    //
@@ -419,7 +419,7 @@ public class GKmlLoader {
    //         //else if (type.getBinding() == com.vividsolutions.jts.geom.MultiPoint.class) {
    //         //else if (feature.getDefaultGeometry().getClass() == com.vividsolutions.jts.geom.MultiPoint.class) {
    //         else if (geometryAttribute.getValue().getClass() == com.vividsolutions.jts.geom.MultiPoint.class) {
-   //            final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> euclidMultipoint = createEuclidMultiPoint(
+   //            final IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>> euclidMultipoint = createEuclidMultiPoint(
    //                     geometryAttribute, projection);
    //            euclidFeatures.add(createFeature(euclidMultipoint, feature));
    //
@@ -500,16 +500,16 @@ public class GKmlLoader {
    //      }
    //
    //
-   //      return new GListFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>(
+   //      return new GListFeatureCollection<IVector2, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>(
    //               GProjection.EPSG_4326, fields, euclidFeatures, GIOUtils.getUniqueID(file));
    //   }
 
 
-   public static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> readFeatures(final File file,
-                                                                                                                                            final GProjection projection)
-                                                                                                                                                                         throws IOException,
-                                                                                                                                                                         SAXException,
-                                                                                                                                                                         ParserConfigurationException {
+   public static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> readFeatures(final File file,
+                                                                                                                                    final GProjection projection)
+                                                                                                                                                                 throws IOException,
+                                                                                                                                                                 SAXException,
+                                                                                                                                                                 ParserConfigurationException {
       if (!file.exists()) {
          throw new IOException("File not found!");
       }
@@ -552,7 +552,7 @@ public class GKmlLoader {
       final GIntHolder invalidCounter = new GIntHolder(0);
 
       final int featuresCount = featuresCollection.size();
-      final ArrayList<IGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> euclidFeatures = new ArrayList<IGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>>(
+      final ArrayList<IGlobeFeature<IVector2, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>> euclidFeatures = new ArrayList<IGlobeFeature<IVector2, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>>(
                featuresCount);
 
 
@@ -691,7 +691,7 @@ public class GKmlLoader {
          //else if (type.getBinding() == com.vividsolutions.jts.geom.MultiPoint.class) {
          //else if (feature.getDefaultGeometry().getClass() == com.vividsolutions.jts.geom.MultiPoint.class) {
          else if (geometryAttribute.getValue().getClass() == com.vividsolutions.jts.geom.MultiPoint.class) {
-            final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> euclidMultipoint = createEuclidMultiPoint(
+            final IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>> euclidMultipoint = createEuclidMultiPoint(
                      geometryAttribute, projection);
             euclidFeatures.add(createFeature(euclidMultipoint, feature));
 
@@ -751,7 +751,7 @@ public class GKmlLoader {
       }
 
 
-      return new GListFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>(
+      return new GListFeatureCollection<IVector2, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>(
                GProjection.EPSG_4326, fields, euclidFeatures, GIOUtils.getUniqueID(file));
    }
 
@@ -793,8 +793,8 @@ public class GKmlLoader {
    }
 
 
-   private static IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> createEuclidMultiPoint(final GeometryAttribute geometryAttribute,
-                                                                                                          final GProjection projection) {
+   private static IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>> createEuclidMultiPoint(final GeometryAttribute geometryAttribute,
+                                                                                                  final GProjection projection) {
       final com.vividsolutions.jts.geom.MultiPoint multipoint = (com.vividsolutions.jts.geom.MultiPoint) geometryAttribute.getValue();
 
       if (multipoint.getNumGeometries() == 1) {
@@ -813,9 +813,9 @@ public class GKmlLoader {
    }
 
 
-   private static IGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> createFeature(final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> geometry,
-                                                                                                                          final SimpleFeature feature) {
-      return new GGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>(geometry,
+   private static IGlobeFeature<IVector2, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> createFeature(final IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>> geometry,
+                                                                                                                  final SimpleFeature feature) {
+      return new GGlobeFeature<IVector2, IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>>(geometry,
                feature.getAttributes());
    }
 
@@ -859,7 +859,7 @@ public class GKmlLoader {
    //      //      final GFileName fileName = GFileName.fromParentAndParts(samplesDirectory, "cartobrutal", "world-modified", "world.shp");
    //      //      final GFileName fileName = GFileName.fromParentAndParts(samplesDirectory, "shp", "argentina.shp", "places.shp");
    //
-   //      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features = GKmlLoader.readFeatures(
+   //      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> features = GKmlLoader.readFeatures(
    //               fileName, GProjection.EPSG_4326);
    //
    //

@@ -7,7 +7,7 @@ import java.awt.Color;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 
-import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.ISurface2D;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.colors.IColor;
@@ -57,7 +57,7 @@ public class GPolygonRenderingShape
 
 
    private Color getLODIgnoreColor(final ISurface2D<? extends IFiniteBounds<IVector2, ?>> polygon,
-                                   final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                   final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
                                    final IRenderingStyle renderingStyle,
                                    final IVectorial2DRenderingScaler scaler) {
       if (renderingStyle.isDebugRendering()) {
@@ -78,7 +78,7 @@ public class GPolygonRenderingShape
 
    @Override
    protected final void renderLODIgnore(final ISurface2D<? extends IFiniteBounds<IVector2, ?>> polygon,
-                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
                                         final IRenderingStyle renderingStyle,
                                         final IVectorial2DRenderingScaler scaler,
                                         final IVectorial2DDrawer drawer) {
@@ -90,7 +90,7 @@ public class GPolygonRenderingShape
 
    @Override
    protected final void rawDraw(final ISurface2D<? extends IFiniteBounds<IVector2, ?>> polygon,
-                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
+                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature,
                                 final IRenderingStyle renderingStyle,
                                 final IVectorial2DRenderingScaler scaler,
                                 final IVectorial2DDrawer drawer) {

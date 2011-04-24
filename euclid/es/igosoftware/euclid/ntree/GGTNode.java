@@ -5,32 +5,42 @@ package es.igosoftware.euclid.ntree;
 import java.util.Collection;
 import java.util.Collections;
 
+import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
+import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GLoggerObject;
 
 
-public abstract class GGTNode<VectorT extends IVector<VectorT, ?>, ElementT>
+public abstract class GGTNode<
+
+VectorT extends IVector<VectorT, ?>,
+
+ElementT,
+
+GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
+
+>
          extends
             GLoggerObject {
 
 
-   protected final GGTInnerNode<VectorT, ElementT>                     _parent;
-   protected final GAxisAlignedOrthotope<VectorT, ?>                   _bounds;
-   protected final Collection<GElementGeometryPair<VectorT, ElementT>> _elements;
-   private GAxisAlignedOrthotope<VectorT, ?>                           _minimumBounds;
+   protected final GGTInnerNode<VectorT, ElementT, GeometryT>                     _parent;
+   protected final GAxisAlignedOrthotope<VectorT, ?>                              _bounds;
+   protected final Collection<GElementGeometryPair<VectorT, ElementT, GeometryT>> _elements;
+   private GAxisAlignedOrthotope<VectorT, ?>                                      _minimumBounds;
 
 
-   protected GGTNode(final GGTInnerNode<VectorT, ElementT> parent,
+   protected GGTNode(final GGTInnerNode<VectorT, ElementT, GeometryT> parent,
                      final GAxisAlignedOrthotope<VectorT, ?> bounds,
-                     final Collection<GElementGeometryPair<VectorT, ElementT>> elements) {
+                     final Collection<GElementGeometryPair<VectorT, ElementT, GeometryT>> elements) {
       _parent = parent;
       _bounds = bounds;
       _elements = elements;
    }
 
 
-   public final GGTInnerNode<VectorT, ElementT> getParent() {
+   public final GGTInnerNode<VectorT, ElementT, GeometryT> getParent() {
       return _parent;
    }
 
@@ -52,7 +62,7 @@ public abstract class GGTNode<VectorT extends IVector<VectorT, ?>, ElementT>
       VectorT lower = null;
       VectorT upper = null;
 
-      for (final GElementGeometryPair<VectorT, ElementT> pair : getAllElements()) {
+      for (final GElementGeometryPair<VectorT, ElementT, GeometryT> pair : getAllElements()) {
          final GAxisAlignedOrthotope<VectorT, ?> geometryBounds = pair.getGeometry().getBounds().asAxisAlignedOrthotope();
          final VectorT geometryLower = geometryBounds._lower;
          final VectorT geometryUpper = geometryBounds._upper;
@@ -72,9 +82,9 @@ public abstract class GGTNode<VectorT extends IVector<VectorT, ?>, ElementT>
    }
 
 
-   public final GGTInnerNode<VectorT, ElementT> getRoot() {
+   public final GGTInnerNode<VectorT, ElementT, GeometryT> getRoot() {
       if (_parent == null) {
-         return (GGTInnerNode<VectorT, ElementT>) this;
+         return (GGTInnerNode<VectorT, ElementT, GeometryT>) this;
       }
       return _parent.getRoot();
    }
@@ -86,7 +96,7 @@ public abstract class GGTNode<VectorT extends IVector<VectorT, ?>, ElementT>
    }
 
 
-   public GGeometryNTree<VectorT, ElementT> getNTree() {
+   public GGeometryNTree<VectorT, ElementT, GeometryT> getNTree() {
       return _parent.getNTree();
    }
 
@@ -107,8 +117,8 @@ public abstract class GGTNode<VectorT extends IVector<VectorT, ?>, ElementT>
    }
 
 
-   public abstract void depthFirstAcceptVisitor(final IGTDepthFirstVisitor<VectorT, ElementT> visitor)
-                                                                                                      throws IGTBreadFirstVisitor.AbortVisiting;
+   public abstract void depthFirstAcceptVisitor(final IGTDepthFirstVisitor<VectorT, ElementT, GeometryT> visitor)
+                                                                                                                 throws IGTBreadFirstVisitor.AbortVisiting;
 
 
    public abstract int getLeafNodesCount();
@@ -117,7 +127,7 @@ public abstract class GGTNode<VectorT extends IVector<VectorT, ?>, ElementT>
    public abstract int getInnerNodesCount();
 
 
-   public final Collection<GElementGeometryPair<VectorT, ElementT>> getElements() {
+   public final Collection<GElementGeometryPair<VectorT, ElementT, GeometryT>> getElements() {
       if (_elements == null) {
          return Collections.emptyList();
       }
@@ -131,7 +141,7 @@ public abstract class GGTNode<VectorT extends IVector<VectorT, ?>, ElementT>
    }
 
 
-   public abstract Collection<GElementGeometryPair<VectorT, ElementT>> getAllElements();
+   public abstract Collection<GElementGeometryPair<VectorT, ElementT, GeometryT>> getAllElements();
 
 
    public abstract int getAllElementsCount();

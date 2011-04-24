@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.colors.IColor;
 import es.igosoftware.euclid.features.IGlobeFeature;
@@ -29,17 +29,17 @@ public class GUniqueValuesColorizer
          extends
             GColorizerAbstract {
 
-   private final String                                                                                                  _fieldName;
-   private final GColorScheme                                                                                            _colorScheme;
-   private final IColor                                                                                                  _defaultColor;
-   private final boolean                                                                                                 _renderLegends;
-   private final IFunction<Object, String>                                                                               _labeler;
+   private final String                                                                                          _fieldName;
+   private final GColorScheme                                                                                    _colorScheme;
+   private final IColor                                                                                          _defaultColor;
+   private final boolean                                                                                         _renderLegends;
+   private final IFunction<Object, String>                                                                       _labeler;
 
-   private int                                                                                                           _fieldIndex;
-   private List<String>                                                                                                  _sortedLabels;
-   private HashMap<String, IColor>                                                                                       _colors;
+   private int                                                                                                   _fieldIndex;
+   private List<String>                                                                                          _sortedLabels;
+   private HashMap<String, IColor>                                                                               _colors;
 
-   private IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> _lastFeatures;
+   private IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> _lastFeatures;
 
 
    public GUniqueValuesColorizer(final String fieldName,
@@ -66,7 +66,7 @@ public class GUniqueValuesColorizer
 
 
    @Override
-   public void preprocessFeatures(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features) {
+   public void preprocessFeatures(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> features) {
 
       if (features == _lastFeatures) {
          return;
@@ -88,7 +88,7 @@ public class GUniqueValuesColorizer
       }
 
       final Set<String> labels = new HashSet<String>();
-      for (final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature : features) {
+      for (final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature : features) {
          final Object value = feature.getAttribute(_fieldIndex);
          labels.add(_labeler.apply(value));
       }
@@ -105,7 +105,7 @@ public class GUniqueValuesColorizer
 
 
    @Override
-   public IColor getColor(final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature) {
+   public IColor getColor(final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFiniteBounds<IVector2, ?>>> feature) {
 
       if (_fieldIndex < 0) {
          return _defaultColor;
