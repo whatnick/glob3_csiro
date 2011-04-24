@@ -13,6 +13,7 @@ import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.IBoundedGeometry3D;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
+import es.igosoftware.euclid.bounding.IFinite3DBounds;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.IVector;
@@ -91,27 +92,27 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<Vecto
 
    public static <
 
-   FeatureGeometryT extends IBoundedGeometry3D<? extends IFiniteBounds<IVector3, ?>>
+   FeatureGeometryT extends IBoundedGeometry3D<? extends IFinite3DBounds<?>>
 
-   > GListFeatureCollection<IVector3, IBoundedGeometry3D<? extends IFiniteBounds<IVector3, ?>>> from3DGeometryList(final GProjection projection,
-                                                                                                                   final List<FeatureGeometryT> geometries,
-                                                                                                                   final String uniqueID) {
+   > GListFeatureCollection<IVector3, IBoundedGeometry3D<? extends IFinite3DBounds<?>>> from3DGeometryList(final GProjection projection,
+                                                                                                           final List<FeatureGeometryT> geometries,
+                                                                                                           final String uniqueID) {
 
       final List<GField> fields = Collections.emptyList();
 
-      final List<IGlobeFeature<IVector3, IBoundedGeometry3D<? extends IFiniteBounds<IVector3, ?>>>> features = GCollections.collect(
+      final List<IGlobeFeature<IVector3, IBoundedGeometry3D<? extends IFinite3DBounds<?>>>> features = GCollections.collect(
                geometries,
-               new IFunction<FeatureGeometryT, IGlobeFeature<IVector3, IBoundedGeometry3D<? extends IFiniteBounds<IVector3, ?>>>>() {
+               new IFunction<FeatureGeometryT, IGlobeFeature<IVector3, IBoundedGeometry3D<? extends IFinite3DBounds<?>>>>() {
 
                   @Override
-                  public IGlobeFeature<IVector3, IBoundedGeometry3D<? extends IFiniteBounds<IVector3, ?>>> apply(final FeatureGeometryT geometry) {
-                     return new GGlobeFeature<IVector3, IBoundedGeometry3D<? extends IFiniteBounds<IVector3, ?>>>(geometry,
+                  public IGlobeFeature<IVector3, IBoundedGeometry3D<? extends IFinite3DBounds<?>>> apply(final FeatureGeometryT geometry) {
+                     return new GGlobeFeature<IVector3, IBoundedGeometry3D<? extends IFinite3DBounds<?>>>(geometry,
                               Collections.emptyList());
                   }
                });
 
-      return new GListFeatureCollection<IVector3, IBoundedGeometry3D<? extends IFiniteBounds<IVector3, ?>>>(projection, fields,
-               features, uniqueID);
+      return new GListFeatureCollection<IVector3, IBoundedGeometry3D<? extends IFinite3DBounds<?>>>(projection, fields, features,
+               uniqueID);
    }
 
    private final GProjection                                    _projection;
