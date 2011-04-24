@@ -121,7 +121,7 @@ public class GVectorial2DRenderingTest {
       final GAxisAlignedRectangle viewport = pointsFeaturesBounds.asRectangle().expandedByPercent(0.05);
 
 
-      final GFileName directoryName = GFileName.relative("render");
+      final GFileName directoryName = GFileName.relative("temporary-data", "render");
       final boolean renderLODIgnores = true;
       final double lodMinSize = 2;
       final int textureDimension = 256;
@@ -154,7 +154,7 @@ public class GVectorial2DRenderingTest {
 
 
       final int depth = 0;
-      final int maxDepth = 4;
+      final int maxDepth = 3;
       render(renderers, viewport, imageWidth, imageHeight, directoryName, depth, maxDepth);
    }
 
@@ -345,8 +345,6 @@ public class GVectorial2DRenderingTest {
                return GLength.Kilometer.value(2);
             }
             return GLength.Kilometer.value(1);
-
-            //            return GLength.Kilometer.value(2);
          }
 
 
@@ -356,10 +354,8 @@ public class GVectorial2DRenderingTest {
                                        final IVectorial2DRenderingScaler scaler) {
             final String country = (String) feature.getAttribute(_countryIndex);
             if ((country != null) && country.trim().toLowerCase().equals("argentina")) {
-               //               return GColorI.GREEN.muchLighter();
                return GColorF.newRGB256(204, 224, 143).lighter();
             }
-            //            return GColorI.GRAY.lighter();
             return GColorF.newRGB256(204, 224, 143).muchDarker();
          }
 
@@ -368,11 +364,6 @@ public class GVectorial2DRenderingTest {
          public float getSurfaceOpacity(final ISurface2D<?> surface,
                                         final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                         final IVectorial2DRenderingScaler scaler) {
-            //            final String country = (String) feature.getAttribute(_countryIndex);
-            //            if ((country != null) && country.trim().toLowerCase().equals("argentina")) {
-            //               return 1;
-            //            }
-            //            return 0.75f;
             return 1;
          }
 
@@ -381,13 +372,6 @@ public class GVectorial2DRenderingTest {
          public IColor getSurfaceBorderColor(final ISurface2D<?> surface,
                                              final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                              final IVectorial2DRenderingScaler scaler) {
-            //            final IColor surfaceColor = getSurfaceColor(surface, feature, scaler, drawer);
-            //
-            //            final String country = (String) feature.getAttribute(_countryIndex);
-            //            if ((country != null) && country.trim().toLowerCase().equals("argentina")) {
-            //               return surfaceColor.muchDarker();
-            //            }
-            //            return surfaceColor;
             return getSurfaceColor(surface, feature, scaler).muchDarker();
          }
 
@@ -415,22 +399,6 @@ public class GVectorial2DRenderingTest {
             return 1;
          }
 
-
-         //         @Override
-         //         public GPolygonalChainRenderingShape getCurveShape(final ICurve2D<?> curve,
-         //                                                            final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-         //                                                            final GVectorialRenderingContext rc) {
-         //            if (curve instanceof IPolygonalChain2D) {
-         //               final IPolygonalChain2D polygonalChain = (IPolygonalChain2D) curve;
-         //
-         //               final double length = polygonalChain.getLength();
-         //               if (length < 0.01) {
-         //                  return null;
-         //               }
-         //            }
-         //
-         //            return super.getCurveShape(curve, feature, scaler, drawer);
-         //         }
 
       };
 
@@ -475,7 +443,7 @@ public class GVectorial2DRenderingTest {
       //      fillImage(image, GColorF.newRGB256(135, 183, 219).asAWTColor());
       fillImage(image, GColorF.newRGB256(211, 237, 249).darker().asAWTColor());
 
-      final IVectorial2DDrawer drawer = new GJava2DVectorial2DDrawer(image);
+      final IVectorial2DDrawer drawer = new GJava2DVectorial2DDrawer(image, true);
 
       for (final GPair<GVectorial2DRenderer, IRenderingStyle2D> renderer : renderers) {
          final IProjectionTool projectionTool = new IProjectionTool() {

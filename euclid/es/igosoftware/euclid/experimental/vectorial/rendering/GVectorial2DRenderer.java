@@ -106,7 +106,7 @@ public class GVectorial2DRenderer {
       final BufferedImage image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_4BYTE_ABGR);
       image.setAccelerationPriority(1);
 
-      final IVectorial2DDrawer drawer = new GJava2DVectorial2DDrawer(image);
+      final IVectorial2DDrawer drawer = new GJava2DVectorial2DDrawer(image, true);
 
       render(viewport, image, projectionTool, renderingStyle, drawer);
 

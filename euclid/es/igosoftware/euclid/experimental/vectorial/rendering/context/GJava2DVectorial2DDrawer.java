@@ -33,18 +33,23 @@ public class GJava2DVectorial2DDrawer
 
    private final Graphics2D             _g2d;
    private final BufferedImage          _image;
+   private final boolean                _flippedY;
 
 
-   public GJava2DVectorial2DDrawer(final BufferedImage image) {
+   public GJava2DVectorial2DDrawer(final BufferedImage image,
+                                   final boolean flipY) {
       GAssert.notNull(image, "image");
 
       _image = image;
 
-      _g2d = initializeG2D(image);
+      _flippedY = flipY;
+
+      _g2d = initializeG2D(image, flipY);
    }
 
 
-   private Graphics2D initializeG2D(final BufferedImage image) {
+   private static Graphics2D initializeG2D(final BufferedImage image,
+                                           final boolean flipY) {
       final Graphics2D g2d = image.createGraphics();
 
       g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -54,9 +59,11 @@ public class GJava2DVectorial2DDrawer
       g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
       g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-      final AffineTransform transformFlipY = AffineTransform.getScaleInstance(1, -1);
-      transformFlipY.concatenate(AffineTransform.getTranslateInstance(0, -image.getHeight()));
-      g2d.setTransform(transformFlipY);
+      if (flipY) {
+         final AffineTransform transformFlipY = AffineTransform.getScaleInstance(1, -1);
+         transformFlipY.concatenate(AffineTransform.getTranslateInstance(0, -image.getHeight()));
+         g2d.setTransform(transformFlipY);
+      }
 
       return g2d;
    }
@@ -235,13 +242,18 @@ public class GJava2DVectorial2DDrawer
    public final void drawImage(final Image image,
                                final double x,
                                final double y) {
-      final AffineTransform currentTransform = _g2d.getTransform();
-      _g2d.setTransform(IDENTITY_TRANSFORM);
+      if (_flippedY) {
+         final AffineTransform currentTransform = _g2d.getTransform();
+         _g2d.setTransform(IDENTITY_TRANSFORM);
 
-      final int imageHeight = _image.getHeight();
-      _g2d.drawImage(image, GMath.toRoundedInt(x), imageHeight - GMath.toRoundedInt(y), null);
+         final int imageHeight = _image.getHeight();
+         _g2d.drawImage(image, GMath.toRoundedInt(x), imageHeight - GMath.toRoundedInt(y) - image.getHeight(null), null);
 
-      _g2d.setTransform(currentTransform);
+         _g2d.setTransform(currentTransform);
+      }
+      else {
+         _g2d.drawImage(image, GMath.toRoundedInt(x), GMath.toRoundedInt(y), null);
+      }
    }
 
 
@@ -259,14 +271,20 @@ public class GJava2DVectorial2DDrawer
       final float[] offsets = new float[4];
       final BufferedImageOp rop = new RescaleOp(scales, offsets, null);
 
-      final AffineTransform currentTransform = _g2d.getTransform();
-      _g2d.setTransform(IDENTITY_TRANSFORM);
+      if (_flippedY) {
+         final AffineTransform currentTransform = _g2d.getTransform();
+         _g2d.setTransform(IDENTITY_TRANSFORM);
 
-      final int imageHeight = _image.getHeight();
+         final int imageHeight = _image.getHeight();
 
-      _g2d.drawImage(image, rop, GMath.toRoundedInt(x), imageHeight - GMath.toRoundedInt(y));
+         _g2d.drawImage(image, rop, GMath.toRoundedInt(x), imageHeight - GMath.toRoundedInt(y) - image.getHeight());
 
-      _g2d.setTransform(currentTransform);
+         _g2d.setTransform(currentTransform);
+      }
+      else {
+         _g2d.drawImage(image, rop, GMath.toRoundedInt(x), GMath.toRoundedInt(y));
+      }
+
    }
 
 
