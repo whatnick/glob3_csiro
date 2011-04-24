@@ -26,9 +26,8 @@ public class GDebugNode2DRenderingShape
    private static final Color                       INNER_NODES_BOUND_COLOR = LEAF_NODE_BOUND_COLOR.darker().darker();
 
    private static final BasicStroke                 LEAF_NODES_STROKE       = new BasicStroke(1, BasicStroke.CAP_ROUND,
-                                                                                     BasicStroke.JOIN_ROUND, 10, new float[] {
-            2,
-            2                                                                       }, 0);
+                                                                                     BasicStroke.JOIN_ROUND, 10,
+                                                                                     new float[] { 2, 2 }, 0);
    private static final BasicStroke                 INNER_NODES_STROKE      = new BasicStroke(1);
 
 

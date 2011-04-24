@@ -148,10 +148,9 @@ public class GVectorial2DRenderingTest {
       final IRenderingStyle2D renderingStyle = createRenderingStyle(renderLODIgnores, lodMinSize, debugRendering);
 
       @SuppressWarnings("unchecked")
-      final GPair<GVectorial2DRenderer, IRenderingStyle2D>[] renderers = (GPair<GVectorial2DRenderer, IRenderingStyle2D>[]) new GPair<?, ?>[] {
-               new GPair<GVectorial2DRenderer, IRenderingStyle2D>(surfacesRenderer, renderingStyle),
-               new GPair<GVectorial2DRenderer, IRenderingStyle2D>(linesRenderer, renderingStyle),
-               new GPair<GVectorial2DRenderer, IRenderingStyle2D>(pointsRenderer, renderingStyle) };
+      final GPair<GVectorial2DRenderer, IRenderingStyle2D>[] renderers = (GPair<GVectorial2DRenderer, IRenderingStyle2D>[]) new GPair<?, ?>[] { new GPair<GVectorial2DRenderer, IRenderingStyle2D>(
+               surfacesRenderer, renderingStyle), new GPair<GVectorial2DRenderer, IRenderingStyle2D>(linesRenderer,
+               renderingStyle), new GPair<GVectorial2DRenderer, IRenderingStyle2D>(pointsRenderer, renderingStyle) };
 
 
       final int depth = 0;

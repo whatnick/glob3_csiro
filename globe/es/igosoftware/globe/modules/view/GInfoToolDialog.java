@@ -86,17 +86,8 @@ public class GInfoToolDialog
 
    private void initGUI(final GPointInfo[] info) {
 
-      final TableLayout thisLayout = new TableLayout(new double[][] {
-               {
-                        3.0,
-                        TableLayoutConstants.FILL,
-                        TableLayoutConstants.FILL,
-                        7.0,
-                        TableLayoutConstants.FILL,
-                        TableLayoutConstants.FILL,
-                        TableLayoutConstants.FILL,
-                        3.0 },
-               { 3.0, TableLayoutConstants.FILL, 3.0 } });
+      final TableLayout thisLayout = new TableLayout(
+               new double[][] { { 3.0, TableLayoutConstants.FILL, TableLayoutConstants.FILL, 7.0, TableLayoutConstants.FILL, TableLayoutConstants.FILL, TableLayoutConstants.FILL, 3.0 }, { 3.0, TableLayoutConstants.FILL, 3.0 } });
       thisLayout.setHGap(5);
       thisLayout.setVGap(5);
       getContentPane().setLayout(thisLayout);

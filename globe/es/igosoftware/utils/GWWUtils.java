@@ -240,9 +240,9 @@ public final class GWWUtils {
 
       final LatLon[] vertices = new LatLon[] { //
       new LatLon(lowerLatitude, lowerLongitude), //
-               new LatLon(lowerLatitude, upperLongitude), //
-               new LatLon(upperLatitude, upperLongitude), // 
-               new LatLon(upperLatitude, lowerLongitude) };
+      new LatLon(lowerLatitude, upperLongitude), //
+      new LatLon(upperLatitude, upperLongitude), // 
+      new LatLon(upperLatitude, lowerLongitude) };
 
       renderQuad(dc, vertices, red, green, blue);
    }

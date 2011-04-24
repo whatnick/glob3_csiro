@@ -73,21 +73,11 @@ public class VectorTest {
    private static final IVector2[] generics2Neg    = { VectorTest.generic2FNeg, VectorTest.generic2DNeg };
    private static final IVector3[] generics3Neg    = { VectorTest.generic3FNeg, VectorTest.generic3DNeg };
 
-   private static final IVector2[] generics2All    = {
-            VectorTest.generic2F,
-            VectorTest.generic2D,
-            VectorTest.generic2FNeg,
-            VectorTest.generic2DNeg,
-            VectorTest.generic2Rounded            };
+   private static final IVector2[] generics2All    = { VectorTest.generic2F, VectorTest.generic2D, VectorTest.generic2FNeg, VectorTest.generic2DNeg, VectorTest.generic2Rounded };
    //   private static final IVector2[] generics2D      = { VectorTest.generic2D, VectorTest.generic2DNeg,
    //            VectorTest.generic2Rounded               };
 
-   private static final IVector3[] generics3All    = {
-            VectorTest.generic3F,
-            VectorTest.generic3D,
-            VectorTest.generic3FNeg,
-            VectorTest.generic3DNeg,
-            VectorTest.generic3Rounded            };
+   private static final IVector3[] generics3All    = { VectorTest.generic3F, VectorTest.generic3D, VectorTest.generic3FNeg, VectorTest.generic3DNeg, VectorTest.generic3Rounded };
 
    //   private static final IVector3[] generics3D      = { VectorTest.generic3D, VectorTest.generic3DNeg,
    //            VectorTest.generic3Rounded               };
@@ -96,77 +86,13 @@ public class VectorTest {
    private static final IVector2[] zeros2          = { GVector2F.ZERO, GVector2D.ZERO };
    private static final IVector3[] zeros3          = { GVector3F.ZERO, GVector3D.ZERO };
 
-   private static final IVector2[] all2D           = {
-            VectorTest.generic2D,
-            VectorTest.generic2DNeg,
-            GVector2D.X_UP,
-            GVector2D.Y_UP,
-            GVector2D.X_DOWN,
-            GVector2D.Y_DOWN,
-            GVector2D.ZERO                        };
-   private static final IVector2[] all2F           = {
-            VectorTest.generic2F,
-            VectorTest.generic2FNeg,
-            GVector2F.X_UP,
-            GVector2F.Y_UP,
-            GVector2F.Y_DOWN,
-            GVector2F.Y_DOWN,
-            GVector2F.ZERO                        };
-   private static final IVector2[] all2            = {
-            VectorTest.generic2F,
-            VectorTest.generic2D,
-            VectorTest.generic2FNeg,
-            VectorTest.generic2DNeg,
-            GVector2F.X_UP,
-            GVector2D.X_UP,
-            GVector2F.Y_UP,
-            GVector2D.Y_UP,
-            GVector2F.Y_DOWN,
-            GVector2D.X_DOWN,
-            GVector2F.Y_DOWN,
-            GVector2D.Y_DOWN,
-            GVector2F.ZERO,
-            GVector2D.ZERO                        };
+   private static final IVector2[] all2D           = { VectorTest.generic2D, VectorTest.generic2DNeg, GVector2D.X_UP, GVector2D.Y_UP, GVector2D.X_DOWN, GVector2D.Y_DOWN, GVector2D.ZERO };
+   private static final IVector2[] all2F           = { VectorTest.generic2F, VectorTest.generic2FNeg, GVector2F.X_UP, GVector2F.Y_UP, GVector2F.Y_DOWN, GVector2F.Y_DOWN, GVector2F.ZERO };
+   private static final IVector2[] all2            = { VectorTest.generic2F, VectorTest.generic2D, VectorTest.generic2FNeg, VectorTest.generic2DNeg, GVector2F.X_UP, GVector2D.X_UP, GVector2F.Y_UP, GVector2D.Y_UP, GVector2F.Y_DOWN, GVector2D.X_DOWN, GVector2F.Y_DOWN, GVector2D.Y_DOWN, GVector2F.ZERO, GVector2D.ZERO };
 
-   private static final IVector3[] all3D           = {
-            VectorTest.generic3D,
-            VectorTest.generic3DNeg,
-            GVector3D.X_UP,
-            GVector3D.Y_UP,
-            GVector3D.Z_UP,
-            GVector3D.X_DOWN,
-            GVector3D.Y_DOWN,
-            GVector3D.Z_DOWN,
-            GVector3D.ZERO                        };
-   private static final IVector3[] all3F           = {
-            VectorTest.generic3F,
-            VectorTest.generic3FNeg,
-            GVector3F.X_UP,
-            GVector3F.Y_UP,
-            GVector3F.Z_UP,
-            GVector3F.Y_DOWN,
-            GVector3F.Y_DOWN,
-            GVector3F.Z_DOWN,
-            GVector3F.ZERO                        };
-   private static final IVector3[] all3            = {
-            VectorTest.generic3F,
-            VectorTest.generic3D,
-            VectorTest.generic3FNeg,
-            VectorTest.generic3DNeg,
-            GVector3F.X_UP,
-            GVector3D.X_UP,
-            GVector3F.Y_UP,
-            GVector3D.Y_UP,
-            GVector3F.Z_UP,
-            GVector3D.Z_UP,
-            GVector3F.Y_DOWN,
-            GVector3D.X_DOWN,
-            GVector3F.Y_DOWN,
-            GVector3D.Y_DOWN,
-            GVector3F.Z_DOWN,
-            GVector3D.Z_DOWN,
-            GVector3F.ZERO,
-            GVector3D.ZERO                        };
+   private static final IVector3[] all3D           = { VectorTest.generic3D, VectorTest.generic3DNeg, GVector3D.X_UP, GVector3D.Y_UP, GVector3D.Z_UP, GVector3D.X_DOWN, GVector3D.Y_DOWN, GVector3D.Z_DOWN, GVector3D.ZERO };
+   private static final IVector3[] all3F           = { VectorTest.generic3F, VectorTest.generic3FNeg, GVector3F.X_UP, GVector3F.Y_UP, GVector3F.Z_UP, GVector3F.Y_DOWN, GVector3F.Y_DOWN, GVector3F.Z_DOWN, GVector3F.ZERO };
+   private static final IVector3[] all3            = { VectorTest.generic3F, VectorTest.generic3D, VectorTest.generic3FNeg, VectorTest.generic3DNeg, GVector3F.X_UP, GVector3D.X_UP, GVector3F.Y_UP, GVector3D.Y_UP, GVector3F.Z_UP, GVector3D.Z_UP, GVector3F.Y_DOWN, GVector3D.X_DOWN, GVector3F.Y_DOWN, GVector3D.Y_DOWN, GVector3F.Z_DOWN, GVector3D.Z_DOWN, GVector3F.ZERO, GVector3D.ZERO };
 
 
    private <T extends IVector2> void assertCloseTo(final String description,

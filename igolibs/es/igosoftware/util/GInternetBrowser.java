@@ -44,8 +44,7 @@ public class GInternetBrowser {
    private static final Runtime  RUNTIME        = Runtime.getRuntime();
 
    //   private static final String[] LINUX_BROWSERS = { "epiphany", "firefox", "mozilla", "konqueror", "netscape", "opera", "links", "lynx"                             };
-   private static final String[] LINUX_BROWSERS = { "firefox", "mozilla", "epiphany", "konqueror", "netscape", "opera", "links",
-            "lynx"                             };
+   private static final String[] LINUX_BROWSERS = { "firefox", "mozilla", "epiphany", "konqueror", "netscape", "opera", "links", "lynx" };
 
 
    private GInternetBrowser() {
