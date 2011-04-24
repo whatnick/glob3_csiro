@@ -14,15 +14,25 @@ import es.igosoftware.euclid.experimental.measurement.GLength;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
 import es.igosoftware.euclid.experimental.vectorial.rendering.features.ICurveRenderingShape;
+import es.igosoftware.euclid.experimental.vectorial.rendering.features.INodeRenderingShape;
 import es.igosoftware.euclid.experimental.vectorial.rendering.features.IRenderingSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.features.ISurfaceRenderingShape;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
+import es.igosoftware.euclid.ntree.GGTNode;
 import es.igosoftware.euclid.vector.IVector2;
 
 
 public interface IRenderingStyle {
 
+
+   /* -------------------------------------------------------------------------------------- */
+   /* nodes  */
+   public INodeRenderingShape getNodeShape(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> node,
+                                           final IVectorial2DRenderingScaler scaler);
+
+
+   /* -------------------------------------------------------------------------------------- */
    /* general */
    public boolean isDebugRendering();
 
@@ -51,6 +61,7 @@ public interface IRenderingStyle {
    public IMeasure<GArea> getMaximumSize();
 
 
+   /* -------------------------------------------------------------------------------------- */
    /* point style */
    public IMeasure<GArea> getPointSize(final IVector2 point,
                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
@@ -82,6 +93,7 @@ public interface IRenderingStyle {
                                           final IVectorial2DRenderingScaler scaler);
 
 
+   /* -------------------------------------------------------------------------------------- */
    /* surfaces */
    public IMeasure<GLength> getSurfaceBorderSize(final ISurface2D<?> surface,
                                                  final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,
@@ -108,6 +120,7 @@ public interface IRenderingStyle {
                                                                                                    final IVectorial2DRenderingScaler scaler);
 
 
+   /* -------------------------------------------------------------------------------------- */
    /* curves */
    public IMeasure<GLength> getCurveBorderSize(final ICurve2D<?> curve,
                                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature,

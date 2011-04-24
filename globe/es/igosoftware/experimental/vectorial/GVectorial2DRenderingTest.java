@@ -125,7 +125,7 @@ public class GVectorial2DRenderingTest {
       final boolean renderLODIgnores = true;
       final double lodMinSize = 2;
       final int textureDimension = 256;
-      final boolean debugRendering = false;
+      final boolean debugRendering = true;
 
       final IVector2 extent = viewport.getExtent();
 

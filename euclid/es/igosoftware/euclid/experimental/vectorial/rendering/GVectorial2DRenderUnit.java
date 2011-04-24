@@ -2,7 +2,6 @@
 
 package es.igosoftware.euclid.experimental.vectorial.rendering;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
@@ -19,6 +18,7 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectio
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
 import es.igosoftware.euclid.experimental.vectorial.rendering.features.ICurveRenderingShape;
+import es.igosoftware.euclid.experimental.vectorial.rendering.features.INodeRenderingShape;
 import es.igosoftware.euclid.experimental.vectorial.rendering.features.IRenderingSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.features.ISurfaceRenderingShape;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle;
@@ -36,14 +36,6 @@ import es.igosoftware.util.GMath;
 class GVectorial2DRenderUnit
          implements
             IVectorial2DRenderUnit {
-
-
-   private static final Color       LEAF_NODE_BOUND_COLOR   = new Color(0f, 1f, 0f, 0.5f);
-   private static final Color       INNER_NODES_BOUND_COLOR = LEAF_NODE_BOUND_COLOR.darker().darker();
-
-   private static final BasicStroke LEAF_NODES_STROKE       = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND,
-                                                                     10, new float[] { 2, 2 }, 0);
-   private static final BasicStroke INNER_NODES_STROKE      = new BasicStroke(1);
 
 
    @Override
@@ -123,15 +115,9 @@ class GVectorial2DRenderUnit
                          final IVectorial2DRenderingScaler scaler,
                          final IVectorial2DDrawer drawer) {
 
-      if (renderingStyle.isDebugRendering()) {
-         drawNodeBounds(node, scaler, drawer);
-
-         final int TODO_CONVERT_TO_RENDERING_SHAPE;
-         //         final ICurveRenderingShape<ICurve2D<? extends IFiniteBounds<IVector2, ?>>> nodeShape = renderingStyle.getNodeShape(node,
-         //                  scaler);
-         //         if (nodeShape != null) {
-         //            nodeShape.draw(node, renderingStyle, scaler, drawer);
-         //         }
+      final INodeRenderingShape nodeShape = renderingStyle.getNodeShape(node, scaler);
+      if (nodeShape != null) {
+         nodeShape.draw(node, renderingStyle, scaler, drawer);
       }
 
 
@@ -140,19 +126,6 @@ class GVectorial2DRenderUnit
          drawGeometry(geometry, pair.getElement(), extendedRegion, renderingStyle, scaler, drawer);
       }
 
-   }
-
-
-   private void drawNodeBounds(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> node,
-                               final IVectorial2DRenderingScaler scaler,
-                               final IVectorial2DDrawer drawer) {
-      final boolean isInner = (node instanceof GGTInnerNode);
-
-      final Color color = isInner ? INNER_NODES_BOUND_COLOR : LEAF_NODE_BOUND_COLOR;
-      final BasicStroke stroke = isInner ? INNER_NODES_STROKE : LEAF_NODES_STROKE;
-
-      final GAxisAlignedOrthotope<IVector2, ?> scaledNodeBounds = scaler.scaleAndTranslate(node.getBounds());
-      drawer.drawRect(scaledNodeBounds, color, stroke);
    }
 
 

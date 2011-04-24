@@ -12,13 +12,16 @@ import es.igosoftware.euclid.experimental.measurement.GArea;
 import es.igosoftware.euclid.experimental.measurement.GLength;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
+import es.igosoftware.euclid.experimental.vectorial.rendering.features.GDebugNodeRenderingShape;
 import es.igosoftware.euclid.experimental.vectorial.rendering.features.GEllipseRenderingSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.features.GPolygonRenderingShape;
 import es.igosoftware.euclid.experimental.vectorial.rendering.features.GPolygonalChainRenderingShape;
 import es.igosoftware.euclid.experimental.vectorial.rendering.features.ICurveRenderingShape;
+import es.igosoftware.euclid.experimental.vectorial.rendering.features.INodeRenderingShape;
 import es.igosoftware.euclid.experimental.vectorial.rendering.features.IRenderingSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.features.ISurfaceRenderingShape;
 import es.igosoftware.euclid.features.IGlobeFeature;
+import es.igosoftware.euclid.ntree.GGTNode;
 import es.igosoftware.euclid.shape.IComplexPolygon2D;
 import es.igosoftware.euclid.shape.IPolygon2D;
 import es.igosoftware.euclid.shape.IPolygonalChain2D;
@@ -30,7 +33,20 @@ public abstract class GRenderingStyleAbstract
          implements
             IRenderingStyle {
 
+   /* -------------------------------------------------------------------------------------- */
+   /* nodes */
+   @Override
+   public INodeRenderingShape getNodeShape(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> node,
+                                           final IVectorial2DRenderingScaler scaler) {
+      if (!isDebugRendering()) {
+         return null;
+      }
 
+      return new GDebugNodeRenderingShape(node, scaler);
+   }
+
+
+   /* -------------------------------------------------------------------------------------- */
    /* points */
    @Override
    public IRenderingSymbol getPointSymbol(final IVector2 point,
@@ -42,6 +58,7 @@ public abstract class GRenderingStyleAbstract
    }
 
 
+   /* -------------------------------------------------------------------------------------- */
    /* surfaces */
    @Override
    public ISurfaceRenderingShape<ISurface2D<? extends IFiniteBounds<IVector2, ?>>> getSurfaceShape(final ISurface2D<? extends IFiniteBounds<IVector2, ?>> surface,
@@ -75,6 +92,7 @@ public abstract class GRenderingStyleAbstract
    }
 
 
+   /* -------------------------------------------------------------------------------------- */
    /* curves */
    @Override
    public ICurveRenderingShape<ICurve2D<? extends IFiniteBounds<IVector2, ?>>> getCurveShape(final ICurve2D<? extends IFiniteBounds<IVector2, ?>> curve,

@@ -8,6 +8,7 @@ import es.igosoftware.euclid.vector.IVector2;
 
 public interface ISurface2D<BoundsT extends IBounds<IVector2, BoundsT>>
          extends
-            ISurface<IVector2, BoundsT> {
+            ISurface<IVector2, BoundsT>,
+            IBoundedGeometry2D<BoundsT> {
 
 }
