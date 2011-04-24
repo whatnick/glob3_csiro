@@ -19,11 +19,11 @@ import es.igosoftware.util.GAWTUtils;
 import es.igosoftware.util.GAssert;
 
 
-public abstract class GShapeRenderingSymbol
+public abstract class GShape2DRenderingSymbol
          extends
-            GRenderingFeatureAbstract<IVector2>
+            G2DRenderingFeatureAbstract<IVector2>
          implements
-            IRenderingSymbol {
+            I2DRenderingSymbol {
 
 
    protected final IVector2 _position;
@@ -31,10 +31,10 @@ public abstract class GShapeRenderingSymbol
    protected final float    _borderWidth;
 
 
-   protected GShapeRenderingSymbol(final IVector2 point,
-                                   final IMeasure<GArea> pointSize,
-                                   final IMeasure<GLength> pointBorderSize,
-                                   final IVectorial2DRenderingScaler scaler) {
+   protected GShape2DRenderingSymbol(final IVector2 point,
+                                     final IMeasure<GArea> pointSize,
+                                     final IMeasure<GLength> pointBorderSize,
+                                     final IVectorial2DRenderingScaler scaler) {
       GAssert.notNull(point, "point");
       GAssert.notNull(pointSize, "pointSize");
       GAssert.notNull(pointBorderSize, "pointBorderSize");

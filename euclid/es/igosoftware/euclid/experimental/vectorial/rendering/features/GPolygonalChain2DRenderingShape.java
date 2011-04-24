@@ -21,11 +21,11 @@ import es.igosoftware.euclid.shape.IPolygonalChain2D;
 import es.igosoftware.euclid.vector.IVector2;
 
 
-public class GPolygonalChainRenderingShape
+public class GPolygonalChain2DRenderingShape
          extends
-            GRenderingFeatureAbstract<ICurve2D<? extends IFinite2DBounds<?>>>
+            G2DRenderingFeatureAbstract<ICurve2D<? extends IFinite2DBounds<?>>>
          implements
-            ICurveRenderingShape<ICurve2D<? extends IFinite2DBounds<?>>> {
+            ICurve2DRenderingShape<ICurve2D<? extends IFinite2DBounds<?>>> {
 
 
    private final float      _borderWidth;
@@ -33,10 +33,10 @@ public class GPolygonalChainRenderingShape
    private final GAWTPoints _points;
 
 
-   public GPolygonalChainRenderingShape(final IPolygonalChain2D polygonalChain,
-                                        final GAWTPoints points,
-                                        final IMeasure<GLength> curveBorderSize,
-                                        final IVectorial2DRenderingScaler scaler) {
+   public GPolygonalChain2DRenderingShape(final IPolygonalChain2D polygonalChain,
+                                          final GAWTPoints points,
+                                          final IMeasure<GLength> curveBorderSize,
+                                          final IVectorial2DRenderingScaler scaler) {
       final IVector2 point = polygonalChain.getCentroid();
 
       final double borderLenghtInMeters = curveBorderSize.getValueInReferenceUnits();

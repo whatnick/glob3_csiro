@@ -11,13 +11,13 @@ import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.vector.IVector2;
 
 
-public abstract class GRenderingFeatureAbstract<
+public abstract class G2DRenderingFeatureAbstract<
 
 GeometryT extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>
 
 >
          implements
-            IRenderingFeature<GeometryT> {
+            I2DRenderingFeature<GeometryT> {
 
 
    @Override

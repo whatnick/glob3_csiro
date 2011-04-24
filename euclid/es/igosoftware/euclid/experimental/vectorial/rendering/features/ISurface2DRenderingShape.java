@@ -6,12 +6,12 @@ import es.igosoftware.euclid.ISurface2D;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
 
 
-public interface ISurfaceRenderingShape<
+public interface ISurface2DRenderingShape<
 
 GeometryT extends ISurface2D<? extends IFinite2DBounds<?>>
 
 >
          extends
-            IRenderingShape<GeometryT> {
+            I2DRenderingShape<GeometryT> {
 
 }

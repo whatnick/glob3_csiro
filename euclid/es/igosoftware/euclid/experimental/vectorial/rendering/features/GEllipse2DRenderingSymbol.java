@@ -14,15 +14,15 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.util.GMath;
 
 
-public class GEllipseRenderingSymbol
+public class GEllipse2DRenderingSymbol
          extends
-            GShapeRenderingSymbol {
+            GShape2DRenderingSymbol {
 
 
-   public GEllipseRenderingSymbol(final IVector2 point,
-                                  final IMeasure<GArea> pointSize,
-                                  final IMeasure<GLength> pointBorderSize,
-                                  final IVectorial2DRenderingScaler scaler) {
+   public GEllipse2DRenderingSymbol(final IVector2 point,
+                                    final IMeasure<GArea> pointSize,
+                                    final IMeasure<GLength> pointBorderSize,
+                                    final IVectorial2DRenderingScaler scaler) {
       super(point, pointSize, pointBorderSize, scaler);
    }
 

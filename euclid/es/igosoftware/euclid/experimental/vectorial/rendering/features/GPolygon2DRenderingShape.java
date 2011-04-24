@@ -22,11 +22,11 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.util.GAWTUtils;
 
 
-public class GPolygonRenderingShape
+public class GPolygon2DRenderingShape
          extends
-            GRenderingFeatureAbstract<ISurface2D<? extends IFinite2DBounds<?>>>
+            G2DRenderingFeatureAbstract<ISurface2D<? extends IFinite2DBounds<?>>>
          implements
-            ISurfaceRenderingShape<ISurface2D<? extends IFinite2DBounds<?>>> {
+            ISurface2DRenderingShape<ISurface2D<? extends IFinite2DBounds<?>>> {
 
 
    private final float       _borderWidth;
@@ -34,10 +34,10 @@ public class GPolygonRenderingShape
    private final Shape       _awtShape;
 
 
-   public GPolygonRenderingShape(final IPolygon2D polygon,
-                                 final Shape awtShape,
-                                 final IMeasure<GLength> surfaceBorderSize,
-                                 final IVectorial2DRenderingScaler scaler) {
+   public GPolygon2DRenderingShape(final IPolygon2D polygon,
+                                   final Shape awtShape,
+                                   final IMeasure<GLength> surfaceBorderSize,
+                                   final IVectorial2DRenderingScaler scaler) {
       final IVector2 point = polygon.getCentroid();
 
       final double borderLenghtInMeters = surfaceBorderSize.getValueInReferenceUnits();

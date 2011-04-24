@@ -18,9 +18,9 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.util.GAssert;
 
 
-public class GDebugNodeRenderingShape
+public class GDebugNode2DRenderingShape
          implements
-            INodeRenderingShape {
+            INode2DRenderingShape {
 
    private static final Color                       LEAF_NODE_BOUND_COLOR   = new Color(0f, 1f, 0f, 0.5f);
    private static final Color                       INNER_NODES_BOUND_COLOR = LEAF_NODE_BOUND_COLOR.darker().darker();
@@ -35,8 +35,8 @@ public class GDebugNodeRenderingShape
    private final GAxisAlignedOrthotope<IVector2, ?> _scaledBounds;
 
 
-   public GDebugNodeRenderingShape(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> node,
-                                   final IVectorial2DRenderingScaler scaler) {
+   public GDebugNode2DRenderingShape(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> node,
+                                     final IVectorial2DRenderingScaler scaler) {
       GAssert.notNull(node, "node");
       GAssert.notNull(scaler, "scaler");
 

@@ -22,11 +22,11 @@ import es.igosoftware.util.GPair;
 import es.igosoftware.util.LRUCache;
 
 
-public class GIconRenderingSymbol
+public class GIcon2DRenderingSymbol
          extends
-            GRenderingFeatureAbstract<IVector2>
+            G2DRenderingFeatureAbstract<IVector2>
          implements
-            IRenderingSymbol {
+            I2DRenderingSymbol {
 
 
    private static class ImageData {
@@ -113,10 +113,10 @@ public class GIconRenderingSymbol
    private final ImageData     _imageData;
 
 
-   public GIconRenderingSymbol(final BufferedImage icon,
-                               final IVector2 point,
-                               final IMeasure<GArea> pointSize,
-                               final IVectorial2DRenderingScaler scaler) {
+   public GIcon2DRenderingSymbol(final BufferedImage icon,
+                                 final IVector2 point,
+                                 final IMeasure<GArea> pointSize,
+                                 final IVectorial2DRenderingScaler scaler) {
 
       _imageData = imageDataCache.get(icon);
 

@@ -64,9 +64,9 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.context.GJava2DVec
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
-import es.igosoftware.euclid.experimental.vectorial.rendering.features.GIconRenderingSymbol;
-import es.igosoftware.euclid.experimental.vectorial.rendering.features.GRectangleRenderingSymbol;
-import es.igosoftware.euclid.experimental.vectorial.rendering.features.IRenderingSymbol;
+import es.igosoftware.euclid.experimental.vectorial.rendering.features.GIcon2DRenderingSymbol;
+import es.igosoftware.euclid.experimental.vectorial.rendering.features.GRectangle2DRenderingSymbol;
+import es.igosoftware.euclid.experimental.vectorial.rendering.features.I2DRenderingSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.GRenderingStyle2DAbstract;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle2D;
 import es.igosoftware.euclid.features.GGeometryType;
@@ -245,21 +245,21 @@ public class GVectorial2DRenderingTest {
 
 
          @Override
-         public IRenderingSymbol getPointSymbol(final IVector2 point,
-                                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                                final IVectorial2DRenderingScaler scaler) {
+         public I2DRenderingSymbol getPointSymbol(final IVector2 point,
+                                                  final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                                  final IVectorial2DRenderingScaler scaler) {
             if (isCategory(feature, "automotive")) {
                final IMeasure<GArea> pointSize = getPointSize(point, feature, scaler);
-               return new GIconRenderingSymbol(automotiveIcon, point, pointSize, scaler);
+               return new GIcon2DRenderingSymbol(automotiveIcon, point, pointSize, scaler);
             }
             else if (isCategory(feature, "government and public services")) {
                final IMeasure<GArea> pointSize = getPointSize(point, feature, scaler);
-               return new GIconRenderingSymbol(governmentIcon, point, pointSize, scaler);
+               return new GIcon2DRenderingSymbol(governmentIcon, point, pointSize, scaler);
             }
             else if (isCategory(feature, "tourism")) {
                final IMeasure<GArea> pointSize = getPointSize(point, feature, scaler);
                final IMeasure<GLength> pointBorderSize = getPointBorderSize(point, feature, scaler);
-               return new GRectangleRenderingSymbol(point, pointSize, pointBorderSize, scaler);
+               return new GRectangle2DRenderingSymbol(point, pointSize, pointBorderSize, scaler);
             }
             else {
                return super.getPointSymbol(point, feature, scaler);

@@ -6,13 +6,13 @@ import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
 
 
-public interface IRenderingShape<
+public interface I2DRenderingShape<
 
 GeometryT extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>
 
 >
          extends
-            IRenderingFeature<GeometryT> {
+            I2DRenderingFeature<GeometryT> {
 
 
 }

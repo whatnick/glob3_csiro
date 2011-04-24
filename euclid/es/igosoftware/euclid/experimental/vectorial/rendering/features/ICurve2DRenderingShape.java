@@ -6,12 +6,12 @@ import es.igosoftware.euclid.ICurve2D;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
 
 
-public interface ICurveRenderingShape<
+public interface ICurve2DRenderingShape<
 
 GeometryT extends ICurve2D<? extends IFinite2DBounds<?>>
 
 >
          extends
-            IRenderingShape<GeometryT> {
+            I2DRenderingShape<GeometryT> {
 
 }
