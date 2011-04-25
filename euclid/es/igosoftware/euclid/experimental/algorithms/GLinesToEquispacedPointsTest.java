@@ -66,7 +66,11 @@ public class GLinesToEquispacedPointsTest
 
    private <
 
-   VectorT extends IVector<VectorT, ?>, SegmentT extends GSegment<VectorT, SegmentT, ?>, BoundsT extends IBounds<VectorT, BoundsT>
+   VectorT extends IVector<VectorT, ?>,
+
+   SegmentT extends GSegment<VectorT, SegmentT, ?>,
+
+   BoundsT extends IBounds<VectorT, BoundsT>
 
    > void checkResult(final List<VectorT> result,
                       final IPolygonalChain<VectorT, SegmentT, BoundsT> geom,
