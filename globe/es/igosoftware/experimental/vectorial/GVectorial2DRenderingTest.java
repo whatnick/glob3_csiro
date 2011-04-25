@@ -40,6 +40,8 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 
 import javax.imageio.ImageIO;
 
@@ -258,15 +260,15 @@ public class GVectorial2DRenderingTest {
 
 
          @Override
-         public GStyled2DGeometry<? extends IGeometry2D> getPointStyledSurface(final IVector2 point,
-                                                                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                                                               final IVectorial2DRenderingScaler scaler) {
+         public Collection<? extends GStyled2DGeometry<? extends IGeometry2D>> getPointSymbols(final IVector2 point,
+                                                                                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                                                                               final IVectorial2DRenderingScaler scaler) {
 
             if (isCategory(feature, "automotive")) {
-               return createStyledIcon(point, feature, scaler, automotiveIcon);
+               return Collections.singleton(createStyledIcon(point, feature, scaler, automotiveIcon));
             }
             else if (isCategory(feature, "government and public services")) {
-               return createStyledIcon(point, feature, scaler, governmentIcon);
+               return Collections.singleton(createStyledIcon(point, feature, scaler, governmentIcon));
             }
             else if (isCategory(feature, "tourism")) {
                final IVector2 extent = calculateRectangleExtent(point, feature, scaler);
@@ -277,10 +279,10 @@ public class GVectorial2DRenderingTest {
                final ICurve2DStyle curveStyle = getPointCurveStyle(point, feature, scaler);
 
                final GAxisAlignedRectangle rectangle = new GAxisAlignedRectangle(position, position.add(extent));
-               return new GStyledRectangle2D(rectangle, surfaceStyle, curveStyle);
+               return Collections.singleton(new GStyledRectangle2D(rectangle, surfaceStyle, curveStyle));
             }
             else {
-               return super.getPointStyledSurface(point, feature, scaler);
+               return super.getPointSymbols(point, feature, scaler);
             }
          }
 

@@ -2,12 +2,15 @@
 
 package es.igosoftware.euclid.experimental.vectorial.rendering;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.util.Collection;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.ICurve2D;
 import es.igosoftware.euclid.IGeometry2D;
 import es.igosoftware.euclid.ISurface2D;
+import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.experimental.measurement.GArea;
@@ -78,14 +81,27 @@ class GVectorial2DRenderUnit
          return;
       }
 
-      if (!renderingStyle.processNode(node, scaler, drawer)) {
+      //      if (!renderingStyle.processNode(node, scaler, drawer)) {
+      //         return;
+      //      }
+
+
+      final IVector2 nodeExtent = nodeBounds.asRectangle().getExtent();
+      final IVector2 scaledExtent = scaler.scaleExtent(nodeExtent);
+
+      if (scaledExtent.length() <= renderingStyle.getLODMinSize()) {
+         if (renderingStyle.isDebugRendering()) {
+            final GAxisAlignedOrthotope<IVector2, ?> scaledNodeBounds = scaler.scaleAndTranslate(nodeBounds);
+            drawer.fillRect(scaledNodeBounds, Color.RED);
+         }
+
          return;
       }
 
-      final GStyled2DGeometry<? extends IGeometry2D> nodeSymbol = renderingStyle.getNodeSymbol(node, scaler);
-      if (nodeSymbol != null) {
-         nodeSymbol.draw(drawer, Double.POSITIVE_INFINITY, renderingStyle.isDebugRendering(), renderingStyle.isRenderLODIgnores());
-      }
+
+      final Collection<? extends GStyled2DGeometry<? extends IGeometry2D>> symbols = renderingStyle.getNodeSymbols(node, scaler);
+      drawSymbols(symbols, renderingStyle, drawer);
+
 
       if (node instanceof GGTInnerNode) {
          final GGTInnerNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> inner;
@@ -136,25 +152,41 @@ class GVectorial2DRenderUnit
       else if (geometry instanceof IVector2) {
          final IVector2 point = (IVector2) geometry;
 
-         final GStyled2DGeometry<? extends IGeometry2D> symbol = renderingStyle.getPointStyledSurface(point, feature, scaler);
-         drawSymbol(symbol, renderingStyle, drawer);
+         final Collection<? extends GStyled2DGeometry<? extends IGeometry2D>> symbols = renderingStyle.getPointSymbols(point,
+                  feature, scaler);
+         drawSymbols(symbols, renderingStyle, drawer);
       }
       else if (geometry instanceof ICurve2D<?>) {
          final ICurve2D<? extends IFinite2DBounds<?>> curve = (ICurve2D<? extends IFinite2DBounds<?>>) geometry;
 
-         final GStyled2DGeometry<? extends IGeometry2D> symbol = renderingStyle.getStyledCurve(curve, feature, scaler);
-         drawSymbol(symbol, renderingStyle, drawer);
+         final Collection<? extends GStyled2DGeometry<? extends IGeometry2D>> symbols = renderingStyle.getCurveSymbols(curve,
+                  feature, scaler);
+         drawSymbols(symbols, renderingStyle, drawer);
       }
       else if (geometry instanceof ISurface2D<?>) {
          final ISurface2D<? extends IFinite2DBounds<?>> surface = (ISurface2D<? extends IFinite2DBounds<?>>) geometry;
 
-         final GStyled2DGeometry<? extends IGeometry2D> symbol = renderingStyle.getStyledSurface(surface, feature, scaler);
-         drawSymbol(symbol, renderingStyle, drawer);
+         final Collection<? extends GStyled2DGeometry<? extends IGeometry2D>> symbols = renderingStyle.getSurfaceSymbols(surface,
+                  feature, scaler);
+         drawSymbols(symbols, renderingStyle, drawer);
       }
       else {
          System.out.println("Warning: geometry type " + geometry.getClass() + " not supported");
       }
 
+   }
+
+
+   private void drawSymbols(final Collection<? extends GStyled2DGeometry<? extends IGeometry2D>> symbols,
+                            final IRenderingStyle2D renderingStyle,
+                            final IVectorial2DDrawer drawer) {
+      if (symbols == null) {
+         return;
+      }
+
+      for (final GStyled2DGeometry<? extends IGeometry2D> symbol : symbols) {
+         drawSymbol(symbol, renderingStyle, drawer);
+      }
    }
 
 
