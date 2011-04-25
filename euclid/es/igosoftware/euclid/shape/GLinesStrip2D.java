@@ -8,6 +8,8 @@ import java.util.List;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.euclid.vector.IVectorFunction;
+import es.igosoftware.util.GCollections;
 
 
 public class GLinesStrip2D
@@ -106,6 +108,17 @@ public class GLinesStrip2D
    @Override
    public GLinesStrip2D clone() {
       return this;
+   }
+
+
+   @Override
+   public GLinesStrip2D transform(final IVectorFunction<IVector2> transformer) {
+      if (transformer == null) {
+         return this;
+      }
+
+      final List<IVector2> transformedPoints = GCollections.collect(_points, transformer);
+      return new GLinesStrip2D(false, transformedPoints);
    }
 
 

@@ -29,4 +29,11 @@ public class GNullCurve2DStyle
       return null;
    }
 
+
+   @Override
+   public Paint getLODIgnorePaint() {
+      return null;
+   }
+
+
 }

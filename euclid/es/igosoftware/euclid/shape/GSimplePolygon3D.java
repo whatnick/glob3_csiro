@@ -45,6 +45,7 @@ import es.igosoftware.euclid.utils.GTriangulate;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
+import es.igosoftware.euclid.vector.IVectorFunction;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.IFunction;
@@ -235,6 +236,16 @@ public final class GSimplePolygon3D
    @Override
    public boolean isConvex() {
       throw new RuntimeException("not yet implemented");
+   }
+
+
+   @Override
+   public GSimplePolygon3D transform(final IVectorFunction<IVector3> transformer) {
+      if (transformer == null) {
+         return this;
+      }
+      final List<IVector3> transformedPoints = GCollections.collect(_points, transformer);
+      return new GSimplePolygon3D(false, transformedPoints);
    }
 
 

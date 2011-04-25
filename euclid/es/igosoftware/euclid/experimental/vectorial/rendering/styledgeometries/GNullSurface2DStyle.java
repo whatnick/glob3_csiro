@@ -23,4 +23,10 @@ public class GNullSurface2DStyle
    }
 
 
+   @Override
+   public Paint getLODIgnorePaint() {
+      return null;
+   }
+
+
 }

@@ -37,6 +37,7 @@
 package es.igosoftware.euclid.bounding;
 
 import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.euclid.vector.IVectorFunction;
 import es.igosoftware.util.GMath;
 
 
@@ -115,6 +116,21 @@ public final class GDisk
    @Override
    public boolean touchesBounds(final IBounds<IVector2, ?> that) {
       return touches((IBounds2D<?>) that);
+   }
+
+
+   @Override
+   public GDisk transform(final IVectorFunction<IVector2> transformer) {
+      if (transformer == null) {
+         return this;
+      }
+
+      final GAxisAlignedRectangle transformedBounds = asAxisAlignedOrthotope().transform(transformer);
+
+      final IVector2 scaledExtent = transformedBounds.getExtent();
+      final double radius = (scaledExtent.x() + scaledExtent.y()) / 2;
+
+      return new GDisk(transformedBounds._center, radius);
    }
 
 

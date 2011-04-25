@@ -3,11 +3,13 @@
 package es.igosoftware.euclid.experimental.tests;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import junit.framework.TestCase;
 import es.igosoftware.euclid.IEdgedGeometry;
 import es.igosoftware.euclid.bounding.IBounds;
+import es.igosoftware.euclid.shape.GComplexPolygon2D;
 import es.igosoftware.euclid.shape.GLinesStrip2D;
 import es.igosoftware.euclid.shape.GQuad2D;
 import es.igosoftware.euclid.shape.GQuad3D;
@@ -121,9 +123,9 @@ public class EuclidTest
       p3 = new GVector2D(9, 9);
       p4 = new GVector2D(1, 9);
       final GSimplePolygon2D hole = new GSimplePolygon2D(false, p1, p2, p3, p4);
-      //      final GComplexPolygon2D geom = new GComplexPolygon2D(ring, Collections.singletonList(hole));
-      //      checkEdges(geom, true);
-      fail();
+      final GComplexPolygon2D geom = new GComplexPolygon2D(ring, Collections.singletonList(hole));
+      checkEdges(geom, true);
+      //      fail(); 
    }
 
 

@@ -6,6 +6,7 @@ import es.igosoftware.euclid.GGeometryAbstract;
 import es.igosoftware.euclid.ISurface2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.euclid.vector.IVectorFunction;
 import es.igosoftware.util.GAssert;
 
 
@@ -151,6 +152,18 @@ public class GAxisAlignedEllipse2D
          return false;
       }
       return true;
+   }
+
+
+   @Override
+   public GAxisAlignedEllipse2D transform(final IVectorFunction<IVector2> transformer) {
+      if (transformer == null) {
+         return this;
+      }
+
+      final GAxisAlignedRectangle transformedBounds = getBounds().transform(transformer);
+
+      return new GAxisAlignedEllipse2D(transformedBounds._center, transformedBounds.getExtent().div(2));
    }
 
 

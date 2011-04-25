@@ -166,6 +166,7 @@ public class GJava2DVectorial2DDrawer
          yPoints[i] = GMath.toRoundedInt(point.y());
       }
 
+
       drawPolyline(xPoints, yPoints, pointsCount, paint, stroke);
    }
 

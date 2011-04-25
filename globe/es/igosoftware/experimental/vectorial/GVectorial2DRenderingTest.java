@@ -45,6 +45,7 @@ import javax.imageio.ImageIO;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.ICurve2D;
+import es.igosoftware.euclid.IGeometry2D;
 import es.igosoftware.euclid.ISurface2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
@@ -64,9 +65,12 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.context.GJava2DVec
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
-import es.igosoftware.euclid.experimental.vectorial.rendering.features.GIcon2DRenderingSymbol;
-import es.igosoftware.euclid.experimental.vectorial.rendering.features.GRectangle2DRenderingSymbol;
-import es.igosoftware.euclid.experimental.vectorial.rendering.features.I2DRenderingSymbol;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GIconUtils;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyled2DGeometry;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyledIcon2D;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyledRectangle2D;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.ICurve2DStyle;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.ISurface2DStyle;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.GRenderingStyle2DAbstract;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle2D;
 import es.igosoftware.euclid.features.GGeometryType;
@@ -78,6 +82,7 @@ import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.util.GPair;
 import es.igosoftware.util.GStringUtils;
+import es.igosoftware.util.GUtils;
 import es.igosoftware.util.IFunction;
 import es.igosoftware.utils.GWWUtils;
 
@@ -152,10 +157,21 @@ public class GVectorial2DRenderingTest {
                surfacesRenderer, renderingStyle), new GPair<GVectorial2DRenderer, IRenderingStyle2D>(linesRenderer,
                renderingStyle), new GPair<GVectorial2DRenderer, IRenderingStyle2D>(pointsRenderer, renderingStyle) };
 
+      final boolean profile = false;
+      if (profile) {
+         System.out.println();
+         System.out.println(" CONNECT PROFILER ");
+         System.out.println();
+         GUtils.delay(30000);
+         System.out.println("- Running... ");
+      }
 
       final int depth = 0;
       final int maxDepth = 3;
       render(renderers, viewport, imageWidth, imageHeight, directoryName, depth, maxDepth);
+
+      System.out.println();
+      System.out.println("- done!");
    }
 
 
@@ -201,8 +217,6 @@ public class GVectorial2DRenderingTest {
             }
 
             if (features.getGeometryType().contains(GGeometryType.SURFACE)) {
-               //               _pointColorizer.preprocessFeatures(features);
-
                _countryIndex = features.getFieldIndex("NEV_Countr");
             }
 
@@ -244,64 +258,83 @@ public class GVectorial2DRenderingTest {
 
 
          @Override
-         public I2DRenderingSymbol getPointSymbol(final IVector2 point,
-                                                  final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                                  final IVectorial2DRenderingScaler scaler) {
+         public GStyled2DGeometry<? extends IGeometry2D> getPointStyledSurface(final IVector2 point,
+                                                                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                                                               final IVectorial2DRenderingScaler scaler) {
+
             if (isCategory(feature, "automotive")) {
-               final IMeasure<GArea> pointSize = getPointSize(point, feature, scaler);
-               return new GIcon2DRenderingSymbol(automotiveIcon, point, pointSize, scaler);
+               return createStyledIcon(point, feature, scaler, automotiveIcon);
             }
             else if (isCategory(feature, "government and public services")) {
-               final IMeasure<GArea> pointSize = getPointSize(point, feature, scaler);
-               return new GIcon2DRenderingSymbol(governmentIcon, point, pointSize, scaler);
+               return createStyledIcon(point, feature, scaler, governmentIcon);
             }
             else if (isCategory(feature, "tourism")) {
-               final IMeasure<GArea> pointSize = getPointSize(point, feature, scaler);
-               final IMeasure<GLength> pointBorderSize = getPointBorderSize(point, feature, scaler);
-               return new GRectangle2DRenderingSymbol(point, pointSize, pointBorderSize, scaler);
+               final IVector2 extent = calculateRectangleExtent(point, feature, scaler);
+               final IVector2 position = calculatePosition(point, feature, scaler, extent);
+
+               final ISurface2DStyle surfaceStyle = getPointSurfaceStyle(point, feature, scaler);
+
+               final ICurve2DStyle curveStyle = getPointCurveStyle(point, feature, scaler);
+
+               final GAxisAlignedRectangle rectangle = new GAxisAlignedRectangle(position, position.add(extent));
+               return new GStyledRectangle2D(rectangle, surfaceStyle, curveStyle);
             }
             else {
-               return super.getPointSymbol(point, feature, scaler);
+               return super.getPointStyledSurface(point, feature, scaler);
             }
          }
 
 
+         private GStyled2DGeometry<? extends IGeometry2D> createStyledIcon(final IVector2 point,
+                                                                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                                                           final IVectorial2DRenderingScaler scaler,
+                                                                           final BufferedImage icon) {
+            final float percentFilled = GIconUtils.getPercentFilled(icon);
+            final IVector2 extent = calculateRectangleExtent(point, feature, scaler).div(percentFilled);
+            final IVector2 position = calculatePosition(point, feature, scaler, extent);
+
+            final BufferedImage scaledIcon = GIconUtils.getScaledImage(icon, extent);
+
+            return new GStyledIcon2D(position, scaledIcon, 0.75f);
+         }
+
+
          @Override
-         public IMeasure<GArea> getPointSize(final IVector2 point,
-                                             final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                             final IVectorial2DRenderingScaler scaler) {
+         protected IMeasure<GArea> getPointSize(final IVector2 point,
+                                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                                final IVectorial2DRenderingScaler scaler) {
             return GArea.SquareKilometer.value(50);
          }
 
 
          @Override
-         public IMeasure<GLength> getPointBorderSize(final IVector2 point,
-                                                     final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                                     final IVectorial2DRenderingScaler scaler) {
+         protected IMeasure<GLength> getPointBorderSize(final IVector2 point,
+                                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                                        final IVectorial2DRenderingScaler scaler) {
             return GLength.Kilometer.value(0.5);
          }
 
 
          @Override
-         public float getPointOpacity(final IVector2 point,
-                                      final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                      final IVectorial2DRenderingScaler scaler) {
+         protected float getPointOpacity(final IVector2 point,
+                                         final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                         final IVectorial2DRenderingScaler scaler) {
             return 0.75f;
          }
 
 
          @Override
-         public IColor getPointColor(final IVector2 point,
-                                     final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                     final IVectorial2DRenderingScaler scaler) {
+         protected IColor getPointColor(final IVector2 point,
+                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                        final IVectorial2DRenderingScaler scaler) {
             return _pointColorizer.getColor(feature);
          }
 
 
          @Override
-         public IColor getPointBorderColor(final IVector2 point,
-                                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                           final IVectorial2DRenderingScaler scaler) {
+         protected IColor getPointBorderColor(final IVector2 point,
+                                              final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                              final IVectorial2DRenderingScaler scaler) {
             return _pointColorizer.getColor(feature).muchDarker();
          }
 
@@ -337,9 +370,9 @@ public class GVectorial2DRenderingTest {
 
 
          @Override
-         public IMeasure<GLength> getSurfaceBorderSize(final ISurface2D<?> surface,
-                                                       final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                                       final IVectorial2DRenderingScaler scaler) {
+         protected IMeasure<GLength> getSurfaceBorderSize(final ISurface2D<?> surface,
+                                                          final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                                          final IVectorial2DRenderingScaler scaler) {
             final String country = (String) feature.getAttribute(_countryIndex);
             if ((country != null) && country.trim().toLowerCase().equals("argentina")) {
                return GLength.Kilometer.value(2);
@@ -349,9 +382,9 @@ public class GVectorial2DRenderingTest {
 
 
          @Override
-         public IColor getSurfaceColor(final ISurface2D<?> surface,
-                                       final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                       final IVectorial2DRenderingScaler scaler) {
+         protected IColor getSurfaceColor(final ISurface2D<?> surface,
+                                          final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                          final IVectorial2DRenderingScaler scaler) {
             final String country = (String) feature.getAttribute(_countryIndex);
             if ((country != null) && country.trim().toLowerCase().equals("argentina")) {
                return GColorF.newRGB256(204, 224, 143).lighter();
@@ -361,41 +394,41 @@ public class GVectorial2DRenderingTest {
 
 
          @Override
-         public float getSurfaceOpacity(final ISurface2D<?> surface,
-                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                        final IVectorial2DRenderingScaler scaler) {
+         protected float getSurfaceOpacity(final ISurface2D<?> surface,
+                                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                           final IVectorial2DRenderingScaler scaler) {
             return 1;
          }
 
 
          @Override
-         public IColor getSurfaceBorderColor(final ISurface2D<?> surface,
-                                             final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                             final IVectorial2DRenderingScaler scaler) {
+         protected IColor getSurfaceBorderColor(final ISurface2D<?> surface,
+                                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                                final IVectorial2DRenderingScaler scaler) {
             return getSurfaceColor(surface, feature, scaler).muchDarker();
          }
 
 
          @Override
-         public IMeasure<GLength> getCurveBorderSize(final ICurve2D<?> curve,
-                                                     final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                                     final IVectorial2DRenderingScaler scaler) {
+         protected IMeasure<GLength> getCurveBorderSize(final ICurve2D<?> curve,
+                                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                                        final IVectorial2DRenderingScaler scaler) {
             return GLength.Kilometer.value(0.5f);
          }
 
 
          @Override
-         public IColor getCurveColor(final ICurve2D<?> curve,
-                                     final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                     final IVectorial2DRenderingScaler scaler) {
+         protected IColor getCurveColor(final ICurve2D<?> curve,
+                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                        final IVectorial2DRenderingScaler scaler) {
             return GColorF.GRAY;
          }
 
 
          @Override
-         public float getCurveOpacity(final ICurve2D<?> curve,
-                                      final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                      final IVectorial2DRenderingScaler scaler) {
+         protected float getCurveOpacity(final ICurve2D<?> curve,
+                                         final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                         final IVectorial2DRenderingScaler scaler) {
             return 1;
          }
 

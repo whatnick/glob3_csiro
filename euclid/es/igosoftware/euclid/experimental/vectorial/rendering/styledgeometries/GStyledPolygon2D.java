@@ -26,9 +26,9 @@ public class GStyledPolygon2D
 
 
    public GStyledPolygon2D(final IPolygon2D polygon,
-                           final ICurve2DStyle curveStyle,
-                           final ISurface2DStyle surfaceStyle) {
-      super(polygon, curveStyle, surfaceStyle);
+                           final ISurface2DStyle surfaceStyle,
+                           final ICurve2DStyle curveStyle) {
+      super(polygon, surfaceStyle, curveStyle);
 
       _polygonShape = initializeShape();
    }
@@ -77,7 +77,7 @@ public class GStyledPolygon2D
 
 
    @Override
-   public void draw(final IVectorial2DDrawer drawer) {
+   protected void rawDraw(final IVectorial2DDrawer drawer) {
       // render surface
       final Paint fillPaint = _surfaceStyle.getSurfacePaint();
       if (fillPaint != null) {

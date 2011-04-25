@@ -31,8 +31,7 @@ public class ScriptTest
          ScriptManager.getPythonAlgorithm(getScriptStream("noAlgorithmVarSet.py"));
          fail();
       }
-      catch (final IllegalScriptException e) {
-      }
+      catch (final IllegalScriptException e) {}
    }
 
 
@@ -41,8 +40,7 @@ public class ScriptTest
          ScriptManager.getPythonAlgorithm(getScriptStream("noIAlgorithmInstance.py"));
          fail();
       }
-      catch (final IllegalScriptException e) {
-      }
+      catch (final IllegalScriptException e) {}
    }
 
 

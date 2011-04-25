@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.ICurve2D;
+import es.igosoftware.euclid.IGeometry2D;
 import es.igosoftware.euclid.ISurface2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
@@ -17,10 +18,10 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.context.GVectorial
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
-import es.igosoftware.euclid.experimental.vectorial.rendering.features.I2DRenderingSymbol;
-import es.igosoftware.euclid.experimental.vectorial.rendering.features.ICurve2DRenderingShape;
 import es.igosoftware.euclid.experimental.vectorial.rendering.features.INode2DRenderingShape;
-import es.igosoftware.euclid.experimental.vectorial.rendering.features.ISurface2DRenderingShape;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyled2DGeometry;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyledCurve2D;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyledSurface2D;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle2D;
 import es.igosoftware.euclid.experimental.vectorial.rendering.utils.GRenderingQuadtree;
 import es.igosoftware.euclid.features.IGlobeFeature;
@@ -149,25 +150,32 @@ class GVectorial2DRenderUnit
       }
       else if (geometry instanceof IVector2) {
          final IVector2 point = (IVector2) geometry;
-         final I2DRenderingSymbol symbol = renderingStyle.getPointSymbol(point, feature, scaler);
-         if (symbol != null) {
-            symbol.draw(point, feature, renderingStyle, scaler, drawer);
+
+         //         final I2DRenderingSymbol symbol = renderingStyle.getPointSymbol(point, feature, scaler);
+         //         if (symbol != null) {
+         //            symbol.draw(point, feature, renderingStyle, scaler, drawer);
+         //         }
+
+         final GStyled2DGeometry<? extends IGeometry2D> styledSurface = renderingStyle.getPointStyledSurface(point, feature,
+                  scaler);
+         if (styledSurface != null) {
+            styledSurface.draw(drawer, renderingStyle.getLODMinSize());
          }
       }
       else if (geometry instanceof ICurve2D<?>) {
          final ICurve2D<? extends IFinite2DBounds<?>> curve = (ICurve2D<? extends IFinite2DBounds<?>>) geometry;
-         final ICurve2DRenderingShape<ICurve2D<? extends IFinite2DBounds<?>>> shape = renderingStyle.getCurveShape(curve,
-                  feature, scaler);
-         if (shape != null) {
-            shape.draw(curve, feature, renderingStyle, scaler, drawer);
+
+         final GStyledCurve2D<? extends ICurve2D<?>> styledCurve = renderingStyle.getStyledCurve(curve, feature, scaler);
+         if (styledCurve != null) {
+            styledCurve.draw(drawer, renderingStyle.getLODMinSize());
          }
       }
       else if (geometry instanceof ISurface2D<?>) {
          final ISurface2D<? extends IFinite2DBounds<?>> surface = (ISurface2D<? extends IFinite2DBounds<?>>) geometry;
-         final ISurface2DRenderingShape<ISurface2D<? extends IFinite2DBounds<?>>> shape = renderingStyle.getSurfaceShape(surface,
-                  feature, scaler);
-         if (shape != null) {
-            shape.draw(surface, feature, renderingStyle, scaler, drawer);
+
+         final GStyledSurface2D<? extends ISurface2D<?>> styledSurface = renderingStyle.getStyledSurface(surface, feature, scaler);
+         if (styledSurface != null) {
+            styledSurface.draw(drawer, renderingStyle.getLODMinSize());
          }
       }
       else {
