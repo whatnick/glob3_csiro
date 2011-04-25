@@ -3,7 +3,7 @@
 package es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries;
 
 
-import java.awt.Paint;
+import java.awt.Color;
 
 import es.igosoftware.euclid.ISurface2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
@@ -22,8 +22,9 @@ GeometryT extends ISurface2D<? extends IFinite2DBounds<?>>
          extends
             GStyled2DGeometry<GeometryT> {
 
-   protected final ISurface2DStyle _surfaceStyle;
-   protected final ICurve2DStyle   _curveStyle;
+   protected final ISurface2DStyle       _surfaceStyle;
+   protected final ICurve2DStyle         _curveStyle;
+   protected final GAxisAlignedRectangle _bounds;
 
 
    protected GStyledSurface2D(final GeometryT geometry,
@@ -36,23 +37,22 @@ GeometryT extends ISurface2D<? extends IFinite2DBounds<?>>
 
       _surfaceStyle = surfaceStyle;
       _curveStyle = curveStyle;
+
+      _bounds = _geometry.getBounds().asAxisAlignedOrthotope();
    }
 
 
    @Override
-   protected double getSize() {
-      final IVector2 extent = _geometry.getBounds().asAxisAlignedOrthotope().getExtent();
-      return extent.x() * extent.y();
+   protected boolean isBigger(final double lodMinSize) {
+      final IVector2 extent = _bounds.getExtent();
+      return (extent.length() > lodMinSize);
    }
 
 
    @Override
-   protected void drawLODIgnore(final IVectorial2DDrawer drawer) {
-      final Paint paint = _curveStyle.getLODIgnorePaint();
-      if (paint != null) {
-         final GAxisAlignedRectangle bounds = _geometry.getBounds().asAxisAlignedOrthotope();
-         drawer.fillRect(bounds, paint);
-      }
+   protected void drawLODIgnore(final IVectorial2DDrawer drawer,
+                                final boolean debugRendering) {
+      drawer.fillRect(_bounds, debugRendering ? Color.MAGENTA : _surfaceStyle.getSurfacePaint());
    }
 
 

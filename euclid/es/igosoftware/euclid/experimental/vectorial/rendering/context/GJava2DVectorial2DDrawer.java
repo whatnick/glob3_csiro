@@ -264,6 +264,10 @@ public class GJava2DVectorial2DDrawer
                                final double y,
                                final float opacity) {
 
+      if (opacity <= 0) {
+         return;
+      }
+
       if (opacity >= 1) {
          drawImage(image, x, y);
       }

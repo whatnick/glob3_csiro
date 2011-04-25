@@ -22,7 +22,8 @@ public class GStyledPolygonalChain2D
 
 
    @Override
-   protected void rawDraw(final IVectorial2DDrawer drawer) {
+   protected void draw(final IVectorial2DDrawer drawer,
+                       final boolean debugRendering) {
       // render border
       final Stroke borderStroke = _curveStyle.getBorderStroke();
       if (borderStroke != null) {

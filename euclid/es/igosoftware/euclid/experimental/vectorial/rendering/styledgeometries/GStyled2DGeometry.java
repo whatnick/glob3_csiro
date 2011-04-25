@@ -21,23 +21,29 @@ public abstract class GStyled2DGeometry<GeometryT extends IGeometry2D> {
 
 
    public final void draw(final IVectorial2DDrawer drawer,
-                          final double lodMinSize) {
-      if (getSize() > lodMinSize) {
-         rawDraw(drawer);
+                          final double lodMinSize,
+                          final boolean debugRendering,
+                          final boolean renderLODIgnores) {
+      if (isBigger(lodMinSize)) {
+         draw(drawer, debugRendering);
       }
       else {
-         drawLODIgnore(drawer);
+         if (renderLODIgnores) {
+            drawLODIgnore(drawer, debugRendering);
+         }
       }
    }
 
 
-   protected abstract void rawDraw(final IVectorial2DDrawer drawer);
+   protected abstract boolean isBigger(final double lodMinSize);
 
 
-   protected abstract double getSize();
+   protected abstract void draw(final IVectorial2DDrawer drawer,
+                                final boolean debugRendering);
 
 
-   protected abstract void drawLODIgnore(final IVectorial2DDrawer drawer);
+   protected abstract void drawLODIgnore(final IVectorial2DDrawer drawer,
+                                         final boolean debugRendering);
 
 
 }

@@ -128,7 +128,7 @@ public class GVectorial2DRenderingTest {
 
       final GFileName directoryName = GFileName.relative("temporary-data", "render");
       final boolean renderLODIgnores = true;
-      final double lodMinSize = 2;
+      final double lodMinSize = 4;
       final int textureDimension = 256;
       final boolean debugRendering = false;
 
@@ -336,12 +336,6 @@ public class GVectorial2DRenderingTest {
                                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                               final IVectorial2DRenderingScaler scaler) {
             return _pointColorizer.getColor(feature).muchDarker();
-         }
-
-
-         @Override
-         public IColor getLODColor() {
-            return GColorI.MAGENTA;
          }
 
 

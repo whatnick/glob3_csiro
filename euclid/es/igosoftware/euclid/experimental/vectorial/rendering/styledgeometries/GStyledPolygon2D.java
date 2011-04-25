@@ -77,7 +77,8 @@ public class GStyledPolygon2D
 
 
    @Override
-   protected void rawDraw(final IVectorial2DDrawer drawer) {
+   protected void draw(final IVectorial2DDrawer drawer,
+                       final boolean debugRendering) {
       // render surface
       final Paint fillPaint = _surfaceStyle.getSurfacePaint();
       if (fillPaint != null) {

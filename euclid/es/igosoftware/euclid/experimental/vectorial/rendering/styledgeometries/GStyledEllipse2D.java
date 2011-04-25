@@ -23,7 +23,8 @@ public class GStyledEllipse2D
 
 
    @Override
-   protected void rawDraw(final IVectorial2DDrawer drawer) {
+   protected void draw(final IVectorial2DDrawer drawer,
+                       final boolean debugRendering) {
 
       final GAxisAlignedRectangle bounds = _geometry.getBounds();
 

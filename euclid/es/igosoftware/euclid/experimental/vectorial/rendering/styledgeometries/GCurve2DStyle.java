@@ -13,15 +13,12 @@ public class GCurve2DStyle
 
    private final Stroke _borderStroke;
    private final Paint  _borderPaint;
-   private final Paint  _lodIgnorePaint;
 
 
    public GCurve2DStyle(final Stroke borderStroke,
-                        final Paint borderPaint,
-                        final Paint lodIgnorePaint) {
+                        final Paint borderPaint) {
       _borderStroke = borderStroke;
       _borderPaint = borderPaint;
-      _lodIgnorePaint = lodIgnorePaint;
    }
 
 
@@ -36,10 +33,5 @@ public class GCurve2DStyle
       return _borderPaint;
    }
 
-
-   @Override
-   public Paint getLODIgnorePaint() {
-      return _lodIgnorePaint;
-   }
 
 }

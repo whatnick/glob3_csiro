@@ -11,13 +11,10 @@ public class GSurface2DStyle
 
 
    private final Paint _surfacePaint;
-   private final Paint _lodIgnorePaint;
 
 
-   public GSurface2DStyle(final Paint surfacePaint,
-                          final Paint lodIgnorePaint) {
+   public GSurface2DStyle(final Paint surfacePaint) {
       _surfacePaint = surfacePaint;
-      _lodIgnorePaint = lodIgnorePaint;
    }
 
 
@@ -26,10 +23,5 @@ public class GSurface2DStyle
       return _surfacePaint;
    }
 
-
-   @Override
-   public Paint getLODIgnorePaint() {
-      return _lodIgnorePaint;
-   }
 
 }

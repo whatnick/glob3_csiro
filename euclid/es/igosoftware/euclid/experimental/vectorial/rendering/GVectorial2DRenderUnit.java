@@ -2,14 +2,12 @@
 
 package es.igosoftware.euclid.experimental.vectorial.rendering;
 
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.ICurve2D;
 import es.igosoftware.euclid.IGeometry2D;
 import es.igosoftware.euclid.ISurface2D;
-import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.experimental.measurement.GArea;
@@ -18,10 +16,7 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.context.GVectorial
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
-import es.igosoftware.euclid.experimental.vectorial.rendering.features.INode2DRenderingShape;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyled2DGeometry;
-import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyledCurve2D;
-import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyledSurface2D;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle2D;
 import es.igosoftware.euclid.experimental.vectorial.rendering.utils.GRenderingQuadtree;
 import es.igosoftware.euclid.features.IGlobeFeature;
@@ -51,15 +46,15 @@ class GVectorial2DRenderUnit
       final IVectorial2DRenderingScaler scaler = new GVectorial2DRenderingScaler(viewport, projection, projectionTool,
                renderedImage.getWidth(), renderedImage.getHeight());
 
-      final GAxisAlignedRectangle extendedRegion = calculateExtendedRegion(viewport, scaler, renderingStyle);
+      final GAxisAlignedRectangle extendedViewport = calculateExtendedViewport(viewport, scaler, renderingStyle);
 
-      processNode(quadtree.getRoot(), extendedRegion, renderingStyle, scaler, drawer);
+      processNode(quadtree.getRoot(), extendedViewport, renderingStyle, scaler, drawer);
    }
 
 
-   private static GAxisAlignedRectangle calculateExtendedRegion(final GAxisAlignedRectangle viewport,
-                                                                final IVectorial2DRenderingScaler scaler,
-                                                                final IRenderingStyle2D renderingStyle) {
+   private static GAxisAlignedRectangle calculateExtendedViewport(final GAxisAlignedRectangle viewport,
+                                                                  final IVectorial2DRenderingScaler scaler,
+                                                                  final IRenderingStyle2D renderingStyle) {
       final IMeasure<GArea> maximumSize = renderingStyle.getMaximumSize();
 
       final double areaInSquaredMeters = maximumSize.getValueInReferenceUnits();
@@ -83,19 +78,14 @@ class GVectorial2DRenderUnit
          return;
       }
 
-
-      final IVector2 scaledNodeExtent = scaler.scaleExtent(nodeBounds.getExtent());
-      final double scaledNodeSize = scaledNodeExtent.x() * scaledNodeExtent.y();
-      if (scaledNodeSize < renderingStyle.getLODMinSize()) {
-         if (renderingStyle.isDebugRendering()) {
-            final GAxisAlignedOrthotope<IVector2, ?> scaledNodeBounds = scaler.scaleAndTranslate(nodeBounds);
-            final Color color = renderingStyle.getLODColor().asAWTColor();
-            drawer.fillRect(scaledNodeBounds, color);
-         }
-
+      if (!renderingStyle.processNode(node, scaler, drawer)) {
          return;
       }
 
+      final GStyled2DGeometry<? extends IGeometry2D> nodeSymbol = renderingStyle.getNodeSymbol(node, scaler);
+      if (nodeSymbol != null) {
+         nodeSymbol.draw(drawer, Double.POSITIVE_INFINITY, renderingStyle.isDebugRendering(), renderingStyle.isRenderLODIgnores());
+      }
 
       if (node instanceof GGTInnerNode) {
          final GGTInnerNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> inner;
@@ -115,11 +105,6 @@ class GVectorial2DRenderUnit
                          final IRenderingStyle2D renderingStyle,
                          final IVectorial2DRenderingScaler scaler,
                          final IVectorial2DDrawer drawer) {
-
-      final INode2DRenderingShape nodeShape = renderingStyle.getNodeShape(node, scaler);
-      if (nodeShape != null) {
-         nodeShape.draw(node, renderingStyle, scaler, drawer);
-      }
 
 
       for (final GElementGeometryPair<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> pair : node.getElements()) {
@@ -151,37 +136,35 @@ class GVectorial2DRenderUnit
       else if (geometry instanceof IVector2) {
          final IVector2 point = (IVector2) geometry;
 
-         //         final I2DRenderingSymbol symbol = renderingStyle.getPointSymbol(point, feature, scaler);
-         //         if (symbol != null) {
-         //            symbol.draw(point, feature, renderingStyle, scaler, drawer);
-         //         }
-
-         final GStyled2DGeometry<? extends IGeometry2D> styledSurface = renderingStyle.getPointStyledSurface(point, feature,
-                  scaler);
-         if (styledSurface != null) {
-            styledSurface.draw(drawer, renderingStyle.getLODMinSize());
-         }
+         final GStyled2DGeometry<? extends IGeometry2D> symbol = renderingStyle.getPointStyledSurface(point, feature, scaler);
+         drawSymbol(symbol, renderingStyle, drawer);
       }
       else if (geometry instanceof ICurve2D<?>) {
          final ICurve2D<? extends IFinite2DBounds<?>> curve = (ICurve2D<? extends IFinite2DBounds<?>>) geometry;
 
-         final GStyledCurve2D<? extends ICurve2D<?>> styledCurve = renderingStyle.getStyledCurve(curve, feature, scaler);
-         if (styledCurve != null) {
-            styledCurve.draw(drawer, renderingStyle.getLODMinSize());
-         }
+         final GStyled2DGeometry<? extends IGeometry2D> symbol = renderingStyle.getStyledCurve(curve, feature, scaler);
+         drawSymbol(symbol, renderingStyle, drawer);
       }
       else if (geometry instanceof ISurface2D<?>) {
          final ISurface2D<? extends IFinite2DBounds<?>> surface = (ISurface2D<? extends IFinite2DBounds<?>>) geometry;
 
-         final GStyledSurface2D<? extends ISurface2D<?>> styledSurface = renderingStyle.getStyledSurface(surface, feature, scaler);
-         if (styledSurface != null) {
-            styledSurface.draw(drawer, renderingStyle.getLODMinSize());
-         }
+         final GStyled2DGeometry<? extends IGeometry2D> symbol = renderingStyle.getStyledSurface(surface, feature, scaler);
+         drawSymbol(symbol, renderingStyle, drawer);
       }
       else {
          System.out.println("Warning: geometry type " + geometry.getClass() + " not supported");
       }
 
+   }
+
+
+   private void drawSymbol(final GStyled2DGeometry<? extends IGeometry2D> symbol,
+                           final IRenderingStyle2D renderingStyle,
+                           final IVectorial2DDrawer drawer) {
+      if (symbol != null) {
+         symbol.draw(drawer, renderingStyle.getLODMinSize(), renderingStyle.isDebugRendering(),
+                  renderingStyle.isRenderLODIgnores());
+      }
    }
 
 

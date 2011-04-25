@@ -7,6 +7,7 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
+import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.util.GAssert;
 
@@ -18,8 +19,10 @@ public class GStyledIcon2D
 
    private final BufferedImage _icon;
    private final float         _opacity;
+
    private final float         _percentFilled;
    private final Color         _averageColor;
+   private final GVector2D     _iconExtent;
 
 
    public GStyledIcon2D(final IVector2 position,
@@ -33,11 +36,14 @@ public class GStyledIcon2D
       _opacity = opacity;
       _percentFilled = GIconUtils.getPercentFilled(icon);
       _averageColor = GIconUtils.getAverageColor(icon);
+
+      _iconExtent = new GVector2D(_icon.getWidth(), _icon.getHeight());
    }
 
 
    @Override
-   protected void rawDraw(final IVectorial2DDrawer drawer) {
+   protected void draw(final IVectorial2DDrawer drawer,
+                       final boolean debugRendering) {
       drawer.drawImage(_icon, _geometry, _opacity);
    }
 
@@ -49,14 +55,15 @@ public class GStyledIcon2D
 
 
    @Override
-   protected double getSize() {
-      return _icon.getWidth() * _icon.getHeight() * _percentFilled;
+   protected boolean isBigger(final double lodMinSize) {
+      return (_iconExtent.length() * _percentFilled) > lodMinSize;
    }
 
 
    @Override
-   protected void drawLODIgnore(final IVectorial2DDrawer drawer) {
-      drawer.fillRect(_geometry.x(), _geometry.y(), _icon.getWidth(), _icon.getHeight(), _averageColor);
+   protected void drawLODIgnore(final IVectorial2DDrawer drawer,
+                                final boolean debugRendering) {
+      drawer.fillRect(_geometry, _iconExtent, debugRendering ? Color.MAGENTA : _averageColor);
    }
 
 

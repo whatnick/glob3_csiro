@@ -25,7 +25,8 @@ public class GStyledRectangle2D
 
 
    @Override
-   protected void rawDraw(final IVectorial2DDrawer drawer) {
+   protected void draw(final IVectorial2DDrawer drawer,
+                       final boolean debugRendering) {
       final IVector2 position = _geometry._lower;
       final IVector2 extent = _geometry._extent;
 
