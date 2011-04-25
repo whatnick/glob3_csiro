@@ -20,5 +20,9 @@ ResultT extends IAlgorithmResult<ResultVectorT>
          extends
             IFunction<ParametersT, ResultT> {
 
+   String getName();
+
+
+   String getDescription();
 
 }

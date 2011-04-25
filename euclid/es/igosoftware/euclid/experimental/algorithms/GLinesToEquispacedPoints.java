@@ -146,4 +146,16 @@ VectorT extends IVector<VectorT, ?>
    }
 
 
+   @Override
+   public String getName() {
+      return "Lines to equispaced points";
+   }
+
+
+   @Override
+   public String getDescription() {
+      return "Obtains a sequence of points that are equispace along the input line.";
+   }
+
+
 }
