@@ -29,7 +29,7 @@ import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GMath;
 
 
-public class EuclidTest
+public class GEuclidTest
          extends
             TestCase {
 

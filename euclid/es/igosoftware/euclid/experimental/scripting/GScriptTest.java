@@ -12,12 +12,12 @@ import junit.framework.TestCase;
 import es.igosoftware.euclid.experimental.algorithms.IAlgorithm;
 
 
-public class ScriptTest
+public class GScriptTest
          extends
             TestCase {
 
    public void testNormalCase() throws Exception {
-      final IAlgorithm alg = ScriptManager.getPythonAlgorithm(getScriptStream("normalCase.py"));
+      final IAlgorithm alg = GScriptManager.getPythonAlgorithm(getScriptStream("normalCase.py"));
       assertTrue(alg.getName().equals("name"));
       assertTrue(alg.getDescription().equals("description"));
       @SuppressWarnings("unchecked")
@@ -28,20 +28,20 @@ public class ScriptTest
 
    public void testNoAlgorithmVarSet() throws Exception {
       try {
-         ScriptManager.getPythonAlgorithm(getScriptStream("noAlgorithmVarSet.py"));
+         GScriptManager.getPythonAlgorithm(getScriptStream("noAlgorithmVarSet.py"));
          fail();
       }
-      catch (final IllegalScriptException e) {
+      catch (final GIllegalScriptException e) {
       }
    }
 
 
    public void testNoIAlgorithmInstance() throws Exception {
       try {
-         ScriptManager.getPythonAlgorithm(getScriptStream("noIAlgorithmInstance.py"));
+         GScriptManager.getPythonAlgorithm(getScriptStream("noIAlgorithmInstance.py"));
          fail();
       }
-      catch (final IllegalScriptException e) {
+      catch (final GIllegalScriptException e) {
       }
    }
 

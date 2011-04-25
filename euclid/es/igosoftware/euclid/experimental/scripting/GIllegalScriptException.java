@@ -2,11 +2,11 @@
 
 package es.igosoftware.euclid.experimental.scripting;
 
-public class IllegalScriptException
+public class GIllegalScriptException
          extends
             Exception {
 
-   public IllegalScriptException(final String msg) {
+   public GIllegalScriptException(final String msg) {
       super(msg);
    }
 

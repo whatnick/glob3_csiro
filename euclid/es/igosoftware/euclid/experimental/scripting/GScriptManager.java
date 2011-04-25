@@ -10,7 +10,7 @@ import org.python.util.PythonInterpreter;
 import es.igosoftware.euclid.experimental.algorithms.IAlgorithm;
 
 
-public class ScriptManager {
+public class GScriptManager {
 
    private static final String      PYTHON_VAR_NAME = "ALGORITHM";
    private static PythonInterpreter interpreter     = new PythonInterpreter();
@@ -26,15 +26,15 @@ public class ScriptManager {
     * @param <ResultT>
     * @param is
     * @return
-    * @throws IllegalScriptException
+    * @throws GIllegalScriptException
     *            If the instance does not implement the IAlgorithm instance or the {@value #PYTHON_VAR_NAME} is not set
     */
-   public static IAlgorithm<?, ?, ?, ?> getPythonAlgorithm(final InputStream is) throws IllegalScriptException {
+   public static IAlgorithm<?, ?, ?, ?> getPythonAlgorithm(final InputStream is) throws GIllegalScriptException {
       interpreter.set(PYTHON_VAR_NAME, null);
       interpreter.execfile(is);
       final PyObject pyObject = interpreter.get(PYTHON_VAR_NAME);
       if (pyObject == null) {
-         throw new IllegalScriptException("There is no \"" + PYTHON_VAR_NAME + " = "
+         throw new GIllegalScriptException("There is no \"" + PYTHON_VAR_NAME + " = "
                                           + "[algorithm instance]\" statement in the script");
       }
       final Object javaObject = pyObject.__tojava__(IAlgorithm.class);
@@ -42,7 +42,7 @@ public class ScriptManager {
          return (IAlgorithm<?, ?, ?, ?>) javaObject;
       }
       catch (final ClassCastException e) {
-         throw new IllegalScriptException("The returned python " + "object does not implement the IAlgorithm interface");
+         throw new GIllegalScriptException("The returned python " + "object does not implement the IAlgorithm interface");
       }
    }
 }
