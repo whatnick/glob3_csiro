@@ -2,8 +2,10 @@
 <classpath>
 	<classpathentry kind="src" path=""/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/igolibs"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="libs/jna.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/euclid"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/igolibs"/>
+	<classpathentry kind="lib" path="lib/bsh-2.0b4.jar"/>
+	<classpathentry kind="lib" path="lib/jython-2.5.0.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

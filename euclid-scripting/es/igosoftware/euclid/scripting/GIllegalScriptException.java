@@ -1,6 +1,6 @@
 
 
-package es.igosoftware.euclid.experimental.scripting;
+package es.igosoftware.euclid.scripting;
 
 public class GIllegalScriptException
          extends

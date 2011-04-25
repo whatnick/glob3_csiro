@@ -1,6 +1,6 @@
 
 
-package es.igosoftware.euclid.experimental.scripting;
+package es.igosoftware.euclid.scripting;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -47,7 +47,7 @@ public class GScriptTest
 
 
    private InputStream getScriptStream(final String fileName) throws FileNotFoundException {
-      return new BufferedInputStream(new FileInputStream(new File("es/igosoftware/euclid/experimental/scripting/" + fileName)));
+      return new BufferedInputStream(new FileInputStream(new File("es/igosoftware/euclid/scripting/" + fileName)));
    }
 
 }
