@@ -1215,6 +1215,11 @@ public abstract class GGlobeApplication
    }
 
 
+   public boolean isApplet() {
+      return _frame == null;
+   }
+
+
    @Override
    public View getView() {
       return getWorldWindowGLCanvas().getView();
