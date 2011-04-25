@@ -139,9 +139,16 @@ public class EuclidTest
                      final boolean loop) {
       final List<SegmentT> edges = geom.getEdges();
       final List<VectorT> points = geom.getPoints();
+
+      /*
+       * Number of expected edges are pointCount - 1 in lines, and pointCount in closed rings
+       */
       final int expectedEdges = loop ? points.size() : points.size() - 1;
       assertTrue(edges.size() == expectedEdges);
 
+      /*
+       * Check that all points except leading and trailing ones are referenced two times by the edges 
+       */
       final List<Integer> timesUsed = new ArrayList<Integer>();
       for (int i = 0; i < points.size(); i++) {
          timesUsed.add(2);
@@ -157,6 +164,7 @@ public class EuclidTest
          final int toIndex = points.indexOf(edge._to);
 
          final int difference = Math.abs(fromIndex - toIndex);
+         //Check they are consecutive
          assertTrue((difference == 1) || (difference == points.size() - 1));
          timesUsed.set(fromIndex, timesUsed.get(fromIndex) - 1);
          timesUsed.set(toIndex, timesUsed.get(toIndex) - 1);
