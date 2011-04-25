@@ -17,7 +17,8 @@ public class ScriptManager {
 
 
    /**
-    * TODO
+    * Returns an instance of the IAlgorithm instance. The instance is passed in python in the InputStream parameter. The python
+    * code must have a statement that sets a {@value #PYTHON_VAR_NAME} local variable to the python instance.
     * 
     * @param <ParametersVectorT>
     * @param <ParametersT>
@@ -26,6 +27,7 @@ public class ScriptManager {
     * @param is
     * @return
     * @throws IllegalScriptException
+    *            If the instance does not implement the IAlgorithm instance or the {@value #PYTHON_VAR_NAME} is not set
     */
    public static IAlgorithm<?, ?, ?, ?> getPythonAlgorithm(final InputStream is) throws IllegalScriptException {
       interpreter.set(PYTHON_VAR_NAME, null);

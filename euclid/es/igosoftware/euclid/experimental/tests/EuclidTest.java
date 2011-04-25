@@ -3,11 +3,13 @@
 package es.igosoftware.euclid.experimental.tests;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import junit.framework.TestCase;
 import es.igosoftware.euclid.IEdgedGeometry;
 import es.igosoftware.euclid.bounding.IBounds;
+import es.igosoftware.euclid.shape.GComplexPolygon2D;
 import es.igosoftware.euclid.shape.GLinesStrip2D;
 import es.igosoftware.euclid.shape.GQuad2D;
 import es.igosoftware.euclid.shape.GQuad3D;
@@ -18,6 +20,8 @@ import es.igosoftware.euclid.shape.GSimplePolygon2D;
 import es.igosoftware.euclid.shape.GSimplePolygon3D;
 import es.igosoftware.euclid.shape.GTriangle2D;
 import es.igosoftware.euclid.shape.GTriangle3D;
+import es.igosoftware.euclid.shape.IComplexPolygon;
+import es.igosoftware.euclid.shape.IPolygon;
 import es.igosoftware.euclid.shape.IPolygonalChain2D;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.GVector3D;
@@ -121,9 +125,25 @@ public class EuclidTest
       p3 = new GVector2D(9, 9);
       p4 = new GVector2D(1, 9);
       final GSimplePolygon2D hole = new GSimplePolygon2D(false, p1, p2, p3, p4);
-      //      final GComplexPolygon2D geom = new GComplexPolygon2D(ring, Collections.singletonList(hole));
-      //      checkEdges(geom, true);
-      fail();
+      final GComplexPolygon2D geom = new GComplexPolygon2D(ring, Collections.singletonList(hole));
+      checkEdgesComplexGeometry(geom);
+   }
+
+
+   private <
+
+   VectorT extends IVector<VectorT, ?>,
+
+   SegmentT extends GSegment<VectorT, SegmentT, ?>,
+
+   BoundsT extends IBounds<VectorT, BoundsT>
+
+   > void checkEdgesComplexGeometry(final IComplexPolygon<VectorT, SegmentT, BoundsT> geom) {
+      checkEdges(geom.getHull(), true);
+      final List<? extends IPolygon<VectorT, SegmentT, BoundsT>> holes = geom.getHoles();
+      for (final IPolygon<VectorT, SegmentT, BoundsT> hole : holes) {
+         checkEdges(hole, true);
+      }
    }
 
 
@@ -180,7 +200,6 @@ public class EuclidTest
       final GSegment3D segment = new GSegment3D(new GVector3D(0, 0, 0), new GVector3D(0, 10, 5));
       final GVector3D p = new GVector3D(0.0, 0.8944271909999159, 0.4472135954999579);
       final double distance = segment.squaredDistance(p);
-      System.out.println(distance);
       assertTrue(GMath.closeToZero(distance));
    }
 }

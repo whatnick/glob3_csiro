@@ -53,7 +53,7 @@ public final class GComplexPolygon2D
 
 
    public GComplexPolygon2D(final ISimplePolygon2D hull,
-                            final List<ISimplePolygon2D> holes) {
+                            final List<? extends ISimplePolygon2D> holes) {
       super(hull, holes);
    }
 
