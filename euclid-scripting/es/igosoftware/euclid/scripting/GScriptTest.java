@@ -31,12 +31,7 @@ public class GScriptTest
          GScriptManager.getPythonAlgorithm(getScriptStream("noAlgorithmVarSet.py"));
          fail();
       }
-<<<<<<< HEAD:euclid/es/igosoftware/euclid/experimental/scripting/ScriptTest.java
-      catch (final IllegalScriptException e) {}
-=======
-      catch (final GIllegalScriptException e) {
-      }
->>>>>>> ef8c4971ab295e2d462754644a989ec2a440276b:euclid-scripting/es/igosoftware/euclid/scripting/GScriptTest.java
+      catch (final GIllegalScriptException e) {}
    }
 
 
@@ -45,12 +40,7 @@ public class GScriptTest
          GScriptManager.getPythonAlgorithm(getScriptStream("noIAlgorithmInstance.py"));
          fail();
       }
-<<<<<<< HEAD:euclid/es/igosoftware/euclid/experimental/scripting/ScriptTest.java
-      catch (final IllegalScriptException e) {}
-=======
-      catch (final GIllegalScriptException e) {
-      }
->>>>>>> ef8c4971ab295e2d462754644a989ec2a440276b:euclid-scripting/es/igosoftware/euclid/scripting/GScriptTest.java
+      catch (final GIllegalScriptException e) {}
    }
 
 

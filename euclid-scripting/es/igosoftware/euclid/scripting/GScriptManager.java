@@ -35,7 +35,7 @@ public class GScriptManager {
       final PyObject pyObject = interpreter.get(PYTHON_VAR_NAME);
       if (pyObject == null) {
          throw new GIllegalScriptException("There is no \"" + PYTHON_VAR_NAME + " = "
-                                          + "[algorithm instance]\" statement in the script");
+                                           + "[algorithm instance]\" statement in the script");
       }
       final Object javaObject = pyObject.__tojava__(IAlgorithm.class);
       try {
