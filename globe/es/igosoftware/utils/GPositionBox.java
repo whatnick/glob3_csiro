@@ -190,23 +190,23 @@ public final class GPositionBox {
 
    private Position[] initializeBottomQuadVertices() {
       return new Position[] { new Position(_lower.latitude, _lower.longitude, _lower.elevation), //
-               new Position(_lower.latitude, _upper.longitude, _lower.elevation), //
-               new Position(_upper.latitude, _upper.longitude, _lower.elevation), // 
-               new Position(_upper.latitude, _lower.longitude, _lower.elevation) };
+      new Position(_lower.latitude, _upper.longitude, _lower.elevation), //
+      new Position(_upper.latitude, _upper.longitude, _lower.elevation), // 
+      new Position(_upper.latitude, _lower.longitude, _lower.elevation) };
    }
 
 
    private Position[] initializeVertices() {
       return new Position[] { //
-               new Position(_lower.latitude, _lower.longitude, _lower.elevation), //
-               new Position(_lower.latitude, _lower.longitude, _upper.elevation), //
-               new Position(_lower.latitude, _upper.longitude, _upper.elevation), //
-               new Position(_lower.latitude, _upper.longitude, _lower.elevation), //
+      new Position(_lower.latitude, _lower.longitude, _lower.elevation), //
+      new Position(_lower.latitude, _lower.longitude, _upper.elevation), //
+      new Position(_lower.latitude, _upper.longitude, _upper.elevation), //
+      new Position(_lower.latitude, _upper.longitude, _lower.elevation), //
 
-               new Position(_upper.latitude, _lower.longitude, _lower.elevation), //
-               new Position(_upper.latitude, _lower.longitude, _upper.elevation), //
-               new Position(_upper.latitude, _upper.longitude, _upper.elevation),
-               new Position(_upper.latitude, _upper.longitude, _lower.elevation) };
+      new Position(_upper.latitude, _lower.longitude, _lower.elevation), //
+      new Position(_upper.latitude, _lower.longitude, _upper.elevation), //
+      new Position(_upper.latitude, _upper.longitude, _upper.elevation), new Position(_upper.latitude, _upper.longitude,
+               _lower.elevation) };
    }
 
 
@@ -320,11 +320,11 @@ public final class GPositionBox {
       //         upperElevation = GMath.previousDown(upperElevation);
       //      }
 
-      return new GPositionBox[] {
-               new GPositionBox(new Position(_lower.latitude, midLon, minEle), new Position(midLat, _lower.longitude, maxEle)), //
-               new GPositionBox(new Position(_lower.latitude, _upper.longitude, minEle), new Position(midLat, midLon, maxEle)), //
-               new GPositionBox(new Position(midLat, midLon, minEle), new Position(_upper.latitude, _lower.longitude, maxEle)), //
-               new GPositionBox(new Position(midLat, _upper.longitude, minEle), new Position(_upper.latitude, midLon, maxEle)) };
+      return new GPositionBox[] { new GPositionBox(new Position(_lower.latitude, midLon, minEle), new Position(midLat,
+               _lower.longitude, maxEle)), //
+      new GPositionBox(new Position(_lower.latitude, _upper.longitude, minEle), new Position(midLat, midLon, maxEle)), //
+      new GPositionBox(new Position(midLat, midLon, minEle), new Position(_upper.latitude, _lower.longitude, maxEle)), //
+      new GPositionBox(new Position(midLat, _upper.longitude, minEle), new Position(_upper.latitude, midLon, maxEle)) };
    }
 
 

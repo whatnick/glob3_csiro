@@ -48,7 +48,7 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GMath;
-import es.igosoftware.util.ITransformer;
+import es.igosoftware.util.IFunction;
 
 
 public final class GShape {
@@ -246,9 +246,9 @@ public final class GShape {
       }
 
       final Collection<GAxisAlignedOrthotope<VectorT, ?>> bounds = GCollections.collect(geometries,
-               new ITransformer<GeometryT, GAxisAlignedOrthotope<VectorT, ?>>() {
+               new IFunction<GeometryT, GAxisAlignedOrthotope<VectorT, ?>>() {
                   @Override
-                  public GAxisAlignedOrthotope<VectorT, ?> transform(final GeometryT element) {
+                  public GAxisAlignedOrthotope<VectorT, ?> apply(final GeometryT element) {
                      return element.getBounds().asAxisAlignedOrthotope();
                   }
                });
@@ -266,7 +266,7 @@ public final class GShape {
    GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>> GAxisAlignedOrthotope<VectorT, ?
 
    > getBounds(final Iterable<? extends ElementT> elements,
-               final ITransformer<ElementT, GeometryT> transformer) {
+               final IFunction<ElementT, GeometryT> transformer) {
 
       if (elements == null) {
          return null;
@@ -281,7 +281,7 @@ public final class GShape {
       VectorT upper = null;
       while (iterator.hasNext()) {
          final ElementT element = iterator.next();
-         final GeometryT geometry = transformer.transform(element);
+         final GeometryT geometry = transformer.apply(element);
 
          final GAxisAlignedOrthotope<VectorT, ?> bounds = geometry.getBounds().asAxisAlignedOrthotope();
 

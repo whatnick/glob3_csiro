@@ -45,7 +45,8 @@ public final class GCapsule2D
          extends
             GNCapsule<IVector2, GSegment2D, GCapsule2D>
          implements
-            IBounds2D<GCapsule2D> {
+            IBounds2D<GCapsule2D>,
+            IFinite2DBounds<GCapsule2D> {
 
    /**
     * 
@@ -135,5 +136,6 @@ public final class GCapsule2D
    public boolean touchesBounds(final IBounds<IVector2, ?> that) {
       return touches((IBounds2D<?>) that);
    }
+
 
 }

@@ -21,4 +21,7 @@ public interface IMeasure<UnitT extends IUnit<UnitT>> {
    public IMeasure<UnitT> simplified();
 
 
+   public double getValueInReferenceUnits();
+
+
 }

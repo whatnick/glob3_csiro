@@ -3,12 +3,22 @@
 package es.igosoftware.euclid.experimental.algorithms;
 
 import es.igosoftware.euclid.vector.IVector;
+import es.igosoftware.util.IFunction;
 
 
 public interface IAlgorithm<
 
-VectorT extends IVector<VectorT, ?>
+ParametersVectorT extends IVector<ParametersVectorT, ?>,
 
-> {
+ParametersT extends IAlgorithmParameters<ParametersVectorT>,
+
+ResultVectorT extends IVector<ResultVectorT, ?>,
+
+ResultT extends IAlgorithmResult<ResultVectorT>
+
+>
+         extends
+            IFunction<ParametersT, ResultT> {
+
 
 }

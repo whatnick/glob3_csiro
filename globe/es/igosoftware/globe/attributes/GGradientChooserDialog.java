@@ -90,7 +90,7 @@ import org.jdesktop.swingx.multislider.ThumbListener;
  * 
  * @author joshy
  */
-public class GradientChooserDialog
+public class GGradientChooserDialog
          extends
             JXPanel {
 
@@ -115,7 +115,7 @@ public class GradientChooserDialog
    /**
     * Creates new JXGradientChooser
     */
-   public GradientChooserDialog() {
+   public GGradientChooserDialog() {
       initComponents2();
    }
 
@@ -631,7 +631,7 @@ public class GradientChooserDialog
 
       final Component root = SwingUtilities.getRoot(comp);
       final JDialog dialog = new JDialog((JFrame) root, title, true);
-      final GradientChooserDialog picker = new GradientChooserDialog();
+      final GGradientChooserDialog picker = new GGradientChooserDialog();
       if (mgrad != null) {
          picker.setGradient(mgrad);
       }

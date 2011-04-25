@@ -164,7 +164,7 @@ public abstract class GColorAbstract
 
    @Override
    public final IColor muchDarker() {
-      return interpolatedTo(GColorF.BLACK, 0.5f);
+      return GColorF.BLACK.mixedWidth(this, 0.5f);
    }
 
 
@@ -182,13 +182,44 @@ public abstract class GColorAbstract
 
    @Override
    public final IColor muchLighter() {
-      return interpolatedTo(GColorF.WHITE, 0.233f);
+      return GColorF.WHITE.mixedWidth(this, 0.233f);
    }
 
 
    @Override
    public final java.awt.Color asAWTColor() {
       return new java.awt.Color(getRed(), getGreen(), getBlue());
+   }
+
+
+   @Override
+   public final java.awt.Color asAWTColor(final float opacity) {
+      return new java.awt.Color(getRed(), getGreen(), getBlue(), opacity);
+   }
+
+
+   @Override
+   public String toHexString() {
+      final int iRed = Math.round(255 * getRed());
+      final int iGreen = Math.round(255 * getGreen());
+      final int iBlue = Math.round(255 * getBlue());
+
+      return toHexString(iRed) + toHexString(iGreen) + toHexString(iBlue);
+   }
+
+
+   private static String toHexString(final int value) {
+      final String hex = Integer.toHexString(value).toUpperCase();
+      if (hex.length() == 1) {
+         return "0" + hex;
+      }
+      return hex;
+   }
+
+
+   @Override
+   public String toInt256String() {
+      return "(" + Math.round(getRed() * 255) + ", " + Math.round(getGreen() * 255) + ", " + Math.round(getBlue() * 255) + ")";
    }
 
 }

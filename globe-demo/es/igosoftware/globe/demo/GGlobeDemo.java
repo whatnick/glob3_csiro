@@ -297,7 +297,7 @@ public class GGlobeDemo
       //         e.printStackTrace();
       //      }
 
-      final GDragAndDropModule dragAndDropModule = new GDragAndDropModule(new GShapeLoaderDropHandler(this));
+      final GDragAndDropModule dragAndDropModule = new GDragAndDropModule(new GShapeLoaderDropHandler(this, false));
 
       return new IGlobeModule[] { homePositionModule, new GLayersManagerModule(), new GVectorial2DModule(),
                new GGeotoolsVectorialModule(), pointsCloudModule, new GMultidimensionalDataModule(_multidimentionaldata),

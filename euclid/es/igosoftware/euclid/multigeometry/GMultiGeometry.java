@@ -19,7 +19,7 @@ import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GMath;
-import es.igosoftware.util.ITransformer;
+import es.igosoftware.util.IFunction;
 
 
 public abstract class GMultiGeometry<
@@ -118,9 +118,9 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
 
    @Override
    public VectorT getCentroid() {
-      final List<VectorT> centroids = GCollections.collect(_children, new ITransformer<ChildrenGeometryT, VectorT>() {
+      final List<VectorT> centroids = GCollections.collect(_children, new IFunction<ChildrenGeometryT, VectorT>() {
          @Override
-         public VectorT transform(final ChildrenGeometryT element) {
+         public VectorT apply(final ChildrenGeometryT element) {
             return element.getCentroid();
          }
       });
@@ -133,9 +133,9 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
    @Override
    public BoundsT getBounds() {
       final List<GAxisAlignedOrthotope<VectorT, ?>> bounds = GCollections.collect(_children,
-               new ITransformer<ChildrenGeometryT, GAxisAlignedOrthotope<VectorT, ?>>() {
+               new IFunction<ChildrenGeometryT, GAxisAlignedOrthotope<VectorT, ?>>() {
                   @Override
-                  public GAxisAlignedOrthotope<VectorT, ?> transform(final ChildrenGeometryT element) {
+                  public GAxisAlignedOrthotope<VectorT, ?> apply(final ChildrenGeometryT element) {
                      return element.getBounds().asAxisAlignedOrthotope();
                   }
                });
@@ -200,7 +200,7 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
 
    @Override
    public double distanceToBoundary(final VectorT point) {
-      return Math.sqrt(squaredDistance(point));
+      return GMath.sqrt(squaredDistance(point));
    }
 
 

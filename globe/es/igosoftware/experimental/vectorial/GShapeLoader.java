@@ -51,8 +51,8 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.GeometryType;
 
-import es.igosoftware.euclid.IBoundedGeometry;
-import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.IBoundedGeometry2D;
+import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.features.GField;
 import es.igosoftware.euclid.features.GGlobeFeature;
 import es.igosoftware.euclid.features.GListFeatureCollection;
@@ -126,16 +126,16 @@ public class GShapeLoader {
    }
 
 
-   public static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> readFeatures(final GFileName fileName,
-                                                                                                                                            final GProjection projection)
-                                                                                                                                                                         throws IOException {
+   public static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> readFeatures(final GFileName fileName,
+                                                                                                                            final GProjection projection)
+                                                                                                                                                         throws IOException {
       return readFeatures(fileName.asFile(), projection);
    }
 
 
-   public static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> readFeatures(final File file,
-                                                                                                                                            final GProjection projection)
-                                                                                                                                                                         throws IOException {
+   public static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> readFeatures(final File file,
+                                                                                                                            final GProjection projection)
+                                                                                                                                                         throws IOException {
       if (!file.exists()) {
          throw new IOException("File not found!");
       }
@@ -155,7 +155,7 @@ public class GShapeLoader {
       final GIntHolder invalidCounter = new GIntHolder(0);
 
       final int featuresCount = featuresCollection.size();
-      final ArrayList<IGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> euclidFeatures = new ArrayList<IGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>>(
+      final ArrayList<IGlobeFeature<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> euclidFeatures = new ArrayList<IGlobeFeature<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>(
                featuresCount);
 
 
@@ -249,8 +249,8 @@ public class GShapeLoader {
             validCounter.increment();
          }
          else if (type.getBinding() == com.vividsolutions.jts.geom.MultiPoint.class) {
-            final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> euclidMultipoint = createEuclidMultiPoint(
-                     geometryAttribute, projection);
+            final IBoundedGeometry2D<? extends IFinite2DBounds<?>> euclidMultipoint = createEuclidMultiPoint(geometryAttribute,
+                     projection);
             euclidFeatures.add(createFeature(euclidMultipoint, feature));
 
             validCounter.increment();
@@ -293,14 +293,14 @@ public class GShapeLoader {
       }
 
 
-      return new GListFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>(
-               GProjection.EPSG_4326, fields, euclidFeatures, GIOUtils.getUniqueID(file));
+      return new GListFeatureCollection<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>>(GProjection.EPSG_4326,
+               fields, euclidFeatures, GIOUtils.getUniqueID(file));
    }
 
 
    private static IPolygon2D createEuclidPolygon(final GProjection projection,
                                                  final com.vividsolutions.jts.geom.Polygon jtsPolygon) {
-      final ISimplePolygon2D outerEuclidPolygon = createPolygon(jtsPolygon.getCoordinates(), projection);
+      final ISimplePolygon2D outerEuclidPolygon = createPolygon(jtsPolygon.getExteriorRing().getCoordinates(), projection);
 
       final int holesCount = jtsPolygon.getNumInteriorRing();
       if (holesCount == 0) {
@@ -321,22 +321,15 @@ public class GShapeLoader {
          }
       }
 
-      final IPolygon2D euclidPolygon;
-      if (euclidHoles.isEmpty()) {
-         euclidPolygon = outerEuclidPolygon;
-      }
-      else {
-         euclidPolygon = new GComplexPolygon2D(outerEuclidPolygon, euclidHoles);
-      }
-      // System.out.println("Found polygon with " + holesCount + " holes");
-
-      return euclidPolygon;
+      return euclidHoles.isEmpty() ? //
+                                  outerEuclidPolygon : //
+                                  new GComplexPolygon2D(outerEuclidPolygon, euclidHoles);
 
    }
 
 
-   private static IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> createEuclidMultiPoint(final GeometryAttribute geometryAttribute,
-                                                                                                          final GProjection projection) {
+   private static IBoundedGeometry2D<? extends IFinite2DBounds<?>> createEuclidMultiPoint(final GeometryAttribute geometryAttribute,
+                                                                                          final GProjection projection) {
       final com.vividsolutions.jts.geom.MultiPoint multipoint = (com.vividsolutions.jts.geom.MultiPoint) geometryAttribute.getValue();
 
       if (multipoint.getNumGeometries() == 1) {
@@ -355,10 +348,11 @@ public class GShapeLoader {
    }
 
 
-   private static IGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> createFeature(final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> geometry,
-                                                                                                                          final SimpleFeature feature) {
-      return new GGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>(geometry,
-               feature.getAttributes());
+   private static IGlobeFeature<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> createFeature(final IBoundedGeometry2D<? extends IFinite2DBounds<?>> geometry,
+                                                                                                          final SimpleFeature feature) {
+      final List<Object> featureAttributes = feature.getAttributes();
+      return new GGlobeFeature<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>>(geometry, featureAttributes.subList(1,
+               featureAttributes.size()));
    }
 
 
@@ -401,7 +395,7 @@ public class GShapeLoader {
       //      final GFileName fileName = GFileName.fromParentAndParts(samplesDirectory, "cartobrutal", "world-modified", "world.shp");
       //      final GFileName fileName = GFileName.fromParentAndParts(samplesDirectory, "shp", "argentina.shp", "places.shp");
 
-      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features = GShapeLoader.readFeatures(
+      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> features = GShapeLoader.readFeatures(
                fileName, GProjection.EPSG_4326);
 
 

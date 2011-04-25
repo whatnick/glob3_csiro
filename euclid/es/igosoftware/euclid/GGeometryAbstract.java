@@ -37,6 +37,7 @@
 package es.igosoftware.euclid;
 
 import es.igosoftware.euclid.vector.IVector;
+import es.igosoftware.util.GMath;
 
 
 public abstract class GGeometryAbstract<VectorT extends IVector<VectorT, ?>>
@@ -48,7 +49,7 @@ public abstract class GGeometryAbstract<VectorT extends IVector<VectorT, ?>>
 
    @Override
    public double distance(final VectorT point) {
-      return Math.sqrt(squaredDistance(point));
+      return GMath.sqrt(squaredDistance(point));
    }
 
 

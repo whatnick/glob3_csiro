@@ -102,8 +102,8 @@ import es.igosoftware.util.GImageUtils;
 import es.igosoftware.util.GLogger;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.GPair;
+import es.igosoftware.util.GPredicate;
 import es.igosoftware.util.GUtils;
-import es.igosoftware.util.IPredicate;
 import es.igosoftware.util.LRUCache;
 import es.igosoftware.utils.GWrapperFontSet;
 import gov.nasa.worldwind.BasicModel;
@@ -493,7 +493,7 @@ public abstract class GGlobeApplication
          }
       });
 
-      return GCollections.select(modules.get(), new IPredicate<IGlobeModule>() {
+      return GCollections.select(modules.get(), new GPredicate<IGlobeModule>() {
          @Override
          public boolean evaluate(final IGlobeModule element) {
             return (element != null);

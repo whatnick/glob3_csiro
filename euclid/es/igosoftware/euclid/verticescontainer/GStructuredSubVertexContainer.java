@@ -49,9 +49,9 @@ import es.igosoftware.euclid.vector.IVectorI2;
 import es.igosoftware.util.GArrayListInt;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.IComparatorInt;
+import es.igosoftware.util.IFunction;
 import es.igosoftware.util.IListInt;
 import es.igosoftware.util.IPredicate;
-import es.igosoftware.util.ITransformer;
 
 
 public final class GStructuredSubVertexContainer<
@@ -458,8 +458,8 @@ GroupT extends IStructuredVertexContainer.IVertexGroup<VectorT, IVertexContainer
 
 
    @Override
-   public GStructuredSubVertexContainer<VectorT, GroupT> collect(final ITransformer<VectorT, VectorT> referencePointTransformer,
-                                                                 final ITransformer<IStructuredVertexContainer.StructuredVertex<VectorT, GroupT>, IStructuredVertexContainer.StructuredVertex<VectorT, GroupT>> vertexTransformer) {
+   public GStructuredSubVertexContainer<VectorT, GroupT> collect(final IFunction<VectorT, VectorT> referencePointTransformer,
+                                                                 final IFunction<IStructuredVertexContainer.StructuredVertex<VectorT, GroupT>, IStructuredVertexContainer.StructuredVertex<VectorT, GroupT>> vertexTransformer) {
 
       final IStructuredVertexContainer<VectorT, IStructuredVertexContainer.StructuredVertex<VectorT, GroupT>, GroupT, ?> result = _outer.collect(
                referencePointTransformer, vertexTransformer);

@@ -52,7 +52,7 @@ public class GFilterIteratorTest {
    public void testEmptyIterator() {
       final List<Integer> list = new ArrayList<Integer>();
 
-      final Iterator<Integer> iterator = new GFilterIterator<Integer>(list.iterator(), new IPredicate<Integer>() {
+      final Iterator<Integer> iterator = new GFilterIterator<Integer>(list.iterator(), new GPredicate<Integer>() {
          @Override
          public boolean evaluate(final Integer object) {
             return false;
@@ -70,7 +70,7 @@ public class GFilterIteratorTest {
       list.add(2);
       list.add(3);
 
-      final Iterator<Integer> iterator = new GFilterIterator<Integer>(list.iterator(), new IPredicate<Integer>() {
+      final Iterator<Integer> iterator = new GFilterIterator<Integer>(list.iterator(), new GPredicate<Integer>() {
          @Override
          public boolean evaluate(final Integer integer) {
             return false;
@@ -89,7 +89,7 @@ public class GFilterIteratorTest {
       list.add(3);
       list.add(4);
 
-      final Iterator<Integer> iterator = new GFilterIterator<Integer>(list.iterator(), new IPredicate<Integer>() {
+      final Iterator<Integer> iterator = new GFilterIterator<Integer>(list.iterator(), new GPredicate<Integer>() {
          @Override
          public boolean evaluate(final Integer integer) {
             return (integer % 2) != 0;
@@ -117,7 +117,7 @@ public class GFilterIteratorTest {
       list.add(3);
       list.add(4);
 
-      final Iterator<Integer> iterator = new GFilterIterator<Integer>(list.iterator(), new IPredicate<Integer>() {
+      final Iterator<Integer> iterator = new GFilterIterator<Integer>(list.iterator(), new GPredicate<Integer>() {
          @Override
          public boolean evaluate(final Integer integer) {
             return (integer % 2) == 0;

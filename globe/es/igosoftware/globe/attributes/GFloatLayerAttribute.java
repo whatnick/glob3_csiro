@@ -49,6 +49,7 @@ import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -196,7 +197,7 @@ public abstract class GFloatLayerAttribute
       final int intMax = toInt(_maximum, _stepSize);
       final int intValue = toInt(get(), _stepSize);
 
-      final JSlider slider = new JSlider(JSlider.HORIZONTAL, intMin, intMax, intValue) {
+      final JSlider slider = new JSlider(SwingConstants.HORIZONTAL, intMin, intMax, intValue) {
          private static final long serialVersionUID = 1L;
 
 
@@ -216,6 +217,7 @@ public abstract class GFloatLayerAttribute
       slider.setPaintTicks(true);
       slider.setPaintLabels(false);
       slider.setSnapToTicks(false);
+
 
       if (isReadOnly()) {
          slider.setEnabled(false);

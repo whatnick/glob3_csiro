@@ -106,7 +106,7 @@ public class GShapefileTools {
          fields.add(new GField(fieldName, fieldType));
       }
 
-      final int TODO_read_projection_or_ask_user;
+      // TODO: read projection or ask user
       final GProjection projection = GProjection.EPSG_4326;
 
       final String uniqueID = GIOUtils.getUniqueID(file);

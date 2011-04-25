@@ -49,8 +49,8 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-import es.igosoftware.euclid.IBoundedGeometry;
-import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.IBoundedGeometry2D;
+import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.IVector2;
@@ -160,11 +160,11 @@ public class GKmlModule
       final Thread worker = new Thread("KML vectorial layer loader") {
          @Override
          public void run() {
-            final int TODO_read_projection_or_ask_user;
+            // TODO: read projection or ask user
             final GProjection projection = GProjection.EPSG_4326;
 
             try {
-               final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features = GKmlLoader.readFeatures(
+               final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> features = GKmlLoader.readFeatures(
                         file, projection);
 
                final GVectorial2DLayer layer = new GVectorial2DLayer(file.getName(), features);

@@ -29,7 +29,7 @@ import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GPair;
-import es.igosoftware.util.ITransformer;
+import es.igosoftware.util.IFunction;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 
 
@@ -306,9 +306,9 @@ public class GDragAndDropModule
       final GGlobeApplication application = GGlobeApplication.instance();
 
       final List<DropFileHandlerWrapper> wrappers = GCollections.collect(selectedHandlers,
-               new ITransformer<IDropFileHandler, DropFileHandlerWrapper>() {
+               new IFunction<IDropFileHandler, DropFileHandlerWrapper>() {
                   @Override
-                  public DropFileHandlerWrapper transform(final IDropFileHandler element) {
+                  public DropFileHandlerWrapper apply(final IDropFileHandler element) {
                      return new DropFileHandlerWrapper(application, element);
                   }
                });

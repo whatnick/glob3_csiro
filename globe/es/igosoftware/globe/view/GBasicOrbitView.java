@@ -36,6 +36,7 @@
 
 package es.igosoftware.globe.view;
 
+import es.igosoftware.util.GMath;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.util.Logging;
 import gov.nasa.worldwind.view.ViewUtil;
@@ -55,7 +56,7 @@ public class GBasicOrbitView
       if ((eyePosition1 != null) && (dc != null)) {
          final double elevation = ViewUtil.computeElevationAboveSurface(dc, eyePosition1);
          final double tanHalfFov = fieldOfView.tanHalfAngle();
-         near = elevation / (2 * Math.sqrt(2 * tanHalfFov * tanHalfFov + 1));
+         near = elevation / (2 * GMath.sqrt(2 * tanHalfFov * tanHalfFov + 1));
       }
 
       return (near < 0.001) ? 0.001 : near / 4;

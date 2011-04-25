@@ -65,7 +65,7 @@ import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GLoggerObject;
 import es.igosoftware.util.GMath;
-import es.igosoftware.util.ITransformer;
+import es.igosoftware.util.IFunction;
 
 
 public class GRelief
@@ -397,9 +397,9 @@ public class GRelief
 
    public Collection<Double> getZs(final int x,
                                    final int y) {
-      final Collection<Double> zs = GCollections.collect(_grid[x][y], new ITransformer<IVector3, Double>() {
+      final Collection<Double> zs = GCollections.collect(_grid[x][y], new IFunction<IVector3, Double>() {
          @Override
-         public Double transform(final IVector3 element) {
+         public Double apply(final IVector3 element) {
             return element.z();
          }
       });

@@ -49,8 +49,8 @@ import org.geotools.data.DataStoreFinder;
 import org.geotools.swing.data.JDataStoreWizard;
 import org.geotools.swing.wizard.JWizard;
 
-import es.igosoftware.euclid.IBoundedGeometry;
-import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.IBoundedGeometry2D;
+import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.IVector2;
@@ -157,7 +157,7 @@ public class GGeotoolsVectorialModule
     */
    private void connectoToDataSource(final IGlobeApplication application) {
 
-      //final int TODO_read_projection_or_ask_user;
+      //// TODO: read projection or ask user
       final GProjection projection = GProjection.EPSG_4326;
 
       //final JDataStoreWizard wizard = new JDataStoreWizard(new ShapefileDataStoreFactory());
@@ -213,7 +213,7 @@ public class GGeotoolsVectorialModule
 
                   try {
 
-                     final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features = GGeotoolsVectorialLoader.readFeatures(
+                     final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> features = GGeotoolsVectorialLoader.readFeatures(
                               dataStore, layerName, projection);
 
                      final GVectorial2DLayer layer = new GVectorial2DLayer(layerName, features);

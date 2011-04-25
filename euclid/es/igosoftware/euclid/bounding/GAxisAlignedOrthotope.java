@@ -46,7 +46,7 @@ import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GMath;
-import es.igosoftware.util.ITransformer;
+import es.igosoftware.util.IFunction;
 
 
 public abstract class GAxisAlignedOrthotope<
@@ -75,9 +75,9 @@ GeometryT extends GAxisAlignedOrthotope<VectorT, GeometryT>
 
       if (exemplar.dimensions() == 2) {
          final Iterable<GAxisAlignedRectangle> rectangles = GCollections.collect(orthotopes,
-                  new ITransformer<GAxisAlignedOrthotope<VectorT, ?>, GAxisAlignedRectangle>() {
+                  new IFunction<GAxisAlignedOrthotope<VectorT, ?>, GAxisAlignedRectangle>() {
                      @Override
-                     public GAxisAlignedRectangle transform(final GAxisAlignedOrthotope<VectorT, ?> element) {
+                     public GAxisAlignedRectangle apply(final GAxisAlignedOrthotope<VectorT, ?> element) {
                         return (GAxisAlignedRectangle) element;
                      }
                   });
@@ -86,9 +86,9 @@ GeometryT extends GAxisAlignedOrthotope<VectorT, GeometryT>
       }
       else if (exemplar.dimensions() == 3) {
          final Iterable<GAxisAlignedBox> boxes = GCollections.collect(orthotopes,
-                  new ITransformer<GAxisAlignedOrthotope<VectorT, ?>, GAxisAlignedBox>() {
+                  new IFunction<GAxisAlignedOrthotope<VectorT, ?>, GAxisAlignedBox>() {
                      @Override
-                     public GAxisAlignedBox transform(final GAxisAlignedOrthotope<VectorT, ?> element) {
+                     public GAxisAlignedBox apply(final GAxisAlignedOrthotope<VectorT, ?> element) {
                         return (GAxisAlignedBox) element;
                      }
                   });
@@ -273,6 +273,12 @@ GeometryT extends GAxisAlignedOrthotope<VectorT, GeometryT>
    protected abstract String getStringName();
 
 
+   public abstract GAxisAlignedOrthotope<VectorT, GeometryT> expandedByPercent(final double percent);
+
+
+   public abstract GAxisAlignedOrthotope<VectorT, GeometryT> expandedByPercent(final VectorT percent);
+
+
    public abstract GAxisAlignedOrthotope<VectorT, GeometryT> expandedByDistance(final double delta);
 
 
@@ -352,10 +358,13 @@ GeometryT extends GAxisAlignedOrthotope<VectorT, GeometryT>
    }
 
 
-   public abstract GAxisAlignedOrthotope<VectorT, GeometryT>[] subdivideByAxis(final byte axis);
+   public abstract GAxisAlignedOrthotope<VectorT, GeometryT>[] subdividedByAxis(final byte axis);
 
 
-   public abstract GAxisAlignedOrthotope<VectorT, GeometryT>[] subdivideAtCenter();
+   public abstract GAxisAlignedOrthotope<VectorT, GeometryT>[] subdividedAtCenter();
+
+
+   public abstract GAxisAlignedOrthotope<VectorT, GeometryT>[] subdividedAt(final VectorT pivot);
 
 
    public abstract boolean touches(final GAxisAlignedOrthotope<VectorT, ?> that);
@@ -369,5 +378,7 @@ GeometryT extends GAxisAlignedOrthotope<VectorT, GeometryT>
 
    public abstract GeometryT mergedWith(final GAxisAlignedOrthotope<VectorT, ?> that);
 
+
+   public abstract GeometryT clamp(final GAxisAlignedOrthotope<VectorT, ?> that);
 
 }

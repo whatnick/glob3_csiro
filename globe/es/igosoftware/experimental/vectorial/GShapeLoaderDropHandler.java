@@ -7,8 +7,8 @@ import java.io.IOException;
 
 import javax.swing.JOptionPane;
 
-import es.igosoftware.euclid.IBoundedGeometry;
-import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.IBoundedGeometry2D;
+import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.IVector2;
@@ -23,12 +23,15 @@ public class GShapeLoaderDropHandler
 
 
    private final IGlobeApplication _application;
+   private final boolean           _confirmOpen;
 
 
-   public GShapeLoaderDropHandler(final IGlobeApplication application) {
+   public GShapeLoaderDropHandler(final IGlobeApplication application,
+                                  final boolean confirmOpen) {
       GAssert.notNull(application, "application");
 
       _application = application;
+      _confirmOpen = confirmOpen;
    }
 
 
@@ -65,7 +68,7 @@ public class GShapeLoaderDropHandler
    @Override
    public boolean processFile(final File droppedFile) {
 
-      if (!confirmOpenFile(droppedFile)) {
+      if (_confirmOpen && !confirmOpenFile(droppedFile)) {
          return false;
       }
 
@@ -73,11 +76,11 @@ public class GShapeLoaderDropHandler
       final Thread worker = new Thread() {
          @Override
          public void run() {
-            final int TODO_read_projection_or_ask_user;
+            // TODO: read projection or ask user
             final GProjection projection = GProjection.EPSG_4326;
 
             try {
-               final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> featuresCollection = GShapeLoader.readFeatures(
+               final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> featuresCollection = GShapeLoader.readFeatures(
                         droppedFile, projection);
 
                final GVectorial2DLayer layer = new GVectorial2DLayer(droppedFile.getName(), featuresCollection);

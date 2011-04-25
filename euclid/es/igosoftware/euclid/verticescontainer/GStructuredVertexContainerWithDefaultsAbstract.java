@@ -51,9 +51,9 @@ import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.vector.IVectorI2;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.IComparatorInt;
+import es.igosoftware.util.IFunction;
 import es.igosoftware.util.IListInt;
 import es.igosoftware.util.IPredicate;
-import es.igosoftware.util.ITransformer;
 
 
 public abstract class GStructuredVertexContainerWithDefaultsAbstract<
@@ -884,8 +884,8 @@ MutableT extends GStructuredVertexContainerWithDefaultsAbstract<VectorT, GroupT,
 
 
    @Override
-   public MutableT collect(final ITransformer<VectorT, VectorT> referencePointTransformer,
-                           final ITransformer<IStructuredVertexContainer.StructuredVertex<VectorT, GroupT>, IStructuredVertexContainer.StructuredVertex<VectorT, GroupT>> vertexTransformer) {
+   public MutableT collect(final IFunction<VectorT, VectorT> referencePointTransformer,
+                           final IFunction<IStructuredVertexContainer.StructuredVertex<VectorT, GroupT>, IStructuredVertexContainer.StructuredVertex<VectorT, GroupT>> vertexTransformer) {
 
       final MutableT result = newEmptyContainer(size());
 
@@ -893,13 +893,13 @@ MutableT extends GStructuredVertexContainerWithDefaultsAbstract<VectorT, GroupT,
       final HashMap<GroupT, GroupT> groupsMap = new HashMap<GroupT, GroupT>(groupsList.size());
       for (final GroupT group : groupsList) {
          final GroupT transformedGroup = group.newEmptyContainer(group.size(),
-                  referencePointTransformer.transform(group.getReferencePoint()));
+                  referencePointTransformer.apply(group.getReferencePoint()));
          groupsMap.put(group, transformedGroup);
       }
 
       for (int i = 0; i < size(); i++) {
          final IStructuredVertexContainer.StructuredVertex<VectorT, GroupT> vertex = getVertex(i);
-         final IStructuredVertexContainer.StructuredVertex<VectorT, GroupT> transformedVertex = vertexTransformer.transform(vertex);
+         final IStructuredVertexContainer.StructuredVertex<VectorT, GroupT> transformedVertex = vertexTransformer.apply(vertex);
          final GroupT transformedGroup = groupsMap.get(vertex._group);
 
          final IStructuredVertexContainer.StructuredVertex<VectorT, GroupT> collectedVertex = new IStructuredVertexContainer.StructuredVertex<VectorT, GroupT>(

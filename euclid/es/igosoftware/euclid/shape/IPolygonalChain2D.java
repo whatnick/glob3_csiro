@@ -46,5 +46,7 @@ public interface IPolygonalChain2D
             IPolygonalChain<IVector2, GSegment2D, GAxisAlignedRectangle>,
             ICurve2D<GAxisAlignedRectangle> {
 
+   public double getLength();
+
 
 }

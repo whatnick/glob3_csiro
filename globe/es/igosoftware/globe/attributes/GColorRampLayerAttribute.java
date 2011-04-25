@@ -83,7 +83,7 @@ public abstract class GColorRampLayerAttribute
          widget.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent e) {
-               final MultipleGradientPaint gradient = GradientChooserDialog.showDialog(application.getFrame(), "Color ramp",
+               final MultipleGradientPaint gradient = GGradientChooserDialog.showDialog(application.getFrame(), "Color ramp",
                         get());
                if (gradient != null) {
                   set((LinearGradientPaint) gradient);

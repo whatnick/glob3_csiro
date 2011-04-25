@@ -84,7 +84,7 @@ public class GLinesStrip2D
       final List<IVector2> points = getPoints();
       final int pointsCount = points.size();
 
-      final GSegment2D[] edges = new GSegment2D[pointsCount];
+      final GSegment2D[] edges = new GSegment2D[pointsCount - 1];
 
       for (int i = 1; i < pointsCount; i++) {
          edges[i - 1] = new GSegment2D(points.get(i - 1), points.get(i));

@@ -60,7 +60,8 @@ public final class GAxisAlignedBox
          extends
             GAxisAlignedOrthotope<IVector3, GAxisAlignedBox>
          implements
-            IBounds3D<GAxisAlignedBox> {
+            IBounds3D<GAxisAlignedBox>,
+            IFinite3DBounds<GAxisAlignedBox> {
 
    private static final long           serialVersionUID = 1L;
 
@@ -273,6 +274,20 @@ public final class GAxisAlignedBox
    @Override
    public GAxisAlignedBox expandedByDistance(final IVector3 delta) {
       return new GAxisAlignedBox(_lower.sub(delta), _upper.add(delta));
+   }
+
+
+   @Override
+   public GAxisAlignedBox expandedByPercent(final double percent) {
+      final IVector3 delta = _extent.scale(percent);
+      return expandedByDistance(delta);
+   }
+
+
+   @Override
+   public GAxisAlignedBox expandedByPercent(final IVector3 percent) {
+      final IVector3 delta = _extent.scale(percent);
+      return expandedByDistance(delta);
    }
 
 
@@ -614,12 +629,13 @@ public final class GAxisAlignedBox
 
 
    @Override
-   public GAxisAlignedBox[] subdivideAtCenter() {
-      return subdividedByXYZ(_center);
+   public GAxisAlignedBox[] subdividedAtCenter() {
+      return subdividedAt(_center);
    }
 
 
-   public GAxisAlignedBox[] subdividedByXYZ(final IVector3 pivot) {
+   @Override
+   public GAxisAlignedBox[] subdividedAt(final IVector3 pivot) {
       final GAxisAlignedBox[] result = new GAxisAlignedBox[8];
 
       for (int i = 0; i < 8; i++) {
@@ -690,7 +706,7 @@ public final class GAxisAlignedBox
 
 
    @Override
-   public GAxisAlignedBox[] subdivideByAxis(final byte axis) {
+   public GAxisAlignedBox[] subdividedByAxis(final byte axis) {
       switch (axis) {
          case 0:
             return subdividedByX();
@@ -700,17 +716,6 @@ public final class GAxisAlignedBox
             return subdividedByZ();
          default:
             throw new IllegalArgumentException("Invalid axis=" + axis);
-      }
-   }
-
-
-   public static void main(final String[] args) {
-      final GAxisAlignedBox box = new GAxisAlignedBox(GVector3D.ZERO, GVector3D.UNIT);
-
-      final GAxisAlignedBox[] subdivisions = box.subdivideAtCenter();
-
-      for (final GAxisAlignedBox subdivision : subdivisions) {
-         System.out.println(subdivision);
       }
    }
 
@@ -730,6 +735,13 @@ public final class GAxisAlignedBox
    @Override
    public GAxisAlignedBox mergedWith(final GAxisAlignedOrthotope<IVector3, ?> that) {
       return new GAxisAlignedBox(_lower.min(that._lower), _upper.max(that._upper));
+   }
+
+
+   @Override
+   public GAxisAlignedBox clamp(final GAxisAlignedOrthotope<IVector3, ?> that) {
+      return new GAxisAlignedBox(_lower.clamp(that._lower, that._upper), _upper.clamp(that._lower, that._upper));
+
    }
 
 

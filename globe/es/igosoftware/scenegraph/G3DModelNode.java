@@ -47,7 +47,7 @@ import es.igosoftware.scenegraph.GPositionRenderableLayer.PickResult;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GPair;
-import es.igosoftware.util.ITransformer;
+import es.igosoftware.util.IFunction;
 import es.igosoftware.utils.GWWUtils;
 import gov.nasa.worldwind.geom.Box;
 import gov.nasa.worldwind.geom.Extent;
@@ -202,9 +202,9 @@ public class G3DModelNode
          final Matrix globalMatrix = getGlobalMatrix(parentMatrix);
 
          final List<Vec4> verticesInGlobalCoordinates = GCollections.collect(_model.getVertices(),
-                  new ITransformer<IVector3, Vec4>() {
+                  new IFunction<IVector3, Vec4>() {
                      @Override
-                     public Vec4 transform(final IVector3 element) {
+                     public Vec4 apply(final IVector3 element) {
                         final Vec4 vec4 = GWWUtils.toVec4(element);
                         final Vec4 transformed = vec4.transformBy4(globalMatrix);
                         return GWWUtils.toVec3(transformed);

@@ -58,7 +58,8 @@ public final class GAxisAlignedRectangle
          extends
             GAxisAlignedOrthotope<IVector2, GAxisAlignedRectangle>
          implements
-            IBounds2D<GAxisAlignedRectangle> {
+            IBounds2D<GAxisAlignedRectangle>,
+            IFinite2DBounds<GAxisAlignedRectangle> {
 
    private static final long                 serialVersionUID = 1L;
 
@@ -323,6 +324,20 @@ public final class GAxisAlignedRectangle
 
 
    @Override
+   public GAxisAlignedRectangle expandedByPercent(final double percent) {
+      final IVector2 delta = _extent.scale(percent);
+      return expandedByDistance(delta);
+   }
+
+
+   @Override
+   public GAxisAlignedRectangle expandedByPercent(final IVector2 percent) {
+      final IVector2 delta = _extent.scale(percent);
+      return expandedByDistance(delta);
+   }
+
+
+   @Override
    public List<IVector2> getVertices() {
       final List<IVector2> v = new ArrayList<IVector2>(4);
 
@@ -501,7 +516,7 @@ public final class GAxisAlignedRectangle
 
 
    @Override
-   public GAxisAlignedRectangle[] subdivideByAxis(final byte axis) {
+   public GAxisAlignedRectangle[] subdividedByAxis(final byte axis) {
       switch (axis) {
          case 0:
             return subdividedByX();
@@ -514,13 +529,47 @@ public final class GAxisAlignedRectangle
 
 
    @Override
-   public GAxisAlignedRectangle[] subdivideAtCenter() {
+   public GAxisAlignedRectangle[] subdividedAtCenter() {
       final GAxisAlignedRectangle[] divisionsAtX = subdividedByX();
 
       final GAxisAlignedRectangle[] children0 = divisionsAtX[0].subdividedByY();
       final GAxisAlignedRectangle[] children1 = divisionsAtX[1].subdividedByY();
 
       return new GAxisAlignedRectangle[] { children0[0], children0[1], children1[0], children1[1] };
+   }
+
+
+   @Override
+   public GAxisAlignedRectangle[] subdividedAt(final IVector2 pivot) {
+      final GAxisAlignedRectangle[] result = new GAxisAlignedRectangle[4];
+
+      for (int i = 0; i < 4; i++) {
+         result[i] = splitByXY(i, pivot);
+      }
+
+      return result;
+   }
+
+
+   private GAxisAlignedRectangle splitByXY(final int key,
+                                           final IVector2 pivot) {
+      final int xKey = key & 1;
+      final int yKey = key & 2;
+
+      final double octLowerX = (xKey == 0) ? _lower.x() : pivot.x();
+      final double octLowerY = (yKey == 0) ? _lower.y() : pivot.y();
+
+      double octUpperX = (xKey == 0) ? pivot.x() : _upper.x();
+      double octUpperY = (yKey == 0) ? pivot.y() : _upper.y();
+
+      if (octUpperX < _upper.x()) {
+         octUpperX = GMath.previousDown(octUpperX);
+      }
+      if (octUpperY < _upper.y()) {
+         octUpperY = GMath.previousDown(octUpperY);
+      }
+
+      return new GAxisAlignedRectangle(new GVector2D(octLowerX, octLowerY), new GVector2D(octUpperX, octUpperY));
    }
 
 
@@ -562,6 +611,12 @@ public final class GAxisAlignedRectangle
    @Override
    public GAxisAlignedRectangle mergedWith(final GAxisAlignedOrthotope<IVector2, ?> that) {
       return new GAxisAlignedRectangle(_lower.min(that._lower), _upper.max(that._upper));
+   }
+
+
+   @Override
+   public GAxisAlignedRectangle clamp(final GAxisAlignedOrthotope<IVector2, ?> that) {
+      return new GAxisAlignedRectangle(_lower.clamp(that._lower, that._upper), _upper.clamp(that._lower, that._upper));
    }
 
 

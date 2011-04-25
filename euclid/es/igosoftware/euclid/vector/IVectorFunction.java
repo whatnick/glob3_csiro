@@ -34,9 +34,14 @@
 */
 
 
-package es.igosoftware.util;
+package es.igosoftware.euclid.vector;
+
+import es.igosoftware.util.IFunction;
 
 
-public interface ITransformer<ElementT, ResultT> {
-   public ResultT transform(final ElementT element);
+public interface IVectorFunction<VectorT extends IVector<VectorT, ?>>
+         extends
+            IFunction<VectorT, VectorT> {
+
+
 }

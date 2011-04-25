@@ -64,7 +64,7 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
 
    @Override
    public double length() {
-      return Math.sqrt(squaredLength());
+      return GMath.sqrt(squaredLength());
    }
 
 

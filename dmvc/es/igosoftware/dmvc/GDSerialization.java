@@ -12,7 +12,7 @@ import org.jboss.netty.channel.Channel;
 import es.igosoftware.dmvc.client.GDClient;
 import es.igosoftware.dmvc.server.GDServer;
 import es.igosoftware.util.GCollections;
-import es.igosoftware.util.ITransformer;
+import es.igosoftware.util.IFunction;
 
 
 public class GDSerialization {
@@ -42,9 +42,9 @@ public class GDSerialization {
       }
 
       if (object instanceof Iterable<?>) {
-         final ITransformer<Object, Object> transformer = new ITransformer<Object, Object>() {
+         final IFunction<Object, Object> transformer = new IFunction<Object, Object>() {
             @Override
-            public Object transform(final Object element) {
+            public Object apply(final Object element) {
                return GDSerialization.materializeInClient(element, channel, client);
             }
          };
@@ -98,9 +98,9 @@ public class GDSerialization {
 
       if (object instanceof Iterable<?>) {
 
-         final ITransformer<Object, Object> transformer = new ITransformer<Object, Object>() {
+         final IFunction<Object, Object> transformer = new IFunction<Object, Object>() {
             @Override
-            public Object transform(final Object element) {
+            public Object apply(final Object element) {
                return GDSerialization.materializeInServer(element, channel, server);
             }
          };
@@ -151,9 +151,9 @@ public class GDSerialization {
       }
 
       if (object instanceof Iterable<?>) {
-         final ITransformer<Object, Object> transformer = new ITransformer<Object, Object>() {
+         final IFunction<Object, Object> transformer = new IFunction<Object, Object>() {
             @Override
-            public Object transform(final Object element) {
+            public Object apply(final Object element) {
                return GDSerialization.objectToSerialize(element, client);
             }
          };
@@ -204,9 +204,9 @@ public class GDSerialization {
       }
 
       if (object instanceof Iterable<?>) {
-         final ITransformer<Object, Object> transformer = new ITransformer<Object, Object>() {
+         final IFunction<Object, Object> transformer = new IFunction<Object, Object>() {
             @Override
-            public Object transform(final Object element) {
+            public Object apply(final Object element) {
                return GDSerialization.objectToSerialize(element, server);
             }
          };

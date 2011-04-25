@@ -1,6 +1,6 @@
 
 
-package es.igosoftware.euclid.experimental.vectorial.rendering;
+package es.igosoftware.euclid.experimental.vectorial.rendering.utils;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
