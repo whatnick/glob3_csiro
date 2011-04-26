@@ -29,4 +29,5 @@ public class GNullCurve2DStyle
       return null;
    }
 
+
 }

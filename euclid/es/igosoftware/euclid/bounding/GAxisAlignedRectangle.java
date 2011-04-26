@@ -51,6 +51,7 @@ import es.igosoftware.euclid.shape.GSegment2D;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.euclid.vector.IVectorFunction;
 import es.igosoftware.util.GMath;
 
 
@@ -617,6 +618,15 @@ public final class GAxisAlignedRectangle
    @Override
    public GAxisAlignedRectangle clamp(final GAxisAlignedOrthotope<IVector2, ?> that) {
       return new GAxisAlignedRectangle(_lower.clamp(that._lower, that._upper), _upper.clamp(that._lower, that._upper));
+   }
+
+
+   @Override
+   public GAxisAlignedRectangle transform(final IVectorFunction<IVector2> transformer) {
+      if (transformer == null) {
+         return this;
+      }
+      return new GAxisAlignedRectangle(transformer.apply(_lower), transformer.apply(_upper));
    }
 
 

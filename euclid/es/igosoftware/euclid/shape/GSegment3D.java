@@ -41,6 +41,7 @@ import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 import es.igosoftware.euclid.vector.IVector3;
+import es.igosoftware.euclid.vector.IVectorFunction;
 
 
 public final class GSegment3D
@@ -86,5 +87,16 @@ public final class GSegment3D
    public GSegment3D clone() {
       return this;
    }
+
+
+   @Override
+   public GSegment3D transform(final IVectorFunction<IVector3> transformer) {
+      if (transformer == null) {
+         return this;
+      }
+
+      return new GSegment3D(transformer.apply(_from), transformer.apply(_to));
+   }
+
 
 }

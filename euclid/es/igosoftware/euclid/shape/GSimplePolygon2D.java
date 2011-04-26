@@ -44,6 +44,8 @@ import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.utils.GTriangulate;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.euclid.vector.IVectorFunction;
+import es.igosoftware.util.GCollections;
 
 
 public final class GSimplePolygon2D
@@ -336,6 +338,16 @@ public final class GSimplePolygon2D
    @Override
    public boolean isConvex() {
       throw new RuntimeException("not yet implemented");
+   }
+
+
+   @Override
+   public GSimplePolygon2D transform(final IVectorFunction<IVector2> transformer) {
+      if (transformer == null) {
+         return this;
+      }
+      final List<IVector2> transformedPoints = GCollections.collect(_points, transformer);
+      return new GSimplePolygon2D(false, transformedPoints);
    }
 
 

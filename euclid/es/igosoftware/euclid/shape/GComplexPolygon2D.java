@@ -41,6 +41,9 @@ import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.euclid.vector.IVectorFunction;
+import es.igosoftware.util.GCollections;
+import es.igosoftware.util.IFunction;
 
 
 public final class GComplexPolygon2D
@@ -53,7 +56,7 @@ public final class GComplexPolygon2D
 
 
    public GComplexPolygon2D(final ISimplePolygon2D hull,
-                            final List<ISimplePolygon2D> holes) {
+                            final List<? extends ISimplePolygon2D> holes) {
       super(hull, holes);
    }
 
@@ -137,6 +140,23 @@ public final class GComplexPolygon2D
    @Override
    public boolean isConvex() {
       return false;
+   }
+
+
+   @Override
+   public GComplexPolygon2D transform(final IVectorFunction<IVector2> transformer) {
+      if (transformer == null) {
+         return this;
+      }
+
+      final List<? extends ISimplePolygon2D> transformedHoles = GCollections.collect(_holes,
+               new IFunction<ISimplePolygon2D, ISimplePolygon2D>() {
+                  @Override
+                  public ISimplePolygon2D apply(final ISimplePolygon2D hole) {
+                     return hole.transform(transformer);
+                  }
+               });
+      return new GComplexPolygon2D(_hull.transform(transformer), transformedHoles);
    }
 
 

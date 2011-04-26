@@ -41,6 +41,7 @@ import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.euclid.vector.IVectorFunction;
 
 
 public final class GTriangle2D
@@ -200,6 +201,15 @@ public final class GTriangle2D
       final List<GTriangle2D> result = new ArrayList<GTriangle2D>(1);
       result.add(this);
       return result;
+   }
+
+
+   @Override
+   public GTriangle2D transform(final IVectorFunction<IVector2> transformer) {
+      if (transformer == null) {
+         return this;
+      }
+      return new GTriangle2D(transformer.apply(_v0), transformer.apply(_v1), transformer.apply(_v2));
    }
 
 

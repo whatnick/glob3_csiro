@@ -64,9 +64,16 @@ public class GLinesToEquispacedPointsTest
    }
 
 
+   /**
+    * Check that two consecutive points have the expected distance and are in the line
+    */
    private <
 
-   VectorT extends IVector<VectorT, ?>, SegmentT extends GSegment<VectorT, SegmentT, ?>, BoundsT extends IBounds<VectorT, BoundsT>
+   VectorT extends IVector<VectorT, ?>,
+
+   SegmentT extends GSegment<VectorT, SegmentT, ?>,
+
+   BoundsT extends IBounds<VectorT, BoundsT>
 
    > void checkResult(final List<VectorT> result,
                       final IPolygonalChain<VectorT, SegmentT, BoundsT> geom,
@@ -75,6 +82,9 @@ public class GLinesToEquispacedPointsTest
          final VectorT p1 = result.get(i - 1);
          final VectorT p2 = result.get(i);
 
+         /*
+          * Find the segment the two consecutive points are in
+          */
          final List<SegmentT> segments = geom.getEdges();
          int firstSegmentIndex = -1;
          int secondSegmentIndex = -1;
@@ -88,6 +98,9 @@ public class GLinesToEquispacedPointsTest
             }
          }
 
+         /*
+          * Obtain the distance between the points following the segments in the source line
+          */
          double realDistance = 0;
          VectorT lastPoint = p1;
          for (int j = firstSegmentIndex; j < secondSegmentIndex; j++) {

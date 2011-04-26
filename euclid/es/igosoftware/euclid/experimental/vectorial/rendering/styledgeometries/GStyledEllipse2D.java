@@ -16,14 +16,15 @@ public class GStyledEllipse2D
 
 
    public GStyledEllipse2D(final GAxisAlignedEllipse2D ellipse,
-                           final ICurve2DStyle curveStyle,
-                           final ISurface2DStyle surfaceStyle) {
-      super(ellipse, curveStyle, surfaceStyle);
+                           final ISurface2DStyle surfaceStyle,
+                           final ICurve2DStyle curveStyle) {
+      super(ellipse, surfaceStyle, curveStyle);
    }
 
 
    @Override
-   public void draw(final IVectorial2DDrawer drawer) {
+   protected void draw(final IVectorial2DDrawer drawer,
+                       final boolean debugRendering) {
 
       final GAxisAlignedRectangle bounds = _geometry.getBounds();
 

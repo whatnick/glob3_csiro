@@ -29,9 +29,9 @@ BoundsT extends IBounds<VectorT, BoundsT>
             IPolygonalChain<VectorT, SegmentT, BoundsT> {
 
 
-   private static final long   serialVersionUID = 1L;
+   private static final long     serialVersionUID = 1L;
 
-   private final List<VectorT> _points;
+   protected final List<VectorT> _points;
 
 
    protected GLinesStrip(final boolean validate,

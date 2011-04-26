@@ -6,9 +6,12 @@ import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.experimental.vectorial.rendering.utils.GAWTPoints;
 import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.euclid.vector.IVectorFunction;
 
 
-public interface IVectorial2DRenderingScaler {
+public interface IVectorial2DRenderingScaler
+         extends
+            IVectorFunction<IVector2> {
 
 
    public GAWTPoints toScaledAndTranslatedPoints(final IPointsContainer<IVector2> pointsContainer);
