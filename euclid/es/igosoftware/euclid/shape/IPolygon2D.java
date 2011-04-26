@@ -41,6 +41,7 @@ import java.util.List;
 import es.igosoftware.euclid.ISurface2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.euclid.vector.IVectorFunction;
 
 
 public interface IPolygon2D
@@ -50,6 +51,10 @@ public interface IPolygon2D
 
 
    public List<GTriangle2D> triangulate();
+
+
+   @Override
+   public IPolygon2D transform(final IVectorFunction<IVector2> transformer);
 
 
 }

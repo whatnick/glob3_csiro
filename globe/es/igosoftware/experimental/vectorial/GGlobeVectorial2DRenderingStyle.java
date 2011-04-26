@@ -342,12 +342,6 @@ public class GGlobeVectorial2DRenderingStyle
 
 
    @Override
-   public IColor getLODColor() {
-      return _pointColor;
-   }
-
-
-   @Override
    public double getLODMinSize() {
       return 5;
    }

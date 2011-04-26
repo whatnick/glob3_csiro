@@ -4,6 +4,7 @@ package es.igosoftware.euclid;
 
 import es.igosoftware.euclid.bounding.IBounds;
 import es.igosoftware.euclid.vector.IVector;
+import es.igosoftware.euclid.vector.IVectorFunction;
 
 
 /**
@@ -28,6 +29,9 @@ BoundsT extends IBounds<VectorT, BoundsT>
 >
          extends
             IBoundedGeometry<VectorT, BoundsT> {
+
+
+   public ISurface<VectorT, BoundsT> transform(final IVectorFunction<VectorT> transformer);
 
 
 }

@@ -94,4 +94,10 @@ public class GVectorial2DRenderingScaler
    }
 
 
+   @Override
+   public IVector2 apply(final IVector2 point) {
+      return scaleAndTranslate(point);
+   }
+
+
 }

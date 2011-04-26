@@ -166,6 +166,7 @@ public class GJava2DVectorial2DDrawer
          yPoints[i] = GMath.toRoundedInt(point.y());
       }
 
+
       drawPolyline(xPoints, yPoints, pointsCount, paint, stroke);
    }
 
@@ -262,6 +263,10 @@ public class GJava2DVectorial2DDrawer
                                final double x,
                                final double y,
                                final float opacity) {
+
+      if (opacity <= 0) {
+         return;
+      }
 
       if (opacity >= 1) {
          drawImage(image, x, y);

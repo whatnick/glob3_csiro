@@ -40,8 +40,7 @@ public class GScriptTest
          GScriptManager.getPythonAlgorithm(getScriptStream("noAlgorithmVarSet.py"));
          fail();
       }
-      catch (final GIllegalScriptException e) {
-      }
+      catch (final GIllegalScriptException e) {}
    }
 
 
@@ -50,8 +49,7 @@ public class GScriptTest
          GScriptManager.getPythonAlgorithm(getScriptStream("noIAlgorithmInstance.py"));
          fail();
       }
-      catch (final GIllegalScriptException e) {
-      }
+      catch (final GIllegalScriptException e) {}
    }
 
 

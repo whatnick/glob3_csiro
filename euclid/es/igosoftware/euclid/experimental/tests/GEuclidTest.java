@@ -126,6 +126,8 @@ public class GEuclidTest
       p4 = new GVector2D(1, 9);
       final GSimplePolygon2D hole = new GSimplePolygon2D(false, p1, p2, p3, p4);
       final GComplexPolygon2D geom = new GComplexPolygon2D(ring, Collections.singletonList(hole));
+      checkEdges(geom, true);
+      //      fail(); 
       checkEdgesComplexGeometry(geom);
    }
 

@@ -38,6 +38,7 @@ package es.igosoftware.euclid.bounding;
 
 import es.igosoftware.euclid.shape.GSegment2D;
 import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.euclid.vector.IVectorFunction;
 import es.igosoftware.util.GMath;
 
 
@@ -135,6 +136,24 @@ public final class GCapsule2D
    @Override
    public boolean touchesBounds(final IBounds<IVector2, ?> that) {
       return touches((IBounds2D<?>) that);
+   }
+
+
+   @Override
+   public GCapsule2D transform(final IVectorFunction<IVector2> transformer) {
+      if (transformer == null) {
+         return this;
+      }
+
+      final GDisk fromDisk = new GDisk(_segment._from, _radius);
+      final GDisk toDisk = new GDisk(_segment._to, _radius);
+
+      final GDisk transformedFromDisk = fromDisk.transform(transformer);
+      final GDisk transformedToDisk = toDisk.transform(transformer);
+
+      final GSegment2D segment = new GSegment2D(transformedFromDisk._center, transformedToDisk._center);
+      final double radius = (transformedFromDisk._radius + transformedToDisk._radius) / 2;
+      return new GCapsule2D(segment, radius);
    }
 
 
