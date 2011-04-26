@@ -581,7 +581,9 @@ public class GNetCDFMultidimentionalData
       catch (final InvalidRangeException ex) {
          return Double.NaN;
       }
-
+      catch (final ArrayIndexOutOfBoundsException ex) {
+         return Double.NaN;
+      }
    }
 
 
@@ -904,6 +906,9 @@ public class GNetCDFMultidimentionalData
 
       //      final GHolder<Integer> removedCounter = new GHolder<Integer>(0);
 
+      final ArrayList<List<Integer>> indicesHolder = new ArrayList<List<Integer>>(0);
+
+
       combination(new Processor<Integer>() {
          @Override
          public void process(final List<Integer> indices) {
@@ -1013,6 +1018,132 @@ public class GNetCDFMultidimentionalData
       }, ranges);
 
 
+      /*
+      combination(new Processor<Integer>() {
+
+         @Override
+         public void process(final List<Integer> values) {
+            // TODO Auto-generated method stub
+            indicesHolder.add(values);
+         }
+      }, ranges);
+
+
+      final List<Integer> rangeList = GCollections.rangeList(0, indicesHolder.size() - 1);
+
+      GCollections.concurrentEvaluate(rangeList, new IRangeEvaluator() {
+         @Override
+         public void evaluate(final int from,
+                              final int to) {
+            for (int r = from; r <= to; r++) {
+               final List<Integer> indices = indicesHolder.get(r);
+               try {
+
+                  final String section = indices.toString().substring(1, indices.toString().length() - 1);
+                  final double uValue, vValue;
+
+                  try {
+                     final double uValue_temp = vectorVariable._uVariable.read(section).getDouble(0);
+                     final double vValue_temp = vectorVariable._vVariable.read(section).getDouble(0);
+                     uValue = uValue_temp;
+                     vValue = vValue_temp;
+                  }
+                  catch (final InvalidRangeException ex) {
+                     continue;
+                  }
+                  catch (final ArrayIndexOutOfBoundsException ex) {
+                     continue;
+                  }
+
+
+                  if (Double.isNaN(uValue) || Double.isNaN(vValue)) {
+                     continue;
+                  }
+
+                  if (!Double.isNaN(vectorVariable._uMissingValue) && GMath.closeTo(uValue, vectorVariable._uMissingValue)) {
+                     continue;
+                  }
+
+                  if (!Double.isNaN(vectorVariable._vMissingValue) && GMath.closeTo(vValue, vectorVariable._vMissingValue)) {
+                     continue;
+                  }
+
+                  //               System.out.println("Vector " + uValue + "," + vValue);
+
+                  boolean removedPoint = false;
+                  final double z = get(_elevationVariable, dimensions, indices);
+                  if (_elevationThresholdVariable != null) {
+                     final double elevationThreshold = get(_elevationThresholdVariable, dimensions, indices);
+                     if ((z > elevationThreshold) || Double.isNaN(z)) {
+                        removedPoint = true;
+                        continue;
+                     }
+                  }
+
+                  final double x = get(_longitudeVariable, dimensions, indices);
+                  final double y = get(_latitudeVariable, dimensions, indices);
+                  //               final double z = get(_elevationVariable, dimensions, indices);
+
+                  // Draw vectors centred in cell
+                  if (Double.isNaN(x) || Double.isNaN(y)) {
+                     continue;
+                  }
+
+                  final double uValue_half_scaled = uValue * factor / 2.0;
+                  final double vValue_half_scaled = vValue * factor / 2.0;
+
+                  final Position positionCentre = new Position(Angle.fromDegrees(y), Angle.fromDegrees(x), z);
+
+
+                  final Position positionFrom = GWWUtils.increment(positionCentre, -uValue_half_scaled, -vValue_half_scaled, 0);
+                  final Position positionTo = GWWUtils.increment(positionCentre, uValue_half_scaled, vValue_half_scaled, 0);
+
+                  if ((positionFrom == null) || (positionTo == null)) {
+                     continue;
+                  }
+
+                  final Vec4 point4From = GWWUtils.toVec4(positionFrom, globe, verticalExaggeration);
+                  final Vec4 point4To = GWWUtils.toVec4(positionTo, globe, verticalExaggeration);
+
+
+                  final GVector3D pointFrom = new GVector3D(point4From.x - referencePoint.x, point4From.y - referencePoint.y,
+                           point4From.z - referencePoint.z);
+                  final GVector3D pointTo = new GVector3D(point4To.x - referencePoint.x, point4To.y - referencePoint.y,
+                           point4To.z - referencePoint.z);
+
+                  //               final GColorI color = removedPoint ? GColorI.RED : GColorI.WHITE;
+                  final IColor color;
+                  if (removedPoint) {
+                     color = GColorI.RED;
+                  }
+                  else {
+                     if (colorization == IMultidimensionalData.VectorColorization.RAMP_BY_ANGLE) {
+                        color = colorizeVectorByAngle(uValue, vValue);
+                     }
+                     else {
+                        color = colorization.getColor();
+                     }
+                  }
+
+                  synchronized (vertexContainer) {
+                     vertexContainer.addPoint(pointFrom, color);
+                     vertexContainer.addPoint(pointTo, color);
+                  }
+
+
+                  //Geometry of Arrowhead
+                  synchronized (arrowVertexContainer) {
+                     computeArrowheadGeometry(pointFrom, pointTo, arrowVertexContainer);
+                  }
+               }
+               catch (final IOException e) {
+                  e.printStackTrace();
+               }
+            }
+         }
+      });
+
+      */
       //      System.out.println("Removed " + removedCounter.get() + " points");
 
 
