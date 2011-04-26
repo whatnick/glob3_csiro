@@ -9,5 +9,5 @@ class NoSet(IAlgorithm):
 		return "description"
 
 	def apply(self, parameters):
-		return 3.14159;
+		return 3.14159
 
