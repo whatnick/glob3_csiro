@@ -144,4 +144,31 @@ public interface IVectorial2DDrawer {
                          final float opacity);
 
 
+   /* -------------------------------------------------------------------------------------- */
+   /* String drawing */
+   public void drawString(final String str,
+                          final double x,
+                          final double y,
+                          final Paint paint);
+
+
+   public void drawString(final String str,
+                          final IVector2 position,
+                          final Paint paint);
+
+
+   public void drawShadowedString(final String str,
+                                  final IVector2 position,
+                                  final Paint paint,
+                                  final double shadowOffset,
+                                  final Paint shadowPaint);
+
+
+   public void drawShadowedStringCentered(final String str,
+                                          final IVector2 position,
+                                          final Paint paint,
+                                          final double shadowOffset,
+                                          final Paint shadowPaint);
+
+
 }

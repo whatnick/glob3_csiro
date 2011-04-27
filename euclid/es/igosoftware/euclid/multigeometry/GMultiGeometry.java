@@ -38,11 +38,11 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
             Iterable<ChildrenGeometryT> {
 
 
-   private static final long             serialVersionUID = 1L;
+   private static final long               serialVersionUID = 1L;
 
-   private final List<ChildrenGeometryT> _children;
+   protected final List<ChildrenGeometryT> _children;
 
-   private EnumSet<GGeometryType>        _geometryType;
+   private EnumSet<GGeometryType>          _geometryType;
 
 
    public GMultiGeometry(final ChildrenGeometryT... children) {

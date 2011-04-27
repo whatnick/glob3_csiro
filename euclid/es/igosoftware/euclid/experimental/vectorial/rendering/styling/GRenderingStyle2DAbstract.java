@@ -11,7 +11,6 @@ import java.util.Collections;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.ICurve2D;
-import es.igosoftware.euclid.IGeometry2D;
 import es.igosoftware.euclid.ISurface2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
@@ -56,6 +55,12 @@ public abstract class GRenderingStyle2DAbstract
                                                           public Paint getBorderPaint() {
                                                              return new Color(0f, 1f, 0f, 0.5f).darker().darker();
                                                           }
+
+
+                                                          @Override
+                                                          public boolean isGroupableWith(final ICurve2DStyle that) {
+                                                             return false;
+                                                          }
                                                        };
 
    private static final ICurve2DStyle LEAF_NODE_STYLE  = new ICurve2DStyle() {
@@ -70,14 +75,20 @@ public abstract class GRenderingStyle2DAbstract
                                                           public Paint getBorderPaint() {
                                                              return new Color(0f, 1f, 0f, 0.5f);
                                                           }
+
+
+                                                          @Override
+                                                          public boolean isGroupableWith(final ICurve2DStyle that) {
+                                                             return false;
+                                                          }
                                                        };
 
 
    /* -------------------------------------------------------------------------------------- */
    /* nodes */
    @Override
-   public Collection<? extends GStyled2DGeometry<? extends IGeometry2D>> getNodeSymbols(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> node,
-                                                                                        final IVectorial2DRenderingScaler scaler) {
+   public Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getNodeSymbols(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> node,
+                                                                                                                             final IVectorial2DRenderingScaler scaler) {
       if (!isDebugRendering()) {
          return null;
       }
@@ -121,9 +132,9 @@ public abstract class GRenderingStyle2DAbstract
 
 
    @Override
-   public Collection<? extends GStyled2DGeometry<? extends IGeometry2D>> getPointSymbols(final IVector2 point,
-                                                                                         final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                                                                         final IVectorial2DRenderingScaler scaler) {
+   public Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getPointSymbols(final IVector2 point,
+                                                                                                                              final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                                                                                                              final IVectorial2DRenderingScaler scaler) {
 
       final IVector2 extent = calculateEllipseExtent(point, feature, scaler);
 
@@ -140,52 +151,26 @@ public abstract class GRenderingStyle2DAbstract
    protected ICurve2DStyle getPointCurveStyle(final IVector2 point,
                                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                               final IVectorial2DRenderingScaler scaler) {
-      final Stroke borderStroke = getPointSurfaceBorderStroke(point, feature, scaler);
-      final Paint surfaceBorderPaint = getPointSurfaceBorderPaint(point, feature, scaler);
-
-      return new GCurve2DStyle(borderStroke, surfaceBorderPaint);
-   }
-
-
-   protected ISurface2DStyle getPointSurfaceStyle(final IVector2 point,
-                                                  final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                                  final IVectorial2DRenderingScaler scaler) {
-      final Paint surfacePaint = getPointSurfacePaint(point, feature, scaler);
-
-      return new GSurface2DStyle(surfacePaint);
-   }
-
-
-   protected Paint getPointSurfaceBorderPaint(final IVector2 point,
-                                              final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                              final IVectorial2DRenderingScaler scaler) {
-      final IColor color = getPointBorderColor(point, feature, scaler);
-      final float opacity = getPointOpacity(point, feature, scaler);
-
-      return color.asAWTColor(opacity);
-   }
-
-
-   protected Stroke getPointSurfaceBorderStroke(final IVector2 point,
-                                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                                final IVectorial2DRenderingScaler scaler) {
       final IMeasure<GLength> borderSize = getPointBorderSize(point, feature, scaler);
 
       final double borderLenghtInMeters = borderSize.getValueInReferenceUnits();
       final IVector2 pointPlusBorderSize = scaler.increment(point, borderLenghtInMeters, 0);
       final float borderWidth = (float) scaler.scaleExtent(pointPlusBorderSize.sub(point)).x();
 
-      return new BasicStroke(borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+      final IColor color = getPointBorderColor(point, feature, scaler);
+      final float opacity = getPointOpacity(point, feature, scaler);
+
+      return new GCurve2DStyle(borderWidth, color, opacity);
    }
 
 
-   protected Paint getPointSurfacePaint(final IVector2 point,
-                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                        final IVectorial2DRenderingScaler scaler) {
+   protected ISurface2DStyle getPointSurfaceStyle(final IVector2 point,
+                                                  final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                                  final IVectorial2DRenderingScaler scaler) {
       final IColor color = getPointColor(point, feature, scaler);
       final float opacity = getPointOpacity(point, feature, scaler);
 
-      return color.asAWTColor(opacity);
+      return new GSurface2DStyle(color, opacity);
    }
 
 
@@ -216,7 +201,7 @@ public abstract class GRenderingStyle2DAbstract
 
 
    protected IVector2 calculatePosition(final IVector2 point,
-                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                        @SuppressWarnings("unused") final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                         final IVectorial2DRenderingScaler scaler,
                                         final IVector2 extent) {
       final IVector2 scaledPoint = scaler.scaleAndTranslate(point);
@@ -246,24 +231,10 @@ public abstract class GRenderingStyle2DAbstract
                                               final IVectorial2DRenderingScaler scaler);
 
 
-   protected Stroke getSurfaceBorderStroke(final ISurface2D<? extends IFinite2DBounds<?>> surface,
-                                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                           final IVectorial2DRenderingScaler scaler) {
-      final IMeasure<GLength> borderSize = getSurfaceBorderSize(surface, feature, scaler);
-      final IVector2 point = surface.getCentroid();
-
-      final double borderLenghtInMeters = borderSize.getValueInReferenceUnits();
-      final IVector2 pointPlusBorderSize = scaler.increment(point, borderLenghtInMeters, 0);
-      final float borderWidth = (float) scaler.scaleExtent(pointPlusBorderSize.sub(point)).x();
-
-      return new BasicStroke(borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-   }
-
-
    @Override
-   public Collection<? extends GStyled2DGeometry<? extends IGeometry2D>> getSurfaceSymbols(final ISurface2D<? extends IFinite2DBounds<?>> surface,
-                                                                                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                                                                           final IVectorial2DRenderingScaler scaler) {
+   public Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getSurfaceSymbols(final ISurface2D<? extends IFinite2DBounds<?>> surface,
+                                                                                                                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                                                                                                                final IVectorial2DRenderingScaler scaler) {
 
       if (surface instanceof IPolygon2D) {
          final IPolygon2D polygon = (IPolygon2D) surface;
@@ -282,39 +253,28 @@ public abstract class GRenderingStyle2DAbstract
    protected ICurve2DStyle getSurfaceCurveStyle(final ISurface2D<? extends IFinite2DBounds<?>> surface,
                                                 final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                                 final IVectorial2DRenderingScaler scaler) {
-      final Stroke borderStroke = getSurfaceBorderStroke(surface, feature, scaler);
-      final Paint surfaceBorderPaint = getSurfaceBorderPaint(surface, feature, scaler);
+      final IMeasure<GLength> borderSize = getSurfaceBorderSize(surface, feature, scaler);
+      final IVector2 point = surface.getCentroid();
 
-      return new GCurve2DStyle(borderStroke, surfaceBorderPaint);
+      final double borderLenghtInMeters = borderSize.getValueInReferenceUnits();
+      final IVector2 pointPlusBorderSize = scaler.increment(point, borderLenghtInMeters, 0);
+      final float borderWidth = (float) scaler.scaleExtent(pointPlusBorderSize.sub(point)).x();
+
+
+      final IColor color = getSurfaceBorderColor(surface, feature, scaler);
+      final float opacity = getSurfaceOpacity(surface, feature, scaler);
+
+      return new GCurve2DStyle(borderWidth, color, opacity);
    }
 
 
    protected ISurface2DStyle getSurfaceStyle(final ISurface2D<? extends IFinite2DBounds<?>> surface,
                                              final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                              final IVectorial2DRenderingScaler scaler) {
-      final Paint surfacePaint = getSurfacePaint(surface, feature, scaler);
-
-      return new GSurface2DStyle(surfacePaint);
-   }
-
-
-   protected Paint getSurfaceBorderPaint(final ISurface2D<? extends IFinite2DBounds<?>> surface,
-                                         final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                         final IVectorial2DRenderingScaler scaler) {
-      final IColor color = getSurfaceBorderColor(surface, feature, scaler);
-      final float opacity = getSurfaceOpacity(surface, feature, scaler);
-
-      return color.asAWTColor(opacity);
-   }
-
-
-   protected Paint getSurfacePaint(final ISurface2D<? extends IFinite2DBounds<?>> surface,
-                                   final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                   final IVectorial2DRenderingScaler scaler) {
       final IColor color = getSurfaceColor(surface, feature, scaler);
       final float opacity = getSurfaceOpacity(surface, feature, scaler);
 
-      return color.asAWTColor(opacity);
+      return new GSurface2DStyle(color, opacity);
    }
 
 
@@ -335,34 +295,10 @@ public abstract class GRenderingStyle2DAbstract
                                             final IVectorial2DRenderingScaler scaler);
 
 
-   protected Paint getCurvePaint(final ICurve2D<? extends IFinite2DBounds<?>> curve,
-                                 final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                 final IVectorial2DRenderingScaler scaler) {
-      final IColor color = getCurveColor(curve, feature, scaler);
-      final float opacity = getCurveOpacity(curve, feature, scaler);
-
-      return color.asAWTColor(opacity);
-   }
-
-
-   protected Stroke getCurveStroke(final ICurve2D<? extends IFinite2DBounds<?>> curve,
-                                   final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                   final IVectorial2DRenderingScaler scaler) {
-      final IMeasure<GLength> borderSize = getCurveBorderSize(curve, feature, scaler);
-      final IVector2 point = curve.getCentroid();
-
-      final double borderLenghtInMeters = borderSize.getValueInReferenceUnits();
-      final IVector2 pointPlusBorderSize = scaler.increment(point, borderLenghtInMeters, 0);
-      final float borderWidth = (float) scaler.scaleExtent(pointPlusBorderSize.sub(point)).x();
-
-      return new BasicStroke(borderWidth);
-   }
-
-
    @Override
-   public Collection<? extends GStyled2DGeometry<? extends IGeometry2D>> getCurveSymbols(final ICurve2D<? extends IFinite2DBounds<?>> curve,
-                                                                                         final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                                                                         final IVectorial2DRenderingScaler scaler) {
+   public Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getCurveSymbols(final ICurve2D<? extends IFinite2DBounds<?>> curve,
+                                                                                                                              final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                                                                                                              final IVectorial2DRenderingScaler scaler) {
 
       if (curve instanceof IPolygonalChain2D) {
          final IPolygonalChain2D polygonalChain = (IPolygonalChain2D) curve;
@@ -380,10 +316,19 @@ public abstract class GRenderingStyle2DAbstract
    protected ICurve2DStyle getCurveStyle(final ICurve2D<? extends IFinite2DBounds<?>> curve,
                                          final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                          final IVectorial2DRenderingScaler scaler) {
-      final Stroke curveStroke = getCurveStroke(curve, feature, scaler);
-      final Paint curvePaint = getCurvePaint(curve, feature, scaler);
+      final IMeasure<GLength> borderSize = getCurveBorderSize(curve, feature, scaler);
+      final IVector2 point = curve.getCentroid();
 
-      return new GCurve2DStyle(curveStroke, curvePaint);
+      final double borderLenghtInMeters = borderSize.getValueInReferenceUnits();
+      final IVector2 pointPlusBorderSize = scaler.increment(point, borderLenghtInMeters, 0);
+      final float borderWidth = (float) scaler.scaleExtent(pointPlusBorderSize.sub(point)).x();
+
+
+      final IColor color = getCurveColor(curve, feature, scaler);
+      final float opacity = getCurveOpacity(curve, feature, scaler);
+
+
+      return new GCurve2DStyle(borderWidth, color, opacity);
    }
 
 

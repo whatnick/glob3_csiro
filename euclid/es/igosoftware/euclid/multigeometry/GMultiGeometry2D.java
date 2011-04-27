@@ -35,4 +35,29 @@ ChildrenGeometryT extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVe
    }
 
 
+   @Override
+   public boolean closeTo(final IBoundedGeometry<IVector2, GAxisAlignedRectangle> that) {
+      //
+      //      if (that instanceof GMultiGeometry2D) {
+      //         @SuppressWarnings("unchecked")
+      //         final GMultiGeometry2D<ChildrenGeometryT> thatMG = (GMultiGeometry2D<ChildrenGeometryT>) that;
+      //
+      //         if (_children.size() != thatMG._children.size()) {
+      //            return false;
+      //         }
+      //
+      //         for (int i = 0; i < _children.size(); i++) {
+      //            if (!_children.get(i).closeTo(thatMG._children.get(i))) {
+      //               return false;
+      //            }
+      //         }
+      //
+      //         return false;
+      //      }
+      //
+      //      return false;
+      throw new RuntimeException("Not yet implemented");
+   }
+
+
 }

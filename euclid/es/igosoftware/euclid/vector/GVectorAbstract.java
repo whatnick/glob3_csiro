@@ -37,6 +37,7 @@
 package es.igosoftware.euclid.vector;
 
 import es.igosoftware.euclid.GGeometryAbstract;
+import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.util.GMath;
 
@@ -137,6 +138,16 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
    @Override
    public final boolean containsOnBoundary(final VectorT point) {
       return closeTo(point);
+   }
+
+
+   @SuppressWarnings("unchecked")
+   @Override
+   public boolean closeTo(final IBoundedGeometry<VectorT, BoundsT> that) {
+      if (that instanceof IVector) {
+         return closeTo((VectorT) that);
+      }
+      return false;
    }
 
 

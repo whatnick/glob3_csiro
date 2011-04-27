@@ -9,6 +9,9 @@ import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.Area;
 
+import es.igosoftware.euclid.IBoundedGeometry2D;
+import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.shape.IComplexPolygon2D;
 import es.igosoftware.euclid.shape.IPolygon2D;
@@ -92,6 +95,30 @@ public class GStyledPolygon2D
          final Paint borderPaint = _curveStyle.getBorderPaint();
          drawer.draw(_polygonShape, borderPaint, borderStroke);
       }
+   }
+
+
+   @Override
+   public boolean isGroupableWith(final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> that) {
+      return false;
+   }
+
+
+   @Override
+   public String toString() {
+      return "GStyledPolygon2D [geometry=" + _geometry + ", surfaceStyle=" + _surfaceStyle + ", curveStyle=" + _curveStyle + "]";
+   }
+
+
+   @Override
+   public GAxisAlignedRectangle getBounds() {
+      return _geometry.getBounds();
+   }
+
+
+   @Override
+   public boolean isGroupable() {
+      return false;
    }
 
 

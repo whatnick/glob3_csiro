@@ -39,6 +39,7 @@ package es.igosoftware.euclid.shape;
 import java.util.List;
 
 import es.igosoftware.euclid.GGeometryAbstract;
+import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 import es.igosoftware.euclid.bounding.GBall;
 import es.igosoftware.euclid.bounding.GCapsule3D;
@@ -655,6 +656,16 @@ public final class GPlane
    @Override
    public IVector3 getCentroid() {
       throw new RuntimeException("The plane has not a centroid");
+   }
+
+
+   @Override
+   public boolean closeTo(final IBoundedGeometry<IVector3, GPlane> that) {
+      if (that instanceof GPlane) {
+         final GPlane thatPlane = (GPlane) that;
+         return GMath.closeTo(_d, thatPlane._d) && _normal.closeTo(thatPlane._normal);
+      }
+      return false;
    }
 
 

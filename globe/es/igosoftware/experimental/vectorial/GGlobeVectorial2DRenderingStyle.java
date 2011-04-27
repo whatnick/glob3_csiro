@@ -315,11 +315,7 @@ public class GGlobeVectorial2DRenderingStyle
 
    @Override
    public String uniqueName() {
-      final int TODO_PUT_ALL_DATA_ON_UNIQUE_NAME;
-      return (_debugRendering ? "t" : "f") + //
-             _pointColor.toHexString() + //
-             Float.toHexString(_pointOpacity) + //
-             _pointSize;
+      return null;
    }
 
 
@@ -471,6 +467,12 @@ public class GGlobeVectorial2DRenderingStyle
                                 final IVectorial2DRenderingScaler scaler) {
       // TODO Auto-generated method stub
       return 0;
+   }
+
+
+   @Override
+   public boolean isClusterSymbols() {
+      return true;
    }
 
 

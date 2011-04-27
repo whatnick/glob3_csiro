@@ -6,6 +6,9 @@ package es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries;
 import java.awt.Paint;
 import java.awt.Stroke;
 
+import es.igosoftware.euclid.IBoundedGeometry2D;
+import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.shape.IPolygonalChain2D;
 
@@ -30,6 +33,30 @@ public class GStyledPolygonalChain2D
          final Paint borderPaint = _curveStyle.getBorderPaint();
          drawer.drawPolyline(_geometry, borderPaint, borderStroke);
       }
+   }
+
+
+   @Override
+   public boolean isGroupableWith(final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> that) {
+      return false;
+   }
+
+
+   @Override
+   public String toString() {
+      return "GStyledPolygonalChain2D [geometry=" + _geometry + ", curveStyle=" + _curveStyle + "]";
+   }
+
+
+   @Override
+   public GAxisAlignedRectangle getBounds() {
+      return _geometry.getBounds();
+   }
+
+
+   @Override
+   public boolean isGroupable() {
+      return false;
    }
 
 

@@ -11,4 +11,7 @@ public interface ISurface2DStyle
 
    public Paint getSurfacePaint();
 
+
+   public boolean isGroupableWith(final ISurface2DStyle that);
+
 }

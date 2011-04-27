@@ -23,4 +23,16 @@ public class GNullSurface2DStyle
    }
 
 
+   @Override
+   public String toString() {
+      return "GNullSurface2DStyle []";
+   }
+
+
+   @Override
+   public boolean isGroupableWith(final ISurface2DStyle that) {
+      return (this == that);
+   }
+
+
 }

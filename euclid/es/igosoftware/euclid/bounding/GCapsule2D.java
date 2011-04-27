@@ -36,6 +36,7 @@
 
 package es.igosoftware.euclid.bounding;
 
+import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.shape.GSegment2D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVectorFunction;
@@ -154,6 +155,16 @@ public final class GCapsule2D
       final GSegment2D segment = new GSegment2D(transformedFromDisk._center, transformedToDisk._center);
       final double radius = (transformedFromDisk._radius + transformedToDisk._radius) / 2;
       return new GCapsule2D(segment, radius);
+   }
+
+
+   @Override
+   public boolean closeTo(final IBoundedGeometry<IVector2, GCapsule2D> that) {
+      if (that instanceof GCapsule2D) {
+         final GCapsule2D thatNB = (GCapsule2D) that;
+         return GMath.closeTo(_radius, thatNB._radius) && _segment.closeTo(thatNB._segment);
+      }
+      return false;
    }
 
 

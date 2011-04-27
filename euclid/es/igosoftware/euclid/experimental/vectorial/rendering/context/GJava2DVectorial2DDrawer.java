@@ -2,12 +2,15 @@
 
 package es.igosoftware.euclid.experimental.vectorial.rendering.context;
 
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Paint;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.font.FontRenderContext;
+import java.awt.font.LineMetrics;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
@@ -307,5 +310,113 @@ public class GJava2DVectorial2DDrawer
       drawImage(image, position.x(), position.y(), opacity);
    }
 
+
+   @Override
+   public void drawString(final String str,
+                          final double x,
+                          final double y,
+                          final Paint paint) {
+      _g2d.setPaint(paint);
+
+      if (_flippedY) {
+         final AffineTransform currentTransform = _g2d.getTransform();
+         _g2d.setTransform(IDENTITY_TRANSFORM);
+
+         final float imageHeight = _image.getHeight();
+
+         final Font f = _g2d.getFont();
+         final FontRenderContext frc = _g2d.getFontRenderContext();
+
+         final LineMetrics metrics = f.getLineMetrics(str, frc);
+
+         final float lineheight = metrics.getHeight(); // Total line height
+         final double flipedY = imageHeight - (y - lineheight / 2);
+
+         _g2d.drawString(str, (float) x, (float) flipedY);
+
+         _g2d.setTransform(currentTransform);
+      }
+      else {
+         _g2d.drawString(str, (float) x, (float) y);
+      }
+   }
+
+
+   @Override
+   public void drawString(final String str,
+                          final IVector2 position,
+                          final Paint paint) {
+      drawString(str, position.x(), position.y(), paint);
+   }
+
+
+   @Override
+   public void drawShadowedString(final String str,
+                                  final IVector2 position,
+                                  final Paint paint,
+                                  final double shadowOffset,
+                                  final Paint shadowPaint) {
+      final double x = position.x();
+      final double y = position.y();
+      if (shadowOffset > 0) {
+         drawString(str, x + 1, y - 1, shadowPaint);
+         drawString(str, x + 1, y + 1, shadowPaint);
+         drawString(str, x - 1, y - 1, shadowPaint);
+         drawString(str, x - 1, y + 1, shadowPaint);
+      }
+      drawString(str, x, y, paint);
+   }
+
+
+   @Override
+   public void drawShadowedStringCentered(final String str,
+                                          final IVector2 position,
+                                          final Paint paint,
+                                          final double shadowOffset,
+                                          final Paint shadowPaint) {
+
+      final Font f = _g2d.getFont();
+      final FontRenderContext frc = _g2d.getFontRenderContext();
+      final Rectangle2D bounds = f.getStringBounds(str, frc);
+      final LineMetrics metrics = f.getLineMetrics(str, frc);
+      final double width = bounds.getWidth(); // The width of our text
+      final float lineheight = metrics.getHeight(); // Total line height
+      final float ascent = metrics.getAscent(); // Top of text to baseline
+
+      final double x = (position.x() + (0 - width) / 2);
+      final double y = (position.y() + (0 - lineheight) / 2 + ascent);
+
+      if (shadowOffset > 0) {
+         drawString(str, x + shadowOffset, y - shadowOffset, shadowPaint);
+         drawString(str, x + shadowOffset, y + shadowOffset, shadowPaint);
+         drawString(str, x - shadowOffset, y - shadowOffset, shadowPaint);
+         drawString(str, x - shadowOffset, y + shadowOffset, shadowPaint);
+      }
+      drawString(str, x, y, paint);
+   }
+
+
+   //   public static void main(final String[] args) throws IOException {
+   //
+   //      final int width = 320;
+   //      final int height = 240;
+   //      final BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+   //      final GJava2DVectorial2DDrawer drawer = new GJava2DVectorial2DDrawer(image, false);
+   //
+   //      final double centerX = (width / 3d * 2);
+   //      final double centerY = (height / 3d * 2);
+   //
+   //      final double rectWidth = 20;
+   //      drawer.fillRect(centerX - rectWidth / 2, centerY - rectWidth / 2, rectWidth, rectWidth, Color.BLUE);
+   //
+   //
+   //      drawer.drawShadowedStringCentered("Wooo!", new GVector2D(centerX, centerY), Color.WHITE, 1, Color.LIGHT_GRAY);
+   //
+   //      final double ovalWidth = 2;
+   //      drawer.fillOval(centerX - ovalWidth / 2, centerY - ovalWidth / 2, ovalWidth, ovalWidth, Color.RED);
+   //
+   //
+   //      ImageIO.write(image, "png", new File("/home/dgd/Desktop/centeredLabel.png"));
+   //   }
 
 }

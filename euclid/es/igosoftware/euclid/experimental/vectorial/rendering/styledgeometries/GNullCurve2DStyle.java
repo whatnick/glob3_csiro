@@ -30,4 +30,16 @@ public class GNullCurve2DStyle
    }
 
 
+   @Override
+   public String toString() {
+      return "GNullCurve2DStyle []";
+   }
+
+
+   @Override
+   public boolean isGroupableWith(final ICurve2DStyle that) {
+      return (this == that);
+   }
+
+
 }

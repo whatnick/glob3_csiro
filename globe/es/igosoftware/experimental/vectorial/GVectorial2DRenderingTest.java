@@ -169,7 +169,7 @@ public class GVectorial2DRenderingTest {
       }
 
       final int depth = 0;
-      final int maxDepth = 3;
+      final int maxDepth = 4;
       render(renderers, viewport, imageWidth, imageHeight, directoryName, depth, maxDepth);
 
       System.out.println();
@@ -227,7 +227,6 @@ public class GVectorial2DRenderingTest {
 
          @Override
          public String uniqueName() {
-            final int TODO_PUT_ALL_DATA_ON_UNIQUE_NAME;
             return null;
          }
 
@@ -260,15 +259,15 @@ public class GVectorial2DRenderingTest {
 
 
          @Override
-         public Collection<? extends GStyled2DGeometry<? extends IGeometry2D>> getPointSymbols(final IVector2 point,
-                                                                                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                                                                               final IVectorial2DRenderingScaler scaler) {
+         public Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getPointSymbols(final IVector2 point,
+                                                                                                                                    final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                                                                                                                    final IVectorial2DRenderingScaler scaler) {
 
             if (isCategory(feature, "automotive")) {
-               return Collections.singleton(createStyledIcon(point, feature, scaler, automotiveIcon));
+               return Collections.singleton(createStyledIcon(point, feature, scaler, "automotive", automotiveIcon));
             }
             else if (isCategory(feature, "government and public services")) {
-               return Collections.singleton(createStyledIcon(point, feature, scaler, governmentIcon));
+               return Collections.singleton(createStyledIcon(point, feature, scaler, "government", governmentIcon));
             }
             else if (isCategory(feature, "tourism")) {
                final IVector2 extent = calculateRectangleExtent(point, feature, scaler);
@@ -290,6 +289,7 @@ public class GVectorial2DRenderingTest {
          private GStyled2DGeometry<? extends IGeometry2D> createStyledIcon(final IVector2 point,
                                                                            final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                                                            final IVectorial2DRenderingScaler scaler,
+                                                                           final String iconName,
                                                                            final BufferedImage icon) {
             final float percentFilled = GIconUtils.getPercentFilled(icon);
             final IVector2 extent = calculateRectangleExtent(point, feature, scaler).div(percentFilled);
@@ -297,7 +297,8 @@ public class GVectorial2DRenderingTest {
 
             final BufferedImage scaledIcon = GIconUtils.getScaledImage(icon, extent);
 
-            return new GStyledIcon2D(position, scaledIcon, 0.75f);
+
+            return new GStyledIcon2D(position, iconName, scaledIcon, 0.75f);
          }
 
 
@@ -428,6 +429,11 @@ public class GVectorial2DRenderingTest {
             return 1;
          }
 
+
+         @Override
+         public boolean isClusterSymbols() {
+            return true;
+         }
 
       };
 

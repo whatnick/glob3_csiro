@@ -7,7 +7,6 @@ import java.util.Collection;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.ICurve2D;
-import es.igosoftware.euclid.IGeometry2D;
 import es.igosoftware.euclid.ISurface2D;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.experimental.measurement.GArea;
@@ -49,31 +48,34 @@ public interface IRenderingStyle2D {
    public IMeasure<GArea> getMaximumSize();
 
 
+   public boolean isClusterSymbols();
+
+
    /* -------------------------------------------------------------------------------------- */
    /* nodes  */
-   public Collection<? extends GStyled2DGeometry<? extends IGeometry2D>> getNodeSymbols(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> node,
-                                                                                        final IVectorial2DRenderingScaler scaler);
+   public Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getNodeSymbols(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> node,
+                                                                                                                             final IVectorial2DRenderingScaler scaler);
 
 
    /* -------------------------------------------------------------------------------------- */
    /* point style */
-   public Collection<? extends GStyled2DGeometry<? extends IGeometry2D>> getPointSymbols(final IVector2 point,
-                                                                                         final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                                                                         final IVectorial2DRenderingScaler scaler);
+   public Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getPointSymbols(final IVector2 point,
+                                                                                                                              final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                                                                                                              final IVectorial2DRenderingScaler scaler);
 
 
    /* -------------------------------------------------------------------------------------- */
    /* surfaces */
-   public Collection<? extends GStyled2DGeometry<? extends IGeometry2D>> getSurfaceSymbols(final ISurface2D<? extends IFinite2DBounds<?>> surface,
-                                                                                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                                                                           final IVectorial2DRenderingScaler scaler);
+   public Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getSurfaceSymbols(final ISurface2D<? extends IFinite2DBounds<?>> surface,
+                                                                                                                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                                                                                                                final IVectorial2DRenderingScaler scaler);
 
 
    /* -------------------------------------------------------------------------------------- */
    /* curves */
-   public Collection<? extends GStyled2DGeometry<? extends IGeometry2D>> getCurveSymbols(final ICurve2D<? extends IFinite2DBounds<?>> curve,
-                                                                                         final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                                                                         final IVectorial2DRenderingScaler scaler);
+   public Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getCurveSymbols(final ICurve2D<? extends IFinite2DBounds<?>> curve,
+                                                                                                                              final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                                                                                                              final IVectorial2DRenderingScaler scaler);
 
 
 }

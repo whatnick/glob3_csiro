@@ -17,4 +17,7 @@ public interface ICurve2DStyle
    public Paint getBorderPaint();
 
 
+   public boolean isGroupableWith(final ICurve2DStyle that);
+
+
 }

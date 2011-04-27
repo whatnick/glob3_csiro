@@ -40,6 +40,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import es.igosoftware.euclid.GGeometryAbstract;
+import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
@@ -380,5 +381,17 @@ GeometryT extends GAxisAlignedOrthotope<VectorT, GeometryT>
 
 
    public abstract GeometryT clamp(final GAxisAlignedOrthotope<VectorT, ?> that);
+
+
+   @Override
+   public boolean closeTo(final IBoundedGeometry<VectorT, GeometryT> that) {
+      if (that instanceof GAxisAlignedOrthotope) {
+         @SuppressWarnings("unchecked")
+         final GeometryT thatAAO = (GeometryT) that;
+         return _lower.closeTo(thatAAO._lower) && _upper.closeTo(thatAAO._upper);
+      }
+      return false;
+   }
+
 
 }

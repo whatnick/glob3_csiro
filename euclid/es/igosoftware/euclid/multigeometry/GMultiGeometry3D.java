@@ -35,4 +35,10 @@ ChildrenGeometryT extends IBoundedGeometry<IVector3, ? extends IFinite3DBounds<?
    }
 
 
+   @Override
+   public boolean closeTo(final IBoundedGeometry<IVector3, GAxisAlignedBox> that) {
+      throw new RuntimeException("Not yet implemented");
+   }
+
+
 }

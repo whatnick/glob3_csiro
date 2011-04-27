@@ -73,14 +73,15 @@ public class GClusterer {
 
          while (!toProcess.isEmpty()) {
             final T valueInProcess = toProcess.removeFirst();
-
-            if (!processed.contains(valueInProcess)) {
-               processed.add(valueInProcess);
-
-               cluster.add(valueInProcess);
-
-               toProcess.addAll(neighborhoodCalculator.getNeighborhood(valueInProcess));
+            if (processed.contains(valueInProcess)) {
+               continue;
             }
+
+            processed.add(valueInProcess);
+
+            cluster.add(valueInProcess);
+
+            toProcess.addAll(neighborhoodCalculator.getNeighborhood(valueInProcess));
          }
 
       }

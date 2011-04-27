@@ -37,6 +37,7 @@
 package es.igosoftware.euclid.vector;
 
 import es.igosoftware.euclid.GGeometryAbstract;
+import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.matrix.GMatrix33D;
 import es.igosoftware.euclid.matrix.GMatrix44D;
@@ -435,6 +436,15 @@ public final class GMutableVector2<T extends IVector2>
    @Override
    public boolean containsOnBoundary(final IVector2 point) {
       return _value.containsOnBoundary(point);
+   }
+
+
+   @Override
+   public boolean closeTo(final IBoundedGeometry<IVector2, GAxisAlignedRectangle> that) {
+      if (that instanceof IVector2) {
+         return _value.closeTo((IVector2) that);
+      }
+      return false;
    }
 
 

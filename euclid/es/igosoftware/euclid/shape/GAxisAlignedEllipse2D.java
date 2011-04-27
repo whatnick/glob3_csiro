@@ -3,6 +3,7 @@
 package es.igosoftware.euclid.shape;
 
 import es.igosoftware.euclid.GGeometryAbstract;
+import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.ISurface2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.vector.IVector2;
@@ -164,6 +165,16 @@ public class GAxisAlignedEllipse2D
       final GAxisAlignedRectangle transformedBounds = getBounds().transform(transformer);
 
       return new GAxisAlignedEllipse2D(transformedBounds._center, transformedBounds.getExtent().div(2));
+   }
+
+
+   @Override
+   public boolean closeTo(final IBoundedGeometry<IVector2, GAxisAlignedRectangle> that) {
+      if (that instanceof GAxisAlignedEllipse2D) {
+         final GAxisAlignedEllipse2D thatAAE = (GAxisAlignedEllipse2D) that;
+         return _center.closeTo(thatAAE._center) && _radius.closeTo(thatAAE._radius);
+      }
+      return false;
    }
 
 
