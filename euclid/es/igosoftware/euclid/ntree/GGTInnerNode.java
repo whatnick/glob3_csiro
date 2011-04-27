@@ -336,7 +336,7 @@ GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
       while (!queue.isEmpty()) {
          final GGTNode<VectorT, ElementT, GeometryT> current = queue.removeFirst();
 
-         if ((region != null) && !current.getBounds().touchesBounds(region)) {
+         if ((region != null) && !current.getMinimumBounds().touchesBounds(region)) {
             continue;
          }
 

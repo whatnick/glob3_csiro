@@ -95,7 +95,7 @@ public abstract class GRenderingStyle2DAbstract
 
       final boolean isInner = (node instanceof GGTInnerNode);
 
-      final GAxisAlignedRectangle scaledBounds = (GAxisAlignedRectangle) scaler.scaleAndTranslate(node.getBounds());
+      final GAxisAlignedRectangle scaledBounds = (GAxisAlignedRectangle) scaler.scaleAndTranslate(node.getMinimumBounds());
 
       final ISurface2DStyle surfaceStyle = GNullSurface2DStyle.INSTANCE;
       final ICurve2DStyle curveStyle = isInner ? INNER_NODE_STYLE : LEAF_NODE_STYLE;

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -169,25 +170,44 @@ class GVectorial2DRenderUnit
       //
       //      exemplar.drawGroup(cluster, drawer, lodMinSize, debugRendering, renderLODIgnores);
 
-      final Collection<Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> clustersByGroups = createClusters(
-               cluster, true);
+      if (isSameClass(cluster)) {
+         final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> exemplar = cluster.iterator().next();
+         exemplar.drawGroup(cluster, drawer, lodMinSize, debugRendering, renderLODIgnores);
+      }
+      else {
+         final Collection<Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> clustersByGroups = createClusters(
+                  cluster, true);
 
-      for (final Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> clusterByGroup : clustersByGroups) {
-         final int size = clusterByGroup.size();
+         for (final Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> clusterByGroup : clustersByGroups) {
+            final int size = clusterByGroup.size();
 
-         if (size == 0) {
-            continue;
+            if (size == 0) {
+               continue;
+            }
+            else if (size == 1) {
+               renderSymbol(GCollections.theOnlyOne(clusterByGroup), drawer, lodMinSize, debugRendering, renderLODIgnores);
+            }
+            else {
+               final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> exemplar = clusterByGroup.iterator().next();
+
+               exemplar.drawGroup(clusterByGroup, drawer, lodMinSize, debugRendering, renderLODIgnores);
+            }
          }
-         else if (size == 1) {
-            renderSymbol(GCollections.theOnlyOne(clusterByGroup), drawer, lodMinSize, debugRendering, renderLODIgnores);
-         }
-         else {
-            final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> exemplar = clusterByGroup.iterator().next();
+      }
+   }
 
-            exemplar.drawGroup(clusterByGroup, drawer, lodMinSize, debugRendering, renderLODIgnores);
+
+   private static boolean isSameClass(final Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> cluster) {
+      final Iterator<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> iterator = cluster.iterator();
+
+      final Class<? extends GStyled2DGeometry> klass = iterator.next().getClass();
+      while (iterator.hasNext()) {
+         if (klass != iterator.next().getClass()) {
+            return false;
          }
       }
 
+      return true;
    }
 
 
@@ -274,19 +294,23 @@ class GVectorial2DRenderUnit
 
 
                   private void processNode(final GGTNode<IVector2, GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> node) {
+
                      for (final GElementGeometryPair<IVector2, GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> elementAndGeometry : node.getElements()) {
                         final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> element = elementAndGeometry.getElement();
-                        if (element != symbol) {
-                           if (element.isGroupable()) {
-                              if (!considerIsGroupableWith || element.isGroupableWith(symbol)) {
-                                 final GAxisAlignedRectangle geometryBounds = toRoundedInt(element.getBounds());
-                                 if (bounds.touchesBounds(geometryBounds)) {
-                                    neighborhood.add(element);
-                                 }
+                        if (element == symbol) {
+                           continue;
+                        }
+
+                        if (element.isGroupable()) {
+                           if (!considerIsGroupableWith || element.isGroupableWith(symbol)) {
+                              final GAxisAlignedRectangle geometryBounds = toRoundedInt(element.getBounds());
+                              if (bounds.touchesBounds(geometryBounds)) {
+                                 neighborhood.add(element);
                               }
                            }
                         }
                      }
+
                   }
                });
 

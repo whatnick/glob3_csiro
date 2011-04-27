@@ -5,6 +5,7 @@ package es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries;
 
 import java.awt.Paint;
 import java.awt.Stroke;
+import java.util.Collection;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
@@ -57,6 +58,12 @@ public class GStyledPolygonalChain2D
    @Override
    public boolean isGroupable() {
       return false;
+   }
+
+
+   @Override
+   protected GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> getAverageSymbol(final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group) {
+      return null;
    }
 
 

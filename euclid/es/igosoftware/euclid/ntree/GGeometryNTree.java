@@ -310,7 +310,7 @@ GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
             maxDepth.max(depth);
 
 
-            final VectorT leafExtent = leaf.getBounds().getExtent();
+            final VectorT leafExtent = leaf.getMinimumBounds().getExtent();
             final VectorT totalLeafExtent = totalLeafExtentHolder.get();
             if (totalLeafExtent == null) {
                totalLeafExtentHolder.set(leafExtent);

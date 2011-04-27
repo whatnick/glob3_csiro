@@ -306,7 +306,7 @@ public class GVectorial2DRenderingTest {
          protected IMeasure<GArea> getPointSize(final IVector2 point,
                                                 final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                                 final IVectorial2DRenderingScaler scaler) {
-            return GArea.SquareKilometer.value(50);
+            return GArea.SquareKilometer.value(30);
          }
 
 

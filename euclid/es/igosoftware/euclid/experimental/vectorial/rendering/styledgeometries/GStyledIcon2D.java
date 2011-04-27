@@ -5,6 +5,7 @@ package es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.util.Collection;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
@@ -100,5 +101,20 @@ public class GStyledIcon2D
       return true;
    }
 
+
+   @Override
+   protected GStyledIcon2D getAverageSymbol(final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group) {
+
+      GVector2D sumPosition = GVector2D.ZERO;
+      for (final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> each : group) {
+         final GStyledIcon2D eachEllipse = (GStyledIcon2D) each;
+         final IVector2 point = eachEllipse._geometry;
+         sumPosition = sumPosition.add(point);
+      }
+
+      final GVector2D averagePosition = sumPosition.div(group.size());
+
+      return new GStyledIcon2D(averagePosition, _iconName, _icon, _opacity);
+   }
 
 }

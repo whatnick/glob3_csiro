@@ -5,11 +5,13 @@ package es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries;
 
 import java.awt.Paint;
 import java.awt.Stroke;
+import java.util.Collection;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
+import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
 
 
@@ -79,6 +81,26 @@ public class GStyledRectangle2D
    @Override
    public boolean isGroupable() {
       return true;
+   }
+
+
+   @Override
+   protected GStyledRectangle2D getAverageSymbol(final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group) {
+
+      GVector2D sumLower = GVector2D.ZERO;
+      GVector2D sumExtent = GVector2D.ZERO;
+      for (final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> each : group) {
+         final GStyledRectangle2D eachEllipse = (GStyledRectangle2D) each;
+         final GAxisAlignedRectangle ellipse = eachEllipse._geometry;
+         sumLower = sumLower.add(ellipse._lower);
+         sumExtent = sumExtent.add(ellipse._extent);
+      }
+
+      final GVector2D averageLower = sumLower.div(group.size());
+      final GVector2D averageExtent = sumExtent.div(group.size());
+
+      return new GStyledRectangle2D(new GAxisAlignedRectangle(averageLower, averageLower.add(averageExtent)), _surfaceStyle,
+               _curveStyle);
    }
 
 
