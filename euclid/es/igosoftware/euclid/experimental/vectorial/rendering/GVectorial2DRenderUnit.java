@@ -238,14 +238,6 @@ class GVectorial2DRenderUnit
                   }
                }, parameters);
 
-      //      final Collection<Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> clusters = GClusterer.getClusters(
-      //               symbols,
-      //               new GClusterer.NeighborhoodCalculator<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>() {
-      //                  @Override
-      //                  public Collection<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getNeighborhood(final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbol) {
-      //                     return calculateNeighborhood(symbolsQuadtree, symbol, considerIsGroupableWith);
-      //                  }
-      //               });
 
       final GGraph<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> graph = new GGraph<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>(
                symbols);
@@ -254,9 +246,7 @@ class GVectorial2DRenderUnit
          final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> neighborhood = calculateNeighborhood(
                   symbolsQuadtree, symbol, considerIsGroupableWith);
          for (final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> neighbor : neighborhood) {
-            //            if (!graph.isAdjacent(symbol, neighbor)) {
             graph.addBidirectionalEdge(symbol, neighbor);
-            //            }
          }
       }
 
@@ -270,6 +260,7 @@ class GVectorial2DRenderUnit
                                                                                                                             final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbol,
                                                                                                                             final boolean considerIsGroupableWith) {
       final GAxisAlignedRectangle bounds = toRoundedInt(symbol.getBounds());
+      final double minOverlapArea = bounds.area() * 0.3;
 
       final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> neighborhood = new LinkedList<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>();
 
@@ -304,7 +295,8 @@ class GVectorial2DRenderUnit
                         if (element.isGroupable()) {
                            if (!considerIsGroupableWith || element.isGroupableWith(symbol)) {
                               final GAxisAlignedRectangle geometryBounds = toRoundedInt(element.getBounds());
-                              if (bounds.touchesBounds(geometryBounds)) {
+                              if (bounds.touchesBounds(geometryBounds)
+                                  && (bounds.intersection(geometryBounds).area() > minOverlapArea)) {
                                  neighborhood.add(element);
                               }
                            }

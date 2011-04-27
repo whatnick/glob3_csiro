@@ -283,6 +283,7 @@ public class GVectorial2DRenderingTest {
             else {
                return super.getPointSymbols(point, feature, scaler);
             }
+            //            return super.getPointSymbols(point, feature, scaler);
          }
 
 
@@ -331,6 +332,7 @@ public class GVectorial2DRenderingTest {
                                         final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                         final IVectorial2DRenderingScaler scaler) {
             return _pointColorizer.getColor(feature);
+            //            return GColorF.RED;
          }
 
 

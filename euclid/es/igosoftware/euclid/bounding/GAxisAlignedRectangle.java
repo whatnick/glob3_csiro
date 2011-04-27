@@ -630,4 +630,13 @@ public final class GAxisAlignedRectangle
    }
 
 
+   public GAxisAlignedRectangle intersection(final GAxisAlignedRectangle that) {
+      if (!touches(that)) {
+         return null;
+      }
+
+      return new GAxisAlignedRectangle(_lower.max(that._lower), _upper.min(that._upper));
+   }
+
+
 }
