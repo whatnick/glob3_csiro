@@ -2,6 +2,7 @@
 
 package es.igosoftware.euclid.experimental.vectorial.rendering.context;
 
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.Paint;
 import java.awt.Shape;
@@ -166,6 +167,14 @@ public interface IVectorial2DDrawer {
 
    public void drawShadowedStringCentered(final String str,
                                           final IVector2 position,
+                                          final Paint paint,
+                                          final double shadowOffset,
+                                          final Paint shadowPaint);
+
+
+   public void drawShadowedStringCentered(final String str,
+                                          final IVector2 position,
+                                          final Font font,
                                           final Paint paint,
                                           final double shadowOffset,
                                           final Paint shadowPaint);

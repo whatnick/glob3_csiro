@@ -168,4 +168,10 @@ public final class GCapsule2D
    }
 
 
+   @Override
+   public double area() {
+      throw new RuntimeException("Not yet implemented");
+   }
+
+
 }

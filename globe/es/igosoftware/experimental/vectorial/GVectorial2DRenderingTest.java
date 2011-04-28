@@ -37,11 +37,14 @@
 package es.igosoftware.experimental.vectorial;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -70,6 +73,7 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial
 import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GIconUtils;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyled2DGeometry;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyledIcon2D;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyledLabel2D;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyledRectangle2D;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.ICurve2DStyle;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.ISurface2DStyle;
@@ -78,6 +82,7 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRendering
 import es.igosoftware.euclid.features.GGeometryType;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
+import es.igosoftware.euclid.multigeometry.GMultiGeometry2D;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.io.GFileName;
@@ -206,6 +211,7 @@ public class GVectorial2DRenderingTest {
 
          private int              _categoryIndex  = -1;
          private int              _countryIndex   = -1;
+         private int              _provinceIndex  = -1;
 
 
          @Override
@@ -219,7 +225,49 @@ public class GVectorial2DRenderingTest {
             }
 
             if (features.getGeometryType().contains(GGeometryType.SURFACE)) {
+               /*
+               OBJECTID,   Integer]
+               VertexCou,  Double]
+               ISO,        String]
+               NAME_0,     String]
+               NAME_1,     String]
+               VARNAME_1,  String]
+               NL_NAME_1,  String]
+               HASC_1,     String]
+               TYPE_1,     String]
+               ENGTYPE_1,  String]
+               VALIDFR_1,  String]
+               VALIDTO_1,  String]
+               REMARKS_1,  String]
+               Region,     String]
+               RegionVar,  String]
+               ProvNumber, Integer]
+               NEV_Countr, String]
+               FIRST_FIPS, String]
+               FIRST_HASC, String]
+               FIPS_1,     String]
+               gadm_level, Double]
+               CheckMe,    Integer]
+               Region_Cod, String]
+               Region_C_1, String]
+               ScaleRank,  Integer]
+               Region_C_2, String]
+               Region_C_3, String]
+               Country_Pr, String]
+               DataRank,   Integer]
+               Abbrev,     String]
+               Postal,     String]
+               Area_sqkm,  Double]
+               sameAsCity, Integer]
+               ADM0_A3,    String]
+               MAP_COLOR,  Integer]
+               LabelRank,  Integer]
+               Shape_Leng, Double]
+               Shape_Area, Double]
+               */
+
                _countryIndex = features.getFieldIndex("NEV_Countr");
+               _provinceIndex = features.getFieldIndex("NAME_1");
             }
 
          }
@@ -388,7 +436,8 @@ public class GVectorial2DRenderingTest {
             if ((country != null) && country.trim().toLowerCase().equals("argentina")) {
                return GColorF.newRGB256(204, 224, 143).lighter();
             }
-            return GColorF.newRGB256(204, 224, 143).muchDarker();
+            //return GColorF.newRGB256(204, 224, 143).muchDarker().muchDarker();
+            return GColorF.GRAY;
          }
 
 
@@ -404,7 +453,11 @@ public class GVectorial2DRenderingTest {
          protected IColor getSurfaceBorderColor(final ISurface2D<?> surface,
                                                 final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                                 final IVectorial2DRenderingScaler scaler) {
-            return getSurfaceColor(surface, feature, scaler).muchDarker();
+            final String country = (String) feature.getAttribute(_countryIndex);
+            if ((country != null) && country.trim().toLowerCase().equals("argentina")) {
+               return getSurfaceColor(surface, feature, scaler).muchDarker();
+            }
+            return getSurfaceColor(surface, feature, scaler).darker();
          }
 
 
@@ -437,8 +490,69 @@ public class GVectorial2DRenderingTest {
             return true;
          }
 
+
+         @Override
+         public Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getSurfaceSymbols(final ISurface2D<? extends IFinite2DBounds<?>> surface,
+                                                                                                                                      final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                                                                                                                      final IVectorial2DRenderingScaler scaler) {
+            final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> superSymbols = super.getSurfaceSymbols(
+                     surface, feature, scaler);
+
+            final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> allSymbols = new ArrayList<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>(
+                     superSymbols);
+
+
+            final String country = (String) feature.getAttribute(_countryIndex);
+            if ((country != null) && country.trim().toLowerCase().equals("argentina")) {
+               final String provinceName = (String) feature.getAttribute(_provinceIndex);
+               if ((provinceName != null) && !provinceName.trim().isEmpty()) {
+                  boolean addLabel = true;
+                  if (feature.getDefaultGeometry() instanceof GMultiGeometry2D) {
+                     @SuppressWarnings("unchecked")
+                     final GMultiGeometry2D<IBoundedGeometry2D<? extends IFinite2DBounds<?>>> multigeometry = (GMultiGeometry2D<IBoundedGeometry2D<? extends IFinite2DBounds<?>>>) feature.getDefaultGeometry();
+                     final IBoundedGeometry2D<? extends IFinite2DBounds<?>> biggestGeometry = getBiggestGeometry(multigeometry);
+                     if (biggestGeometry != surface) {
+                        addLabel = false;
+                     }
+                  }
+
+                  if (addLabel) {
+                     final IVector2 position = scaler.scaleAndTranslate(surface.getBounds().asAxisAlignedOrthotope()._center);
+
+                     //               final Font font = new Font("Dialog", Font.BOLD, 25);
+                     final Font font = new Font("Serif", Font.BOLD, 25);
+
+                     //               FontRenderContext frc;
+                     //               font.getStringBounds(provinceName, frc);
+
+                     //               LayoutPath
+                     //               TextLayout
+
+                     allSymbols.add(new GStyledLabel2D(position, provinceName, font));
+                  }
+               }
+            }
+
+            return allSymbols;
+         }
+
       };
 
+   }
+
+
+   private static IBoundedGeometry2D<? extends IFinite2DBounds<?>> getBiggestGeometry(final GMultiGeometry2D<IBoundedGeometry2D<? extends IFinite2DBounds<?>>> multigeometry) {
+      IBoundedGeometry2D<? extends IFinite2DBounds<?>> biggestGeometry = null;
+      double biggestArea = Double.NEGATIVE_INFINITY;
+      for (final IBoundedGeometry2D<? extends IFinite2DBounds<?>> geometry : multigeometry) {
+         final double currentArea = geometry.getBounds().area();
+         if (currentArea > biggestArea) {
+            biggestArea = currentArea;
+            biggestGeometry = geometry;
+         }
+      }
+
+      return biggestGeometry;
    }
 
 

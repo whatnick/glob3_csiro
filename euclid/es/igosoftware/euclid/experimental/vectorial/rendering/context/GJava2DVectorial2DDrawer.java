@@ -374,11 +374,43 @@ public class GJava2DVectorial2DDrawer
                                           final Paint paint,
                                           final double shadowOffset,
                                           final Paint shadowPaint) {
+      drawShadowedStringCentered(str, position, _g2d.getFont(), paint, shadowOffset, shadowPaint);
 
-      final Font f = _g2d.getFont();
+      //      final Font f = _g2d.getFont();
+      //      final FontRenderContext frc = _g2d.getFontRenderContext();
+      //      final Rectangle2D bounds = f.getStringBounds(str, frc);
+      //      final LineMetrics metrics = f.getLineMetrics(str, frc);
+      //      final double width = bounds.getWidth(); // The width of our text
+      //      final float lineheight = metrics.getHeight(); // Total line height
+      //      final float ascent = metrics.getAscent(); // Top of text to baseline
+      //
+      //      final double x = (position.x() + (0 - width) / 2);
+      //      final double y = (position.y() + (0 - lineheight) / 2 + ascent);
+      //
+      //      if (shadowOffset > 0) {
+      //         drawString(str, x + shadowOffset, y - shadowOffset, shadowPaint);
+      //         drawString(str, x + shadowOffset, y + shadowOffset, shadowPaint);
+      //         drawString(str, x - shadowOffset, y - shadowOffset, shadowPaint);
+      //         drawString(str, x - shadowOffset, y + shadowOffset, shadowPaint);
+      //      }
+      //      drawString(str, x, y, paint);
+   }
+
+
+   @Override
+   public void drawShadowedStringCentered(final String str,
+                                          final IVector2 position,
+                                          final Font font,
+                                          final Paint paint,
+                                          final double shadowOffset,
+                                          final Paint shadowPaint) {
+
+      final Font currentFont = _g2d.getFont();
+      _g2d.setFont(font);
+
       final FontRenderContext frc = _g2d.getFontRenderContext();
-      final Rectangle2D bounds = f.getStringBounds(str, frc);
-      final LineMetrics metrics = f.getLineMetrics(str, frc);
+      final Rectangle2D bounds = font.getStringBounds(str, frc);
+      final LineMetrics metrics = font.getLineMetrics(str, frc);
       final double width = bounds.getWidth(); // The width of our text
       final float lineheight = metrics.getHeight(); // Total line height
       final float ascent = metrics.getAscent(); // Top of text to baseline
@@ -393,6 +425,9 @@ public class GJava2DVectorial2DDrawer
          drawString(str, x - shadowOffset, y + shadowOffset, shadowPaint);
       }
       drawString(str, x, y, paint);
+
+      _g2d.setFont(currentFont);
+
    }
 
 

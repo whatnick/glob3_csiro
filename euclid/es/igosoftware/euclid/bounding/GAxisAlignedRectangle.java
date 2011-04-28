@@ -592,6 +592,7 @@ public final class GAxisAlignedRectangle
    }
 
 
+   @Override
    public double area() {
       final double width = getWidth();
       final double height = getHeight();
