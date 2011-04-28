@@ -53,6 +53,7 @@ import javax.swing.SwingUtilities;
 import es.igosoftware.concurrent.GConcurrent;
 import es.igosoftware.experimental.ndimensional.G3DImageMultidimensionalData;
 import es.igosoftware.experimental.ndimensional.GMultidimensionalDataModule;
+import es.igosoftware.experimental.ndimensional.GNetCDFMultidimentionalData;
 import es.igosoftware.experimental.ndimensional.IMultidimensionalData;
 import es.igosoftware.experimental.pointscloud.rendering.GPointsCloudModule;
 import es.igosoftware.experimental.vectorial.GGeotoolsVectorialModule;
@@ -378,7 +379,7 @@ public class GGlobeDemo
       try {
          //FIXME: Unused currently auto-detect code works
          //final String[] valueVariablesNames = new String[] { "salt", "temp", "dens" };
-         /*
+
          final GNetCDFMultidimentionalData.VectorVariable[] vectorVariables = new GNetCDFMultidimentionalData.VectorVariable[] { new GNetCDFMultidimentionalData.VectorVariable(
                   "Water Velocity", "u", "v") };
 
@@ -396,15 +397,15 @@ public class GGlobeDemo
 
          final IMultidimensionalData cfDataCurvy = new GNetCDFMultidimentionalData("data/tuna_t2b_out3_0_35.nc", "x_centre",
                   "y_centre", "z_centre", "topz", null, vectorVariablesCurvy, "record", true, true);
-         */
+
 
          final Position headPosition = new Position(Angle.fromDegrees(39.4737), Angle.fromDegrees(-6.3710), 0);
          final IMultidimensionalData headData = new G3DImageMultidimensionalData("Mr Head", "data/cthead-8bit", ".png",
                   headPosition, 10, 10, 20);
 
 
-         //_multidimentionaldata = new IMultidimensionalData[] { cfData, cfDataBig, cfDataCurvy, headData };
-         _multidimentionaldata = new IMultidimensionalData[] { headData };
+         _multidimentionaldata = new IMultidimensionalData[] { cfData, cfDataBig, cfDataCurvy, headData };
+         //_multidimentionaldata = new IMultidimensionalData[] { headData };
       }
       catch (final IOException e) {
          e.printStackTrace();
