@@ -45,6 +45,7 @@ import es.igosoftware.euclid.utils.GTriangulate;
 import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.euclid.vector.IVectorFunction;
 
 
 public final class GQuad2D
@@ -188,6 +189,15 @@ public final class GQuad2D
          result.add(new GTriangle2D(getPoint(iTriangle._v0), getPoint(iTriangle._v1), getPoint(iTriangle._v2)));
       }
       return result;
+   }
+
+
+   @Override
+   public GQuad2D transform(final IVectorFunction<IVector2> transformer) {
+      if (transformer == null) {
+         return this;
+      }
+      return new GQuad2D(transformer.apply(_v0), transformer.apply(_v1), transformer.apply(_v2), transformer.apply(_v3));
    }
 
 

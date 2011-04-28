@@ -5,6 +5,7 @@ package es.igosoftware.euclid.multigeometry;
 import java.util.List;
 
 import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.vector.IVector2;
@@ -16,7 +17,9 @@ ChildrenGeometryT extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVe
 
 >
          extends
-            GMultiGeometry<IVector2, ChildrenGeometryT, GAxisAlignedRectangle> {
+            GMultiGeometry<IVector2, ChildrenGeometryT, GAxisAlignedRectangle>
+         implements
+            IBoundedGeometry2D<GAxisAlignedRectangle> {
 
 
    private static final long serialVersionUID = 1L;
@@ -29,6 +32,31 @@ ChildrenGeometryT extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVe
 
    public GMultiGeometry2D(final List<ChildrenGeometryT> children) {
       super(children);
+   }
+
+
+   @Override
+   public boolean closeTo(final IBoundedGeometry<IVector2, GAxisAlignedRectangle> that) {
+      //
+      //      if (that instanceof GMultiGeometry2D) {
+      //         @SuppressWarnings("unchecked")
+      //         final GMultiGeometry2D<ChildrenGeometryT> thatMG = (GMultiGeometry2D<ChildrenGeometryT>) that;
+      //
+      //         if (_children.size() != thatMG._children.size()) {
+      //            return false;
+      //         }
+      //
+      //         for (int i = 0; i < _children.size(); i++) {
+      //            if (!_children.get(i).closeTo(thatMG._children.get(i))) {
+      //               return false;
+      //            }
+      //         }
+      //
+      //         return false;
+      //      }
+      //
+      //      return false;
+      throw new RuntimeException("Not yet implemented");
    }
 
 

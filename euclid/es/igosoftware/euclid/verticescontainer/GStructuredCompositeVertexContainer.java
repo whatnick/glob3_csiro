@@ -48,8 +48,8 @@ import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.vector.IVectorI2;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.IComparatorInt;
+import es.igosoftware.util.IFunction;
 import es.igosoftware.util.IPredicate;
-import es.igosoftware.util.ITransformer;
 
 
 public final class GStructuredCompositeVertexContainer<
@@ -515,8 +515,8 @@ GroupT extends IStructuredVertexContainer.IVertexGroup<VectorT, IVertexContainer
 
 
    @Override
-   public GStructuredCompositeVertexContainer<VectorT, GroupT> collect(final ITransformer<VectorT, VectorT> referencePointTransformer,
-                                                                       final ITransformer<IStructuredVertexContainer.StructuredVertex<VectorT, GroupT>, IStructuredVertexContainer.StructuredVertex<VectorT, GroupT>> vertexTransformer) {
+   public GStructuredCompositeVertexContainer<VectorT, GroupT> collect(final IFunction<VectorT, VectorT> referencePointTransformer,
+                                                                       final IFunction<IStructuredVertexContainer.StructuredVertex<VectorT, GroupT>, IStructuredVertexContainer.StructuredVertex<VectorT, GroupT>> vertexTransformer) {
 
       final GStructuredCompositeVertexContainer<VectorT, GroupT> result = newEmptyContainer(_children.size());
 

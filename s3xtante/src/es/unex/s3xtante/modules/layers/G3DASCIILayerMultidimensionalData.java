@@ -162,7 +162,7 @@ public class G3DASCIILayerMultidimensionalData
 
 
    @Override
-   public int getDimensionLenght(final String dimensionName) {
+   public int getDimensionLength(final String dimensionName) {
       GAssert.notNull(dimensionName, "dimensionName");
 
 

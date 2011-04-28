@@ -1196,4 +1196,11 @@ public final class GPanoramicLayerOLD
       return false;
    }
 
+
+   @Override
+   public IGlobeRenderingStyle getRenderingStyle() {
+      return null;
+   }
+
+
 }

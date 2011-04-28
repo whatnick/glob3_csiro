@@ -92,8 +92,8 @@ public class GCustomViewInputHandler
    private final AnimationController _gotoAnimControl        = new AnimationController();
    private final AnimationController _uiAnimControl          = new AnimationController();
 
-   private final double              _panoramicMaxFOV        = 120;
-   private final double              _panoramicMinFOV        = 5;
+   private final double              _panoramicMaxFOV        = 100;
+   private final double              _panoramicMinFOV        = 10;
 
 
    public GCustomViewInputHandler() {
@@ -209,7 +209,7 @@ public class GCustomViewInputHandler
 
       if (actionAttributes.getMouseActions() != null) {
          // Normalize the forward and right magnitudes.
-         final double length = Math.sqrt(forwardInput * forwardInput + sideInput * sideInput);
+         final double length = GMath.sqrt(forwardInput * forwardInput + sideInput * sideInput);
          if (length > 0.0) {
             forwardInput /= length;
             sideInput /= length;
@@ -327,7 +327,7 @@ public class GCustomViewInputHandler
 
             if (inputState == GInputState.PANORAMICS) {
                changeHeading((GCustomView) view, _uiAnimControl,
-                        (headingChange.multiply(-1.0)).multiply((view.getFieldOfView().divide(_panoramicMaxFOV)).degrees),
+                        (headingChange.multiply(-1.0)).multiply(0.4 * (view.getFieldOfView().divide(_panoramicMaxFOV)).degrees),
                         actionAttribs);
             }
             else {
@@ -341,7 +341,7 @@ public class GCustomViewInputHandler
 
             if (inputState == GInputState.PANORAMICS) {
                changePitch((GCustomView) view, _uiAnimControl,
-                        pitchChange.multiply((view.getFieldOfView().divide(_panoramicMaxFOV)).degrees), actionAttribs);
+                        pitchChange.multiply(0.4 * (view.getFieldOfView().divide(_panoramicMaxFOV)).degrees), actionAttribs);
             }
             else {
                changePitch((GCustomView) view, _uiAnimControl, pitchChange, actionAttribs);
@@ -372,7 +372,7 @@ public class GCustomViewInputHandler
          //         }
       }
       else {
-         final double length = Math.sqrt(headingInput * headingInput + pitchInput * pitchInput);
+         final double length = GMath.sqrt(headingInput * headingInput + pitchInput * pitchInput);
          if (length > 0.0) {
             headingInput /= length;
             pitchInput /= length;

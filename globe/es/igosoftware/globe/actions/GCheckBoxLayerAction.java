@@ -10,7 +10,6 @@ import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
-import javax.swing.JToggleButton;
 
 import es.igosoftware.globe.IGlobeApplication;
 
@@ -20,8 +19,8 @@ public abstract class GCheckBoxLayerAction
             GLayerAction {
 
 
-   private boolean      _value;
-   private final Action _action;
+   private boolean _value;
+   private Action  _action;
 
 
    protected GCheckBoxLayerAction(final String label,
@@ -32,7 +31,7 @@ public abstract class GCheckBoxLayerAction
       super(label, mnemonic, icon, showOnToolBar);
       _value = initialValue;
 
-      _action = createAction(label, icon, initialValue);
+      //      _action = createAction(label, icon, initialValue);
    }
 
 
@@ -43,7 +42,7 @@ public abstract class GCheckBoxLayerAction
       super(label, icon, showOnToolBar);
       _value = initialValue;
 
-      _action = createAction(label, icon, initialValue);
+      //      _action = createAction(label, icon, initialValue);
    }
 
 
@@ -74,15 +73,23 @@ public abstract class GCheckBoxLayerAction
    }
 
 
-   @Override
-   public Component createToolbarWidget(final IGlobeApplication application) {
-      return new JToggleButton(_action);
+   private Action getAction(final IGlobeApplication application) {
+      if (_action == null) {
+         _action = createAction(application.getTranslation(getLabel()), getIcon(), _value);
+      }
+      return _action;
    }
 
 
    @Override
    public JMenuItem createMenuWidget(final IGlobeApplication application) {
-      return new JCheckBoxMenuItem(_action);
+      return new JCheckBoxMenuItem(getAction(application));
+   }
+
+
+   @Override
+   public Component createToolbarWidget(final IGlobeApplication application) {
+      return GSwingFactory.createToolbarCheckBox(getAction(application));
    }
 
 

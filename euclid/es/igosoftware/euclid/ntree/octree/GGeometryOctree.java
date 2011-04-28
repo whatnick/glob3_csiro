@@ -2,24 +2,32 @@
 
 package es.igosoftware.euclid.ntree.octree;
 
-import es.igosoftware.euclid.IBoundedGeometry;
+import java.util.Collection;
+
+import es.igosoftware.euclid.IBoundedGeometry3D;
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
-import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.bounding.IFinite3DBounds;
 import es.igosoftware.euclid.ntree.GGeometryNTree;
 import es.igosoftware.euclid.ntree.GGeometryNTreeParameters;
 import es.igosoftware.euclid.vector.IVector3;
-import es.igosoftware.util.ITransformer;
+import es.igosoftware.util.IFunction;
 
 
-public class GGeometryOctree<ElementT>
+public class GGeometryOctree<
+
+ElementT,
+
+GeometryT extends IBoundedGeometry3D<? extends IFinite3DBounds<?>>
+
+>
          extends
-            GGeometryNTree<IVector3, ElementT> {
+            GGeometryNTree<IVector3, ElementT, GeometryT> {
 
 
    public GGeometryOctree(final String name,
                           final GAxisAlignedBox bounds,
                           final Iterable<? extends ElementT> elements,
-                          final ITransformer<ElementT, ? extends IBoundedGeometry<IVector3, ? extends IFiniteBounds<IVector3, ?>>> transformer,
+                          final IFunction<ElementT, Collection<? extends GeometryT>> transformer,
                           final GGeometryNTreeParameters parameters) {
       super(name, bounds, elements, transformer, parameters);
    }

@@ -43,8 +43,14 @@ public class S3xtante
       //final GPointsCloudModule pointsCloudModule = new GPointsCloudModule(loader);
 
 
-      return new IGlobeModule[] { new GLayersManagerModule(), new GVectorial2DModule(), new GStatisticsModule(),
-               new GSextanteModule(), new GAddTableModule(), new GAddRasterLayerModule(), new GVectorial2DModule(),
+      return new IGlobeModule[] {
+               new GLayersManagerModule(),
+               new GVectorial2DModule(),
+               new GStatisticsModule(),
+               new GSextanteModule(),
+               new GAddTableModule(),
+               new GAddRasterLayerModule(),
+               new GVectorial2DModule(),
                new GViewControlsModule() };
 
    }

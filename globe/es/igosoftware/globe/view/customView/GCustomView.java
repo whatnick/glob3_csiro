@@ -39,6 +39,7 @@ package es.igosoftware.globe.view.customView;
 import es.igosoftware.globe.GCameraState;
 import es.igosoftware.globe.view.GInputState;
 import es.igosoftware.panoramic.GPanoramic;
+import es.igosoftware.util.GMath;
 import gov.nasa.worldwind.Configuration;
 import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.avlist.AVKey;
@@ -848,7 +849,7 @@ public class GCustomView
       if ((eyePosition1 != null) && (dc != null)) {
          final double elevation = ViewUtil.computeElevationAboveSurface(dc, eyePosition1);
          final double tanHalfFov = fieldOfView.tanHalfAngle();
-         near = elevation / (2 * Math.sqrt(2 * tanHalfFov * tanHalfFov + 1));
+         near = elevation / (2 * GMath.sqrt(2 * tanHalfFov * tanHalfFov + 1));
       }
 
       return (near < 0.001) ? 0.001 : near / 4;

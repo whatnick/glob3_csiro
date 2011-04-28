@@ -88,6 +88,7 @@ import org.pushingpixels.substance.api.fonts.FontPolicy;
 import org.pushingpixels.substance.api.fonts.FontSet;
 import org.pushingpixels.substance.api.skin.SubstanceMistAquaLookAndFeel;
 
+import es.igosoftware.globe.actions.GSwingFactory;
 import es.igosoftware.globe.actions.IGenericAction;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
@@ -101,10 +102,9 @@ import es.igosoftware.util.GImageUtils;
 import es.igosoftware.util.GLogger;
 import es.igosoftware.util.GMath;
 import es.igosoftware.util.GPair;
+import es.igosoftware.util.GPredicate;
 import es.igosoftware.util.GUtils;
-import es.igosoftware.util.IPredicate;
 import es.igosoftware.util.LRUCache;
-import es.igosoftware.utils.GSwingUtils;
 import es.igosoftware.utils.GWrapperFontSet;
 import gov.nasa.worldwind.BasicModel;
 import gov.nasa.worldwind.Configuration;
@@ -493,7 +493,7 @@ public abstract class GGlobeApplication
          }
       });
 
-      return GCollections.select(modules.get(), new IPredicate<IGlobeModule>() {
+      return GCollections.select(modules.get(), new GPredicate<IGlobeModule>() {
          @Override
          public boolean evaluate(final IGlobeModule element) {
             return (element != null);
@@ -643,8 +643,8 @@ public abstract class GGlobeApplication
          return;
       }
 
-      final JMenuItem exitItem = GSwingUtils.createMenuItem(getTranslation("Exit"), getSmallIcon(GFileName.relative("quit.png")),
-               'x', new ActionListener() {
+      final JMenuItem exitItem = GSwingFactory.createMenuItem(getTranslation("Exit"),
+               getSmallIcon(GFileName.relative("quit.png")), 'x', new ActionListener() {
                   @Override
                   public void actionPerformed(final ActionEvent e) {
                      exit();
@@ -1215,6 +1215,11 @@ public abstract class GGlobeApplication
    }
 
 
+   public boolean isApplet() {
+      return _frame == null;
+   }
+
+
    @Override
    public View getView() {
       return getWorldWindowGLCanvas().getView();
@@ -1503,6 +1508,18 @@ public abstract class GGlobeApplication
             }
          }
       }
+
+
+      // attributes from the rendering style
+      final IGlobeRenderingStyle renderingStyle = layer.getRenderingStyle();
+      if (renderingStyle != null) {
+         final List<? extends ILayerAttribute<?>> renderingStyleAttributes = GCollections.selectNotNull(renderingStyle.getLayerAttributes(
+                  this, layer));
+         if ((renderingStyleAttributes != null) && !renderingStyleAttributes.isEmpty()) {
+            result.add(renderingStyleAttributes);
+         }
+      }
+
 
       // attributes from the layer itself
       final List<? extends ILayerAttribute<?>> layerAttributes = GCollections.selectNotNull(layer.getLayerAttributes(this));

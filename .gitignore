@@ -6,3 +6,6 @@ rendering-cache
 .rendering-cache
 http-cache
 .http-cache
+temporary-data
+#produced by jython
+cachedir

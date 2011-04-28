@@ -45,9 +45,10 @@ import es.igosoftware.euclid.utils.GTriangulate;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
+import es.igosoftware.euclid.vector.IVectorFunction;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GMath;
-import es.igosoftware.util.ITransformer;
+import es.igosoftware.util.IFunction;
 
 
 public final class GSimplePolygon3D
@@ -170,25 +171,25 @@ public final class GSimplePolygon3D
       final List<IVector2> points2d;
 
       if (_plane.isCloseToPlaneXY()) {
-         points2d = GCollections.collect(_points, new ITransformer<IVector3, IVector2>() {
+         points2d = GCollections.collect(_points, new IFunction<IVector3, IVector2>() {
             @Override
-            public IVector2 transform(final IVector3 element) {
+            public IVector2 apply(final IVector3 element) {
                return new GVector2D(element.x(), element.y());
             }
          });
       }
       else if (_plane.isCloseToPlaneXZ()) {
-         points2d = GCollections.collect(_points, new ITransformer<IVector3, IVector2>() {
+         points2d = GCollections.collect(_points, new IFunction<IVector3, IVector2>() {
             @Override
-            public IVector2 transform(final IVector3 element) {
+            public IVector2 apply(final IVector3 element) {
                return new GVector2D(element.x(), element.z());
             }
          });
       }
       else /*if (_plane.isCloseToPlaneYZ())*/{
-         points2d = GCollections.collect(_points, new ITransformer<IVector3, IVector2>() {
+         points2d = GCollections.collect(_points, new IFunction<IVector3, IVector2>() {
             @Override
-            public IVector2 transform(final IVector3 element) {
+            public IVector2 apply(final IVector3 element) {
                return new GVector2D(element.y(), element.z());
             }
          });
@@ -235,6 +236,16 @@ public final class GSimplePolygon3D
    @Override
    public boolean isConvex() {
       throw new RuntimeException("not yet implemented");
+   }
+
+
+   @Override
+   public GSimplePolygon3D transform(final IVectorFunction<IVector3> transformer) {
+      if (transformer == null) {
+         return this;
+      }
+      final List<IVector3> transformedPoints = GCollections.collect(_points, transformer);
+      return new GSimplePolygon3D(false, transformedPoints);
    }
 
 

@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import es.igosoftware.euclid.GEdgedGeometryAbstract;
+import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.IBounds;
 import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector;
@@ -29,9 +30,9 @@ BoundsT extends IBounds<VectorT, BoundsT>
             IPolygonalChain<VectorT, SegmentT, BoundsT> {
 
 
-   private static final long   serialVersionUID = 1L;
+   private static final long     serialVersionUID = 1L;
 
-   private final List<VectorT> _points;
+   protected final List<VectorT> _points;
 
 
    protected GLinesStrip(final boolean validate,
@@ -182,6 +183,43 @@ BoundsT extends IBounds<VectorT, BoundsT>
       final VectorT first = _points.get(0);
       final VectorT last = _points.get(_points.size() - 1);
       return first.closeTo(last);
+   }
+
+
+   @Override
+   public String toString() {
+      return "GLinesStrip [points=" + _points.size() + "]";
+   }
+
+
+   public double getLength() {
+      double result = 0;
+      for (int i = 1; i < _points.size(); i++) {
+         result += _points.get(i - 1).distance(_points.get(i));
+      }
+      return result;
+   }
+
+
+   @Override
+   public boolean closeTo(final IBoundedGeometry<VectorT, BoundsT> that) {
+      if (that instanceof GLinesStrip) {
+         @SuppressWarnings("unchecked")
+         final GLinesStrip<VectorT, SegmentT, BoundsT> thatLineStrip = (GLinesStrip<VectorT, SegmentT, BoundsT>) that;
+
+         if (_points.size() != thatLineStrip._points.size()) {
+            return false;
+         }
+
+         for (int i = 0; i < _points.size(); i++) {
+            if (!_points.get(i).closeTo(thatLineStrip.getPoint(i))) {
+               return false;
+            }
+         }
+
+         return true;
+      }
+      return false;
    }
 
 

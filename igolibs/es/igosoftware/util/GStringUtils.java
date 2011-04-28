@@ -165,21 +165,27 @@ public class GStringUtils {
 
 
    public static String getTimeMessage(final long ms) {
+      return getTimeMessage(ms, true);
+   }
+
+
+   public static String getTimeMessage(final long ms,
+                                       final boolean rounded) {
       if (ms < 1000) {
          return ms + "ms";
       }
 
       if (ms < 60000) {
          final double seconds = ms / 1000d;
-         return Math.round(seconds) + "s";
+         return (rounded ? Math.round(seconds) : seconds) + "s";
       }
 
       final long minutes = ms / 60000;
-      final long seconds = (ms - (minutes * 60000)) / 1000;
+      final double seconds = (ms - (minutes * 60000d)) / 1000d;
       if (seconds <= 0) {
          return minutes + "m";
       }
-      return minutes + "m " + seconds + "s";
+      return minutes + "m " + (rounded ? Math.round(seconds) : seconds) + "s";
    }
 
 

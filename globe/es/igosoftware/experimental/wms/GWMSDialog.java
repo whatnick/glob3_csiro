@@ -6,7 +6,6 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -39,6 +38,7 @@ import es.igosoftware.experimental.gui.GDatosForTablaFactory;
 import es.igosoftware.experimental.gui.GTablaIgoCusto;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.util.GLogger;
+import es.igosoftware.util.GSwingUtils;
 import es.igosoftware.util.GUtils;
 import gov.nasa.worldwind.ogc.wms.WMSCapabilities;
 
@@ -440,9 +440,7 @@ public class GWMSDialog
       final JPanel p0 = new JPanel();
       p0.setLayout(new BorderLayout());
       p0.setBorder(verticalPadding);
-      final JLabel descriptionLabel = new JLabel("Server connection details ");
-      descriptionLabel.setFont(getFont().deriveFont(Font.BOLD));
-
+      final JLabel descriptionLabel = GSwingUtils.makeBold(new JLabel("Server connection details "));
       p0.add(descriptionLabel, BorderLayout.WEST);
 
       final JPanel p1 = new JPanel();

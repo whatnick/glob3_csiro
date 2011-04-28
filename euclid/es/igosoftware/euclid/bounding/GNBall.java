@@ -37,6 +37,7 @@
 package es.igosoftware.euclid.bounding;
 
 import es.igosoftware.euclid.GGeometryAbstract;
+import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GMath;
@@ -52,7 +53,7 @@ GeometryT extends GNBall<VectorT, GeometryT>
          extends
             GGeometryAbstract<VectorT>
          implements
-            IBounds<VectorT, GeometryT> {
+            IFiniteBounds<VectorT, GeometryT> {
 
    private static final long serialVersionUID = 1L;
 
@@ -166,6 +167,17 @@ GeometryT extends GNBall<VectorT, GeometryT>
    @Override
    public VectorT getCentroid() {
       return _center;
+   }
+
+
+   @Override
+   public boolean closeTo(final IBoundedGeometry<VectorT, GeometryT> that) {
+      if (that instanceof GNBall) {
+         @SuppressWarnings("unchecked")
+         final GeometryT thatNB = (GeometryT) that;
+         return GMath.closeTo(_radius, thatNB._radius) && _center.closeTo(thatNB._center);
+      }
+      return false;
    }
 
 

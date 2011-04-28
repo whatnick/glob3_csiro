@@ -5,6 +5,7 @@ package es.igosoftware.euclid.multigeometry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -12,12 +13,13 @@ import es.igosoftware.euclid.GGeometryAbstract;
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.features.GGeometryType;
 import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GMath;
-import es.igosoftware.util.ITransformer;
+import es.igosoftware.util.IFunction;
 
 
 public abstract class GMultiGeometry<
@@ -36,9 +38,11 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
             Iterable<ChildrenGeometryT> {
 
 
-   private static final long             serialVersionUID = 1L;
+   private static final long               serialVersionUID = 1L;
 
-   private final List<ChildrenGeometryT> _children;
+   protected final List<ChildrenGeometryT> _children;
+
+   private EnumSet<GGeometryType>          _geometryType;
 
 
    public GMultiGeometry(final ChildrenGeometryT... children) {
@@ -114,9 +118,9 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
 
    @Override
    public VectorT getCentroid() {
-      final List<VectorT> centroids = GCollections.collect(_children, new ITransformer<ChildrenGeometryT, VectorT>() {
+      final List<VectorT> centroids = GCollections.collect(_children, new IFunction<ChildrenGeometryT, VectorT>() {
          @Override
-         public VectorT transform(final ChildrenGeometryT element) {
+         public VectorT apply(final ChildrenGeometryT element) {
             return element.getCentroid();
          }
       });
@@ -129,9 +133,9 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
    @Override
    public BoundsT getBounds() {
       final List<GAxisAlignedOrthotope<VectorT, ?>> bounds = GCollections.collect(_children,
-               new ITransformer<ChildrenGeometryT, GAxisAlignedOrthotope<VectorT, ?>>() {
+               new IFunction<ChildrenGeometryT, GAxisAlignedOrthotope<VectorT, ?>>() {
                   @Override
-                  public GAxisAlignedOrthotope<VectorT, ?> transform(final ChildrenGeometryT element) {
+                  public GAxisAlignedOrthotope<VectorT, ?> apply(final ChildrenGeometryT element) {
                      return element.getBounds().asAxisAlignedOrthotope();
                   }
                });
@@ -196,13 +200,38 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
 
    @Override
    public double distanceToBoundary(final VectorT point) {
-      return Math.sqrt(squaredDistance(point));
+      return GMath.sqrt(squaredDistance(point));
    }
 
 
    @Override
    public final boolean containsOnBoundary(final VectorT point) {
       return GMath.closeToZero(distanceToBoundary(point));
+   }
+
+
+   public final EnumSet<GGeometryType> getGeometryType() {
+      // lazy initialized to avoid an iteration on _features if GeometriesTypes is not needed
+
+      if (_geometryType == null) {
+         _geometryType = calculateGeometriesTypes();
+      }
+
+      return _geometryType;
+   }
+
+
+   private EnumSet<GGeometryType> calculateGeometriesTypes() {
+      final EnumSet<GGeometryType> result = EnumSet.noneOf(GGeometryType.class);
+
+      for (final ChildrenGeometryT child : _children) {
+         result.addAll(GGeometryType.getGeometryType(child));
+         if (result.containsAll(GGeometryType.ALL)) {
+            return GGeometryType.ALL;
+         }
+      }
+
+      return result;
    }
 
 

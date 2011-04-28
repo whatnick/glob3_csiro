@@ -185,7 +185,7 @@ public interface IMultidimensionalData {
                                                                    final Map<String, GRange<Integer>> dimensionsRanges);
 
 
-   public int getDimensionLenght(final String dimensionName);
+   public int getDimensionLength(final String dimensionName);
 
 
 }

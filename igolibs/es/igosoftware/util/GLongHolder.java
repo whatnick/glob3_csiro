@@ -119,4 +119,19 @@ public final class GLongHolder {
       return Long.toString(_value);
    }
 
+
+   public void max(final long value) {
+      if (value > _value) {
+         _value = value;
+      }
+   }
+
+
+   public void min(final long value) {
+      if (value < _value) {
+         _value = value;
+      }
+   }
+
+
 }

@@ -41,6 +41,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.IBounds;
 import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector;
@@ -203,5 +204,26 @@ BoundsT extends IBounds<VectorT, BoundsT>
       return GVectorUtils.getAverage(_points);
    }
 
+
+   @Override
+   public boolean closeTo(final IBoundedGeometry<VectorT, BoundsT> that) {
+      if (that instanceof GLinesStrip) {
+         @SuppressWarnings("unchecked")
+         final GSimplePolytope<VectorT, SegmentT, BoundsT> thatPolytope = (GSimplePolytope<VectorT, SegmentT, BoundsT>) that;
+
+         if (_points.size() != thatPolytope._points.size()) {
+            return false;
+         }
+
+         for (int i = 0; i < _points.size(); i++) {
+            if (!_points.get(i).closeTo(thatPolytope.getPoint(i))) {
+               return false;
+            }
+         }
+
+         return true;
+      }
+      return false;
+   }
 
 }

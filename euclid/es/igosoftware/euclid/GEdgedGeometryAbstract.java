@@ -82,7 +82,7 @@ BoundsT extends IBounds<VectorT, ?>
 
    @Override
    public double distanceToBoundary(final VectorT point) {
-      return Math.sqrt(squaredDistance(point));
+      return GMath.sqrt(squaredDistance(point));
    }
 
 

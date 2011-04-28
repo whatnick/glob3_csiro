@@ -39,12 +39,19 @@ package es.igosoftware.euclid.shape;
 import es.igosoftware.euclid.ICurve2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.euclid.vector.IVectorFunction;
 
 
 public interface IPolygonalChain2D
          extends
             IPolygonalChain<IVector2, GSegment2D, GAxisAlignedRectangle>,
-            ICurve2D {
+            ICurve2D<GAxisAlignedRectangle> {
+
+   public double getLength();
+
+
+   @Override
+   public IPolygonalChain2D transform(final IVectorFunction<IVector2> transformer);
 
 
 }

@@ -4,7 +4,13 @@ package es.igosoftware.euclid.ntree;
 
 import java.util.Collection;
 
+import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.IBoundedGeometry2D;
+import es.igosoftware.euclid.IBoundedGeometry3D;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
+import es.igosoftware.euclid.bounding.IFinite2DBounds;
+import es.igosoftware.euclid.bounding.IFinite3DBounds;
+import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
@@ -25,29 +31,58 @@ public class GGeometryNTreeParameters {
    }
 
 
-   public static interface AcceptLeafNodeCreationPolicy<VectorT extends IVector<VectorT, ?>, ElementT> {
-      public boolean accept(final int depth,
-                            final GAxisAlignedOrthotope<VectorT, ?> bounds,
-                            final Collection<ElementT> elements);
+   public static interface AcceptLeafNodeCreationPolicy<
+
+   VectorT extends IVector<VectorT, ?>,
+
+   ElementT,
+
+   GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
+
+   > {
+      public boolean acceptLeafNodeCreation(final int depth,
+                                            final GAxisAlignedOrthotope<VectorT, ?> bounds,
+                                            final Collection<GElementGeometryPair<VectorT, ElementT, GeometryT>> elements);
    }
 
 
-   public static interface Accept3DLeafNodeCreationPolicy<ElementT>
+   public static interface Accept3DLeafNodeCreationPolicy<
+
+   ElementT,
+
+   GeometryT extends IBoundedGeometry3D<? extends IFinite3DBounds<?>>
+
+   >
             extends
-               AcceptLeafNodeCreationPolicy<IVector3, ElementT> {
+               AcceptLeafNodeCreationPolicy<IVector3, ElementT, GeometryT> {
    }
 
 
-   public static interface Accept2DLeafNodeCreationPolicy<ElementT>
+   public static interface Accept2DLeafNodeCreationPolicy<
+
+   ElementT,
+
+   GeometryT extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>
+
+
+   >
             extends
-               AcceptLeafNodeCreationPolicy<IVector2, ElementT> {
+               AcceptLeafNodeCreationPolicy<IVector2, ElementT, GeometryT> {
 
    }
 
 
-   private static class DefaultAcceptLeafNodeCreationPolicy<VectorT extends IVector<VectorT, ?>, ElementT>
+   private static class DefaultAcceptLeafNodeCreationPolicy<
+
+   VectorT extends IVector<VectorT, ?>,
+
+   ElementT,
+
+   GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
+
+   >
             implements
-               AcceptLeafNodeCreationPolicy<VectorT, ElementT> {
+               AcceptLeafNodeCreationPolicy<VectorT, ElementT, GeometryT> {
 
       private final int _maxDepth;
       private final int _maxElementsInLeafs;
@@ -64,14 +99,14 @@ public class GGeometryNTreeParameters {
 
 
       @Override
-      public boolean accept(final int depth,
-                            final GAxisAlignedOrthotope<VectorT, ?> bounds,
-                            final Collection<ElementT> elements) {
-         if ((elements.size() <= _maxElementsInLeafs) || (depth >= _maxDepth + 1)) {
+      public boolean acceptLeafNodeCreation(final int depth,
+                                            final GAxisAlignedOrthotope<VectorT, ?> bounds,
+                                            final Collection<GElementGeometryPair<VectorT, ElementT, GeometryT>> elements) {
+         if (depth >= _maxDepth) {
             return true;
          }
 
-         return false;
+         return (elements.size() <= _maxElementsInLeafs);
       }
    }
 

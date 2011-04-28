@@ -52,7 +52,7 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GLogger;
-import es.igosoftware.util.ITransformer;
+import es.igosoftware.util.IFunction;
 import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Box;
@@ -240,9 +240,9 @@ public final class GWWUtils {
 
       final LatLon[] vertices = new LatLon[] { //
       new LatLon(lowerLatitude, lowerLongitude), //
-               new LatLon(lowerLatitude, upperLongitude), //
-               new LatLon(upperLatitude, upperLongitude), // 
-               new LatLon(upperLatitude, lowerLongitude) };
+      new LatLon(lowerLatitude, upperLongitude), //
+      new LatLon(upperLatitude, upperLongitude), // 
+      new LatLon(upperLatitude, lowerLongitude) };
 
       renderQuad(dc, vertices, red, green, blue);
    }
@@ -387,9 +387,9 @@ public final class GWWUtils {
          return null;
       }
 
-      final List<Vec4> points = GCollections.collect(aaBox.getVertices(), new ITransformer<IVector3, Vec4>() {
+      final List<Vec4> points = GCollections.collect(aaBox.getVertices(), new IFunction<IVector3, Vec4>() {
          @Override
-         public Vec4 transform(final IVector3 element) {
+         public Vec4 apply(final IVector3 element) {
             return GWWUtils.toVec4(element);
          }
       });
@@ -599,11 +599,29 @@ public final class GWWUtils {
    }
 
 
+   public static LatLon toLatLon(final IVector2 point,
+                                 final GProjection projection) {
+      final IVector2 geodesicPoint = point.reproject(projection, GProjection.EPSG_4326);
+      return LatLon.fromRadians(geodesicPoint.y(), geodesicPoint.x());
+   }
+
+
    public static Position toPosition(final IVector3 point,
                                      final GProjection projection) {
       final IVector3 geodesicPoint = point.reproject(projection, GProjection.EPSG_4326);
       return Position.fromRadians(geodesicPoint.y(), geodesicPoint.x(), geodesicPoint.z());
    }
 
+
+   public static IVector2 increment(final IVector2 position,
+                                    final GProjection projection,
+                                    final double deltaEasting,
+                                    final double deltaNorthing) {
+      final LatLon latLon = GWWUtils.toLatLon(position, projection);
+
+      final LatLon newUTM = GWWUtils.increment(latLon, deltaEasting, deltaNorthing);
+
+      return new GVector2D(newUTM.getLongitude().radians, newUTM.getLatitude().radians);
+   }
 
 }

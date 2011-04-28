@@ -151,39 +151,75 @@ public abstract class GColorAbstract
 
 
    @Override
-   public IColor darker() {
+   public final IColor darker() {
       return adjustBrightness(-0.08f);
    }
 
 
    @Override
-   public IColor twiceDarker() {
+   public final IColor twiceDarker() {
       return adjustBrightness(-0.15f);
    }
 
 
    @Override
-   public IColor muchDarker() {
-      return interpolatedTo(GColorF.BLACK, 0.5f);
+   public final IColor muchDarker() {
+      return GColorF.BLACK.mixedWidth(this, 0.5f);
    }
 
 
    @Override
-   public IColor lighter() {
+   public final IColor lighter() {
       return adjustSaturationBrightness(-0.03f, 0.08f);
    }
 
 
    @Override
-   public IColor twiceLighter() {
+   public final IColor twiceLighter() {
       return adjustSaturationBrightness(-0.06f, 0.15f);
    }
 
 
    @Override
-   public IColor muchLighter() {
-      return interpolatedTo(GColorF.WHITE, 0.233f);
+   public final IColor muchLighter() {
+      return GColorF.WHITE.mixedWidth(this, 0.233f);
    }
 
+
+   @Override
+   public final java.awt.Color asAWTColor() {
+      return new java.awt.Color(getRed(), getGreen(), getBlue());
+   }
+
+
+   @Override
+   public final java.awt.Color asAWTColor(final float opacity) {
+      return new java.awt.Color(getRed(), getGreen(), getBlue(), opacity);
+   }
+
+
+   @Override
+   public String toHexString() {
+      final int iRed = Math.round(255 * getRed());
+      final int iGreen = Math.round(255 * getGreen());
+      final int iBlue = Math.round(255 * getBlue());
+
+      return toHexString(iRed) + toHexString(iGreen) + toHexString(iBlue);
+   }
+
+
+   private static String toHexString(final int value) {
+      final String hex = Integer.toHexString(value).toUpperCase();
+      if (hex.length() == 1) {
+         return "0" + hex;
+      }
+      return hex;
+   }
+
+
+   @Override
+   public String toInt256String() {
+      return "(" + Math.round(getRed() * 255) + ", " + Math.round(getGreen() * 255) + ", " + Math.round(getBlue() * 255) + ")";
+   }
 
 }

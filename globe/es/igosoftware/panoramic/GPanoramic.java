@@ -272,7 +272,6 @@ public class GPanoramic
          }
       });
 
-      _hudLayer.setEnabled(false);
       _hudIcon.setEnable(false);
       _hudLayer.addElement(_hudIcon);
    }
@@ -677,9 +676,16 @@ public class GPanoramic
    }
 
 
+   /**
+    * Use this method to enter into the panoramic. It sets view-control options (restrict camera movement to rotation only, change
+    * how mouse-wheel movement is interpreted, activates its own icon in the HUD-Layer, etc...). Also saves the current camera
+    * state.
+    * 
+    * @param view
+    * @param application
+    */
    public void activate(final GCustomView view,
                         final GGlobeApplication application) {
-      _hudLayer.setEnabled(true);
       _hudIcon.setEnable(true);
       _isActive = true;
 
@@ -688,14 +694,9 @@ public class GPanoramic
       }
 
       application.jumpTo(getPosition(), 0);
-      //      view.setInputState(GInputState.PANORAMICS);
       view.enterPanoramic(this);
-      //final GPanoramicViewLimits viewLimits = new GPanoramicViewLimits();
       view.setOrbitViewLimits(new GPanoramicViewLimits());
 
-
-      //      hideOtherLayers(application, this._layer);
-      //      hideOtherPanoramics(this);
 
       view.setFieldOfView(Angle.fromDegrees(120));
 
@@ -708,9 +709,15 @@ public class GPanoramic
    }
 
 
+   /**
+    * Use this method to exit the panoramic. Should be used in conjunction with
+    * <code>activate(GCustomView view, GGlobeApplication application)</code>, as it also takes care of restoring the view state
+    * that aforementioned method has saved
+    * 
+    * @param view
+    */
    public void deactivate(final GCustomView view) {
 
-      _hudLayer.setEnabled(false);
       _hudIcon.setEnable(false);
       _isActive = false;
 

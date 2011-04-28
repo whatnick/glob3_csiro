@@ -1,0 +1,120 @@
+
+
+package es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries;
+
+
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.util.Collection;
+
+import es.igosoftware.euclid.IBoundedGeometry2D;
+import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.bounding.IFinite2DBounds;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
+import es.igosoftware.euclid.vector.GVector2D;
+import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.util.GAssert;
+import es.igosoftware.util.GUtils;
+
+
+public class GStyledIcon2D
+         extends
+            GStyled2DGeometry<IVector2> {
+
+
+   private final String        _iconName;
+   private final BufferedImage _icon;
+   private final float         _opacity;
+
+   private final float         _percentFilled;
+   private final Color         _averageColor;
+   private final GVector2D     _iconExtent;
+
+
+   public GStyledIcon2D(final IVector2 position,
+                        final String iconName,
+                        final BufferedImage icon,
+                        final float opacity) {
+      super(position);
+
+      GAssert.notNull(icon, "icon");
+
+      _icon = icon;
+      _opacity = opacity;
+      _iconName = iconName;
+      _percentFilled = GIconUtils.getPercentFilled(icon);
+      _averageColor = GIconUtils.getAverageColor(icon);
+
+      _iconExtent = new GVector2D(_icon.getWidth(), _icon.getHeight());
+   }
+
+
+   @Override
+   protected void draw(final IVectorial2DDrawer drawer,
+                       final boolean debugRendering) {
+      drawer.drawImage(_icon, _geometry, _opacity);
+   }
+
+
+   @Override
+   public String toString() {
+      return "GStyledIcon2D [icon=" + _icon + ", opacity=" + _opacity + "]";
+   }
+
+
+   @Override
+   protected boolean isBigger(final double lodMinSize) {
+      return (_iconExtent.length() * _percentFilled) > lodMinSize;
+   }
+
+
+   @Override
+   protected void drawLODIgnore(final IVectorial2DDrawer drawer,
+                                final boolean debugRendering) {
+      drawer.fillRect(_geometry, _iconExtent, debugRendering ? Color.MAGENTA : _averageColor);
+   }
+
+
+   @Override
+   public boolean isGroupableWith(final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> that) {
+      if (that instanceof GStyledIcon2D) {
+         final GStyledIcon2D thatIcon = (GStyledIcon2D) that;
+         //         return _icon.equals(thatIcon._icon) && _geometry.closeTo(thatIcon._geometry)
+         //         && _iconExtent.closeTo(thatIcon._iconExtent);
+
+         //         return _icon.equals(thatIcon._icon);
+         return GUtils.equals(_iconName, thatIcon._iconName);
+      }
+
+      return false;
+   }
+
+
+   @Override
+   public GAxisAlignedRectangle getBounds() {
+      return new GAxisAlignedRectangle(_geometry, _geometry.add(_iconExtent));
+   }
+
+
+   @Override
+   public boolean isGroupable() {
+      return true;
+   }
+
+
+   @Override
+   protected GStyledIcon2D getAverageSymbol(final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group) {
+
+      GVector2D sumPosition = GVector2D.ZERO;
+      for (final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> each : group) {
+         final GStyledIcon2D eachEllipse = (GStyledIcon2D) each;
+         final IVector2 point = eachEllipse._geometry;
+         sumPosition = sumPosition.add(point);
+      }
+
+      final GVector2D averagePosition = sumPosition.div(group.size());
+
+      return new GStyledIcon2D(averagePosition, _iconName, _icon, _opacity);
+   }
+
+}

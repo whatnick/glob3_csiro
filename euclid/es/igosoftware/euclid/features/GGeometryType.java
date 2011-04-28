@@ -38,6 +38,12 @@ package es.igosoftware.euclid.features;
 
 import java.util.EnumSet;
 
+import es.igosoftware.euclid.ICurve;
+import es.igosoftware.euclid.IGeometry;
+import es.igosoftware.euclid.ISurface;
+import es.igosoftware.euclid.multigeometry.GMultiGeometry;
+import es.igosoftware.euclid.vector.IVector;
+
 
 public enum GGeometryType {
    POINT,
@@ -45,4 +51,25 @@ public enum GGeometryType {
    SURFACE;
 
    public static final EnumSet<GGeometryType> ALL = EnumSet.allOf(GGeometryType.class);
+
+
+   public static EnumSet<GGeometryType> getGeometryType(final IGeometry<?> geometry) {
+      if (geometry instanceof IVector) {
+         return EnumSet.of(GGeometryType.POINT);
+      }
+      else if (geometry instanceof ICurve) {
+         return EnumSet.of(GGeometryType.CURVE);
+      }
+      else if (geometry instanceof ISurface) {
+         return EnumSet.of(GGeometryType.SURFACE);
+      }
+      else if (geometry instanceof GMultiGeometry) {
+         return ((GMultiGeometry<?, ?, ?>) ((GMultiGeometry<?, ?, ?>) geometry)).getGeometryType();
+      }
+      else {
+         throw new RuntimeException("Unsupported geometry type: " + geometry.getClass());
+      }
+   }
+
+
 }

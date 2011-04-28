@@ -98,9 +98,8 @@ public class GGazetteerPanel
 
       _wwd = wwd;
 
-      final TableLayout thisLayout = new TableLayout(new double[][] {
-               { 7.0, TableLayoutConstants.FILL, TableLayoutConstants.FILL, TableLayoutConstants.FILL, 7.0 },
-               { 7.0, TableLayoutConstants.MINIMUM, TableLayoutConstants.FILL, 6.0 } });
+      final TableLayout thisLayout = new TableLayout(
+               new double[][] { { 7.0, TableLayoutConstants.FILL, TableLayoutConstants.FILL, TableLayoutConstants.FILL, 7.0 }, { 7.0, TableLayoutConstants.MINIMUM, TableLayoutConstants.FILL, 6.0 } });
       thisLayout.setHGap(5);
       thisLayout.setVGap(5);
       setLayout(thisLayout);

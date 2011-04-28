@@ -45,9 +45,6 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<Vecto
    }
 
 
-   public EnumSet<GGeometryType> getGeometriesTypes();
-
-
    public List<GField> getFields();
 
 
@@ -73,5 +70,18 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<Vecto
 
 
    public boolean isEditable();
+
+
+   public EnumSet<GGeometryType> getGeometryType();
+
+
+   public int getFieldIndex(final String fieldName);
+
+
+   public GField getField(final String fieldName);
+
+
+   public GField getField(final int index);
+
 
 }

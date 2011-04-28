@@ -36,13 +36,15 @@
 
 package es.igosoftware.euclid.shape;
 
+import es.igosoftware.euclid.ICurve3D;
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 import es.igosoftware.euclid.vector.IVector3;
 
 
 public interface IPolygonalChain3D
          extends
-            IPolygonalChain<IVector3, GSegment3D, GAxisAlignedBox> {
+            IPolygonalChain<IVector3, GSegment3D, GAxisAlignedBox>,
+            ICurve3D<GAxisAlignedBox> {
 
 
 }

@@ -53,7 +53,6 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
@@ -112,6 +111,14 @@ public class GHelpModule
                       final boolean autoOpen,
                       final boolean showInPanel) {
       this(label, iconName, languageHtmlURL, autoOpen, showInPanel, null);
+   }
+
+
+   public GHelpModule(final GFileName iconName,
+                      final String[][] languageHtmlURL,
+                      final boolean autoOpen,
+                      final boolean showInPanel) {
+      this(DEFAULT_LABEL, iconName, languageHtmlURL, autoOpen, showInPanel, null);
    }
 
 
@@ -183,7 +190,7 @@ public class GHelpModule
 
          rootPanel.add(htmlPane, BorderLayout.CENTER);
 
-         final JFrame frame = application.getFrame();
+         //final JFrame frame = application.getFrame();
          //         final JDialog dialog = new JDialog(frame, _label, true);
          final JDialog dialog = new JDialog(application.getFrame(), application.getTranslation(_label), false);
          //         dialog.setResizable(false);
@@ -200,8 +207,14 @@ public class GHelpModule
 
          dialog.getContentPane().add(rootPanel);
 
-         dialog.setSize(Math.round(frame.getWidth() * 0.7f), Math.round(frame.getHeight() * 0.85f));
-         dialog.setLocationRelativeTo(frame);
+         //         if (!(frame != null)) {
+         //            System.out.println("frame is null - why?");
+         //         }
+         //         System.out.println(frame.getWidth() + " , " + frame.getHeight());
+         dialog.setSize(Math.round(((Component) application).getWidth() * 0.7f),
+                  Math.round(((Component) application).getHeight() * 0.85f));
+         dialog.setLocationRelativeTo((Component) application);
+
 
          dialog.setVisible(true);
       }
@@ -261,6 +274,7 @@ public class GHelpModule
 
 
       final URL url = getClass().getClassLoader().getResource(urlByLanguage);
+      System.out.println(url);
       htmlPane.setPage(url);
 
       scrollPane.getViewport().add(htmlPane);
@@ -341,6 +355,7 @@ public class GHelpModule
    public void initializeTranslations(final IGlobeApplication application) {
       application.addTranslation("es", DEFAULT_LABEL, "Ayuda");
       application.addTranslation("de", DEFAULT_LABEL, "Hilfe");
+      application.addTranslation("pt", DEFAULT_LABEL, "Ajuda");
    }
 
 }

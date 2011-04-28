@@ -37,20 +37,25 @@
 package es.igosoftware.globe.attributes;
 
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.util.EventListener;
 
+import javax.swing.JComponent;
+import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
+import es.igosoftware.util.GMath;
 import es.igosoftware.util.GPair;
 
 
@@ -73,26 +78,13 @@ public abstract class GFloatLayerAttribute
 
 
    public GFloatLayerAttribute(final String label,
-                               final boolean readOnly,
-                               final float minimum,
-                               final float maximum,
-                               final GFloatLayerAttribute.WidgetType widgetType,
-                               final float stepSize) {
-      super(label, readOnly);
-      _minimum = minimum;
-      _maximum = maximum;
-      _stepSize = stepSize;
-      _widgetType = widgetType;
-   }
-
-
-   public GFloatLayerAttribute(final String label,
+                               final String description,
                                final String propertyName,
                                final float minimum,
                                final float maximum,
                                final GFloatLayerAttribute.WidgetType widgetType,
                                final float stepSize) {
-      super(label, propertyName);
+      super(label, description, propertyName);
       _minimum = minimum;
       _maximum = maximum;
       _stepSize = stepSize;
@@ -101,26 +93,14 @@ public abstract class GFloatLayerAttribute
 
 
    public GFloatLayerAttribute(final String label,
-                               final float minimum,
-                               final float maximum,
-                               final GFloatLayerAttribute.WidgetType widgetType,
-                               final float stepSize) {
-      super(label);
-      _minimum = minimum;
-      _maximum = maximum;
-      _stepSize = stepSize;
-      _widgetType = widgetType;
-   }
-
-
-   public GFloatLayerAttribute(final String label,
+                               final String description,
                                final String propertyName,
                                final boolean readOnly,
                                final float minimum,
                                final float maximum,
                                final GFloatLayerAttribute.WidgetType widgetType,
                                final float stepSize) {
-      super(label, propertyName, readOnly);
+      super(label, description, propertyName, readOnly);
       _minimum = minimum;
       _maximum = maximum;
       _stepSize = stepSize;
@@ -129,8 +109,8 @@ public abstract class GFloatLayerAttribute
 
 
    @Override
-   public void cleanupWidget(final IGlobeLayer layer,
-                             final GPair<Component, EventListener> widget) {
+   public final void cleanupWidget(final IGlobeLayer layer,
+                                   final GPair<Component, EventListener> widget) {
       setListener(null);
 
       unsubscribeFromEvents(layer, widget._second);
@@ -138,13 +118,14 @@ public abstract class GFloatLayerAttribute
 
 
    @Override
-   public GPair<Component, EventListener> createWidget(final IGlobeApplication application,
-                                                       final IGlobeLayer layer) {
+   public final GPair<Component, EventListener> createWidget(final IGlobeApplication application,
+                                                             final IGlobeLayer layer) {
 
-      Component widget = null;
+      final JComponent widget;
       switch (_widgetType) {
          case SLIDER:
-            // TODO: create slider, now just pass trought to spinner
+            widget = createSlider();
+            break;
 
          case SPINNER:
             widget = createSpinner();
@@ -153,8 +134,12 @@ public abstract class GFloatLayerAttribute
          case TEXTBOX:
             widget = createTextBox();
             break;
+
+         default:
+            return null;
       }
 
+      setTooltip(application, widget);
 
       final EventListener listener = subscribeToEvents(layer);
       return new GPair<Component, EventListener>(widget, listener);
@@ -184,7 +169,7 @@ public abstract class GFloatLayerAttribute
                      if (f < _minimum) {
                         textField.setText(Float.toString(_minimum));
                      }
-                     set(Float.parseFloat(textField.getText()));
+                     set(GMath.roundTo(Float.parseFloat(textField.getText()), _stepSize));
                   }
                   catch (final NumberFormatException nfe) {
                      Toolkit.getDefaultToolkit().beep();
@@ -206,6 +191,74 @@ public abstract class GFloatLayerAttribute
    }
 
 
+   private JSlider createSlider() {
+
+      final int intMin = toInt(_minimum, _stepSize);
+      final int intMax = toInt(_maximum, _stepSize);
+      final int intValue = toInt(get(), _stepSize);
+
+      final JSlider slider = new JSlider(SwingConstants.HORIZONTAL, intMin, intMax, intValue) {
+         private static final long serialVersionUID = 1L;
+
+
+         @Override
+         public Dimension getPreferredSize() {
+            final Dimension superPreferredSize = super.getPreferredSize();
+            return new Dimension(superPreferredSize.width / 2, superPreferredSize.height * 2 / 3);
+         }
+      };
+
+      slider.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+      final int intRange = intMax - intMin;
+      final int majorTickSpacing = GMath.integerDivisionBy(intRange, new int[] { 5, 4, 3 }, intRange / 2);
+      final int minorTickSpacing = GMath.integerDivisionBy(majorTickSpacing, new int[] { 4, 3, 2 }, 1);
+      slider.setMajorTickSpacing(majorTickSpacing);
+      slider.setMinorTickSpacing(minorTickSpacing);
+      slider.setPaintTicks(true);
+      slider.setPaintLabels(false);
+      slider.setSnapToTicks(false);
+
+
+      if (isReadOnly()) {
+         slider.setEnabled(false);
+      }
+      else {
+         slider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(final ChangeEvent e) {
+               if (slider.getValueIsAdjusting()) {
+                  return;
+               }
+
+               final float floatValue = toFloat(slider.getValue(), _stepSize);
+               set(GMath.roundTo(floatValue, _stepSize));
+            }
+         });
+      }
+
+      setListener(new IChangeListener() {
+         @Override
+         public void changed() {
+            slider.setValue(toInt(get(), _stepSize));
+         }
+      });
+
+      return slider;
+   }
+
+
+   private static int toInt(final float value,
+                            final float stepSize) {
+      return (int) (value / stepSize);
+   }
+
+
+   private static float toFloat(final int value,
+                                final float stepSize) {
+      return (value * stepSize);
+   }
+
+
    private JSpinner createSpinner() {
       final SpinnerNumberModel model = new SpinnerNumberModel(get(), Float.valueOf(_minimum), Float.valueOf(_maximum),
                Float.valueOf(_stepSize));
@@ -219,7 +272,7 @@ public abstract class GFloatLayerAttribute
          spinner.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(final ChangeEvent e) {
-               set((Float) spinner.getValue());
+               set(GMath.roundTo((Float) spinner.getValue(), _stepSize));
             }
          });
       }

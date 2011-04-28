@@ -67,8 +67,8 @@ import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GLoggerObject;
 import es.igosoftware.util.GMath;
+import es.igosoftware.util.GPredicate;
 import es.igosoftware.util.GProgress;
-import es.igosoftware.util.IPredicate;
 
 
 public abstract class GPointsCloud
@@ -199,7 +199,7 @@ public abstract class GPointsCloud
 
       if (_filterBounds != null) {
          //final Object filteredVertices = vertices.select(new IPredicate<IVertexContainer.Vertex<IVector3>>() {
-         final IUnstructuredVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> filteredVertices = vertices.select(new IPredicate<IVertexContainer.Vertex<IVector3>>() {
+         final IUnstructuredVertexContainer<IVector3, IVertexContainer.Vertex<IVector3>, ?> filteredVertices = vertices.select(new GPredicate<IVertexContainer.Vertex<IVector3>>() {
             @Override
             public boolean evaluate(final IVertexContainer.Vertex<IVector3> vertex) {
                return _filterBounds.contains(vertex._point);

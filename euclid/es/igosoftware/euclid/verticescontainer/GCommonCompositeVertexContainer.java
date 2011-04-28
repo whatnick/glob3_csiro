@@ -46,9 +46,9 @@ import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.GVectorPrecision;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GCollections;
+import es.igosoftware.util.GPredicate;
 import es.igosoftware.util.IEvaluator;
-import es.igosoftware.util.IPredicate;
-import es.igosoftware.util.ITransformer;
+import es.igosoftware.util.IFunction;
 
 
 public abstract class GCommonCompositeVertexContainer<
@@ -109,7 +109,7 @@ ChildrenT extends IVertexContainer<VectorT, VertexT, ?>
 
    @Override
    public boolean isMutable() {
-      return super.isMutable() && GCollections.allSatisfy(_children, new IPredicate<ChildrenT>() {
+      return super.isMutable() && GCollections.allSatisfy(_children, new GPredicate<ChildrenT>() {
          @Override
          public boolean evaluate(final ChildrenT element) {
             return element.isMutable();
@@ -603,9 +603,9 @@ ChildrenT extends IVertexContainer<VectorT, VertexT, ?>
    @Override
    public GAxisAlignedOrthotope<VectorT, ?> getBounds() {
       final List<GAxisAlignedOrthotope<VectorT, ?>> childrenBounds = GCollections.concurrentCollect(_children,
-               new ITransformer<ChildrenT, GAxisAlignedOrthotope<VectorT, ?>>() {
+               new IFunction<ChildrenT, GAxisAlignedOrthotope<VectorT, ?>>() {
                   @Override
-                  public GAxisAlignedOrthotope<VectorT, ?> transform(final ChildrenT element) {
+                  public GAxisAlignedOrthotope<VectorT, ?> apply(final ChildrenT element) {
                      return element.getBounds();
                   }
                });
@@ -617,9 +617,9 @@ ChildrenT extends IVertexContainer<VectorT, VertexT, ?>
    @Override
    public IVertexContainer.WeightedVertex<VectorT> getAverage() {
       final List<IVertexContainer.WeightedVertex<VectorT>> childrenAverages = GCollections.concurrentCollect(_children,
-               new ITransformer<ChildrenT, IVertexContainer.WeightedVertex<VectorT>>() {
+               new IFunction<ChildrenT, IVertexContainer.WeightedVertex<VectorT>>() {
                   @Override
-                  public IVertexContainer.WeightedVertex<VectorT> transform(final ChildrenT element) {
+                  public IVertexContainer.WeightedVertex<VectorT> apply(final ChildrenT element) {
                      return element.getAverage();
                   }
                });

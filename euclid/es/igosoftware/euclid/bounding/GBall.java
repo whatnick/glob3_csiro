@@ -46,7 +46,7 @@ public final class GBall
             GNBall<IVector3, GBall>
          implements
             IBounds3D<GBall>,
-            IFiniteBounds<IVector3, GBall> {
+            IFinite3DBounds<GBall> {
 
    private static final long serialVersionUID = 1L;
 

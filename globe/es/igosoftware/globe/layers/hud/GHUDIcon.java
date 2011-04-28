@@ -185,7 +185,7 @@ public class GHUDIcon
 
          if (!dc.isPickingMode()) {
             gl.glEnable(GL.GL_TEXTURE_2D);
-            //_texture.bind();
+            _texture.bind();
 
             gl.glTexEnvf(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_MODULATE);
             gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR_MIPMAP_LINEAR);
@@ -198,9 +198,6 @@ public class GHUDIcon
             final TextureCoords texCoords = _texture.getImageTexCoords();
             dc.drawUnitQuad(texCoords);
 
-            //            gl.glBindTexture(GL.GL_TEXTURE_2D, 0);
-            //gl.glDisable(GL.GL_TEXTURE_2D);
-
 
          }
 
@@ -209,7 +206,7 @@ public class GHUDIcon
 
          //         gl.glMatrixMode(GL.GL_TEXTURE);
          //         gl.glPopMatrix();
-         gl.glDisable(GL.GL_TEXTURE_2D);
+         //gl.glDisable(GL.GL_TEXTURE_2D);
          if (projectionPushed) {
             gl.glMatrixMode(GL.GL_PROJECTION);
             gl.glPopMatrix();

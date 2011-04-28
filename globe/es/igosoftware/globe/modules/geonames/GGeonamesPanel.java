@@ -106,10 +106,8 @@ public class GGeonamesPanel
    private void initGUI() {
 
       try {
-         final TableLayout thisLayout = new TableLayout(new double[][] {
-                  { 7.0, TableLayoutConstants.FILL, TableLayoutConstants.FILL, TableLayoutConstants.FILL, 6.0 },
-                  { 6.0, TableLayoutConstants.MINIMUM, TableLayoutConstants.FILL, TableLayoutConstants.FILL,
-                           TableLayoutConstants.MINIMUM, 6.0 } });
+         final TableLayout thisLayout = new TableLayout(
+                  new double[][] { { 7.0, TableLayoutConstants.FILL, TableLayoutConstants.FILL, TableLayoutConstants.FILL, 6.0 }, { 6.0, TableLayoutConstants.MINIMUM, TableLayoutConstants.FILL, TableLayoutConstants.FILL, TableLayoutConstants.MINIMUM, 6.0 } });
          thisLayout.setHGap(5);
          thisLayout.setVGap(5);
          setLayout(thisLayout);

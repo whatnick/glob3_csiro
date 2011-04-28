@@ -48,8 +48,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import es.igosoftware.euclid.IBoundedGeometry;
-import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.IBoundedGeometry2D;
+import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.features.GField;
 import es.igosoftware.euclid.features.GListMutableFeatureCollection;
 import es.igosoftware.euclid.features.IGlobeFeature;
@@ -122,7 +122,7 @@ public class GVectorial2DModule
                                                        final IGlobeLayer layer) {
       if (layer instanceof IGlobeVector2Layer) {
          final IGlobeVector2Layer vectorLayer = (IGlobeVector2Layer) layer;
-         final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features = vectorLayer.getFeaturesCollection();
+         final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> features = vectorLayer.getFeaturesCollection();
 
          if ((features != null) && features.isEditable()) {
             final GCheckBoxLayerAction editAction = new GCheckBoxLayerAction("Edit",
@@ -188,6 +188,7 @@ public class GVectorial2DModule
       if (returnVal == JFileChooser.APPROVE_OPTION) {
          final File selectedFile = fileChooser.getSelectedFile();
          if (selectedFile != null) {
+            GIOUtils.setCurrentDirectory(selectedFile.getParentFile());
             openFile(selectedFile, application);
          }
       }
@@ -201,11 +202,11 @@ public class GVectorial2DModule
       final Thread worker = new Thread("Vectorial layer loader") {
          @Override
          public void run() {
-            final int TODO_read_projection_or_ask_user;
+            // TODO: read projection or ask user
             final GProjection projection = GProjection.EPSG_4326;
 
             try {
-               final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features = GShapeLoader.readFeatures(
+               final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> features = GShapeLoader.readFeatures(
                         file, projection);
 
                final GVectorial2DLayer layer = new GVectorial2DLayer(file.getName(), features);
@@ -234,7 +235,10 @@ public class GVectorial2DModule
 
 
    private JFileChooser createFileChooser(final IGlobeApplication application) {
-      final JFileChooser fileChooser = new JFileChooser(System.getProperty("user.home")) {
+
+      final File currentDirectory = GIOUtils.getCurrentDirectory();
+
+      final JFileChooser fileChooser = new JFileChooser(currentDirectory) {
          private static final long serialVersionUID = 1L;
 
 
@@ -278,10 +282,10 @@ public class GVectorial2DModule
    private void createNewLayer(final IGlobeApplication application) {
       final GProjection projection = GProjection.EPSG_4326;
       final List<GField> fields = Collections.emptyList();
-      final List<IGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> featuresList = Collections.emptyList();
+      final List<IGlobeFeature<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> featuresList = Collections.emptyList();
       final String uniqueID = null;
 
-      final IGlobeMutableFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>, ?> features = new GListMutableFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>(
+      final IGlobeMutableFeatureCollection<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>, ?> features = new GListMutableFeatureCollection<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>>(
                projection, fields, featuresList, uniqueID);
 
       final String layerName = getLayerName(application);
@@ -314,7 +318,7 @@ public class GVectorial2DModule
    private void startEditionOfLayer(final IGlobeVector2Layer layer) {
       System.out.println("Starting edition of: " + layer);
 
-      //      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> features = layer.getFeaturesCollection();
+      //      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> features = layer.getFeaturesCollection();
 
       //      final int ______Diego_at_work;
    }

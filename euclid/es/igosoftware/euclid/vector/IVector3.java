@@ -39,6 +39,7 @@ package es.igosoftware.euclid.vector;
 import java.io.Serializable;
 import java.util.Comparator;
 
+import es.igosoftware.euclid.IBoundedGeometry3D;
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 
 
@@ -48,7 +49,8 @@ import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 //            IGeometry<IVector3, IVector3> {
 public interface IVector3
          extends
-            IVector<IVector3, GAxisAlignedBox> {
+            IVector<IVector3, GAxisAlignedBox>,
+            IBoundedGeometry3D<GAxisAlignedBox> {
 
    public static class DefaultComparator
             implements

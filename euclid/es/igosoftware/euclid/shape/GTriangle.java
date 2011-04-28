@@ -41,6 +41,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.IBounds;
 import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector;
@@ -226,6 +227,19 @@ BoundsT extends IBounds<VectorT, BoundsT>
    @Override
    public VectorT getCentroid() {
       return GVectorUtils.getAverage(_v0, _v1, _v2);
+   }
+
+
+   @Override
+   public boolean closeTo(final IBoundedGeometry<VectorT, BoundsT> that) {
+      if (that instanceof GTriangle) {
+         @SuppressWarnings("unchecked")
+         final GTriangle<VectorT, SegmentT, BoundsT> thatTriangle = (GTriangle<VectorT, SegmentT, BoundsT>) that;
+         return _v0.closeTo(thatTriangle._v0) && //
+                _v1.closeTo(thatTriangle._v1) && //
+                _v2.closeTo(thatTriangle._v2);
+      }
+      return false;
    }
 
 

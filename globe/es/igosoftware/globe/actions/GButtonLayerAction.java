@@ -45,7 +45,6 @@ import javax.swing.JButton;
 import javax.swing.JMenuItem;
 
 import es.igosoftware.globe.IGlobeApplication;
-import es.igosoftware.utils.GSwingUtils;
 
 
 public abstract class GButtonLayerAction
@@ -70,7 +69,7 @@ public abstract class GButtonLayerAction
 
    @Override
    public Component createToolbarWidget(final IGlobeApplication application) {
-      final JButton button = GSwingUtils.createToolbarButton(getIcon(), application.getTranslation(getLabel()),
+      final JButton button = GSwingFactory.createToolbarButton(getIcon(), application.getTranslation(getLabel()),
                new ActionListener() {
                   @Override
                   public void actionPerformed(final ActionEvent e) {

@@ -38,19 +38,26 @@ package es.igosoftware.globe.attributes;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EventListener;
 import java.util.List;
 
+import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.Border;
 
 import net.miginfocom.swing.MigLayout;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
+import es.igosoftware.util.GCollections;
+import es.igosoftware.util.GComponentTitledBorder;
 import es.igosoftware.util.GPair;
+import es.igosoftware.util.GPredicate;
+import es.igosoftware.util.GSwingUtils;
 import es.igosoftware.util.GTriplet;
 
 
@@ -60,47 +67,82 @@ public class GGroupAttribute
 
 
    private final String                   _label;
+   private final Icon                     _icon;
+   private final String                   _description;
    private final List<ILayerAttribute<?>> _children;
 
 
    public GGroupAttribute(final String label,
+                          final String description,
+                          final ILayerAttribute<?>... children) {
+      this(label, null, description, children);
+   }
+
+
+   public GGroupAttribute(final String label,
+                          final Icon icon,
+                          final String description,
                           final ILayerAttribute<?>... children) {
       _label = label;
+      _icon = icon;
+      _description = description;
       _children = Arrays.asList(children);
    }
 
 
    public GGroupAttribute(final String label,
-                          final List<ILayerAttribute<?>> children) {
+                          final String description,
+                          final List<? extends ILayerAttribute<?>> children) {
+      this(label, null, description, children);
+   }
+
+
+   public GGroupAttribute(final String label,
+                          final Icon icon,
+                          final String description,
+                          final List<? extends ILayerAttribute<?>> children) {
       _label = label;
+      _icon = icon;
+      _description = description;
       _children = new ArrayList<ILayerAttribute<?>>(children);
    }
 
 
    @Override
    public boolean isVisible() {
-      return true;
+      return GCollections.allSatisfy(_children, new GPredicate<ILayerAttribute<?>>() {
+         @Override
+         public boolean evaluate(final ILayerAttribute<?> element) {
+            return element.isVisible();
+         }
+      });
    }
 
 
    @Override
-   public String getLabel() {
+   public final String getLabel() {
       return null;
    }
+
+
+   @Override
+   public final String getDescription() {
+      return _description;
+   }
+
 
    private final List<GTriplet<IGlobeLayer, ILayerAttribute<?>, GPair<Component, EventListener>>> _widgetsInLayerPropertiesPanel = new ArrayList<GTriplet<IGlobeLayer, ILayerAttribute<?>, GPair<Component, EventListener>>>();
 
 
    @Override
-   public GPair<Component, EventListener> createWidget(final IGlobeApplication application,
-                                                       final IGlobeLayer layer) {
-      final JPanel panel = new JPanel(new MigLayout("fillx, insets 0 0 0 0"));
+   public final GPair<Component, EventListener> createWidget(final IGlobeApplication application,
+                                                             final IGlobeLayer layer) {
+      final JPanel panel = new JPanel(new MigLayout("fillx, insets 0 0 0 0, gap 0 1"));
       panel.setBackground(Color.WHITE);
+      panel.setBorder(createTitledBorder(application, panel));
 
-      panel.add(makeBold(new JLabel(_label)), "growx, wrap, span 2");
+      //      panel.add(makeBold(new JLabel(application.getTranslation(_label))), "growx, wrap, span 2");
 
-
-      //      boolean firstAttributeOnPanel = true;
 
       for (final ILayerAttribute<?> attribute : _children) {
          if (!attribute.isVisible()) {
@@ -112,51 +154,53 @@ public class GGroupAttribute
             continue;
          }
 
-
-         //         if (firstAttributeOnPanel) {
-         //            firstAttributeOnPanel = false;
-         //            if (panel.getComponents().length > 0) {
-         //               panel.add(new JSeparator(SwingConstants.HORIZONTAL), "growx, wrap, span 2");
-         //            }
-         //         }
-
          _widgetsInLayerPropertiesPanel.add(new GTriplet<IGlobeLayer, ILayerAttribute<?>, GPair<Component, EventListener>>(layer,
                   attribute, widget));
+
          final String label = attribute.getLabel();
          if (label == null) {
-            //            _layerPropertiesPanel.add(widget._first, "wrap, gap 3, span 2");
             panel.add(widget._first, "growx, wrap, span 2");
          }
          else {
-            panel.add(new JLabel("   " + application.getTranslation(label)), "gap 3");
+            panel.add(new JLabel(application.getTranslation(label)), "gap 3");
             panel.add(widget._first, "left, wrap");
          }
       }
 
 
-      //      final JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
-      //      //      final JLabel separator = new JLabel(" ");
       return new GPair<Component, EventListener>(panel, null);
    }
 
 
-   private JLabel makeBold(final JLabel label) {
-      final Font font = label.getFont();
+   private Border createTitledBorder(final IGlobeApplication application,
+                                     final JComponent container) {
+      final JLabel l;
+      if (_icon == null) {
+         l = new JLabel(" " + application.getTranslation(_label) + " ");
+      }
+      else {
+         l = new JLabel(application.getTranslation(_label) + " ");
+         l.setIcon(_icon);
+      }
+      final JLabel label = GSwingUtils.makeBold(l);
+      label.setOpaque(true);
+      label.setBackground(Color.WHITE);
 
-      label.setFont(font.deriveFont(font.getStyle() ^ Font.BOLD));
+      if (_description != null) {
+         label.setToolTipText(application.getTranslation(_description));
+      }
 
-      return label;
+      final Border border = BorderFactory.createCompoundBorder( //
+               BorderFactory.createLineBorder(Color.GRAY), //
+               BorderFactory.createEmptyBorder(3, 3, 3, 3));
+
+      return new GComponentTitledBorder(label, container, border);
    }
 
 
    @Override
-   public void cleanupWidget(final IGlobeLayer layer2,
-                             final GPair<Component, EventListener> widget2) {
-      //      for (final ILayerAttribute<?> attribute : _children) {
-      //         attribute.cleanupWidget(layer, widget);
-      //      }
-
-
+   public final void cleanupWidget(final IGlobeLayer layer2,
+                                   final GPair<Component, EventListener> widget2) {
       for (final GTriplet<IGlobeLayer, ILayerAttribute<?>, GPair<Component, EventListener>> layerAttributeAndWidget : _widgetsInLayerPropertiesPanel) {
          final IGlobeLayer layer = layerAttributeAndWidget._first;
          final ILayerAttribute<?> attribute = layerAttributeAndWidget._second;
@@ -169,30 +213,33 @@ public class GGroupAttribute
 
 
    @Override
-   public Object get() {
+   public final Object get() {
       return null;
    }
 
 
    @Override
-   public void set(final Object value) {
+   public final void set(final Object value) {
+
    }
 
 
    @Override
-   public boolean isReadOnly() {
+   public final boolean isReadOnly() {
       return true;
    }
 
 
    @Override
-   public void setListener(final ILayerAttribute.IChangeListener listener) {
+   public final void setListener(final ILayerAttribute.IChangeListener listener) {
 
    }
 
 
    @Override
-   public void changed() {
+   public final void changed() {
 
    }
+
+
 }

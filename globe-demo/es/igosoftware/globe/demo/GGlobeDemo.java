@@ -57,7 +57,9 @@ import es.igosoftware.experimental.ndimensional.GNetCDFMultidimentionalData;
 import es.igosoftware.experimental.ndimensional.IMultidimensionalData;
 import es.igosoftware.experimental.pointscloud.rendering.GPointsCloudModule;
 import es.igosoftware.experimental.vectorial.GGeotoolsVectorialModule;
+import es.igosoftware.experimental.vectorial.GShapeLoaderDropHandler;
 import es.igosoftware.experimental.vectorial.GVectorial2DModule;
+import es.igosoftware.globe.GDragAndDropModule;
 import es.igosoftware.globe.GGlobeApplication;
 import es.igosoftware.globe.GHomePositionModule;
 import es.igosoftware.globe.GLayersManagerModule;
@@ -91,6 +93,7 @@ import es.igosoftware.scenegraph.GGroupNode;
 import es.igosoftware.scenegraph.GPositionRenderableLayer;
 import es.igosoftware.scenegraph.GTransformationOrder;
 import es.igosoftware.util.GUtils;
+import es.igosoftware.utils.GPNOAWMSLayer;
 import gov.nasa.worldwind.AnaglyphSceneController;
 import gov.nasa.worldwind.Configuration;
 import gov.nasa.worldwind.avlist.AVKey;
@@ -169,7 +172,7 @@ public class GGlobeDemo
 
       // layers.add(new TerrainProfileLayer());
 
-      //      layers.add(new GPNOAWMSLayer(GPNOAWMSLayer.ImageFormat.JPEG));
+      layers.add(new GPNOAWMSLayer(GPNOAWMSLayer.ImageFormat.JPEG));
 
       //      layers.add(new GDielmoWMSLayer(GDielmoWMSLayer.ImageFormat.PNG));
 
@@ -290,7 +293,22 @@ public class GGlobeDemo
       final double homeElevation = 2000;
       final GHomePositionModule homePositionModule = new GHomePositionModule(homePosition, heading, pitch, homeElevation, true);
 
+
+      //      final IPointsCloudLoader loader = new GPointsCloudFileLoader("data/pointsclouds");
+      //      final GPointsCloudModule pointsCloudModule = new GPointsCloudModule(loader);
+
+      //      final GPointsCloudModule pointsCloudModule = null;
+      //      try {
+      //      final IPointsCloudLoader loader = new GPointsCloudStreamingLoader("127.0.0.1", 8000);
+
+
+      //   final IPointsCloudLoader loader = new GPointsCloudFileLoader("data/pointsclouds");
+      // pointsCloudModule = new GPointsCloudModule(loader);
+      //     }
+      //      final IPointsCloudLoader loader = new GPointsCloudFileLoader(GFileName.relativeFromParts("data", "pointsclouds"));
+
       final IPointsCloudLoader loader = new GPointsCloudFileLoader(GFileName.relative("data", "pointsclouds"));
+
       final GPointsCloudModule pointsCloudModule = new GPointsCloudModule(loader);
 
       //      GPointsCloudModule pointsCloudModule = null;
@@ -303,10 +321,13 @@ public class GGlobeDemo
       //         e.printStackTrace();
       //      }
 
+      final GDragAndDropModule dragAndDropModule = new GDragAndDropModule(new GShapeLoaderDropHandler(this, false));
+
       return new IGlobeModule[] { homePositionModule, new GLayersManagerModule(), new GVectorial2DModule(),
                new GGeotoolsVectorialModule(), pointsCloudModule, new GMultidimensionalDataModule(_multidimentionaldata),
                new GFlatWorldModule(), new GShowLatLonGraticuleModule(), new GShowUTMGraticuleModule(),
-               new GShowMeasureToolModule(), new GFullScreenModule(), new GAnaglyphViewerModule(false), new GStatisticsModule() };
+               new GShowMeasureToolModule(), new GFullScreenModule(), new GAnaglyphViewerModule(false), new GStatisticsModule(),
+               dragAndDropModule };
    }
 
 

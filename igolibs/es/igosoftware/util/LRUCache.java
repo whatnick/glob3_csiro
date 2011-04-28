@@ -88,6 +88,7 @@ public final class LRUCache<KeyT, ValueT, ExceptionT extends Exception> {
       private static final long serialVersionUID = 1L;
 
       private final KeyT        _key;
+      private final int         _keyHashCode;
       private final ValueT      _value;
       private final ExceptionT  _exception;
 
@@ -96,6 +97,7 @@ public final class LRUCache<KeyT, ValueT, ExceptionT extends Exception> {
                     final ValueT value,
                     final ExceptionT exception) {
          _key = key;
+         _keyHashCode = key.hashCode();
          _value = value;
          _exception = exception;
       }
@@ -234,8 +236,9 @@ public final class LRUCache<KeyT, ValueT, ExceptionT extends Exception> {
 
 
    public synchronized boolean hasValue(final KeyT key) {
+      final int keyHashCode = key.hashCode();
       for (final LRUCache.Entry<KeyT, ValueT, ExceptionT> entry : _entries) {
-         if (entry._key.equals(key)) {
+         if ((entry._keyHashCode == keyHashCode) && entry._key.equals(key)) {
             return true;
          }
       }
@@ -245,8 +248,9 @@ public final class LRUCache<KeyT, ValueT, ExceptionT extends Exception> {
 
 
    public synchronized ValueT getValueOrNull(final KeyT key) throws ExceptionT {
+      final int keyHashCode = key.hashCode();
       for (final LRUCache.Entry<KeyT, ValueT, ExceptionT> entry : _entries) {
-         if (entry._key.equals(key)) {
+         if ((entry._keyHashCode == keyHashCode) && entry._key.equals(key)) {
             return entry.getValue();
          }
       }
@@ -256,8 +260,9 @@ public final class LRUCache<KeyT, ValueT, ExceptionT extends Exception> {
 
 
    public synchronized boolean moveUp(final KeyT key) {
+      final int keyHashCode = key.hashCode();
       for (final LRUCache.Entry<KeyT, ValueT, ExceptionT> entry : _entries) {
-         if (entry._key.equals(key)) {
+         if ((entry._keyHashCode == keyHashCode) && entry._key.equals(key)) {
             _entries.remove(entry);
             _entries.addFirst(entry);
             return true;
@@ -274,8 +279,9 @@ public final class LRUCache<KeyT, ValueT, ExceptionT extends Exception> {
 
       final boolean showStatistics = (_statisticsInterval != 0) && (_callsCount % _statisticsInterval == 0);
 
+      final int keyHashCode = key.hashCode();
       for (final LRUCache.Entry<KeyT, ValueT, ExceptionT> entry : _entries) {
-         if (entry._key.equals(key)) {
+         if ((entry._keyHashCode == keyHashCode) && entry._key.equals(key)) {
             _entries.remove(entry);
             _entries.addFirst(entry);
 

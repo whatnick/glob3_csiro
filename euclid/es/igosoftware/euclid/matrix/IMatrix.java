@@ -39,12 +39,12 @@ package es.igosoftware.euclid.matrix;
 import java.io.PrintStream;
 
 import es.igosoftware.euclid.vector.IVector;
-import es.igosoftware.euclid.vector.IVectorTransformer;
+import es.igosoftware.euclid.vector.IVectorFunction;
 
 
 public interface IMatrix<MatrixT, VectorT extends IVector<VectorT, ?>>
          extends
-            IVectorTransformer<VectorT> {
+            IVectorFunction<VectorT> {
 
 
    public MatrixT add(final MatrixT that);

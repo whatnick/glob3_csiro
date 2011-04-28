@@ -2,27 +2,50 @@
 
 package es.igosoftware.euclid.experimental.vectorial.rendering;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
-import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.IBoundedGeometry2D;
+import es.igosoftware.euclid.ICurve2D;
+import es.igosoftware.euclid.ISurface2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
-import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.bounding.IFinite2DBounds;
+import es.igosoftware.euclid.experimental.measurement.GArea;
+import es.igosoftware.euclid.experimental.measurement.IMeasure;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.GVectorial2DRenderingScaler;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyled2DGeometry;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle2D;
+import es.igosoftware.euclid.experimental.vectorial.rendering.utils.GRenderingQuadtree;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.multigeometry.GMultiGeometry2D;
+import es.igosoftware.euclid.ntree.GElementGeometryPair;
 import es.igosoftware.euclid.ntree.GGTInnerNode;
+import es.igosoftware.euclid.ntree.GGTLeafNode;
 import es.igosoftware.euclid.ntree.GGTNode;
-import es.igosoftware.euclid.shape.IComplexPolygon2D;
-import es.igosoftware.euclid.shape.IPolygon2D;
-import es.igosoftware.euclid.shape.IPolygonalChain2D;
-import es.igosoftware.euclid.vector.GVector2D;
-import es.igosoftware.euclid.vector.IPointsContainer;
+import es.igosoftware.euclid.ntree.GGeometryNTree;
+import es.igosoftware.euclid.ntree.GGeometryNTreeParameters;
+import es.igosoftware.euclid.ntree.IGTBreadFirstVisitor;
+import es.igosoftware.euclid.ntree.quadtree.GGeometryQuadtree;
+import es.igosoftware.euclid.projection.GProjection;
+import es.igosoftware.euclid.vector.GVector2F;
 import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.graph.GGraph;
+import es.igosoftware.util.GCollections;
+import es.igosoftware.util.GHolder;
+import es.igosoftware.util.GMath;
+import es.igosoftware.util.IFunction;
 
 
 class GVectorial2DRenderUnit
@@ -30,349 +53,418 @@ class GVectorial2DRenderUnit
             IVectorial2DRenderUnit {
 
 
+   //   private static final boolean CLUSTER_RENDERING = true;
+
+
    @Override
-   public BufferedImage render(final GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> quadtree,
-                               final GAxisAlignedRectangle region,
-                               final GVectorialRenderingAttributes attributes) {
+   public void render(final BufferedImage renderedImage,
+                      final GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> quadtree,
+                      final GProjection projection,
+                      final IProjectionTool projectionTool,
+                      final GAxisAlignedRectangle viewport,
+                      final IRenderingStyle2D renderingStyle,
+                      final IVectorial2DDrawer drawer) {
 
-      final IVector2 extent = region.getExtent();
+      final IVectorial2DRenderingScaler scaler = new GVectorial2DRenderingScaler(viewport, projection, projectionTool,
+               renderedImage.getWidth(), renderedImage.getHeight());
 
-      final int width = attributes._imageWidth;
-      final int height = attributes._imageHeight;
+      final GAxisAlignedRectangle extendedViewport = calculateExtendedViewport(viewport, scaler, renderingStyle);
 
-      final IVector2 scale = new GVector2D(width, height).div(extent);
+      final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> allSymbols = new LinkedList<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>();
 
-      final BufferedImage renderedImage = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
-      renderedImage.setAccelerationPriority(1);
+      final GHolder<Boolean> hasGroupableSymbols = new GHolder<Boolean>(false);
+      processNode(quadtree.getRoot(), extendedViewport, renderingStyle, scaler, drawer, allSymbols, hasGroupableSymbols);
 
-      final Graphics2D g2d = renderedImage.createGraphics();
-      g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-      g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-      //      g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-
-      if (attributes._renderBounds) {
-         g2d.setColor(Color.YELLOW);
-         g2d.setStroke(new BasicStroke(2));
-
-         g2d.drawRect(0, 0, width, height);
-
-         //         g2d.drawString(region._lower.toString(), 10, 10);
-         //         g2d.drawString(" " + region._upper, 10, 20);
-      }
-
-      final AffineTransform transformFlipY = AffineTransform.getScaleInstance(1, -1);
-      transformFlipY.concatenate(AffineTransform.getTranslateInstance(0, -height));
-
-      g2d.setTransform(transformFlipY);
-
-      processNode(quadtree.getRoot(), quadtree, region, attributes, scale, g2d, renderedImage);
-
-      return renderedImage;
+      renderSymbols(allSymbols, hasGroupableSymbols.get(), renderingStyle, drawer);
    }
 
 
-   private void processNode(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> node,
-                            final GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> quadtree,
-                            final GAxisAlignedRectangle region,
-                            final GVectorialRenderingAttributes attributes,
-                            final IVector2 scale,
-                            final Graphics2D g2d,
-                            final BufferedImage renderedImage) {
+   private static void renderSymbols(final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols,
+                                     final boolean hasGroupableSymbols,
+                                     final IRenderingStyle2D renderingStyle,
+                                     final IVectorial2DDrawer drawer) {
 
-      final GAxisAlignedRectangle nodeBounds = node.getBounds().asRectangle();
+      final double lodMinSize = renderingStyle.getLODMinSize();
+      final boolean debugRendering = renderingStyle.isDebugRendering();
+      final boolean renderLODIgnores = renderingStyle.isRenderLODIgnores();
 
-      if (!nodeBounds.touches(region)) {
+      if (renderingStyle.isClusterSymbols() && hasGroupableSymbols) {
+         renderSymbolsInClusters(symbols, drawer, lodMinSize, debugRendering, renderLODIgnores);
+      }
+      else {
+         renderSymbolsIndividually(symbols, drawer, lodMinSize, debugRendering, renderLODIgnores);
+      }
+   }
+
+
+   protected static void renderSymbolsIndividually(final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols,
+                                                   final IVectorial2DDrawer drawer,
+                                                   final double lodMinSize,
+                                                   final boolean debugRendering,
+                                                   final boolean renderLODIgnores) {
+      for (final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbol : symbols) {
+         renderSymbol(symbol, drawer, lodMinSize, debugRendering, renderLODIgnores);
+      }
+
+      System.out.println("  - Rendered " + symbols.size() + " symbols");
+   }
+
+
+   protected static void renderSymbolsInClusters(final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols,
+                                                 final IVectorial2DDrawer drawer,
+                                                 final double lodMinSize,
+                                                 final boolean debugRendering,
+                                                 final boolean renderLODIgnores) {
+      final Collection<Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> clusters = createClusters(
+               symbols, false);
+
+      final List<Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> sortedClusters = new ArrayList<Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>>(
+               clusters);
+      final Comparator<Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> comparator = new Comparator<Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>>() {
+         @Override
+         public int compare(final Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> cluster1,
+                            final Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> cluster2) {
+            final int size1 = cluster1.size();
+            final int size2 = cluster2.size();
+            if (size1 == size2) {
+               return 0;
+            }
+            else if (size1 > size2) {
+               return -1;
+            }
+            else {
+               return 1;
+            }
+         }
+      };
+      Collections.sort(sortedClusters, comparator);
+
+      int clusteredCount = 0;
+      for (final Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> cluster : sortedClusters) {
+         final int size = cluster.size();
+
+         if (size == 0) {
+            continue;
+         }
+         else if (size == 1) {
+            renderSymbol(GCollections.theOnlyOne(cluster), drawer, lodMinSize, debugRendering, renderLODIgnores);
+         }
+         else {
+            renderCluster(cluster, drawer, lodMinSize, debugRendering, renderLODIgnores);
+         }
+         clusteredCount += size;
+      }
+
+      System.out.println("  - Rendered " + clusteredCount + " symbols in " + clusters.size() + " clusters");
+   }
+
+
+   private static void renderCluster(final Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> cluster,
+                                     final IVectorial2DDrawer drawer,
+                                     final double lodMinSize,
+                                     final boolean debugRendering,
+                                     final boolean renderLODIgnores) {
+      final int __Diego_at_work;
+
+      //      final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> exemplar = cluster.iterator().next();
+      //
+      //      exemplar.drawGroup(cluster, drawer, lodMinSize, debugRendering, renderLODIgnores);
+
+      if (isSameClass(cluster)) {
+         final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> exemplar = cluster.iterator().next();
+         exemplar.drawGroup(cluster, drawer, lodMinSize, debugRendering, renderLODIgnores);
+      }
+      else {
+         final Collection<Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> clustersByGroups = createClusters(
+                  cluster, true);
+
+         for (final Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> clusterByGroup : clustersByGroups) {
+            final int size = clusterByGroup.size();
+
+            if (size == 0) {
+               continue;
+            }
+            else if (size == 1) {
+               renderSymbol(GCollections.theOnlyOne(clusterByGroup), drawer, lodMinSize, debugRendering, renderLODIgnores);
+            }
+            else {
+               final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> exemplar = clusterByGroup.iterator().next();
+
+               exemplar.drawGroup(clusterByGroup, drawer, lodMinSize, debugRendering, renderLODIgnores);
+            }
+         }
+      }
+   }
+
+
+   private static boolean isSameClass(final Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> cluster) {
+      final Iterator<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> iterator = cluster.iterator();
+
+      final Class<? extends GStyled2DGeometry> klass = iterator.next().getClass();
+      while (iterator.hasNext()) {
+         if (klass != iterator.next().getClass()) {
+            return false;
+         }
+      }
+
+      return true;
+   }
+
+
+   private static void renderSymbol(final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbol,
+                                    final IVectorial2DDrawer drawer,
+                                    final double lodMinSize,
+                                    final boolean debugRendering,
+                                    final boolean renderLODIgnores) {
+      if (symbol != null) {
+         symbol.draw(drawer, lodMinSize, debugRendering, renderLODIgnores);
+      }
+   }
+
+
+   private static Collection<Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> createClusters(final Collection<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols,
+                                                                                                                                final boolean considerIsGroupableWith) {
+      final GGeometryNTreeParameters parameters = new GGeometryNTreeParameters(false, 12, 10,
+               GGeometryNTreeParameters.BoundsPolicy.MINIMUM, true);
+
+      final GGeometryQuadtree<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbolsQuadtree = new GGeometryQuadtree<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>>(
+               "Symbols Quadtree",
+               null,
+               symbols,
+               new IFunction<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, Collection<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>() {
+                  @Override
+                  public Collection<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> apply(final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> element) {
+                     return Collections.singleton(element.getGeometry());
+                  }
+               }, parameters);
+
+
+      final GGraph<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> graph = new GGraph<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>(
+               symbols);
+
+      for (final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbol : symbols) {
+         final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> neighborhood = calculateNeighborhood(
+                  symbolsQuadtree, symbol, considerIsGroupableWith);
+         for (final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> neighbor : neighborhood) {
+            graph.addBidirectionalEdge(symbol, neighbor);
+         }
+      }
+
+      final Collection<Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> clusters = graph.getConnectedGroupsOfNodes();
+
+      return clusters;
+   }
+
+
+   private static List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> calculateNeighborhood(final GGeometryQuadtree<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbolsQuadtree,
+                                                                                                                            final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbol,
+                                                                                                                            final boolean considerIsGroupableWith) {
+      final GAxisAlignedRectangle bounds = toRoundedInt(symbol.getBounds());
+      final double minOverlapArea = bounds.area() * 0.3;
+
+      final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> neighborhood = new LinkedList<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>();
+
+      symbolsQuadtree.breadthFirstAcceptVisitor(
+               bounds,
+               new IGTBreadFirstVisitor<IVector2, GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>>() {
+                  @Override
+                  public void visitOctree(final GGeometryNTree<IVector2, GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> octree) {
+                  }
+
+
+                  @Override
+                  public void visitInnerNode(final GGTInnerNode<IVector2, GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> inner) {
+                     processNode(inner);
+                  }
+
+
+                  @Override
+                  public void visitLeafNode(final GGTLeafNode<IVector2, GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> leaf) {
+                     processNode(leaf);
+                  }
+
+
+                  private void processNode(final GGTNode<IVector2, GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> node) {
+
+                     for (final GElementGeometryPair<IVector2, GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> elementAndGeometry : node.getElements()) {
+                        final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> element = elementAndGeometry.getElement();
+                        if (element == symbol) {
+                           continue;
+                        }
+
+                        if (element.isGroupable()) {
+                           if (!considerIsGroupableWith || element.isGroupableWith(symbol)) {
+                              final GAxisAlignedRectangle geometryBounds = toRoundedInt(element.getBounds());
+                              if (bounds.touchesBounds(geometryBounds)
+                                  && (bounds.intersection(geometryBounds).area() > minOverlapArea)) {
+                                 neighborhood.add(element);
+                              }
+                           }
+                        }
+                     }
+
+                  }
+               });
+
+      return neighborhood;
+   }
+
+
+   private static GAxisAlignedRectangle toRoundedInt(final GAxisAlignedRectangle rectangle) {
+      return new GAxisAlignedRectangle(toRoundedInt(rectangle._lower), toRoundedInt(rectangle._upper));
+   }
+
+
+   private static IVector2 toRoundedInt(final IVector2 vector) {
+      return new GVector2F(GMath.toRoundedInt(vector.x()), GMath.toRoundedInt(vector.y()));
+   }
+
+
+   private static GAxisAlignedRectangle calculateExtendedViewport(final GAxisAlignedRectangle viewport,
+                                                                  final IVectorial2DRenderingScaler scaler,
+                                                                  final IRenderingStyle2D renderingStyle) {
+      final IMeasure<GArea> maximumSize = renderingStyle.getMaximumSize();
+
+      final double areaInSquaredMeters = maximumSize.getValueInReferenceUnits();
+      final double extent = GMath.sqrt(areaInSquaredMeters);
+      final IVector2 lower = scaler.increment(viewport._lower, -extent, -extent);
+      final IVector2 upper = scaler.increment(viewport._upper, extent, extent);
+
+      return new GAxisAlignedRectangle(lower, upper);
+   }
+
+
+   private static void processNode(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> node,
+                                   final GAxisAlignedRectangle extendedRegion,
+                                   final IRenderingStyle2D renderingStyle,
+                                   final IVectorial2DRenderingScaler scaler,
+                                   final IVectorial2DDrawer drawer,
+                                   final List<GStyled2DGeometry<?>> allSymbols,
+                                   final GHolder<Boolean> hasGroupableSymbols) {
+
+      final GAxisAlignedRectangle nodeBounds = node.getMinimumBounds().asRectangle();
+
+      if (!nodeBounds.touches(extendedRegion)) {
          return;
       }
 
+      //      if (!renderingStyle.processNode(node, scaler, drawer)) {
+      //         return;
+      //      }
 
-      final IVector2 scaledNodeExtent = nodeBounds.getExtent().scale(scale);
-      final double projectedSize = scaledNodeExtent.x() * scaledNodeExtent.y();
-      if (projectedSize <= attributes._lodMinSize) {
-         if (attributes._renderLODIgnores || attributes._debugLODRendering) {
-            final Color color = attributes._debugLODRendering ? Color.RED : attributes._lodColor;
 
-            final IVector2 projectedCenter = nodeBounds.getCenter().sub(region._lower).scale(scale);
-            setPixel(renderedImage, projectedCenter, color);
+      final IVector2 nodeExtent = nodeBounds.asRectangle().getExtent();
+      final IVector2 scaledExtent = scaler.scaleExtent(nodeExtent);
+
+      if (scaledExtent.length() <= renderingStyle.getLODMinSize()) {
+         if (renderingStyle.isDebugRendering()) {
+            final GAxisAlignedOrthotope<IVector2, ?> scaledNodeBounds = scaler.scaleAndTranslate(nodeBounds);
+            drawer.fillRect(scaledNodeBounds, Color.RED);
          }
 
          return;
       }
+
+      final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols = renderingStyle.getNodeSymbols(
+               node, scaler);
+      addSymbols(symbols, allSymbols, hasGroupableSymbols);
 
 
       if (node instanceof GGTInnerNode) {
-         final GGTInnerNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> inner;
-         inner = (GGTInnerNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>>) node;
+         final GGTInnerNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> inner;
+         inner = (GGTInnerNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>>) node;
 
-         for (final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> child : inner.getChildren()) {
-            processNode(child, quadtree, region, attributes, scale, g2d, renderedImage);
+         for (final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> child : inner.getChildren()) {
+            processNode(child, extendedRegion, renderingStyle, scaler, drawer, allSymbols, hasGroupableSymbols);
          }
       }
 
-      renderNodeGeometries(node, region, attributes, scale, g2d, renderedImage);
+      drawNode(node, extendedRegion, renderingStyle, scaler, drawer, allSymbols, hasGroupableSymbols);
    }
 
 
-   private void renderNodeGeometries(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>> node,
-                                     final GAxisAlignedRectangle region,
-                                     final GVectorialRenderingAttributes attributes,
-                                     final IVector2 scale,
-                                     final Graphics2D g2d,
-                                     final BufferedImage renderedImage) {
+   private static void drawNode(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> node,
+                                final GAxisAlignedRectangle extendedRegion,
+                                final IRenderingStyle2D renderingStyle,
+                                final IVectorial2DRenderingScaler scaler,
+                                final IVectorial2DDrawer drawer,
+                                final List<GStyled2DGeometry<?>> allSymbols,
+                                final GHolder<Boolean> hasGroupableSymbols) {
 
 
-      if (attributes._renderBounds) {
-         final GAxisAlignedOrthotope<IVector2, ?> nodeBounds = node.getBounds();
-
-         final IVector2 nodeLower = nodeBounds._lower.sub(region._lower).scale(scale);
-         final IVector2 nodeUpper = nodeBounds._upper.sub(region._lower).scale(scale);
-
-         g2d.setStroke(new BasicStroke(0.25f));
-         g2d.setColor(Color.GREEN);
-         final int x = Math.round((float) nodeLower.x());
-         final int y = Math.round((float) nodeLower.y());
-         final int width = Math.round((float) (nodeUpper.x() - nodeLower.x()));
-         final int height = Math.round((float) (nodeUpper.y() - nodeLower.y()));
-         g2d.drawRect(x, y, width, height);
-      }
-
-
-      for (final IGlobeFeature<IVector2, ? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> feature : node.getElements()) {
-         final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> geometry = feature.getDefaultGeometry();
-         if (geometry.getBounds().asAxisAlignedOrthotope().touches(region)) {
-            renderGeometry(geometry, scale, renderedImage, g2d, region, attributes);
-         }
+      for (final GElementGeometryPair<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> pair : node.getElements()) {
+         final IBoundedGeometry2D<? extends IFinite2DBounds<?>> geometry = pair.getGeometry();
+         drawGeometry(geometry, pair.getElement(), extendedRegion, renderingStyle, scaler, drawer, allSymbols,
+                  hasGroupableSymbols);
       }
 
    }
 
 
-   private static void setPixel(final BufferedImage renderedImage,
-                                final IVector2 point,
-                                final Color color) {
+   private static void drawGeometry(final IBoundedGeometry2D<? extends IFinite2DBounds<?>> geometry,
+                                    final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                    final GAxisAlignedRectangle extendedRegion,
+                                    final IRenderingStyle2D renderingStyle,
+                                    final IVectorial2DRenderingScaler scaler,
+                                    final IVectorial2DDrawer drawer,
+                                    final List<GStyled2DGeometry<?>> allSymbols,
+                                    final GHolder<Boolean> hasGroupableSymbols) {
 
-      final int imageX = Math.round((float) point.x());
-      final int imageY = Math.round((float) point.y());
-
-      if ((imageX >= 0) && (imageY >= 0)) {
-         final int imageWidth = renderedImage.getWidth();
-         final int imageHeight = renderedImage.getHeight();
-
-         if ((imageX < imageWidth) && (imageY < imageHeight)) {
-            final int rotatedImageY = imageHeight - 1 - imageY;
-
-            final int oldRGB = renderedImage.getRGB(imageX, rotatedImageY);
-            if (oldRGB == 0) {
-               renderedImage.setRGB(imageX, rotatedImageY, color.getRGB());
-            }
-            else {
-               final Color oldColor = new Color(oldRGB);
-               final Color mixed = mix(oldColor, color);
-               renderedImage.setRGB(imageX, rotatedImageY, mixed.getRGB());
-            }
-         }
+      if (!geometry.getBounds().asAxisAlignedOrthotope().touches(extendedRegion)) {
+         return;
       }
-
-   }
-
-
-   private static Color mix(final Color colorA,
-                            final Color colorB) {
-
-      final int r = average(colorA.getRed(), colorB.getRed());
-      final int g = average(colorA.getGreen(), colorB.getGreen());
-      final int b = average(colorA.getBlue(), colorB.getBlue());
-      //      final int a = average(colorA.getAlpha(), colorB.getAlpha());
-      final int a = Math.max(colorA.getAlpha(), colorB.getAlpha());
-      return new Color(r, g, b, a);
-   }
-
-
-   private static int average(final int a,
-                              final int b) {
-      return (a + b) / 2;
-   }
-
-
-   private void renderGeometry(final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> geometry,
-                               final IVector2 scale,
-                               final BufferedImage renderedImage,
-                               final Graphics2D g2d,
-                               final GAxisAlignedRectangle region,
-                               final GVectorialRenderingAttributes attributes) {
 
       if (geometry instanceof GMultiGeometry2D) {
          @SuppressWarnings("unchecked")
-         final GMultiGeometry2D<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> multigeometry = (GMultiGeometry2D<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) geometry;
-         for (final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> child : multigeometry) {
-            if (child.getBounds().asAxisAlignedOrthotope().touches(region)) {
-               renderGeometry(child, scale, renderedImage, g2d, region, attributes);
-            }
+         final GMultiGeometry2D<IBoundedGeometry2D<? extends IFinite2DBounds<?>>> multigeometry = (GMultiGeometry2D<IBoundedGeometry2D<? extends IFinite2DBounds<?>>>) geometry;
+         for (final IBoundedGeometry2D<? extends IFinite2DBounds<?>> child : multigeometry) {
+            drawGeometry(child, feature, extendedRegion, renderingStyle, scaler, drawer, allSymbols, hasGroupableSymbols);
          }
       }
       else if (geometry instanceof IVector2) {
-         renderPoint((IVector2) geometry, scale, g2d, region, attributes);
+         final IVector2 point = (IVector2) geometry;
+
+         final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols = renderingStyle.getPointSymbols(
+                  point, feature, scaler);
+         addSymbols(symbols, allSymbols, hasGroupableSymbols);
+      }
+      else if (geometry instanceof ICurve2D<?>) {
+         final ICurve2D<? extends IFinite2DBounds<?>> curve = (ICurve2D<? extends IFinite2DBounds<?>>) geometry;
+
+         final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols = renderingStyle.getCurveSymbols(
+                  curve, feature, scaler);
+         addSymbols(symbols, allSymbols, hasGroupableSymbols);
+      }
+      else if (geometry instanceof ISurface2D<?>) {
+         final ISurface2D<? extends IFinite2DBounds<?>> surface = (ISurface2D<? extends IFinite2DBounds<?>>) geometry;
+
+         final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols = renderingStyle.getSurfaceSymbols(
+                  surface, feature, scaler);
+         addSymbols(symbols, allSymbols, hasGroupableSymbols);
       }
       else {
-         // size validation only for non-points
-         final GAxisAlignedOrthotope<IVector2, ?> geometryBounds = geometry.getBounds().asAxisAlignedOrthotope();
-         final IVector2 scaledGeometryExtent = geometryBounds.getExtent().scale(scale);
-         final double projectedSize = scaledGeometryExtent.x() * scaledGeometryExtent.y();
-         if (projectedSize <= attributes._lodMinSize) {
-            if (attributes._renderLODIgnores || attributes._debugLODRendering) {
-               final Color color = attributes._debugLODRendering ? Color.MAGENTA : attributes._lodColor;
+         System.out.println("Warning: geometry type " + geometry.getClass() + " not supported");
+      }
 
-               final IVector2 projectedCenter = geometryBounds.getCenter().sub(region._lower).scale(scale);
-               setPixel(renderedImage, projectedCenter, color);
+   }
+
+
+   private static void addSymbols(final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols,
+                                  final List<GStyled2DGeometry<?>> allSymbols,
+                                  final GHolder<Boolean> hasGroupableSymbols) {
+      if (symbols == null) {
+         return;
+      }
+
+      for (final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbol : symbols) {
+         if (symbol != null) {
+            allSymbols.add(symbol);
+            if (symbol.isGroupable()) {
+               hasGroupableSymbols.set(true);
             }
-
-            return;
-         }
-
-
-         if (geometry instanceof IPolygonalChain2D) {
-            renderPolyline((IPolygonalChain2D) geometry, scale, g2d, region, attributes);
-         }
-         else if (geometry instanceof IPolygon2D) {
-            renderPolygon((IPolygon2D) geometry, scale, g2d, region, attributes);
-         }
-         else {
-            System.out.println("Warning: geometry type " + geometry.getClass() + " not supported");
-         }
-
-      }
-   }
-
-
-   private static void renderPoint(final IVector2 point,
-                                   final IVector2 scale,
-                                   final Graphics2D g2d,
-                                   final GAxisAlignedRectangle region,
-                                   final GVectorialRenderingAttributes attributes) {
-      final IVector2 projectedPoint = point.sub(region._lower).scale(scale);
-
-      final int x = Math.round((float) projectedPoint.x());
-      final int y = Math.round((float) projectedPoint.y());
-
-      drawPoint(g2d, attributes, x, y);
-   }
-
-
-   private static class Points {
-      private final int[] _xPoints;
-      private final int[] _yPoints;
-
-
-      private Points(final int[] xPoints,
-                     final int[] yPoints) {
-         _xPoints = xPoints;
-         _yPoints = yPoints;
-      }
-   }
-
-
-   private static Points getPoints(final IPointsContainer<IVector2> polygon,
-                                   final IVector2 scale,
-                                   final GAxisAlignedRectangle region) {
-      final int nPoints = polygon.getPointsCount();
-      final int[] xPoints = new int[nPoints];
-      final int[] yPoints = new int[nPoints];
-
-      for (int i = 0; i < nPoints; i++) {
-         final IVector2 point = polygon.getPoint(i).sub(region._lower).scale(scale);
-
-         xPoints[i] = Math.round((float) point.x());
-         yPoints[i] = Math.round((float) point.y());
-      }
-
-      return new Points(xPoints, yPoints);
-   }
-
-
-   private static void renderPolyline(final IPolygonalChain2D geometry,
-                                      final IVector2 scale,
-                                      final Graphics2D g2d,
-                                      final GAxisAlignedRectangle region,
-                                      final GVectorialRenderingAttributes attributes) {
-      drawPolyline(g2d, attributes, getPoints(geometry, scale, region));
-   }
-
-
-   private static void renderPolygon(final IPolygon2D geometry,
-                                     final IVector2 scale,
-                                     final Graphics2D g2d,
-                                     final GAxisAlignedRectangle region,
-                                     final GVectorialRenderingAttributes attributes) {
-
-      final IPolygon2D geometryToDraw;
-      if (geometry instanceof IComplexPolygon2D) {
-         // TODO: tesselate complex polygon 
-         geometryToDraw = ((IComplexPolygon2D) geometry).getHull();
-      }
-      else {
-         geometryToDraw = geometry;
-      }
-
-      drawPolygon(g2d, attributes, getPoints(geometryToDraw, scale, region));
-   }
-
-
-   private static void drawPoint(final Graphics2D g2d,
-                                 final GVectorialRenderingAttributes attributes,
-                                 final int x,
-                                 final int y) {
-      final int width = Math.max(1, Math.round(attributes._borderWidth) * 2);
-      final int height = width;
-
-      // fill point
-      g2d.setColor(attributes._fillColor);
-      g2d.fillOval(x, y, width, height);
-
-      // render border
-      if (attributes._borderWidth > 0) {
-         g2d.setColor(attributes._borderColor);
-         g2d.drawOval(x, y, width, height);
-      }
-   }
-
-
-   private static void drawPolyline(final Graphics2D g2d,
-                                    final GVectorialRenderingAttributes attributes,
-                                    final Points points) {
-      // render border
-      if (attributes._borderWidth > 0) {
-         //final float borderWidth = (float) (attributes._borderWidth / ((scale.x() + scale.y()) / 2));
-         final float borderWidth = attributes._borderWidth;
-         if (borderWidth > 0) {
-            final BasicStroke borderStroke = new BasicStroke(borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-
-            g2d.setStroke(borderStroke);
-            g2d.setColor(attributes._borderColor);
-            g2d.drawPolyline(points._xPoints, points._yPoints, points._xPoints.length);
          }
       }
    }
 
 
-   private static void drawPolygon(final Graphics2D g2d,
-                                   final GVectorialRenderingAttributes attributes,
-                                   final Points points) {
-      // fill polygon
-      g2d.setColor(attributes._fillColor);
-      g2d.fillPolygon(points._xPoints, points._yPoints, points._xPoints.length);
-
-
-      // render border
-      if (attributes._borderWidth > 0) {
-         //final float borderWidth = (float) (attributes._borderWidth / ((scale.x() + scale.y()) / 2));
-         final float borderWidth = attributes._borderWidth;
-         if (borderWidth > 0) {
-            final BasicStroke borderStroke = new BasicStroke(borderWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-
-            g2d.setStroke(borderStroke);
-            g2d.setColor(attributes._borderColor);
-            g2d.drawPolygon(points._xPoints, points._yPoints, points._xPoints.length);
-         }
-      }
-   }
 }

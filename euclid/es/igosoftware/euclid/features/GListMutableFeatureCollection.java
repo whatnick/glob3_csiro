@@ -9,13 +9,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import es.igosoftware.euclid.IBoundedGeometry;
-import es.igosoftware.euclid.IGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.mutability.GMutableAbstract;
 import es.igosoftware.euclid.projection.GProjection;
-import es.igosoftware.euclid.shape.IPolygon;
-import es.igosoftware.euclid.shape.IPolygonalChain;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GAssert;
 
@@ -37,7 +34,7 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<Vecto
    private final String                                              _uniqueID;
 
    private GAxisAlignedOrthotope<VectorT, ?>                         _bounds;
-   private EnumSet<GGeometryType>                                    _geometriesTypes;
+   private EnumSet<GGeometryType>                                    _geometryType;
 
 
    public GListMutableFeatureCollection(final GProjection projection,
@@ -110,7 +107,7 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<Vecto
 
       _features.add(value);
 
-      _geometriesTypes.add(getShapeType(value.getDefaultGeometry()));
+      _geometryType.addAll(GGeometryType.getGeometryType(value.getDefaultGeometry()));
 
       changed();
    }
@@ -122,7 +119,7 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<Vecto
 
       final IGlobeFeature<VectorT, FeatureGeometryT> result = _features.remove(toInt(index));
       if (result != null) {
-         _geometriesTypes = null;
+         _geometryType = null;
          changed();
       }
       return result;
@@ -135,7 +132,7 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<Vecto
 
       final boolean removed = _features.remove(value);
       if (removed) {
-         _geometriesTypes = null;
+         _geometryType = null;
          changed();
       }
       return removed;
@@ -151,24 +148,8 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<Vecto
       }
 
       _features.clear();
-      _geometriesTypes = null;
+      _geometryType = null;
       changed();
-   }
-
-
-   private static <VectorT extends IVector<VectorT, ?>> GGeometryType getShapeType(final IGeometry<VectorT> geometry) {
-      if (geometry instanceof IVector) {
-         return GGeometryType.POINT;
-      }
-      else if (geometry instanceof IPolygonalChain) {
-         return GGeometryType.CURVE;
-      }
-      else if (geometry instanceof IPolygon) {
-         return GGeometryType.SURFACE;
-      }
-      else {
-         throw new RuntimeException("Unsupported geometry type: " + geometry.getClass());
-      }
    }
 
 
@@ -180,12 +161,12 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<Vecto
 
 
    @Override
-   public final EnumSet<GGeometryType> getGeometriesTypes() {
-      if (_geometriesTypes == null) {
-         _geometriesTypes = calculateGeometriesTypes();
+   public final EnumSet<GGeometryType> getGeometryType() {
+      if (_geometryType == null) {
+         _geometryType = calculateGeometriesTypes();
       }
 
-      return _geometriesTypes;
+      return _geometryType;
    }
 
 
@@ -193,7 +174,7 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<Vecto
       final EnumSet<GGeometryType> result = EnumSet.noneOf(GGeometryType.class);
 
       for (final IGlobeFeature<VectorT, FeatureGeometryT> feature : _features) {
-         result.add(getShapeType(feature.getDefaultGeometry()));
+         result.addAll(GGeometryType.getGeometryType(feature.getDefaultGeometry()));
          if (result.containsAll(GGeometryType.ALL)) {
             return GGeometryType.ALL;
          }
@@ -283,6 +264,29 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<Vecto
    @Override
    public boolean isEditable() {
       return true;
+   }
+
+
+   @Override
+   public int getFieldIndex(final String fieldName) {
+      for (int i = 0; i < _fields.size(); i++) {
+         if (_fields.get(i).getName().equals(fieldName)) {
+            return i;
+         }
+      }
+      return -1;
+   }
+
+
+   @Override
+   public GField getField(final String fieldName) {
+      return _fields.get(getFieldIndex(fieldName));
+   }
+
+
+   @Override
+   public GField getField(final int index) {
+      return _fields.get(index);
    }
 
 

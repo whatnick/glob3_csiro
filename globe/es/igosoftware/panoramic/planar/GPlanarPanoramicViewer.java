@@ -416,12 +416,20 @@ public class GPlanarPanoramicViewer {
 
 
    public void open() {
-      open(800, 600);
+      open(800, 600, 0);
    }
 
 
    public void open(final int width,
                     final int height) {
+      open(width, height, 0);
+
+   }
+
+
+   public void open(final int width,
+                    final int height,
+                    final int initialZoomLevelIncrement) {
       final JFrame frame = createFrame(width, height);
 
       final Container container = frame.getContentPane();
@@ -446,7 +454,12 @@ public class GPlanarPanoramicViewer {
       frame.setVisible(true);
 
       final Dimension containerSize = container.getSize();
-      _currentLevel = calculateInitialLevel(containerSize);
+      if ((initialZoomLevelIncrement > 0)) {
+         _currentLevel = Math.min(calculateInitialLevel(containerSize) + initialZoomLevelIncrement, _maxLevel);
+      }
+      else {
+         _currentLevel = calculateInitialLevel(containerSize);
+      }
 
       final GPlanarPanoramicZoomLevel currentZoomLevel = getCurrentZoomLevel();
       _offset.x = (containerSize.width - currentZoomLevel.getWidth()) / 2;
@@ -958,7 +971,7 @@ public class GPlanarPanoramicViewer {
       });
 
 
-      //       final ILoader loader = new GFileLoader("/home/dgd/Desktop/PruebaPanoramicas/PLANAR/PANOS/cantabria1.jpg/");
+      //    final ILoader loader = new GFileLoader("panoramics/giga_alburquerque_retablo/giga_alburquerque_retablo.tif/");
 
 
       //      final URL url = new URL("file:///home/dgd/Desktop/PruebaPanoramicas/PLANAR/PANOS/cantabria1.jpg/");
@@ -971,10 +984,24 @@ public class GPlanarPanoramicViewer {
       //      final URL url = new URL("file:///home/dgd/Desktop/PruebaPanoramicas/PLANAR/PANOS/cantabria1.jpg/");
 
       //      final URL url = new URL("http://213.165.81.201:8080/gigapixel/Cantabria1/");
+
+      //      final URL url = new URL("http://213.165.81.201:8080/gigapixel/PlazaSanJorge-Caceres-Espana/");
+
+
+      //     final URL url = new URL(
+      //           "file:////Users/mdelacalle/Desktop/gigapan_PMF/terminados/procesados/giga_alburquerque_retablo/giga_alburquerque_retablo.tif/");
+      //       final URL url = new URL("http://localhost/PANOS/cantabria1.jpg/");
+      //      final URL url = new URL("http://localhost/PANOS/PlazaSanJorge-Caceres-Espana.jpg/");
+      //final URL url = new URL("http://213.165.81.201:8080/gigapixel/Cantabria1/");
+      //final URL url = new URL("http://213.165.81.201:8080/gigapixel/PlazaSanJorge-Caceres-Espana/");
+
+
+      final int workersCount = GConcurrent.AVAILABLE_PROCESSORS * 2;
+      // final ILoader loader = new GHttpLoader(url, workersCount, true, false);
       final URL url = new URL("http://213.165.81.201:8080/");
 
 
-      final int workersCount = GConcurrent.AVAILABLE_PROCESSORS;
+      // final int workersCount = GConcurrent.AVAILABLE_PROCESSORS;
       final ILoader loader = new GHttpLoader(url, workersCount, true, false, false);
 
       final GFileName path = GFileName.relative("gigapixel", "PlazaSanJorge-Caceres-Espana");

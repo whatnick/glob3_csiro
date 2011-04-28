@@ -9,7 +9,7 @@ import es.igosoftware.dmvc.commands.GDAbstractCommand;
 import es.igosoftware.dmvc.commands.IDCommand;
 import es.igosoftware.protocol.GProtocolMultiplexor;
 import es.igosoftware.util.GCollections;
-import es.igosoftware.util.ITransformer;
+import es.igosoftware.util.IFunction;
 
 
 public abstract class GDAbstractServerCommand
@@ -19,14 +19,14 @@ public abstract class GDAbstractServerCommand
             IDServerCommand {
 
 
-   private static final long                                     serialVersionUID   = 1L;
+   private static final long                                  serialVersionUID   = 1L;
 
-   private static final ITransformer<IDCommand, IDServerCommand> CASTER_TRANSFORMER = new ITransformer<IDCommand, IDServerCommand>() {
-                                                                                       @Override
-                                                                                       public IDServerCommand transform(final IDCommand element) {
-                                                                                          return (IDServerCommand) element;
-                                                                                       }
-                                                                                    };
+   private static final IFunction<IDCommand, IDServerCommand> CASTER_TRANSFORMER = new IFunction<IDCommand, IDServerCommand>() {
+                                                                                    @Override
+                                                                                    public IDServerCommand apply(final IDCommand element) {
+                                                                                       return (IDServerCommand) element;
+                                                                                    }
+                                                                                 };
 
 
    @Override

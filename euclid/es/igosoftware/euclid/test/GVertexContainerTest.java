@@ -62,51 +62,51 @@ public class GVertexContainerTest {
    final private static GColorI    DEFAULT_COLOR     = GColorI.WHITE;
 
    final private static IVector3[] points            = { GVector3D.ZERO, //
-            new GVector3D(1, 0, 0), //
-            new GVector3D(1, 1, 0), //
-            new GVector3D(1, 1, 1), //
-            new GVector3D(1, 1, 2), //
-            new GVector3D(1, 2, 2), //
-            new GVector3D(2, 2, 2), //
-            new GVector3D(3, 3, 3), //
-            new GVector3D(3, 2, 1)                  };
+                                                     new GVector3D(1, 0, 0), //
+                                                     new GVector3D(1, 1, 0), //
+                                                     new GVector3D(1, 1, 1), //
+                                                     new GVector3D(1, 1, 2), //
+                                                     new GVector3D(1, 2, 2), //
+                                                     new GVector3D(2, 2, 2), //
+                                                     new GVector3D(3, 3, 3), //
+                                                     new GVector3D(3, 2, 1) };
 
    final private static float[]    intensities       = { GVertexContainerTest.DEFAULT_INTENSITY, //
-            GVertexContainerTest.DEFAULT_INTENSITY, //
-            GVertexContainerTest.DEFAULT_INTENSITY, //
-            0.5f, //
-            0.6f, //
-            GVertexContainerTest.DEFAULT_INTENSITY, //
-            GVertexContainerTest.DEFAULT_INTENSITY, //
-            GVertexContainerTest.DEFAULT_INTENSITY, //
-            GVertexContainerTest.DEFAULT_INTENSITY  };
+                                                     GVertexContainerTest.DEFAULT_INTENSITY, //
+                                                     GVertexContainerTest.DEFAULT_INTENSITY, //
+                                                     0.5f, //
+                                                     0.6f, //
+                                                     GVertexContainerTest.DEFAULT_INTENSITY, //
+                                                     GVertexContainerTest.DEFAULT_INTENSITY, //
+                                                     GVertexContainerTest.DEFAULT_INTENSITY, //
+                                                     GVertexContainerTest.DEFAULT_INTENSITY };
 
    final private static IVector3[] normals           = { GVertexContainerTest.DEFAULT_NORMAL, //
-            GVertexContainerTest.DEFAULT_NORMAL, //
-            GVertexContainerTest.DEFAULT_NORMAL, //
-            GVertexContainerTest.DEFAULT_NORMAL, //
-            GVertexContainerTest.DEFAULT_NORMAL, //
-            GVector3D.Z_UP, //
-            new GVector3D(1, 1, 1).normalized(), //
-            GVertexContainerTest.DEFAULT_NORMAL, //
-            GVertexContainerTest.DEFAULT_NORMAL     };
+                                                     GVertexContainerTest.DEFAULT_NORMAL, //
+                                                     GVertexContainerTest.DEFAULT_NORMAL, //
+                                                     GVertexContainerTest.DEFAULT_NORMAL, //
+                                                     GVertexContainerTest.DEFAULT_NORMAL, //
+                                                     GVector3D.Z_UP, //
+                                                     new GVector3D(1, 1, 1).normalized(), //
+                                                     GVertexContainerTest.DEFAULT_NORMAL, //
+                                                     GVertexContainerTest.DEFAULT_NORMAL };
 
    final private static IColor[]   colors            = { GVertexContainerTest.DEFAULT_COLOR, //
-            GVertexContainerTest.DEFAULT_COLOR, //
-            GVertexContainerTest.DEFAULT_COLOR, //
-            GVertexContainerTest.DEFAULT_COLOR, //
-            GVertexContainerTest.DEFAULT_COLOR, //
-            GVertexContainerTest.DEFAULT_COLOR, //
-            GVertexContainerTest.DEFAULT_COLOR, //
-            GColorI.newRGB(0.1f, 0.2f, 0.3f), //
-            GColorI.newRGB(0.11f, 0.22f, 0.33f)     };
+                                                     GVertexContainerTest.DEFAULT_COLOR, //
+                                                     GVertexContainerTest.DEFAULT_COLOR, //
+                                                     GVertexContainerTest.DEFAULT_COLOR, //
+                                                     GVertexContainerTest.DEFAULT_COLOR, //
+                                                     GVertexContainerTest.DEFAULT_COLOR, //
+                                                     GVertexContainerTest.DEFAULT_COLOR, //
+                                                     GColorI.newRGB(0.1f, 0.2f, 0.3f), //
+                                                     GColorI.newRGB(0.11f, 0.22f, 0.33f) };
 
-   final private static IVector3[] sortedPoints      = { new GVector3D(3, 2, 1), new GVector3D(1, 0, 0), new GVector3D(1, 1, 2),
-            new GVector3D(3, 3, 3), new GVector3D(2, 2, 2), new GVector3D(1, 1, 1), new GVector3D(0, 0, 0),
-            new GVector3D(1, 2, 2), new GVector3D(1, 1, 0) };
+   final private static IVector3[] sortedPoints      = { new GVector3D(3, 2, 1), new GVector3D(1, 0, 0), new GVector3D(1, 1, 2), new GVector3D(
+                                                              3, 3, 3), new GVector3D(2, 2, 2), new GVector3D(1, 1, 1), new GVector3D(
+                                                              0, 0, 0), new GVector3D(1, 2, 2), new GVector3D(1, 1, 0) };
 
-   final private static IVector3[] sortedSubPoints   = { new GVector3D(1, 0, 0), new GVector3D(1, 1, 2), new GVector3D(1, 1, 1),
-            new GVector3D(3, 3, 3),                 };
+   final private static IVector3[] sortedSubPoints   = { new GVector3D(1, 0, 0), new GVector3D(1, 1, 2), new GVector3D(1, 1, 1), new GVector3D(
+                                                              3, 3, 3), };
 
 
    private static void assertCloseTo(final String description,

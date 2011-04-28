@@ -40,7 +40,7 @@ import es.igosoftware.euclid.mutability.IMutable;
 import es.igosoftware.scenegraph.GPositionRenderableLayer.PickResult;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GCollections;
-import es.igosoftware.util.ITransformer;
+import es.igosoftware.util.IFunction;
 import gov.nasa.worldwind.geom.Extent;
 import gov.nasa.worldwind.geom.Line;
 import gov.nasa.worldwind.geom.Matrix;
@@ -169,9 +169,9 @@ public final class GGroupNode
          final Matrix globalMatrix = getGlobalMatrix(parentMatrix);
 
          synchronized (_children) {
-            final List<Extent> childrenBounds = GCollections.collect(_children, new ITransformer<INode, Extent>() {
+            final List<Extent> childrenBounds = GCollections.collect(_children, new IFunction<INode, Extent>() {
                @Override
-               public Extent transform(final INode element) {
+               public Extent apply(final INode element) {
                   return element.getBoundsInModelCoordinates(globalMatrix, true);
                }
             });

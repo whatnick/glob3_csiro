@@ -105,8 +105,8 @@ public interface IColor {
    public boolean closeTo(final IColor that);
 
 
-   public IColor interpolatedTo(final IColor that,
-                                final float alpha);
+   public IColor mixedWidth(final IColor that,
+                            final float alpha);
 
 
    public IColor max(final IColor that);
@@ -165,5 +165,18 @@ public interface IColor {
 
 
    public IColor muchLighter();
+
+
+   public java.awt.Color asAWTColor();
+
+
+   public java.awt.Color asAWTColor(final float opacity);
+
+
+   public String toHexString();
+
+
+   public String toInt256String();
+
 
 }

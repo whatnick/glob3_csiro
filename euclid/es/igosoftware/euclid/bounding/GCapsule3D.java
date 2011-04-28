@@ -36,6 +36,7 @@
 
 package es.igosoftware.euclid.bounding;
 
+import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.shape.GPlane;
 import es.igosoftware.euclid.shape.GSegment3D;
 import es.igosoftware.euclid.vector.IVector3;
@@ -47,7 +48,7 @@ public class GCapsule3D
             GNCapsule<IVector3, GSegment3D, GCapsule3D>
          implements
             IBounds3D<GCapsule3D>,
-            IFiniteBounds<IVector3, GCapsule3D> {
+            IFinite3DBounds<GCapsule3D> {
 
    /**
     * 
@@ -146,5 +147,16 @@ public class GCapsule3D
    public boolean touchesBounds(final IBounds<IVector3, ?> that) {
       return touches((IBounds3D<?>) that);
    }
+
+
+   @Override
+   public boolean closeTo(final IBoundedGeometry<IVector3, GCapsule3D> that) {
+      if (that instanceof GCapsule3D) {
+         final GCapsule3D thatNB = (GCapsule3D) that;
+         return GMath.closeTo(_radius, thatNB._radius) && _segment.closeTo(thatNB._segment);
+      }
+      return false;
+   }
+
 
 }

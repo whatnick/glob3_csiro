@@ -42,6 +42,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import es.igosoftware.euclid.GEdgedGeometryAbstract;
+import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.IBounds;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GAssert;
@@ -304,5 +305,18 @@ BoundsT extends IBounds<VectorT, BoundsT>
    public final boolean isClosed() {
       return false;
    }
+
+
+   @Override
+   public boolean closeTo(final IBoundedGeometry<VectorT, BoundsT> that) {
+      if (that instanceof GSegment) {
+         @SuppressWarnings("unchecked")
+         final GSegment<VectorT, SegmentT, BoundsT> thatSegment = (GSegment<VectorT, SegmentT, BoundsT>) that;
+         return _from.closeTo(thatSegment._from) && //
+                _to.closeTo(thatSegment._to);
+      }
+      return false;
+   }
+
 
 }

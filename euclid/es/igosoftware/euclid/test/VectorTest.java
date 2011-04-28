@@ -52,7 +52,7 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GMath;
-import es.igosoftware.util.ITransformer;
+import es.igosoftware.util.IFunction;
 
 
 public class VectorTest {
@@ -73,13 +73,11 @@ public class VectorTest {
    private static final IVector2[] generics2Neg    = { VectorTest.generic2FNeg, VectorTest.generic2DNeg };
    private static final IVector3[] generics3Neg    = { VectorTest.generic3FNeg, VectorTest.generic3DNeg };
 
-   private static final IVector2[] generics2All    = { VectorTest.generic2F, VectorTest.generic2D, VectorTest.generic2FNeg,
-            VectorTest.generic2DNeg, VectorTest.generic2Rounded };
+   private static final IVector2[] generics2All    = { VectorTest.generic2F, VectorTest.generic2D, VectorTest.generic2FNeg, VectorTest.generic2DNeg, VectorTest.generic2Rounded };
    //   private static final IVector2[] generics2D      = { VectorTest.generic2D, VectorTest.generic2DNeg,
    //            VectorTest.generic2Rounded               };
 
-   private static final IVector3[] generics3All    = { VectorTest.generic3F, VectorTest.generic3D, VectorTest.generic3FNeg,
-            VectorTest.generic3DNeg, VectorTest.generic3Rounded };
+   private static final IVector3[] generics3All    = { VectorTest.generic3F, VectorTest.generic3D, VectorTest.generic3FNeg, VectorTest.generic3DNeg, VectorTest.generic3Rounded };
 
    //   private static final IVector3[] generics3D      = { VectorTest.generic3D, VectorTest.generic3DNeg,
    //            VectorTest.generic3Rounded               };
@@ -88,22 +86,13 @@ public class VectorTest {
    private static final IVector2[] zeros2          = { GVector2F.ZERO, GVector2D.ZERO };
    private static final IVector3[] zeros3          = { GVector3F.ZERO, GVector3D.ZERO };
 
-   private static final IVector2[] all2D           = { VectorTest.generic2D, VectorTest.generic2DNeg, GVector2D.X_UP,
-            GVector2D.Y_UP, GVector2D.X_DOWN, GVector2D.Y_DOWN, GVector2D.ZERO };
-   private static final IVector2[] all2F           = { VectorTest.generic2F, VectorTest.generic2FNeg, GVector2F.X_UP,
-            GVector2F.Y_UP, GVector2F.Y_DOWN, GVector2F.Y_DOWN, GVector2F.ZERO };
-   private static final IVector2[] all2            = { VectorTest.generic2F, VectorTest.generic2D, VectorTest.generic2FNeg,
-            VectorTest.generic2DNeg, GVector2F.X_UP, GVector2D.X_UP, GVector2F.Y_UP, GVector2D.Y_UP, GVector2F.Y_DOWN,
-            GVector2D.X_DOWN, GVector2F.Y_DOWN, GVector2D.Y_DOWN, GVector2F.ZERO, GVector2D.ZERO };
+   private static final IVector2[] all2D           = { VectorTest.generic2D, VectorTest.generic2DNeg, GVector2D.X_UP, GVector2D.Y_UP, GVector2D.X_DOWN, GVector2D.Y_DOWN, GVector2D.ZERO };
+   private static final IVector2[] all2F           = { VectorTest.generic2F, VectorTest.generic2FNeg, GVector2F.X_UP, GVector2F.Y_UP, GVector2F.Y_DOWN, GVector2F.Y_DOWN, GVector2F.ZERO };
+   private static final IVector2[] all2            = { VectorTest.generic2F, VectorTest.generic2D, VectorTest.generic2FNeg, VectorTest.generic2DNeg, GVector2F.X_UP, GVector2D.X_UP, GVector2F.Y_UP, GVector2D.Y_UP, GVector2F.Y_DOWN, GVector2D.X_DOWN, GVector2F.Y_DOWN, GVector2D.Y_DOWN, GVector2F.ZERO, GVector2D.ZERO };
 
-   private static final IVector3[] all3D           = { VectorTest.generic3D, VectorTest.generic3DNeg, GVector3D.X_UP,
-            GVector3D.Y_UP, GVector3D.Z_UP, GVector3D.X_DOWN, GVector3D.Y_DOWN, GVector3D.Z_DOWN, GVector3D.ZERO };
-   private static final IVector3[] all3F           = { VectorTest.generic3F, VectorTest.generic3FNeg, GVector3F.X_UP,
-            GVector3F.Y_UP, GVector3F.Z_UP, GVector3F.Y_DOWN, GVector3F.Y_DOWN, GVector3F.Z_DOWN, GVector3F.ZERO };
-   private static final IVector3[] all3            = { VectorTest.generic3F, VectorTest.generic3D, VectorTest.generic3FNeg,
-            VectorTest.generic3DNeg, GVector3F.X_UP, GVector3D.X_UP, GVector3F.Y_UP, GVector3D.Y_UP, GVector3F.Z_UP,
-            GVector3D.Z_UP, GVector3F.Y_DOWN, GVector3D.X_DOWN, GVector3F.Y_DOWN, GVector3D.Y_DOWN, GVector3F.Z_DOWN,
-            GVector3D.Z_DOWN, GVector3F.ZERO, GVector3D.ZERO };
+   private static final IVector3[] all3D           = { VectorTest.generic3D, VectorTest.generic3DNeg, GVector3D.X_UP, GVector3D.Y_UP, GVector3D.Z_UP, GVector3D.X_DOWN, GVector3D.Y_DOWN, GVector3D.Z_DOWN, GVector3D.ZERO };
+   private static final IVector3[] all3F           = { VectorTest.generic3F, VectorTest.generic3FNeg, GVector3F.X_UP, GVector3F.Y_UP, GVector3F.Z_UP, GVector3F.Y_DOWN, GVector3F.Y_DOWN, GVector3F.Z_DOWN, GVector3F.ZERO };
+   private static final IVector3[] all3            = { VectorTest.generic3F, VectorTest.generic3D, VectorTest.generic3FNeg, VectorTest.generic3DNeg, GVector3F.X_UP, GVector3D.X_UP, GVector3F.Y_UP, GVector3D.Y_UP, GVector3F.Z_UP, GVector3D.Z_UP, GVector3F.Y_DOWN, GVector3D.X_DOWN, GVector3F.Y_DOWN, GVector3D.Y_DOWN, GVector3F.Z_DOWN, GVector3D.Z_DOWN, GVector3F.ZERO, GVector3D.ZERO };
 
 
    private <T extends IVector2> void assertCloseTo(final String description,
@@ -163,9 +152,9 @@ public class VectorTest {
       }
 
 
-      final List<IVector<?, ?>> mutables = GCollections.collect(result, new ITransformer<IVector<?, ?>, IVector<?, ?>>() {
+      final List<IVector<?, ?>> mutables = GCollections.collect(result, new IFunction<IVector<?, ?>, IVector<?, ?>>() {
          @Override
-         public IVector<?, ?> transform(final IVector<?, ?> element) {
+         public IVector<?, ?> apply(final IVector<?, ?> element) {
             return element.asMutable();
          }
       });
@@ -191,9 +180,9 @@ public class VectorTest {
          result.add(new GVector2F(element, element));
       }
 
-      final List<IVector<?, ?>> mutables = GCollections.collect(result, new ITransformer<IVector<?, ?>, IVector<?, ?>>() {
+      final List<IVector<?, ?>> mutables = GCollections.collect(result, new IFunction<IVector<?, ?>, IVector<?, ?>>() {
          @Override
-         public IVector<?, ?> transform(final IVector<?, ?> element) {
+         public IVector<?, ?> apply(final IVector<?, ?> element) {
             return element.asMutable();
          }
       });
@@ -211,9 +200,9 @@ public class VectorTest {
          result.add(new GVector3F(element, element, element));
       }
 
-      final List<IVector3> mutables = GCollections.collect(result, new ITransformer<IVector3, IVector3>() {
+      final List<IVector3> mutables = GCollections.collect(result, new IFunction<IVector3, IVector3>() {
          @Override
-         public IVector3 transform(final IVector3 element) {
+         public IVector3 apply(final IVector3 element) {
             return element.asMutable();
          }
       });
@@ -261,23 +250,23 @@ public class VectorTest {
 
 
       for (final IVector<?, ?> vector : getVectorsWithTwoDimensions(1, -1)) {
-         Assert.assertEquals(vector + " length", Math.sqrt(2), vector.length());
+         Assert.assertEquals(vector + " length", GMath.sqrt(2), vector.length());
          Assert.assertEquals(vector + " length", 2.0, vector.squaredLength());
       }
 
       for (final IVector<?, ?> vector : getVectorsWithTwoDimensions(2, -2)) {
-         Assert.assertEquals(vector + " length", Math.sqrt(8), vector.length());
+         Assert.assertEquals(vector + " length", GMath.sqrt(8), vector.length());
          Assert.assertEquals(vector + " length", 8.0, vector.squaredLength());
       }
 
 
       for (final IVector<?, ?> vector : getVectorsWithThreeDimensions(1, -1)) {
-         Assert.assertEquals(vector + " length", Math.sqrt(3), vector.length());
+         Assert.assertEquals(vector + " length", GMath.sqrt(3), vector.length());
          Assert.assertEquals(vector + " length", 3.0, vector.squaredLength());
       }
 
       for (final IVector<?, ?> vector : getVectorsWithThreeDimensions(2, -2)) {
-         Assert.assertEquals(vector + " length", Math.sqrt(12), vector.length());
+         Assert.assertEquals(vector + " length", GMath.sqrt(12), vector.length());
          Assert.assertEquals(vector + " length", 12.0, vector.squaredLength());
 
       }

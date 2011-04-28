@@ -846,4 +846,43 @@ public final class GMath {
       return (int) longValue;
    }
 
+
+   public static int toRoundedInt(final double doubleValue) {
+      return toInt(Math.round(doubleValue));
+   }
+
+
+   public static boolean isDivisible(final int value,
+                                     final int divisor) {
+      return (value % divisor) == 0;
+   }
+
+
+   public static boolean isDivisible(final long value,
+                                     final long divisor) {
+      return (value % divisor) == 0;
+   }
+
+
+   public static int integerDivisionBy(final int value,
+                                       final int[] divisors,
+                                       final int defaultValue) {
+      for (final int divisor : divisors) {
+         if (GMath.isDivisible(value, divisor)) {
+            return value / divisor;
+         }
+      }
+      return defaultValue;
+   }
+
+
+   public static double sqrt(final double value) {
+      if (closeToZero(value)) {
+         return 0;
+      }
+
+      return Math.sqrt(value);
+   }
+
+
 }

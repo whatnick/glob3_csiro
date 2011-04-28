@@ -66,11 +66,11 @@ import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GHolder;
 import es.igosoftware.util.GMath;
+import es.igosoftware.util.GPredicate;
 import es.igosoftware.util.GRange;
 import es.igosoftware.util.GStringUtils;
-import es.igosoftware.util.IPredicate;
+import es.igosoftware.util.IFunction;
 import es.igosoftware.util.IRangeEvaluator;
-import es.igosoftware.util.ITransformer;
 import es.igosoftware.utils.GPositionBox;
 import es.igosoftware.utils.GWWUtils;
 import gov.nasa.worldwind.geom.Angle;
@@ -623,7 +623,7 @@ public class GNetCDFMultidimentionalData
       }
 
       final float colorAlpha = (alpha % rampStep) / rampStep;
-      return from.interpolatedTo(ramp[toI], colorAlpha);
+      return from.mixedWidth(ramp[toI], colorAlpha);
    }
 
 
@@ -1274,9 +1274,9 @@ public class GNetCDFMultidimentionalData
 
    @Override
    public List<String> getDimensionsNames() {
-      return GCollections.collect(_dimensions, new ITransformer<Dimension, String>() {
+      return GCollections.collect(_dimensions, new IFunction<Dimension, String>() {
          @Override
-         public String transform(final Dimension dimension) {
+         public String apply(final Dimension dimension) {
             return dimension.getName();
          }
       });
@@ -1285,7 +1285,7 @@ public class GNetCDFMultidimentionalData
 
    @Override
    public List<String> getNonTimeDimensionsNames() {
-      return GCollections.select(getDimensionsNames(), new IPredicate<String>() {
+      return GCollections.select(getDimensionsNames(), new GPredicate<String>() {
          @Override
          public boolean evaluate(final String dimensionName) {
             return !dimensionName.equals(_timeDimension.getName());
@@ -1295,7 +1295,7 @@ public class GNetCDFMultidimentionalData
 
 
    @Override
-   public int getDimensionLenght(final String dimensionName) {
+   public int getDimensionLength(final String dimensionName) {
       return _ncFile.findDimension(dimensionName).getLength();
    }
 

@@ -68,4 +68,8 @@ BoundsT extends IBounds<VectorT, ?>
 
    public boolean containsOnBoundary(final VectorT point);
 
+
+   public boolean closeTo(final IBoundedGeometry<VectorT, BoundsT> that);
+
+
 }

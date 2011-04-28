@@ -154,7 +154,7 @@ public class GTriangulate {
       double dx = x2 - xc;
       double dy = y2 - yc;
       final double rsqr = dx * dx + dy * dy;
-      final double r = Math.sqrt(rsqr);
+      final double r = GMath.sqrt(rsqr);
 
       dx = point.x() - xc;
       dy = point.y() - yc;

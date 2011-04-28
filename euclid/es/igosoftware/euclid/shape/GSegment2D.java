@@ -43,6 +43,7 @@ import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.vector.GMutableVector2;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.euclid.vector.IVectorFunction;
 import es.igosoftware.util.GMath;
 
 
@@ -199,6 +200,16 @@ public final class GSegment2D
    @Override
    public GSegment2D clone() {
       return this;
+   }
+
+
+   @Override
+   public GSegment2D transform(final IVectorFunction<IVector2> transformer) {
+      if (transformer == null) {
+         return this;
+      }
+
+      return new GSegment2D(transformer.apply(_from), transformer.apply(_to));
    }
 
 
