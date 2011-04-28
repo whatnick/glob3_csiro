@@ -69,6 +69,7 @@ import es.igosoftware.util.GMath;
 import es.igosoftware.util.GRange;
 import es.igosoftware.util.GStringUtils;
 import es.igosoftware.util.IPredicate;
+import es.igosoftware.util.IRangeEvaluator;
 import es.igosoftware.util.ITransformer;
 import es.igosoftware.utils.GPositionBox;
 import es.igosoftware.utils.GWWUtils;
@@ -573,16 +574,19 @@ public class GNetCDFMultidimentionalData
             }
          }
       }
+      synchronized (_ncFile) {
+         try {
 
-      try {
-         final Double var = variable.read(section.toString()).getDouble(0);
-         return var;
-      }
-      catch (final InvalidRangeException ex) {
-         return Double.NaN;
-      }
-      catch (final ArrayIndexOutOfBoundsException ex) {
-         return Double.NaN;
+            final Double var = variable.read(section.toString()).getDouble(0);
+            return var;
+
+         }
+         catch (final InvalidRangeException ex) {
+            return Double.NaN;
+         }
+         catch (final ArrayIndexOutOfBoundsException ex) {
+            return Double.NaN;
+         }
       }
    }
 
@@ -904,11 +908,254 @@ public class GNetCDFMultidimentionalData
          ranges[i++] = range;
       }
 
-      //      final GHolder<Integer> removedCounter = new GHolder<Integer>(0);
 
-      final ArrayList<List<Integer>> indicesHolder = new ArrayList<List<Integer>>(0);
+      //origVecProcessor(vectorVariable, globe, verticalExaggeration, referencePoint, factor, colorization, dimensions,
+      //         vertexContainer, arrowVertexContainer, ranges);
 
 
+      gcollVecProcessor(vectorVariable, globe, verticalExaggeration, referencePoint, factor, colorization, dimensions,
+               vertexContainer, arrowVertexContainer, ranges);
+
+
+      //      System.out.println("Removed " + removedCounter.get() + " points");
+
+
+      final int pointsCount = vertexContainer.size();
+      //      System.out.println("pointsCount=" + pointsCount);
+
+      final FloatBuffer pointsBuffer = ByteBuffer.allocateDirect(pointsCount * BYTES_PER_VECTOR3F).order(ByteOrder.nativeOrder()).asFloatBuffer();
+      pointsBuffer.rewind();
+      final FloatBuffer colorsBuffer = ByteBuffer.allocateDirect(pointsCount * BYTES_PER_VECTOR3F).order(ByteOrder.nativeOrder()).asFloatBuffer();
+      colorsBuffer.rewind();
+      final FloatBuffer arrowsBuffer = ByteBuffer.allocateDirect((pointsCount * 3) / 2 * BYTES_PER_VECTOR3F).order(
+               ByteOrder.nativeOrder()).asFloatBuffer();
+      arrowsBuffer.rewind();
+      final FloatBuffer arrowscolorsBuffer = ByteBuffer.allocateDirect((pointsCount * 3) / 2 * BYTES_PER_VECTOR3F).order(
+               ByteOrder.nativeOrder()).asFloatBuffer();
+      arrowscolorsBuffer.rewind();
+
+      for (i = 0; i < pointsCount; i++) {
+         final IVector3 point = vertexContainer.getPoint(i);
+         pointsBuffer.put((float) point.x());
+         pointsBuffer.put((float) point.y());
+         pointsBuffer.put((float) point.z());
+
+         final IColor color = vertexContainer.getColor(i);
+         colorsBuffer.put(color.getRed());
+         colorsBuffer.put(color.getGreen());
+         colorsBuffer.put(color.getBlue());
+         //         colorsBuffer.put(0.25f);
+         if (i % 2 == 1) {
+            final IVector3 pointR = arrowVertexContainer.getPoint(i - 1);
+            final IVector3 pointL = arrowVertexContainer.getPoint(i);
+
+            arrowsBuffer.put((float) point.x());
+            arrowsBuffer.put((float) point.y());
+            arrowsBuffer.put((float) point.z());
+
+            arrowsBuffer.put((float) pointR.x());
+            arrowsBuffer.put((float) pointR.y());
+            arrowsBuffer.put((float) pointR.z());
+
+            arrowsBuffer.put((float) pointL.x());
+            arrowsBuffer.put((float) pointL.y());
+            arrowsBuffer.put((float) pointL.z());
+
+            for (int triPt = 0; triPt < 3; triPt++) {
+               arrowscolorsBuffer.put(color.getRed());
+               arrowscolorsBuffer.put(color.getGreen());
+               arrowscolorsBuffer.put(color.getBlue());
+            }
+         }
+      }
+
+      if (_verbose) {
+         final long elapsed = System.currentTimeMillis() - start;
+         System.out.println("Vectors calculated in " + GStringUtils.getTimeMessage(elapsed));
+      }
+
+      return new IMultidimensionalData.VectorsCloud(pointsBuffer, colorsBuffer, arrowsBuffer, arrowscolorsBuffer);
+
+
+   }
+
+
+   /**
+    * @param vectorVariable
+    * @param globe
+    * @param verticalExaggeration
+    * @param referencePoint
+    * @param factor
+    * @param colorization
+    * @param dimensions
+    * @param vertexContainer
+    * @param arrowVertexContainer
+    * @param ranges
+    */
+   private void gcollVecProcessor(final VectorVariable vectorVariable,
+                                  final Globe globe,
+                                  final double verticalExaggeration,
+                                  final Vec4 referencePoint,
+                                  final float factor,
+                                  final IMultidimensionalData.VectorColorization colorization,
+                                  final List<Dimension> dimensions,
+                                  final GVertex3Container vertexContainer,
+                                  final GVertex3Container arrowVertexContainer,
+                                  final List<Integer>[] ranges) {
+
+      final List<List<Integer>> indicesHolder = new ArrayList<List<Integer>>();
+
+      combination(new Processor<Integer>() {
+
+         @Override
+         public void process(final List<Integer> values) {
+            // TODO Auto-generated method stub
+            indicesHolder.add(values);
+         }
+      }, ranges);
+
+
+      final List<Integer> rangeList = GCollections.rangeList(0, indicesHolder.size() - 1);
+
+      GCollections.concurrentEvaluate(rangeList, new IRangeEvaluator() {
+         @Override
+         public void evaluate(final int from,
+                              final int to) {
+            for (int r = from; r <= to; r++) {
+               final List<Integer> indices = indicesHolder.get(r);
+               try {
+
+                  final String section = indices.toString().substring(1, indices.toString().length() - 1);
+                  final double uValue, vValue;
+
+                  try {
+                     synchronized (_ncFile) {
+                        final double uValue_temp = vectorVariable._uVariable.read(section).getDouble(0);
+                        final double vValue_temp = vectorVariable._vVariable.read(section).getDouble(0);
+                        uValue = uValue_temp;
+                        vValue = vValue_temp;
+                     }
+                  }
+                  catch (final InvalidRangeException ex) {
+                     continue;
+                  }
+                  catch (final ArrayIndexOutOfBoundsException ex) {
+                     continue;
+                  }
+
+
+                  if (Double.isNaN(uValue) || Double.isNaN(vValue)) {
+                     continue;
+                  }
+
+                  if (!Double.isNaN(vectorVariable._uMissingValue) && GMath.closeTo(uValue, vectorVariable._uMissingValue)) {
+                     continue;
+                  }
+
+                  if (!Double.isNaN(vectorVariable._vMissingValue) && GMath.closeTo(vValue, vectorVariable._vMissingValue)) {
+                     continue;
+                  }
+
+                  //               System.out.println("Vector " + uValue + "," + vValue);
+
+                  boolean removedPoint = false;
+                  final double z = get(_elevationVariable, dimensions, indices);
+                  final double elevationThreshold;
+                  if (_elevationThresholdVariable != null) {
+                     elevationThreshold = get(_elevationThresholdVariable, dimensions, indices);
+                     if ((z > elevationThreshold) || Double.isNaN(z)) {
+                        removedPoint = true;
+                        continue;
+                     }
+                  }
+
+                  final double x = get(_longitudeVariable, dimensions, indices);
+                  final double y = get(_latitudeVariable, dimensions, indices);
+                  //               final double z = get(_elevationVariable, dimensions, indices);
+
+                  // Draw vectors centred in cell
+                  if (Double.isNaN(x) || Double.isNaN(y)) {
+                     continue;
+                  }
+
+                  final double uValue_half_scaled = uValue * factor / 2.0;
+                  final double vValue_half_scaled = vValue * factor / 2.0;
+
+                  final Position positionCentre = new Position(Angle.fromDegrees(y), Angle.fromDegrees(x), z);
+
+
+                  final Position positionFrom = GWWUtils.increment(positionCentre, -uValue_half_scaled, -vValue_half_scaled, 0);
+                  final Position positionTo = GWWUtils.increment(positionCentre, uValue_half_scaled, vValue_half_scaled, 0);
+
+                  if ((positionFrom == null) || (positionTo == null)) {
+                     continue;
+                  }
+
+                  final Vec4 point4From = GWWUtils.toVec4(positionFrom, globe, verticalExaggeration);
+                  final Vec4 point4To = GWWUtils.toVec4(positionTo, globe, verticalExaggeration);
+
+
+                  final GVector3D pointFrom = new GVector3D(point4From.x - referencePoint.x, point4From.y - referencePoint.y,
+                           point4From.z - referencePoint.z);
+                  final GVector3D pointTo = new GVector3D(point4To.x - referencePoint.x, point4To.y - referencePoint.y,
+                           point4To.z - referencePoint.z);
+
+                  //               final GColorI color = removedPoint ? GColorI.RED : GColorI.WHITE;
+                  final IColor color;
+                  if (removedPoint) {
+                     color = GColorI.RED;
+                  }
+                  else {
+                     if (colorization == IMultidimensionalData.VectorColorization.RAMP_BY_ANGLE) {
+                        color = colorizeVectorByAngle(uValue, vValue);
+                     }
+                     else {
+                        color = colorization.getColor();
+                     }
+                  }
+
+                  synchronized (vertexContainer) {
+                     vertexContainer.addPoint(pointFrom, color);
+                     vertexContainer.addPoint(pointTo, color);
+                  }
+
+
+                  //Geometry of Arrowhead
+                  synchronized (arrowVertexContainer) {
+                     computeArrowheadGeometry(pointFrom, pointTo, arrowVertexContainer);
+                  }
+               }
+               catch (final IOException e) {
+                  e.printStackTrace();
+               }
+            }
+         }
+      });
+   }
+
+
+   /**
+    * @param vectorVariable
+    * @param globe
+    * @param verticalExaggeration
+    * @param referencePoint
+    * @param factor
+    * @param colorization
+    * @param dimensions
+    * @param vertexContainer
+    * @param arrowVertexContainer
+    * @param ranges
+    */
+   private void origVecProcessor(final VectorVariable vectorVariable,
+                                 final Globe globe,
+                                 final double verticalExaggeration,
+                                 final Vec4 referencePoint,
+                                 final float factor,
+                                 final IMultidimensionalData.VectorColorization colorization,
+                                 final List<Dimension> dimensions,
+                                 final GVertex3Container vertexContainer,
+                                 final GVertex3Container arrowVertexContainer,
+                                 final List<Integer>[] ranges) {
       combination(new Processor<Integer>() {
          @Override
          public void process(final List<Integer> indices) {
@@ -1016,194 +1263,6 @@ public class GNetCDFMultidimentionalData
 
 
       }, ranges);
-
-
-      /*
-      combination(new Processor<Integer>() {
-
-         @Override
-         public void process(final List<Integer> values) {
-            // TODO Auto-generated method stub
-            indicesHolder.add(values);
-         }
-      }, ranges);
-
-
-      final List<Integer> rangeList = GCollections.rangeList(0, indicesHolder.size() - 1);
-
-      GCollections.concurrentEvaluate(rangeList, new IRangeEvaluator() {
-         @Override
-         public void evaluate(final int from,
-                              final int to) {
-            for (int r = from; r <= to; r++) {
-               final List<Integer> indices = indicesHolder.get(r);
-               try {
-
-                  final String section = indices.toString().substring(1, indices.toString().length() - 1);
-                  final double uValue, vValue;
-
-                  try {
-                     final double uValue_temp = vectorVariable._uVariable.read(section).getDouble(0);
-                     final double vValue_temp = vectorVariable._vVariable.read(section).getDouble(0);
-                     uValue = uValue_temp;
-                     vValue = vValue_temp;
-                  }
-                  catch (final InvalidRangeException ex) {
-                     continue;
-                  }
-                  catch (final ArrayIndexOutOfBoundsException ex) {
-                     continue;
-                  }
-
-
-                  if (Double.isNaN(uValue) || Double.isNaN(vValue)) {
-                     continue;
-                  }
-
-                  if (!Double.isNaN(vectorVariable._uMissingValue) && GMath.closeTo(uValue, vectorVariable._uMissingValue)) {
-                     continue;
-                  }
-
-                  if (!Double.isNaN(vectorVariable._vMissingValue) && GMath.closeTo(vValue, vectorVariable._vMissingValue)) {
-                     continue;
-                  }
-
-                  //               System.out.println("Vector " + uValue + "," + vValue);
-
-                  boolean removedPoint = false;
-                  final double z = get(_elevationVariable, dimensions, indices);
-                  if (_elevationThresholdVariable != null) {
-                     final double elevationThreshold = get(_elevationThresholdVariable, dimensions, indices);
-                     if ((z > elevationThreshold) || Double.isNaN(z)) {
-                        removedPoint = true;
-                        continue;
-                     }
-                  }
-
-                  final double x = get(_longitudeVariable, dimensions, indices);
-                  final double y = get(_latitudeVariable, dimensions, indices);
-                  //               final double z = get(_elevationVariable, dimensions, indices);
-
-                  // Draw vectors centred in cell
-                  if (Double.isNaN(x) || Double.isNaN(y)) {
-                     continue;
-                  }
-
-                  final double uValue_half_scaled = uValue * factor / 2.0;
-                  final double vValue_half_scaled = vValue * factor / 2.0;
-
-                  final Position positionCentre = new Position(Angle.fromDegrees(y), Angle.fromDegrees(x), z);
-
-
-                  final Position positionFrom = GWWUtils.increment(positionCentre, -uValue_half_scaled, -vValue_half_scaled, 0);
-                  final Position positionTo = GWWUtils.increment(positionCentre, uValue_half_scaled, vValue_half_scaled, 0);
-
-                  if ((positionFrom == null) || (positionTo == null)) {
-                     continue;
-                  }
-
-                  final Vec4 point4From = GWWUtils.toVec4(positionFrom, globe, verticalExaggeration);
-                  final Vec4 point4To = GWWUtils.toVec4(positionTo, globe, verticalExaggeration);
-
-
-                  final GVector3D pointFrom = new GVector3D(point4From.x - referencePoint.x, point4From.y - referencePoint.y,
-                           point4From.z - referencePoint.z);
-                  final GVector3D pointTo = new GVector3D(point4To.x - referencePoint.x, point4To.y - referencePoint.y,
-                           point4To.z - referencePoint.z);
-
-                  //               final GColorI color = removedPoint ? GColorI.RED : GColorI.WHITE;
-                  final IColor color;
-                  if (removedPoint) {
-                     color = GColorI.RED;
-                  }
-                  else {
-                     if (colorization == IMultidimensionalData.VectorColorization.RAMP_BY_ANGLE) {
-                        color = colorizeVectorByAngle(uValue, vValue);
-                     }
-                     else {
-                        color = colorization.getColor();
-                     }
-                  }
-
-                  synchronized (vertexContainer) {
-                     vertexContainer.addPoint(pointFrom, color);
-                     vertexContainer.addPoint(pointTo, color);
-                  }
-
-
-                  //Geometry of Arrowhead
-                  synchronized (arrowVertexContainer) {
-                     computeArrowheadGeometry(pointFrom, pointTo, arrowVertexContainer);
-                  }
-               }
-               catch (final IOException e) {
-                  e.printStackTrace();
-               }
-            }
-         }
-      });
-
-      */
-      //      System.out.println("Removed " + removedCounter.get() + " points");
-
-
-      final int pointsCount = vertexContainer.size();
-      //      System.out.println("pointsCount=" + pointsCount);
-
-      final FloatBuffer pointsBuffer = ByteBuffer.allocateDirect(pointsCount * BYTES_PER_VECTOR3F).order(ByteOrder.nativeOrder()).asFloatBuffer();
-      pointsBuffer.rewind();
-      final FloatBuffer colorsBuffer = ByteBuffer.allocateDirect(pointsCount * BYTES_PER_VECTOR3F).order(ByteOrder.nativeOrder()).asFloatBuffer();
-      colorsBuffer.rewind();
-      final FloatBuffer arrowsBuffer = ByteBuffer.allocateDirect((pointsCount * 3) / 2 * BYTES_PER_VECTOR3F).order(
-               ByteOrder.nativeOrder()).asFloatBuffer();
-      arrowsBuffer.rewind();
-      final FloatBuffer arrowscolorsBuffer = ByteBuffer.allocateDirect((pointsCount * 3) / 2 * BYTES_PER_VECTOR3F).order(
-               ByteOrder.nativeOrder()).asFloatBuffer();
-      arrowscolorsBuffer.rewind();
-
-      for (i = 0; i < pointsCount; i++) {
-         final IVector3 point = vertexContainer.getPoint(i);
-         pointsBuffer.put((float) point.x());
-         pointsBuffer.put((float) point.y());
-         pointsBuffer.put((float) point.z());
-
-         final IColor color = vertexContainer.getColor(i);
-         colorsBuffer.put(color.getRed());
-         colorsBuffer.put(color.getGreen());
-         colorsBuffer.put(color.getBlue());
-         //         colorsBuffer.put(0.25f);
-         if (i % 2 == 1) {
-            final IVector3 pointR = arrowVertexContainer.getPoint(i - 1);
-            final IVector3 pointL = arrowVertexContainer.getPoint(i);
-
-            arrowsBuffer.put((float) point.x());
-            arrowsBuffer.put((float) point.y());
-            arrowsBuffer.put((float) point.z());
-
-            arrowsBuffer.put((float) pointR.x());
-            arrowsBuffer.put((float) pointR.y());
-            arrowsBuffer.put((float) pointR.z());
-
-            arrowsBuffer.put((float) pointL.x());
-            arrowsBuffer.put((float) pointL.y());
-            arrowsBuffer.put((float) pointL.z());
-
-            for (int triPt = 0; triPt < 3; triPt++) {
-               arrowscolorsBuffer.put(color.getRed());
-               arrowscolorsBuffer.put(color.getGreen());
-               arrowscolorsBuffer.put(color.getBlue());
-            }
-         }
-      }
-
-      if (_verbose) {
-         final long elapsed = System.currentTimeMillis() - start;
-         System.out.println("Vectors calculated in " + GStringUtils.getTimeMessage(elapsed));
-      }
-
-      return new IMultidimensionalData.VectorsCloud(pointsBuffer, colorsBuffer, arrowsBuffer, arrowscolorsBuffer);
-
-
    }
 
 
