@@ -159,4 +159,35 @@ public class GCapsule3D
    }
 
 
+   @Override
+   public double volume() {
+      /*
+         The volume of a capsule is the volume of an ball of _radius plus the volume of a cylinder. 
+
+      
+                 _.-|""""""""""""""""""""""""|-._
+               .'   |                        |   `.
+              /     |                        |     \
+             |      |        segment         |      |
+             |      +------------------------+      |
+             |      |                        |      |
+              \     |                        |     /
+               `._  |                        |  _.'
+                  `-|........................|-'
+                    |                        |
+           half ball         cylinder         half ball
+
+
+       */
+
+      // see http://en.wikipedia.org/wiki/Sphere#Volume_of_a_sphere
+      final double ballVolume = Math.PI * (_radius * _radius * _radius) * 4 / 3;
+
+      // see http://en.wikipedia.org/wiki/Cylinder_%28geometry%29#Volume
+      final double cylinderVolume = Math.PI * (_radius * _radius) * _segment.length();
+
+      return ballVolume + cylinderVolume;
+   }
+
+
 }

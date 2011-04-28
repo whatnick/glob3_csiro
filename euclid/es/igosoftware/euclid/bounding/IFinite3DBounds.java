@@ -16,4 +16,7 @@ GeometryT extends IBounds<IVector3, GeometryT>
    @Override
    public GAxisAlignedBox asAxisAlignedOrthotope();
 
+
+   public double volume();
+
 }

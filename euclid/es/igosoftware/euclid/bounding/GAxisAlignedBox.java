@@ -745,4 +745,10 @@ public final class GAxisAlignedBox
    }
 
 
+   @Override
+   public double volume() {
+      return _extent.x() * _extent.y() * _extent.z();
+   }
+
+
 }

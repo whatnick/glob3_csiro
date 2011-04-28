@@ -170,7 +170,32 @@ public final class GCapsule2D
 
    @Override
    public double area() {
-      throw new RuntimeException("Not yet implemented");
+      /*
+         The area of a capsule is the area of an disk of _radius plus the area of a rectangle. 
+
+      
+                 _.-|""""""""""""""""""""""""|-._
+               .'   |                        |   `.
+              /     |                        |     \
+             |      |        segment         |      |
+             |      +------------------------+      |
+             |      |                        |      |
+              \     |                        |     /
+               `._  |                        |  _.'
+                  `-|........................|-'
+                    |                        |
+           half disk        rectangle         half disk
+
+
+       */
+
+      final double diskArea = Math.PI * (_radius * _radius);
+
+      final double rectangleWidth = _radius * 2;
+      final double rectangleHeight = _segment.length();
+      final double rectangleArea = rectangleWidth * rectangleHeight;
+
+      return diskArea + rectangleArea;
    }
 
 

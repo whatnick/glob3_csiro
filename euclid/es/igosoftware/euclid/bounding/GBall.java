@@ -126,4 +126,11 @@ public final class GBall
    }
 
 
+   @Override
+   public double volume() {
+      // see http://en.wikipedia.org/wiki/Sphere#Volume_of_a_sphere
+      return Math.PI * (_radius * _radius * _radius) * 4 / 3;
+   }
+
+
 }
