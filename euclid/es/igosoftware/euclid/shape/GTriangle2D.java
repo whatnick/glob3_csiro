@@ -139,11 +139,13 @@ public final class GTriangle2D
    }
 
 
+   @Override
    public boolean isCounterClockWise() {
       return GShape.isCounterClockWise(_v0, _v1, _v2);
    }
 
 
+   @Override
    public boolean isClockWise() {
       return GShape.isClockWise(_v0, _v1, _v2);
    }

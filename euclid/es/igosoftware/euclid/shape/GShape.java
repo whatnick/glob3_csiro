@@ -43,6 +43,7 @@ import java.util.List;
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
@@ -302,6 +303,7 @@ public final class GShape {
    }
 
 
+   // from  http://paulbourke.net/geometry/polyarea/
    public static double signedArea(final IVector2... points) {
       final int pointsCount = points.length;
 
@@ -319,7 +321,8 @@ public final class GShape {
    }
 
 
-   public static double signedArea(final List<IVector2> points) {
+   // from  http://paulbourke.net/geometry/polyarea/
+   public static double signedArea2(final List<IVector2> points) {
       final int pointsCount = points.size();
 
       double area = 0;
@@ -343,9 +346,23 @@ public final class GShape {
    }
 
 
+   public static boolean isCounterClockWise(final IVector3 a,
+                                            final IVector3 b,
+                                            final IVector3 c) {
+      return GShape.signedArea(a, b, c) > 0;
+   }
+
+
    public static boolean isClockWise(final IVector2 a,
                                      final IVector2 b,
                                      final IVector2 c) {
+      return GShape.signedArea(a, b, c) < 0;
+   }
+
+
+   public static boolean isClockWise(final IVector3 a,
+                                     final IVector3 b,
+                                     final IVector3 c) {
       return GShape.signedArea(a, b, c) < 0;
    }
 
@@ -355,8 +372,70 @@ public final class GShape {
    }
 
 
+   public static boolean isCounterClockWise(final IVector3... points) {
+      return GShape.signedArea(points) > 0;
+   }
+
+
    public static boolean isClockWise(final IVector2... points) {
       return GShape.signedArea(points) < 0;
+   }
+
+
+   public static boolean isClockWise(final IVector3... points) {
+      return GShape.signedArea(points) < 0;
+   }
+
+
+   public static double signedArea3(final List<IVector3> points) {
+      final int pointsCount = points.size();
+
+      GVector3D n = GVector3D.ZERO;
+
+      for (int i = 0; i < pointsCount; ++i) {
+         final IVector3 currentPoint = points.get(i);
+         final IVector3 nextPoint = points.get((i + 1) % pointsCount);
+
+         n = n.add(currentPoint.cross(nextPoint));
+      }
+
+      return n.length() / 2;
+   }
+
+
+   public static double signedArea(final IVector3... points) {
+      final int pointsCount = points.length;
+
+      GVector3D n = GVector3D.ZERO;
+
+      for (int i = 0; i < pointsCount; ++i) {
+         final IVector3 currentPoint = points[i];
+         final IVector3 nextPoint = points[(i + 1) % pointsCount];
+
+         n = n.add(currentPoint.cross(nextPoint));
+      }
+
+      return n.length() / 2;
+   }
+
+
+   public static boolean isCounterClockWise2(final List<IVector2> points) {
+      return GShape.signedArea2(points) < 0;
+   }
+
+
+   public static boolean isClockWise2(final List<IVector2> points) {
+      return GShape.signedArea2(points) > 0;
+   }
+
+
+   public static boolean isCounterClockWise3(final List<IVector3> points) {
+      return GShape.signedArea3(points) < 0;
+   }
+
+
+   public static boolean isClockWise3(final List<IVector3> points) {
+      return GShape.signedArea3(points) > 0;
    }
 
 

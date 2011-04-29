@@ -212,4 +212,22 @@ public final class GQuad3D
    }
 
 
+   @Override
+   public double area() {
+      return _v2.sub(_v0).cross(_v3.sub(_v1)).length() / 2;
+   }
+
+
+   @Override
+   public boolean isCounterClockWise() {
+      return GShape.isCounterClockWise(_v0, _v1, _v2, _v3);
+   }
+
+
+   @Override
+   public boolean isClockWise() {
+      return GShape.isClockWise(_v0, _v1, _v2, _v3);
+   }
+
+
 }

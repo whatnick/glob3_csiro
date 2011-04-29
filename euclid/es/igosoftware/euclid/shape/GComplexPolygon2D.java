@@ -198,4 +198,16 @@ public final class GComplexPolygon2D
    }
 
 
+   @Override
+   public boolean isCounterClockWise() {
+      return GShape.isCounterClockWise2(_hull.getPoints());
+   }
+
+
+   @Override
+   public boolean isClockWise() {
+      return GShape.isClockWise2(_hull.getPoints());
+   }
+
+
 }

@@ -135,4 +135,23 @@ public final class GTriangle3D
    }
 
 
+   @Override
+   public double area() {
+      // from: http://paulbourke.net/geometry/area3d/
+      return (_v1.sub(_v0).cross(_v2.sub(_v0))).length() / 2;
+   }
+
+
+   @Override
+   public boolean isCounterClockWise() {
+      return GShape.isCounterClockWise(_v0, _v1, _v2);
+   }
+
+
+   @Override
+   public boolean isClockWise() {
+      return GShape.isClockWise(_v0, _v1, _v2);
+   }
+
+
 }

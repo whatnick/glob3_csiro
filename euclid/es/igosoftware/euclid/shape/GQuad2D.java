@@ -212,4 +212,15 @@ public final class GQuad2D
    }
 
 
+   @Override
+   public boolean isCounterClockWise() {
+      return GShape.isCounterClockWise(_v0, _v1, _v2, _v3);
+   }
+
+
+   @Override
+   public boolean isClockWise() {
+      return GShape.isClockWise(_v0, _v1, _v2, _v3);
+   }
+
 }

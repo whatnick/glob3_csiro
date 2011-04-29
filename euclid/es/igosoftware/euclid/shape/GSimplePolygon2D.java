@@ -353,7 +353,7 @@ public final class GSimplePolygon2D
 
    @Override
    public double area() {
-      return GShape.signedArea(_points);
+      return GShape.signedArea2(_points);
    }
 
 
@@ -362,7 +362,7 @@ public final class GSimplePolygon2D
       IVector2 centroid = GVector2D.ZERO;
 
       final int imax = _points.size() - 1;
- 
+
       double area = 0;
       for (int i = 0; i < imax; ++i) {
          final IVector2 currentPoint = _points.get(i);
@@ -381,6 +381,18 @@ public final class GSimplePolygon2D
       centroid = centroid.div(6 * area);
 
       return centroid;
+   }
+
+
+   @Override
+   public boolean isCounterClockWise() {
+      return GShape.isCounterClockWise2(_points);
+   }
+
+
+   @Override
+   public boolean isClockWise() {
+      return GShape.isClockWise2(_points);
    }
 
 

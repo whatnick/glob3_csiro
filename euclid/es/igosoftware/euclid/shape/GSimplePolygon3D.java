@@ -255,4 +255,22 @@ public final class GSimplePolygon3D
    }
 
 
+   @Override
+   public double area() {
+      return GShape.signedArea3(_points);
+   }
+
+
+   @Override
+   public boolean isCounterClockWise() {
+      return GShape.isCounterClockWise3(_points);
+   }
+
+
+   @Override
+   public boolean isClockWise() {
+      return GShape.isClockWise3(_points);
+   }
+
+
 }
