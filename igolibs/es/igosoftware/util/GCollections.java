@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -1475,6 +1476,14 @@ public final class GCollections {
          }
       }
       return result;
+   }
+
+
+   public static <T> List<T> asSorted(final Collection<T> collection,
+                                      final Comparator<T> comparator) {
+      final List<T> sorted = new ArrayList<T>(collection);
+      Collections.sort(sorted, comparator);
+      return sorted;
    }
 
 
