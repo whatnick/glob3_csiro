@@ -18,6 +18,8 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
 import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.IBoundedGeometry2D;
+import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.multigeometry.GMultiGeometry2D;
 import es.igosoftware.euclid.multigeometry.GMultiLine2D;
@@ -38,8 +40,8 @@ import es.igosoftware.euclid.vector.IVector2;
  * 
  * Utility methods to convert JTS geometries from/to Euclid geometries
  * 
- * @author dgd
  * 
+ * @author dgd
  */
 public class GJTSUtils {
 
@@ -202,7 +204,7 @@ public class GJTSUtils {
          return toJTS((IPolygon2D) geometry);
       }
       else if (geometry instanceof GMultiGeometry2D<?>) {
-         return toJTS((GMultiGeometry2D<IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) geometry);
+         return toJTS((GMultiGeometry2D<IBoundedGeometry2D<? extends IFinite2DBounds<?>>>) geometry);
       }
       else {
          throw new RuntimeException("Euclid geometry not supported (" + geometry.getClass() + ")");
@@ -272,7 +274,7 @@ public class GJTSUtils {
    }
 
 
-   public static GeometryCollection toJTS(final GMultiGeometry2D<? extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> multigeometry) {
+   public static GeometryCollection toJTS(final GMultiGeometry2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> multigeometry) {
       final IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>> exemplar = multigeometry.getChild(0);
 
       if (exemplar instanceof IPolygonalChain2D) {

@@ -243,4 +243,118 @@ BoundsT extends IBounds<VectorT, BoundsT>
    }
 
 
+   @Override
+   public final boolean contains(final VectorT point) {
+      if (!getBounds().contains(point)) {
+         return false;
+      }
+
+      return isTriangleContainsPoint(_v0, _v1, _v2, point);
+   }
+
+
+   public static <VectorT extends IVector<VectorT, ?>> boolean isTriangleContainsPoint(final VectorT a,
+                                                                                       final VectorT b,
+                                                                                       final VectorT c,
+                                                                                       final VectorT point) {
+
+      // from "Real-Time Collision Detection" (Christer Ericson) page 204
+
+      // Translate point and triangle so that point lies at origin
+      final VectorT ta = a.sub(point);
+      final VectorT tb = b.sub(point);
+      final VectorT tc = c.sub(point);
+
+      final double ab = ta.dot(tb);
+      final double ac = ta.dot(tc);
+      final double bc = tb.dot(tc);
+      final double cc = tc.dot(tc);
+
+      // Make sure plane normals for pab and pbc point in the same direction
+      if (bc * ac - cc * ab < 0.0f) {
+         return false;
+      }
+
+      // Make sure plane normals for pab and pca point in the same direction
+      final double bb = tb.dot(tb);
+      if (ab * bc - ac * bb < 0.0f) {
+         return false;
+      }
+
+      // Otherwise P must be in (or on) the triangle
+      return true;
+   }
+
+
+   //   private static void renderTriangle(final GTriangle2D triangle,
+   //                                      final Graphics2D g2d) {
+   //      g2d.setColor(new Color(255, 255, 255, 127));
+   //      final int[] xPoints = { GMath.toRoundedInt(triangle._v0.x()), GMath.toRoundedInt(triangle._v1.x()), GMath.toRoundedInt(triangle._v2.x()) };
+   //      final int[] yPoints = { GMath.toRoundedInt(triangle._v0.y()), GMath.toRoundedInt(triangle._v1.y()), GMath.toRoundedInt(triangle._v2.y()) };
+   //      g2d.fillPolygon(xPoints, yPoints, xPoints.length);
+   //
+   //      //      g2d.setColor(new Color(255, 255, 255, 255));
+   //      //      g2d.drawPolygon(xPoints, yPoints, xPoints.length);
+   //   }
+   //
+   //
+   //   private static void renderQuad(final GQuad2D quad,
+   //                                  final Graphics2D g2d) {
+   //      g2d.setColor(new Color(255, 255, 255, 127));
+   //      final int[] xPoints = { GMath.toRoundedInt(quad._v0.x()), GMath.toRoundedInt(quad._v1.x()), GMath.toRoundedInt(quad._v2.x()), GMath.toRoundedInt(quad._v3.x()) };
+   //      final int[] yPoints = { GMath.toRoundedInt(quad._v0.y()), GMath.toRoundedInt(quad._v1.y()), GMath.toRoundedInt(quad._v2.y()), GMath.toRoundedInt(quad._v3.y()) };
+   //      g2d.fillPolygon(xPoints, yPoints, xPoints.length);
+   //
+   //      g2d.setColor(new Color(255, 255, 255, 255));
+   //      g2d.drawPolygon(xPoints, yPoints, xPoints.length);
+   //   }
+   //
+   //
+   //   public static void main(final String[] args) throws IOException {
+   //      System.out.println("Test Point in Triangle");
+   //      System.out.println("----------------------\n");
+   //
+   //      final Random random = new Random(0);
+   //
+   //      //      final GTriangle2D triangle = new GTriangle2D(new GVector2D(128, 10), new GVector2D(320, 10), new GVector2D(10, 320));
+   //      final GTriangle2D geometry = new GTriangle2D(new GVector2D(320, 64), new GVector2D(640 - 64, 480 - 64), new GVector2D(10,
+   //               320));
+   //      //      final GQuad2D geometry = new GQuad2D(new GVector2D(480, 64), new GVector2D(640 - 64, 480 - 64), new GVector2D(240, 320),
+   //      //               new GVector2D(64, 64));
+   //      System.out.println(geometry.isConvex());
+   //
+   //      final BufferedImage image = new BufferedImage(640, 480, BufferedImage.TYPE_3BYTE_BGR);
+   //
+   //      final Graphics2D g2d = image.createGraphics();
+   //      g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+   //      g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+   //      g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+   //      g2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+   //      g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+   //      g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+   //
+   //      renderTriangle(geometry, g2d);
+   //      //      for (final GTriangle2D triangle : geometry.triangulate()) {
+   //      //         renderTriangle(triangle, g2d);
+   //      //      }
+   //      //      renderQuad(geometry, g2d);
+   //
+   //      for (int i = 0; i < 8000; i++) {
+   //         final int x = random.nextInt(640);
+   //         final int y = random.nextInt(480);
+   //
+   //         final boolean pointInTriangle = geometry.contains(new GVector2D(x, y));
+   //         final Color color = pointInTriangle ? Color.GREEN : Color.RED;
+   //         g2d.setColor(color);
+   //         g2d.drawOval(x - 1, y - 1, 2, 2);
+   //      }
+   //
+   //      g2d.dispose();
+   //
+   //      ImageIO.write(image, "jpg", new File("/home/dgd/Escritorio/PointsInTriangle.jpg"));
+   //
+   //      System.out.println("- done!");
+   //   }
+
+
 }

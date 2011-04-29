@@ -351,4 +351,37 @@ public final class GSimplePolygon2D
    }
 
 
+   @Override
+   public double area() {
+      return GShape.signedArea(_points);
+   }
+
+
+   @Override
+   public IVector2 getCentroid() {
+      IVector2 centroid = GVector2D.ZERO;
+
+      final int imax = _points.size() - 1;
+ 
+      double area = 0;
+      for (int i = 0; i < imax; ++i) {
+         final IVector2 currentPoint = _points.get(i);
+         final IVector2 nextPoint = _points.get(i + 1);
+
+         final double term = currentPoint.x() * nextPoint.y() - nextPoint.x() * currentPoint.y();
+         area += term;
+         centroid = centroid.add(currentPoint.add(nextPoint).scale(term));
+      }
+
+      final double term = _points.get(imax).x() * _points.get(0).y() - _points.get(0).x() * _points.get(imax).y();
+      area += term;
+      centroid = centroid.add(_points.get(imax).add(_points.get(0)).scale(term));
+
+      area /= 2.0;
+      centroid = centroid.div(6 * area);
+
+      return centroid;
+   }
+
+
 }

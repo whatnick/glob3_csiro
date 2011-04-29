@@ -176,7 +176,7 @@ public final class GPTX3Loader
          _rotationMatrix = GMatrix33D.createMatrix(rotationA0[0], rotationA0[1], rotationA0[2], //    
                   rotationA1[0], rotationA1[1], rotationA1[2], //
                   rotationA2[0], rotationA2[1], rotationA2[2]);
-         _rotationMatrix = _rotationMatrix.transpose();
+         _rotationMatrix = _rotationMatrix.transposed();
 
          // complete transformation matrix (includes translation and rotation)
          line = input.readLine();

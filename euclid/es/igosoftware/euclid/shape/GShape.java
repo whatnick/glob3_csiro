@@ -293,4 +293,71 @@ public final class GShape {
    }
 
 
+   // Returns  the signed triangle area. The result is positive if
+   // abc is ccw, negative if abc is cw, zero if abc is degenerate.
+   public static double signedArea(final IVector2 a,
+                                   final IVector2 b,
+                                   final IVector2 c) {
+      return (a.x() - c.x()) * (b.y() - c.y()) - (a.y() - c.y()) * (b.x() - c.x()) / 2;
+   }
+
+
+   public static double signedArea(final IVector2... points) {
+      final int pointsCount = points.length;
+
+      double area = 0;
+      for (int i = 0; i < pointsCount; i++) {
+         final IVector2 pointI = points[i];
+         final IVector2 pointJ = points[(i + 1) % pointsCount];
+
+         area += pointI.x() * pointJ.y();
+         area -= pointJ.x() * pointI.y();
+      }
+      area /= 2.0;
+
+      return area;
+   }
+
+
+   public static double signedArea(final List<IVector2> points) {
+      final int pointsCount = points.size();
+
+      double area = 0;
+      for (int i = 0; i < pointsCount; i++) {
+         final IVector2 pointI = points.get(i);
+         final IVector2 pointJ = points.get((i + 1) % pointsCount);
+
+         area += pointI.x() * pointJ.y();
+         area -= pointJ.x() * pointI.y();
+      }
+      area /= 2.0;
+
+      return area;
+   }
+
+
+   public static boolean isCounterClockWise(final IVector2 a,
+                                            final IVector2 b,
+                                            final IVector2 c) {
+      return GShape.signedArea(a, b, c) > 0;
+   }
+
+
+   public static boolean isClockWise(final IVector2 a,
+                                     final IVector2 b,
+                                     final IVector2 c) {
+      return GShape.signedArea(a, b, c) < 0;
+   }
+
+
+   public static boolean isCounterClockWise(final IVector2... points) {
+      return GShape.signedArea(points) > 0;
+   }
+
+
+   public static boolean isClockWise(final IVector2... points) {
+      return GShape.signedArea(points) < 0;
+   }
+
+
 }

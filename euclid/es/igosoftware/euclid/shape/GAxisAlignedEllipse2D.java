@@ -178,4 +178,10 @@ public class GAxisAlignedEllipse2D
    }
 
 
+   @Override
+   public double area() {
+      return Math.PI * _radius.x() * _radius.y();
+   }
+
+
 }

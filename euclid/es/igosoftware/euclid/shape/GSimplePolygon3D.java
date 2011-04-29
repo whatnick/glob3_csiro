@@ -249,4 +249,10 @@ public final class GSimplePolygon3D
    }
 
 
+   @Override
+   public IVector3 getCentroid() {
+      throw new RuntimeException("Not yet implemented");
+   }
+
+
 }

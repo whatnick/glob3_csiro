@@ -186,4 +186,16 @@ public final class GComplexPolygon2D
    }
 
 
+   @Override
+   public double area() {
+      double area = _hull.area();
+
+      for (final ISimplePolygon2D hole : _holes) {
+         area -= hole.area();
+      }
+
+      return area;
+   }
+
+
 }

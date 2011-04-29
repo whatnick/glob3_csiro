@@ -87,11 +87,6 @@ public class GVectorial2DRenderer {
    }
 
 
-   public GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getQuadtree() {
-      return _quadtree;
-   }
-
-
    public BufferedImage getRenderedImage(final GAxisAlignedRectangle viewport,
                                          final int imageWidth,
                                          final int imageHeight,

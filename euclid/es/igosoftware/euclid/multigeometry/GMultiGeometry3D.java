@@ -13,7 +13,7 @@ import es.igosoftware.euclid.vector.IVector3;
 
 public class GMultiGeometry3D<
 
-ChildrenGeometryT extends IBoundedGeometry<IVector3, ? extends IFinite3DBounds<?>>
+ChildrenGeometryT extends IBoundedGeometry3D<? extends IFinite3DBounds<?>>
 
 >
          extends

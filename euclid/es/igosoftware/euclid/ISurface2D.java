@@ -15,4 +15,8 @@ public interface ISurface2D<BoundsT extends IBounds<IVector2, BoundsT>>
    @Override
    public ISurface2D<BoundsT> transform(final IVectorFunction<IVector2> transformer);
 
+
+   public double area();
+
+
 }

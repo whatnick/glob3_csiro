@@ -517,7 +517,8 @@ public class GVectorial2DRenderingTest {
                   }
 
                   if (addLabel) {
-                     final IVector2 position = scaler.scaleAndTranslate(surface.getBounds().asAxisAlignedOrthotope()._center);
+                     //                     final IVector2 position = scaler.scaleAndTranslate(surface.getBounds().asAxisAlignedOrthotope()._center);
+                     final IVector2 position = scaler.scaleAndTranslate(surface.getCentroid());
 
                      //               final Font font = new Font("Dialog", Font.BOLD, 25);
                      final Font font = new Font("Serif", Font.BOLD, 25);
