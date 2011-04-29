@@ -41,6 +41,7 @@ import java.util.List;
 
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.utils.GShapeUtils;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVectorFunction;
 import es.igosoftware.util.GCollections;
@@ -200,13 +201,13 @@ public final class GComplexPolygon2D
 
    @Override
    public boolean isCounterClockWise() {
-      return GShape.isCounterClockWise2(_hull.getPoints());
+      return GShapeUtils.isCounterClockWise2(_hull.getPoints());
    }
 
 
    @Override
    public boolean isClockWise() {
-      return GShape.isClockWise2(_hull.getPoints());
+      return GShapeUtils.isClockWise2(_hull.getPoints());
    }
 
 

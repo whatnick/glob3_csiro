@@ -61,10 +61,10 @@ import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.multigeometry.GMultiGeometry2D;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.shape.GComplexPolygon2D;
-import es.igosoftware.euclid.shape.GShape;
 import es.igosoftware.euclid.shape.IPolygon2D;
 import es.igosoftware.euclid.shape.IPolygonalChain2D;
 import es.igosoftware.euclid.shape.ISimplePolygon2D;
+import es.igosoftware.euclid.utils.GShapeUtils;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.io.GFileName;
@@ -361,7 +361,7 @@ public class GShapeLoader {
       final List<IVector2> points = removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeLastIfRepeated(convert(
                jtsCoordinates, projection))))));
 
-      return GShape.createPolygon2(false, points);
+      return GShapeUtils.createPolygon2(false, points);
    }
 
 
@@ -370,7 +370,7 @@ public class GShapeLoader {
       final List<IVector2> points = removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeLastIfRepeated(convert(
                jtsCoordinates, projection))))));
 
-      return GShape.createLine2(false, points);
+      return GShapeUtils.createLine2(false, points);
    }
 
 

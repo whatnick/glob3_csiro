@@ -41,6 +41,7 @@ import java.util.Collections;
 import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
+import es.igosoftware.euclid.utils.GShapeUtils;
 import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.euclid.vector.IVectorFunction;
@@ -199,7 +200,7 @@ public final class GQuad3D
 
    @Override
    public boolean isConvex() {
-      return GShape.isConvexQuad(_v0, _v1, _v2, _v3);
+      return GShapeUtils.isConvexQuad(_v0, _v1, _v2, _v3);
    }
 
 
@@ -220,13 +221,13 @@ public final class GQuad3D
 
    @Override
    public boolean isCounterClockWise() {
-      return GShape.isCounterClockWise(_v0, _v1, _v2, _v3);
+      return GShapeUtils.isCounterClockWise(_v0, _v1, _v2, _v3);
    }
 
 
    @Override
    public boolean isClockWise() {
-      return GShape.isClockWise(_v0, _v1, _v2, _v3);
+      return GShapeUtils.isClockWise(_v0, _v1, _v2, _v3);
    }
 
 

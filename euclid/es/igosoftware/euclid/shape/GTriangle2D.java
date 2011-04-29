@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.utils.GShapeUtils;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVectorFunction;
 
@@ -135,19 +136,19 @@ public final class GTriangle2D
    // zero if the triangle is degenerate.
    @Override
    public double area() {
-      return GShape.signedArea(_v0, _v1, _v2);
+      return GShapeUtils.signedArea(_v0, _v1, _v2);
    }
 
 
    @Override
    public boolean isCounterClockWise() {
-      return GShape.isCounterClockWise(_v0, _v1, _v2);
+      return GShapeUtils.isCounterClockWise(_v0, _v1, _v2);
    }
 
 
    @Override
    public boolean isClockWise() {
-      return GShape.isClockWise(_v0, _v1, _v2);
+      return GShapeUtils.isClockWise(_v0, _v1, _v2);
    }
 
 

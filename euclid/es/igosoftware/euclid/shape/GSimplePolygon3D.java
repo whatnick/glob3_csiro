@@ -41,6 +41,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
+import es.igosoftware.euclid.utils.GShapeUtils;
 import es.igosoftware.euclid.utils.GTriangulate;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
@@ -257,19 +258,19 @@ public final class GSimplePolygon3D
 
    @Override
    public double area() {
-      return GShape.signedArea3(_points);
+      return GShapeUtils.signedArea3(_points);
    }
 
 
    @Override
    public boolean isCounterClockWise() {
-      return GShape.isCounterClockWise3(_points);
+      return GShapeUtils.isCounterClockWise3(_points);
    }
 
 
    @Override
    public boolean isClockWise() {
-      return GShape.isClockWise3(_points);
+      return GShapeUtils.isClockWise3(_points);
    }
 
 

@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
+import es.igosoftware.euclid.utils.GShapeUtils;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.euclid.vector.IVectorFunction;
 
@@ -144,13 +145,13 @@ public final class GTriangle3D
 
    @Override
    public boolean isCounterClockWise() {
-      return GShape.isCounterClockWise(_v0, _v1, _v2);
+      return GShapeUtils.isCounterClockWise(_v0, _v1, _v2);
    }
 
 
    @Override
    public boolean isClockWise() {
-      return GShape.isClockWise(_v0, _v1, _v2);
+      return GShapeUtils.isClockWise(_v0, _v1, _v2);
    }
 
 

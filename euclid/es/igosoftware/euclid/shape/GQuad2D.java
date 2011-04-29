@@ -41,6 +41,7 @@ import java.util.Collections;
 import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.utils.GShapeUtils;
 import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector2;
@@ -174,7 +175,7 @@ public final class GQuad2D
 
    @Override
    public boolean isConvex() {
-      return GShape.isConvexQuad(new GVector3D(_v0, 0), new GVector3D(_v1, 0), new GVector3D(_v2, 0), new GVector3D(_v3, 0));
+      return GShapeUtils.isConvexQuad(new GVector3D(_v0, 0), new GVector3D(_v1, 0), new GVector3D(_v2, 0), new GVector3D(_v3, 0));
    }
 
 
@@ -208,19 +209,19 @@ public final class GQuad2D
 
    @Override
    public double area() {
-      return GShape.signedArea(_v0, _v1, _v2, _v3);
+      return GShapeUtils.signedArea(_v0, _v1, _v2, _v3);
    }
 
 
    @Override
    public boolean isCounterClockWise() {
-      return GShape.isCounterClockWise(_v0, _v1, _v2, _v3);
+      return GShapeUtils.isCounterClockWise(_v0, _v1, _v2, _v3);
    }
 
 
    @Override
    public boolean isClockWise() {
-      return GShape.isClockWise(_v0, _v1, _v2, _v3);
+      return GShapeUtils.isClockWise(_v0, _v1, _v2, _v3);
    }
 
 }

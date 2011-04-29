@@ -26,11 +26,11 @@ import es.igosoftware.euclid.multigeometry.GMultiLine2D;
 import es.igosoftware.euclid.multigeometry.GMultiPoint2D;
 import es.igosoftware.euclid.multigeometry.GMultiPolygon2D;
 import es.igosoftware.euclid.shape.GComplexPolygon2D;
-import es.igosoftware.euclid.shape.GShape;
 import es.igosoftware.euclid.shape.IComplexPolygon2D;
 import es.igosoftware.euclid.shape.IPolygon2D;
 import es.igosoftware.euclid.shape.IPolygonalChain2D;
 import es.igosoftware.euclid.shape.ISimplePolygon2D;
+import es.igosoftware.euclid.utils.GShapeUtils;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector2;
@@ -115,12 +115,12 @@ public class GJTSUtils {
 
 
    public static ISimplePolygon2D createEuclidPolygon(final Coordinate... coordinates) {
-      return GShape.createPolygon2(false, toEuclid(coordinates));
+      return GShapeUtils.createPolygon2(false, toEuclid(coordinates));
    }
 
 
    public static IPolygonalChain2D createEuclidLine(final Coordinate... coordinates) {
-      return GShape.createLine2(false, toEuclid(coordinates));
+      return GShapeUtils.createLine2(false, toEuclid(coordinates));
    }
 
 
