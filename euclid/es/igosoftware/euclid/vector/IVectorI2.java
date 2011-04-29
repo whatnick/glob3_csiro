@@ -36,9 +36,9 @@
 
 package es.igosoftware.euclid.vector;
 
-public interface IVectorI2<VectorT>
+public interface IVectorI2
          extends
-            IVectorI<VectorT> {
+            IVectorI<IVectorI2> {
 
 
    public int x();

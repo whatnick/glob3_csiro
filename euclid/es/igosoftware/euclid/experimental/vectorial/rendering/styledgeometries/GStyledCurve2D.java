@@ -9,7 +9,6 @@ import es.igosoftware.euclid.ICurve2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
-import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.util.GAssert;
 
 
@@ -41,8 +40,7 @@ GeometryT extends ICurve2D<? extends IFinite2DBounds<?>>
 
    @Override
    protected boolean isBigger(final double lodMinSize) {
-      final IVector2 extent = _bounds.getExtent();
-      return (extent.length() > lodMinSize);
+      return (_bounds.area() > lodMinSize);
    }
 
 

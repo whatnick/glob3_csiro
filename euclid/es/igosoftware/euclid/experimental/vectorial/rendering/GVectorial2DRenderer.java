@@ -3,7 +3,6 @@
 package es.igosoftware.euclid.experimental.vectorial.rendering;
 
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -125,35 +124,26 @@ public class GVectorial2DRenderer {
       final GRenderUnitResult renderUnitResult = renderUnit.render(image, _quadtree, _features.getProjection(), projectionTool,
                viewport, renderingStyle, drawer);
 
-      renderSymbols(renderUnitResult.getSymbols(), renderUnitResult.hasGroupableSymbols(), renderingStyle, drawer);
+
+      if (renderingStyle.isClusterSymbols() && renderUnitResult.hasGroupableSymbols()) {
+         renderSymbolsInClusters(renderUnitResult.getSymbols(), drawer, renderingStyle);
+      }
+      else {
+         renderSymbolsIndividually(renderUnitResult.getSymbols(), drawer, renderingStyle);
+      }
+
 
       renderingStyle.postRenderImage(image);
    }
 
 
-   private static void renderSymbols(final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols,
-                                     final boolean hasGroupableSymbols,
-                                     final IRenderingStyle2D renderingStyle,
-                                     final IVectorial2DDrawer drawer) {
-
+   private static void renderSymbolsIndividually(final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols,
+                                                 final IVectorial2DDrawer drawer,
+                                                 final IRenderingStyle2D renderingStyle) {
       final double lodMinSize = renderingStyle.getLODMinSize();
       final boolean debugRendering = renderingStyle.isDebugRendering();
       final boolean renderLODIgnores = renderingStyle.isRenderLODIgnores();
 
-      if (renderingStyle.isClusterSymbols() && hasGroupableSymbols) {
-         renderSymbolsInClusters(symbols, drawer, lodMinSize, debugRendering, renderLODIgnores);
-      }
-      else {
-         renderSymbolsIndividually(symbols, drawer, lodMinSize, debugRendering, renderLODIgnores);
-      }
-   }
-
-
-   private static void renderSymbolsIndividually(final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols,
-                                                 final IVectorial2DDrawer drawer,
-                                                 final double lodMinSize,
-                                                 final boolean debugRendering,
-                                                 final boolean renderLODIgnores) {
       for (final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbol : symbols) {
          renderSymbol(symbol, drawer, lodMinSize, debugRendering, renderLODIgnores);
       }
@@ -164,32 +154,29 @@ public class GVectorial2DRenderer {
 
    private static void renderSymbolsInClusters(final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols,
                                                final IVectorial2DDrawer drawer,
-                                               final double lodMinSize,
-                                               final boolean debugRendering,
-                                               final boolean renderLODIgnores) {
+                                               final IRenderingStyle2D renderingStyle) {
+
       final Collection<Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> clusters = createClusters(
                symbols, false);
 
-      final List<Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> sortedClusters = new ArrayList<Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>>(
-               clusters);
-      final Comparator<Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> comparator = new Comparator<Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>>() {
-         @Override
-         public int compare(final Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> cluster1,
-                            final Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> cluster2) {
-            final int size1 = cluster1.size();
-            final int size2 = cluster2.size();
-            if (size1 == size2) {
-               return 0;
-            }
-            else if (size1 > size2) {
-               return -1;
-            }
-            else {
-               return 1;
-            }
-         }
-      };
-      Collections.sort(sortedClusters, comparator);
+      final List<Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> sortedClusters = GCollections.asSorted(
+               clusters, new Comparator<Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>>() {
+                  @Override
+                  public int compare(final Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> cluster1,
+                                     final Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> cluster2) {
+                     final int size1 = cluster1.size();
+                     final int size2 = cluster2.size();
+                     if (size1 == size2) {
+                        return 0;
+                     }
+                     else if (size1 > size2) {
+                        return -1;
+                     }
+                     else {
+                        return 1;
+                     }
+                  }
+               });
 
       int clusteredCount = 0;
       for (final Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> cluster : sortedClusters) {
@@ -199,10 +186,14 @@ public class GVectorial2DRenderer {
             continue;
          }
          else if (size == 1) {
+            final double lodMinSize = renderingStyle.getLODMinSize();
+            final boolean debugRendering = renderingStyle.isDebugRendering();
+            final boolean renderLODIgnores = renderingStyle.isRenderLODIgnores();
+
             renderSymbol(GCollections.theOnlyOne(cluster), drawer, lodMinSize, debugRendering, renderLODIgnores);
          }
          else {
-            renderCluster(cluster, drawer, lodMinSize, debugRendering, renderLODIgnores);
+            renderCluster(cluster, drawer, renderingStyle);
          }
          clusteredCount += size;
       }
@@ -213,16 +204,19 @@ public class GVectorial2DRenderer {
 
    private static void renderCluster(final Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> cluster,
                                      final IVectorial2DDrawer drawer,
-                                     final double lodMinSize,
-                                     final boolean debugRendering,
-                                     final boolean renderLODIgnores) {
+                                     final IRenderingStyle2D renderingStyle) {
+
+      final double lodMinSize = renderingStyle.getLODMinSize();
+      final boolean debugRendering = renderingStyle.isDebugRendering();
+      final boolean renderLODIgnores = renderingStyle.isRenderLODIgnores();
+
       final int __Diego_at_work;
 
       //      final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> exemplar = cluster.iterator().next();
       //
       //      exemplar.drawGroup(cluster, drawer, lodMinSize, debugRendering, renderLODIgnores);
 
-      if (isSameClass(cluster)) {
+      if (isHomogenous(cluster)) {
          final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> exemplar = cluster.iterator().next();
          exemplar.drawGroup(cluster, drawer, lodMinSize, debugRendering, renderLODIgnores);
       }
@@ -348,7 +342,7 @@ public class GVectorial2DRenderer {
    }
 
 
-   private static boolean isSameClass(final Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> cluster) {
+   private static boolean isHomogenous(final Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> cluster) {
       final Iterator<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> iterator = cluster.iterator();
 
       final Class<? extends GStyled2DGeometry> klass = iterator.next().getClass();

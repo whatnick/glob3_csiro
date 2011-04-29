@@ -22,13 +22,14 @@ public class GStyledIcon2D
             GStyled2DGeometry<IVector2> {
 
 
-   private final String        _iconName;
-   private final BufferedImage _icon;
-   private final float         _opacity;
+   private final String                _iconName;
+   private final BufferedImage         _icon;
+   private final float                 _opacity;
 
-   private final float         _percentFilled;
-   private final Color         _averageColor;
-   private final GVector2D     _iconExtent;
+   private final float                 _percentFilled;
+   private final Color                 _averageColor;
+
+   private final GAxisAlignedRectangle _bounds;
 
 
    public GStyledIcon2D(final IVector2 position,
@@ -45,7 +46,8 @@ public class GStyledIcon2D
       _percentFilled = GIconUtils.getPercentFilled(icon);
       _averageColor = GIconUtils.getAverageColor(icon);
 
-      _iconExtent = new GVector2D(_icon.getWidth(), _icon.getHeight());
+      final GVector2D iconExtent = new GVector2D(_icon.getWidth(), _icon.getHeight());
+      _bounds = new GAxisAlignedRectangle(_geometry, _geometry.add(iconExtent));
    }
 
 
@@ -64,14 +66,14 @@ public class GStyledIcon2D
 
    @Override
    protected boolean isBigger(final double lodMinSize) {
-      return (_iconExtent.length() * _percentFilled) > lodMinSize;
+      return (_bounds.area() * _percentFilled > lodMinSize);
    }
 
 
    @Override
    protected void drawLODIgnore(final IVectorial2DDrawer drawer,
                                 final boolean debugRendering) {
-      drawer.fillRect(_geometry, _iconExtent, debugRendering ? Color.MAGENTA : _averageColor);
+      drawer.fillRect(_bounds, debugRendering ? Color.MAGENTA : _averageColor);
    }
 
 
@@ -92,7 +94,7 @@ public class GStyledIcon2D
 
    @Override
    public GAxisAlignedRectangle getBounds() {
-      return new GAxisAlignedRectangle(_geometry, _geometry.add(_iconExtent));
+      return _bounds;
    }
 
 
