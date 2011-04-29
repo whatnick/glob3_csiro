@@ -744,7 +744,8 @@ public class GVectorial2DLayer
 
    private GVectorial2DRenderer                                                                                _renderer;
    private final String                                                                                        _name;
-   private GAxisAlignedOrthotope<IVector2, ?>                                                                  _polygonsBounds;
+   //   private GAxisAlignedOrthotope<IVector2, ?>                                                                  _polygonsBounds;
+   private GAxisAlignedRectangle                                                                               _polygonsBounds;
    private final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> _features;
 
 
@@ -796,7 +797,7 @@ public class GVectorial2DLayer
 
 
    private void featuresChanged() {
-      _polygonsBounds = _features.getBounds();
+      _polygonsBounds = _features.getBounds().asRectangle();
       _polygonsSector = GWWUtils.toSector(_polygonsBounds, _features.getProjection());
 
       if (_polygonsSector == null) {
@@ -813,7 +814,7 @@ public class GVectorial2DLayer
    }
 
 
-   private static List<GAxisAlignedRectangle> createTopLevelSectors(final GAxisAlignedOrthotope<IVector2, ?> polygonsSector) {
+   private static List<GAxisAlignedRectangle> createTopLevelSectors(final GAxisAlignedRectangle polygonsSector) {
 
       final List<GAxisAlignedRectangle> allTopLevelSectors = createTopLevelSectors();
 
@@ -825,33 +826,38 @@ public class GVectorial2DLayer
                   }
                });
 
-      return GCollections.collect(intersectingSectors, new IFunction<GAxisAlignedRectangle, GAxisAlignedRectangle>() {
-         @Override
-         public GAxisAlignedRectangle apply(final GAxisAlignedRectangle sector) {
-            return tryToReduce(sector);
-         }
 
-
-         private GAxisAlignedRectangle tryToReduce(final GAxisAlignedRectangle sector) {
-            if (polygonsSector.isFullInside(sector)) {
-               final GAxisAlignedRectangle[] subdivisions = sector.subdividedAtCenter();
-
-               GAxisAlignedRectangle lastTouchedSubdivision = null;
-               for (final GAxisAlignedRectangle subdivision : subdivisions) {
-                  if (subdivision.touches(polygonsSector)) {
-                     if (lastTouchedSubdivision != null) {
-                        return sector;
-                     }
-                     lastTouchedSubdivision = subdivision;
+      final List<GAxisAlignedRectangle> reducedSectors = GCollections.collect(intersectingSectors,
+               new IFunction<GAxisAlignedRectangle, GAxisAlignedRectangle>() {
+                  @Override
+                  public GAxisAlignedRectangle apply(final GAxisAlignedRectangle sector) {
+                     //return tryToReduce(sector);
+                     return sector.intersection(polygonsSector);
                   }
-               }
 
-               return tryToReduce(lastTouchedSubdivision);
-            }
 
-            return sector;
-         }
-      });
+                  //                  private GAxisAlignedRectangle tryToReduce(final GAxisAlignedRectangle sector) {
+                  //                     if (polygonsSector.isFullInside(sector)) {
+                  //                        final GAxisAlignedRectangle[] subdivisions = sector.subdividedAtCenter();
+                  //
+                  //                        GAxisAlignedRectangle lastTouchedSubdivision = null;
+                  //                        for (final GAxisAlignedRectangle subdivision : subdivisions) {
+                  //                           if (subdivision.touches(polygonsSector)) {
+                  //                              if (lastTouchedSubdivision != null) {
+                  //                                 return sector;
+                  //                              }
+                  //                              lastTouchedSubdivision = subdivision;
+                  //                           }
+                  //                        }
+                  //
+                  //                        return tryToReduce(lastTouchedSubdivision);
+                  //                     }
+                  //
+                  //                     return sector;
+                  //                  }
+               });
+
+      return reducedSectors;
    }
 
 

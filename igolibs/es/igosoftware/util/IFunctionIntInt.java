@@ -36,6 +36,8 @@
 
 package es.igosoftware.util;
 
-public interface ITransformerIntInt {
-   public int transform(final int element);
+public interface IFunctionIntInt {
+   
+   public int apply(final int element);
+
 }

@@ -52,7 +52,7 @@ public interface IRenderingStyle2D {
 
 
    /* -------------------------------------------------------------------------------------- */
-   /* nodes  */
+   /* nodes */
    public Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getNodeSymbols(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> node,
                                                                                                                              final IVectorial2DRenderingScaler scaler);
 

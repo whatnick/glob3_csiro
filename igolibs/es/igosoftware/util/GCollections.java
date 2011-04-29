@@ -330,7 +330,7 @@ public final class GCollections {
 
 
    public static int[] collect(final int[] array,
-                               final ITransformerIntInt transformer) {
+                               final IFunctionIntInt transformer) {
       if (array == null) {
          return null;
       }
@@ -338,7 +338,7 @@ public final class GCollections {
       final int[] result = new int[array.length];
 
       for (int i = 0; i < array.length; i++) {
-         result[i] = transformer.transform(array[i]);
+         result[i] = transformer.apply(array[i]);
       }
 
       return result;
@@ -346,7 +346,7 @@ public final class GCollections {
 
 
    public static byte[] collect(final int[] array,
-                                final ITransformerIntByte transformer) {
+                                final IFunctionIntByte transformer) {
       if (array == null) {
          return null;
       }
@@ -354,7 +354,7 @@ public final class GCollections {
       final byte[] result = new byte[array.length];
 
       for (int i = 0; i < array.length; i++) {
-         result[i] = transformer.transform(array[i]);
+         result[i] = transformer.apply(array[i]);
       }
 
       return result;
@@ -494,7 +494,7 @@ public final class GCollections {
 
 
    public static byte[] concurrentCollect(final int[] array,
-                                          final ITransformerIntByte transformer) {
+                                          final IFunctionIntByte transformer) {
       if (array == null) {
          return null;
       }
@@ -505,7 +505,7 @@ public final class GCollections {
       }
 
       if (size == 1) {
-         return new byte[] { transformer.transform(array[0]) };
+         return new byte[] { transformer.apply(array[0]) };
       }
 
       final byte[] result = new byte[size];
@@ -516,7 +516,7 @@ public final class GCollections {
                               final int to) {
             //System.out.println("collecting " + from + "->" + to);
             for (int i = from; i <= to; i++) {
-               result[i] = transformer.transform(array[i]);
+               result[i] = transformer.apply(array[i]);
             }
          }
       });
