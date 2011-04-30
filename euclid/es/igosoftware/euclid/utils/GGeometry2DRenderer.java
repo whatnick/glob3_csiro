@@ -16,11 +16,14 @@ import javax.imageio.ImageIO;
 
 import es.igosoftware.euclid.IGeometry2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.shape.IPolygon2D;
 import es.igosoftware.euclid.shape.IPolygonalChain2D;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.GVector2I;
+import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVectorI2;
+import es.igosoftware.io.GFileName;
 import es.igosoftware.util.GMath;
 
 
@@ -39,7 +42,51 @@ public class GGeometry2DRenderer {
    }
 
 
+   private static class AWTPoints {
+      private final int[] _xPoints;
+      private final int[] _yPoints;
+
+
+      private AWTPoints(final int[] xPoints,
+                        final int[] yPoints) {
+         super();
+         _xPoints = xPoints;
+         _yPoints = yPoints;
+      }
+   }
+
+
+   private static AWTPoints getTranslatedAWTPoints(final IPointsContainer<IVector2> container,
+                                                   final GAxisAlignedRectangle bounds,
+                                                   final IVector2 scale) {
+      final int[] xPoints = new int[container.getPointsCount()];
+      final int[] yPoints = new int[container.getPointsCount()];
+
+      for (int i = 0; i < container.getPointsCount(); i++) {
+         final IVector2 scaledPoint = scaleAndTranslate(container.getPoint(i), bounds, scale);
+         xPoints[i] = GMath.toRoundedInt(scaledPoint.x());
+         yPoints[i] = GMath.toRoundedInt(scaledPoint.y());
+      }
+
+      return new AWTPoints(xPoints, yPoints);
+   }
+
+
+   private static void drawVertices(final Graphics2D g2d,
+                                    final IPointsContainer<IVector2> container,
+                                    final GAxisAlignedRectangle bounds,
+                                    final IVector2 scale) {
+      g2d.setColor(Color.WHITE);
+
+      for (final IVector2 vector : container) {
+         final IVector2 scaledVector = scaleAndTranslate(vector, bounds, scale);
+         g2d.fillOval(GMath.toRoundedInt(scaledVector.x()) - 2, GMath.toRoundedInt(scaledVector.y()) - 2, 3, 3);
+      }
+   }
+
+
    public static BufferedImage render(final Collection<? extends IGeometry2D> geometries,
+                                      final boolean drawVertices,
                                       final GAxisAlignedRectangle bounds,
                                       final IVectorI2 imageSize) {
 
@@ -64,6 +111,15 @@ public class GGeometry2DRenderer {
       g2d.drawString(bounds.asParseableString(), 0, imageSize.y());
 
       for (final IGeometry2D geometry : geometries) {
+
+         if (geometry instanceof IPointsContainer) {
+            if (drawVertices) {
+               @SuppressWarnings("unchecked")
+               final IPointsContainer<IVector2> container = (IPointsContainer<IVector2>) geometry;
+               drawVertices(g2d, container, bounds, scale);
+            }
+         }
+
          if (geometry instanceof IVector2) {
             final IVector2 vector = (IVector2) geometry;
 
@@ -74,16 +130,17 @@ public class GGeometry2DRenderer {
          else if (geometry instanceof IPolygonalChain2D) {
             final IPolygonalChain2D polygonalChain = (IPolygonalChain2D) geometry;
 
-            final int[] xPoints = new int[polygonalChain.getPointsCount()];
-            final int[] yPoints = new int[polygonalChain.getPointsCount()];
-
-            for (int i = 0; i < polygonalChain.getPointsCount(); i++) {
-               final IVector2 scaledPoint = scaleAndTranslate(polygonalChain.getPoint(i), bounds, scale);
-               xPoints[i] = GMath.toRoundedInt(scaledPoint.x());
-               yPoints[i] = GMath.toRoundedInt(scaledPoint.y());
-            }
             g2d.setColor(getPolygonalChainColor());
-            g2d.drawPolyline(xPoints, yPoints, xPoints.length);
+
+            final AWTPoints awtPoints = getTranslatedAWTPoints(polygonalChain, bounds, scale);
+            g2d.drawPolyline(awtPoints._xPoints, awtPoints._yPoints, awtPoints._xPoints.length);
+         }
+         else if (geometry instanceof IPolygon2D) {
+            final IPolygon2D polygon = (IPolygon2D) geometry;
+            g2d.setColor(getPolygonColor());
+
+            final AWTPoints awtPoints = getTranslatedAWTPoints(polygon, bounds, scale);
+            g2d.drawPolygon(awtPoints._xPoints, awtPoints._yPoints, awtPoints._xPoints.length);
          }
          else {
             throw new RuntimeException("Geometry type not yet supported (" + geometry.getClass() + ")");
@@ -96,8 +153,24 @@ public class GGeometry2DRenderer {
    }
 
 
+   public static void render(final Collection<? extends IGeometry2D> geometries,
+                             final boolean drawVertices,
+                             final GAxisAlignedRectangle bounds,
+                             final IVectorI2 imageSize,
+                             final GFileName fileName) throws IOException {
+      final BufferedImage image = render(geometries, drawVertices, bounds, imageSize);
+
+      ImageIO.write(image, "png", fileName.asFile());
+   }
+
+
    private static Color getPolygonalChainColor() {
       return new Color(255, 255, 255, 127);
+   }
+
+
+   private static Color getPolygonColor() {
+      return new Color(255, 0, 255, 127);
    }
 
 
@@ -117,7 +190,7 @@ public class GGeometry2DRenderer {
       //      final GAxisAlignedRectangle bounds = GAxisAlignedRectangle.minimumBoundingRectangle(points);
       final GAxisAlignedRectangle bounds = new GAxisAlignedRectangle(new GVector2D(0, 0), new GVector2D(300, 300));
 
-      final BufferedImage image = render(points, bounds, new GVector2I(640, 480));
+      final BufferedImage image = render(points, true, bounds, new GVector2I(640, 480));
 
       ImageIO.write(image, "png", new File("/home/dgd/Escritorio/GGeometryRenderer.png"));
    }

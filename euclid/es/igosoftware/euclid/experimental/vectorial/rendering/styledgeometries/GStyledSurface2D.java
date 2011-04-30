@@ -29,7 +29,7 @@ GeometryT extends ISurface2D<? extends IFinite2DBounds<?>>
    protected GStyledSurface2D(final GeometryT geometry,
                               final ISurface2DStyle surfaceStyle,
                               final ICurve2DStyle curveStyle) {
-      super(geometry);
+      super(geometry, 0);
 
       GAssert.notNull(surfaceStyle, "surfaceStyle");
       GAssert.notNull(curveStyle, "curveStyle");

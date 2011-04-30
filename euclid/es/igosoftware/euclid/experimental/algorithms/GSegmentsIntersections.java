@@ -81,7 +81,7 @@ public class GSegmentsIntersections {
       final Map<IVector2, Set<GSegment2D>> result = getIntersectionsBruteForce(segments);
 
       System.out.println("- found " + result.size() + " intersections, in " + segments.size() + " segments, in "
-                         + GStringUtils.getTimeMessage(System.currentTimeMillis() - start));
+                         + GStringUtils.getTimeMessage(System.currentTimeMillis() - start, false));
 
       return result;
    }
@@ -127,7 +127,7 @@ public class GSegmentsIntersections {
       intersections.clear();
 
       System.out.println("- drawing...");
-      final BufferedImage image = GGeometry2DRenderer.render(allGeometries, new GAxisAlignedRectangle(GVector2D.ZERO,
+      final BufferedImage image = GGeometry2DRenderer.render(allGeometries, true, new GAxisAlignedRectangle(GVector2D.ZERO,
                new GVector2D(extent.x(), extent.y())), extent);
 
       ImageIO.write(image, "png", new File("/home/dgd/Desktop/GSegmentsIntersections.png"));

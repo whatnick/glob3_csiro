@@ -22,12 +22,32 @@ GeometryT extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>
 
 
    protected final GeometryT _geometry;
+   private final int         _priority;
+   private int               _position = -1;
 
 
-   protected GStyled2DGeometry(final GeometryT geometry) {
+   protected GStyled2DGeometry(final GeometryT geometry,
+                               final int priority) {
       GAssert.notNull(geometry, "geometry");
 
       _geometry = geometry;
+      _priority = priority;
+   }
+
+
+   /* used from renderer */
+   public void setPosition(final int position) {
+      _position = position;
+   }
+
+
+   public int getPriority() {
+      return _priority;
+   }
+
+
+   public int getPosition() {
+      return _position;
    }
 
 
@@ -44,6 +64,8 @@ GeometryT extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>
                           final boolean debugRendering,
                           final boolean renderLODIgnores,
                           final String label) {
+      GAssert.isTrue(_position != -1, "_position not initialized (" + this + ")");
+
       if (isBigger(lodMinSize)) {
          draw(drawer, debugRendering);
          if (label != null) {
@@ -116,7 +138,9 @@ GeometryT extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>
          //            drawer.fillRect(bounds, new Color(200, 200, 200, 127));
          //         }
 
-         getAverageSymbol(group).draw(drawer, lodMinSize, debugRendering, renderLODIgnores, label);
+         final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> averageSymbol = getAverageSymbol(group);
+         averageSymbol.setPosition(_position);
+         averageSymbol.draw(drawer, lodMinSize, debugRendering, renderLODIgnores, label);
       }
       else {
          IVector2 lower = GVector2D.POSITIVE_INFINITY;

@@ -36,13 +36,11 @@
 
 package es.igosoftware.euclid.shape;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.utils.GShapeUtils;
-import es.igosoftware.euclid.utils.GTriangulate;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVectorFunction;
@@ -326,13 +324,14 @@ public final class GSimplePolygon2D
 
    @Override
    public List<GTriangle2D> triangulate() {
-      final GTriangulate.IndexedTriangle[] iTriangles = GTriangulate.triangulate(_points);
-
-      final List<GTriangle2D> result = new ArrayList<GTriangle2D>(iTriangles.length);
-      for (final GTriangulate.IndexedTriangle iTriangle : iTriangles) {
-         result.add(new GTriangle2D(_points.get(iTriangle._v0), _points.get(iTriangle._v1), _points.get(iTriangle._v2)));
-      }
-      return result;
+      //      final GVoronoiTriangulator.IndexedTriangle[] iTriangles = GVoronoiTriangulator.triangulate(_points);
+      //
+      //      final List<GTriangle2D> result = new ArrayList<GTriangle2D>(iTriangles.length);
+      //      for (final GVoronoiTriangulator.IndexedTriangle iTriangle : iTriangles) {
+      //         result.add(new GTriangle2D(_points.get(iTriangle._v0), _points.get(iTriangle._v1), _points.get(iTriangle._v2)));
+      //      }
+      //      return result;
+      throw new RuntimeException("Not yet implemented");
    }
 
 

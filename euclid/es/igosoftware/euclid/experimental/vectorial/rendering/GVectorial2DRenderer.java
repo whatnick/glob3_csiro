@@ -144,7 +144,34 @@ public class GVectorial2DRenderer {
       final boolean debugRendering = renderingStyle.isDebugRendering();
       final boolean renderLODIgnores = renderingStyle.isRenderLODIgnores();
 
-      for (final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbol : symbols) {
+      final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> sortedSymbols = GCollections.asSorted(
+               symbols, new Comparator<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>() {
+                  @Override
+                  public int compare(final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> o1,
+                                     final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> o2) {
+                     final int priority1 = o1.getPriority();
+                     final int priority2 = o2.getPriority();
+                     if (priority1 > priority2) {
+                        return 1;
+                     }
+                     else if (priority1 < priority2) {
+                        return -1;
+                     }
+                     else {
+                        final int position1 = o1.getPosition();
+                        final int position2 = o2.getPosition();
+                        if (position1 > position2) {
+                           return 1;
+                        }
+                        else if (position1 < position2) {
+                           return -1;
+                        }
+                        return 0;
+                     }
+                  }
+               });
+
+      for (final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbol : sortedSymbols) {
          renderSymbol(symbol, drawer, lodMinSize, debugRendering, renderLODIgnores);
       }
 

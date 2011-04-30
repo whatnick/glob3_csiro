@@ -36,7 +36,7 @@ public class GStyledIcon2D
                         final String iconName,
                         final BufferedImage icon,
                         final float opacity) {
-      super(position);
+      super(position, 0);
 
       GAssert.notNull(icon, "icon");
 

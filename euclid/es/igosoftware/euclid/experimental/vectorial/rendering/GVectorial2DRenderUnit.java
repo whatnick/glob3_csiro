@@ -188,6 +188,7 @@ class GVectorial2DRenderUnit
 
       for (final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbol : symbols) {
          if (symbol != null) {
+            symbol.setPosition(allSymbols.size());
             allSymbols.add(symbol);
             if (symbol.isGroupable()) {
                hasGroupableSymbols.set(true);
@@ -195,6 +196,5 @@ class GVectorial2DRenderUnit
          }
       }
    }
-
 
 }

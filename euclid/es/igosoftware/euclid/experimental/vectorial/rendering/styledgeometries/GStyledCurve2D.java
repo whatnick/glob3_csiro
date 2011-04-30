@@ -28,7 +28,7 @@ GeometryT extends ICurve2D<? extends IFinite2DBounds<?>>
 
    protected GStyledCurve2D(final GeometryT geometry,
                             final ICurve2DStyle curveStyle) {
-      super(geometry);
+      super(geometry, 0);
 
       GAssert.notNull(curveStyle, "curveStyle");
 

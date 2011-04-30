@@ -24,7 +24,7 @@ public class GStyledLabel2D
    public GStyledLabel2D(final IVector2 position,
                          final String label,
                          final Font font) {
-      super(position);
+      super(position, 1000000);
 
       _label = label;
       _font = font;
