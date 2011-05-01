@@ -319,4 +319,9 @@ BoundsT extends IBounds<VectorT, BoundsT>
    }
 
 
+   public double perimeter() {
+      return _from.distance(_to);
+   }
+
+
 }

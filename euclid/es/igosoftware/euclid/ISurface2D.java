@@ -19,4 +19,6 @@ public interface ISurface2D<BoundsT extends IBounds<IVector2, BoundsT>>
    public double area();
 
 
+   public double perimeter();
+
 }

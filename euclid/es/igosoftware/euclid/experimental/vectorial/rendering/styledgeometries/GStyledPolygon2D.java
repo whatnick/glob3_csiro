@@ -31,8 +31,9 @@ public class GStyledPolygon2D
 
    public GStyledPolygon2D(final IPolygon2D polygon,
                            final ISurface2DStyle surfaceStyle,
-                           final ICurve2DStyle curveStyle) {
-      super(polygon, surfaceStyle, curveStyle);
+                           final ICurve2DStyle curveStyle,
+                           final int priority) {
+      super(polygon, surfaceStyle, curveStyle, priority);
 
       _polygonShape = initializeShape();
    }

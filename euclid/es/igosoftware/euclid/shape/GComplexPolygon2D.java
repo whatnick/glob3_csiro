@@ -211,4 +211,14 @@ public final class GComplexPolygon2D
    }
 
 
+   @Override
+   public double perimeter() {
+      double perimeter = _hull.perimeter();
+      for (final ISimplePolygon2D hole : _holes) {
+         perimeter += hole.perimeter();
+      }
+      return perimeter;
+   }
+
+
 }

@@ -52,7 +52,6 @@ import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.ICurve2D;
 import es.igosoftware.euclid.IGeometry2D;
 import es.igosoftware.euclid.ISurface2D;
-import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.colors.GColorF;
@@ -79,15 +78,17 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.I
 import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.ISurface2DStyle;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.GRenderingStyle2DAbstract;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle2D;
+import es.igosoftware.euclid.features.GCompositeFeatureCollection;
 import es.igosoftware.euclid.features.GGeometryType;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.multigeometry.GMultiGeometry2D;
 import es.igosoftware.euclid.projection.GProjection;
+import es.igosoftware.euclid.vector.GVector2I;
 import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.euclid.vector.IVectorI2;
 import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
-import es.igosoftware.util.GPair;
 import es.igosoftware.util.GStringUtils;
 import es.igosoftware.util.GUtils;
 import es.igosoftware.util.IFunction;
@@ -100,6 +101,7 @@ public class GVectorial2DRenderingTest {
       System.out.println("------------------------------\n");
 
 
+      final GProjection projection = GProjection.EPSG_4326;
       final GFileName pointsFileName = GFileName.absolute("home", "dgd", "Desktop", "Data For Maps", "argentina.shapefiles",
                "americas_south_america_argentina_poi.shp");
 
@@ -109,28 +111,23 @@ public class GVectorial2DRenderingTest {
       final GFileName linesFileName = GFileName.absolute("home", "dgd", "Desktop", "Data For Maps", "argentina.shapefiles",
                "americas_south_america_argentina_highway.shp");
 
-      final GProjection projection = GProjection.EPSG_4326;
 
-      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> pointsFeatures = loadFeatures(
+      final IGlobeFeatureCollection<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> pointsFeatures = GShapeLoader.readFeatures(
                pointsFileName, projection);
 
-      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> surfacesFeatures = loadFeatures(
+      final IGlobeFeatureCollection<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> surfacesFeatures = GShapeLoader.readFeatures(
                surfacesFileName, projection);
 
-      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> linesFeatures = loadFeatures(
+      final IGlobeFeatureCollection<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> linesFeatures = GShapeLoader.readFeatures(
                linesFileName, projection);
 
-      final GAxisAlignedOrthotope<IVector2, ?> pointsFeaturesBounds = pointsFeatures.getBounds();
+
+      @SuppressWarnings("unchecked")
+      final IGlobeFeatureCollection<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> compositeFeatures = new GCompositeFeatureCollection<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>>(
+               surfacesFeatures, linesFeatures, pointsFeatures);
 
 
-      final GVectorial2DRenderer pointsRenderer = createRenderer(pointsFeatures);
-      final GVectorial2DRenderer surfacesRenderer = createRenderer(surfacesFeatures);
-      final GVectorial2DRenderer linesRenderer = createRenderer(linesFeatures);
-
-
-      //      final GAxisAlignedRectangle viewport = ((GAxisAlignedRectangle) centerBounds(multipleOfSmallestDimention(featuresBounds),
-      //               featuresBounds.getCenter()));
-      final GAxisAlignedRectangle viewport = pointsFeaturesBounds.asRectangle().expandedByPercent(0.05);
+      final GAxisAlignedRectangle viewport = pointsFeatures.getBounds().asRectangle().expandedByPercent(0.05);
 
 
       final GFileName directoryName = GFileName.relative("temporary-data", "render");
@@ -139,30 +136,14 @@ public class GVectorial2DRenderingTest {
       final int textureDimension = 256;
       final boolean debugRendering = false;
 
-      final IVector2 extent = viewport.getExtent();
+      final IVectorI2 imageExtent = calculateImageExtent(textureDimension, viewport);
 
-      final int imageWidth;
-      final int imageHeight;
-      if (extent.x() > extent.y()) {
-         imageHeight = textureDimension;
-         imageWidth = (int) Math.round(extent.x() / extent.y() * textureDimension);
-      }
-      else {
-         imageWidth = textureDimension;
-         imageHeight = (int) Math.round(extent.y() / extent.x() * textureDimension);
-      }
-
+      final GVectorial2DRenderer renderer = new GVectorial2DRenderer(compositeFeatures, true);
+      final IRenderingStyle2D renderingStyle = createRenderingStyle(renderLODIgnores, lodMinSize, debugRendering);
 
       GIOUtils.assureEmptyDirectory(directoryName, false);
 
       System.out.println();
-
-      final IRenderingStyle2D renderingStyle = createRenderingStyle(renderLODIgnores, lodMinSize, debugRendering);
-
-      @SuppressWarnings("unchecked")
-      final GPair<GVectorial2DRenderer, IRenderingStyle2D>[] renderers = (GPair<GVectorial2DRenderer, IRenderingStyle2D>[]) new GPair<?, ?>[] { new GPair<GVectorial2DRenderer, IRenderingStyle2D>(
-               surfacesRenderer, renderingStyle), new GPair<GVectorial2DRenderer, IRenderingStyle2D>(linesRenderer,
-               renderingStyle), new GPair<GVectorial2DRenderer, IRenderingStyle2D>(pointsRenderer, renderingStyle) };
 
       final boolean profile = false;
       if (profile) {
@@ -174,11 +155,30 @@ public class GVectorial2DRenderingTest {
       }
 
       final int depth = 0;
-      final int maxDepth = 4;
-      render(renderers, viewport, imageWidth, imageHeight, directoryName, depth, maxDepth);
+      final int maxDepth = 5;
+      render(renderer, renderingStyle, viewport, imageExtent, directoryName, depth, maxDepth);
 
       System.out.println();
       System.out.println("- done!");
+   }
+
+
+   private static IVectorI2 calculateImageExtent(final int textureDimension,
+                                                 final GAxisAlignedRectangle viewport) {
+      final IVector2 viewportExtent = viewport.getExtent();
+
+      final int imageWidth;
+      final int imageHeight;
+      if (viewportExtent.x() > viewportExtent.y()) {
+         imageHeight = textureDimension;
+         imageWidth = (int) Math.round(viewportExtent.x() / viewportExtent.y() * textureDimension);
+      }
+      else {
+         imageWidth = textureDimension;
+         imageHeight = (int) Math.round(viewportExtent.y() / viewportExtent.x() * textureDimension);
+      }
+
+      return new GVector2I(imageWidth, imageHeight);
    }
 
 
@@ -196,22 +196,29 @@ public class GVectorial2DRenderingTest {
 
 
       return new GRenderingStyle2DAbstract() {
+         private static final String COUNTRY         = "NEV_Countr";
+         private static final String PROVINCE        = "NAME_1";
+         private static final String CATEGORY        = "CATEGORY";
 
-         private final IColorizer _pointColorizer = new GUniqueValuesColorizer("CATEGORY", colorScheme, GColorI.WHITE, true,
-                                                           new IFunction<Object, String>() {
-                                                              @Override
-                                                              public String apply(final Object element) {
-                                                                 if (element == null) {
-                                                                    return "";
+
+         private final IColorizer    _pointColorizer = new GUniqueValuesColorizer(CATEGORY, colorScheme, GColorI.WHITE, true,
+                                                              new IFunction<Object, String>() {
+                                                                 @Override
+                                                                 public String apply(final Object element) {
+                                                                    if (element == null) {
+                                                                       return "";
+                                                                    }
+
+                                                                    return element.toString().trim().toLowerCase();
                                                                  }
+                                                              });
 
-                                                                 return element.toString().trim().toLowerCase();
-                                                              }
-                                                           });
 
-         private int              _categoryIndex  = -1;
-         private int              _countryIndex   = -1;
-         private int              _provinceIndex  = -1;
+         //         private int                 _categoryIndex  = -1;
+
+
+         //         private int                 _countryIndex   = -1;
+         //         private int                 _provinceIndex  = -1;
 
 
          @Override
@@ -221,7 +228,7 @@ public class GVectorial2DRenderingTest {
             if (features.getGeometryType().contains(GGeometryType.POINT)) {
                _pointColorizer.preprocessFeatures(features);
 
-               _categoryIndex = features.getFieldIndex("CATEGORY");
+               //               _categoryIndex = features.getFieldIndex(CATEGORY);
             }
 
             if (features.getGeometryType().contains(GGeometryType.SURFACE)) {
@@ -266,8 +273,8 @@ public class GVectorial2DRenderingTest {
                Shape_Area, Double]
                */
 
-               _countryIndex = features.getFieldIndex("NEV_Countr");
-               _provinceIndex = features.getFieldIndex("NAME_1");
+               //               _countryIndex = features.getFieldIndex(COUNTRY);
+               //               _provinceIndex = features.getFieldIndex(PROVINCE);
             }
 
          }
@@ -293,14 +300,14 @@ public class GVectorial2DRenderingTest {
 
          private boolean isCategory(final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                     final String category) {
-            if (_categoryIndex >= 0) {
-               final Object categoryO = feature.getAttribute(_categoryIndex);
-               if (categoryO instanceof String) {
-                  if (((String) categoryO).trim().toLowerCase().equals(category.trim().toLowerCase())) {
-                     return true;
-                  }
+            //            if (_categoryIndex >= 0) {
+            final Object categoryO = feature.getAttribute(CATEGORY);
+            if (categoryO instanceof String) {
+               if (((String) categoryO).trim().toLowerCase().equals(category.trim().toLowerCase())) {
+                  return true;
                }
             }
+            //            }
 
             return false;
          }
@@ -326,7 +333,7 @@ public class GVectorial2DRenderingTest {
                final ICurve2DStyle curveStyle = getPointCurveStyle(point, feature, scaler);
 
                final GAxisAlignedRectangle rectangle = new GAxisAlignedRectangle(position, position.add(extent));
-               return Collections.singleton(new GStyledRectangle2D(rectangle, surfaceStyle, curveStyle));
+               return Collections.singleton(new GStyledRectangle2D(rectangle, surfaceStyle, curveStyle, 1000));
             }
             else {
                return super.getPointSymbols(point, feature, scaler);
@@ -347,7 +354,7 @@ public class GVectorial2DRenderingTest {
             final BufferedImage scaledIcon = GIconUtils.getScaledImage(icon, extent);
 
 
-            return new GStyledIcon2D(position, iconName, scaledIcon, 0.75f);
+            return new GStyledIcon2D(position, iconName, scaledIcon, 0.75f, 1000);
          }
 
 
@@ -420,7 +427,7 @@ public class GVectorial2DRenderingTest {
          protected IMeasure<GLength> getSurfaceBorderSize(final ISurface2D<?> surface,
                                                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                                           final IVectorial2DRenderingScaler scaler) {
-            final String country = (String) feature.getAttribute(_countryIndex);
+            final String country = (String) feature.getAttribute(COUNTRY);
             if ((country != null) && country.trim().toLowerCase().equals("argentina")) {
                return GLength.Kilometer.value(2);
             }
@@ -432,7 +439,7 @@ public class GVectorial2DRenderingTest {
          protected IColor getSurfaceColor(final ISurface2D<?> surface,
                                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                           final IVectorial2DRenderingScaler scaler) {
-            final String country = (String) feature.getAttribute(_countryIndex);
+            final String country = (String) feature.getAttribute(COUNTRY);
             if ((country != null) && country.trim().toLowerCase().equals("argentina")) {
                return GColorF.newRGB256(204, 224, 143).lighter();
             }
@@ -453,7 +460,7 @@ public class GVectorial2DRenderingTest {
          protected IColor getSurfaceBorderColor(final ISurface2D<?> surface,
                                                 final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                                 final IVectorial2DRenderingScaler scaler) {
-            final String country = (String) feature.getAttribute(_countryIndex);
+            final String country = (String) feature.getAttribute(COUNTRY);
             if ((country != null) && country.trim().toLowerCase().equals("argentina")) {
                return getSurfaceColor(surface, feature, scaler).muchDarker();
             }
@@ -465,7 +472,7 @@ public class GVectorial2DRenderingTest {
          protected IMeasure<GLength> getCurveBorderSize(final ICurve2D<?> curve,
                                                         final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                                         final IVectorial2DRenderingScaler scaler) {
-            return GLength.Kilometer.value(0.5f);
+            return GLength.Meter.value(5);
          }
 
 
@@ -487,7 +494,8 @@ public class GVectorial2DRenderingTest {
 
          @Override
          public boolean isClusterSymbols() {
-            return true;
+            final int ____TODO__test_clustering_with_priorities;
+            return false;
          }
 
 
@@ -502,9 +510,9 @@ public class GVectorial2DRenderingTest {
                      superSymbols);
 
 
-            final String country = (String) feature.getAttribute(_countryIndex);
+            final String country = (String) feature.getAttribute(COUNTRY);
             if ((country != null) && country.trim().toLowerCase().equals("argentina")) {
-               final String provinceName = (String) feature.getAttribute(_provinceIndex);
+               final String provinceName = (String) feature.getAttribute(PROVINCE);
                if ((provinceName != null) && !provinceName.trim().isEmpty()) {
                   boolean addLabel = true;
                   if (feature.getDefaultGeometry() instanceof GMultiGeometry2D) {
@@ -526,7 +534,9 @@ public class GVectorial2DRenderingTest {
                      //               font.getStringBounds(provinceName, frc);
 
                      //               LayoutPath
-                     //               TextLayout
+                     //                                    TextLayout
+
+                     //                     final LineBreakMeasurer
 
                      allSymbols.add(new GStyledLabel2D(position, provinceName, font));
                   }
@@ -556,39 +566,17 @@ public class GVectorial2DRenderingTest {
    }
 
 
-   private static GVectorial2DRenderer createRenderer(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> features) {
-      final long start = System.currentTimeMillis();
-      final GVectorial2DRenderer renderer = new GVectorial2DRenderer(features, true);
-      System.out.println();
-      System.out.println("- Created renderer in " + GStringUtils.getTimeMessage(System.currentTimeMillis() - start, false));
-      return renderer;
-   }
-
-
-   private static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> loadFeatures(final GFileName fileName,
-                                                                                                                             final GProjection projection)
-                                                                                                                                                          throws IOException {
-
-      final long start = System.currentTimeMillis();
-      final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> features = GShapeLoader.readFeatures(
-               fileName, projection);
-      System.out.println("- Features loaded in " + GStringUtils.getTimeMessage(System.currentTimeMillis() - start, false));
-      System.out.println();
-      return features;
-   }
-
-
-   private static void render(final GPair<GVectorial2DRenderer, IRenderingStyle2D>[] renderers,
+   private static void render(final GVectorial2DRenderer rendeder,
+                              final IRenderingStyle2D renderingStyle,
                               final GAxisAlignedRectangle viewport,
-                              final int imageWidth,
-                              final int imageHeight,
+                              final IVectorI2 imageExtent,
                               final GFileName directoryName,
                               final int depth,
                               final int maxDepth) throws IOException {
 
       final long start = System.currentTimeMillis();
 
-      final BufferedImage image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_4BYTE_ABGR);
+      final BufferedImage image = new BufferedImage(imageExtent.x(), imageExtent.y(), BufferedImage.TYPE_4BYTE_ABGR);
       image.setAccelerationPriority(1);
 
       //      fillImage(image, GColorF.newRGB256(135, 183, 219).asAWTColor());
@@ -596,28 +584,28 @@ public class GVectorial2DRenderingTest {
 
       final IVectorial2DDrawer drawer = new GJava2DVectorial2DDrawer(image, true);
 
-      for (final GPair<GVectorial2DRenderer, IRenderingStyle2D> renderer : renderers) {
-         final IProjectionTool projectionTool = new IProjectionTool() {
-            @Override
-            public IVector2 increment(final IVector2 position,
-                                      final GProjection projection,
-                                      final double deltaEasting,
-                                      final double deltaNorthing) {
-               return GWWUtils.increment(position, projection, deltaEasting, deltaNorthing);
-            }
-         };
-         renderer._first.render(viewport, image, projectionTool, renderer._second, drawer);
-      }
+      final IProjectionTool projectionTool = new IProjectionTool() {
+         @Override
+         public IVector2 increment(final IVector2 position,
+                                   final GProjection projection,
+                                   final double deltaEasting,
+                                   final double deltaNorthing) {
+            return GWWUtils.increment(position, projection, deltaEasting, deltaNorthing);
+         }
+      };
+
+      rendeder.render(viewport, image, projectionTool, renderingStyle, drawer);
+
 
       final String imageName = "" + depth;
       final GFileName fileName = GFileName.fromParentAndParts(directoryName, imageName + ".png");
       ImageIO.write(image, "png", fileName.asFile());
 
-      System.out.println("- Rendered \"" + imageName + ".png\" (" + imageWidth + "x" + imageHeight + ") in "
+      System.out.println("- Rendered \"" + imageName + ".png\" (" + imageExtent.x() + "x" + imageExtent.y() + ") in "
                          + GStringUtils.getTimeMessage(System.currentTimeMillis() - start, false));
 
       if (depth < maxDepth) {
-         render(renderers, viewport, imageWidth * 2, imageHeight * 2, directoryName, depth + 1, maxDepth);
+         render(rendeder, renderingStyle, viewport, imageExtent.scale(2), directoryName, depth + 1, maxDepth);
       }
    }
 

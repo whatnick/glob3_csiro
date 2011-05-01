@@ -27,8 +27,9 @@ GeometryT extends ICurve2D<? extends IFinite2DBounds<?>>
 
 
    protected GStyledCurve2D(final GeometryT geometry,
-                            final ICurve2DStyle curveStyle) {
-      super(geometry, 0);
+                            final ICurve2DStyle curveStyle,
+                            final int priority) {
+      super(geometry, priority);
 
       GAssert.notNull(curveStyle, "curveStyle");
 
@@ -40,7 +41,11 @@ GeometryT extends ICurve2D<? extends IFinite2DBounds<?>>
 
    @Override
    protected boolean isBigger(final double lodMinSize) {
-      return (_bounds.area() > lodMinSize);
+      //      return (_bounds.area() > lodMinSize) || (_bounds.perimeter() > lodMinSize);
+      //      if (!(_bounds.perimeter() > lodMinSize)) {
+      //         System.out.println("rejecting perimeter=" + _bounds.perimeter() + " -> " + _geometry);
+      //      }
+      return (_bounds.perimeter() > lodMinSize);
    }
 
 

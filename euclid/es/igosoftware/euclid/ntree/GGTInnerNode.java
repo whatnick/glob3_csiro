@@ -100,7 +100,7 @@ GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
          }
 
          if (geometryInChildrenCounter == 0) {
-            System.out.println("WARNING >> element " + pair + " don't added!!!!!");
+            throw new RuntimeException("WARNING >> element don't added: " + pair);
          }
          else if (geometryInChildrenCounter == 1) {
             elementsToDistribute.add(pair);
@@ -192,11 +192,11 @@ GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
          }
 
          if (geometryAddedCounter == 0) {
-            System.out.println("WARNING >> element " + pair + " don't added!!!!!");
+            throw new RuntimeException("WARNING >> element don't added: " + pair);
          }
          else if (geometryAddedCounter > 1) {
-            System.out.println("WARNING >> element " + pair + " added " + geometryAddedCounter + " times !!!!!");
-            progress.incrementSteps(geometryAddedCounter - 1);
+            throw new RuntimeException("WARNING >> element added " + geometryAddedCounter + " times: " + pair);
+            //            progress.incrementSteps(geometryAddedCounter - 1);
          }
       }
 
@@ -285,7 +285,10 @@ GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
          return null;
       }
 
-      if ((depth > 15) || acceptLeafNodeCreation(bounds, elements, depth, parameters)) {
+      //      final GAxisAlignedOrthotope<VectorT, ?> bounds = bounds2;
+      //      final GAxisAlignedOrthotope<VectorT, ?> bounds = getMinimumBounds(elements);
+
+      if ((depth > 25) || acceptLeafNodeCreation(bounds, elements, depth, parameters)) {
          return createLeafNode(bounds, elements, progress);
       }
 
@@ -299,6 +302,23 @@ GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
                distribution.getGeometriesToDistribute(), depth, parameters, progress);
 
    }
+
+
+   //   private GAxisAlignedOrthotope<VectorT, ?> getMinimumBounds(final Collection<GElementGeometryPair<VectorT, ElementT, GeometryT>> elements) {
+   //      final Iterator<GElementGeometryPair<VectorT, ElementT, GeometryT>> iterator = elements.iterator();
+   //
+   //      GAxisAlignedOrthotope<VectorT, ?> currentBounds = iterator.next().getGeometry().getBounds().asAxisAlignedOrthotope();
+   //
+   //      VectorT lower = currentBounds._lower;
+   //      VectorT upper = currentBounds._upper;
+   //      while (iterator.hasNext()) {
+   //         currentBounds = iterator.next().getGeometry().getBounds().asAxisAlignedOrthotope();
+   //         lower = lower.min(currentBounds._lower);
+   //         upper = upper.min(currentBounds._upper);
+   //      }
+   //
+   //      return GAxisAlignedOrthotope.create(lower, upper);
+   //   }
 
 
    private GGTNode<VectorT, ElementT, GeometryT> createLeafNode(final GAxisAlignedOrthotope<VectorT, ?> bounds,
@@ -336,7 +356,7 @@ GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
       while (!queue.isEmpty()) {
          final GGTNode<VectorT, ElementT, GeometryT> current = queue.removeFirst();
 
-         if ((region != null) && !current.getMinimumBounds().touchesBounds(region)) {
+         if ((region != null) && !current.getBounds().touchesBounds(region)) {
             continue;
          }
 
@@ -392,7 +412,6 @@ GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
       }
 
       visitor.finishedInnerNode(this);
-
    }
 
 

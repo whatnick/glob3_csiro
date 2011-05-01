@@ -20,9 +20,16 @@ GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
    public GeometryT getDefaultGeometry();
 
 
+   public void setFeatureCollection(final IGlobeFeatureCollection<VectorT, GeometryT> featureCollection);
+
+
    public List<Object> getAttributes();
 
 
-   public Object getAttribute(final int index);
+   public boolean hasAttribute(final String fieldName);
+
+
+   public Object getAttribute(final String fieldName);
+
 
 }

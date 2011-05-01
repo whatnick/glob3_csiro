@@ -20,8 +20,9 @@ public class GStyledPolygonalChain2D
 
 
    public GStyledPolygonalChain2D(final IPolygonalChain2D polygonalChain,
-                                  final ICurve2DStyle curveStyle) {
-      super(polygonalChain, curveStyle);
+                                  final ICurve2DStyle curveStyle,
+                                  final int priority) {
+      super(polygonalChain, curveStyle, priority);
    }
 
 

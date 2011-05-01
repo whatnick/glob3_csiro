@@ -396,4 +396,19 @@ public final class GSimplePolygon2D
    }
 
 
+   @Override
+   public double perimeter() {
+      double perimeter = 0;
+
+      final int pointsCount = _points.size();
+      for (int i = 0; i < pointsCount; i++) {
+         final IVector2 currentPoint = _points.get(i);
+         final IVector2 nextPoint = _points.get((i + 1) % pointsCount);
+         perimeter += currentPoint.distance(nextPoint);
+      }
+
+      return perimeter;
+   }
+
+
 }

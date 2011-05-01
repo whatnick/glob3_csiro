@@ -72,8 +72,16 @@ class GVectorial2DRenderUnit
 
       final double areaInSquaredMeters = maximumSize.getValueInReferenceUnits();
       final double extent = GMath.sqrt(areaInSquaredMeters);
-      final IVector2 lower = scaler.increment(viewport._lower, -extent, -extent);
-      final IVector2 upper = scaler.increment(viewport._upper, extent, extent);
+
+      IVector2 lower = scaler.increment(viewport._lower, -extent, -extent);
+      if (lower == null) {
+         lower = viewport._lower;
+      }
+
+      IVector2 upper = scaler.increment(viewport._upper, extent, extent);
+      if (upper == null) {
+         upper = viewport._upper;
+      }
 
       return new GAxisAlignedRectangle(lower, upper);
    }
@@ -87,7 +95,8 @@ class GVectorial2DRenderUnit
                                    final List<GStyled2DGeometry<?>> allSymbols,
                                    final GHolder<Boolean> hasGroupableSymbols) {
 
-      final GAxisAlignedRectangle nodeBounds = node.getMinimumBounds().asRectangle();
+      //      final GAxisAlignedRectangle nodeBounds = node.getMinimumBounds().asRectangle();
+      final GAxisAlignedRectangle nodeBounds = node.getBounds().asRectangle();
 
       if (!nodeBounds.touches(extendedRegion)) {
          return;

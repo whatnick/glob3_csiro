@@ -4,10 +4,13 @@ package es.igosoftware.euclid.experimental.vectorial.rendering.styling;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Paint;
 import java.awt.Stroke;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.ICurve2D;
@@ -22,7 +25,8 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial
 import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GCurve2DStyle;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GNullSurface2DStyle;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyled2DGeometry;
-import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyledEllipse2D;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyledLabel2D;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyledOval2D;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyledPolygon2D;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyledPolygonalChain2D;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyledRectangle2D;
@@ -32,7 +36,7 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.I
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.ntree.GGTInnerNode;
 import es.igosoftware.euclid.ntree.GGTNode;
-import es.igosoftware.euclid.shape.GAxisAlignedEllipse2D;
+import es.igosoftware.euclid.shape.GAxisAlignedOval2D;
 import es.igosoftware.euclid.shape.IPolygon2D;
 import es.igosoftware.euclid.shape.IPolygonalChain2D;
 import es.igosoftware.euclid.vector.IVector2;
@@ -93,14 +97,28 @@ public abstract class GRenderingStyle2DAbstract
          return null;
       }
 
-      final boolean isInner = (node instanceof GGTInnerNode);
+      if (node.getElementsCount() == 0) {
+         return null;
+      }
 
-      final GAxisAlignedRectangle scaledBounds = (GAxisAlignedRectangle) scaler.scaleAndTranslate(node.getMinimumBounds());
+      final boolean isInner = (node instanceof GGTInnerNode);
 
       final ISurface2DStyle surfaceStyle = GNullSurface2DStyle.INSTANCE;
       final ICurve2DStyle curveStyle = isInner ? INNER_NODE_STYLE : LEAF_NODE_STYLE;
 
-      return Collections.singleton(new GStyledRectangle2D(scaledBounds, surfaceStyle, curveStyle));
+      final GAxisAlignedRectangle scaledBounds = (GAxisAlignedRectangle) scaler.scaleAndTranslate(node.getBounds());
+      final GStyledRectangle2D boundsRectangle = new GStyledRectangle2D(scaledBounds, surfaceStyle, curveStyle, Integer.MAX_VALUE);
+
+      final IVector2 position = scaledBounds._center;
+      final String msg = "" + node.getAllElementsCount();
+      final Font font = new Font("Dialog", Font.PLAIN, 8);
+
+      final GStyledLabel2D label = new GStyledLabel2D(position, msg, font);
+      //      return Collections.singleton(boundsRectangle);
+      @SuppressWarnings("unchecked")
+      final List<GStyled2DGeometry<? extends IBoundedGeometry2D<GAxisAlignedRectangle>>> symbols = Arrays.asList(boundsRectangle,
+               label);
+      return symbols;
    }
 
 
@@ -136,15 +154,15 @@ public abstract class GRenderingStyle2DAbstract
                                                                                                                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                                                                                                               final IVectorial2DRenderingScaler scaler) {
 
-      final IVector2 extent = calculateEllipseExtent(point, feature, scaler);
+      final IVector2 extent = calculateOvalExtent(point, feature, scaler);
 
       final IVector2 position = calculatePosition(point, feature, scaler, extent);
-      final GAxisAlignedEllipse2D ellipse = new GAxisAlignedEllipse2D(position, extent);
+      final GAxisAlignedOval2D oval = new GAxisAlignedOval2D(position, extent);
 
       final ISurface2DStyle surfaceStyle = getPointSurfaceStyle(point, feature, scaler);
       final ICurve2DStyle curveStyle = getPointCurveStyle(point, feature, scaler);
 
-      return Collections.singleton(new GStyledEllipse2D(ellipse, surfaceStyle, curveStyle));
+      return Collections.singleton(new GStyledOval2D(oval, surfaceStyle, curveStyle, 1000));
    }
 
 
@@ -174,9 +192,9 @@ public abstract class GRenderingStyle2DAbstract
    }
 
 
-   protected IVector2 calculateEllipseExtent(final IVector2 point,
-                                             final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                             final IVectorial2DRenderingScaler scaler) {
+   protected IVector2 calculateOvalExtent(final IVector2 point,
+                                          final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                          final IVectorial2DRenderingScaler scaler) {
       final IMeasure<GArea> pointSize = getPointSize(point, feature, scaler);
 
       final double areaInSquaredMeters = pointSize.getValueInReferenceUnits();
@@ -243,7 +261,7 @@ public abstract class GRenderingStyle2DAbstract
          final ISurface2DStyle surfaceStyle = getSurfaceStyle(surface, feature, scaler);
          final ICurve2DStyle curveStyle = getSurfaceCurveStyle(surface, feature, scaler);
 
-         return Collections.singleton(new GStyledPolygon2D(scaledPolygon, surfaceStyle, curveStyle));
+         return Collections.singleton(new GStyledPolygon2D(scaledPolygon, surfaceStyle, curveStyle, 0));
       }
 
       throw new RuntimeException("Surface type (" + surface.getClass() + ") not supported");
@@ -306,7 +324,7 @@ public abstract class GRenderingStyle2DAbstract
 
          final ICurve2DStyle curveStyle = getCurveStyle(curve, feature, scaler);
 
-         return Collections.singleton(new GStyledPolygonalChain2D(scaledPolygonalChain, curveStyle));
+         return Collections.singleton(new GStyledPolygonalChain2D(scaledPolygonalChain, curveStyle, 10));
       }
 
       throw new RuntimeException("Curve type (" + curve.getClass() + ") not supported");

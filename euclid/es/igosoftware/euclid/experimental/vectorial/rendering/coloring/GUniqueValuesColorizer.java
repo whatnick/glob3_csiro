@@ -18,8 +18,6 @@ import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.colors.IColor;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
-import es.igosoftware.euclid.features.IGlobeMutableFeatureCollection;
-import es.igosoftware.euclid.mutability.IMutable;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.IFunction;
@@ -30,12 +28,13 @@ public class GUniqueValuesColorizer
             GColorizerAbstract {
 
    private final String                                                                                  _fieldName;
+   private boolean                                                                                       _hasField;
+
    private final GColorScheme                                                                            _colorScheme;
    private final IColor                                                                                  _defaultColor;
    private final boolean                                                                                 _renderLegends;
    private final IFunction<Object, String>                                                               _labeler;
 
-   private int                                                                                           _fieldIndex;
    private List<String>                                                                                  _sortedLabels;
    private HashMap<String, IColor>                                                                       _colors;
 
@@ -73,24 +72,19 @@ public class GUniqueValuesColorizer
       }
       _lastFeatures = features;
 
-      if (features instanceof IGlobeMutableFeatureCollection) {
-         ((IGlobeMutableFeatureCollection) features).addChangeListener(new IMutable.ChangeListener() {
-            @Override
-            public void mutableChanged() {
-               _lastFeatures = null;
-            }
-         });
-      }
 
-      _fieldIndex = features.getFieldIndex(_fieldName);
-      if (_fieldIndex < 0) {
-         return;
+      _hasField = features.hasField(_fieldName);
+      if (!_hasField) {
+         throw new RuntimeException("Field " + _fieldName + " not found in " + features);
+         //         return;
       }
 
       final Set<String> labels = new HashSet<String>();
       for (final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature : features) {
-         final Object value = feature.getAttribute(_fieldIndex);
-         labels.add(_labeler.apply(value));
+         if (feature.hasAttribute(_fieldName)) {
+            final Object value = feature.getAttribute(_fieldName);
+            labels.add(_labeler.apply(value));
+         }
       }
 
       _sortedLabels = new ArrayList<String>(labels);
@@ -106,12 +100,11 @@ public class GUniqueValuesColorizer
 
    @Override
    public IColor getColor(final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature) {
-
-      if (_fieldIndex < 0) {
+      if (!_hasField) {
          return _defaultColor;
       }
 
-      final String value = _labeler.apply(feature.getAttribute(_fieldIndex));
+      final String value = _labeler.apply(feature.getAttribute(_fieldName));
       final IColor color = _colors.get(value);
       return (color == null) ? _defaultColor : color;
    }

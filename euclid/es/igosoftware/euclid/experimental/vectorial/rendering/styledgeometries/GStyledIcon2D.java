@@ -35,8 +35,9 @@ public class GStyledIcon2D
    public GStyledIcon2D(final IVector2 position,
                         final String iconName,
                         final BufferedImage icon,
-                        final float opacity) {
-      super(position, 0);
+                        final float opacity,
+                        final int priority) {
+      super(position, priority);
 
       GAssert.notNull(icon, "icon");
 
@@ -107,16 +108,18 @@ public class GStyledIcon2D
    @Override
    protected GStyledIcon2D getAverageSymbol(final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group) {
 
+      int maxPriority = Integer.MIN_VALUE;
       GVector2D sumPosition = GVector2D.ZERO;
       for (final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> each : group) {
          final GStyledIcon2D eachEllipse = (GStyledIcon2D) each;
          final IVector2 point = eachEllipse._geometry;
          sumPosition = sumPosition.add(point);
+         maxPriority = Math.max(maxPriority, each.getPriority());
       }
 
       final GVector2D averagePosition = sumPosition.div(group.size());
 
-      return new GStyledIcon2D(averagePosition, _iconName, _icon, _opacity);
+      return new GStyledIcon2D(averagePosition, _iconName, _icon, _opacity, maxPriority);
    }
 
 }

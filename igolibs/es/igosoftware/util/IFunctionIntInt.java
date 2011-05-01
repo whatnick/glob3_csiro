@@ -37,7 +37,7 @@
 package es.igosoftware.util;
 
 public interface IFunctionIntInt {
-   
+
    public int apply(final int element);
 
 }

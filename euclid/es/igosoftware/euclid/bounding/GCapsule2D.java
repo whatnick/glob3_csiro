@@ -199,4 +199,12 @@ public final class GCapsule2D
    }
 
 
+   @Override
+   public double perimeter() {
+      final double diskPerimeter = Math.PI * 2 * _radius;
+
+      return diskPerimeter + _segment.length() * 2;
+   }
+
+
 }

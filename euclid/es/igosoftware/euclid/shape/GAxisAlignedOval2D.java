@@ -11,7 +11,7 @@ import es.igosoftware.euclid.vector.IVectorFunction;
 import es.igosoftware.util.GAssert;
 
 
-public class GAxisAlignedEllipse2D
+public class GAxisAlignedOval2D
          extends
             GGeometryAbstract<IVector2>
          implements
@@ -27,8 +27,8 @@ public class GAxisAlignedEllipse2D
    private GAxisAlignedRectangle _bounds;
 
 
-   public GAxisAlignedEllipse2D(final IVector2 center,
-                                final IVector2 radius) {
+   public GAxisAlignedOval2D(final IVector2 center,
+                             final IVector2 radius) {
       GAssert.notNull(center, "center");
       GAssert.notNull(radius, "radius");
       GAssert.isPositive(radius.x(), "radius.x()");
@@ -135,7 +135,7 @@ public class GAxisAlignedEllipse2D
       if (getClass() != obj.getClass()) {
          return false;
       }
-      final GAxisAlignedEllipse2D other = (GAxisAlignedEllipse2D) obj;
+      final GAxisAlignedOval2D other = (GAxisAlignedOval2D) obj;
       if (_center == null) {
          if (other._center != null) {
             return false;
@@ -157,21 +157,21 @@ public class GAxisAlignedEllipse2D
 
 
    @Override
-   public GAxisAlignedEllipse2D transform(final IVectorFunction<IVector2> transformer) {
+   public GAxisAlignedOval2D transform(final IVectorFunction<IVector2> transformer) {
       if (transformer == null) {
          return this;
       }
 
       final GAxisAlignedRectangle transformedBounds = getBounds().transform(transformer);
 
-      return new GAxisAlignedEllipse2D(transformedBounds._center, transformedBounds.getExtent().div(2));
+      return new GAxisAlignedOval2D(transformedBounds._center, transformedBounds.getExtent().div(2));
    }
 
 
    @Override
    public boolean closeTo(final IBoundedGeometry<IVector2, GAxisAlignedRectangle> that) {
-      if (that instanceof GAxisAlignedEllipse2D) {
-         final GAxisAlignedEllipse2D thatAAE = (GAxisAlignedEllipse2D) that;
+      if (that instanceof GAxisAlignedOval2D) {
+         final GAxisAlignedOval2D thatAAE = (GAxisAlignedOval2D) that;
          return _center.closeTo(thatAAE._center) && _radius.closeTo(thatAAE._radius);
       }
       return false;
@@ -183,5 +183,18 @@ public class GAxisAlignedEllipse2D
       return Math.PI * _radius.x() * _radius.y();
    }
 
+
+   @Override
+   public double perimeter() {
+      //      // approximation from http://mathforum.org/library/drmath/view/54847.html
+      //      final double A = _radius.x();
+      //      final double B = _radius.y();
+      //
+      //      final double A3 = A * 3;
+      //      final double B3 = B * 3;
+      //
+      //      return Math.PI * ((A3 + B3) - GMath.sqrt((A + B3) * (B + A3)));
+      throw new RuntimeException("Not yet implemented");
+   }
 
 }

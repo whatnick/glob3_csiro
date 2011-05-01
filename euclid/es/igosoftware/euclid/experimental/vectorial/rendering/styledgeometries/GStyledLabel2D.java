@@ -65,6 +65,7 @@ public class GStyledLabel2D
 
    @Override
    public GAxisAlignedRectangle getBounds() {
+      final int TODO;
       return null;
    }
 

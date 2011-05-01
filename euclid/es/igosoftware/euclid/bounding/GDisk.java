@@ -140,4 +140,10 @@ public final class GDisk
    }
 
 
+   @Override
+   public double perimeter() {
+      return Math.PI * 2 * _radius;
+   }
+
+
 }

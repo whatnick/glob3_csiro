@@ -12,7 +12,6 @@ import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.ICurve2D;
 import es.igosoftware.euclid.ISurface2D;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
-import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.colors.GColorF;
 import es.igosoftware.euclid.colors.IColor;
 import es.igosoftware.euclid.experimental.measurement.GArea;
@@ -23,8 +22,6 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.styling.GRendering
 import es.igosoftware.euclid.features.GGeometryType;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
-import es.igosoftware.euclid.features.IGlobeMutableFeatureCollection;
-import es.igosoftware.euclid.mutability.IMutable;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
@@ -79,17 +76,6 @@ public class GGlobeVectorial2DRenderingStyle
 
       final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> featuresCollection = _layer.getFeaturesCollection();
 
-      if (featuresCollection instanceof IGlobeMutableFeatureCollection) {
-         @SuppressWarnings("unchecked")
-         final IGlobeMutableFeatureCollection<IVector2, ? extends IFiniteBounds<IVector2, ?>, ?> mutableFeaturesCollection = (IGlobeMutableFeatureCollection<IVector2, ? extends IFiniteBounds<IVector2, ?>, ?>) featuresCollection;
-
-         mutableFeaturesCollection.addChangeListener(new IMutable.ChangeListener() {
-            @Override
-            public void mutableChanged() {
-               final int __________Diego_at_work____Update_attributes;
-            }
-         });
-      }
 
       final EnumSet<GGeometryType> geometriesTypes = featuresCollection.getGeometryType();
 

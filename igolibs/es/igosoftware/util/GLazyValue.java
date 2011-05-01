@@ -36,10 +36,47 @@
 
 package es.igosoftware.util;
 
-public interface IFunctionIntByte {
+import java.util.Arrays;
 
 
-   public byte apply(final int element);
+public abstract class GLazyValue<T> {
+   private T       _value;
+   private boolean _initialized = false;
+
+
+   public T get() {
+      if (!_initialized) {
+         _value = calculateValue();
+         _initialized = true;
+      }
+      return _value;
+   }
+
+
+   protected abstract T calculateValue();
+
+
+   @Override
+   public String toString() {
+      return "GLazyValue [" + valueToString() + "]";
+   }
+
+
+   public String valueToString() {
+      if (!_initialized) {
+         return "<not initialized>";
+      }
+
+      if (_value == null) {
+         return "null";
+      }
+
+      if (_value instanceof Object[]) {
+         return Arrays.toString((Object[]) _value);
+      }
+
+      return _value.toString();
+   }
 
 
 }

@@ -22,8 +22,9 @@ public class GStyledRectangle2D
 
    public GStyledRectangle2D(final GAxisAlignedRectangle rectangle,
                              final ISurface2DStyle surfaceStyle,
-                             final ICurve2DStyle curveStyle) {
-      super(rectangle, surfaceStyle, curveStyle);
+                             final ICurve2DStyle curveStyle,
+                             final int priority) {
+      super(rectangle, surfaceStyle, curveStyle, priority);
 
    }
 
@@ -86,6 +87,7 @@ public class GStyledRectangle2D
 
    @Override
    protected GStyledRectangle2D getAverageSymbol(final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group) {
+      int maxPriority = Integer.MIN_VALUE;
 
       GVector2D sumLower = GVector2D.ZERO;
       GVector2D sumExtent = GVector2D.ZERO;
@@ -94,13 +96,14 @@ public class GStyledRectangle2D
          final GAxisAlignedRectangle ellipse = eachEllipse._geometry;
          sumLower = sumLower.add(ellipse._lower);
          sumExtent = sumExtent.add(ellipse._extent);
+         maxPriority = Math.max(maxPriority, each.getPriority());
       }
 
       final GVector2D averageLower = sumLower.div(group.size());
       final GVector2D averageExtent = sumExtent.div(group.size());
 
       return new GStyledRectangle2D(new GAxisAlignedRectangle(averageLower, averageLower.add(averageExtent)), _surfaceStyle,
-               _curveStyle);
+               _curveStyle, maxPriority);
    }
 
 

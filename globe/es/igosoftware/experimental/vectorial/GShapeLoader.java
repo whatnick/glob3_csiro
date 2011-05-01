@@ -71,6 +71,7 @@ import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.util.GIntHolder;
 import es.igosoftware.util.GProgress;
+import es.igosoftware.util.GStringUtils;
 
 
 public class GShapeLoader {
@@ -126,19 +127,21 @@ public class GShapeLoader {
    }
 
 
-   public static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> readFeatures(final GFileName fileName,
-                                                                                                                            final GProjection projection)
-                                                                                                                                                         throws IOException {
+   public static IGlobeFeatureCollection<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> readFeatures(final GFileName fileName,
+                                                                                                                  final GProjection projection)
+                                                                                                                                               throws IOException {
       return readFeatures(fileName.asFile(), projection);
    }
 
 
-   public static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> readFeatures(final File file,
-                                                                                                                            final GProjection projection)
-                                                                                                                                                         throws IOException {
+   public static IGlobeFeatureCollection<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> readFeatures(final File file,
+                                                                                                                  final GProjection projection)
+                                                                                                                                               throws IOException {
       if (!file.exists()) {
          throw new IOException("File not found!");
       }
+
+      final long start = System.currentTimeMillis();
 
       final FileDataStore store = FileDataStoreFinder.getDataStore(file);
 
@@ -292,6 +295,8 @@ public class GShapeLoader {
          fields.add(new GField(fieldName, fieldType));
       }
 
+      System.out.println("- Features loaded in " + GStringUtils.getTimeMessage(System.currentTimeMillis() - start, false));
+      System.out.println();
 
       return new GListFeatureCollection<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>>(GProjection.EPSG_4326,
                fields, euclidFeatures, GIOUtils.getUniqueID(file));

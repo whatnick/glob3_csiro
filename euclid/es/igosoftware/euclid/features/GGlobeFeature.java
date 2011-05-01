@@ -56,8 +56,10 @@ GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
          implements
             IGlobeFeature<VectorT, GeometryT> {
 
-   private final GeometryT    _geometry;
-   private final List<Object> _attributes;
+   private final GeometryT                             _geometry;
+   private final List<Object>                          _attributes;
+
+   private IGlobeFeatureCollection<VectorT, GeometryT> _featureCollection;
 
 
    public GGlobeFeature(final GeometryT geometry,
@@ -82,15 +84,39 @@ GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
    }
 
 
-   @Override
-   public Object getAttribute(final int index) {
-      return _attributes.get(index);
-   }
+   //   @Override
+   //   public Object getAttribute(final int index) {
+   //      return _attributes.get(index);
+   //   }
 
 
    @Override
    public String toString() {
       return "GGlobeFeature [geometry=" + _geometry + ", attributes=" + _attributes + "]";
+   }
+
+
+   @Override
+   public void setFeatureCollection(final IGlobeFeatureCollection<VectorT, GeometryT> featureCollection) {
+      if (_featureCollection != null) {
+         throw new RuntimeException("featureCollection already set");
+      }
+
+      GAssert.isTrue(featureCollection.getFieldsCount() == _attributes.size(), "Fields and Attributes don't match");
+
+      _featureCollection = featureCollection;
+   }
+
+
+   @Override
+   public Object getAttribute(final String fieldName) {
+      return _attributes.get(_featureCollection.getFieldIndex(fieldName));
+   }
+
+
+   @Override
+   public boolean hasAttribute(final String fieldName) {
+      return _featureCollection.hasField(fieldName);
    }
 
 }

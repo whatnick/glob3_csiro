@@ -37,6 +37,7 @@ import es.igosoftware.graph.GGraph;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GMath;
+import es.igosoftware.util.GStringUtils;
 import es.igosoftware.util.IFunction;
 
 
@@ -48,9 +49,19 @@ public class GVectorial2DRenderer {
 
    public GVectorial2DRenderer(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> features,
                                final boolean verbose) {
+      GAssert.notNull(features, "features");
+
+      final long start = System.currentTimeMillis();
+
       _features = features;
 
       _quadtree = createQuadtree(verbose);
+
+      if (verbose) {
+         System.out.println();
+         System.out.println("- Created renderer for " + features.size() + " features in "
+                            + GStringUtils.getTimeMessage(System.currentTimeMillis() - start, false));
+      }
    }
 
 
@@ -68,7 +79,7 @@ public class GVectorial2DRenderer {
          public boolean acceptLeafNodeCreation(final int depth,
                                                final GAxisAlignedOrthotope<IVector2, ?> bounds,
                                                final Collection<GElementGeometryPair<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> elements) {
-            if (depth >= 12) {
+            if (depth >= 20) {
                return true;
             }
 
@@ -318,13 +329,17 @@ public class GVectorial2DRenderer {
    private static List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> calculateNeighborhood(final GGeometryQuadtree<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbolsQuadtree,
                                                                                                                             final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbol,
                                                                                                                             final boolean considerIsGroupableWith) {
-      final GAxisAlignedRectangle bounds = toRoundedInt(symbol.getBounds());
-      final double minOverlapArea = bounds.area() * 0.25;
+      final GAxisAlignedRectangle symbolBounds = toRoundedInt(symbol.getBounds());
+      if (symbolBounds == null) {
+         return Collections.emptyList();
+      }
+      final int symbolPriority = symbol.getPriority();
+      final double minOverlapArea = symbolBounds.area() * 0.25;
 
       final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> neighborhood = new LinkedList<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>();
 
       symbolsQuadtree.breadthFirstAcceptVisitor(
-               bounds,
+               symbolBounds,
                new IGTBreadFirstVisitor<IVector2, GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>>() {
                   @Override
                   public void visitOctree(final GGeometryNTree<IVector2, GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> octree) {
@@ -352,11 +367,13 @@ public class GVectorial2DRenderer {
                         }
 
                         if (element.isGroupable()) {
-                           if (!considerIsGroupableWith || element.isGroupableWith(symbol)) {
-                              final GAxisAlignedRectangle geometryBounds = toRoundedInt(element.getBounds());
-                              if (bounds.touchesBounds(geometryBounds)
-                                  && (bounds.intersection(geometryBounds).area() >= minOverlapArea)) {
-                                 neighborhood.add(element);
+                           if (element.getPriority() == symbolPriority) {
+                              if (!considerIsGroupableWith || element.isGroupableWith(symbol)) {
+                                 final GAxisAlignedRectangle geometryBounds = toRoundedInt(element.getBounds());
+                                 if (symbolBounds.touchesBounds(geometryBounds)
+                                     && (symbolBounds.intersection(geometryBounds).area() >= minOverlapArea)) {
+                                    neighborhood.add(element);
+                                 }
                               }
                            }
                         }
@@ -384,6 +401,10 @@ public class GVectorial2DRenderer {
 
 
    private static GAxisAlignedRectangle toRoundedInt(final GAxisAlignedRectangle rectangle) {
+      if (rectangle == null) {
+         return null;
+      }
+
       return new GAxisAlignedRectangle(toRoundedInt(rectangle._lower), toRoundedInt(rectangle._upper));
    }
 

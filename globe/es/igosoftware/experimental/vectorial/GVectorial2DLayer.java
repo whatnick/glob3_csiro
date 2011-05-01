@@ -45,8 +45,6 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorial2DRender
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle2D;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
-import es.igosoftware.euclid.features.IGlobeMutableFeatureCollection;
-import es.igosoftware.euclid.mutability.IMutable;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
@@ -774,22 +772,6 @@ public class GVectorial2DLayer
       _name = name;
       _features = features;
 
-      if (_features.isEditable()) {
-         if (features instanceof IGlobeMutableFeatureCollection) {
-            @SuppressWarnings("unchecked")
-            final IGlobeMutableFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>, ?> editableFeatures = (IGlobeMutableFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>, ?>) features;
-
-            editableFeatures.addChangeListener(new IMutable.ChangeListener() {
-               @Override
-               public void mutableChanged() {
-                  featuresChanged();
-               }
-            });
-         }
-         else {
-            System.err.println("editable features type not supported (" + features.getClass());
-         }
-      }
 
       featuresChanged(); // force initial calculation of features related info
 

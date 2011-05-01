@@ -592,14 +592,6 @@ public final class GAxisAlignedRectangle
    }
 
 
-   @Override
-   public double area() {
-      final double width = getWidth();
-      final double height = getHeight();
-      return width * height;
-   }
-
-
    private double getWidth() {
       return _upper.x() - _lower.x();
    }
@@ -637,6 +629,22 @@ public final class GAxisAlignedRectangle
       }
 
       return new GAxisAlignedRectangle(_lower.max(that._lower), _upper.min(that._upper));
+   }
+
+
+   @Override
+   public double area() {
+      final double width = getWidth();
+      final double height = getHeight();
+      return width * height;
+   }
+
+
+   @Override
+   public double perimeter() {
+      final double width = getWidth();
+      final double height = getHeight();
+      return (width + height) * 2;
    }
 
 
