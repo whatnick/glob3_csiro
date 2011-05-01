@@ -20,9 +20,10 @@ public class GStyledPolygonalChain2D
 
 
    public GStyledPolygonalChain2D(final IPolygonalChain2D polygonalChain,
+                                  final String label,
                                   final ICurve2DStyle curveStyle,
                                   final int priority) {
-      super(polygonalChain, curveStyle, priority);
+      super(polygonalChain, label, curveStyle, priority);
    }
 
 
@@ -63,7 +64,8 @@ public class GStyledPolygonalChain2D
 
 
    @Override
-   protected GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> getAverageSymbol(final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group) {
+   protected GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> getAverageSymbol(final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group,
+                                                                                                            final String label) {
       return null;
    }
 

@@ -1450,8 +1450,8 @@ public final class GCollections {
    }
 
 
-   public static <T> T theOnlyOne(final Iterable<T> iterable) {
-      final Iterator<T> iterator = iterable.iterator();
+   public static <T> T theOnlyOne(final Iterable<? extends T> iterable) {
+      final Iterator<? extends T> iterator = iterable.iterator();
 
       if (!iterator.hasNext()) {
          throw new RuntimeException("Iterable is empty");

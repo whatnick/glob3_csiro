@@ -20,10 +20,11 @@ public class GStyledOval2D
 
 
    public GStyledOval2D(final GAxisAlignedOval2D ellipse,
+                        final String label,
                         final ISurface2DStyle surfaceStyle,
                         final ICurve2DStyle curveStyle,
                         final int priority) {
-      super(ellipse, surfaceStyle, curveStyle, priority);
+      super(ellipse, label, surfaceStyle, curveStyle, priority);
    }
 
 
@@ -81,7 +82,8 @@ public class GStyledOval2D
 
 
    @Override
-   protected GStyledOval2D getAverageSymbol(final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group) {
+   protected GStyledOval2D getAverageSymbol(final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group,
+                                            final String label) {
 
       int maxPriority = Integer.MIN_VALUE;
       GVector2D sumCenter = GVector2D.ZERO;
@@ -97,7 +99,8 @@ public class GStyledOval2D
       final GVector2D averageCenter = sumCenter.div(group.size());
       final GVector2D averageRadius = sumRadius.div(group.size());
 
-      return new GStyledOval2D(new GAxisAlignedOval2D(averageCenter, averageRadius), _surfaceStyle, _curveStyle, maxPriority);
+      return new GStyledOval2D(new GAxisAlignedOval2D(averageCenter, averageRadius), label, _surfaceStyle, _curveStyle,
+               maxPriority);
    }
 
 

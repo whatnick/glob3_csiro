@@ -30,10 +30,11 @@ public class GStyledPolygon2D
 
 
    public GStyledPolygon2D(final IPolygon2D polygon,
+                           final String label,
                            final ISurface2DStyle surfaceStyle,
                            final ICurve2DStyle curveStyle,
                            final int priority) {
-      super(polygon, surfaceStyle, curveStyle, priority);
+      super(polygon, label, surfaceStyle, curveStyle, priority);
 
       _polygonShape = initializeShape();
    }
@@ -125,7 +126,8 @@ public class GStyledPolygon2D
 
 
    @Override
-   protected GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> getAverageSymbol(final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group) {
+   protected GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> getAverageSymbol(final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group,
+                                                                                                            final String label) {
       return null;
    }
 

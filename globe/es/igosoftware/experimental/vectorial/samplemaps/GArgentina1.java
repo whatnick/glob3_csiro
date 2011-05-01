@@ -34,11 +34,12 @@
 */
 
 
-package es.igosoftware.experimental.vectorial;
+package es.igosoftware.experimental.vectorial.samplemaps;
 
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -84,21 +85,26 @@ import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.multigeometry.GMultiGeometry2D;
 import es.igosoftware.euclid.projection.GProjection;
+import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.GVector2I;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVectorI2;
+import es.igosoftware.experimental.vectorial.GShapeLoader;
 import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
+import es.igosoftware.util.GMath;
 import es.igosoftware.util.GStringUtils;
 import es.igosoftware.util.GUtils;
 import es.igosoftware.util.IFunction;
 import es.igosoftware.utils.GWWUtils;
 
 
-public class GVectorial2DRenderingTest {
+public class GArgentina1 {
+
+
    public static void main(final String[] args) throws IOException {
-      System.out.println("Vectorial2D Rendering Test 0.1");
-      System.out.println("------------------------------\n");
+      System.out.println("GArgentina1 0.1");
+      System.out.println("---------------\n");
 
 
       final GProjection projection = GProjection.EPSG_4326;
@@ -135,11 +141,13 @@ public class GVectorial2DRenderingTest {
       final double lodMinSize = 4;
       final int textureDimension = 256;
       final boolean debugRendering = false;
+      final boolean drawBackgroundImage = true;
 
       final IVectorI2 imageExtent = calculateImageExtent(textureDimension, viewport);
 
       final GVectorial2DRenderer renderer = new GVectorial2DRenderer(compositeFeatures, true);
-      final IRenderingStyle2D renderingStyle = createRenderingStyle(renderLODIgnores, lodMinSize, debugRendering);
+      final IRenderingStyle2D renderingStyle = createRenderingStyle(viewport, drawBackgroundImage, renderLODIgnores, lodMinSize,
+               debugRendering);
 
       GIOUtils.assureEmptyDirectory(directoryName, false);
 
@@ -155,7 +163,7 @@ public class GVectorial2DRenderingTest {
       }
 
       final int depth = 0;
-      final int maxDepth = 5;
+      final int maxDepth = 4;
       render(renderer, renderingStyle, viewport, imageExtent, directoryName, depth, maxDepth);
 
       System.out.println();
@@ -182,7 +190,26 @@ public class GVectorial2DRenderingTest {
    }
 
 
-   private static GRenderingStyle2DAbstract createRenderingStyle(final boolean renderLODIgnores,
+   private static GAxisAlignedRectangle getRegionOfImage(final GAxisAlignedRectangle imageRegion,
+                                                         final GVector2D imageExtent,
+                                                         final GAxisAlignedRectangle viewPort) {
+      final IVector2 imageRegionLower = imageRegion._lower;
+      final IVector2 imageRegionExtent = imageRegion._extent;
+
+      final IVector2 regionLower = viewPort._lower.sub(imageRegionLower).div(imageRegionExtent).scale(imageExtent);
+      final IVector2 regionUpper = viewPort._upper.sub(imageRegionLower).div(imageRegionExtent).scale(imageExtent);
+
+      final IVector2 regionExtent = regionUpper.sub(regionLower);
+
+      final IVector2 regionLowerFlipped = new GVector2D(regionLower.x(), imageExtent.y() - regionLower.y() - regionExtent.y());
+
+      return new GAxisAlignedRectangle(regionLowerFlipped, regionLowerFlipped.add(regionExtent));
+   }
+
+
+   private static GRenderingStyle2DAbstract createRenderingStyle(final GAxisAlignedRectangle viewport,
+                                                                 final boolean drawBackgroundImage,
+                                                                 final boolean renderLODIgnores,
                                                                  final double lodMinSize,
                                                                  final boolean debugRendering) throws IOException {
 
@@ -191,6 +218,8 @@ public class GVectorial2DRenderingTest {
       final BufferedImage automotiveIcon = ImageIO.read(GFileName.fromParentAndParts(symbologyDirectory, "automotive-128x128.png").asFile());
       final BufferedImage governmentIcon = ImageIO.read(GFileName.fromParentAndParts(symbologyDirectory, "government-128x128.png").asFile());
 
+
+      final BufferedImage backgroundImage = drawBackgroundImage ? createBackgroundImage(viewport) : null;
 
       final GColorScheme colorScheme = GColorBrewerColorSchemeSet.INSTANCE.getSchemes(9, GColorScheme.Type.Qualitative).get(2);
 
@@ -333,12 +362,11 @@ public class GVectorial2DRenderingTest {
                final ICurve2DStyle curveStyle = getPointCurveStyle(point, feature, scaler);
 
                final GAxisAlignedRectangle rectangle = new GAxisAlignedRectangle(position, position.add(extent));
-               return Collections.singleton(new GStyledRectangle2D(rectangle, surfaceStyle, curveStyle, 1000));
+               return Collections.singleton(new GStyledRectangle2D(rectangle, null, surfaceStyle, curveStyle, 1000));
             }
             else {
                return super.getPointSymbols(point, feature, scaler);
             }
-            //            return super.getPointSymbols(point, feature, scaler);
          }
 
 
@@ -354,7 +382,7 @@ public class GVectorial2DRenderingTest {
             final BufferedImage scaledIcon = GIconUtils.getScaledImage(icon, extent);
 
 
-            return new GStyledIcon2D(position, iconName, scaledIcon, 0.75f, 1000);
+            return new GStyledIcon2D(position, null, iconName, scaledIcon, 0.75f, 1000);
          }
 
 
@@ -407,6 +435,25 @@ public class GVectorial2DRenderingTest {
 
          @Override
          public void preRenderImage(final BufferedImage renderedImage) {
+            fillImage(renderedImage, GColorF.newRGB256(211, 237, 249).darker().asAWTColor());
+
+            if (backgroundImage != null) {
+               final Graphics2D g2d = renderedImage.createGraphics();
+               g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+               g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+               g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+               g2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+               g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+               g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+
+               g2d.drawImage(backgroundImage, //
+                        0, 0, renderedImage.getWidth(), renderedImage.getHeight(), //
+                        null);
+
+               g2d.dispose();
+            }
+
             _pointColorizer.preRenderImage(renderedImage);
          }
 
@@ -494,8 +541,7 @@ public class GVectorial2DRenderingTest {
 
          @Override
          public boolean isClusterSymbols() {
-            final int ____TODO__test_clustering_with_priorities;
-            return false;
+            return true;
          }
 
 
@@ -551,6 +597,34 @@ public class GVectorial2DRenderingTest {
    }
 
 
+   protected static BufferedImage createBackgroundImage(final GAxisAlignedRectangle viewport) throws IOException {
+      //      final GFileName blueMarbleFileName = GFileName.absolute("home", "dgd", "Desktop", "Data For Maps", "bluemarble",
+      //      "2_no_clouds_8k.jpg");
+      //      final GFileName blueMarbleFileName = GFileName.absolute("home", "dgd", "Desktop", "Data For Maps", "bluemarble",
+      //      "etopo2ShadedBlueMarbleLight4left10.jpg");
+      //      final GFileName blueMarbleFileName = GFileName.absolute("home", "dgd", "Desktop", "Data For Maps", "bluemarble",
+      //      "world.topo.bathy.200407.3x21600x10800.jpg");
+      final GFileName blueMarbleFileName = GFileName.absolute("home", "dgd", "Desktop", "Data For Maps", "bluemarble",
+               "oceans.jpg");
+
+      final BufferedImage fullBlueMarble = ImageIO.read(blueMarbleFileName.asFile());
+      final GAxisAlignedRectangle blueMarbleBounds = new GAxisAlignedRectangle(new GVector2D(-Math.PI, -Math.PI / 2),
+               new GVector2D(Math.PI, Math.PI / 2));
+      final GVector2D blueMarbleImageExtent = new GVector2D(fullBlueMarble.getWidth(), fullBlueMarble.getHeight());
+
+      final GAxisAlignedRectangle imageRegion = getRegionOfImage(blueMarbleBounds, blueMarbleImageExtent, viewport);
+
+      final int x = GMath.toRoundedInt(imageRegion._lower.x());
+      final int y = GMath.toRoundedInt(imageRegion._lower.y());
+      final int w = GMath.toRoundedInt(imageRegion._extent.x());
+      final int h = GMath.toRoundedInt(imageRegion._extent.y());
+
+      final BufferedImage result = fullBlueMarble.getSubimage(x, y, w, h);
+      System.out.println("- Created background image (" + result.getWidth() + "x" + result.getHeight() + ")");
+      return result;
+   }
+
+
    private static IBoundedGeometry2D<? extends IFinite2DBounds<?>> getBiggestGeometry(final GMultiGeometry2D<IBoundedGeometry2D<? extends IFinite2DBounds<?>>> multigeometry) {
       IBoundedGeometry2D<? extends IFinite2DBounds<?>> biggestGeometry = null;
       double biggestArea = Double.NEGATIVE_INFINITY;
@@ -578,9 +652,6 @@ public class GVectorial2DRenderingTest {
 
       final BufferedImage image = new BufferedImage(imageExtent.x(), imageExtent.y(), BufferedImage.TYPE_4BYTE_ABGR);
       image.setAccelerationPriority(1);
-
-      //      fillImage(image, GColorF.newRGB256(135, 183, 219).asAWTColor());
-      fillImage(image, GColorF.newRGB256(211, 237, 249).darker().asAWTColor());
 
       final IVectorial2DDrawer drawer = new GJava2DVectorial2DDrawer(image, true);
 

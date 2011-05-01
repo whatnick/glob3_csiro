@@ -3,13 +3,15 @@
 package es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
+import es.igosoftware.euclid.colors.GColorF;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
-import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.util.GAssert;
 
@@ -22,15 +24,18 @@ GeometryT extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>
 
 
    protected final GeometryT _geometry;
+   private final String      _label;
    private final int         _priority;
    private int               _position = -1;
 
 
    protected GStyled2DGeometry(final GeometryT geometry,
+                               final String label,
                                final int priority) {
       GAssert.notNull(geometry, "geometry");
 
       _geometry = geometry;
+      _label = label;
       _priority = priority;
    }
 
@@ -55,21 +60,12 @@ GeometryT extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>
                           final double lodMinSize,
                           final boolean debugRendering,
                           final boolean renderLODIgnores) {
-      draw(drawer, lodMinSize, debugRendering, renderLODIgnores, null);
-   }
-
-
-   public final void draw(final IVectorial2DDrawer drawer,
-                          final double lodMinSize,
-                          final boolean debugRendering,
-                          final boolean renderLODIgnores,
-                          final String label) {
       GAssert.isTrue(_position != -1, "_position not initialized (" + this + ")");
 
       if (isBigger(lodMinSize)) {
          draw(drawer, debugRendering);
-         if (label != null) {
-            drawLabel(drawer, label);
+         if (_label != null) {
+            drawLabel(drawer);
          }
       }
       else {
@@ -80,12 +76,10 @@ GeometryT extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>
    }
 
 
-   private void drawLabel(final IVectorial2DDrawer drawer,
-                          final String label) {
-
+   private void drawLabel(final IVectorial2DDrawer drawer) {
       final IVector2 position = getBounds().getCentroid();
 
-      drawer.drawShadowedStringCentered(label, position, Color.BLACK, 1, new Color(255, 255, 255, 127));
+      drawer.drawShadowedStringCentered(_label, position, Color.BLACK, 1, new Color(255, 255, 255, 127));
    }
 
 
@@ -114,12 +108,7 @@ GeometryT extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>
    public abstract GAxisAlignedRectangle getBounds();
 
 
-   public void drawGroup(final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group,
-                         final IVectorial2DDrawer drawer,
-                         final double lodMinSize,
-                         final boolean debugRendering,
-                         final boolean renderLODIgnores) {
-      final String label = Integer.toString(group.size());
+   public final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> createGroupSymbols(final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group) {
 
       boolean allSameClass = true;
       final Class<? extends GStyled2DGeometry> klass = getClass();
@@ -130,37 +119,38 @@ GeometryT extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>
          }
       }
 
+      final String label = Integer.toString(group.size());
+
       if (allSameClass) {
-         //         for (final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> each : group) {
-         //            final GAxisAlignedRectangle bounds = each.getBounds();
-         //
-         //            each.draw(drawer, debugRendering);
-         //            drawer.fillRect(bounds, new Color(200, 200, 200, 127));
-         //         }
-
-         final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> averageSymbol = getAverageSymbol(group);
+         final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> averageSymbol = getAverageSymbol(
+                  group, label);
          averageSymbol.setPosition(_position);
-         averageSymbol.draw(drawer, lodMinSize, debugRendering, renderLODIgnores, label);
+         return Collections.singleton(averageSymbol);
       }
-      else {
-         IVector2 lower = GVector2D.POSITIVE_INFINITY;
-         IVector2 upper = GVector2D.NEGATIVE_INFINITY;
-         for (final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> each : group) {
-            final GAxisAlignedRectangle bounds = each.getBounds();
-            lower = lower.min(bounds._lower);
-            upper = upper.max(bounds._upper);
 
-            drawer.fillRect(bounds, new Color(255, 0, 0, 127));
-            each.draw(drawer, debugRendering);
-         }
-         final GAxisAlignedRectangle groupBounds = new GAxisAlignedRectangle(lower, upper);
-         drawer.fillRect(groupBounds, new Color(255, 0, 0, 64));
-         drawer.drawShadowedStringCentered(label, groupBounds._center, Color.BLACK, 1, new Color(255, 255, 255, 127));
+      final Collection<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> result = new ArrayList<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>();
+
+      GAxisAlignedRectangle mergedBounds = null;
+      for (final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> each : group) {
+
+         final GAxisAlignedRectangle bounds = each.getBounds();
+         mergedBounds = (mergedBounds == null) ? bounds : mergedBounds.mergedWith(bounds);
+
+         result.add(each);
       }
+
+      final ISurface2DStyle surfaceStyle = new GSurface2DStyle(GColorF.RED, 0.5f);
+      final ICurve2DStyle curveStyle = GNullCurve2DStyle.INSTANCE;
+      final GStyledRectangle2D rectangle = new GStyledRectangle2D(mergedBounds, label, surfaceStyle, curveStyle, 10000000);
+      rectangle.setPosition(_position);
+      result.add(rectangle);
+
+      return result;
    }
 
 
-   protected abstract GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> getAverageSymbol(final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group);
+   protected abstract GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> getAverageSymbol(final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group,
+                                                                                                                     final String label);
 
 
 }

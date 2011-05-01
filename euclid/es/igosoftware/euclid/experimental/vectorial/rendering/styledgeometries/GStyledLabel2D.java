@@ -24,7 +24,7 @@ public class GStyledLabel2D
    public GStyledLabel2D(final IVector2 position,
                          final String label,
                          final Font font) {
-      super(position, 1000000);
+      super(position, null, 1000000);
 
       _label = label;
       _font = font;
@@ -71,7 +71,8 @@ public class GStyledLabel2D
 
 
    @Override
-   protected GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> getAverageSymbol(final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group) {
+   protected GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> getAverageSymbol(final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group,
+                                                                                                            final String label) {
       return null;
    }
 

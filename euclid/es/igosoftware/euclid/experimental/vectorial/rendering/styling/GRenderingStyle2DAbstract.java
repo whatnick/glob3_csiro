@@ -107,7 +107,8 @@ public abstract class GRenderingStyle2DAbstract
       final ICurve2DStyle curveStyle = isInner ? INNER_NODE_STYLE : LEAF_NODE_STYLE;
 
       final GAxisAlignedRectangle scaledBounds = (GAxisAlignedRectangle) scaler.scaleAndTranslate(node.getBounds());
-      final GStyledRectangle2D boundsRectangle = new GStyledRectangle2D(scaledBounds, surfaceStyle, curveStyle, Integer.MAX_VALUE);
+      final GStyledRectangle2D boundsRectangle = new GStyledRectangle2D(scaledBounds, null, surfaceStyle, curveStyle,
+               Integer.MAX_VALUE);
 
       final IVector2 position = scaledBounds._center;
       final String msg = "" + node.getAllElementsCount();
@@ -162,7 +163,7 @@ public abstract class GRenderingStyle2DAbstract
       final ISurface2DStyle surfaceStyle = getPointSurfaceStyle(point, feature, scaler);
       final ICurve2DStyle curveStyle = getPointCurveStyle(point, feature, scaler);
 
-      return Collections.singleton(new GStyledOval2D(oval, surfaceStyle, curveStyle, 1000));
+      return Collections.singleton(new GStyledOval2D(oval, null, surfaceStyle, curveStyle, 1000));
    }
 
 
@@ -261,7 +262,7 @@ public abstract class GRenderingStyle2DAbstract
          final ISurface2DStyle surfaceStyle = getSurfaceStyle(surface, feature, scaler);
          final ICurve2DStyle curveStyle = getSurfaceCurveStyle(surface, feature, scaler);
 
-         return Collections.singleton(new GStyledPolygon2D(scaledPolygon, surfaceStyle, curveStyle, 0));
+         return Collections.singleton(new GStyledPolygon2D(scaledPolygon, null, surfaceStyle, curveStyle, 0));
       }
 
       throw new RuntimeException("Surface type (" + surface.getClass() + ") not supported");
@@ -324,7 +325,7 @@ public abstract class GRenderingStyle2DAbstract
 
          final ICurve2DStyle curveStyle = getCurveStyle(curve, feature, scaler);
 
-         return Collections.singleton(new GStyledPolygonalChain2D(scaledPolygonalChain, curveStyle, 10));
+         return Collections.singleton(new GStyledPolygonalChain2D(scaledPolygonalChain, null, curveStyle, 10));
       }
 
       throw new RuntimeException("Curve type (" + curve.getClass() + ") not supported");

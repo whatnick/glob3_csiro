@@ -27,9 +27,10 @@ GeometryT extends ICurve2D<? extends IFinite2DBounds<?>>
 
 
    protected GStyledCurve2D(final GeometryT geometry,
+                            final String label,
                             final ICurve2DStyle curveStyle,
                             final int priority) {
-      super(geometry, priority);
+      super(geometry, label, priority);
 
       GAssert.notNull(curveStyle, "curveStyle");
 
