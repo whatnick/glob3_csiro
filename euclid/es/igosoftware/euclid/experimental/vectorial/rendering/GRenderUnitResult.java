@@ -6,7 +6,7 @@ import java.util.List;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
-import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GSymbol2D;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSymbol2D;
 
 
 public class GRenderUnitResult {

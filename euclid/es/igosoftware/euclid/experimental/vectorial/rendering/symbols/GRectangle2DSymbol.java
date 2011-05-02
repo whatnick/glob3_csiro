@@ -1,6 +1,6 @@
 
 
-package es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries;
+package es.igosoftware.euclid.experimental.vectorial.rendering.symbols;
 
 
 import java.awt.Paint;
