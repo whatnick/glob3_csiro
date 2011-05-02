@@ -80,25 +80,25 @@ public class GRamerDouglasPeuckerAlgorithm<VectorT extends IVector<VectorT, ?>>
    private List<VectorT> simplifyDouglasPeucker(final List<VectorT> points,
                                                 final double epsilon) {
 
-      if (points.size() < 2) {
+
+      if (points.size() <= 2) {
          return new ArrayList<VectorT>(points);
       }
 
+
       //Find the point with the maximum distance
-      double maxDistance = Double.NEGATIVE_INFINITY;
-      int maxIndex = -1;
       final int endPos = points.size() - 1;
 
-      final VectorT from = points.get(0);
-      final VectorT to = points.get(endPos);
+      final VectorT first = points.get(0);
+      final VectorT last = points.get(endPos);
+      final GSegment<VectorT, ?, ?> segment = GSegment.create(first, last);
 
-
-      final GSegment<VectorT, ?, ?> segment = GSegment.create(from, to);
-
-      for (int i = 1; i < endPos /*- 1*/; i++) {
-         final double currentDistance = segment.distance(points.get(i));
-         if (currentDistance > maxDistance) {
-            maxDistance = currentDistance;
+      double maxSquaredDistance = Double.NEGATIVE_INFINITY;
+      int maxIndex = -1;
+      for (int i = 1; i < endPos; i++) {
+         final double currentSquaredDistance = segment.squaredDistance(points.get(i));
+         if (currentSquaredDistance > maxSquaredDistance) {
+            maxSquaredDistance = currentSquaredDistance;
             maxIndex = i;
          }
       }
@@ -106,7 +106,8 @@ public class GRamerDouglasPeuckerAlgorithm<VectorT extends IVector<VectorT, ?>>
 
       final List<VectorT> result = new ArrayList<VectorT>();
 
-      if (maxDistance > epsilon) {
+      final double squaredEpsilon = epsilon * epsilon;
+      if (maxSquaredDistance > squaredEpsilon) {
          //If max distance is greater than epsilon, recursively simplify
          final List<VectorT> recResults1 = simplifyDouglasPeucker(points.subList(0, maxIndex + 1), epsilon);
          final List<VectorT> recResults2 = simplifyDouglasPeucker(points.subList(maxIndex, endPos + 1), epsilon);
@@ -115,8 +116,8 @@ public class GRamerDouglasPeuckerAlgorithm<VectorT extends IVector<VectorT, ?>>
          result.addAll(recResults2);
       }
       else {
-         result.add(from);
-         result.add(to);
+         result.add(first);
+         result.add(last);
       }
 
       return result;
