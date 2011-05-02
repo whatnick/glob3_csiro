@@ -34,7 +34,7 @@
 */
 
 
-package es.igosoftware.euclid.utils;
+package es.igosoftware.euclid.experimental.algorithms;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,6 +44,7 @@ import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.shape.GTriangle2D;
+import es.igosoftware.euclid.utils.GGeometry2DRenderer;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.GVector2I;
 import es.igosoftware.euclid.vector.IVector2;
@@ -53,7 +54,42 @@ import es.igosoftware.util.GMath;
 import es.igosoftware.util.GStringUtils;
 
 
-public class GVoronoiTriangulator {
+public class GDelaunayTriangulator2D
+         implements
+            IAlgorithm<IVector2, GDelaunayTriangulator2D.Parameters, IVector2, GDelaunayTriangulator2D.Result> {
+
+
+   public class Parameters
+            implements
+               IAlgorithmParameters<IVector2> {
+
+      private final IVector2[] _points;
+
+
+      public Parameters(final IVector2... points) {
+         _points = points;
+      }
+   }
+
+
+   public class Result
+            implements
+               IAlgorithmResult<IVector2> {
+
+      private final GDelaunayTriangulator2D.IndexedTriangle[] _indexedTriangles;
+
+
+      private Result(final IndexedTriangle[] indexedTriangles) {
+         super();
+         _indexedTriangles = indexedTriangles;
+      }
+
+
+      public GDelaunayTriangulator2D.IndexedTriangle[] getIndexedTriangles() {
+         return _indexedTriangles;
+      }
+   }
+
 
    public static class IndexedTriangle {
       public final int _v0;
@@ -104,7 +140,7 @@ public class GVoronoiTriangulator {
 
    /*
      Return TRUE if a point is inside the circumcircle made up
-     of the points (x1,y1), (x2,y2), (x3,y3)
+     of the points (point0, point1, point2)
      The circumcircle is returned in circle
      NOTE: A point on the edge is inside the circumcircle
    */
@@ -408,6 +444,29 @@ public class GVoronoiTriangulator {
                GFileName.absolute("home", "dgd", "Desktop", "triangles.png"));
 
       System.out.println("- done!");
+   }
+
+
+   @Override
+   public String getName() {
+      return "Delaunay Triangulator 2D";
+   }
+
+
+   @Override
+   public String getDescription() {
+      return "In mathematics and computational geometry, a Delaunay triangulation for a set P of points in the plane is a "
+             + "triangulation DT(P) such that no point in P is inside the circumcircle of any triangle in DT(P). Delaunay "
+             + "triangulations maximize the minimum angle of all the angles of the triangles in the triangulation; they tend "
+             + "to avoid skinny triangles. The triangulation was invented by Boris Delaunay in 1934. "
+             + "See http://en.wikipedia.org/wiki/Delaunay_triangulation";
+   }
+
+
+   @Override
+   public GDelaunayTriangulator2D.Result apply(final GDelaunayTriangulator2D.Parameters parameters) {
+      final IndexedTriangle[] result = triangulate(parameters._points);
+      return new GDelaunayTriangulator2D.Result(result);
    }
 
 
