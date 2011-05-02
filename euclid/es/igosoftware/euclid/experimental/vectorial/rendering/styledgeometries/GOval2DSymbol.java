@@ -14,17 +14,18 @@ import es.igosoftware.euclid.shape.GAxisAlignedOval2D;
 import es.igosoftware.euclid.vector.GVector2D;
 
 
-public class GStyledOval2D
+public class GOval2DSymbol
          extends
-            GStyledSurface2D<GAxisAlignedOval2D> {
+            GSurface2DSymbol<GAxisAlignedOval2D> {
 
 
-   public GStyledOval2D(final GAxisAlignedOval2D ellipse,
+   public GOval2DSymbol(final GAxisAlignedOval2D ellipse,
                         final String label,
                         final ISurface2DStyle surfaceStyle,
                         final ICurve2DStyle curveStyle,
-                        final int priority) {
-      super(ellipse, label, surfaceStyle, curveStyle, priority);
+                        final int priority,
+                        final boolean groupable) {
+      super(ellipse, label, surfaceStyle, curveStyle, priority, groupable);
    }
 
 
@@ -51,15 +52,9 @@ public class GStyledOval2D
 
 
    @Override
-   public boolean isGroupable() {
-      return true;
-   }
-
-
-   @Override
-   public boolean isGroupableWith(final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> that) {
-      if (that instanceof GStyledOval2D) {
-         final GStyledOval2D thatOval = (GStyledOval2D) that;
+   public boolean isGroupableWith(final GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> that) {
+      if (that instanceof GOval2DSymbol) {
+         final GOval2DSymbol thatOval = (GOval2DSymbol) that;
          return _surfaceStyle.isGroupableWith(thatOval._surfaceStyle) && _curveStyle.isGroupableWith(thatOval._curveStyle);
       }
 
@@ -80,14 +75,14 @@ public class GStyledOval2D
 
 
    @Override
-   protected GStyledOval2D getAverageSymbol(final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group,
+   protected GOval2DSymbol getAverageSymbol(final Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group,
                                             final String label) {
 
       int maxPriority = Integer.MIN_VALUE;
       GVector2D sumCenter = GVector2D.ZERO;
       GVector2D sumRadius = GVector2D.ZERO;
-      for (final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> each : group) {
-         final GStyledOval2D eachEllipse = (GStyledOval2D) each;
+      for (final GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> each : group) {
+         final GOval2DSymbol eachEllipse = (GOval2DSymbol) each;
          final GAxisAlignedOval2D ellipse = eachEllipse._geometry;
          sumCenter = sumCenter.add(ellipse._center);
          sumRadius = sumRadius.add(ellipse._radius);
@@ -97,8 +92,8 @@ public class GStyledOval2D
       final GVector2D averageCenter = sumCenter.div(group.size());
       final GVector2D averageRadius = sumRadius.div(group.size());
 
-      return new GStyledOval2D(new GAxisAlignedOval2D(averageCenter, averageRadius), label, _surfaceStyle, _curveStyle,
-               maxPriority);
+      return new GOval2DSymbol(new GAxisAlignedOval2D(averageCenter, averageRadius), label, _surfaceStyle, _curveStyle,
+               maxPriority, false);
    }
 
 

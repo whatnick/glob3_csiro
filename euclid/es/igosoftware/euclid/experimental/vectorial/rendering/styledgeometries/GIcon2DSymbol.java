@@ -17,9 +17,9 @@ import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GUtils;
 
 
-public class GStyledIcon2D
+public class GIcon2DSymbol
          extends
-            GStyled2DGeometry<IVector2> {
+            GSymbol2D<IVector2> {
 
 
    private final String                _iconName;
@@ -32,13 +32,14 @@ public class GStyledIcon2D
    private final GAxisAlignedRectangle _bounds;
 
 
-   public GStyledIcon2D(final IVector2 position,
+   public GIcon2DSymbol(final IVector2 position,
                         final String label,
                         final String iconName,
                         final BufferedImage icon,
                         final float opacity,
-                        final int priority) {
-      super(position, label, priority);
+                        final int priority,
+                        final boolean groupable) {
+      super(position, label, priority, groupable);
 
       GAssert.notNull(icon, "icon");
 
@@ -80,15 +81,9 @@ public class GStyledIcon2D
 
 
    @Override
-   public boolean isGroupable() {
-      return true;
-   }
-
-
-   @Override
-   public boolean isGroupableWith(final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> that) {
-      if (that instanceof GStyledIcon2D) {
-         final GStyledIcon2D thatIcon = (GStyledIcon2D) that;
+   public boolean isGroupableWith(final GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> that) {
+      if (that instanceof GIcon2DSymbol) {
+         final GIcon2DSymbol thatIcon = (GIcon2DSymbol) that;
          return GUtils.equals(_iconName, thatIcon._iconName);
       }
 
@@ -103,13 +98,13 @@ public class GStyledIcon2D
 
 
    @Override
-   protected GStyledIcon2D getAverageSymbol(final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group,
+   protected GIcon2DSymbol getAverageSymbol(final Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group,
                                             final String label) {
 
       int maxPriority = Integer.MIN_VALUE;
       GVector2D sumPosition = GVector2D.ZERO;
-      for (final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> each : group) {
-         final GStyledIcon2D eachEllipse = (GStyledIcon2D) each;
+      for (final GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> each : group) {
+         final GIcon2DSymbol eachEllipse = (GIcon2DSymbol) each;
          final IVector2 point = eachEllipse._geometry;
          sumPosition = sumPosition.add(point);
          maxPriority = Math.max(maxPriority, each.getPriority());
@@ -117,7 +112,7 @@ public class GStyledIcon2D
 
       final GVector2D averagePosition = sumPosition.div(group.size());
 
-      return new GStyledIcon2D(averagePosition, label, _iconName, _icon, _opacity, maxPriority);
+      return new GIcon2DSymbol(averagePosition, label, _iconName, _icon, _opacity, maxPriority, false);
    }
 
 }

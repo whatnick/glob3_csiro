@@ -23,14 +23,14 @@ import es.igosoftware.euclid.experimental.measurement.GLength;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GCurve2DStyle;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GLabel2DSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GNullSurface2DStyle;
-import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyled2DGeometry;
-import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyledLabel2D;
-import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyledOval2D;
-import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyledPolygon2D;
-import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyledPolygonalChain2D;
-import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyledRectangle2D;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GOval2DSymbol;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GPolygon2DSymbol;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GPolygonalChain2DSymbol;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GRectangle2DSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GSurface2DStyle;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GSymbol2D;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.ICurve2DStyle;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.ISurface2DStyle;
 import es.igosoftware.euclid.features.IGlobeFeature;
@@ -91,8 +91,8 @@ public abstract class GRenderingStyle2DAbstract
    /* -------------------------------------------------------------------------------------- */
    /* nodes */
    @Override
-   public Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getNodeSymbols(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> node,
-                                                                                                                             final IVectorial2DRenderingScaler scaler) {
+   public Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getNodeSymbols(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> node,
+                                                                                                                     final IVectorial2DRenderingScaler scaler) {
       if (!isDebugRendering()) {
          return null;
       }
@@ -107,18 +107,17 @@ public abstract class GRenderingStyle2DAbstract
       final ICurve2DStyle curveStyle = isInner ? INNER_NODE_STYLE : LEAF_NODE_STYLE;
 
       final GAxisAlignedRectangle scaledBounds = (GAxisAlignedRectangle) scaler.scaleAndTranslate(node.getBounds());
-      final GStyledRectangle2D boundsRectangle = new GStyledRectangle2D(scaledBounds, null, surfaceStyle, curveStyle,
-               Integer.MAX_VALUE);
+      final GRectangle2DSymbol boundsRectangle = new GRectangle2DSymbol(scaledBounds, null, surfaceStyle, curveStyle,
+               Integer.MAX_VALUE, false);
 
       final IVector2 position = scaledBounds._center;
       final String msg = "" + node.getAllElementsCount();
       final Font font = new Font("Dialog", Font.PLAIN, 8);
 
-      final GStyledLabel2D label = new GStyledLabel2D(position, msg, font);
+      final GLabel2DSymbol label = new GLabel2DSymbol(position, msg, font);
       //      return Collections.singleton(boundsRectangle);
       @SuppressWarnings("unchecked")
-      final List<GStyled2DGeometry<? extends IBoundedGeometry2D<GAxisAlignedRectangle>>> symbols = Arrays.asList(boundsRectangle,
-               label);
+      final List<GSymbol2D<? extends IBoundedGeometry2D<GAxisAlignedRectangle>>> symbols = Arrays.asList(boundsRectangle, label);
       return symbols;
    }
 
@@ -151,9 +150,9 @@ public abstract class GRenderingStyle2DAbstract
 
 
    @Override
-   public Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getPointSymbols(final IVector2 point,
-                                                                                                                              final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                                                                                                              final IVectorial2DRenderingScaler scaler) {
+   public Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getPointSymbols(final IVector2 point,
+                                                                                                                      final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                                                                                                      final IVectorial2DRenderingScaler scaler) {
 
       final IVector2 extent = calculateOvalExtent(point, feature, scaler);
 
@@ -163,7 +162,7 @@ public abstract class GRenderingStyle2DAbstract
       final ISurface2DStyle surfaceStyle = getPointSurfaceStyle(point, feature, scaler);
       final ICurve2DStyle curveStyle = getPointCurveStyle(point, feature, scaler);
 
-      return Collections.singleton(new GStyledOval2D(oval, null, surfaceStyle, curveStyle, 1000));
+      return Collections.singleton(new GOval2DSymbol(oval, null, surfaceStyle, curveStyle, 1000, true));
    }
 
 
@@ -251,9 +250,9 @@ public abstract class GRenderingStyle2DAbstract
 
 
    @Override
-   public Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getSurfaceSymbols(final ISurface2D<? extends IFinite2DBounds<?>> surface,
-                                                                                                                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                                                                                                                final IVectorial2DRenderingScaler scaler) {
+   public Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getSurfaceSymbols(final ISurface2D<? extends IFinite2DBounds<?>> surface,
+                                                                                                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                                                                                                        final IVectorial2DRenderingScaler scaler) {
 
       if (surface instanceof IPolygon2D) {
          final IPolygon2D polygon = (IPolygon2D) surface;
@@ -262,7 +261,7 @@ public abstract class GRenderingStyle2DAbstract
          final ISurface2DStyle surfaceStyle = getSurfaceStyle(surface, feature, scaler);
          final ICurve2DStyle curveStyle = getSurfaceCurveStyle(surface, feature, scaler);
 
-         return Collections.singleton(new GStyledPolygon2D(scaledPolygon, null, surfaceStyle, curveStyle, 0));
+         return Collections.singleton(new GPolygon2DSymbol(scaledPolygon, null, surfaceStyle, curveStyle, 0));
       }
 
       throw new RuntimeException("Surface type (" + surface.getClass() + ") not supported");
@@ -315,9 +314,9 @@ public abstract class GRenderingStyle2DAbstract
 
 
    @Override
-   public Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getCurveSymbols(final ICurve2D<? extends IFinite2DBounds<?>> curve,
-                                                                                                                              final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                                                                                                              final IVectorial2DRenderingScaler scaler) {
+   public Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getCurveSymbols(final ICurve2D<? extends IFinite2DBounds<?>> curve,
+                                                                                                                      final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                                                                                                      final IVectorial2DRenderingScaler scaler) {
 
       if (curve instanceof IPolygonalChain2D) {
          final IPolygonalChain2D polygonalChain = (IPolygonalChain2D) curve;
@@ -325,7 +324,7 @@ public abstract class GRenderingStyle2DAbstract
 
          final ICurve2DStyle curveStyle = getCurveStyle(curve, feature, scaler);
 
-         return Collections.singleton(new GStyledPolygonalChain2D(scaledPolygonalChain, null, curveStyle, 10));
+         return Collections.singleton(new GPolygonalChain2DSymbol(scaledPolygonalChain, null, curveStyle, 10));
       }
 
       throw new RuntimeException("Curve type (" + curve.getClass() + ") not supported");

@@ -13,18 +13,18 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial
 import es.igosoftware.euclid.vector.IVector2;
 
 
-public class GStyledLabel2D
+public class GLabel2DSymbol
          extends
-            GStyled2DGeometry<IVector2> {
+            GSymbol2D<IVector2> {
 
    private final String _label;
    private final Font   _font;
 
 
-   public GStyledLabel2D(final IVector2 position,
+   public GLabel2DSymbol(final IVector2 position,
                          final String label,
                          final Font font) {
-      super(position, null, 1000000);
+      super(position, null, 1000000, false);
 
       _label = label;
       _font = font;
@@ -52,13 +52,7 @@ public class GStyledLabel2D
 
 
    @Override
-   public boolean isGroupable() {
-      return false;
-   }
-
-
-   @Override
-   public boolean isGroupableWith(final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> that) {
+   public boolean isGroupableWith(final GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> that) {
       return false;
    }
 
@@ -71,8 +65,8 @@ public class GStyledLabel2D
 
 
    @Override
-   protected GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> getAverageSymbol(final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group,
-                                                                                                            final String label) {
+   protected GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> getAverageSymbol(final Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group,
+                                                                                                    final String label) {
       return null;
    }
 

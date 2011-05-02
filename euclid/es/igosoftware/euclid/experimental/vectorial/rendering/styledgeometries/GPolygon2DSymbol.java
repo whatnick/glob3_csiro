@@ -21,20 +21,20 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.util.GMath;
 
 
-public class GStyledPolygon2D
+public class GPolygon2DSymbol
          extends
-            GStyledSurface2D<IPolygon2D> {
+            GSurface2DSymbol<IPolygon2D> {
 
 
    private final Shape _polygonShape;
 
 
-   public GStyledPolygon2D(final IPolygon2D polygon,
+   public GPolygon2DSymbol(final IPolygon2D polygon,
                            final String label,
                            final ISurface2DStyle surfaceStyle,
                            final ICurve2DStyle curveStyle,
                            final int priority) {
-      super(polygon, label, surfaceStyle, curveStyle, priority);
+      super(polygon, label, surfaceStyle, curveStyle, priority, false);
 
       _polygonShape = initializeShape();
    }
@@ -114,20 +114,14 @@ public class GStyledPolygon2D
 
 
    @Override
-   public boolean isGroupable() {
+   public boolean isGroupableWith(final GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> that) {
       return false;
    }
 
 
    @Override
-   public boolean isGroupableWith(final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> that) {
-      return false;
-   }
-
-
-   @Override
-   protected GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> getAverageSymbol(final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group,
-                                                                                                            final String label) {
+   protected GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> getAverageSymbol(final Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group,
+                                                                                                    final String label) {
       return null;
    }
 

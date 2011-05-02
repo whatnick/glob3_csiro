@@ -15,17 +15,18 @@ import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
 
 
-public class GStyledRectangle2D
+public class GRectangle2DSymbol
          extends
-            GStyledSurface2D<GAxisAlignedRectangle> {
+            GSurface2DSymbol<GAxisAlignedRectangle> {
 
 
-   public GStyledRectangle2D(final GAxisAlignedRectangle rectangle,
+   public GRectangle2DSymbol(final GAxisAlignedRectangle rectangle,
                              final String label,
                              final ISurface2DStyle surfaceStyle,
                              final ICurve2DStyle curveStyle,
-                             final int priority) {
-      super(rectangle, label, surfaceStyle, curveStyle, priority);
+                             final int priority,
+                             final boolean groupable) {
+      super(rectangle, label, surfaceStyle, curveStyle, priority, groupable);
 
    }
 
@@ -54,15 +55,9 @@ public class GStyledRectangle2D
 
 
    @Override
-   public boolean isGroupable() {
-      return true;
-   }
-
-
-   @Override
-   public boolean isGroupableWith(final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> that) {
-      if (that instanceof GStyledRectangle2D) {
-         final GStyledRectangle2D thatRect = (GStyledRectangle2D) that;
+   public boolean isGroupableWith(final GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> that) {
+      if (that instanceof GRectangle2DSymbol) {
+         final GRectangle2DSymbol thatRect = (GRectangle2DSymbol) that;
          return _surfaceStyle.isGroupableWith(thatRect._surfaceStyle) && _curveStyle.isGroupableWith(thatRect._curveStyle);
       }
 
@@ -84,14 +79,14 @@ public class GStyledRectangle2D
 
 
    @Override
-   protected GStyledRectangle2D getAverageSymbol(final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group,
+   protected GRectangle2DSymbol getAverageSymbol(final Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group,
                                                  final String label) {
       int maxPriority = Integer.MIN_VALUE;
 
       GVector2D sumLower = GVector2D.ZERO;
       GVector2D sumExtent = GVector2D.ZERO;
-      for (final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> each : group) {
-         final GStyledRectangle2D eachEllipse = (GStyledRectangle2D) each;
+      for (final GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> each : group) {
+         final GRectangle2DSymbol eachEllipse = (GRectangle2DSymbol) each;
          final GAxisAlignedRectangle ellipse = eachEllipse._geometry;
          sumLower = sumLower.add(ellipse._lower);
          sumExtent = sumExtent.add(ellipse._extent);
@@ -101,8 +96,8 @@ public class GStyledRectangle2D
       final GVector2D averageLower = sumLower.div(group.size());
       final GVector2D averageExtent = sumExtent.div(group.size());
 
-      return new GStyledRectangle2D(new GAxisAlignedRectangle(averageLower, averageLower.add(averageExtent)), label,
-               _surfaceStyle, _curveStyle, maxPriority);
+      return new GRectangle2DSymbol(new GAxisAlignedRectangle(averageLower, averageLower.add(averageExtent)), label,
+               _surfaceStyle, _curveStyle, maxPriority, false);
    }
 
 

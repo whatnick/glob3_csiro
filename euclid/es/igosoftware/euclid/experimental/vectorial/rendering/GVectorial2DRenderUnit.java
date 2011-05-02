@@ -20,7 +20,7 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.context.GVectorial
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
-import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyled2DGeometry;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GSymbol2D;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle2D;
 import es.igosoftware.euclid.experimental.vectorial.rendering.utils.GRenderingQuadtree;
 import es.igosoftware.euclid.features.IGlobeFeature;
@@ -55,8 +55,8 @@ class GVectorial2DRenderUnit
 
       final GAxisAlignedRectangle extendedViewport = calculateExtendedViewport(viewport, scaler, renderingStyle);
 
-      final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> groupableSymbols = new LinkedList<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>();
-      final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> nonGroupableSymbols = new LinkedList<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>();
+      final List<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> groupableSymbols = new LinkedList<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>();
+      final List<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> nonGroupableSymbols = new LinkedList<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>();
 
       processNode(quadtree.getRoot(), extendedViewport, renderingStyle, scaler, drawer, groupableSymbols, nonGroupableSymbols);
 
@@ -91,8 +91,8 @@ class GVectorial2DRenderUnit
                                    final IRenderingStyle2D renderingStyle,
                                    final IVectorial2DRenderingScaler scaler,
                                    final IVectorial2DDrawer drawer,
-                                   final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> groupableSymbols,
-                                   final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> nonGroupableSymbols) {
+                                   final List<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> groupableSymbols,
+                                   final List<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> nonGroupableSymbols) {
 
       //      final GAxisAlignedRectangle nodeBounds = node.getMinimumBounds().asRectangle();
       final GAxisAlignedRectangle nodeBounds = node.getBounds().asRectangle();
@@ -118,7 +118,7 @@ class GVectorial2DRenderUnit
          return;
       }
 
-      final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols = renderingStyle.getNodeSymbols(
+      final Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols = renderingStyle.getNodeSymbols(
                node, scaler);
       addSymbols(symbols, groupableSymbols, nonGroupableSymbols);
 
@@ -145,8 +145,8 @@ class GVectorial2DRenderUnit
                                     final IRenderingStyle2D renderingStyle,
                                     final IVectorial2DRenderingScaler scaler,
                                     final IVectorial2DDrawer drawer,
-                                    final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> groupableSymbols,
-                                    final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> nonGroupableSymbols) {
+                                    final List<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> groupableSymbols,
+                                    final List<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> nonGroupableSymbols) {
 
       if (!geometry.getBounds().asAxisAlignedOrthotope().touches(extendedRegion)) {
          return;
@@ -162,21 +162,21 @@ class GVectorial2DRenderUnit
       else if (geometry instanceof IVector2) {
          final IVector2 point = (IVector2) geometry;
 
-         final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols = renderingStyle.getPointSymbols(
+         final Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols = renderingStyle.getPointSymbols(
                   point, feature, scaler);
          addSymbols(symbols, groupableSymbols, nonGroupableSymbols);
       }
       else if (geometry instanceof ICurve2D<?>) {
          final ICurve2D<? extends IFinite2DBounds<?>> curve = (ICurve2D<? extends IFinite2DBounds<?>>) geometry;
 
-         final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols = renderingStyle.getCurveSymbols(
+         final Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols = renderingStyle.getCurveSymbols(
                   curve, feature, scaler);
          addSymbols(symbols, groupableSymbols, nonGroupableSymbols);
       }
       else if (geometry instanceof ISurface2D<?>) {
          final ISurface2D<? extends IFinite2DBounds<?>> surface = (ISurface2D<? extends IFinite2DBounds<?>>) geometry;
 
-         final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols = renderingStyle.getSurfaceSymbols(
+         final Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols = renderingStyle.getSurfaceSymbols(
                   surface, feature, scaler);
          addSymbols(symbols, groupableSymbols, nonGroupableSymbols);
       }
@@ -187,14 +187,14 @@ class GVectorial2DRenderUnit
    }
 
 
-   private static void addSymbols(final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols,
-                                  final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> groupableSymbols,
-                                  final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> nonGroupableSymbols) {
+   private static void addSymbols(final Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols,
+                                  final List<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> groupableSymbols,
+                                  final List<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> nonGroupableSymbols) {
       if (symbols == null) {
          return;
       }
 
-      for (final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbol : symbols) {
+      for (final GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbol : symbols) {
          if (symbol != null) {
             if (symbol.isGroupable()) {
                symbol.setPosition(groupableSymbols.size());

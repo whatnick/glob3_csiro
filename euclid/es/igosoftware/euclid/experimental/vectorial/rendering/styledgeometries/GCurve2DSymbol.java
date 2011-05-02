@@ -12,25 +12,26 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial
 import es.igosoftware.util.GAssert;
 
 
-public abstract class GStyledCurve2D<
+public abstract class GCurve2DSymbol<
 
 GeometryT extends ICurve2D<? extends IFinite2DBounds<?>>
 
 >
 
          extends
-            GStyled2DGeometry<GeometryT> {
+            GSymbol2D<GeometryT> {
 
 
    protected final ICurve2DStyle         _curveStyle;
    protected final GAxisAlignedRectangle _bounds;
 
 
-   protected GStyledCurve2D(final GeometryT geometry,
+   protected GCurve2DSymbol(final GeometryT geometry,
                             final String label,
                             final ICurve2DStyle curveStyle,
-                            final int priority) {
-      super(geometry, label, priority);
+                            final int priority,
+                            final boolean groupable) {
+      super(geometry, label, priority, groupable);
 
       GAssert.notNull(curveStyle, "curveStyle");
 

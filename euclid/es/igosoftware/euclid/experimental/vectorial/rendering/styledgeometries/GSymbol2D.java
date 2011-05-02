@@ -16,7 +16,7 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.util.GAssert;
 
 
-public abstract class GStyled2DGeometry<
+public abstract class GSymbol2D<
 
 GeometryT extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>
 
@@ -27,16 +27,19 @@ GeometryT extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>
    private final String      _label;
    private final int         _priority;
    private int               _position = -1;
+   private final boolean     _groupable;
 
 
-   protected GStyled2DGeometry(final GeometryT geometry,
-                               final String label,
-                               final int priority) {
+   protected GSymbol2D(final GeometryT geometry,
+                       final String label,
+                       final int priority,
+                       final boolean groupable) {
       GAssert.notNull(geometry, "geometry");
 
       _geometry = geometry;
       _label = label;
       _priority = priority;
+      _groupable = groupable;
    }
 
 
@@ -99,20 +102,22 @@ GeometryT extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>
    }
 
 
-   public abstract boolean isGroupable();
+   public final boolean isGroupable() {
+      return _groupable;
+   }
 
 
-   public abstract boolean isGroupableWith(final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> that);
+   public abstract boolean isGroupableWith(final GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> that);
 
 
    public abstract GAxisAlignedRectangle getBounds();
 
 
-   public final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> createGroupSymbols(final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group) {
+   public final Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> createGroupSymbols(final Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group) {
 
       boolean allSameClass = true;
-      final Class<? extends GStyled2DGeometry> klass = getClass();
-      for (final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> each : group) {
+      final Class<? extends GSymbol2D> klass = getClass();
+      for (final GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> each : group) {
          if (each.getClass() != klass) {
             allSameClass = false;
             break;
@@ -122,16 +127,16 @@ GeometryT extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>
       final String label = Integer.toString(group.size());
 
       if (allSameClass) {
-         final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> averageSymbol = getAverageSymbol(
-                  group, label);
+         final GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> averageSymbol = getAverageSymbol(group,
+                  label);
          averageSymbol.setPosition(_position);
          return Collections.singleton(averageSymbol);
       }
 
-      final Collection<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> result = new ArrayList<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>();
+      final Collection<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> result = new ArrayList<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>();
 
       GAxisAlignedRectangle mergedBounds = null;
-      for (final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> each : group) {
+      for (final GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> each : group) {
 
          final GAxisAlignedRectangle bounds = each.getBounds();
          mergedBounds = (mergedBounds == null) ? bounds : mergedBounds.mergedWith(bounds);
@@ -141,7 +146,7 @@ GeometryT extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>
 
       final ISurface2DStyle surfaceStyle = new GSurface2DStyle(GColorF.RED, 0.5f);
       final ICurve2DStyle curveStyle = GNullCurve2DStyle.INSTANCE;
-      final GStyledRectangle2D rectangle = new GStyledRectangle2D(mergedBounds, label, surfaceStyle, curveStyle, 10000000);
+      final GRectangle2DSymbol rectangle = new GRectangle2DSymbol(mergedBounds, label, surfaceStyle, curveStyle, 10000000, false);
       rectangle.setPosition(_position);
       result.add(rectangle);
 
@@ -149,8 +154,8 @@ GeometryT extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>
    }
 
 
-   protected abstract GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> getAverageSymbol(final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group,
-                                                                                                                     final String label);
+   protected abstract GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> getAverageSymbol(final Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group,
+                                                                                                             final String label);
 
 
 }

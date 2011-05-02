@@ -70,11 +70,11 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.context.GJava2DVec
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GIcon2DSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GIconUtils;
-import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyled2DGeometry;
-import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyledIcon2D;
-import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyledLabel2D;
-import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyledRectangle2D;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GLabel2DSymbol;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GRectangle2DSymbol;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GSymbol2D;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.ICurve2DStyle;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.ISurface2DStyle;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.GRenderingStyle2DAbstract;
@@ -160,7 +160,7 @@ public class GArgentinaMap1 {
 
       System.out.println();
 
-      final boolean profile = true;
+      final boolean profile = false;
       if (profile) {
          System.out.println();
          System.out.println(" CONNECT PROFILER ");
@@ -350,9 +350,9 @@ public class GArgentinaMap1 {
 
 
          @Override
-         public Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getPointSymbols(final IVector2 point,
-                                                                                                                                    final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                                                                                                                    final IVectorial2DRenderingScaler scaler) {
+         public Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getPointSymbols(final IVector2 point,
+                                                                                                                            final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                                                                                                            final IVectorial2DRenderingScaler scaler) {
 
             if (isCategory(feature, "automotive")) {
                return Collections.singleton(createStyledIcon(point, feature, scaler, "automotive", automotiveIcon));
@@ -369,7 +369,7 @@ public class GArgentinaMap1 {
                final ICurve2DStyle curveStyle = getPointCurveStyle(point, feature, scaler);
 
                final GAxisAlignedRectangle rectangle = new GAxisAlignedRectangle(position, position.add(extent));
-               return Collections.singleton(new GStyledRectangle2D(rectangle, null, surfaceStyle, curveStyle, 1000));
+               return Collections.singleton(new GRectangle2DSymbol(rectangle, null, surfaceStyle, curveStyle, 1000, true));
             }
             else {
                return super.getPointSymbols(point, feature, scaler);
@@ -377,11 +377,11 @@ public class GArgentinaMap1 {
          }
 
 
-         private GStyled2DGeometry<? extends IGeometry2D> createStyledIcon(final IVector2 point,
-                                                                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                                                           final IVectorial2DRenderingScaler scaler,
-                                                                           final String iconName,
-                                                                           final BufferedImage icon) {
+         private GSymbol2D<? extends IGeometry2D> createStyledIcon(final IVector2 point,
+                                                                   final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                                                   final IVectorial2DRenderingScaler scaler,
+                                                                   final String iconName,
+                                                                   final BufferedImage icon) {
             final float percentFilled = GIconUtils.getPercentFilled(icon);
             final IVector2 extent = calculateRectangleExtent(point, feature, scaler).div(percentFilled);
             final IVector2 position = calculatePosition(point, feature, scaler, extent);
@@ -389,7 +389,7 @@ public class GArgentinaMap1 {
             final BufferedImage scaledIcon = GIconUtils.getScaledImage(icon, extent);
 
 
-            return new GStyledIcon2D(position, null, iconName, scaledIcon, 0.75f, 1000);
+            return new GIcon2DSymbol(position, null, iconName, scaledIcon, 0.75f, 1000, true);
          }
 
 
@@ -553,13 +553,13 @@ public class GArgentinaMap1 {
 
 
          @Override
-         public Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getSurfaceSymbols(final ISurface2D<? extends IFinite2DBounds<?>> surface,
-                                                                                                                                      final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                                                                                                                      final IVectorial2DRenderingScaler scaler) {
-            final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> superSymbols = super.getSurfaceSymbols(
+         public Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getSurfaceSymbols(final ISurface2D<? extends IFinite2DBounds<?>> surface,
+                                                                                                                              final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                                                                                                              final IVectorial2DRenderingScaler scaler) {
+            final Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> superSymbols = super.getSurfaceSymbols(
                      surface, feature, scaler);
 
-            final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> allSymbols = new ArrayList<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>(
+            final List<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> allSymbols = new ArrayList<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>(
                      superSymbols);
 
 
@@ -591,7 +591,7 @@ public class GArgentinaMap1 {
 
                      //                     final LineBreakMeasurer
 
-                     allSymbols.add(new GStyledLabel2D(position, provinceName, font));
+                     allSymbols.add(new GLabel2DSymbol(position, provinceName, font));
                   }
                }
             }

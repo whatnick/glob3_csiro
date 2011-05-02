@@ -15,7 +15,7 @@ import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
-import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GStyled2DGeometry;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.GSymbol2D;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle2D;
 import es.igosoftware.euclid.ntree.GElementGeometryPair;
 import es.igosoftware.euclid.ntree.GGTInnerNode;
@@ -38,13 +38,13 @@ public class GVectorial2DSymbolsRenderer
          implements
             IVectorial2DSymbolsRenderer {
 
-   private static final Comparator<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> PRIORITY_COMPARATOR;
+   private static final Comparator<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> PRIORITY_COMPARATOR;
 
    static {
-      PRIORITY_COMPARATOR = new Comparator<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>() {
+      PRIORITY_COMPARATOR = new Comparator<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>() {
          @Override
-         public int compare(final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> o1,
-                            final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> o2) {
+         public int compare(final GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> o1,
+                            final GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> o2) {
             final int priority1 = o1.getPriority();
             final int priority2 = o2.getPriority();
             if (priority1 > priority2) {
@@ -69,19 +69,19 @@ public class GVectorial2DSymbolsRenderer
    }
 
 
-   private final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>              _nonGroupableSymbols;
-   private final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>              _groupableSymbols;
+   private final List<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>              _nonGroupableSymbols;
+   private final List<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>              _groupableSymbols;
 
-   private final boolean                                                                                          _clusterSymbols;
-   private final double                                                                                           _lodMinSize;
-   private final boolean                                                                                          _debugRendering;
-   private final boolean                                                                                          _renderLODIgnores;
+   private final boolean                                                                                  _clusterSymbols;
+   private final double                                                                                   _lodMinSize;
+   private final boolean                                                                                  _debugRendering;
+   private final boolean                                                                                  _renderLODIgnores;
 
-   private final IVectorial2DDrawer                                                                               _drawer;
+   private final IVectorial2DDrawer                                                                       _drawer;
 
 
-   public GVectorial2DSymbolsRenderer(final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> nonGroupableSymbols,
-                                      final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> groupableSymbols,
+   public GVectorial2DSymbolsRenderer(final List<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> nonGroupableSymbols,
+                                      final List<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> groupableSymbols,
                                       final IRenderingStyle2D renderingStyle,
                                       final IVectorial2DDrawer drawer) {
       _nonGroupableSymbols = nonGroupableSymbols;
@@ -102,7 +102,7 @@ public class GVectorial2DSymbolsRenderer
          drawSymbolsInClusters();
       }
       else {
-         final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> allSymbols = new ArrayList<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>(
+         final List<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> allSymbols = new ArrayList<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>(
                   _nonGroupableSymbols.size() + _groupableSymbols.size());
 
          allSymbols.addAll(_groupableSymbols);
@@ -116,13 +116,13 @@ public class GVectorial2DSymbolsRenderer
    }
 
 
-   private void drawSymbolsIndividually(final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols) {
+   private void drawSymbolsIndividually(final List<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols) {
       //      final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> sortedSymbols = GCollections.asSorted(
       //               symbols, PRIORITY_COMPARATOR);
       //      
       Collections.sort(symbols, PRIORITY_COMPARATOR);
 
-      for (final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbol : symbols) {
+      for (final GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbol : symbols) {
          drawSymbol(symbol);
       }
 
@@ -130,7 +130,7 @@ public class GVectorial2DSymbolsRenderer
    }
 
 
-   private void drawSymbol(final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbol) {
+   private void drawSymbol(final GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbol) {
       if (symbol != null) {
          symbol.draw(_drawer, _lodMinSize, _debugRendering, _renderLODIgnores);
       }
@@ -139,17 +139,17 @@ public class GVectorial2DSymbolsRenderer
 
    private void drawSymbolsInClusters() {
 
-      final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> allSymbols = new ArrayList<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>(
+      final List<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> allSymbols = new ArrayList<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>(
                _groupableSymbols.size() + _nonGroupableSymbols.size());
 
-      final Collection<Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> clusters = createClusters(
+      final Collection<Set<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> clusters = createClusters(
                _groupableSymbols, false);
 
       final int groupableSymbolsCount = _groupableSymbols.size();
       _groupableSymbols.clear(); // release some memory
 
       int symbolsInClustersCount = 0;
-      for (final Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> cluster : clusters) {
+      for (final Set<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> cluster : clusters) {
          final int clusterSize = cluster.size();
          symbolsInClustersCount += clusterSize;
 
@@ -177,7 +177,7 @@ public class GVectorial2DSymbolsRenderer
    }
 
 
-   private Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> createClusterSymbols(final Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> cluster) {
+   private Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> createClusterSymbols(final Set<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> cluster) {
 
       final int _______________Diego_at_work;
 
@@ -185,17 +185,17 @@ public class GVectorial2DSymbolsRenderer
       //      return exemplar.createGroupSymbols(cluster);
 
       if (isHomogenous(cluster)) {
-         final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> exemplar = cluster.iterator().next();
+         final GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> exemplar = cluster.iterator().next();
          return exemplar.createGroupSymbols(cluster);
       }
 
 
-      final Collection<Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> clustersByGroups = createClusters(
+      final Collection<Set<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> clustersByGroups = createClusters(
                cluster, true);
 
-      final Collection<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> result = new ArrayList<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>();
+      final Collection<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> result = new ArrayList<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>();
 
-      for (final Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> clusterByGroup : clustersByGroups) {
+      for (final Set<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> clusterByGroup : clustersByGroups) {
          final int clusterSize = clusterByGroup.size();
 
          if (clusterSize == 0) {
@@ -205,7 +205,7 @@ public class GVectorial2DSymbolsRenderer
             result.add(GCollections.theOnlyOne(clusterByGroup));
          }
          else {
-            final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> exemplar = clusterByGroup.iterator().next();
+            final GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> exemplar = clusterByGroup.iterator().next();
 
             result.addAll(exemplar.createGroupSymbols(clusterByGroup));
          }
@@ -216,10 +216,10 @@ public class GVectorial2DSymbolsRenderer
    }
 
 
-   private static boolean isHomogenous(final Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> cluster) {
-      final Iterator<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> iterator = cluster.iterator();
+   private static boolean isHomogenous(final Set<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> cluster) {
+      final Iterator<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> iterator = cluster.iterator();
 
-      final Class<? extends GStyled2DGeometry> klass = iterator.next().getClass();
+      final Class<? extends GSymbol2D> klass = iterator.next().getClass();
       while (iterator.hasNext()) {
          if (klass != iterator.next().getClass()) {
             return false;
@@ -230,43 +230,43 @@ public class GVectorial2DSymbolsRenderer
    }
 
 
-   private static Collection<Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> createClusters(final Collection<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols,
-                                                                                                                                final boolean considerIsGroupableWith) {
+   private static Collection<Set<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> createClusters(final Collection<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols,
+                                                                                                                        final boolean considerIsGroupableWith) {
       final GGeometryNTreeParameters parameters = new GGeometryNTreeParameters(false, 20, 10,
                GGeometryNTreeParameters.BoundsPolicy.MINIMUM, false);
 
-      final GGeometryQuadtree<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbolsQuadtree = new GGeometryQuadtree<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>>(
+      final GGeometryQuadtree<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbolsQuadtree = new GGeometryQuadtree<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>>(
                "Symbols Quadtree",
                null,
                symbols,
-               new IFunction<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, Collection<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>() {
+               new IFunction<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, Collection<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>() {
                   @Override
-                  public Collection<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> apply(final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> element) {
+                  public Collection<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> apply(final GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> element) {
                      return Collections.singleton(element.getGeometry());
                   }
                }, parameters);
 
 
-      final GGraph<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> graph = new GGraph<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>(
+      final GGraph<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> graph = new GGraph<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>(
                symbols);
 
-      for (final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbol : symbols) {
-         final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> neighborhood = calculateNeighborhood(
+      for (final GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbol : symbols) {
+         final List<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> neighborhood = calculateNeighborhood(
                   symbolsQuadtree, symbol, considerIsGroupableWith);
-         for (final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> neighbor : neighborhood) {
+         for (final GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> neighbor : neighborhood) {
             graph.addBidirectionalEdge(symbol, neighbor);
          }
       }
 
-      final Collection<Set<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> clusters = graph.getConnectedGroupsOfNodes();
+      final Collection<Set<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> clusters = graph.getConnectedGroupsOfNodes();
 
       return clusters;
    }
 
 
-   private static List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> calculateNeighborhood(final GGeometryQuadtree<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbolsQuadtree,
-                                                                                                                            final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbol,
-                                                                                                                            final boolean considerIsGroupableWith) {
+   private static List<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> calculateNeighborhood(final GGeometryQuadtree<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbolsQuadtree,
+                                                                                                                    final GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbol,
+                                                                                                                    final boolean considerIsGroupableWith) {
 
       if (!symbol.isGroupable()) {
          return Collections.emptyList();
@@ -279,32 +279,32 @@ public class GVectorial2DSymbolsRenderer
       final int symbolPriority = symbol.getPriority();
       final double minOverlapArea = symbolBounds.area() * 0.25;
 
-      final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> neighborhood = new LinkedList<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>();
+      final List<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> neighborhood = new LinkedList<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>();
 
       symbolsQuadtree.breadthFirstAcceptVisitor(
                symbolBounds,
-               new IGTBreadFirstVisitor<IVector2, GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>>() {
+               new IGTBreadFirstVisitor<IVector2, GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>>() {
                   @Override
-                  public void visitOctree(final GGeometryNTree<IVector2, GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> octree) {
+                  public void visitOctree(final GGeometryNTree<IVector2, GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> octree) {
                   }
 
 
                   @Override
-                  public void visitInnerNode(final GGTInnerNode<IVector2, GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> inner) {
+                  public void visitInnerNode(final GGTInnerNode<IVector2, GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> inner) {
                      processNode(inner);
                   }
 
 
                   @Override
-                  public void visitLeafNode(final GGTLeafNode<IVector2, GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> leaf) {
+                  public void visitLeafNode(final GGTLeafNode<IVector2, GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> leaf) {
                      processNode(leaf);
                   }
 
 
-                  private void processNode(final GGTNode<IVector2, GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> node) {
+                  private void processNode(final GGTNode<IVector2, GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> node) {
 
-                     for (final GElementGeometryPair<IVector2, GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> elementAndGeometry : node.getElements()) {
-                        final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> element = elementAndGeometry.getElement();
+                     for (final GElementGeometryPair<IVector2, GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> elementAndGeometry : node.getElements()) {
+                        final GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> element = elementAndGeometry.getElement();
                         if (element != symbol) {
                            if (element.isGroupable()) {
                               if (element.getPriority() == symbolPriority) {
