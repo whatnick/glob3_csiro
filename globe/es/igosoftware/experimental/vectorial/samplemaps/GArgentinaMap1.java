@@ -70,15 +70,15 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.context.GJava2DVec
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
-import es.igosoftware.euclid.experimental.vectorial.rendering.styling.GRenderingStyle2DAbstract;
-import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle2D;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styling.ICurve2DStyle;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styling.ISurface2DStyle;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GSymbolizer2DAbstract;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.ISymbolizer2D;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GIcon2DSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GIconUtils;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GLabel2DSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GRectangle2DSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSymbol2D;
-import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.ICurve2DStyle;
-import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.ISurface2DStyle;
 import es.igosoftware.euclid.features.GCompositeFeatureCollection;
 import es.igosoftware.euclid.features.GGeometryType;
 import es.igosoftware.euclid.features.IGlobeFeature;
@@ -153,7 +153,7 @@ public class GArgentinaMap1 {
       final IVectorI2 imageExtent = calculateImageExtent(textureDimension, viewport);
 
       final GVectorial2DRenderer renderer = new GVectorial2DRenderer(compositeFeatures, true);
-      final IRenderingStyle2D renderingStyle = createRenderingStyle(viewport, drawBackgroundImage, renderLODIgnores, lodMinSize,
+      final ISymbolizer2D renderingStyle = createSymbolizer(viewport, drawBackgroundImage, renderLODIgnores, lodMinSize,
                debugRendering);
 
       GIOUtils.assureEmptyDirectory(directoryName, false);
@@ -214,11 +214,11 @@ public class GArgentinaMap1 {
    }
 
 
-   private static GRenderingStyle2DAbstract createRenderingStyle(final GAxisAlignedRectangle viewport,
-                                                                 final boolean drawBackgroundImage,
-                                                                 final boolean renderLODIgnores,
-                                                                 final double lodMinSize,
-                                                                 final boolean debugRendering) throws IOException {
+   private static ISymbolizer2D createSymbolizer(final GAxisAlignedRectangle viewport,
+                                                 final boolean drawBackgroundImage,
+                                                 final boolean renderLODIgnores,
+                                                 final double lodMinSize,
+                                                 final boolean debugRendering) throws IOException {
 
       final GFileName symbologyDirectory = GFileName.absolute("home", "dgd", "Desktop", "GIS Symbology");
 
@@ -231,7 +231,7 @@ public class GArgentinaMap1 {
       final GColorScheme colorScheme = GColorBrewerColorSchemeSet.INSTANCE.getSchemes(9, GColorScheme.Type.Qualitative).get(2);
 
 
-      return new GRenderingStyle2DAbstract() {
+      return new GSymbolizer2DAbstract() {
          private static final String COUNTRY         = "NEV_Countr";
          private static final String PROVINCE        = "NAME_1";
          private static final String CATEGORY        = "CATEGORY";
@@ -650,7 +650,7 @@ public class GArgentinaMap1 {
 
 
    private static void render(final GVectorial2DRenderer rendeder,
-                              final IRenderingStyle2D renderingStyle,
+                              final ISymbolizer2D renderingStyle,
                               final GAxisAlignedRectangle viewport,
                               final IVectorI2 imageExtent,
                               final GFileName directoryName,

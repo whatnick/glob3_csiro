@@ -1,6 +1,6 @@
 
 
-package es.igosoftware.euclid.experimental.vectorial.rendering.symbols;
+package es.igosoftware.euclid.experimental.vectorial.rendering.styling;
 
 import java.awt.Paint;
 import java.awt.Stroke;

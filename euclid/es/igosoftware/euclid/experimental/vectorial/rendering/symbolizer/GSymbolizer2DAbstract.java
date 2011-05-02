@@ -1,6 +1,6 @@
 
 
-package es.igosoftware.euclid.experimental.vectorial.rendering.styling;
+package es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -22,17 +22,17 @@ import es.igosoftware.euclid.experimental.measurement.GArea;
 import es.igosoftware.euclid.experimental.measurement.GLength;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
-import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GCurve2DStyle;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styling.GCurve2DStyle;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styling.GNullSurface2DStyle;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styling.GSurface2DStyle;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styling.ICurve2DStyle;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styling.ISurface2DStyle;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GLabel2DSymbol;
-import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GNullSurface2DStyle;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GOval2DSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GPolygon2DSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GPolygonalChain2DSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GRectangle2DSymbol;
-import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSurface2DStyle;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSymbol2D;
-import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.ICurve2DStyle;
-import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.ISurface2DStyle;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.ntree.GGTInnerNode;
 import es.igosoftware.euclid.ntree.GGTNode;
@@ -43,9 +43,9 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.util.GMath;
 
 
-public abstract class GRenderingStyle2DAbstract
+public abstract class GSymbolizer2DAbstract
          implements
-            IRenderingStyle2D {
+            ISymbolizer2D {
 
 
    private static final ICurve2DStyle INNER_NODE_STYLE = new ICurve2DStyle() {

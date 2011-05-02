@@ -18,7 +18,7 @@ import es.igosoftware.euclid.experimental.measurement.GArea;
 import es.igosoftware.euclid.experimental.measurement.GLength;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
-import es.igosoftware.euclid.experimental.vectorial.rendering.styling.GRenderingStyle2DAbstract;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GSymbolizer2DAbstract;
 import es.igosoftware.euclid.features.GGeometryType;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
@@ -39,9 +39,9 @@ import es.igosoftware.util.GMath;
 import es.igosoftware.util.GUtils;
 
 
-public class GGlobeVectorial2DRenderingStyle
+public class GGlobeVectorialSymbolizer2D
          extends
-            GRenderingStyle2DAbstract
+            GSymbolizer2DAbstract
          implements
             IGlobeRenderingStyle {
 
@@ -60,7 +60,7 @@ public class GGlobeVectorial2DRenderingStyle
    private float                    _pointOpacity     = 1;
 
 
-   public GGlobeVectorial2DRenderingStyle(final IGlobeVector2Layer layer) {
+   public GGlobeVectorialSymbolizer2D(final IGlobeVector2Layer layer) {
       GAssert.notNull(layer, "layer");
 
       _layer = layer;

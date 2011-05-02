@@ -9,6 +9,7 @@ import es.igosoftware.euclid.ICurve2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styling.ICurve2DStyle;
 import es.igosoftware.util.GAssert;
 
 

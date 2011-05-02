@@ -1,6 +1,6 @@
 
 
-package es.igosoftware.euclid.experimental.vectorial.rendering.styling;
+package es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer;
 
 import java.awt.image.BufferedImage;
 import java.util.Collection;
@@ -19,7 +19,7 @@ import es.igosoftware.euclid.ntree.GGTNode;
 import es.igosoftware.euclid.vector.IVector2;
 
 
-public interface IRenderingStyle2D {
+public interface ISymbolizer2D {
 
 
    /* -------------------------------------------------------------------------------------- */

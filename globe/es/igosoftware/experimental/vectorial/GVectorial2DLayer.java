@@ -43,7 +43,7 @@ import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorial2DRenderer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
-import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle2D;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.ISymbolizer2D;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.GVector2D;
@@ -129,7 +129,7 @@ public class GVectorial2DLayer
    private static final class RenderingKey {
       private final GVectorial2DLayer     _layer;
       private final GAxisAlignedRectangle _tileBounds;
-      private final IRenderingStyle2D     _renderingStyle;
+      private final ISymbolizer2D         _renderingStyle;
       private final String                _id;
 
 
@@ -760,7 +760,7 @@ public class GVectorial2DLayer
    private long                                                                                                _lastCurrentTilesCalculated = -1;
 
 
-   private final GGlobeVectorial2DRenderingStyle                                                               _renderingStyle             = new GGlobeVectorial2DRenderingStyle(
+   private final GGlobeVectorialSymbolizer2D                                                                   _renderingStyle             = new GGlobeVectorialSymbolizer2D(
                                                                                                                                                     this);
 
 
@@ -1195,7 +1195,7 @@ public class GVectorial2DLayer
 
 
    @Override
-   public GGlobeVectorial2DRenderingStyle getRenderingStyle() {
+   public GGlobeVectorialSymbolizer2D getRenderingStyle() {
       return _renderingStyle;
    }
 

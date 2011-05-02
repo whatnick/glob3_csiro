@@ -12,7 +12,7 @@ import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.GJava2DVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
-import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle2D;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.ISymbolizer2D;
 import es.igosoftware.euclid.experimental.vectorial.rendering.utils.GRenderingQuadtree;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
@@ -83,7 +83,7 @@ public class GVectorial2DRenderer {
                                          final int imageWidth,
                                          final int imageHeight,
                                          final IProjectionTool projectionTool,
-                                         final IRenderingStyle2D renderingStyle) {
+                                         final ISymbolizer2D renderingStyle) {
       GAssert.notNull(viewport, "viewport");
       GAssert.isPositive(imageWidth, "imageWidth");
       GAssert.isPositive(imageHeight, "imageHeight");
@@ -103,7 +103,7 @@ public class GVectorial2DRenderer {
    public void render(final GAxisAlignedRectangle viewport,
                       final BufferedImage image,
                       final IProjectionTool projectionTool,
-                      final IRenderingStyle2D renderingStyle,
+                      final ISymbolizer2D renderingStyle,
                       final IVectorial2DDrawer drawer) {
       GAssert.notNull(viewport, "viewport");
       GAssert.notNull(image, "image");

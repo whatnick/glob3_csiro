@@ -20,7 +20,7 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.context.GVectorial
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
-import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle2D;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.ISymbolizer2D;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSymbol2D;
 import es.igosoftware.euclid.experimental.vectorial.rendering.utils.GRenderingQuadtree;
 import es.igosoftware.euclid.features.IGlobeFeature;
@@ -47,7 +47,7 @@ class GVectorial2DRenderUnit
                                    final GProjection projection,
                                    final IProjectionTool projectionTool,
                                    final GAxisAlignedRectangle viewport,
-                                   final IRenderingStyle2D renderingStyle,
+                                   final ISymbolizer2D renderingStyle,
                                    final IVectorial2DDrawer drawer) {
 
       final IVectorial2DRenderingScaler scaler = new GVectorial2DRenderingScaler(viewport, projection, projectionTool,
@@ -66,7 +66,7 @@ class GVectorial2DRenderUnit
 
    private static GAxisAlignedRectangle calculateExtendedViewport(final GAxisAlignedRectangle viewport,
                                                                   final IVectorial2DRenderingScaler scaler,
-                                                                  final IRenderingStyle2D renderingStyle) {
+                                                                  final ISymbolizer2D renderingStyle) {
       final IMeasure<GArea> maximumSize = renderingStyle.getMaximumSize();
 
       final double areaInSquaredMeters = maximumSize.getValueInReferenceUnits();
@@ -88,7 +88,7 @@ class GVectorial2DRenderUnit
 
    private static void processNode(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> node,
                                    final GAxisAlignedRectangle extendedRegion,
-                                   final IRenderingStyle2D renderingStyle,
+                                   final ISymbolizer2D renderingStyle,
                                    final IVectorial2DRenderingScaler scaler,
                                    final IVectorial2DDrawer drawer,
                                    final List<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> groupableSymbols,
@@ -142,7 +142,7 @@ class GVectorial2DRenderUnit
    private static void drawGeometry(final IBoundedGeometry2D<? extends IFinite2DBounds<?>> geometry,
                                     final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                     final GAxisAlignedRectangle extendedRegion,
-                                    final IRenderingStyle2D renderingStyle,
+                                    final ISymbolizer2D renderingStyle,
                                     final IVectorial2DRenderingScaler scaler,
                                     final IVectorial2DDrawer drawer,
                                     final List<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> groupableSymbols,
