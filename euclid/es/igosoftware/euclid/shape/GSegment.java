@@ -45,6 +45,8 @@ import es.igosoftware.euclid.GEdgedGeometryAbstract;
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.IBounds;
 import es.igosoftware.euclid.vector.IVector;
+import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GMath;
 
@@ -65,8 +67,27 @@ BoundsT extends IBounds<VectorT, BoundsT>
 
    private static final long serialVersionUID = 1L;
 
-   public final VectorT      _from;
-   public final VectorT      _to;
+
+   @SuppressWarnings("unchecked")
+   public static <VectorT extends IVector<VectorT, ?>> GSegment<VectorT, ?, ?> create(final VectorT from,
+                                                                                      final VectorT to) {
+      GAssert.notNull(from, "from");
+      GAssert.notNull(to, "to");
+
+      if (from instanceof IVector3) {
+         return (GSegment<VectorT, ?, ?>) new GSegment3D((IVector3) from, (IVector3) to);
+      }
+      else if (from instanceof IVector2) {
+         return (GSegment<VectorT, ?, ?>) new GSegment2D((IVector2) from, (IVector2) to);
+      }
+      else {
+         throw new IllegalArgumentException("Unsupported points type (" + from.getClass() + ")");
+      }
+   }
+
+
+   public final VectorT _from;
+   public final VectorT _to;
 
 
    public GSegment(final VectorT from,
