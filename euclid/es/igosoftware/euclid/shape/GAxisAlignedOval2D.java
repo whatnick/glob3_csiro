@@ -9,6 +9,7 @@ import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVectorFunction;
 import es.igosoftware.util.GAssert;
+import es.igosoftware.util.GMath;
 
 
 public class GAxisAlignedOval2D
@@ -186,15 +187,16 @@ public class GAxisAlignedOval2D
 
    @Override
    public double perimeter() {
-      //      // approximation from http://mathforum.org/library/drmath/view/54847.html
-      //      final double A = _radius.x();
-      //      final double B = _radius.y();
-      //
-      //      final double A3 = A * 3;
-      //      final double B3 = B * 3;
-      //
-      //      return Math.PI * ((A3 + B3) - GMath.sqrt((A + B3) * (B + A3)));
-      throw new RuntimeException("Not yet implemented");
+      // Ramanujan approximation from http://mathforum.org/library/drmath/view/54847.html
+
+      final double A = _radius.x();
+      final double B = _radius.y();
+
+      final double A3 = A * 3;
+      final double B3 = B * 3;
+
+      return Math.PI * ((A3 + B3) - GMath.sqrt((A + B3) * (B + A3)));
    }
+
 
 }
