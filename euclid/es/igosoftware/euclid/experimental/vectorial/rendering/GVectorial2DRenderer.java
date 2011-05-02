@@ -117,11 +117,9 @@ public class GVectorial2DRenderer {
       final GRenderUnitResult renderUnitResult = renderUnit.render(image, _quadtree, _features.getProjection(), projectionTool,
                viewport, renderingStyle, drawer);
 
-
-      final IVectorial2DSymbolsRenderer symbolsRenderer = new GVectorial2DSymbolsRenderer(renderUnitResult.getSymbols(),
-               renderUnitResult.hasGroupableSymbols(), renderingStyle, drawer);
+      final IVectorial2DSymbolsRenderer symbolsRenderer = new GVectorial2DSymbolsRenderer(
+               renderUnitResult.getNonGroupableSymbols(), renderUnitResult.getGroupableSymbols(), renderingStyle, drawer);
       symbolsRenderer.draw();
-
 
       renderingStyle.postRenderImage(image);
    }

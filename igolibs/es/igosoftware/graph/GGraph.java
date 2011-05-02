@@ -277,7 +277,7 @@ public class GGraph<NodeT> {
                                        final boolean preVisit,
                                        final boolean postVisit,
                                        final IGraphVisitor<NodeT> visitor) {
-      final Set<NodeT> visited = new HashSet<NodeT>();
+      final Set<NodeT> visited = new HashSet<NodeT>(_nodes.size());
       depthFirstAcceptVisitor(visited, node, preVisit, postVisit, visitor);
    }
 
@@ -293,11 +293,22 @@ public class GGraph<NodeT> {
          visitor.visitNode(node);
       }
 
-      for (final NodeT neighbor : getNeighbors(node)) {
-         if (!visited.contains(neighbor)) {
-            depthFirstAcceptVisitor(visited, neighbor, preVisit, postVisit, visitor);
+
+      //      for (final NodeT neighbor : getNeighbors(node)) {
+      //         if (!visited.contains(neighbor)) {
+      //            depthFirstAcceptVisitor(visited, neighbor, preVisit, postVisit, visitor);
+      //         }
+      //      }
+      final Set<Edge<NodeT>> edges = _nodeEdges.get(node);
+      if (edges != null) {
+         for (final Edge<NodeT> edge : edges) {
+            final NodeT neighbor = edge._to;
+            if (!visited.contains(neighbor)) {
+               depthFirstAcceptVisitor(visited, neighbor, preVisit, postVisit, visitor);
+            }
          }
       }
+
 
       if (postVisit) {
          visitor.visitNode(node);

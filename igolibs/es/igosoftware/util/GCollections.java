@@ -59,13 +59,13 @@ public final class GCollections {
    }
 
 
-   public static int size(final Iterable<?> iterable) {
+   public static long size(final Iterable<?> iterable) {
       if (iterable instanceof Collection<?>) {
          return ((Collection<?>) iterable).size();
       }
 
       final Iterator<?> iterator = iterable.iterator();
-      int count = 0;
+      long count = 0;
       while (iterator.hasNext()) {
          count++;
          iterator.next();

@@ -54,13 +54,16 @@ public class GStyledRectangle2D
 
 
    @Override
+   public boolean isGroupable() {
+      return true;
+   }
+
+
+   @Override
    public boolean isGroupableWith(final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> that) {
       if (that instanceof GStyledRectangle2D) {
-         final GStyledRectangle2D thatRectangle = (GStyledRectangle2D) that;
-         //         return _geometry.closeTo(thatRectangle._geometry) && _surfaceStyle.isGroupableWith(thatRectangle._surfaceStyle)
-         //         && _curveStyle.isGroupableWith(thatRectangle._curveStyle);
-         return _surfaceStyle.isGroupableWith(thatRectangle._surfaceStyle)
-                && _curveStyle.isGroupableWith(thatRectangle._curveStyle);
+         final GStyledRectangle2D thatRect = (GStyledRectangle2D) that;
+         return _surfaceStyle.isGroupableWith(thatRect._surfaceStyle) && _curveStyle.isGroupableWith(thatRect._curveStyle);
       }
 
       return false;
@@ -77,12 +80,6 @@ public class GStyledRectangle2D
    @Override
    public GAxisAlignedRectangle getBounds() {
       return _geometry;
-   }
-
-
-   @Override
-   public boolean isGroupable() {
-      return true;
    }
 
 

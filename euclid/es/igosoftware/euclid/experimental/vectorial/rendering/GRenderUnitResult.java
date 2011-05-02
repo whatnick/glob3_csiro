@@ -12,24 +12,24 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.styledgeometries.G
 public class GRenderUnitResult {
 
 
-   private final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> _symbols;
-   private final boolean                                                                             _hasGroupableSymbols;
+   private final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> _nonGroupableSymbols;
+   private final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> _groupableSymbols;
 
 
-   GRenderUnitResult(final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols,
-                     final boolean hasGroupableSymbols) {
-      _symbols = symbols;
-      _hasGroupableSymbols = hasGroupableSymbols;
+   GRenderUnitResult(final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> groupableSymbols,
+                     final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> nonGroupableSymbols) {
+      _groupableSymbols = groupableSymbols;
+      _nonGroupableSymbols = nonGroupableSymbols;
    }
 
 
-   public List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getSymbols() {
-      return _symbols;
+   public List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getNonGroupableSymbols() {
+      return _nonGroupableSymbols;
    }
 
 
-   public boolean hasGroupableSymbols() {
-      return _hasGroupableSymbols;
+   public List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getGroupableSymbols() {
+      return _groupableSymbols;
    }
 
 

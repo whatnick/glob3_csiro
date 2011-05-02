@@ -40,12 +40,6 @@ public class GStyledPolygonalChain2D
 
 
    @Override
-   public boolean isGroupableWith(final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> that) {
-      return false;
-   }
-
-
-   @Override
    public String toString() {
       return "GStyledPolygonalChain2D [geometry=" + _geometry + ", curveStyle=" + _curveStyle + "]";
    }
@@ -59,6 +53,12 @@ public class GStyledPolygonalChain2D
 
    @Override
    public boolean isGroupable() {
+      return false;
+   }
+
+
+   @Override
+   public boolean isGroupableWith(final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> that) {
       return false;
    }
 

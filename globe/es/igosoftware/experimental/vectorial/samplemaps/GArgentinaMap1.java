@@ -99,11 +99,11 @@ import es.igosoftware.util.IFunction;
 import es.igosoftware.utils.GWWUtils;
 
 
-public class GArgentina1 {
+public class GArgentinaMap1 {
 
 
    public static void main(final String[] args) throws IOException {
-      System.out.println("GArgentina1 0.1");
+      System.out.println("Argentina Map 1");
       System.out.println("---------------\n");
 
 
@@ -127,11 +127,18 @@ public class GArgentina1 {
       final IGlobeFeatureCollection<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> linesFeatures = GShapeLoader.readFeatures(
                linesFileName, projection);
 
+      System.out.println("Points: " + pointsFeatures.size());
 
       @SuppressWarnings("unchecked")
       final IGlobeFeatureCollection<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> compositeFeatures = new GCompositeFeatureCollection<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>>(
                surfacesFeatures, linesFeatures, pointsFeatures);
 
+      //      System.out.println("---------------------------------------------------------------------------------------");
+      //      System.out.println(" Points  : " + pointsFeatures.size());
+      //      System.out.println(" Surfaces: " + surfacesFeatures.size());
+      //      System.out.println(" Lines   : " + linesFeatures.size());
+      //      System.out.println(" All     : " + compositeFeatures.size());
+      //      System.out.println("---------------------------------------------------------------------------------------");
 
       final GAxisAlignedRectangle viewport = pointsFeatures.getBounds().asRectangle().expandedByPercent(0.05);
 
@@ -141,7 +148,7 @@ public class GArgentina1 {
       final double lodMinSize = 4;
       final int textureDimension = 256;
       final boolean debugRendering = false;
-      final boolean drawBackgroundImage = true;
+      final boolean drawBackgroundImage = false;
 
       final IVectorI2 imageExtent = calculateImageExtent(textureDimension, viewport);
 
@@ -153,7 +160,7 @@ public class GArgentina1 {
 
       System.out.println();
 
-      final boolean profile = false;
+      final boolean profile = true;
       if (profile) {
          System.out.println();
          System.out.println(" CONNECT PROFILER ");
@@ -499,7 +506,7 @@ public class GArgentina1 {
          protected float getSurfaceOpacity(final ISurface2D<?> surface,
                                            final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                            final IVectorial2DRenderingScaler scaler) {
-            return 1;
+            return 0.25f;
          }
 
 
@@ -604,6 +611,8 @@ public class GArgentina1 {
       //      "etopo2ShadedBlueMarbleLight4left10.jpg");
       //      final GFileName blueMarbleFileName = GFileName.absolute("home", "dgd", "Desktop", "Data For Maps", "bluemarble",
       //      "world.topo.bathy.200407.3x21600x10800.jpg");
+      //      final GFileName blueMarbleFileName = GFileName.absolute("home", "dgd", "Desktop", "Data For Maps", "bluemarble",
+      //               "world.topo.bathy.200407.3x21600x10800.jpg");
       final GFileName blueMarbleFileName = GFileName.absolute("home", "dgd", "Desktop", "Data For Maps", "bluemarble",
                "oceans.jpg");
 

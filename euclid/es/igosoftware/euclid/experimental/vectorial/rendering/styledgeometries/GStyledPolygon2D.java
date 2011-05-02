@@ -102,12 +102,6 @@ public class GStyledPolygon2D
 
 
    @Override
-   public boolean isGroupableWith(final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> that) {
-      return false;
-   }
-
-
-   @Override
    public String toString() {
       return "GStyledPolygon2D [geometry=" + _geometry + ", surfaceStyle=" + _surfaceStyle + ", curveStyle=" + _curveStyle + "]";
    }
@@ -121,6 +115,12 @@ public class GStyledPolygon2D
 
    @Override
    public boolean isGroupable() {
+      return false;
+   }
+
+
+   @Override
+   public boolean isGroupableWith(final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> that) {
       return false;
    }
 

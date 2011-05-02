@@ -80,13 +80,15 @@ public class GStyledIcon2D
 
 
    @Override
+   public boolean isGroupable() {
+      return true;
+   }
+
+
+   @Override
    public boolean isGroupableWith(final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> that) {
       if (that instanceof GStyledIcon2D) {
          final GStyledIcon2D thatIcon = (GStyledIcon2D) that;
-         //         return _icon.equals(thatIcon._icon) && _geometry.closeTo(thatIcon._geometry)
-         //         && _iconExtent.closeTo(thatIcon._iconExtent);
-
-         //         return _icon.equals(thatIcon._icon);
          return GUtils.equals(_iconName, thatIcon._iconName);
       }
 
@@ -97,12 +99,6 @@ public class GStyledIcon2D
    @Override
    public GAxisAlignedRectangle getBounds() {
       return _bounds;
-   }
-
-
-   @Override
-   public boolean isGroupable() {
-      return true;
    }
 
 

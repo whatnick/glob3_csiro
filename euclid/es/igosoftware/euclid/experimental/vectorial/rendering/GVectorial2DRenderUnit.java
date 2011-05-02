@@ -30,7 +30,6 @@ import es.igosoftware.euclid.ntree.GGTInnerNode;
 import es.igosoftware.euclid.ntree.GGTNode;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.IVector2;
-import es.igosoftware.util.GHolder;
 import es.igosoftware.util.GMath;
 
 
@@ -56,12 +55,12 @@ class GVectorial2DRenderUnit
 
       final GAxisAlignedRectangle extendedViewport = calculateExtendedViewport(viewport, scaler, renderingStyle);
 
-      final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> allSymbols = new LinkedList<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>();
+      final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> groupableSymbols = new LinkedList<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>();
+      final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> nonGroupableSymbols = new LinkedList<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>();
 
-      final GHolder<Boolean> hasGroupableSymbols = new GHolder<Boolean>(false);
-      processNode(quadtree.getRoot(), extendedViewport, renderingStyle, scaler, drawer, allSymbols, hasGroupableSymbols);
+      processNode(quadtree.getRoot(), extendedViewport, renderingStyle, scaler, drawer, groupableSymbols, nonGroupableSymbols);
 
-      return new GRenderUnitResult(allSymbols, hasGroupableSymbols.get());
+      return new GRenderUnitResult(groupableSymbols, nonGroupableSymbols);
    }
 
 
@@ -92,8 +91,8 @@ class GVectorial2DRenderUnit
                                    final IRenderingStyle2D renderingStyle,
                                    final IVectorial2DRenderingScaler scaler,
                                    final IVectorial2DDrawer drawer,
-                                   final List<GStyled2DGeometry<?>> allSymbols,
-                                   final GHolder<Boolean> hasGroupableSymbols) {
+                                   final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> groupableSymbols,
+                                   final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> nonGroupableSymbols) {
 
       //      final GAxisAlignedRectangle nodeBounds = node.getMinimumBounds().asRectangle();
       final GAxisAlignedRectangle nodeBounds = node.getBounds().asRectangle();
@@ -121,7 +120,7 @@ class GVectorial2DRenderUnit
 
       final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols = renderingStyle.getNodeSymbols(
                node, scaler);
-      addSymbols(symbols, allSymbols, hasGroupableSymbols);
+      addSymbols(symbols, groupableSymbols, nonGroupableSymbols);
 
 
       if (node instanceof GGTInnerNode) {
@@ -129,13 +128,13 @@ class GVectorial2DRenderUnit
          inner = (GGTInnerNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>>) node;
 
          for (final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> child : inner.getChildren()) {
-            processNode(child, extendedRegion, renderingStyle, scaler, drawer, allSymbols, hasGroupableSymbols);
+            processNode(child, extendedRegion, renderingStyle, scaler, drawer, groupableSymbols, nonGroupableSymbols);
          }
       }
 
       for (final GElementGeometryPair<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> pair : node.getElements()) {
-         drawGeometry(pair.getGeometry(), pair.getElement(), extendedRegion, renderingStyle, scaler, drawer, allSymbols,
-                  hasGroupableSymbols);
+         drawGeometry(pair.getGeometry(), pair.getElement(), extendedRegion, renderingStyle, scaler, drawer, groupableSymbols,
+                  nonGroupableSymbols);
       }
    }
 
@@ -146,8 +145,8 @@ class GVectorial2DRenderUnit
                                     final IRenderingStyle2D renderingStyle,
                                     final IVectorial2DRenderingScaler scaler,
                                     final IVectorial2DDrawer drawer,
-                                    final List<GStyled2DGeometry<?>> allSymbols,
-                                    final GHolder<Boolean> hasGroupableSymbols) {
+                                    final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> groupableSymbols,
+                                    final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> nonGroupableSymbols) {
 
       if (!geometry.getBounds().asAxisAlignedOrthotope().touches(extendedRegion)) {
          return;
@@ -157,7 +156,7 @@ class GVectorial2DRenderUnit
          @SuppressWarnings("unchecked")
          final GMultiGeometry2D<IBoundedGeometry2D<? extends IFinite2DBounds<?>>> multigeometry = (GMultiGeometry2D<IBoundedGeometry2D<? extends IFinite2DBounds<?>>>) geometry;
          for (final IBoundedGeometry2D<? extends IFinite2DBounds<?>> child : multigeometry) {
-            drawGeometry(child, feature, extendedRegion, renderingStyle, scaler, drawer, allSymbols, hasGroupableSymbols);
+            drawGeometry(child, feature, extendedRegion, renderingStyle, scaler, drawer, groupableSymbols, nonGroupableSymbols);
          }
       }
       else if (geometry instanceof IVector2) {
@@ -165,21 +164,21 @@ class GVectorial2DRenderUnit
 
          final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols = renderingStyle.getPointSymbols(
                   point, feature, scaler);
-         addSymbols(symbols, allSymbols, hasGroupableSymbols);
+         addSymbols(symbols, groupableSymbols, nonGroupableSymbols);
       }
       else if (geometry instanceof ICurve2D<?>) {
          final ICurve2D<? extends IFinite2DBounds<?>> curve = (ICurve2D<? extends IFinite2DBounds<?>>) geometry;
 
          final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols = renderingStyle.getCurveSymbols(
                   curve, feature, scaler);
-         addSymbols(symbols, allSymbols, hasGroupableSymbols);
+         addSymbols(symbols, groupableSymbols, nonGroupableSymbols);
       }
       else if (geometry instanceof ISurface2D<?>) {
          final ISurface2D<? extends IFinite2DBounds<?>> surface = (ISurface2D<? extends IFinite2DBounds<?>>) geometry;
 
          final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols = renderingStyle.getSurfaceSymbols(
                   surface, feature, scaler);
-         addSymbols(symbols, allSymbols, hasGroupableSymbols);
+         addSymbols(symbols, groupableSymbols, nonGroupableSymbols);
       }
       else {
          System.out.println("Warning: geometry type " + geometry.getClass() + " not supported");
@@ -189,18 +188,21 @@ class GVectorial2DRenderUnit
 
 
    private static void addSymbols(final Collection<? extends GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols,
-                                  final List<GStyled2DGeometry<?>> allSymbols,
-                                  final GHolder<Boolean> hasGroupableSymbols) {
+                                  final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> groupableSymbols,
+                                  final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> nonGroupableSymbols) {
       if (symbols == null) {
          return;
       }
 
       for (final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbol : symbols) {
          if (symbol != null) {
-            symbol.setPosition(allSymbols.size());
-            allSymbols.add(symbol);
             if (symbol.isGroupable()) {
-               hasGroupableSymbols.set(true);
+               symbol.setPosition(groupableSymbols.size());
+               groupableSymbols.add(symbol);
+            }
+            else {
+               symbol.setPosition(nonGroupableSymbols.size());
+               nonGroupableSymbols.add(symbol);
             }
          }
       }

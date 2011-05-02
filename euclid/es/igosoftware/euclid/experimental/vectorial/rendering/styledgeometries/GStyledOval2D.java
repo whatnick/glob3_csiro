@@ -51,12 +51,16 @@ public class GStyledOval2D
 
 
    @Override
+   public boolean isGroupable() {
+      return true;
+   }
+
+
+   @Override
    public boolean isGroupableWith(final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> that) {
       if (that instanceof GStyledOval2D) {
-         final GStyledOval2D thatEllipse = (GStyledOval2D) that;
-         //         return _geometry.closeTo(thatEllipse._geometry) && _surfaceStyle.isGroupableWith(thatEllipse._surfaceStyle)
-         //         && _curveStyle.isGroupableWith(thatEllipse._curveStyle);
-         return _surfaceStyle.isGroupableWith(thatEllipse._surfaceStyle) && _curveStyle.isGroupableWith(thatEllipse._curveStyle);
+         final GStyledOval2D thatOval = (GStyledOval2D) that;
+         return _surfaceStyle.isGroupableWith(thatOval._surfaceStyle) && _curveStyle.isGroupableWith(thatOval._curveStyle);
       }
 
       return false;
@@ -72,12 +76,6 @@ public class GStyledOval2D
    @Override
    public GAxisAlignedRectangle getBounds() {
       return _geometry.getBounds();
-   }
-
-
-   @Override
-   public boolean isGroupable() {
-      return true;
    }
 
 

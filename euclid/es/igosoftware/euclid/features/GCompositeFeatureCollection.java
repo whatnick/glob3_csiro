@@ -131,7 +131,7 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<Vecto
    private long calculateSize() {
       long size = 0;
       for (final IGlobeFeatureCollection<VectorT, FeatureGeometryT> child : _children) {
-         size = child.size();
+         size += child.size();
       }
       return size;
    }
