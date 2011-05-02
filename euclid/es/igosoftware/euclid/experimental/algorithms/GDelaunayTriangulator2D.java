@@ -59,7 +59,7 @@ public class GDelaunayTriangulator2D
             IAlgorithm<IVector2, GDelaunayTriangulator2D.Parameters, IVector2, GDelaunayTriangulator2D.Result> {
 
 
-   public class Parameters
+   public static class Parameters
             implements
                IAlgorithmParameters<IVector2> {
 
@@ -72,7 +72,7 @@ public class GDelaunayTriangulator2D
    }
 
 
-   public class Result
+   public static class Result
             implements
                IAlgorithmResult<IVector2> {
 

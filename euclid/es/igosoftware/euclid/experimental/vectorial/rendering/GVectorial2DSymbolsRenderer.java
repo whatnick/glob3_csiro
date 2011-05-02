@@ -179,10 +179,6 @@ public class GVectorial2DSymbolsRenderer
 
    private Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> createClusterSymbols(final Set<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> cluster) {
 
-      final int _______________Diego_at_work;
-
-      //      final GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> exemplar = cluster.iterator().next();
-      //      return exemplar.createGroupSymbols(cluster);
 
       if (isHomogenous(cluster)) {
          final GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> exemplar = cluster.iterator().next();
