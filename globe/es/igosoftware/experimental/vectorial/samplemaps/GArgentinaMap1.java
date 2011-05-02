@@ -506,7 +506,7 @@ public class GArgentinaMap1 {
          protected float getSurfaceOpacity(final ISurface2D<?> surface,
                                            final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                            final IVectorial2DRenderingScaler scaler) {
-            return 0.25f;
+            return 1f;
          }
 
 
