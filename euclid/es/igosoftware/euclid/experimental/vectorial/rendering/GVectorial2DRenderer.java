@@ -26,6 +26,7 @@ public class GVectorial2DRenderer {
 
    private final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>           _features;
    private final GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> _quadtree;
+   private final boolean                                                                                                 _verbose;
 
 
    public GVectorial2DRenderer(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> features,
@@ -35,7 +36,7 @@ public class GVectorial2DRenderer {
       final long start = System.currentTimeMillis();
 
       _features = features;
-
+      _verbose = verbose;
       _quadtree = createQuadtree(verbose);
 
       if (verbose) {
@@ -119,7 +120,8 @@ public class GVectorial2DRenderer {
                projectionTool, viewport, renderingStyle, drawer);
 
       final IVectorial2DSymbolsRenderer symbolsRenderer = new GVectorial2DSymbolsRenderer(
-               renderUnitResult.getNonGroupableSymbols(), renderUnitResult.getGroupableSymbols(), renderingStyle, drawer);
+               renderUnitResult.getNonGroupableSymbols(), renderUnitResult.getGroupableSymbols(), renderingStyle, drawer,
+               _verbose);
       symbolsRenderer.draw();
 
       renderingStyle.postRender(renderExtent, projectionTool, viewport, renderingStyle, drawer);

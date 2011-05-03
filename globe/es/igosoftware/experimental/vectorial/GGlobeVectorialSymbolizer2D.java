@@ -29,7 +29,7 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVectorI2;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
-import es.igosoftware.globe.IGlobeRenderingStyle;
+import es.igosoftware.globe.IGlobeSymbolizer;
 import es.igosoftware.globe.IGlobeVector2Layer;
 import es.igosoftware.globe.attributes.GAreaLayerAttribute;
 import es.igosoftware.globe.attributes.GBooleanLayerAttribute;
@@ -47,7 +47,7 @@ public class GGlobeVectorialSymbolizer2D
          extends
             GSymbolizer2DAbstract
          implements
-            IGlobeRenderingStyle {
+            IGlobeSymbolizer {
 
 
    private final IGlobeVector2Layer _layer;
@@ -393,7 +393,7 @@ public class GGlobeVectorialSymbolizer2D
 
    @Override
    public double getMaximumSizeInMeters(final IVectorial2DRenderingScaler scaler) {
-      //      return getPointSize().getValueInReferenceUnits();
+      //      return getPointSize().getValueInReferenceUnits() * 2;
       return 0;
    }
 

@@ -165,7 +165,7 @@ public class GSearchResultLayer
 
 
    @Override
-   public GGlobeVectorialSymbolizer2D getRenderingStyle() {
+   public GGlobeVectorialSymbolizer2D getSymbolizer() {
       return null;
    }
 

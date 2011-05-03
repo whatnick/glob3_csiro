@@ -12,7 +12,7 @@ public interface IGlobeVector2Layer
 
 
    @Override
-   public GGlobeVectorialSymbolizer2D getRenderingStyle();
+   public GGlobeVectorialSymbolizer2D getSymbolizer();
 
 
    public void clearCache();

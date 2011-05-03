@@ -1198,7 +1198,7 @@ public final class GPanoramicLayerOLD
 
 
    @Override
-   public IGlobeRenderingStyle getRenderingStyle() {
+   public IGlobeSymbolizer getSymbolizer() {
       return null;
    }
 
