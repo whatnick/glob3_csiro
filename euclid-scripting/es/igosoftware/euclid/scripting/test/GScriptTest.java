@@ -1,6 +1,6 @@
 
 
-package es.igosoftware.euclid.scripting;
+package es.igosoftware.euclid.scripting.test;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -10,6 +10,9 @@ import java.io.InputStream;
 
 import junit.framework.TestCase;
 import es.igosoftware.euclid.experimental.algorithms.IAlgorithm;
+import es.igosoftware.euclid.scripting.GIllegalScriptException;
+import es.igosoftware.euclid.scripting.GScriptManager;
+import es.igosoftware.io.GFileName;
 
 
 public class GScriptTest
@@ -26,7 +29,7 @@ public class GScriptTest
 
 
    public void testJythonNormalCase() throws Exception {
-      final IAlgorithm alg = GScriptManager.getPythonAlgorithm(getScriptStream("normalCase.py"));
+      final IAlgorithm alg = GScriptManager.getPythonAlgorithm(getScriptStream(GFileName.relative("normalCase.py")));
       assertTrue(alg.getName().equals("name"));
       assertTrue(alg.getDescription().equals("description"));
       @SuppressWarnings("unchecked")
@@ -37,24 +40,26 @@ public class GScriptTest
 
    public void testJythonNoAlgorithmVarSet() throws Exception {
       try {
-         GScriptManager.getPythonAlgorithm(getScriptStream("noAlgorithmVarSet.py"));
+         GScriptManager.getPythonAlgorithm(getScriptStream(GFileName.relative("noAlgorithmVarSet.py")));
          fail();
       }
-      catch (final GIllegalScriptException e) {}
+      catch (final GIllegalScriptException e) {
+      }
    }
 
 
    public void testJythonNoIAlgorithmInstance() throws Exception {
       try {
-         GScriptManager.getPythonAlgorithm(getScriptStream("noIAlgorithmInstance.py"));
+         GScriptManager.getPythonAlgorithm(getScriptStream(GFileName.relative("noIAlgorithmInstance.py")));
          fail();
       }
-      catch (final GIllegalScriptException e) {}
+      catch (final GIllegalScriptException e) {
+      }
    }
 
 
    public void testBeanshellNormalCase() throws Exception {
-      final IAlgorithm alg = GScriptManager.getBeanshellAlgorithm(getScriptStream("normalCase.bsh"));
+      final IAlgorithm alg = GScriptManager.getBeanshellAlgorithm(getScriptStream(GFileName.relative("normalCase.bsh")));
       assertTrue(alg.getName().equals("name"));
       assertTrue(alg.getDescription().equals("description"));
       @SuppressWarnings("unchecked")
@@ -65,7 +70,7 @@ public class GScriptTest
 
    public void testBeanshellNoAlgorithmVarSet() throws Exception {
       try {
-         GScriptManager.getBeanshellAlgorithm(getScriptStream("noAlgorithmVarSet.bsh"));
+         GScriptManager.getBeanshellAlgorithm(getScriptStream(GFileName.relative("noAlgorithmVarSet.bsh")));
          fail();
       }
       catch (final GIllegalScriptException e) {
@@ -76,7 +81,7 @@ public class GScriptTest
 
    public void testBeanshellNoIAlgorithmInstance() throws Exception {
       try {
-         GScriptManager.getBeanshellAlgorithm(getScriptStream("noIAlgorithmInstance.bsh"));
+         GScriptManager.getBeanshellAlgorithm(getScriptStream(GFileName.relative("noIAlgorithmInstance.bsh")));
          fail();
       }
       catch (final GIllegalScriptException e) {
@@ -84,7 +89,13 @@ public class GScriptTest
    }
 
 
-   private InputStream getScriptStream(final String fileName) throws FileNotFoundException {
+   public void testSum() throws Exception {
+      final IAlgorithm<?, ?, ?, ?> script = GScriptManager.getBeanshellAlgorithm(getScriptStream(GFileName.relative("realCase.bsh")));
+      //      ?script.apply(null);
+   }
+
+
+   private InputStream getScriptStream(final GFileName fileName) throws FileNotFoundException {
       return new BufferedInputStream(new FileInputStream(new File("es/igosoftware/euclid/scripting/" + fileName)));
    }
 

@@ -1,6 +1,6 @@
 
 
-package es.igosoftware.euclid.scripting;
+package es.igosoftware.euclid.scripting.test;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
