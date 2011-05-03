@@ -181,4 +181,7 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
                             final GProjection targetProjection);
 
 
+   public VectorT squared();
+
+
 }

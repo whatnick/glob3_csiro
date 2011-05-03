@@ -19,7 +19,7 @@ import es.igosoftware.euclid.vector.IVector2;
 public interface IVectorial2DRenderUnit {
 
 
-   public GRenderUnitResult render(final BufferedImage renderedImage,
+   public GRenderUnitResult render(final BufferedImage image,
                                    final GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> quadtree,
                                    final GProjection projection,
                                    final IProjectionTool projectionTool,

@@ -9,8 +9,6 @@ import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.ICurve2D;
 import es.igosoftware.euclid.ISurface2D;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
-import es.igosoftware.euclid.experimental.measurement.GArea;
-import es.igosoftware.euclid.experimental.measurement.IMeasure;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSymbol2D;
 import es.igosoftware.euclid.features.IGlobeFeature;
@@ -39,13 +37,13 @@ public interface ISymbolizer2D {
    public void preprocessFeatures(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> features);
 
 
-   public void preRenderImage(final BufferedImage renderedImage);
+   public void preRenderImage(final BufferedImage image);
 
 
-   public void postRenderImage(final BufferedImage renderedImage);
+   public void postRenderImage(final BufferedImage image);
 
 
-   public IMeasure<GArea> getMaximumSize();
+   public double getMaximumSizeInMeters(final IVectorial2DRenderingScaler scaler);
 
 
    public boolean isClusterSymbols();
@@ -65,17 +63,17 @@ public interface ISymbolizer2D {
 
 
    /* -------------------------------------------------------------------------------------- */
-   /* surfaces */
-   public Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getSurfaceSymbols(final ISurface2D<? extends IFinite2DBounds<?>> surface,
-                                                                                                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                                                                                                        final IVectorial2DRenderingScaler scaler);
-
-
-   /* -------------------------------------------------------------------------------------- */
    /* curves */
    public Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getCurveSymbols(final ICurve2D<? extends IFinite2DBounds<?>> curve,
                                                                                                                       final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                                                                                                       final IVectorial2DRenderingScaler scaler);
+
+
+   /* -------------------------------------------------------------------------------------- */
+   /* surfaces */
+   public Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getSurfaceSymbols(final ISurface2D<? extends IFinite2DBounds<?>> surface,
+                                                                                                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                                                                                                        final IVectorial2DRenderingScaler scaler);
 
 
 }

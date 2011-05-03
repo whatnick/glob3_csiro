@@ -285,10 +285,8 @@ GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
          return null;
       }
 
-      //      final GAxisAlignedOrthotope<VectorT, ?> bounds = bounds2;
-      //      final GAxisAlignedOrthotope<VectorT, ?> bounds = getMinimumBounds(elements);
 
-      if ((depth > 25) || acceptLeafNodeCreation(bounds, elements, depth, parameters)) {
+      if (acceptLeafNodeCreation(bounds, elements, depth, parameters)) {
          return createLeafNode(bounds, elements, progress);
       }
 
@@ -302,23 +300,6 @@ GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
                distribution.getGeometriesToDistribute(), depth, parameters, progress);
 
    }
-
-
-   //   private GAxisAlignedOrthotope<VectorT, ?> getMinimumBounds(final Collection<GElementGeometryPair<VectorT, ElementT, GeometryT>> elements) {
-   //      final Iterator<GElementGeometryPair<VectorT, ElementT, GeometryT>> iterator = elements.iterator();
-   //
-   //      GAxisAlignedOrthotope<VectorT, ?> currentBounds = iterator.next().getGeometry().getBounds().asAxisAlignedOrthotope();
-   //
-   //      VectorT lower = currentBounds._lower;
-   //      VectorT upper = currentBounds._upper;
-   //      while (iterator.hasNext()) {
-   //         currentBounds = iterator.next().getGeometry().getBounds().asAxisAlignedOrthotope();
-   //         lower = lower.min(currentBounds._lower);
-   //         upper = upper.min(currentBounds._upper);
-   //      }
-   //
-   //      return GAxisAlignedOrthotope.create(lower, upper);
-   //   }
 
 
    private GGTNode<VectorT, ElementT, GeometryT> createLeafNode(final GAxisAlignedOrthotope<VectorT, ?> bounds,

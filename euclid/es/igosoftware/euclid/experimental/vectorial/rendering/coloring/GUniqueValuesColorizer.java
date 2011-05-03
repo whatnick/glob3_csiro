@@ -111,13 +111,13 @@ public class GUniqueValuesColorizer
 
 
    @Override
-   public void preRenderImage(final BufferedImage renderedImage) {
+   public void preRenderImage(final BufferedImage image) {
 
    }
 
 
    @Override
-   public void postRenderImage(final BufferedImage renderedImage) {
+   public void postRenderImage(final BufferedImage image) {
       if (!_renderLegends) {
          return;
       }
@@ -126,7 +126,7 @@ public class GUniqueValuesColorizer
          return;
       }
 
-      final Graphics2D g2d = renderedImage.createGraphics();
+      final Graphics2D g2d = image.createGraphics();
       g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
       g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 

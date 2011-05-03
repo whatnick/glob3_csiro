@@ -191,8 +191,10 @@ public class GVectorial2DSymbolsRenderer
 
       final Collection<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> result = new ArrayList<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>();
 
+      int symbolsInClustersCount = 0;
       for (final Set<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> clusterByGroup : clustersByGroups) {
          final int clusterSize = clusterByGroup.size();
+         symbolsInClustersCount += clusterSize;
 
          if (clusterSize == 0) {
             continue;
@@ -206,6 +208,8 @@ public class GVectorial2DSymbolsRenderer
             result.addAll(exemplar.createGroupSymbols(clusterByGroup));
          }
       }
+
+      GAssert.isTrue(symbolsInClustersCount == cluster.size(), "clustered");
 
       return result;
 

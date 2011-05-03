@@ -7,8 +7,6 @@ import java.util.List;
 import junit.framework.TestCase;
 import es.igosoftware.euclid.bounding.IBounds;
 import es.igosoftware.euclid.experimental.algorithms.GLinesToEquispacedPoints;
-import es.igosoftware.euclid.experimental.algorithms.GLinesToEquispacedPoints.Parameters;
-import es.igosoftware.euclid.experimental.algorithms.GLinesToEquispacedPoints.Result;
 import es.igosoftware.euclid.shape.GLinesStrip2D;
 import es.igosoftware.euclid.shape.GSegment;
 import es.igosoftware.euclid.shape.GSegment3D;

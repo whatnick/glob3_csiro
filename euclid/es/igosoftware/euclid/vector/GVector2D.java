@@ -496,4 +496,10 @@ public class GVector2D
    }
 
 
+   @Override
+   public GVector2D squared() {
+      return new GVector2D(GMath.squared(_x), GMath.squared(_y));
+   }
+
+
 }

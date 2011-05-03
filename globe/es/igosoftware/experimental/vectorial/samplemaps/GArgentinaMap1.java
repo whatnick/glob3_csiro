@@ -106,6 +106,7 @@ public class GArgentinaMap1 {
       System.out.println("Argentina Map 1");
       System.out.println("---------------\n");
 
+      final long start = System.currentTimeMillis();
 
       final GProjection projection = GProjection.EPSG_4326;
       final GFileName pointsFileName = GFileName.absolute("home", "dgd", "Desktop", "Data For Maps", "argentina.shapefiles",
@@ -174,7 +175,7 @@ public class GArgentinaMap1 {
       render(renderer, renderingStyle, viewport, imageExtent, directoryName, depth, maxDepth);
 
       System.out.println();
-      System.out.println("- done!");
+      System.out.println("- done in " + GStringUtils.getTimeMessage(System.currentTimeMillis() - start, false));
    }
 
 
@@ -441,11 +442,11 @@ public class GArgentinaMap1 {
 
 
          @Override
-         public void preRenderImage(final BufferedImage renderedImage) {
-            fillImage(renderedImage, GColorF.newRGB256(211, 237, 249).darker().asAWTColor());
+         public void preRenderImage(final BufferedImage image) {
+            fillImage(image, GColorF.newRGB256(211, 237, 249).darker().asAWTColor());
 
             if (backgroundImage != null) {
-               final Graphics2D g2d = renderedImage.createGraphics();
+               final Graphics2D g2d = image.createGraphics();
                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
                g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
@@ -455,25 +456,31 @@ public class GArgentinaMap1 {
 
 
                g2d.drawImage(backgroundImage, //
-                        0, 0, renderedImage.getWidth(), renderedImage.getHeight(), //
+                        0, 0, image.getWidth(), image.getHeight(), //
                         null);
 
                g2d.dispose();
             }
 
-            _pointColorizer.preRenderImage(renderedImage);
+            _pointColorizer.preRenderImage(image);
          }
 
 
          @Override
-         public void postRenderImage(final BufferedImage renderedImage) {
-            _pointColorizer.postRenderImage(renderedImage);
+         public void postRenderImage(final BufferedImage image) {
+            _pointColorizer.postRenderImage(image);
          }
 
 
          @Override
-         public IMeasure<GArea> getMaximumSize() {
-            return getPointSize(null, null, null);
+         public double getMaximumSizeInMeters(final IVectorial2DRenderingScaler scaler) {
+            //            final double pointSizeInMeters = GMath.sqrt(getPointSize(null, null, null).getValueInReferenceUnits());
+            //            final double curveBorderSizeInMeters = getCurveBorderSize(null, null, null).getValueInReferenceUnits();
+            //            final double surfaceBorderSizeInMeters = getSurfaceBorderSize(null, null, null).getValueInReferenceUnits();
+            //
+            //            return GMath.maxD(pointSizeInMeters, curveBorderSizeInMeters, surfaceBorderSizeInMeters);
+            final int _____Diego_at_work;
+            return 10;
          }
 
 

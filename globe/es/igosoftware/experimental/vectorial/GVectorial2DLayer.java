@@ -268,20 +268,20 @@ public class GVectorial2DLayer
                final GVectorial2DLayer layer = key._layer;
                final GVectorial2DRenderer renderer = layer._renderer;
 
-               final BufferedImage renderedImage = renderer.getRenderedImage(key._tileBounds, TEXTURE_WIDTH, TEXTURE_HEIGHT,
+               final BufferedImage image = renderer.getRenderedImage(key._tileBounds, TEXTURE_WIDTH, TEXTURE_HEIGHT,
                         PROJECTION_TOOL, key._renderingStyle);
                layer.redraw();
 
                if (cacheRenderingOnDisk) {
-                  saveImageIntoDiskCache(renderedImage);
+                  saveImageIntoDiskCache(image);
                }
 
-               return renderedImage;
+               return image;
             }
 
 
-            private void saveImageIntoDiskCache(final BufferedImage renderedImage) {
-               if (renderedImage == null) {
+            private void saveImageIntoDiskCache(final BufferedImage image) {
+               if (image == null) {
                   return;
                }
 
@@ -300,7 +300,7 @@ public class GVectorial2DLayer
 
                         final File tempFile = File.createTempFile("temp", "png", RENDERING_CACHE_DIRECTORY);
 
-                        ImageIO.write(renderedImage, "png", tempFile);
+                        ImageIO.write(image, "png", tempFile);
                         //            final ByteBuffer buffer = DDSCompressor.compressImage(image);
                         //            WWIO.saveBuffer(buffer, tempFile);
 

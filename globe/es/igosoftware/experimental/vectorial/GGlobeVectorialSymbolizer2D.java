@@ -330,13 +330,13 @@ public class GGlobeVectorialSymbolizer2D
 
 
    @Override
-   public void preRenderImage(final BufferedImage renderedImage) {
+   public void preRenderImage(final BufferedImage image) {
 
    }
 
 
    @Override
-   public void postRenderImage(final BufferedImage renderedImage) {
+   public void postRenderImage(final BufferedImage image) {
 
    }
 
@@ -380,8 +380,9 @@ public class GGlobeVectorialSymbolizer2D
 
 
    @Override
-   public IMeasure<GArea> getMaximumSize() {
-      return getPointSize();
+   public double getMaximumSizeInMeters(final IVectorial2DRenderingScaler scaler) {
+      //      return getPointSize().getValueInReferenceUnits();
+      return 0;
    }
 
 

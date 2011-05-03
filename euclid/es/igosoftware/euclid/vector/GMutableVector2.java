@@ -448,4 +448,10 @@ public final class GMutableVector2<T extends IVector2>
    }
 
 
+   @Override
+   public IVector2 squared() {
+      return _value.squared();
+   }
+
+
 }

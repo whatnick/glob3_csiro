@@ -21,10 +21,10 @@ public interface IColorizer {
    public IColor getColor(final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature);
 
 
-   public void preRenderImage(final BufferedImage renderedImage);
+   public void preRenderImage(final BufferedImage image);
 
 
-   public void postRenderImage(final BufferedImage renderedImage);
+   public void postRenderImage(final BufferedImage image);
 
 
 }

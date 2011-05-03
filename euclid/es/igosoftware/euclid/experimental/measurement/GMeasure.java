@@ -178,4 +178,32 @@ public class GMeasure<UnitT extends IUnit<UnitT>>
    }
 
 
+   @Override
+   public IMeasure<UnitT> max(final IMeasure<UnitT> that) {
+      final UnitT thatUnit = that.getUnit();
+      final double thatValue = that.getValue();
+
+      if (thatUnit == _unit) {
+         return (_value > thatValue) ? this : that;
+      }
+
+      final double conversionFactor = thatUnit.convertionFactor() / _unit.convertionFactor();
+      return (_value > (thatValue * conversionFactor)) ? this : that;
+   }
+
+
+   @Override
+   public IMeasure<UnitT> min(final IMeasure<UnitT> that) {
+      final UnitT thatUnit = that.getUnit();
+      final double thatValue = that.getValue();
+
+      if (thatUnit == _unit) {
+         return (_value < thatValue) ? this : that;
+      }
+
+      final double conversionFactor = thatUnit.convertionFactor() / _unit.convertionFactor();
+      return (_value < (thatValue * conversionFactor)) ? this : that;
+   }
+
+
 }
