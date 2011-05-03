@@ -42,11 +42,14 @@ import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorial2DRenderer;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.GJava2DVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.ISymbolizer2D;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.GVector2D;
+import es.igosoftware.euclid.vector.GVector2I;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeVector2Layer;
@@ -268,8 +271,13 @@ public class GVectorial2DLayer
                final GVectorial2DLayer layer = key._layer;
                final GVectorial2DRenderer renderer = layer._renderer;
 
-               final BufferedImage image = renderer.getRenderedImage(key._tileBounds, TEXTURE_WIDTH, TEXTURE_HEIGHT,
-                        PROJECTION_TOOL, key._renderingStyle);
+               final BufferedImage image = new BufferedImage(TEXTURE_WIDTH, TEXTURE_HEIGHT, BufferedImage.TYPE_4BYTE_ABGR);
+               image.setAccelerationPriority(1);
+               final IVectorial2DDrawer drawer = new GJava2DVectorial2DDrawer(image);
+
+               renderer.render(key._tileBounds, new GVector2I(TEXTURE_WIDTH, TEXTURE_HEIGHT), PROJECTION_TOOL,
+                        key._renderingStyle, drawer);
+
                layer.redraw();
 
                if (cacheRenderingOnDisk) {

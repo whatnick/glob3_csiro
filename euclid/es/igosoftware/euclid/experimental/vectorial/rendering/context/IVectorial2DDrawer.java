@@ -131,7 +131,19 @@ public interface IVectorial2DDrawer {
 
 
    public void drawImage(final Image image,
+                         final double x,
+                         final double y,
+                         final double width,
+                         final double height);
+
+
+   public void drawImage(final Image image,
                          final IVector2 position);
+
+
+   public void drawImage(final Image image,
+                         final IVector2 position,
+                         final IVector2 extent);
 
 
    public void drawImage(final BufferedImage image,

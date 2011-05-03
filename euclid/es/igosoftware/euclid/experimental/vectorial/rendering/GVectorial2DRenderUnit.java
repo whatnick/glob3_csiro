@@ -3,7 +3,6 @@
 package es.igosoftware.euclid.experimental.vectorial.rendering;
 
 import java.awt.Color;
-import java.awt.image.BufferedImage;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,6 +27,7 @@ import es.igosoftware.euclid.ntree.GGTInnerNode;
 import es.igosoftware.euclid.ntree.GGTNode;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.euclid.vector.IVectorI2;
 
 
 class GVectorial2DRenderUnit
@@ -39,7 +39,7 @@ class GVectorial2DRenderUnit
 
 
    @Override
-   public GRenderUnitResult render(final BufferedImage image,
+   public GRenderUnitResult render(final IVectorI2 renderExtent,
                                    final GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> quadtree,
                                    final GProjection projection,
                                    final IProjectionTool projectionTool,
@@ -48,7 +48,7 @@ class GVectorial2DRenderUnit
                                    final IVectorial2DDrawer drawer) {
 
       final IVectorial2DRenderingScaler scaler = new GVectorial2DRenderingScaler(viewport, projection, projectionTool,
-               image.getWidth(), image.getHeight());
+               renderExtent);
 
       final GAxisAlignedRectangle extendedViewport = calculateExtendedViewport(viewport, scaler, renderingStyle);
 

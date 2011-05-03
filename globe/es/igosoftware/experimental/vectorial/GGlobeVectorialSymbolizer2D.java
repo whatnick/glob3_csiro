@@ -3,7 +3,6 @@
 package es.igosoftware.experimental.vectorial;
 
 import java.awt.Color;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -11,18 +10,23 @@ import java.util.List;
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.ICurve2D;
 import es.igosoftware.euclid.ISurface2D;
+import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.colors.GColorF;
 import es.igosoftware.euclid.colors.IColor;
 import es.igosoftware.euclid.experimental.measurement.GArea;
 import es.igosoftware.euclid.experimental.measurement.GLength;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GSymbolizer2DAbstract;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.ISymbolizer2D;
 import es.igosoftware.euclid.features.GGeometryType;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.euclid.vector.IVectorI2;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
 import es.igosoftware.globe.IGlobeRenderingStyle;
@@ -330,13 +334,21 @@ public class GGlobeVectorialSymbolizer2D
 
 
    @Override
-   public void preRenderImage(final BufferedImage image) {
+   public void preRender(final IVectorI2 renderExtent,
+                         final IProjectionTool projectionTool,
+                         final GAxisAlignedRectangle viewport,
+                         final ISymbolizer2D renderingStyle,
+                         final IVectorial2DDrawer drawer) {
 
    }
 
 
    @Override
-   public void postRenderImage(final BufferedImage image) {
+   public void postRender(final IVectorI2 renderExtent,
+                          final IProjectionTool projectionTool,
+                          final GAxisAlignedRectangle viewport,
+                          final ISymbolizer2D renderingStyle,
+                          final IVectorial2DDrawer drawer) {
 
    }
 

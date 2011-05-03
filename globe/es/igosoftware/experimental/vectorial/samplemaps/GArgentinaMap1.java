@@ -36,10 +36,7 @@
 
 package es.igosoftware.experimental.vectorial.samplemaps;
 
-import java.awt.Color;
 import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -149,13 +146,12 @@ public class GArgentinaMap1 {
       final double lodMinSize = 4;
       final int textureDimension = 256;
       final boolean debugRendering = false;
-      final boolean drawBackgroundImage = false;
+      final boolean drawBackgroundImage = true;
 
       final IVectorI2 imageExtent = calculateImageExtent(textureDimension, viewport);
 
       final GVectorial2DRenderer renderer = new GVectorial2DRenderer(compositeFeatures, true);
-      final ISymbolizer2D renderingStyle = createSymbolizer(viewport, drawBackgroundImage, renderLODIgnores, lodMinSize,
-               debugRendering);
+      final ISymbolizer2D renderingStyle = createSymbolizer(drawBackgroundImage, renderLODIgnores, lodMinSize, debugRendering);
 
       GIOUtils.assureEmptyDirectory(directoryName, false);
 
@@ -215,8 +211,7 @@ public class GArgentinaMap1 {
    }
 
 
-   private static ISymbolizer2D createSymbolizer(final GAxisAlignedRectangle viewport,
-                                                 final boolean drawBackgroundImage,
+   private static ISymbolizer2D createSymbolizer(final boolean drawBackgroundImage,
                                                  final boolean renderLODIgnores,
                                                  final double lodMinSize,
                                                  final boolean debugRendering) throws IOException {
@@ -227,28 +222,40 @@ public class GArgentinaMap1 {
       final BufferedImage governmentIcon = ImageIO.read(GFileName.fromParentAndParts(symbologyDirectory, "government-128x128.png").asFile());
 
 
-      final BufferedImage backgroundImage = drawBackgroundImage ? createBackgroundImage(viewport) : null;
-
       final GColorScheme colorScheme = GColorBrewerColorSchemeSet.INSTANCE.getSchemes(9, GColorScheme.Type.Qualitative).get(2);
 
 
       return new GSymbolizer2DAbstract() {
-         private static final String COUNTRY         = "NEV_Countr";
-         private static final String PROVINCE        = "NAME_1";
-         private static final String CATEGORY        = "CATEGORY";
+         private static final String COUNTRY  = "NEV_Countr";
+         private static final String PROVINCE = "NAME_1";
+         private static final String CATEGORY = "CATEGORY";
+
+         private BufferedImage       _backgroundImage;
 
 
-         private final IColorizer    _pointColorizer = new GUniqueValuesColorizer(CATEGORY, colorScheme, GColorI.WHITE, true,
-                                                              new IFunction<Object, String>() {
-                                                                 @Override
-                                                                 public String apply(final Object element) {
-                                                                    if (element == null) {
-                                                                       return "";
-                                                                    }
+         private BufferedImage getBackgroundImage(final GAxisAlignedRectangle viewport) {
+            if (_backgroundImage == null) {
+               try {
+                  _backgroundImage = createBackgroundImage(viewport);
+               }
+               catch (final IOException e) {
+                  e.printStackTrace();
+               }
+            }
+            return _backgroundImage;
+         }
 
-                                                                    return element.toString().trim().toLowerCase();
+         private final IColorizer _pointColorizer = new GUniqueValuesColorizer(CATEGORY, colorScheme, GColorI.WHITE, true,
+                                                           new IFunction<Object, String>() {
+                                                              @Override
+                                                              public String apply(final Object element) {
+                                                                 if (element == null) {
+                                                                    return "";
                                                                  }
-                                                              });
+
+                                                                 return element.toString().trim().toLowerCase();
+                                                              }
+                                                           });
 
 
          //         private int                 _categoryIndex  = -1;
@@ -442,33 +449,47 @@ public class GArgentinaMap1 {
 
 
          @Override
-         public void preRenderImage(final BufferedImage image) {
-            fillImage(image, GColorF.newRGB256(211, 237, 249).darker().asAWTColor());
+         public void preRender(final IVectorI2 renderExtent,
+                               final IProjectionTool projectionTool,
+                               final GAxisAlignedRectangle viewport,
+                               final ISymbolizer2D renderingStyle,
+                               final IVectorial2DDrawer drawer) {
 
-            if (backgroundImage != null) {
-               final Graphics2D g2d = image.createGraphics();
-               g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-               g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-               g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-               g2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
-               g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-               g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            drawer.fillRect(0, 0, renderExtent.x(), renderExtent.y(), GColorF.newRGB256(211, 237, 249).darker().asAWTColor());
 
+            if (drawBackgroundImage) {
+               final BufferedImage backgroundImage = getBackgroundImage(viewport);
+               if (backgroundImage != null) {
+                  drawer.drawImage(backgroundImage, 0, 0, renderExtent.x(), renderExtent.y());
+               }
 
-               g2d.drawImage(backgroundImage, //
-                        0, 0, image.getWidth(), image.getHeight(), //
-                        null);
-
-               g2d.dispose();
+               //               final Graphics2D g2d = image.createGraphics();
+               //               g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+               //               g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+               //               g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+               //               g2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+               //               g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+               //               g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+               //
+               //
+               //               g2d.drawImage(backgroundImage, //
+               //                        0, 0, image.getWidth(), image.getHeight(), //
+               //                        null);
+               //
+               //               g2d.dispose();
             }
 
-            _pointColorizer.preRenderImage(image);
+            _pointColorizer.preRender(renderExtent, projectionTool, viewport, renderingStyle, drawer);
          }
 
 
          @Override
-         public void postRenderImage(final BufferedImage image) {
-            _pointColorizer.postRenderImage(image);
+         public void postRender(final IVectorI2 renderExtent,
+                                final IProjectionTool projectionTool,
+                                final GAxisAlignedRectangle viewport,
+                                final ISymbolizer2D renderingStyle,
+                                final IVectorial2DDrawer drawer) {
+            _pointColorizer.postRender(renderExtent, projectionTool, viewport, renderingStyle, drawer);
          }
 
 
@@ -656,20 +677,20 @@ public class GArgentinaMap1 {
    }
 
 
-   private static void render(final GVectorial2DRenderer rendeder,
+   private static void render(final GVectorial2DRenderer renderer,
                               final ISymbolizer2D renderingStyle,
                               final GAxisAlignedRectangle viewport,
-                              final IVectorI2 imageExtent,
+                              final IVectorI2 renderExtent,
                               final GFileName directoryName,
                               final int depth,
                               final int maxDepth) throws IOException {
 
       final long start = System.currentTimeMillis();
 
-      final BufferedImage image = new BufferedImage(imageExtent.x(), imageExtent.y(), BufferedImage.TYPE_4BYTE_ABGR);
+      final BufferedImage image = new BufferedImage(renderExtent.x(), renderExtent.y(), BufferedImage.TYPE_4BYTE_ABGR);
       image.setAccelerationPriority(1);
 
-      final IVectorial2DDrawer drawer = new GJava2DVectorial2DDrawer(image, true);
+      final IVectorial2DDrawer drawer = new GJava2DVectorial2DDrawer(image);
 
       final IProjectionTool projectionTool = new IProjectionTool() {
          @Override
@@ -681,32 +702,18 @@ public class GArgentinaMap1 {
          }
       };
 
-      rendeder.render(viewport, image, projectionTool, renderingStyle, drawer);
-
+      renderer.render(viewport, renderExtent, projectionTool, renderingStyle, drawer);
 
       final String imageName = "" + depth;
       final GFileName fileName = GFileName.fromParentAndParts(directoryName, imageName + ".png");
       ImageIO.write(image, "png", fileName.asFile());
 
-      System.out.println("- Rendered \"" + imageName + ".png\" (" + imageExtent.x() + "x" + imageExtent.y() + ") in "
+      System.out.println("- Rendered \"" + imageName + ".png\" (" + renderExtent.x() + "x" + renderExtent.y() + ") in "
                          + GStringUtils.getTimeMessage(System.currentTimeMillis() - start, false));
 
       if (depth < maxDepth) {
-         render(rendeder, renderingStyle, viewport, imageExtent.scale(2), directoryName, depth + 1, maxDepth);
+         render(renderer, renderingStyle, viewport, renderExtent.scale(2), directoryName, depth + 1, maxDepth);
       }
-   }
-
-
-   private static void fillImage(final BufferedImage image,
-                                 final Color color) {
-      final Graphics2D g2d = image.createGraphics();
-      //      g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-      //      g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-
-      g2d.setBackground(color);
-      g2d.clearRect(0, 0, image.getWidth(), image.getHeight());
-
-      g2d.dispose();
    }
 
 

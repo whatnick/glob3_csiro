@@ -2,20 +2,23 @@
 
 package es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer;
 
-import java.awt.image.BufferedImage;
 import java.util.Collection;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.ICurve2D;
 import es.igosoftware.euclid.IGeometry2D;
 import es.igosoftware.euclid.ISurface2D;
+import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSymbol2D;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.ntree.GGTNode;
 import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.euclid.vector.IVectorI2;
 import es.igosoftware.util.GMath;
 
 
@@ -102,18 +105,26 @@ public class GExpressionsSymbolizer2D
 
 
    @Override
-   public void preRenderImage(final BufferedImage image) {
-      _pointExpression.preRenderImage(image);
-      _curveExpression.preRenderImage(image);
-      _surfaceExpression.preRenderImage(image);
+   public void preRender(final IVectorI2 renderExtent,
+                         final IProjectionTool projectionTool,
+                         final GAxisAlignedRectangle viewport,
+                         final ISymbolizer2D renderingStyle,
+                         final IVectorial2DDrawer drawer) {
+      _pointExpression.preRender(renderExtent, projectionTool, viewport, renderingStyle, drawer);
+      _curveExpression.preRender(renderExtent, projectionTool, viewport, renderingStyle, drawer);
+      _surfaceExpression.preRender(renderExtent, projectionTool, viewport, renderingStyle, drawer);
    }
 
 
    @Override
-   public void postRenderImage(final BufferedImage image) {
-      _pointExpression.postRenderImage(image);
-      _curveExpression.postRenderImage(image);
-      _surfaceExpression.postRenderImage(image);
+   public void postRender(final IVectorI2 renderExtent,
+                          final IProjectionTool projectionTool,
+                          final GAxisAlignedRectangle viewport,
+                          final ISymbolizer2D renderingStyle,
+                          final IVectorial2DDrawer drawer) {
+      _pointExpression.postRender(renderExtent, projectionTool, viewport, renderingStyle, drawer);
+      _curveExpression.postRender(renderExtent, projectionTool, viewport, renderingStyle, drawer);
+      _surfaceExpression.postRender(renderExtent, projectionTool, viewport, renderingStyle, drawer);
    }
 
 

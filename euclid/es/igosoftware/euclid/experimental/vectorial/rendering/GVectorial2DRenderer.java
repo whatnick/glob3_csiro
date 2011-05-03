@@ -2,14 +2,12 @@
 
 package es.igosoftware.euclid.experimental.vectorial.rendering;
 
-import java.awt.image.BufferedImage;
 import java.util.Collection;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
-import es.igosoftware.euclid.experimental.vectorial.rendering.context.GJava2DVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.ISymbolizer2D;
@@ -19,6 +17,7 @@ import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.ntree.GElementGeometryPair;
 import es.igosoftware.euclid.ntree.GGeometryNTreeParameters;
 import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.euclid.vector.IVectorI2;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GStringUtils;
 
@@ -79,49 +78,51 @@ public class GVectorial2DRenderer {
    }
 
 
-   public BufferedImage getRenderedImage(final GAxisAlignedRectangle viewport,
-                                         final int imageWidth,
-                                         final int imageHeight,
-                                         final IProjectionTool projectionTool,
-                                         final ISymbolizer2D renderingStyle) {
-      GAssert.notNull(viewport, "viewport");
-      GAssert.isPositive(imageWidth, "imageWidth");
-      GAssert.isPositive(imageHeight, "imageHeight");
-      GAssert.notNull(renderingStyle, "renderingStyle");
-
-      final BufferedImage image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_4BYTE_ABGR);
-      image.setAccelerationPriority(1);
-
-      final IVectorial2DDrawer drawer = new GJava2DVectorial2DDrawer(image, true);
-
-      render(viewport, image, projectionTool, renderingStyle, drawer);
-
-      return image;
-   }
+   //   public BufferedImage getRenderedImage(final GAxisAlignedRectangle viewport,
+   //                                         final int imageWidth,
+   //                                         final int imageHeight,
+   //                                         final IProjectionTool projectionTool,
+   //                                         final ISymbolizer2D renderingStyle) {
+   //      GAssert.notNull(viewport, "viewport");
+   //      GAssert.isPositive(imageWidth, "imageWidth");
+   //      GAssert.isPositive(imageHeight, "imageHeight");
+   //      GAssert.notNull(renderingStyle, "renderingStyle");
+   //
+   //      final BufferedImage image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_4BYTE_ABGR);
+   //      image.setAccelerationPriority(1);
+   //
+   //      final IVectorial2DDrawer drawer = new GJava2DVectorial2DDrawer(image, true);
+   //
+   //      render(viewport, image, projectionTool, renderingStyle, drawer);
+   //
+   //      return image;
+   //   }
 
 
    public void render(final GAxisAlignedRectangle viewport,
-                      final BufferedImage image,
+                      final IVectorI2 renderExtent,
                       final IProjectionTool projectionTool,
                       final ISymbolizer2D renderingStyle,
                       final IVectorial2DDrawer drawer) {
       GAssert.notNull(viewport, "viewport");
-      GAssert.notNull(image, "image");
+      GAssert.notNull(renderExtent, "renderExtent");
+      GAssert.notNull(projectionTool, "projectionTool");
       GAssert.notNull(renderingStyle, "renderingStyle");
+      GAssert.notNull(drawer, "drawer");
 
       renderingStyle.preprocessFeatures(_features);
 
-      renderingStyle.preRenderImage(image);
+      renderingStyle.preRender(renderExtent, projectionTool, viewport, renderingStyle, drawer);
 
       final IVectorial2DRenderUnit renderUnit = new GVectorial2DRenderUnit();
-      final GRenderUnitResult renderUnitResult = renderUnit.render(image, _quadtree, _features.getProjection(), projectionTool,
-               viewport, renderingStyle, drawer);
+      final GRenderUnitResult renderUnitResult = renderUnit.render(renderExtent, _quadtree, _features.getProjection(),
+               projectionTool, viewport, renderingStyle, drawer);
 
       final IVectorial2DSymbolsRenderer symbolsRenderer = new GVectorial2DSymbolsRenderer(
                renderUnitResult.getNonGroupableSymbols(), renderUnitResult.getGroupableSymbols(), renderingStyle, drawer);
       symbolsRenderer.draw();
 
-      renderingStyle.postRenderImage(image);
+      renderingStyle.postRender(renderExtent, projectionTool, viewport, renderingStyle, drawer);
    }
 
 

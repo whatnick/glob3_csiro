@@ -2,19 +2,22 @@
 
 package es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer;
 
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.IGeometry2D;
+import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSymbol2D;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.euclid.vector.IVectorI2;
 
 
 public class GConstantGeometry2DSymbolizerExpression<GeometryT extends IGeometry2D>
@@ -51,7 +54,11 @@ public class GConstantGeometry2DSymbolizerExpression<GeometryT extends IGeometry
 
 
    @Override
-   public void preRenderImage(final BufferedImage image) {
+   public void preRender(final IVectorI2 renderExtent,
+                         final IProjectionTool projectionTool,
+                         final GAxisAlignedRectangle viewport,
+                         final ISymbolizer2D renderingStyle,
+                         final IVectorial2DDrawer drawer) {
    }
 
 
@@ -64,7 +71,11 @@ public class GConstantGeometry2DSymbolizerExpression<GeometryT extends IGeometry
 
 
    @Override
-   public void postRenderImage(final BufferedImage image) {
+   public void postRender(final IVectorI2 renderExtent,
+                          final IProjectionTool projectionTool,
+                          final GAxisAlignedRectangle viewport,
+                          final ISymbolizer2D renderingStyle,
+                          final IVectorial2DDrawer drawer) {
    }
 
 }

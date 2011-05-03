@@ -2,8 +2,6 @@
 
 package es.igosoftware.euclid.experimental.vectorial.rendering;
 
-import java.awt.image.BufferedImage;
-
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
@@ -14,12 +12,13 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.utils.GRenderingQu
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.euclid.vector.IVectorI2;
 
 
 public interface IVectorial2DRenderUnit {
 
 
-   public GRenderUnitResult render(final BufferedImage image,
+   public GRenderUnitResult render(final IVectorI2 renderExtent,
                                    final GRenderingQuadtree<IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> quadtree,
                                    final GProjection projection,
                                    final IProjectionTool projectionTool,
