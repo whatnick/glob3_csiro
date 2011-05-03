@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
+import es.igosoftware.euclid.utils.GShapeUtils;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.euclid.vector.IVectorFunction;
 
@@ -103,84 +104,6 @@ public final class GTriangle3D
 
 
    @Override
-   public boolean contains(final IVector3 point) {
-      if (!getBounds().contains(point)) {
-         return false;
-      }
-
-      final List<IVector3> points = getPoints();
-
-      final double x = point.x();
-      final double y = point.y();
-
-      int hits = 0;
-
-      final IVector3 last = points.get(points.size() - 1);
-
-      double lastX = last.x();
-      double lastY = last.y();
-      double curX;
-      double curY;
-
-      // Walk the edges of the polygon
-      for (int i = 0; i < points.size(); lastX = curX, lastY = curY, i++) {
-         final IVector3 cur = points.get(i);
-         curX = cur.x();
-         curY = cur.y();
-
-         if (curY == lastY) {
-            continue;
-         }
-
-         final double leftx;
-         if (curX < lastX) {
-            if (x >= lastX) {
-               continue;
-            }
-            leftx = curX;
-         }
-         else {
-            if (x >= curX) {
-               continue;
-            }
-            leftx = lastX;
-         }
-
-         final double test1;
-         final double test2;
-         if (curY < lastY) {
-            if ((y < curY) || (y >= lastY)) {
-               continue;
-            }
-            if (x < leftx) {
-               hits++;
-               continue;
-            }
-            test1 = x - curX;
-            test2 = y - curY;
-         }
-         else {
-            if ((y < lastY) || (y >= curY)) {
-               continue;
-            }
-            if (x < leftx) {
-               hits++;
-               continue;
-            }
-            test1 = x - lastX;
-            test2 = y - lastY;
-         }
-
-         if (test1 < (test2 / (lastY - curY) * (lastX - curX))) {
-            hits++;
-         }
-      }
-
-      return ((hits & 1) != 0);
-   }
-
-
-   @Override
    public boolean isSelfIntersected() {
       return false;
    }
@@ -210,6 +133,25 @@ public final class GTriangle3D
          return this;
       }
       return new GTriangle3D(transformer.apply(_v0), transformer.apply(_v1), transformer.apply(_v2));
+   }
+
+
+   @Override
+   public double area() {
+      // from: http://paulbourke.net/geometry/area3d/
+      return (_v1.sub(_v0).cross(_v2.sub(_v0))).length() / 2;
+   }
+
+
+   @Override
+   public boolean isCounterClockWise() {
+      return GShapeUtils.isCounterClockWise(_v0, _v1, _v2);
+   }
+
+
+   @Override
+   public boolean isClockWise() {
+      return GShapeUtils.isClockWise(_v0, _v1, _v2);
    }
 
 

@@ -41,11 +41,9 @@ import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.IFiniteBounds;
 import es.igosoftware.euclid.features.GField;
-import es.igosoftware.euclid.features.GGlobeFeature;
-import es.igosoftware.euclid.features.GListMutableFeatureCollection;
+import es.igosoftware.euclid.features.GListFeatureCollection;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
-import es.igosoftware.euclid.features.IGlobeMutableFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.shape.IPolygon2D;
 import es.igosoftware.euclid.shape.IPolygonalChain2D;
@@ -96,7 +94,7 @@ public class WWVectorLayer
       _projection = projection;
 
       //Le estoy pasando un null porque no se como hacer esto...
-      _features = new GListMutableFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>(
+      _features = new GListFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>(
                projection, fields, null, GIOUtils.getUniqueID(filename.asFile()));
    }
 
@@ -112,14 +110,13 @@ public class WWVectorLayer
 
 
    @Override
-   @SuppressWarnings("unchecked")
    public void addFeature(final Geometry jtsGeometry,
                           final Object[] values) {
-      if (_features instanceof IGlobeMutableFeatureCollection) {
-         final GListMutableFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> mutable = (GListMutableFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) _features;
-         mutable.add(new GGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>(
-                  GJTSUtils.toEuclid(jtsGeometry), Arrays.asList(values)));
-      }
+      //      if (_features instanceof IGlobeMutableFeatureCollection) {
+      //         final GListMutableFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>> mutable = (GListMutableFeatureCollection<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>) _features;
+      //         mutable.add(new GGlobeFeature<IVector2, IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>>(
+      //                  GJTSUtils.toEuclid(jtsGeometry), Arrays.asList(values)));
+      //      }
    }
 
 

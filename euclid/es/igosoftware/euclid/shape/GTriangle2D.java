@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.utils.GShapeUtils;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVectorFunction;
 
@@ -53,10 +54,10 @@ public final class GTriangle2D
    private static final long serialVersionUID = 1L;
 
 
-   public GTriangle2D(final IVector2 pV1,
-                      final IVector2 pV2,
-                      final IVector2 pV3) {
-      super(pV1, pV2, pV3);
+   public GTriangle2D(final IVector2 v0,
+                      final IVector2 v1,
+                      final IVector2 v2) {
+      super(v0, v1, v2);
    }
 
 
@@ -96,90 +97,6 @@ public final class GTriangle2D
    }
 
 
-   //   @Override
-   //   public GAxisAlignedBox getAxisAlignedBoundingBox() {
-   //      return getBounds().getAxisAlignedBoundingBox();
-   //   }
-
-
-   @Override
-   public boolean contains(final IVector2 point) {
-      if (!getBounds().contains(point)) {
-         return false;
-      }
-
-      final List<IVector2> points = getPoints();
-
-      final double x = point.x();
-      final double y = point.y();
-
-      int hits = 0;
-
-      final IVector2 last = points.get(points.size() - 1);
-
-      double lastX = last.x();
-      double lastY = last.y();
-      double curX;
-      double curY;
-
-      // Walk the edges of the polygon
-      for (int i = 0; i < points.size(); lastX = curX, lastY = curY, i++) {
-         final IVector2 cur = points.get(i);
-         curX = cur.x();
-         curY = cur.y();
-
-         if (curY == lastY) {
-            continue;
-         }
-
-         final double leftx;
-         if (curX < lastX) {
-            if (x >= lastX) {
-               continue;
-            }
-            leftx = curX;
-         }
-         else {
-            if (x >= curX) {
-               continue;
-            }
-            leftx = lastX;
-         }
-
-         final double test1;
-         final double test2;
-         if (curY < lastY) {
-            if ((y < curY) || (y >= lastY)) {
-               continue;
-            }
-            if (x < leftx) {
-               hits++;
-               continue;
-            }
-            test1 = x - curX;
-            test2 = y - curY;
-         }
-         else {
-            if ((y < lastY) || (y >= curY)) {
-               continue;
-            }
-            if (x < leftx) {
-               hits++;
-               continue;
-            }
-            test1 = x - lastX;
-            test2 = y - lastY;
-         }
-
-         if (test1 < (test2 / (lastY - curY) * (lastX - curX))) {
-            hits++;
-         }
-      }
-
-      return ((hits & 1) != 0);
-   }
-
-
    @Override
    public boolean isSelfIntersected() {
       return false;
@@ -210,6 +127,28 @@ public final class GTriangle2D
          return this;
       }
       return new GTriangle2D(transformer.apply(_v0), transformer.apply(_v1), transformer.apply(_v2));
+   }
+
+
+   // Returns the signed triangle area.
+   // The result is positive if the triangle is ccw,
+   // negative if the triangle is cw,
+   // zero if the triangle is degenerate.
+   @Override
+   public double area() {
+      return GShapeUtils.signedArea(_v0, _v1, _v2);
+   }
+
+
+   @Override
+   public boolean isCounterClockWise() {
+      return GShapeUtils.isCounterClockWise(_v0, _v1, _v2);
+   }
+
+
+   @Override
+   public boolean isClockWise() {
+      return GShapeUtils.isClockWise(_v0, _v1, _v2);
    }
 
 

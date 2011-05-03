@@ -223,4 +223,15 @@ BoundsT extends IBounds<VectorT, BoundsT>
    }
 
 
+   public double perimeter() {
+      double perimeter = 0;
+
+      for (int i = 1; i < _points.size(); i++) {
+         perimeter += _points.get(i - 1).distance(_points.get(i));
+      }
+
+      return perimeter;
+   }
+
+
 }

@@ -36,12 +36,11 @@
 
 package es.igosoftware.euclid.shape;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
-import es.igosoftware.euclid.utils.GTriangulate;
+import es.igosoftware.euclid.utils.GShapeUtils;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
@@ -84,10 +83,10 @@ public final class GSimplePolygon3D
 
 
    private GSimplePolygon2D getPolygon2D() {
-
       if (_polygon2d == null) {
          _polygon2d = initializePolygon2D();
       }
+
       return _polygon2d;
    }
 
@@ -131,13 +130,15 @@ public final class GSimplePolygon3D
 
    @Override
    public List<GTriangle3D> triangulate() {
-      final GTriangulate.IndexedTriangle[] iTriangles = GTriangulate.triangulate(getPolygon2D()._points);
+      //      final GVoronoiTriangulator.IndexedTriangle[] iTriangles = GVoronoiTriangulator.triangulate(getPolygon2D()._points);
+      //
+      //      final List<GTriangle3D> result = new ArrayList<GTriangle3D>(iTriangles.length);
+      //      for (final GVoronoiTriangulator.IndexedTriangle iTriangle : iTriangles) {
+      //         result.add(new GTriangle3D(_points.get(iTriangle._v0), _points.get(iTriangle._v1), _points.get(iTriangle._v2)));
+      //      }
+      //      return result;
 
-      final List<GTriangle3D> result = new ArrayList<GTriangle3D>(iTriangles.length);
-      for (final GTriangulate.IndexedTriangle iTriangle : iTriangles) {
-         result.add(new GTriangle3D(_points.get(iTriangle._v0), _points.get(iTriangle._v1), _points.get(iTriangle._v2)));
-      }
-      return result;
+      throw new RuntimeException("Not yet implemented");
    }
 
 
@@ -246,6 +247,45 @@ public final class GSimplePolygon3D
       }
       final List<IVector3> transformedPoints = GCollections.collect(_points, transformer);
       return new GSimplePolygon3D(false, transformedPoints);
+   }
+
+
+   @Override
+   public IVector3 getCentroid() {
+      throw new RuntimeException("Not yet implemented");
+   }
+
+
+   @Override
+   public double area() {
+      return GShapeUtils.signedArea3(_points);
+   }
+
+
+   @Override
+   public boolean isCounterClockWise() {
+      return GShapeUtils.isCounterClockWise3(_points);
+   }
+
+
+   @Override
+   public boolean isClockWise() {
+      return GShapeUtils.isClockWise3(_points);
+   }
+
+
+   @Override
+   public double perimeter() {
+      double perimeter = 0;
+
+      final int pointsCount = _points.size();
+      for (int i = 0; i < pointsCount; i++) {
+         final IVector3 currentPoint = _points.get(i);
+         final IVector3 nextPoint = _points.get((i + 1) % pointsCount);
+         perimeter += currentPoint.distance(nextPoint);
+      }
+
+      return perimeter;
    }
 
 

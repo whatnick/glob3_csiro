@@ -43,10 +43,8 @@ import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorial2DRenderer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
-import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle2D;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.ISymbolizer2D;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
-import es.igosoftware.euclid.features.IGlobeMutableFeatureCollection;
-import es.igosoftware.euclid.mutability.IMutable;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
@@ -131,7 +129,7 @@ public class GVectorial2DLayer
    private static final class RenderingKey {
       private final GVectorial2DLayer     _layer;
       private final GAxisAlignedRectangle _tileBounds;
-      private final IRenderingStyle2D     _renderingStyle;
+      private final ISymbolizer2D         _renderingStyle;
       private final String                _id;
 
 
@@ -744,7 +742,8 @@ public class GVectorial2DLayer
 
    private GVectorial2DRenderer                                                                                _renderer;
    private final String                                                                                        _name;
-   private GAxisAlignedOrthotope<IVector2, ?>                                                                  _polygonsBounds;
+   //   private GAxisAlignedOrthotope<IVector2, ?>                                                                  _polygonsBounds;
+   private GAxisAlignedRectangle                                                                               _polygonsBounds;
    private final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> _features;
 
 
@@ -761,7 +760,7 @@ public class GVectorial2DLayer
    private long                                                                                                _lastCurrentTilesCalculated = -1;
 
 
-   private final GGlobeVectorial2DRenderingStyle                                                               _renderingStyle             = new GGlobeVectorial2DRenderingStyle(
+   private final GGlobeVectorialSymbolizer2D                                                                   _renderingStyle             = new GGlobeVectorialSymbolizer2D(
                                                                                                                                                     this);
 
 
@@ -773,22 +772,6 @@ public class GVectorial2DLayer
       _name = name;
       _features = features;
 
-      if (_features.isEditable()) {
-         if (features instanceof IGlobeMutableFeatureCollection) {
-            @SuppressWarnings("unchecked")
-            final IGlobeMutableFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>, ?> editableFeatures = (IGlobeMutableFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>, ?>) features;
-
-            editableFeatures.addChangeListener(new IMutable.ChangeListener() {
-               @Override
-               public void mutableChanged() {
-                  featuresChanged();
-               }
-            });
-         }
-         else {
-            System.err.println("editable features type not supported (" + features.getClass());
-         }
-      }
 
       featuresChanged(); // force initial calculation of features related info
 
@@ -796,7 +779,7 @@ public class GVectorial2DLayer
 
 
    private void featuresChanged() {
-      _polygonsBounds = _features.getBounds();
+      _polygonsBounds = _features.getBounds().asRectangle();
       _polygonsSector = GWWUtils.toSector(_polygonsBounds, _features.getProjection());
 
       if (_polygonsSector == null) {
@@ -813,7 +796,7 @@ public class GVectorial2DLayer
    }
 
 
-   private static List<GAxisAlignedRectangle> createTopLevelSectors(final GAxisAlignedOrthotope<IVector2, ?> polygonsSector) {
+   private static List<GAxisAlignedRectangle> createTopLevelSectors(final GAxisAlignedRectangle polygonsSector) {
 
       final List<GAxisAlignedRectangle> allTopLevelSectors = createTopLevelSectors();
 
@@ -825,33 +808,38 @@ public class GVectorial2DLayer
                   }
                });
 
-      return GCollections.collect(intersectingSectors, new IFunction<GAxisAlignedRectangle, GAxisAlignedRectangle>() {
-         @Override
-         public GAxisAlignedRectangle apply(final GAxisAlignedRectangle sector) {
-            return tryToReduce(sector);
-         }
 
-
-         private GAxisAlignedRectangle tryToReduce(final GAxisAlignedRectangle sector) {
-            if (polygonsSector.isFullInside(sector)) {
-               final GAxisAlignedRectangle[] subdivisions = sector.subdividedAtCenter();
-
-               GAxisAlignedRectangle lastTouchedSubdivision = null;
-               for (final GAxisAlignedRectangle subdivision : subdivisions) {
-                  if (subdivision.touches(polygonsSector)) {
-                     if (lastTouchedSubdivision != null) {
-                        return sector;
-                     }
-                     lastTouchedSubdivision = subdivision;
+      final List<GAxisAlignedRectangle> reducedSectors = GCollections.collect(intersectingSectors,
+               new IFunction<GAxisAlignedRectangle, GAxisAlignedRectangle>() {
+                  @Override
+                  public GAxisAlignedRectangle apply(final GAxisAlignedRectangle sector) {
+                     //return tryToReduce(sector);
+                     return sector.intersection(polygonsSector);
                   }
-               }
 
-               return tryToReduce(lastTouchedSubdivision);
-            }
 
-            return sector;
-         }
-      });
+                  //                  private GAxisAlignedRectangle tryToReduce(final GAxisAlignedRectangle sector) {
+                  //                     if (polygonsSector.isFullInside(sector)) {
+                  //                        final GAxisAlignedRectangle[] subdivisions = sector.subdividedAtCenter();
+                  //
+                  //                        GAxisAlignedRectangle lastTouchedSubdivision = null;
+                  //                        for (final GAxisAlignedRectangle subdivision : subdivisions) {
+                  //                           if (subdivision.touches(polygonsSector)) {
+                  //                              if (lastTouchedSubdivision != null) {
+                  //                                 return sector;
+                  //                              }
+                  //                              lastTouchedSubdivision = subdivision;
+                  //                           }
+                  //                        }
+                  //
+                  //                        return tryToReduce(lastTouchedSubdivision);
+                  //                     }
+                  //
+                  //                     return sector;
+                  //                  }
+               });
+
+      return reducedSectors;
    }
 
 
@@ -1207,7 +1195,7 @@ public class GVectorial2DLayer
 
 
    @Override
-   public GGlobeVectorial2DRenderingStyle getRenderingStyle() {
+   public GGlobeVectorialSymbolizer2D getRenderingStyle() {
       return _renderingStyle;
    }
 

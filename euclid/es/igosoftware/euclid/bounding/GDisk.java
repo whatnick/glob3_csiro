@@ -134,4 +134,16 @@ public final class GDisk
    }
 
 
+   @Override
+   public double area() {
+      return Math.PI * (_radius * _radius);
+   }
+
+
+   @Override
+   public double perimeter() {
+      return Math.PI * 2 * _radius;
+   }
+
+
 }

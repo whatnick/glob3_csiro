@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -58,13 +59,13 @@ public final class GCollections {
    }
 
 
-   public static int size(final Iterable<?> iterable) {
+   public static long size(final Iterable<?> iterable) {
       if (iterable instanceof Collection<?>) {
          return ((Collection<?>) iterable).size();
       }
 
       final Iterator<?> iterator = iterable.iterator();
-      int count = 0;
+      long count = 0;
       while (iterator.hasNext()) {
          count++;
          iterator.next();
@@ -330,7 +331,7 @@ public final class GCollections {
 
 
    public static int[] collect(final int[] array,
-                               final ITransformerIntInt transformer) {
+                               final IFunctionIntInt transformer) {
       if (array == null) {
          return null;
       }
@@ -338,7 +339,7 @@ public final class GCollections {
       final int[] result = new int[array.length];
 
       for (int i = 0; i < array.length; i++) {
-         result[i] = transformer.transform(array[i]);
+         result[i] = transformer.apply(array[i]);
       }
 
       return result;
@@ -346,7 +347,7 @@ public final class GCollections {
 
 
    public static byte[] collect(final int[] array,
-                                final ITransformerIntByte transformer) {
+                                final IFunctionIntByte transformer) {
       if (array == null) {
          return null;
       }
@@ -354,7 +355,7 @@ public final class GCollections {
       final byte[] result = new byte[array.length];
 
       for (int i = 0; i < array.length; i++) {
-         result[i] = transformer.transform(array[i]);
+         result[i] = transformer.apply(array[i]);
       }
 
       return result;
@@ -494,7 +495,7 @@ public final class GCollections {
 
 
    public static byte[] concurrentCollect(final int[] array,
-                                          final ITransformerIntByte transformer) {
+                                          final IFunctionIntByte transformer) {
       if (array == null) {
          return null;
       }
@@ -505,7 +506,7 @@ public final class GCollections {
       }
 
       if (size == 1) {
-         return new byte[] { transformer.transform(array[0]) };
+         return new byte[] { transformer.apply(array[0]) };
       }
 
       final byte[] result = new byte[size];
@@ -516,7 +517,7 @@ public final class GCollections {
                               final int to) {
             //System.out.println("collecting " + from + "->" + to);
             for (int i = from; i <= to; i++) {
-               result[i] = transformer.transform(array[i]);
+               result[i] = transformer.apply(array[i]);
             }
          }
       });
@@ -1449,8 +1450,8 @@ public final class GCollections {
    }
 
 
-   public static <T> T theOnlyOne(final Iterable<T> iterable) {
-      final Iterator<T> iterator = iterable.iterator();
+   public static <T> T theOnlyOne(final Iterable<? extends T> iterable) {
+      final Iterator<? extends T> iterator = iterable.iterator();
 
       if (!iterator.hasNext()) {
          throw new RuntimeException("Iterable is empty");
@@ -1475,6 +1476,14 @@ public final class GCollections {
          }
       }
       return result;
+   }
+
+
+   public static <T> List<T> asSorted(final Collection<T> collection,
+                                      final Comparator<T> comparator) {
+      final List<T> sorted = new ArrayList<T>(collection);
+      Collections.sort(sorted, comparator);
+      return sorted;
    }
 
 

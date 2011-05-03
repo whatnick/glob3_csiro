@@ -4,7 +4,6 @@ package es.igosoftware.euclid.experimental.vectorial.rendering.utils;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
@@ -32,7 +31,6 @@ FeatureT extends IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends 
                              final GAxisAlignedRectangle bounds) {
       super(name, bounds, elements,
             new IFunction<FeatureT, Collection<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>() {
-
                @Override
                public Collection<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> apply(final FeatureT feature) {
                   final IBoundedGeometry2D<? extends IFinite2DBounds<?>> geometry = feature.getDefaultGeometry();
@@ -41,8 +39,7 @@ FeatureT extends IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends 
                      @SuppressWarnings("unchecked")
                      final GMultiGeometry2D<IBoundedGeometry2D<? extends IFinite2DBounds<?>>> multigeometry = (GMultiGeometry2D<IBoundedGeometry2D<? extends IFinite2DBounds<?>>>) geometry;
 
-                     final List<IBoundedGeometry2D<? extends IFinite2DBounds<?>>> children = multigeometry.getChildren();
-                     return children;
+                     return multigeometry.getChildren();
                   }
 
                   return Collections.singleton(geometry);

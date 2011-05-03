@@ -116,19 +116,6 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
    }
 
 
-   @Override
-   public VectorT getCentroid() {
-      final List<VectorT> centroids = GCollections.collect(_children, new IFunction<ChildrenGeometryT, VectorT>() {
-         @Override
-         public VectorT apply(final ChildrenGeometryT element) {
-            return element.getCentroid();
-         }
-      });
-
-      return GVectorUtils.getAverage(centroids);
-   }
-
-
    @SuppressWarnings("unchecked")
    @Override
    public BoundsT getBounds() {
@@ -232,6 +219,19 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
       }
 
       return result;
+   }
+
+
+   @Override
+   public VectorT getCentroid() {
+      final List<VectorT> centroids = GCollections.collect(_children, new IFunction<ChildrenGeometryT, VectorT>() {
+         @Override
+         public VectorT apply(final ChildrenGeometryT element) {
+            return element.getCentroid();
+         }
+      });
+
+      return GVectorUtils.getAverage(centroids);
    }
 
 

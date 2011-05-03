@@ -73,7 +73,7 @@ public final class GStructuredPtxVertex3Container
 
 
       @Override
-      public IVectorI2<?> getRowColumn(final int index) {
+      public IVectorI2 getRowColumn(final int index) {
          return GBufferUtils.getVector(_buffer, index);
       }
 
@@ -86,7 +86,7 @@ public final class GStructuredPtxVertex3Container
 
       @Override
       public void putRowColumn(final int index,
-                               final IVectorI2<?> vector) {
+                               final IVectorI2 vector) {
          GBufferUtils.putVector(_buffer, index, vector);
       }
 
@@ -113,7 +113,7 @@ public final class GStructuredPtxVertex3Container
 
 
       @Override
-      public IVectorI2<?> getRowColumn(final int index) {
+      public IVectorI2 getRowColumn(final int index) {
          return GBufferUtils.getVector(_buffer, index);
       }
 
@@ -126,7 +126,7 @@ public final class GStructuredPtxVertex3Container
 
       @Override
       public void putRowColumn(final int index,
-                               final IVectorI2<?> vector) {
+                               final IVectorI2 vector) {
          GBufferUtils.putVector(_buffer, index, vector);
       }
 

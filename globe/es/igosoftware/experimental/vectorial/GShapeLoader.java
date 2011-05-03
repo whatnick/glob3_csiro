@@ -61,16 +61,17 @@ import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.multigeometry.GMultiGeometry2D;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.shape.GComplexPolygon2D;
-import es.igosoftware.euclid.shape.GShape;
 import es.igosoftware.euclid.shape.IPolygon2D;
 import es.igosoftware.euclid.shape.IPolygonalChain2D;
 import es.igosoftware.euclid.shape.ISimplePolygon2D;
+import es.igosoftware.euclid.utils.GShapeUtils;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.util.GIntHolder;
 import es.igosoftware.util.GProgress;
+import es.igosoftware.util.GStringUtils;
 
 
 public class GShapeLoader {
@@ -126,19 +127,21 @@ public class GShapeLoader {
    }
 
 
-   public static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> readFeatures(final GFileName fileName,
-                                                                                                                            final GProjection projection)
-                                                                                                                                                         throws IOException {
+   public static IGlobeFeatureCollection<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> readFeatures(final GFileName fileName,
+                                                                                                                  final GProjection projection)
+                                                                                                                                               throws IOException {
       return readFeatures(fileName.asFile(), projection);
    }
 
 
-   public static IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> readFeatures(final File file,
-                                                                                                                            final GProjection projection)
-                                                                                                                                                         throws IOException {
+   public static IGlobeFeatureCollection<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> readFeatures(final File file,
+                                                                                                                  final GProjection projection)
+                                                                                                                                               throws IOException {
       if (!file.exists()) {
          throw new IOException("File not found!");
       }
+
+      final long start = System.currentTimeMillis();
 
       final FileDataStore store = FileDataStoreFinder.getDataStore(file);
 
@@ -292,6 +295,8 @@ public class GShapeLoader {
          fields.add(new GField(fieldName, fieldType));
       }
 
+      System.out.println("- Features loaded in " + GStringUtils.getTimeMessage(System.currentTimeMillis() - start, false));
+      System.out.println();
 
       return new GListFeatureCollection<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>>(GProjection.EPSG_4326,
                fields, euclidFeatures, GIOUtils.getUniqueID(file));
@@ -361,7 +366,7 @@ public class GShapeLoader {
       final List<IVector2> points = removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeLastIfRepeated(convert(
                jtsCoordinates, projection))))));
 
-      return GShape.createPolygon2(false, points);
+      return GShapeUtils.createPolygon2(false, points);
    }
 
 
@@ -370,7 +375,7 @@ public class GShapeLoader {
       final List<IVector2> points = removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeLastIfRepeated(convert(
                jtsCoordinates, projection))))));
 
-      return GShape.createLine2(false, points);
+      return GShapeUtils.createLine2(false, points);
    }
 
 

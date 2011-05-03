@@ -885,4 +885,36 @@ public final class GMath {
    }
 
 
+   public static double average(final double value1,
+                                final double value2) {
+      return (value1 + value2) / 2;
+   }
+
+
+   public static double average(final double value1,
+                                final double value2,
+                                final double value3) {
+      return (value1 + value2 + value3) / 3;
+   }
+
+
+   public static double squared(final double value) {
+      return value * value;
+   }
+
+
+   public static double squared(final float value) {
+      return (double) value * value;
+   }
+
+
+   public static long squared(final int value) {
+      return (long) value * value;
+   }
+
+
+   public static long squared(final long value) {
+      return value * value;
+   }
+
 }

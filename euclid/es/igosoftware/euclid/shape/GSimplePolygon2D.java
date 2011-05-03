@@ -36,12 +36,11 @@
 
 package es.igosoftware.euclid.shape;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
-import es.igosoftware.euclid.utils.GTriangulate;
+import es.igosoftware.euclid.utils.GShapeUtils;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVectorFunction;
@@ -325,13 +324,14 @@ public final class GSimplePolygon2D
 
    @Override
    public List<GTriangle2D> triangulate() {
-      final GTriangulate.IndexedTriangle[] iTriangles = GTriangulate.triangulate(_points);
-
-      final List<GTriangle2D> result = new ArrayList<GTriangle2D>(iTriangles.length);
-      for (final GTriangulate.IndexedTriangle iTriangle : iTriangles) {
-         result.add(new GTriangle2D(_points.get(iTriangle._v0), _points.get(iTriangle._v1), _points.get(iTriangle._v2)));
-      }
-      return result;
+      //      final GVoronoiTriangulator.IndexedTriangle[] iTriangles = GVoronoiTriangulator.triangulate(_points);
+      //
+      //      final List<GTriangle2D> result = new ArrayList<GTriangle2D>(iTriangles.length);
+      //      for (final GVoronoiTriangulator.IndexedTriangle iTriangle : iTriangles) {
+      //         result.add(new GTriangle2D(_points.get(iTriangle._v0), _points.get(iTriangle._v1), _points.get(iTriangle._v2)));
+      //      }
+      //      return result;
+      throw new RuntimeException("Not yet implemented");
    }
 
 
@@ -348,6 +348,66 @@ public final class GSimplePolygon2D
       }
       final List<IVector2> transformedPoints = GCollections.collect(_points, transformer);
       return new GSimplePolygon2D(false, transformedPoints);
+   }
+
+
+   @Override
+   public double area() {
+      return GShapeUtils.signedArea2(_points);
+   }
+
+
+   @Override
+   public IVector2 getCentroid() {
+      IVector2 centroid = GVector2D.ZERO;
+
+      final int imax = _points.size() - 1;
+
+      double area = 0;
+      for (int i = 0; i < imax; ++i) {
+         final IVector2 currentPoint = _points.get(i);
+         final IVector2 nextPoint = _points.get(i + 1);
+
+         final double term = currentPoint.x() * nextPoint.y() - nextPoint.x() * currentPoint.y();
+         area += term;
+         centroid = centroid.add(currentPoint.add(nextPoint).scale(term));
+      }
+
+      final double term = _points.get(imax).x() * _points.get(0).y() - _points.get(0).x() * _points.get(imax).y();
+      area += term;
+      centroid = centroid.add(_points.get(imax).add(_points.get(0)).scale(term));
+
+      area /= 2.0;
+      centroid = centroid.div(6 * area);
+
+      return centroid;
+   }
+
+
+   @Override
+   public boolean isCounterClockWise() {
+      return GShapeUtils.isCounterClockWise2(_points);
+   }
+
+
+   @Override
+   public boolean isClockWise() {
+      return GShapeUtils.isClockWise2(_points);
+   }
+
+
+   @Override
+   public double perimeter() {
+      double perimeter = 0;
+
+      final int pointsCount = _points.size();
+      for (int i = 0; i < pointsCount; i++) {
+         final IVector2 currentPoint = _points.get(i);
+         final IVector2 nextPoint = _points.get((i + 1) % pointsCount);
+         perimeter += currentPoint.distance(nextPoint);
+      }
+
+      return perimeter;
    }
 
 

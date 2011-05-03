@@ -409,7 +409,7 @@ public final class GBufferUtils {
 
    public static void putVector(final ShortBuffer buffer,
                                 final int index,
-                                final IVectorI2<?> vector) {
+                                final IVectorI2 vector) {
       final int index3 = index * 2;
       buffer.put(index3 + 0, (short) vector.x());
       buffer.put(index3 + 1, (short) vector.y());
@@ -418,7 +418,7 @@ public final class GBufferUtils {
 
    public static void putVector(final IntBuffer buffer,
                                 final int index,
-                                final IVectorI2<?> vector) {
+                                final IVectorI2 vector) {
       final int index3 = index * 2;
       buffer.put(index3 + 0, vector.x());
       buffer.put(index3 + 1, vector.y());

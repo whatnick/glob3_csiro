@@ -43,7 +43,6 @@ import java.util.List;
 
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.IBounds;
-import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GAssert;
 
@@ -199,15 +198,20 @@ BoundsT extends IBounds<VectorT, BoundsT>
    protected abstract String getStringName();
 
 
-   @Override
-   public VectorT getCentroid() {
-      return GVectorUtils.getAverage(_points);
-   }
+   //   @Override
+   //   public VectorT getCentroid() {
+   //      return GVectorUtils.getAverage(_points);
+   //   }
+
+   //   @Override
+   //   public VectorT getCentroid() {
+   //
+   //   }
 
 
    @Override
    public boolean closeTo(final IBoundedGeometry<VectorT, BoundsT> that) {
-      if (that instanceof GLinesStrip) {
+      if (that instanceof GSimplePolytope) {
          @SuppressWarnings("unchecked")
          final GSimplePolytope<VectorT, SegmentT, BoundsT> thatPolytope = (GSimplePolytope<VectorT, SegmentT, BoundsT>) that;
 

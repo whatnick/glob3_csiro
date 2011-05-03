@@ -744,16 +744,6 @@ public abstract class GMatrix33D
    }
 
 
-   public GMatrix33D transpose() {
-
-      return createMatrix( //
-               _m00, _m10, _m20, //
-               _m01, _m11, _m21, //
-               _m02, _m12, _m22);
-
-   }
-
-
    //   public static void main(final String[] args) {
    //
    //      final GMatrix33D A = createMatrix(1d, 2d, 3d, 4d, 5d, 3d, 7d, 8d, 1d);
