@@ -39,6 +39,8 @@ package es.igosoftware.euclid.bounding;
 import es.igosoftware.euclid.GGeometryAbstract;
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.vector.IVector;
+import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GMath;
 
@@ -180,5 +182,21 @@ GeometryT extends GNBall<VectorT, GeometryT>
       return false;
    }
 
+
+   @SuppressWarnings("unchecked")
+   public static <VectorT extends IVector<VectorT, ?>> GNBall<VectorT, ?> create(final VectorT center,
+                                                                                 final double size) {
+      GAssert.notNull(center, "center");
+
+      if (center instanceof IVector3) {
+         return (GNBall<VectorT, ?>) new GBall((IVector3) center, size);
+      }
+      else if (center instanceof IVector2) {
+         return (GNBall<VectorT, ?>) new GDisk((IVector2) center, size);
+      }
+      else {
+         throw new IllegalArgumentException("Unsupported points type (" + center.getClass() + ")");
+      }
+   }
 
 }
