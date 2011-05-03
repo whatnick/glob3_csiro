@@ -522,7 +522,6 @@ public class GKmlLoader {
 
       final org.geotools.xml.StreamingParser parser = new org.geotools.xml.StreamingParser(configuration, kmlStream,
                KML.Placemark);
-      //      final org.geotools.xml.StreamingParser parser = new org.geotools.xml.StreamingParser(configuration, kmlStream,
       //               SimpleFeature.class);
 
       SimpleFeature f = null;
@@ -530,6 +529,7 @@ public class GKmlLoader {
       final SimpleFeatureCollection featuresCollection = FeatureCollections.newCollection();
 
       int counter = 0;
+      System.out.print("Loading \"" + file.getName() + "\" [");
       while ((f = (SimpleFeature) parser.parse()) != null) {
          counter++;
          //System.out.println("Geometry= " + f.getDefaultGeometry().toString());
@@ -542,7 +542,7 @@ public class GKmlLoader {
          featuresCollection.add(f);
 
       }
-      System.out.println();
+      System.out.println("]");
       System.out.println("Size= " + featuresCollection.size());
 
       final SimpleFeatureType schema = featuresCollection.getSchema();

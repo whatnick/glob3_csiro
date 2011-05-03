@@ -200,7 +200,7 @@ public class GGeotoolsVectorialModule
             else {
 
                selectedLayer = (String) JOptionPane.showInputDialog(application.getFrame(),
-                        application.getTranslation("Select a layer"), application.getTranslation("PostGIS layer selection"),
+                        application.getTranslation("Select a layer"), application.getTranslation("Datasource layer selection"),
                         JOptionPane.PLAIN_MESSAGE, application.getIcon(GFileName.relative("new-vectorial.png"), 24, 24),
                         layerList, null);
             }
