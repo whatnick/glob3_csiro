@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.bounding.GDisk;
 import es.igosoftware.euclid.utils.GShapeUtils;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVectorFunction;
@@ -149,6 +150,54 @@ public final class GTriangle2D
    @Override
    public boolean isClockWise() {
       return GShapeUtils.isClockWise(_v0, _v1, _v2);
+   }
+
+
+   public GDisk getCircumscribedDisk() {
+      final IVector2 e1 = _v2.sub(_v1);
+      final IVector2 e2 = _v0.sub(_v2);
+      final IVector2 e3 = _v1.sub(_v0);
+
+      final double d0 = -e2.dot(e3);
+      final double d1 = -e3.dot(e1);
+      final double d2 = -e1.dot(e2);
+
+      final double c0 = d1 * d2;
+      final double c1 = d2 * d0;
+      final double c2 = d0 * d1;
+
+
+      final IVector2 temp0 = _v0.scale(c1 + c2);
+      final IVector2 temp1 = _v1.scale(c2 + c0);
+      final IVector2 temp2 = _v2.scale(c0 + c1);
+
+      final double c = c0 + c1 + c2;
+      final IVector2 center = temp0.add(temp1).add(temp2).div(2.0 * c);
+
+      final double radius = Math.sqrt((d0 + d1) * (d1 + d2) * (d2 + d0) / c) / 2;
+
+      return new GDisk(center, radius);
+   }
+
+
+   public GDisk getInscribedDisk() {
+      final double l1 = _v1.distance(_v2);
+      final double l2 = _v0.distance(_v2);
+      final double l3 = _v0.distance(_v1);
+
+
+      final IVector2 v1TimesL1 = _v0.scale(l1);
+      final IVector2 v2TimesL2 = _v1.scale(l2);
+      final IVector2 v3TimesL3 = _v2.scale(l3);
+
+      final double perimeter = l1 + l2 + l3;
+      final IVector2 center = v1TimesL1.add(v2TimesL2).add(v3TimesL3).div(perimeter);
+
+      final double s = perimeter / 2.0;
+      final double area = Math.sqrt(s * (s - l1) * (s - l2) * (s - l3));
+      final double radius = area / perimeter;
+
+      return new GDisk(center, radius * 2);
    }
 
 
