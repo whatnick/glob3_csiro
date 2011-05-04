@@ -562,4 +562,10 @@ public class GVector3D
    }
 
 
+   @Override
+   public GVector3D squared() {
+      return new GVector3D(GMath.squared(_x), GMath.squared(_y), GMath.squared(_z));
+   }
+
+
 }

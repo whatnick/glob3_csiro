@@ -2,21 +2,22 @@
 
 package es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer;
 
-import java.awt.image.BufferedImage;
 import java.util.Collection;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.ICurve2D;
 import es.igosoftware.euclid.ISurface2D;
+import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
-import es.igosoftware.euclid.experimental.measurement.GArea;
-import es.igosoftware.euclid.experimental.measurement.IMeasure;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSymbol2D;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.ntree.GGTNode;
 import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.euclid.vector.IVectorI2;
 
 
 public interface ISymbolizer2D {
@@ -39,13 +40,21 @@ public interface ISymbolizer2D {
    public void preprocessFeatures(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> features);
 
 
-   public void preRenderImage(final BufferedImage renderedImage);
+   public void preRender(final IVectorI2 renderExtent,
+                         final IProjectionTool projectionTool,
+                         final GAxisAlignedRectangle viewport,
+                         final ISymbolizer2D renderingStyle,
+                         final IVectorial2DDrawer drawer);
 
 
-   public void postRenderImage(final BufferedImage renderedImage);
+   public void postRender(final IVectorI2 renderExtent,
+                          final IProjectionTool projectionTool,
+                          final GAxisAlignedRectangle viewport,
+                          final ISymbolizer2D renderingStyle,
+                          final IVectorial2DDrawer drawer);
 
 
-   public IMeasure<GArea> getMaximumSize();
+   public double getMaximumSizeInMeters(final IVectorial2DRenderingScaler scaler);
 
 
    public boolean isClusterSymbols();
@@ -65,17 +74,17 @@ public interface ISymbolizer2D {
 
 
    /* -------------------------------------------------------------------------------------- */
-   /* surfaces */
-   public Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getSurfaceSymbols(final ISurface2D<? extends IFinite2DBounds<?>> surface,
-                                                                                                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                                                                                                        final IVectorial2DRenderingScaler scaler);
-
-
-   /* -------------------------------------------------------------------------------------- */
    /* curves */
    public Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getCurveSymbols(final ICurve2D<? extends IFinite2DBounds<?>> curve,
                                                                                                                       final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                                                                                                       final IVectorial2DRenderingScaler scaler);
+
+
+   /* -------------------------------------------------------------------------------------- */
+   /* surfaces */
+   public Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getSurfaceSymbols(final ISurface2D<? extends IFinite2DBounds<?>> surface,
+                                                                                                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                                                                                                        final IVectorial2DRenderingScaler scaler);
 
 
 }

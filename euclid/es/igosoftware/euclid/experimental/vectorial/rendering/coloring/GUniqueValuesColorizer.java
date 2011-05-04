@@ -2,10 +2,6 @@
 
 package es.igosoftware.euclid.experimental.vectorial.rendering.coloring;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -14,11 +10,16 @@ import java.util.List;
 import java.util.Set;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
+import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.colors.IColor;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.ISymbolizer2D;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.euclid.vector.IVectorI2;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.IFunction;
 
@@ -111,13 +112,21 @@ public class GUniqueValuesColorizer
 
 
    @Override
-   public void preRenderImage(final BufferedImage renderedImage) {
+   public void preRender(final IVectorI2 renderExtent,
+                         final IProjectionTool projectionTool,
+                         final GAxisAlignedRectangle viewport,
+                         final ISymbolizer2D renderingStyle,
+                         final IVectorial2DDrawer drawer) {
 
    }
 
 
    @Override
-   public void postRenderImage(final BufferedImage renderedImage) {
+   public void postRender(final IVectorI2 renderExtent,
+                          final IProjectionTool projectionTool,
+                          final GAxisAlignedRectangle viewport,
+                          final ISymbolizer2D renderingStyle,
+                          final IVectorial2DDrawer drawer) {
       if (!_renderLegends) {
          return;
       }
@@ -126,28 +135,29 @@ public class GUniqueValuesColorizer
          return;
       }
 
-      final Graphics2D g2d = renderedImage.createGraphics();
-      g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-      g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-
-
-      final int margin = 10;
-      final int symbolSize = 12;
-      for (int i = 0; i < _sortedLabels.size(); i++) {
-         final Object value = _sortedLabels.get(i);
-         final Color color = _colors.get(value).asAWTColor();
-         g2d.setColor(color);
-         final int y = margin + (i * (symbolSize + 2));
-         g2d.fillOval(margin, y, symbolSize, symbolSize);
-
-         g2d.setColor(color.darker().darker().darker());
-         g2d.drawOval(margin, y, symbolSize, symbolSize);
-
-         drawShadowString(g2d, _labeler.apply(value), margin + symbolSize + (margin / 2), y + symbolSize, Color.LIGHT_GRAY,
-                  Color.BLACK);
-      }
-
-      g2d.dispose();
+      final int TODO_render_legends;
+      //      final Graphics2D g2d = image.createGraphics();
+      //      g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+      //      g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+      //
+      //
+      //      final int margin = 10;
+      //      final int symbolSize = 12;
+      //      for (int i = 0; i < _sortedLabels.size(); i++) {
+      //         final Object value = _sortedLabels.get(i);
+      //         final Color color = _colors.get(value).asAWTColor();
+      //         g2d.setColor(color);
+      //         final int y = margin + (i * (symbolSize + 2));
+      //         g2d.fillOval(margin, y, symbolSize, symbolSize);
+      //
+      //         g2d.setColor(color.darker().darker().darker());
+      //         g2d.drawOval(margin, y, symbolSize, symbolSize);
+      //
+      //         drawShadowString(g2d, _labeler.apply(value), margin + symbolSize + (margin / 2), y + symbolSize, Color.LIGHT_GRAY,
+      //                  Color.BLACK);
+      //      }
+      //
+      //      g2d.dispose();
    }
 
 

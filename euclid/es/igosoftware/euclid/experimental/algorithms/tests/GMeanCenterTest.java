@@ -81,7 +81,7 @@ public class GMeanCenterTest
       final GNBall<IVector2, ?> ball = result.getCenter();
       System.out.println(ball);
       assertTrue(GMath.closeToZero(ball._center.distance(new GVector2D(2.5, 0))));
-      double expectedRadius = Math.sqrt((3 * (Math.pow(2.5, 2)) + Math.pow(7.5, 2)) / 4);
+      final double expectedRadius = Math.sqrt((3 * (Math.pow(2.5, 2)) + Math.pow(7.5, 2)) / 4);
       assertTrue(GMath.closeTo(ball._radius, expectedRadius));
    }
 }

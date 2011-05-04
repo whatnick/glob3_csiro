@@ -78,12 +78,14 @@ public class GVectorial2DSymbolsRenderer
    private final boolean                                                                                  _renderLODIgnores;
 
    private final IVectorial2DDrawer                                                                       _drawer;
+   private final boolean                                                                                  _verbose;
 
 
    public GVectorial2DSymbolsRenderer(final List<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> nonGroupableSymbols,
                                       final List<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> groupableSymbols,
                                       final ISymbolizer2D renderingStyle,
-                                      final IVectorial2DDrawer drawer) {
+                                      final IVectorial2DDrawer drawer,
+                                      final boolean verbose) {
       _nonGroupableSymbols = nonGroupableSymbols;
       _groupableSymbols = groupableSymbols;
 
@@ -93,6 +95,7 @@ public class GVectorial2DSymbolsRenderer
       _renderLODIgnores = renderingStyle.isRenderLODIgnores();
 
       _drawer = drawer;
+      _verbose = verbose;
    }
 
 
@@ -126,7 +129,9 @@ public class GVectorial2DSymbolsRenderer
          drawSymbol(symbol);
       }
 
-      System.out.println("  - Rendered " + symbols.size() + " symbols");
+      if (_verbose) {
+         System.out.println("  - Rendered " + symbols.size() + " symbols");
+      }
    }
 
 
@@ -166,7 +171,9 @@ public class GVectorial2DSymbolsRenderer
 
       GAssert.isTrue(symbolsInClustersCount == groupableSymbolsCount, "clustered");
 
-      System.out.println("  - Clustered " + groupableSymbolsCount + " symbols in " + clusters.size() + " clusters");
+      if (_verbose) {
+         System.out.println("  - Clustered " + groupableSymbolsCount + " symbols in " + clusters.size() + " clusters");
+      }
 
 
       allSymbols.addAll(_nonGroupableSymbols);
@@ -191,8 +198,10 @@ public class GVectorial2DSymbolsRenderer
 
       final Collection<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> result = new ArrayList<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>();
 
+      int symbolsInClustersCount = 0;
       for (final Set<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> clusterByGroup : clustersByGroups) {
          final int clusterSize = clusterByGroup.size();
+         symbolsInClustersCount += clusterSize;
 
          if (clusterSize == 0) {
             continue;
@@ -206,6 +215,8 @@ public class GVectorial2DSymbolsRenderer
             result.addAll(exemplar.createGroupSymbols(clusterByGroup));
          }
       }
+
+      GAssert.isTrue(symbolsInClustersCount == cluster.size(), "clustered");
 
       return result;
 
