@@ -6,20 +6,17 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import javax.imageio.ImageIO;
 
 import es.igosoftware.euclid.IGeometry2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.bounding.GDisk;
 import es.igosoftware.euclid.shape.IPolygon2D;
 import es.igosoftware.euclid.shape.IPolygonalChain2D;
 import es.igosoftware.euclid.vector.GVector2D;
-import es.igosoftware.euclid.vector.GVector2I;
 import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVectorI2;
@@ -171,6 +168,30 @@ public class GGeometry2DRenderer {
                      GMath.toRoundedInt(scaledUpper.x() - scaledLower.x()), GMath.toRoundedInt(scaledUpper.y() - scaledLower.y()) //
             );
          }
+         else if (geometry instanceof GDisk) {
+            final GDisk disk = (GDisk) geometry;
+
+            final IVector2 centerPlusRadius = disk._center.add(disk._radius);
+            final IVector2 scaledRadius = centerPlusRadius.sub(disk._center).scale(scale); // radius times 2 (for extent)
+
+            final IVector2 scaledPosition = scaleAndTranslate(disk._center, bounds, scale, imageSize).sub(scaledRadius);
+
+            final IVector2 scaledExtent = scaledRadius.scale(2);
+
+            g2d.setColor(getDiskColor());
+            g2d.fillOval(GMath.toRoundedInt(scaledPosition.x()), GMath.toRoundedInt(scaledPosition.y()), //
+                     GMath.toRoundedInt(scaledExtent.x()), GMath.toRoundedInt(scaledExtent.y()));
+
+            g2d.setColor(getDiskColor().darker().darker().darker());
+            g2d.drawOval(GMath.toRoundedInt(scaledPosition.x()), GMath.toRoundedInt(scaledPosition.y()), //
+                     GMath.toRoundedInt(scaledExtent.x()), GMath.toRoundedInt(scaledExtent.y()));
+
+            if (drawVertices) {
+               final IVector2 scaledCenter = scaleAndTranslate(disk._center, bounds, scale, imageSize);
+               g2d.fillOval(GMath.toRoundedInt(scaledCenter.x() - 1), GMath.toRoundedInt(scaledCenter.y() - 1), 2, 2);
+            }
+
+         }
          else {
             throw new RuntimeException("Geometry type not yet supported (" + geometry.getClass() + ")");
          }
@@ -188,6 +209,11 @@ public class GGeometry2DRenderer {
       g2d.dispose();
 
       return image;
+   }
+
+
+   private static Color getDiskColor() {
+      return new Color(0, 0, 255, 64);
    }
 
 
@@ -219,23 +245,6 @@ public class GGeometry2DRenderer {
 
    private static Color getPointColor() {
       return new Color(255, 0, 0, 255);
-   }
-
-
-   public static void main(final String[] args) throws IOException {
-      System.out.println("GGeometryRenderer 0.1");
-      System.out.println("---------------------");
-
-
-      final List<GVector2D> points = Arrays.asList(new GVector2D(100, 100), new GVector2D(200, 200), new GVector2D(100, 200),
-               new GVector2D(200, 100));
-
-      //      final GAxisAlignedRectangle bounds = GAxisAlignedRectangle.minimumBoundingRectangle(points);
-      final GAxisAlignedRectangle bounds = new GAxisAlignedRectangle(new GVector2D(0, 0), new GVector2D(300, 300));
-
-      final BufferedImage image = render(points, true, bounds, new GVector2I(640, 480));
-
-      ImageIO.write(image, "png", new File("/home/dgd/Escritorio/GGeometryRenderer.png"));
    }
 
 
