@@ -59,7 +59,6 @@ public class GLabel2DSymbol
 
    @Override
    public GAxisAlignedRectangle getBounds() {
-      final int TODO;
       return null;
    }
 
