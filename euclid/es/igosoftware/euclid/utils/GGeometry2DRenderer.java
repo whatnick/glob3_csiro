@@ -37,8 +37,13 @@ public class GGeometry2DRenderer {
 
    private static final IVector2 scaleAndTranslate(final IVector2 point,
                                                    final GAxisAlignedRectangle bounds,
-                                                   final IVector2 scale) {
-      return point.sub(bounds._lower).scale(scale);
+                                                   final IVector2 scale,
+                                                   final IVectorI2 imageSize) {
+      //      return point.sub(bounds._lower).scale(scale);
+
+      final IVector2 scaled = point.sub(bounds._lower).scale(scale);
+      return new GVector2D(scaled.x(), imageSize.y() - scaled.y());
+
    }
 
 
@@ -58,12 +63,13 @@ public class GGeometry2DRenderer {
 
    private static AWTPoints getTranslatedAWTPoints(final IPointsContainer<IVector2> container,
                                                    final GAxisAlignedRectangle bounds,
-                                                   final IVector2 scale) {
+                                                   final IVector2 scale,
+                                                   final IVectorI2 imageSize) {
       final int[] xPoints = new int[container.getPointsCount()];
       final int[] yPoints = new int[container.getPointsCount()];
 
       for (int i = 0; i < container.getPointsCount(); i++) {
-         final IVector2 scaledPoint = scaleAndTranslate(container.getPoint(i), bounds, scale);
+         final IVector2 scaledPoint = scaleAndTranslate(container.getPoint(i), bounds, scale, imageSize);
          xPoints[i] = GMath.toRoundedInt(scaledPoint.x());
          yPoints[i] = GMath.toRoundedInt(scaledPoint.y());
       }
@@ -75,12 +81,13 @@ public class GGeometry2DRenderer {
    private static void drawVertices(final Graphics2D g2d,
                                     final IPointsContainer<IVector2> container,
                                     final GAxisAlignedRectangle bounds,
-                                    final IVector2 scale) {
+                                    final IVector2 scale,
+                                    final IVectorI2 imageSize) {
       g2d.setColor(Color.WHITE);
 
       for (final IVector2 vector : container) {
-         final IVector2 scaledVector = scaleAndTranslate(vector, bounds, scale);
-         g2d.fillOval(GMath.toRoundedInt(scaledVector.x()) - 2, GMath.toRoundedInt(scaledVector.y()) - 2, 3, 3);
+         final IVector2 scaledVector = scaleAndTranslate(vector, bounds, scale, imageSize);
+         g2d.fillOval(GMath.toRoundedInt(scaledVector.x() - 2), GMath.toRoundedInt(scaledVector.y() - 2), 4, 4);
       }
    }
 
@@ -108,48 +115,84 @@ public class GGeometry2DRenderer {
       g2d.clearRect(0, 0, imageSize.x(), imageSize.y());
 
       g2d.setColor(Color.WHITE);
-      g2d.drawString(bounds.asParseableString(), 0, imageSize.y());
+      g2d.drawString("bounds: " + bounds.asParseableString(), 0, imageSize.y());
+
+
+      //      final AffineTransform transform = new AffineTransform();
+      //      transform.concatenate(AffineTransform.getScaleInstance(1, -1));
+      //      transform.concatenate(AffineTransform.getTranslateInstance(0, -imageSize.y()));
+      //      g2d.setTransform(transform);
+
 
       for (final IGeometry2D geometry : geometries) {
 
-         if (geometry instanceof IPointsContainer) {
-            if (drawVertices) {
-               @SuppressWarnings("unchecked")
-               final IPointsContainer<IVector2> container = (IPointsContainer<IVector2>) geometry;
-               drawVertices(g2d, container, bounds, scale);
-            }
-         }
 
          if (geometry instanceof IVector2) {
             final IVector2 vector = (IVector2) geometry;
 
-            final IVector2 scaledVector = scaleAndTranslate(vector, bounds, scale);
+            final IVector2 scaledVector = scaleAndTranslate(vector, bounds, scale, imageSize);
             g2d.setColor(getPointColor());
-            g2d.fillOval(GMath.toRoundedInt(scaledVector.x()) - 1, GMath.toRoundedInt(scaledVector.y()) - 1, 2, 2);
+            g2d.fillOval(GMath.toRoundedInt(scaledVector.x() - 1), GMath.toRoundedInt(scaledVector.y() - 1), 2, 2);
          }
          else if (geometry instanceof IPolygonalChain2D) {
             final IPolygonalChain2D polygonalChain = (IPolygonalChain2D) geometry;
 
             g2d.setColor(getPolygonalChainColor());
 
-            final AWTPoints awtPoints = getTranslatedAWTPoints(polygonalChain, bounds, scale);
+            final AWTPoints awtPoints = getTranslatedAWTPoints(polygonalChain, bounds, scale, imageSize);
             g2d.drawPolyline(awtPoints._xPoints, awtPoints._yPoints, awtPoints._xPoints.length);
          }
          else if (geometry instanceof IPolygon2D) {
             final IPolygon2D polygon = (IPolygon2D) geometry;
             g2d.setColor(getPolygonColor());
 
-            final AWTPoints awtPoints = getTranslatedAWTPoints(polygon, bounds, scale);
+            final AWTPoints awtPoints = getTranslatedAWTPoints(polygon, bounds, scale, imageSize);
+            g2d.fillPolygon(awtPoints._xPoints, awtPoints._yPoints, awtPoints._xPoints.length);
+
+            g2d.setColor(getPolygonColor().darker().darker().darker());
             g2d.drawPolygon(awtPoints._xPoints, awtPoints._yPoints, awtPoints._xPoints.length);
+         }
+         else if (geometry instanceof GAxisAlignedRectangle) {
+            final GAxisAlignedRectangle rectangle = (GAxisAlignedRectangle) geometry;
+
+            g2d.setColor(getRectangleColor());
+
+            final IVector2 scaledLower = scaleAndTranslate(rectangle._lower, bounds, scale, imageSize);
+            final IVector2 scaledUpper = scaleAndTranslate(rectangle._upper, bounds, scale, imageSize);
+            g2d.fillRect(//
+                     GMath.toRoundedInt(scaledLower.x()), GMath.toRoundedInt(scaledLower.y()), //
+                     GMath.toRoundedInt(scaledUpper.x() - scaledLower.x()), GMath.toRoundedInt(scaledUpper.y() - scaledLower.y()) //
+            );
+
+
+            g2d.setColor(getRectangleColor().darker().darker().darker());
+            g2d.drawRect(//
+                     GMath.toRoundedInt(scaledLower.x()), GMath.toRoundedInt(scaledLower.y()), //
+                     GMath.toRoundedInt(scaledUpper.x() - scaledLower.x()), GMath.toRoundedInt(scaledUpper.y() - scaledLower.y()) //
+            );
          }
          else {
             throw new RuntimeException("Geometry type not yet supported (" + geometry.getClass() + ")");
+         }
+
+
+         if (geometry instanceof IPointsContainer) {
+            if (drawVertices) {
+               @SuppressWarnings("unchecked")
+               final IPointsContainer<IVector2> container = (IPointsContainer<IVector2>) geometry;
+               drawVertices(g2d, container, bounds, scale, imageSize);
+            }
          }
       }
 
       g2d.dispose();
 
       return image;
+   }
+
+
+   private static Color getRectangleColor() {
+      return new Color(255, 255, 0, 64);
    }
 
 
@@ -165,17 +208,17 @@ public class GGeometry2DRenderer {
 
 
    private static Color getPolygonalChainColor() {
-      return new Color(255, 255, 255, 127);
+      return new Color(255, 255, 255, 255);
    }
 
 
    private static Color getPolygonColor() {
-      return new Color(255, 0, 255, 127);
+      return new Color(255, 0, 255, 64);
    }
 
 
    private static Color getPointColor() {
-      return new Color(255, 0, 0, 127);
+      return new Color(255, 0, 0, 255);
    }
 
 
