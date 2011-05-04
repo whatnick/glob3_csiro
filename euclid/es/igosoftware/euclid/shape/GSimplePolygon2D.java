@@ -53,22 +53,46 @@ public final class GSimplePolygon2D
          implements
             ISimplePolygon2D {
 
+   private static final long serialVersionUID = 1L;
 
-   private static final long     serialVersionUID = 1L;
+
+   public static GSimplePolygon2D createConvexHull(final boolean validate,
+                                                   final List<IVector2> points) {
+      return new GSimplePolygon2D(validate, true, points);
+   }
 
 
    private GAxisAlignedRectangle _bounds;
+   private final Boolean         _isConvex;
 
 
    public GSimplePolygon2D(final boolean validate,
                            final IVector2... points) {
       super(validate, points);
+      _isConvex = null;
    }
 
 
    public GSimplePolygon2D(final boolean validate,
                            final List<IVector2> points) {
       super(validate, points);
+      _isConvex = null;
+   }
+
+
+   private GSimplePolygon2D(final boolean validate,
+                            final boolean isConvex,
+                            final IVector2... points) {
+      super(validate, points);
+      _isConvex = isConvex;
+   }
+
+
+   private GSimplePolygon2D(final boolean validate,
+                            final boolean isConvex,
+                            final List<IVector2> points) {
+      super(validate, points);
+      _isConvex = isConvex;
    }
 
 
@@ -337,7 +361,10 @@ public final class GSimplePolygon2D
 
    @Override
    public boolean isConvex() {
-      throw new RuntimeException("not yet implemented");
+      if (_isConvex == null) {
+         throw new RuntimeException("not yet implemented");
+      }
+      return _isConvex;
    }
 
 
