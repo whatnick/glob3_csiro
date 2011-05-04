@@ -739,12 +739,12 @@ public class GKmlLoader {
       System.out.println();
 
       //final SimpleFeatureType schema = featureSource.getSchema();
-      final int fieldsCount = schema.getAttributeCount() - 1;
+      final int fieldsCount = schema.getAttributeCount();
       System.out.println("Fields count: " + fieldsCount);
       final List<GField> fields = new ArrayList<GField>(fieldsCount);
       for (int i = 0; i < fieldsCount; i++) {
-         final String fieldName = schema.getType(i + 1).getName().getLocalPart();
-         final Class<?> fieldType = schema.getType(i + 1).getBinding();
+         final String fieldName = schema.getType(i).getName().getLocalPart();
+         final Class<?> fieldType = schema.getType(i).getBinding();
          System.out.println("Fieldname: " + fieldName);
 
          fields.add(new GField(fieldName, fieldType));
