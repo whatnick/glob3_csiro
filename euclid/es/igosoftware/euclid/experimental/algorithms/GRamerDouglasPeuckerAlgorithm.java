@@ -71,14 +71,14 @@ public class GRamerDouglasPeuckerAlgorithm<VectorT extends IVector<VectorT, ?>>
 
    @Override
    public GRamerDouglasPeuckerAlgorithm.Result<VectorT> apply(final GRamerDouglasPeuckerAlgorithm.Parameters<VectorT> parameters) {
-      final List<VectorT> result = simplifyDouglasPeucker(parameters._points, parameters._epsilon);
+      final List<VectorT> result = simplify(parameters._points, parameters._epsilon);
 
       return new GRamerDouglasPeuckerAlgorithm.Result<VectorT>(result);
    }
 
 
-   private List<VectorT> simplifyDouglasPeucker(final List<VectorT> points,
-                                                final double epsilon) {
+   public static <VectorT extends IVector<VectorT, ?>> List<VectorT> simplify(final List<VectorT> points,
+                                                                              final double epsilon) {
 
 
       if (points.size() <= 2) {
@@ -109,8 +109,8 @@ public class GRamerDouglasPeuckerAlgorithm<VectorT extends IVector<VectorT, ?>>
       final double squaredEpsilon = epsilon * epsilon;
       if (maxSquaredDistance > squaredEpsilon) {
          //If max distance is greater than epsilon, recursively simplify
-         final List<VectorT> recResults1 = simplifyDouglasPeucker(points.subList(0, maxIndex + 1), epsilon);
-         final List<VectorT> recResults2 = simplifyDouglasPeucker(points.subList(maxIndex, endPos + 1), epsilon);
+         final List<VectorT> recResults1 = simplify(points.subList(0, maxIndex + 1), epsilon);
+         final List<VectorT> recResults2 = simplify(points.subList(maxIndex, endPos + 1), epsilon);
 
          result.addAll(recResults1.subList(0, recResults1.size() - 1));
          result.addAll(recResults2);
