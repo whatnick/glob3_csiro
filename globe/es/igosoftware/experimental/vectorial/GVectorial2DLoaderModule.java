@@ -77,7 +77,7 @@ import es.igosoftware.io.GIOUtils;
 import es.igosoftware.util.GPair;
 
 
-public class GGlobeVectorialModule
+public class GVectorial2DLoaderModule
          extends
             GAbstractGlobeModule
          implements
