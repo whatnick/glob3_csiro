@@ -648,4 +648,21 @@ public final class GAxisAlignedRectangle
    }
 
 
+   @Override
+   public GSegment2D getVerticalBisector() {
+      final IVector2 from = new GVector2D(_center.x(), _lower.y());
+      final IVector2 to = new GVector2D(_center.x(), _upper.y());
+
+      return new GSegment2D(from, to);
+   }
+
+
+   @Override
+   public GSegment2D getHorizontalBisector() {
+      final IVector2 from = new GVector2D(_lower.x(), _center.y());
+      final IVector2 to = new GVector2D(_upper.x(), _center.y());
+
+      return new GSegment2D(from, to);
+   }
+
 }

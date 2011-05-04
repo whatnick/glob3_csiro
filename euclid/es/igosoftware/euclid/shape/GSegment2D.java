@@ -129,7 +129,6 @@ public final class GSegment2D
 
 
    public boolean intersects(final GSegment2D that) {
-      //final IntersectionResult intersects = getIntersection(that, new GMutableVector2<IVector2>(GVector2D.ZERO));
       final IntersectionResult intersects = getIntersection(that, null);
       return (intersects == IntersectionResult.COINCIDENT) || (intersects == IntersectionResult.INTERSECTING);
    }
@@ -210,6 +209,24 @@ public final class GSegment2D
       }
 
       return new GSegment2D(transformer.apply(_from), transformer.apply(_to));
+   }
+
+
+   public GSegment2D getVerticalBisector() {
+      final IVector2 center = getCentroid();
+      final IVector2 from = new GVector2D(center.x(), _from.y());
+      final IVector2 to = new GVector2D(center.x(), _to.y());
+
+      return new GSegment2D(from, to);
+   }
+
+
+   public GSegment2D getHorizontalBisector() {
+      final IVector2 center = getCentroid();
+      final IVector2 from = new GVector2D(_from.x(), center.y());
+      final IVector2 to = new GVector2D(_to.x(), center.y());
+
+      return new GSegment2D(from, to);
    }
 
 

@@ -207,4 +207,16 @@ public final class GCapsule2D
    }
 
 
+   @Override
+   public GSegment2D getHorizontalBisector() {
+      return _segment.getHorizontalBisector();
+   }
+
+
+   @Override
+   public GSegment2D getVerticalBisector() {
+      return _segment.getVerticalBisector();
+   }
+
+
 }
