@@ -38,6 +38,18 @@ public class GGraph<NodeT> {
       }
 
 
+      public NodeT either() {
+         return _from;
+      }
+
+
+      public NodeT other(final NodeT node) {
+         GAssert.isTrue((node == _from) || (node == _to), "invalid node");
+
+         return (node == _from) ? _to : _from;
+      }
+
+
       @Override
       public String toString() {
          return "Edge [" + _from + " -> " + _to + "]";
@@ -84,8 +96,8 @@ public class GGraph<NodeT> {
          }
          return true;
       }
-
    }
+
 
    private final Set<NodeT>                   _nodes;
    private final Map<NodeT, Set<Edge<NodeT>>> _nodeEdges = new HashMap<NodeT, Set<Edge<NodeT>>>();
@@ -316,6 +328,11 @@ public class GGraph<NodeT> {
    }
 
 
+   public Set<NodeT> getNodes() {
+      return Collections.unmodifiableSet(_nodes);
+   }
+
+
    public static void main(final String[] args) {
       System.out.println("GGraph 0.1");
       System.out.println("----------\n");
@@ -327,6 +344,7 @@ public class GGraph<NodeT> {
 
       graph.addBidirectionalEdge("A", "B");
       graph.addBidirectionalEdge("A", "C");
+
 
       System.out.println(graph);
 
@@ -354,6 +372,5 @@ public class GGraph<NodeT> {
       }
 
    }
-
 
 }
