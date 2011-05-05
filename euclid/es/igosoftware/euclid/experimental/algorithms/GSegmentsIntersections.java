@@ -2,7 +2,6 @@
 
 package es.igosoftware.euclid.experimental.algorithms;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -127,10 +126,13 @@ public class GSegmentsIntersections {
       intersections.clear();
 
       System.out.println("- drawing...");
-      final BufferedImage image = GGeometry2DRenderer.render(allGeometries, true, new GAxisAlignedRectangle(GVector2D.ZERO,
-               new GVector2D(extent.x(), extent.y())), extent);
 
-      ImageIO.write(image, "png", new File("/home/dgd/Desktop/GSegmentsIntersections.png"));
+      final GGeometry2DRenderer renderer = new GGeometry2DRenderer(new GAxisAlignedRectangle(GVector2D.ZERO, new GVector2D(
+               extent.x(), extent.y())), extent);
+
+      renderer.drawGeometries(allGeometries, true);
+
+      ImageIO.write(renderer.getImage(), "png", new File("/home/dgd/Desktop/GSegmentsIntersections.png"));
    }
 
 
@@ -158,8 +160,8 @@ public class GSegmentsIntersections {
       System.out.println("--------------------------\n");
 
 
-      final boolean drawResults = false;
-      final int segmentsCount = 5000;
+      final boolean drawResults = true;
+      final int segmentsCount = 200;
       final IVectorI2 extent = new GVector2I(1024 * 2, 768 * 2);
 
 
@@ -174,4 +176,6 @@ public class GSegmentsIntersections {
 
       System.out.println("- done!");
    }
+
+
 }

@@ -42,6 +42,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.imageio.ImageIO;
+
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.shape.GTriangle2D;
 import es.igosoftware.euclid.utils.GGeometry2DRenderer;
@@ -421,7 +423,7 @@ public class GDelaunayTriangulator2D
       System.out.println("------------------------\n");
 
 
-      final IVector2[] points = new IVector2[32000];
+      final IVector2[] points = new IVector2[200];
 
       final IVectorI2 imageSize = new GVector2I(1280, 1024);
       final GAxisAlignedRectangle bounds = new GAxisAlignedRectangle(GVector2D.ZERO, new GVector2D(imageSize.x(), imageSize.y()));
@@ -440,8 +442,10 @@ public class GDelaunayTriangulator2D
          triangles.add(new GTriangle2D(points[iTriangle._v0], points[iTriangle._v1], points[iTriangle._v2]));
       }
 
-      GGeometry2DRenderer.render(triangles, true, bounds, imageSize,
-               GFileName.absolute("home", "dgd", "Desktop", "triangles.png"));
+      final GGeometry2DRenderer renderer = new GGeometry2DRenderer(bounds, imageSize);
+      renderer.drawGeometries(triangles, true);
+
+      ImageIO.write(renderer.getImage(), "png", GFileName.absolute("home", "dgd", "Desktop", "triangles.png").asFile());
 
       System.out.println("- done!");
    }
