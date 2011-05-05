@@ -7,7 +7,9 @@ import es.igosoftware.euclid.vector.IVector2;
 
 public class GRay2D
          extends
-            GRay<IVector2> {
+            GRay<IVector2>
+         implements
+            IGeometry2D {
 
 
    private static final long serialVersionUID = 1L;
