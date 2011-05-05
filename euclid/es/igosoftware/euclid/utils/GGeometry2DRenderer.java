@@ -8,6 +8,7 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
 
+import es.igosoftware.euclid.GRay2D;
 import es.igosoftware.euclid.IGeometry2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.GDisk;
@@ -115,71 +116,22 @@ public class GGeometry2DRenderer {
                             final boolean drawVertices) {
       if (geometry instanceof IVector2) {
          final IVector2 vector = (IVector2) geometry;
-
-         final IVector2 scaledVector = scaleAndTranslate(vector);
-         _g2d.setColor((color != null) ? color : getPointColor());
-         _g2d.fillOval(GMath.toRoundedInt(scaledVector.x() - 1), GMath.toRoundedInt(scaledVector.y() - 1), 2, 2);
+         drawVector(vector, color);
       }
       else if (geometry instanceof IPolygonalChain2D) {
-         final IPolygonalChain2D polygonalChain = (IPolygonalChain2D) geometry;
-
-         _g2d.setColor((color != null) ? color : getPolygonalChainColor());
-
-         final AWTPoints awtPoints = getTranslatedAWTPoints(polygonalChain);
-         _g2d.drawPolyline(awtPoints._xPoints, awtPoints._yPoints, awtPoints._xPoints.length);
+         drawPolygonalChain((IPolygonalChain2D) geometry, color);
       }
       else if (geometry instanceof IPolygon2D) {
-         final IPolygon2D polygon = (IPolygon2D) geometry;
-         _g2d.setColor((color != null) ? color : getPolygonColor());
-
-         final AWTPoints awtPoints = getTranslatedAWTPoints(polygon);
-         _g2d.fillPolygon(awtPoints._xPoints, awtPoints._yPoints, awtPoints._xPoints.length);
-
-         _g2d.setColor(_g2d.getColor().darker().darker().darker());
-         _g2d.drawPolygon(awtPoints._xPoints, awtPoints._yPoints, awtPoints._xPoints.length);
+         drawPolygon((IPolygon2D) geometry, color);
       }
       else if (geometry instanceof GAxisAlignedRectangle) {
-         final GAxisAlignedRectangle rectangle = (GAxisAlignedRectangle) geometry;
-
-         _g2d.setColor((color != null) ? color : getRectangleColor());
-
-         final IVector2 scaledLower = scaleAndTranslate(rectangle._lower);
-         final IVector2 scaledUpper = scaleAndTranslate(rectangle._upper);
-         _g2d.fillRect(//
-                  GMath.toRoundedInt(scaledLower.x()), GMath.toRoundedInt(scaledLower.y()), //
-                  GMath.toRoundedInt(scaledUpper.x() - scaledLower.x()), GMath.toRoundedInt(scaledUpper.y() - scaledLower.y()) //
-         );
-
-
-         _g2d.setColor(_g2d.getColor().darker().darker().darker());
-         _g2d.drawRect(//
-                  GMath.toRoundedInt(scaledLower.x()), GMath.toRoundedInt(scaledLower.y()), //
-                  GMath.toRoundedInt(scaledUpper.x() - scaledLower.x()), GMath.toRoundedInt(scaledUpper.y() - scaledLower.y()) //
-         );
+         drawRectangle((GAxisAlignedRectangle) geometry, color);
       }
       else if (geometry instanceof GDisk) {
-         final GDisk disk = (GDisk) geometry;
-
-         final IVector2 centerPlusRadius = disk._center.add(disk._radius);
-         final IVector2 scaledRadius = centerPlusRadius.sub(disk._center).scale(_scale); // radius times 2 (for extent)
-
-         final IVector2 scaledPosition = scaleAndTranslate(disk._center).sub(scaledRadius);
-
-         final IVector2 scaledExtent = scaledRadius.scale(2);
-
-         _g2d.setColor((color != null) ? color : getDiskColor());
-         _g2d.fillOval(GMath.toRoundedInt(scaledPosition.x()), GMath.toRoundedInt(scaledPosition.y()), //
-                  GMath.toRoundedInt(scaledExtent.x()), GMath.toRoundedInt(scaledExtent.y()));
-
-         _g2d.setColor(_g2d.getColor().darker().darker().darker());
-         _g2d.drawOval(GMath.toRoundedInt(scaledPosition.x()), GMath.toRoundedInt(scaledPosition.y()), //
-                  GMath.toRoundedInt(scaledExtent.x()), GMath.toRoundedInt(scaledExtent.y()));
-
-         if (drawVertices) {
-            final IVector2 scaledCenter = scaleAndTranslate(disk._center);
-            _g2d.fillOval(GMath.toRoundedInt(scaledCenter.x() - 1), GMath.toRoundedInt(scaledCenter.y() - 1), 2, 2);
-         }
-
+         drawDisk((GDisk) geometry, color, drawVertices);
+      }
+      else if (geometry instanceof GRay2D) {
+         drawRay((GRay2D) geometry, color);
       }
       else {
          throw new RuntimeException("Geometry type not yet supported (" + geometry.getClass() + ")");
@@ -193,6 +145,100 @@ public class GGeometry2DRenderer {
             drawVertices(container);
          }
       }
+   }
+
+
+   public void drawRay(final GRay2D ray,
+                       final Color color) {
+      _g2d.setColor((color != null) ? color : getRayColor());
+
+      final IVector2 scaledA = scaleAndTranslate(ray._a);
+      final IVector2 scaledB = scaleAndTranslate(ray._b.sub(ray._a).scale(_imageSize.x() + _imageSize.y()).add(ray._a));
+      _g2d.drawLine(//
+               GMath.toRoundedInt(scaledA.x()), GMath.toRoundedInt(scaledA.y()), //
+               GMath.toRoundedInt(scaledB.x()), GMath.toRoundedInt(scaledB.y()));
+
+      _g2d.setColor(_g2d.getColor().darker().darker().darker());
+      _g2d.fillOval(GMath.toRoundedInt(scaledA.x() - 2), GMath.toRoundedInt(scaledA.y() - 2), 4, 4);
+   }
+
+
+   public void drawDisk(final GDisk disk,
+                        final Color color,
+                        final boolean drawVertices) {
+      final IVector2 centerPlusRadius = disk._center.add(disk._radius);
+      final IVector2 scaledRadius = centerPlusRadius.sub(disk._center).scale(_scale); // radius times 2 (for extent)
+
+      final IVector2 scaledPosition = scaleAndTranslate(disk._center).sub(scaledRadius);
+
+      final IVector2 scaledExtent = scaledRadius.scale(2);
+
+      _g2d.setColor((color != null) ? color : getDiskColor());
+      _g2d.fillOval(GMath.toRoundedInt(scaledPosition.x()), GMath.toRoundedInt(scaledPosition.y()), //
+               GMath.toRoundedInt(scaledExtent.x()), GMath.toRoundedInt(scaledExtent.y()));
+
+      _g2d.setColor(_g2d.getColor().darker().darker().darker());
+      _g2d.drawOval(GMath.toRoundedInt(scaledPosition.x()), GMath.toRoundedInt(scaledPosition.y()), //
+               GMath.toRoundedInt(scaledExtent.x()), GMath.toRoundedInt(scaledExtent.y()));
+
+      if (drawVertices) {
+         final IVector2 scaledCenter = scaleAndTranslate(disk._center);
+         _g2d.fillOval(GMath.toRoundedInt(scaledCenter.x() - 1), GMath.toRoundedInt(scaledCenter.y() - 1), 2, 2);
+      }
+   }
+
+
+   public void drawRectangle(final GAxisAlignedRectangle rectangle,
+                             final Color color) {
+      _g2d.setColor((color != null) ? color : getRectangleColor());
+
+      final IVector2 scaledLower = scaleAndTranslate(rectangle._lower);
+      final IVector2 scaledUpper = scaleAndTranslate(rectangle._upper);
+      _g2d.fillRect(//
+               GMath.toRoundedInt(scaledLower.x()), GMath.toRoundedInt(scaledLower.y()), //
+               GMath.toRoundedInt(scaledUpper.x() - scaledLower.x()), GMath.toRoundedInt(scaledUpper.y() - scaledLower.y()) //
+      );
+
+
+      _g2d.setColor(_g2d.getColor().darker().darker().darker());
+      _g2d.drawRect(//
+               GMath.toRoundedInt(scaledLower.x()), GMath.toRoundedInt(scaledLower.y()), //
+               GMath.toRoundedInt(scaledUpper.x() - scaledLower.x()), GMath.toRoundedInt(scaledUpper.y() - scaledLower.y()) //
+      );
+   }
+
+
+   public void drawPolygon(final IPolygon2D polygon,
+                           final Color color) {
+      _g2d.setColor((color != null) ? color : getPolygonColor());
+
+      final AWTPoints awtPoints = getTranslatedAWTPoints(polygon);
+      _g2d.fillPolygon(awtPoints._xPoints, awtPoints._yPoints, awtPoints._xPoints.length);
+
+      _g2d.setColor(_g2d.getColor().darker().darker().darker());
+      _g2d.drawPolygon(awtPoints._xPoints, awtPoints._yPoints, awtPoints._xPoints.length);
+   }
+
+
+   public void drawPolygonalChain(final IPolygonalChain2D polygonalChain,
+                                  final Color color) {
+      _g2d.setColor((color != null) ? color : getPolygonalChainColor());
+
+      final AWTPoints awtPoints = getTranslatedAWTPoints(polygonalChain);
+      _g2d.drawPolyline(awtPoints._xPoints, awtPoints._yPoints, awtPoints._xPoints.length);
+   }
+
+
+   public void drawVector(final IVector2 vector,
+                          final Color color) {
+      final IVector2 scaledVector = scaleAndTranslate(vector);
+      _g2d.setColor((color != null) ? color : getPointColor());
+      _g2d.fillOval(GMath.toRoundedInt(scaledVector.x() - 1), GMath.toRoundedInt(scaledVector.y() - 1), 2, 2);
+   }
+
+
+   private Color getRayColor() {
+      return new Color(0, 255, 255, 64);
    }
 
 
