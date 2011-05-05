@@ -111,9 +111,9 @@ public final class GSimplePolygon2D
 
       final GSegment2D[] edges = new GSegment2D[pointsCount];
 
-      int j = pointsCount - 1;
-      for (int i = 0; i < pointsCount; j = i++) {
-         edges[j] = new GSegment2D(points.get(j), points.get(i));
+      for (int i = 0; i < pointsCount; i++) {
+         final int j = (i + 1) % pointsCount;
+         edges[i] = new GSegment2D(points.get(i), points.get(j));
       }
 
       return Arrays.asList(edges);
