@@ -8,10 +8,10 @@ import java.util.List;
 
 import es.igosoftware.euclid.shape.GSimplePolygon2D;
 import es.igosoftware.euclid.shape.GTriangle;
-import es.igosoftware.euclid.shape.GTriangle2D;
 import es.igosoftware.euclid.utils.GShapeUtils;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.util.GAssert;
+import es.igosoftware.util.GStringUtils;
 
 
 public class GEarClippingTriangulator2D
@@ -40,16 +40,16 @@ public class GEarClippingTriangulator2D
             implements
                IAlgorithmResult<IVector2> {
 
-      private final List<GTriangle2D> _triangles;
+      private final List<GIndexedTriangle> _indexedTriangles;
 
 
-      private Result(final List<GTriangle2D> triangles) {
-         _triangles = triangles;
+      private Result(final List<GIndexedTriangle> triangles) {
+         _indexedTriangles = triangles;
       }
 
 
-      public List<GTriangle2D> getTriangles() {
-         return _triangles;
+      public List<GIndexedTriangle> getIndexedTriangles() {
+         return _indexedTriangles;
       }
    }
 
@@ -66,13 +66,14 @@ public class GEarClippingTriangulator2D
    }
 
 
-   public static List<GTriangle2D> triangulate(final GSimplePolygon2D polygon) {
+   public static List<GIndexedTriangle> triangulate(final GSimplePolygon2D polygon) {
       // from: http://codesuppository.blogspot.com/2009/07/polygon-triangulator-ear-clipping.html
 
-      final List<GTriangle2D> result = new ArrayList<GTriangle2D>();
+      final long start = System.currentTimeMillis();
 
       final int pointsCount = polygon.getPointsCount();
-      final List<IVector2> points = polygon.getPoints();
+
+      final List<GIndexedTriangle> result = new ArrayList<GIndexedTriangle>(pointsCount - 2);
 
       if (pointsCount < 3) {
          return Collections.emptyList();
@@ -113,17 +114,21 @@ public class GEarClippingTriangulator2D
             w = 0;
          }
 
-         if (isEar(u, v, w, nv, indices, points)) {
-            int a, b, c, s, t;
-            a = indices[u];
-            b = indices[v];
-            c = indices[w];
+         //         if (clip(u, v, w, nv, indices, points)) {
+         if (clip(u, v, w, nv, indices, polygon)) {
+            final int a = indices[u];
+            final int b = indices[v];
+            final int c = indices[w];
+            int s;
+            int t;
+
             if (flipped) {
-               result.add(new GTriangle2D(points.get(a), points.get(b), points.get(c)));
+               result.add(new GIndexedTriangle(a, b, c));
             }
             else {
-               result.add(new GTriangle2D(points.get(c), points.get(b), points.get(a)));
+               result.add(new GIndexedTriangle(c, b, a));
             }
+
             m++;
             for (s = v, t = v + 1; t < nv; s++, t++) {
                indices[s] = indices[t];
@@ -133,22 +138,25 @@ public class GEarClippingTriangulator2D
          }
       }
 
+      System.out.println("- Created " + result.size() + " triangles from " + pointsCount + " points in "
+                         + GStringUtils.getTimeMessage(System.currentTimeMillis() - start, false));
+
       return result;
    }
 
    private static final double EPSILON = 0.00000000001;
 
 
-   private static boolean isEar(final int u,
-                                final int v,
-                                final int w,
-                                final int n,
-                                final int[] indices,
-                                final List<IVector2> points) {
+   private static boolean clip(final int u,
+                               final int v,
+                               final int w,
+                               final int n,
+                               final int[] indices,
+                               final GSimplePolygon2D polygon) {
 
-      final IVector2 a = points.get(indices[u]);
-      final IVector2 b = points.get(indices[v]);
-      final IVector2 c = points.get(indices[w]);
+      final IVector2 a = polygon.getPoint(indices[u]);
+      final IVector2 b = polygon.getPoint(indices[v]);
+      final IVector2 c = polygon.getPoint(indices[w]);
 
       if (EPSILON > ((b.x() - a.x()) * (c.y() - a.y()) - (b.y() - a.y()) * (c.x() - a.x()))) {
          return false;
@@ -159,7 +167,7 @@ public class GEarClippingTriangulator2D
             continue;
          }
 
-         if (GTriangle.isTriangleContainsPoint(a, b, c, points.get(indices[p]))) {
+         if (GTriangle.isTriangleContainsPoint(a, b, c, polygon.getPoint(indices[p]))) {
             return false;
          }
       }
@@ -170,7 +178,7 @@ public class GEarClippingTriangulator2D
 
    @Override
    public GEarClippingTriangulator2D.Result apply(final GEarClippingTriangulator2D.Parameters parameters) {
-      final List<GTriangle2D> triangles = triangulate(parameters._polygon);
+      final List<GIndexedTriangle> triangles = triangulate(parameters._polygon);
       return new GEarClippingTriangulator2D.Result(triangles);
    }
 

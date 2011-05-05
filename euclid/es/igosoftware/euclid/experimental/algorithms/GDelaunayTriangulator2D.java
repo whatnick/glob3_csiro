@@ -78,33 +78,17 @@ public class GDelaunayTriangulator2D
             implements
                IAlgorithmResult<IVector2> {
 
-      private final GDelaunayTriangulator2D.IndexedTriangle[] _indexedTriangles;
+      private final GIndexedTriangle[] _indexedTriangles;
 
 
-      private Result(final IndexedTriangle[] indexedTriangles) {
+      private Result(final GIndexedTriangle[] indexedTriangles) {
          super();
          _indexedTriangles = indexedTriangles;
       }
 
 
-      public GDelaunayTriangulator2D.IndexedTriangle[] getIndexedTriangles() {
+      public GIndexedTriangle[] getIndexedTriangles() {
          return _indexedTriangles;
-      }
-   }
-
-
-   public static class IndexedTriangle {
-      public final int _v0;
-      public final int _v1;
-      public final int _v2;
-
-
-      IndexedTriangle(final int v0,
-                      final int v1,
-                      final int v2) {
-         _v0 = v0;
-         _v1 = v1;
-         _v2 = v2;
       }
    }
 
@@ -205,12 +189,12 @@ public class GDelaunayTriangulator2D
    }
 
 
-   public static IndexedTriangle[] triangulate(final List<IVector2> points) {
+   public static GIndexedTriangle[] triangulate(final List<IVector2> points) {
       return triangulate(points.toArray(new IVector2[points.size()]));
    }
 
 
-   public static IndexedTriangle[] triangulate(final IVector2... originalPoints) {
+   public static GIndexedTriangle[] triangulate(final IVector2... originalPoints) {
       final long start = System.currentTimeMillis();
 
       final int pointsCount = originalPoints.length;
@@ -222,7 +206,7 @@ public class GDelaunayTriangulator2D
 
       System.out.println("- Triangulating " + pointsCount + " points...");
 
-      final IndexedTriangle triangles[] = new IndexedTriangle[pointsCount * 3];
+      final GIndexedTriangle triangles[] = new GIndexedTriangle[pointsCount * 3];
 
       // save original indexes before sorting
       final VectorAndIndex[] points = new VectorAndIndex[pointsCount + 3];
@@ -284,7 +268,7 @@ public class GDelaunayTriangulator2D
       points[pointsCount + 1] = new VectorAndIndex(new GVector2D(center.x(), center.y() + 2.0 * dmax), pointsCount + 1);
       points[pointsCount + 2] = new VectorAndIndex(new GVector2D(center.x() + 2.0 * dmax, center.y() - dmax), pointsCount + 2);
 
-      triangles[0] = new IndexedTriangle(pointsCount + 0, pointsCount + 1, pointsCount + 2);
+      triangles[0] = new GIndexedTriangle(pointsCount + 0, pointsCount + 1, pointsCount + 2);
       complete[0] = false;
       ntri = 1;
 
@@ -308,10 +292,10 @@ public class GDelaunayTriangulator2D
                continue;
             }
 
-            final IndexedTriangle triangleJ = triangles[j];
-            final IVector2 point0 = points[triangleJ._v0]._vector;
-            final IVector2 point1 = points[triangleJ._v1]._vector;
-            final IVector2 point2 = points[triangleJ._v2]._vector;
+            final GIndexedTriangle triangleJ = triangles[j];
+            final IVector2 point0 = points[triangleJ._i0]._vector;
+            final IVector2 point1 = points[triangleJ._i1]._vector;
+            final IVector2 point2 = points[triangleJ._i2]._vector;
 
             final Circle circle = new Circle();
             final boolean inside = isInsideCircumCircle(vector, point0, point1, point2, circle);
@@ -330,15 +314,15 @@ public class GDelaunayTriangulator2D
                   edges = edges_n;
                }
 
-               edges[nedge + 0]._from = triangleJ._v0;
-               edges[nedge + 0]._to = triangleJ._v1;
-               edges[nedge + 1]._from = triangleJ._v1;
-               edges[nedge + 1]._to = triangleJ._v2;
-               edges[nedge + 2]._from = triangleJ._v2;
-               edges[nedge + 2]._to = triangleJ._v0;
+               edges[nedge + 0]._from = triangleJ._i0;
+               edges[nedge + 0]._to = triangleJ._i1;
+               edges[nedge + 1]._from = triangleJ._i1;
+               edges[nedge + 1]._to = triangleJ._i2;
+               edges[nedge + 2]._from = triangleJ._i2;
+               edges[nedge + 2]._to = triangleJ._i0;
                nedge += 3;
 
-               triangles[j] = new IndexedTriangle(triangles[ntri - 1]._v0, triangles[ntri - 1]._v1, triangles[ntri - 1]._v2);
+               triangles[j] = new GIndexedTriangle(triangles[ntri - 1]._i0, triangles[ntri - 1]._i1, triangles[ntri - 1]._i2);
                complete[j] = complete[ntri - 1];
                ntri--;
                j--;
@@ -383,7 +367,7 @@ public class GDelaunayTriangulator2D
                return null;
             }
 
-            triangles[ntri] = new IndexedTriangle(edges[j]._from, edges[j]._to, i);
+            triangles[ntri] = new GIndexedTriangle(edges[j]._from, edges[j]._to, i);
             complete[ntri] = false;
             ntri++;
          }
@@ -395,7 +379,7 @@ public class GDelaunayTriangulator2D
               These are triangles which have a vertex number greater than nv
       */
       for (int i = 0; i < ntri; i++) {
-         if ((triangles[i]._v0 >= pointsCount) || (triangles[i]._v1 >= pointsCount) || (triangles[i]._v2 >= pointsCount)) {
+         if ((triangles[i]._i0 >= pointsCount) || (triangles[i]._i1 >= pointsCount) || (triangles[i]._i2 >= pointsCount)) {
             triangles[i] = triangles[ntri - 1];
             ntri--;
             i--;
@@ -403,12 +387,12 @@ public class GDelaunayTriangulator2D
       }
 
       // convert the result to indexes of the original (before sorting) points
-      final IndexedTriangle[] result = new IndexedTriangle[ntri];
+      final GIndexedTriangle[] result = new GIndexedTriangle[ntri];
       for (int i = 0; i < ntri; i++) {
-         final int v0 = points[triangles[i]._v0]._originalIndex;
-         final int v1 = points[triangles[i]._v1]._originalIndex;
-         final int v2 = points[triangles[i]._v2]._originalIndex;
-         result[i] = new IndexedTriangle(v0, v1, v2);
+         final int v0 = points[triangles[i]._i0]._originalIndex;
+         final int v1 = points[triangles[i]._i1]._originalIndex;
+         final int v2 = points[triangles[i]._i2]._originalIndex;
+         result[i] = new GIndexedTriangle(v0, v1, v2);
       }
 
       System.out.println("- Created " + result.length + " triangles from " + points.length + " points in "
@@ -434,12 +418,12 @@ public class GDelaunayTriangulator2D
 
       //      GUtils.delay(30000);
 
-      final IndexedTriangle[] iTriangles = triangulate(points);
+      final GIndexedTriangle[] iTriangles = triangulate(points);
 
 
       final List<GTriangle2D> triangles = new ArrayList<GTriangle2D>(iTriangles.length);
-      for (final IndexedTriangle iTriangle : iTriangles) {
-         triangles.add(new GTriangle2D(points[iTriangle._v0], points[iTriangle._v1], points[iTriangle._v2]));
+      for (final GIndexedTriangle iTriangle : iTriangles) {
+         triangles.add(new GTriangle2D(points[iTriangle._i0], points[iTriangle._i1], points[iTriangle._i2]));
       }
 
       final GGeometry2DRenderer renderer = new GGeometry2DRenderer(bounds, imageSize);
@@ -469,7 +453,7 @@ public class GDelaunayTriangulator2D
 
    @Override
    public GDelaunayTriangulator2D.Result apply(final GDelaunayTriangulator2D.Parameters parameters) {
-      final IndexedTriangle[] result = triangulate(parameters._points);
+      final GIndexedTriangle[] result = triangulate(parameters._points);
       return new GDelaunayTriangulator2D.Result(result);
    }
 
