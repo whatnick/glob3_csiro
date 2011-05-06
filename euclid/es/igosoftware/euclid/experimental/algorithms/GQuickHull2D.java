@@ -70,7 +70,7 @@ public class GQuickHull2D
    }
 
 
-   private static List<IVector2> quickHull(final List<IVector2> points) {
+   public static List<IVector2> quickHull(final List<IVector2> points) {
       if (points.size() <= 3) {
          return new ArrayList<IVector2>(points);
       }

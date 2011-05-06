@@ -76,4 +76,6 @@ BoundsT extends IBounds<VectorT, BoundsT>
 
 
    public boolean isClockWise();
+
+
 }

@@ -650,8 +650,13 @@ public final class GAxisAlignedRectangle
 
    @Override
    public GSegment2D getVerticalBisector() {
-      final IVector2 from = new GVector2D(_center.x(), _lower.y());
-      final IVector2 to = new GVector2D(_center.x(), _upper.y());
+      return getVerticalBisectorAt(_center.x());
+   }
+
+
+   public GSegment2D getVerticalBisectorAt(final double x) {
+      final IVector2 from = new GVector2D(x, _lower.y());
+      final IVector2 to = new GVector2D(x, _upper.y());
 
       return new GSegment2D(from, to);
    }
@@ -659,10 +664,30 @@ public final class GAxisAlignedRectangle
 
    @Override
    public GSegment2D getHorizontalBisector() {
-      final IVector2 from = new GVector2D(_lower.x(), _center.y());
-      final IVector2 to = new GVector2D(_upper.x(), _center.y());
+      return getHorizontalBisectorAt(_center.y());
+   }
+
+
+   public GSegment2D getHorizontalBisectorAt(final double y) {
+      final IVector2 from = new GVector2D(_lower.x(), y);
+      final IVector2 to = new GVector2D(_upper.x(), y);
 
       return new GSegment2D(from, to);
    }
+
+
+   public GSegment2D getSouthWestToNorthEastBisector() {
+      return new GSegment2D(_lower, _upper);
+   }
+
+
+   public GSegment2D getNorthWestToSouthEastBisector() {
+      return new GSegment2D(//
+               new GVector2D(_lower.x(), _upper.y()), //
+               new GVector2D(_upper.x(), _lower.y()) //
+      );
+
+   }
+
 
 }

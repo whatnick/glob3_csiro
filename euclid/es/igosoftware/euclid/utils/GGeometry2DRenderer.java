@@ -4,16 +4,22 @@ package es.igosoftware.euclid.utils;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Polygon;
 import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
 
+import es.igosoftware.euclid.GLine2D;
 import es.igosoftware.euclid.GRay2D;
 import es.igosoftware.euclid.IGeometry2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.GDisk;
+import es.igosoftware.euclid.shape.IComplexPolygon2D;
 import es.igosoftware.euclid.shape.IPolygon2D;
 import es.igosoftware.euclid.shape.IPolygonalChain2D;
+import es.igosoftware.euclid.shape.ISimplePolygon2D;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector2;
@@ -76,6 +82,16 @@ public class GGeometry2DRenderer {
          _xPoints = xPoints;
          _yPoints = yPoints;
       }
+
+
+      private Area asArea() {
+         return new Area(asPolygonShape());
+      }
+
+
+      private Shape asPolygonShape() {
+         return new Polygon(_xPoints, _yPoints, _xPoints.length);
+      }
    }
 
 
@@ -93,8 +109,9 @@ public class GGeometry2DRenderer {
    }
 
 
-   private void drawVertices(final IPointsContainer<IVector2> container) {
-      _g2d.setColor(Color.WHITE);
+   private void drawVertices(final IPointsContainer<IVector2> container,
+                             final Color color) {
+      _g2d.setColor(color);
 
       for (final IVector2 vector : container) {
          final IVector2 scaledVector = scaleAndTranslate(vector);
@@ -112,6 +129,12 @@ public class GGeometry2DRenderer {
 
 
    public void drawGeometry(final IGeometry2D geometry,
+                            final boolean drawVertices) {
+      drawGeometry(geometry, null, drawVertices);
+   }
+
+
+   public void drawGeometry(final IGeometry2D geometry,
                             final Color color,
                             final boolean drawVertices) {
       if (geometry instanceof IVector2) {
@@ -119,10 +142,10 @@ public class GGeometry2DRenderer {
          drawVector(vector, color);
       }
       else if (geometry instanceof IPolygonalChain2D) {
-         drawPolygonalChain((IPolygonalChain2D) geometry, color);
+         drawPolygonalChain((IPolygonalChain2D) geometry, color, drawVertices);
       }
       else if (geometry instanceof IPolygon2D) {
-         drawPolygon((IPolygon2D) geometry, color);
+         drawPolygon((IPolygon2D) geometry, color, drawVertices);
       }
       else if (geometry instanceof GAxisAlignedRectangle) {
          drawRectangle((GAxisAlignedRectangle) geometry, color);
@@ -133,18 +156,21 @@ public class GGeometry2DRenderer {
       else if (geometry instanceof GRay2D) {
          drawRay((GRay2D) geometry, color);
       }
+      else if (geometry instanceof GLine2D) {
+         drawLine((GLine2D) geometry, color);
+      }
       else {
          throw new RuntimeException("Geometry type not yet supported (" + geometry.getClass() + ")");
       }
 
 
-      if (geometry instanceof IPointsContainer) {
-         if (drawVertices) {
-            @SuppressWarnings("unchecked")
-            final IPointsContainer<IVector2> container = (IPointsContainer<IVector2>) geometry;
-            drawVertices(container);
-         }
-      }
+      //      if (geometry instanceof IPointsContainer) {
+      //         if (drawVertices) {
+      //            @SuppressWarnings("unchecked")
+      //            final IPointsContainer<IVector2> container = (IPointsContainer<IVector2>) geometry;
+      //            drawVertices(container);
+      //         }
+      //      }
    }
 
 
@@ -158,8 +184,25 @@ public class GGeometry2DRenderer {
                GMath.toRoundedInt(scaledA.x()), GMath.toRoundedInt(scaledA.y()), //
                GMath.toRoundedInt(scaledB.x()), GMath.toRoundedInt(scaledB.y()));
 
-      _g2d.setColor(_g2d.getColor().darker().darker().darker());
+      _g2d.setColor(_g2d.getColor().darker().darker().darker().darker().darker());
       _g2d.fillOval(GMath.toRoundedInt(scaledA.x() - 2), GMath.toRoundedInt(scaledA.y() - 2), 4, 4);
+   }
+
+
+   public void drawLine(final GLine2D ray,
+                        final Color color) {
+      _g2d.setColor((color != null) ? color : getLineColor());
+
+      //      final IVector2 scaledA = scaleAndTranslate(ray._a);
+      final IVector2 scaledA = scaleAndTranslate(ray._a.sub(ray._b).scale(_imageSize.x() + _imageSize.y()).add(ray._b));
+      final IVector2 scaledB = scaleAndTranslate(ray._b.sub(ray._a).scale(_imageSize.x() + _imageSize.y()).add(ray._a));
+
+      _g2d.drawLine(//
+               GMath.toRoundedInt(scaledA.x()), GMath.toRoundedInt(scaledA.y()), //
+               GMath.toRoundedInt(scaledB.x()), GMath.toRoundedInt(scaledB.y()));
+
+      //      _g2d.setColor(_g2d.getColor().darker().darker().darker().darker().darker());
+      //      _g2d.fillOval(GMath.toRoundedInt(scaledA.x() - 2), GMath.toRoundedInt(scaledA.y() - 2), 4, 4);
    }
 
 
@@ -177,7 +220,7 @@ public class GGeometry2DRenderer {
       _g2d.fillOval(GMath.toRoundedInt(scaledPosition.x()), GMath.toRoundedInt(scaledPosition.y()), //
                GMath.toRoundedInt(scaledExtent.x()), GMath.toRoundedInt(scaledExtent.y()));
 
-      _g2d.setColor(_g2d.getColor().darker().darker().darker());
+      _g2d.setColor(_g2d.getColor().darker().darker().darker().darker().darker());
       _g2d.drawOval(GMath.toRoundedInt(scaledPosition.x()), GMath.toRoundedInt(scaledPosition.y()), //
                GMath.toRoundedInt(scaledExtent.x()), GMath.toRoundedInt(scaledExtent.y()));
 
@@ -200,45 +243,112 @@ public class GGeometry2DRenderer {
       );
 
 
-      _g2d.setColor(_g2d.getColor().darker().darker().darker());
+      _g2d.setColor(_g2d.getColor().darker().darker().darker().darker().darker());
       _g2d.drawRect(//
                GMath.toRoundedInt(scaledLower.x()), GMath.toRoundedInt(scaledLower.y()), //
                GMath.toRoundedInt(scaledUpper.x() - scaledLower.x()), GMath.toRoundedInt(scaledUpper.y() - scaledLower.y()) //
       );
+
+
    }
 
 
+   //   private static final Area asPolygonArea(final ISimplePolygon2D polygon) {
+   //      return new Area(asPolygonShape(polygon));
+   //   }
+   //
+   //
+   //   private static Shape asPolygonShape(final IPolygon2D polygon) {
+   //      final int pointsCount = polygon.getPointsCount();
+   //      final int[] xPoints = new int[pointsCount];
+   //      final int[] yPoints = new int[pointsCount];
+   //
+   //      for (int i = 0; i < pointsCount; i++) {
+   //         final IVector2 point = polygon.getPoint(i);
+   //         xPoints[i] = GMath.toRoundedInt(point.x());
+   //         yPoints[i] = GMath.toRoundedInt(point.y());
+   //      }
+   //
+   //      return new Polygon(xPoints, yPoints, pointsCount);
+   //   }
+
+
    public void drawPolygon(final IPolygon2D polygon,
-                           final Color color) {
-      _g2d.setColor((color != null) ? color : getPolygonColor());
+                           final Color color,
+                           final boolean drawVertices) {
+      if (polygon instanceof ISimplePolygon2D) {
+         _g2d.setColor((color != null) ? color : getPolygonColor());
 
-      final AWTPoints awtPoints = getTranslatedAWTPoints(polygon);
-      _g2d.fillPolygon(awtPoints._xPoints, awtPoints._yPoints, awtPoints._xPoints.length);
+         final AWTPoints awtPoints = getTranslatedAWTPoints(polygon);
+         _g2d.fillPolygon(awtPoints._xPoints, awtPoints._yPoints, awtPoints._xPoints.length);
 
-      _g2d.setColor(_g2d.getColor().darker().darker().darker());
-      _g2d.drawPolygon(awtPoints._xPoints, awtPoints._yPoints, awtPoints._xPoints.length);
+         _g2d.setColor(_g2d.getColor().darker().darker().darker().darker().darker());
+         _g2d.drawPolygon(awtPoints._xPoints, awtPoints._yPoints, awtPoints._xPoints.length);
+      }
+      else if (polygon instanceof IComplexPolygon2D) {
+         final IComplexPolygon2D complexPolygon = (IComplexPolygon2D) polygon;
+
+         final Area complexShape = getTranslatedAWTPoints(complexPolygon.getHull()).asArea();
+
+         for (final ISimplePolygon2D hole : complexPolygon.getHoles()) {
+            // complexShape.exclusiveOr(scaler.toScaledAndTranslatedPoints(hole).asPolygonArea());
+            complexShape.subtract(getTranslatedAWTPoints(hole).asArea());
+         }
+
+         _g2d.setColor((color != null) ? color : getPolygonColor());
+
+         _g2d.fill(complexShape);
+
+         _g2d.setColor(_g2d.getColor().darker().darker().darker().darker().darker());
+         _g2d.draw(complexShape);
+      }
+      else {
+         throw new RuntimeException("Polygon type not yet supported (" + polygon.getClass() + ")");
+      }
+
+      if (drawVertices) {
+         drawVertices(polygon, (color != null) ? color : getPolygonColor());
+      }
    }
 
 
    public void drawPolygonalChain(final IPolygonalChain2D polygonalChain,
-                                  final Color color) {
+                                  final Color color,
+                                  final boolean drawVertices) {
       _g2d.setColor((color != null) ? color : getPolygonalChainColor());
 
       final AWTPoints awtPoints = getTranslatedAWTPoints(polygonalChain);
       _g2d.drawPolyline(awtPoints._xPoints, awtPoints._yPoints, awtPoints._xPoints.length);
+
+      if (drawVertices) {
+         drawVertices(polygonalChain, (color != null) ? color : getPolygonalChainColor());
+      }
    }
 
 
    public void drawVector(final IVector2 vector,
                           final Color color) {
+      drawVector(vector, color, 2);
+   }
+
+
+   public void drawVector(final IVector2 vector,
+                          final Color color,
+                          final int pointSize) {
       final IVector2 scaledVector = scaleAndTranslate(vector);
       _g2d.setColor((color != null) ? color : getPointColor());
-      _g2d.fillOval(GMath.toRoundedInt(scaledVector.x() - 1), GMath.toRoundedInt(scaledVector.y() - 1), 2, 2);
+      _g2d.fillOval(GMath.toRoundedInt(scaledVector.x() - (pointSize / 2)),
+               GMath.toRoundedInt(scaledVector.y() - (pointSize / 2)), pointSize, pointSize);
    }
 
 
    private Color getRayColor() {
       return new Color(0, 255, 255, 64);
+   }
+
+
+   private Color getLineColor() {
+      return new Color(0, 255, 0, 64);
    }
 
 

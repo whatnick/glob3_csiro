@@ -37,10 +37,10 @@
 package es.igosoftware.euclid.shape;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.experimental.algorithms.GPolygonSegment2DIntersections;
 import es.igosoftware.euclid.utils.GShapeUtils;
 import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.GVectorUtils;
@@ -189,25 +189,6 @@ public final class GQuad2D
 
 
    @Override
-   public List<GTriangle2D> triangulate() {
-      //    final GTriangulate.IndexedTriangle[] iTriangles = GTriangulate.triangulate(_v0, _v1, _v2, _v3);
-      //
-      //         final List<GTriangle2D> result = new ArrayList<GTriangle2D>(iTriangles.length);
-      //         for (final GTriangulate.IndexedTriangle iTriangle : iTriangles) {
-      //            result.add(new GTriangle2D(getPoint(iTriangle._v0), getPoint(iTriangle._v1), getPoint(iTriangle._v2)));
-      //         }
-      //         return result;
-
-
-      if (isConvex()) {
-         return Collections.unmodifiableList(Arrays.asList(new GTriangle2D(_v0, _v1, _v2), new GTriangle2D(_v2, _v3, _v0)));
-      }
-
-      throw new RuntimeException("Triangulation of non convex quads is not yet supported");
-   }
-
-
-   @Override
    public double area() {
       return GShapeUtils.signedArea(_v0, _v1, _v2, _v3);
    }
@@ -223,5 +204,12 @@ public final class GQuad2D
    public boolean isClockWise() {
       return GShapeUtils.isClockWise(_v0, _v1, _v2, _v3);
    }
+
+
+   @Override
+   public List<GSegment2D> getIntersections(final GSegment2D segment) {
+      return GPolygonSegment2DIntersections.getIntersections(this, segment);
+   }
+
 
 }

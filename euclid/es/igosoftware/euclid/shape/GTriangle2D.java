@@ -41,6 +41,7 @@ import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.GDisk;
+import es.igosoftware.euclid.experimental.algorithms.GPolygonSegment2DIntersections;
 import es.igosoftware.euclid.utils.GShapeUtils;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVectorFunction;
@@ -110,14 +111,6 @@ public final class GTriangle2D
       result.add(new GSegment2D(_v2, _v1));
       result.add(new GSegment2D(_v0, _v2));
       result.add(new GSegment2D(_v1, _v0));
-      return result;
-   }
-
-
-   @Override
-   public List<GTriangle2D> triangulate() {
-      final List<GTriangle2D> result = new ArrayList<GTriangle2D>(1);
-      result.add(this);
       return result;
    }
 
@@ -198,6 +191,12 @@ public final class GTriangle2D
       final double radius = area / perimeter;
 
       return new GDisk(center, radius * 2);
+   }
+
+
+   @Override
+   public List<GSegment2D> getIntersections(final GSegment2D segment) {
+      return GPolygonSegment2DIntersections.getIntersections(this, segment);
    }
 
 

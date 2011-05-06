@@ -40,11 +40,9 @@ import java.util.Collections;
 import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
-import es.igosoftware.euclid.vector.GMutableVector2;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVectorFunction;
-import es.igosoftware.util.GMath;
 
 
 public final class GSegment2D
@@ -68,69 +66,95 @@ public final class GSegment2D
    }
 
 
-   public static enum IntersectionResult {
-      PARALLEL,
-      COINCIDENT,
-      NOT_INTERSECTING,
-      INTERSECTING;
-   }
-
-
-   private IntersectionResult getIntersection(final GSegment2D that,
-                                              final GMutableVector2<IVector2> intersection) {
-      final double thisFromX = _from.x();
-      final double thisFromY = _from.y();
-
-      final double thisToX = _to.x();
-      final double thisToY = _to.y();
-
-      final double thatFromX = that._from.x();
-      final double thatFromY = that._from.y();
-
-      final double thatToX = that._to.x();
-      final double thatToY = that._to.y();
-
-      final double denominator = ((thatToY - thatFromY) * (thisToX - thisFromX))
-                                 - ((thatToX - thatFromX) * (thisToY - thisFromY));
-
-      final double numeratorA = ((thatToX - thatFromX) * (thisFromY - thatFromY))
-                                - ((thatToY - thatFromY) * (thisFromX - thatFromX));
-
-      final double numeratorB = ((thisToX - thisFromX) * (thisFromY - thatFromY))
-                                - ((thisToY - thisFromY) * (thisFromX - thatFromX));
-
-      if (GMath.closeToZero(denominator)) {
-         if (GMath.closeToZero(numeratorA) && GMath.closeToZero(numeratorB)) {
-            if (contains(that._from) || (contains(that._to))) {
-               return IntersectionResult.COINCIDENT;
-            }
-         }
-
-         return IntersectionResult.PARALLEL;
-      }
-
-      final double ua = GMath.clamp(numeratorA / denominator, 0, 1);
-      final double ub = GMath.clamp(numeratorB / denominator, 0, 1);
-
-      final double precision = GMath.maxD(precision(), that.precision());
-      if (GMath.between(ua, 0, 1, precision) && GMath.between(ub, 0, 1, precision)) {
-         if (intersection != null) {
-            // Get the intersection point. 
-            final double intersectionX = thisFromX + ua * (thisToX - thisFromX);
-            final double intersectionY = thisFromY + ua * (thisToY - thisFromY);
-            intersection.set(new GVector2D(intersectionX, intersectionY));
-         }
-
-         return IntersectionResult.INTERSECTING;
-      }
-
-      return IntersectionResult.NOT_INTERSECTING;
-   }
+   //   public GLineIntersectionResult<IVector2> getIntersection(final GSegment2D that) {
+   //      final double thisFromX = _from.x();
+   //      final double thisFromY = _from.y();
+   //
+   //      final double thisToX = _to.x();
+   //      final double thisToY = _to.y();
+   //
+   //      final double thatFromX = that._from.x();
+   //      final double thatFromY = that._from.y();
+   //
+   //      final double thatToX = that._to.x();
+   //      final double thatToY = that._to.y();
+   //
+   //      final double denominator = ((thatToY - thatFromY) * (thisToX - thisFromX))
+   //                                 - ((thatToX - thatFromX) * (thisToY - thisFromY));
+   //
+   //      final double numeratorA = ((thatToX - thatFromX) * (thisFromY - thatFromY))
+   //                                - ((thatToY - thatFromY) * (thisFromX - thatFromX));
+   //
+   //      final double numeratorB = ((thisToX - thisFromX) * (thisFromY - thatFromY))
+   //                                - ((thisToY - thisFromY) * (thisFromX - thatFromX));
+   //
+   //      if (GMath.closeToZero(denominator)) {
+   //         if (GMath.closeToZero(numeratorA) && GMath.closeToZero(numeratorB)) {
+   //            if (contains(that._from) || (contains(that._to))) {
+   //               return new GLineIntersectionResult<IVector2>(GLineIntersectionResult.Type.COINCIDENT, null);
+   //            }
+   //         }
+   //
+   //         return new GLineIntersectionResult<IVector2>(GLineIntersectionResult.Type.PARALLEL, null);
+   //      }
+   //
+   //      final double ua = GMath.clamp(numeratorA / denominator, 0, 1);
+   //      final double ub = GMath.clamp(numeratorB / denominator, 0, 1);
+   //
+   //      final double precision = GMath.maxD(precision(), that.precision());
+   //      if (GMath.between(ua, 0, 1, precision) && GMath.between(ub, 0, 1, precision)) {
+   //         // Get the intersection point. 
+   //         final double intersectionX = thisFromX + ua * (thisToX - thisFromX);
+   //         final double intersectionY = thisFromY + ua * (thisToY - thisFromY);
+   //         final IVector2 intersection = new GVector2D(intersectionX, intersectionY);
+   //
+   //         return new GLineIntersectionResult<IVector2>(GLineIntersectionResult.Type.INTERSECTING, intersection);
+   //      }
+   //
+   //      return new GLineIntersectionResult<IVector2>(GLineIntersectionResult.Type.NOT_INTERSECTING, null);
+   //   }
 
 
    public boolean intersects(final GSegment2D that) {
-      final IntersectionResult intersects = getIntersection(that, null);
-      return (intersects == IntersectionResult.COINCIDENT) || (intersects == IntersectionResult.INTERSECTING);
+      //      final GLineIntersectionResult.Type intersectionType = getIntersection(that).getType();
+      //
+      //      return (intersectionType == GLineIntersectionResult.Type.COINCIDENT)
+      //             || (intersectionType == GLineIntersectionResult.Type.INTERSECTING);
+
+
+      final GSegment2D segment1 = this;
+      final GSegment2D segment2 = that;
+
+      final IVector2 begin = segment1._from;
+      final IVector2 end = segment1._to;
+      final IVector2 anotherBegin = segment2._from;
+      final IVector2 anotherEnd = segment2._to;
+
+      final double denominator = ((anotherEnd.y() - anotherBegin.y()) * (end.x() - begin.x()))
+                                 - ((anotherEnd.x() - anotherBegin.x()) * (end.y() - begin.y()));
+
+      final double numeratorA = ((anotherEnd.x() - anotherBegin.x()) * (begin.y() - anotherBegin.y()))
+                                - ((anotherEnd.y() - anotherBegin.y()) * (begin.x() - anotherBegin.x()));
+
+      final double numeratorB = ((end.x() - begin.x()) * (begin.y() - anotherBegin.y()))
+                                - ((end.y() - begin.y()) * (begin.x() - anotherBegin.x()));
+
+      if (denominator == 0.0) {
+         //         if ((numeratorA == 0.0) && (numeratorB == 0.0)) {
+         //            return false;
+         //         }
+
+         return false;
+      }
+
+      final double ua = numeratorA / denominator;
+      final double ub = numeratorB / denominator;
+
+      if ((ua >= 0.0) && (ua <= 1.0) && (ub >= 0.0) && (ub <= 1.0)) {
+         return true;
+      }
+
+      return false;
    }
 
 
@@ -146,54 +170,54 @@ public final class GSegment2D
    }
 
 
-   public boolean neighborWithSegment(final GSegment2D that) {
-
-      final double epsilon = 0.0001;
-
-      return neighborWithSegment(that, epsilon);
-
-   }
-
-
-   public boolean neighborWithSegment(final GSegment2D that,
-                                      final double epsilon) {
-
-      final GVector2D thisMinX = new GVector2D(_from.x(), _from.y() - epsilon);
-      final GVector2D thisMaxX = new GVector2D(_to.x(), _to.y() + epsilon);
-      final GVector2D thisMinY = new GVector2D(_from.x() - epsilon, _from.y());
-      final GVector2D thisMaxY = new GVector2D(_to.x() + epsilon, _to.y());
-
-      final GVector2D thatMinX = new GVector2D(that._from.x(), that._from.y() - epsilon);
-      final GVector2D thatMaxX = new GVector2D(that._to.x(), that._to.y() + epsilon);
-      final GVector2D thatMinY = new GVector2D(that._from.x() - epsilon, that._from.y());
-      final GVector2D thatMaxY = new GVector2D(that._to.x() + epsilon, that._to.y());
-
-      final IntersectionResult intersection = getIntersection(that, null);
-
-      if ((intersection == IntersectionResult.COINCIDENT) || (intersection == IntersectionResult.PARALLEL)) {
-
-         boolean condition1 = false;
-         boolean condition2 = false;
-         if (GMath.closeTo(_from.y(), _to.y())) { // parallel to x axis
-            condition1 = that._from.between(thisMinX, thisMaxX) || that._to.between(thisMinX, thisMaxX);
-            condition2 = _from.between(thatMinX, thatMaxX) || _to.between(thatMinX, thatMaxX);
-         }
-         else if (GMath.closeTo(_from.x(), _to.x())) { // parallel to y axis
-            condition1 = that._from.between(thisMinY, thisMaxY) || that._to.between(thisMinY, thisMaxY);
-            condition2 = _from.between(thatMinY, thatMaxY) || _to.between(thatMinY, thatMaxY);
-         }
-         else {
-            condition1 = (that._from.between(thisMinX, thisMaxX) && that._from.between(thisMinY, thisMaxY))
-                         || (that._to.between(thisMinX, thisMaxX) && that._to.between(thisMinY, thisMaxY));
-            condition2 = (_from.between(thatMinX, thatMaxX) && _from.between(thatMinY, thatMaxY))
-                         || (_to.between(thatMinX, thatMaxX) && _to.between(thatMinY, thatMaxY));
-         }
-
-         return condition1 || condition2;
-      }
-
-      return false;
-   }
+   //   public boolean neighborWithSegment(final GSegment2D that) {
+   //
+   //      final double epsilon = 0.0001;
+   //
+   //      return neighborWithSegment(that, epsilon);
+   //
+   //   }
+   //
+   //
+   //   public boolean neighborWithSegment(final GSegment2D that,
+   //                                      final double epsilon) {
+   //
+   //      final GVector2D thisMinX = new GVector2D(_from.x(), _from.y() - epsilon);
+   //      final GVector2D thisMaxX = new GVector2D(_to.x(), _to.y() + epsilon);
+   //      final GVector2D thisMinY = new GVector2D(_from.x() - epsilon, _from.y());
+   //      final GVector2D thisMaxY = new GVector2D(_to.x() + epsilon, _to.y());
+   //
+   //      final GVector2D thatMinX = new GVector2D(that._from.x(), that._from.y() - epsilon);
+   //      final GVector2D thatMaxX = new GVector2D(that._to.x(), that._to.y() + epsilon);
+   //      final GVector2D thatMinY = new GVector2D(that._from.x() - epsilon, that._from.y());
+   //      final GVector2D thatMaxY = new GVector2D(that._to.x() + epsilon, that._to.y());
+   //
+   //      final GLineIntersectionResult.Type intersectionType = getIntersection(that).getType();
+   //      if ((intersectionType == GLineIntersectionResult.Type.COINCIDENT)
+   //          || (intersectionType == GLineIntersectionResult.Type.PARALLEL)) {
+   //
+   //         final boolean condition1;
+   //         final boolean condition2;
+   //         if (GMath.closeTo(_from.y(), _to.y())) { // parallel to x axis
+   //            condition1 = that._from.between(thisMinX, thisMaxX) || that._to.between(thisMinX, thisMaxX);
+   //            condition2 = _from.between(thatMinX, thatMaxX) || _to.between(thatMinX, thatMaxX);
+   //         }
+   //         else if (GMath.closeTo(_from.x(), _to.x())) { // parallel to y axis
+   //            condition1 = that._from.between(thisMinY, thisMaxY) || that._to.between(thisMinY, thisMaxY);
+   //            condition2 = _from.between(thatMinY, thatMaxY) || _to.between(thatMinY, thatMaxY);
+   //         }
+   //         else {
+   //            condition1 = (that._from.between(thisMinX, thisMaxX) && that._from.between(thisMinY, thisMaxY))
+   //                         || (that._to.between(thisMinX, thisMaxX) && that._to.between(thisMinY, thisMaxY));
+   //            condition2 = (_from.between(thatMinX, thatMaxX) && _from.between(thatMinY, thatMaxY))
+   //                         || (_to.between(thatMinX, thatMaxX) && _to.between(thatMinY, thatMaxY));
+   //         }
+   //
+   //         return condition1 || condition2;
+   //      }
+   //
+   //      return false;
+   //   }
 
 
    @Override
@@ -227,6 +251,52 @@ public final class GSegment2D
       final IVector2 to = new GVector2D(_to.x(), center.y());
 
       return new GSegment2D(from, to);
+   }
+
+
+   public IVector2 getIntersectionPoint(final GSegment2D that) {
+      final GSegment2D segment1 = this;
+      final GSegment2D segment2 = that;
+
+      final IVector2 begin = segment1._from;
+      final IVector2 end = segment1._to;
+      final IVector2 anotherBegin = segment2._from;
+      final IVector2 anotherEnd = segment2._to;
+
+      final double denominator = ((anotherEnd.y() - anotherBegin.y()) * (end.x() - begin.x()))
+                                 - ((anotherEnd.x() - anotherBegin.x()) * (end.y() - begin.y()));
+
+      final double numeratorA = ((anotherEnd.x() - anotherBegin.x()) * (begin.y() - anotherBegin.y()))
+                                - ((anotherEnd.y() - anotherBegin.y()) * (begin.x() - anotherBegin.x()));
+
+      final double numeratorB = ((end.x() - begin.x()) * (begin.y() - anotherBegin.y()))
+                                - ((end.y() - begin.y()) * (begin.x() - anotherBegin.x()));
+
+      if (denominator == 0.0) {
+         if ((numeratorA == 0.0) && (numeratorB == 0.0)) {
+            return null;
+         }
+
+         return null;
+      }
+
+      final double ua = numeratorA / denominator;
+      final double ub = numeratorB / denominator;
+
+      if ((ua >= 0.0) && (ua <= 1.0) && (ub >= 0.0) && (ub <= 1.0)) {
+         // Get the intersection point.
+         final double x = begin.x() + ua * (end.x() - begin.x());
+         final double y = begin.y() + ua * (end.y() - begin.y());
+
+         return new GVector2D(x, y);
+      }
+
+      return null;
+   }
+
+
+   public GSegment2D translate(final IVector2 offset) {
+      return new GSegment2D(_from.add(offset), _to.add(offset));
    }
 
 

@@ -345,4 +345,25 @@ BoundsT extends IBounds<VectorT, BoundsT>
    }
 
 
+   public double getMu(final VectorT point) {
+      // from Real-Time Collision Detection - Christer Ericson 
+      //   page 129
+
+      final VectorT pointMinusFrom = point.sub(_from);
+      final VectorT vectorAB = _to.sub(_from);
+
+      final double t = vectorAB.dot(pointMinusFrom);
+      if (GMath.negativeOrZero(t)) {
+         return 0;
+      }
+
+      final double denom = vectorAB.dot(vectorAB);
+      if (GMath.greaterOrEquals(t, denom)) {
+         return 1;
+      }
+
+      return t / denom;
+   }
+
+
 }

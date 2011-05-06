@@ -40,6 +40,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.experimental.algorithms.GPolygonSegment2DIntersections;
 import es.igosoftware.euclid.utils.GShapeUtils;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
@@ -347,19 +348,6 @@ public final class GSimplePolygon2D
 
 
    @Override
-   public List<GTriangle2D> triangulate() {
-      //      final GVoronoiTriangulator.IndexedTriangle[] iTriangles = GVoronoiTriangulator.triangulate(_points);
-      //
-      //      final List<GTriangle2D> result = new ArrayList<GTriangle2D>(iTriangles.length);
-      //      for (final GVoronoiTriangulator.IndexedTriangle iTriangle : iTriangles) {
-      //         result.add(new GTriangle2D(_points.get(iTriangle._v0), _points.get(iTriangle._v1), _points.get(iTriangle._v2)));
-      //      }
-      //      return result;
-      throw new RuntimeException("Not yet implemented");
-   }
-
-
-   @Override
    public boolean isConvex() {
       if (_isConvex == null) {
          throw new RuntimeException("not yet implemented");
@@ -435,6 +423,12 @@ public final class GSimplePolygon2D
       }
 
       return perimeter;
+   }
+
+
+   @Override
+   public List<GSegment2D> getIntersections(final GSegment2D segment) {
+      return GPolygonSegment2DIntersections.getIntersections(this, segment);
    }
 
 
