@@ -31,22 +31,28 @@ public class GConditionalExpression<GeometryT extends IGeometry2D, ResultT>
                                  final IExpression<GeometryT, ResultT> trueExpression,
                                  final IExpression<GeometryT, ResultT> falseExpression) {
       GAssert.notNull(condition, "condition");
-      GAssert.notNull(trueExpression, "trueExpression");
-      GAssert.notNull(falseExpression, "falseExpression");
+      //      GAssert.notNull(trueExpression, "trueExpression");
+      //      GAssert.notNull(falseExpression, "falseExpression");
 
       _condition = condition;
-      _trueExpression = trueExpression;
-      _falseExpression = falseExpression;
+      _trueExpression = orNullExpression(trueExpression);
+      _falseExpression = orNullExpression(falseExpression);
    }
 
 
-   @Override
-   public ResultT evaluate(final GeometryT geometry,
-                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                           final IVectorial2DRenderingScaler scaler) {
-      return _condition.evaluate(geometry, feature, scaler) ? _trueExpression.evaluate(geometry, feature, scaler)
-                                                           : _falseExpression.evaluate(geometry, feature, scaler);
+   private IExpression<GeometryT, ResultT> orNullExpression(final IExpression<GeometryT, ResultT> expression) {
+      if (expression == null) {
+         return new GEmptyExpression<GeometryT, ResultT>() {
+            @Override
+            public ResultT evaluate(final GeometryT geometry,
+                                    final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                    final IVectorial2DRenderingScaler scaler) {
+               return null;
+            }
+         };
+      }
 
+      return expression;
    }
 
 
@@ -88,6 +94,16 @@ public class GConditionalExpression<GeometryT extends IGeometry2D, ResultT>
       _condition.postRender(renderExtent, projectionTool, viewport, renderingStyle, drawer);
       _trueExpression.postRender(renderExtent, projectionTool, viewport, renderingStyle, drawer);
       _falseExpression.postRender(renderExtent, projectionTool, viewport, renderingStyle, drawer);
+   }
+
+
+   @Override
+   public ResultT evaluate(final GeometryT geometry,
+                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                           final IVectorial2DRenderingScaler scaler) {
+
+      return _condition.evaluate(geometry, feature, scaler) ? _trueExpression.evaluate(geometry, feature, scaler)
+                                                           : _falseExpression.evaluate(geometry, feature, scaler);
    }
 
 

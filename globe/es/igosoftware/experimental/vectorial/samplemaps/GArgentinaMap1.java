@@ -38,6 +38,7 @@ package es.igosoftware.experimental.vectorial.samplemaps;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Collection;
 
 import javax.imageio.ImageIO;
 
@@ -53,12 +54,14 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectio
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GColorConstantExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GCompositeGeometry2DSymbolizer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GConditionalExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GCurve2DStyleExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GEmptyExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GExpressionsSymbolizer2D;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GFloatConstantExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GLengthToFloatExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GPolygon2DLabelerSymbolizerExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GPolygon2DSymbolizerExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GPolygonalChain2DSymbolizerExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GSurface2DStyleExpression;
@@ -67,6 +70,7 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.ICurve2
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.IGeometry2DSymbolizerExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.ISurface2DStyleExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.ISymbolizer2D;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSymbol2D;
 import es.igosoftware.euclid.features.GCompositeFeatureCollection;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
@@ -214,7 +218,9 @@ public class GArgentinaMap1 {
    }
 
 
-   private static GPolygon2DSymbolizerExpression createPolygonSymbolizerExpression() {
+   private static GCompositeGeometry2DSymbolizer<IPolygon2D> createPolygonSymbolizerExpression() {
+
+      final String PROVINCE = "NAME_1";
 
       final GEmptyExpression<IPolygon2D, Boolean> isArgentinaCondition = new GEmptyExpression<IPolygon2D, Boolean>() {
          private static final String COUNTRY = "NEV_Countr";
@@ -254,7 +260,21 @@ public class GArgentinaMap1 {
       final ISurface2DStyleExpression<IPolygon2D> surfaceStyleExpression = new GSurface2DStyleExpression<IPolygon2D>(
                surfaceColorExpression, new GFloatConstantExpression<IPolygon2D>(1));
 
-      return new GPolygon2DSymbolizerExpression(curveStyleExpression, surfaceStyleExpression);
+      final GPolygon2DSymbolizerExpression polygonSymbolizer = new GPolygon2DSymbolizerExpression(curveStyleExpression,
+               surfaceStyleExpression);
+
+
+      final GConditionalExpression<IPolygon2D, Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> argentinaPolygonsLabeler;
+      argentinaPolygonsLabeler = new GConditionalExpression<IPolygon2D, Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>>(
+               isArgentinaCondition, //
+               new GPolygon2DLabelerSymbolizerExpression(PROVINCE), //
+               null);
+
+      @SuppressWarnings("unchecked")
+      final GCompositeGeometry2DSymbolizer<IPolygon2D> composite = new GCompositeGeometry2DSymbolizer<IPolygon2D>(
+               polygonSymbolizer, argentinaPolygonsLabeler);
+
+      return composite;
    }
 
 
