@@ -21,13 +21,13 @@ public class GOval2DSymbol
             GSurface2DSymbol<GAxisAlignedOval2D> {
 
 
-   public GOval2DSymbol(final GAxisAlignedOval2D ellipse,
+   public GOval2DSymbol(final GAxisAlignedOval2D oval,
                         final String label,
                         final ISurface2DStyle surfaceStyle,
                         final ICurve2DStyle curveStyle,
                         final int priority,
                         final boolean groupable) {
-      super(ellipse, label, surfaceStyle, curveStyle, priority, groupable);
+      super(oval, label, surfaceStyle, curveStyle, priority, groupable);
    }
 
 
@@ -66,7 +66,7 @@ public class GOval2DSymbol
 
    @Override
    public String toString() {
-      return "GStyledEllipse2D [geometry=" + _geometry + ", surfaceStyle=" + _surfaceStyle + ", curveStyle=" + _curveStyle + "]";
+      return "GStyledEllipse2D [oval=" + _geometry + ", surfaceStyle=" + _surfaceStyle + ", curveStyle=" + _curveStyle + "]";
    }
 
 
@@ -85,9 +85,9 @@ public class GOval2DSymbol
       GVector2D sumRadius = GVector2D.ZERO;
       for (final GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> each : group) {
          final GOval2DSymbol eachEllipse = (GOval2DSymbol) each;
-         final GAxisAlignedOval2D ellipse = eachEllipse._geometry;
-         sumCenter = sumCenter.add(ellipse._center);
-         sumRadius = sumRadius.add(ellipse._radius);
+         final GAxisAlignedOval2D oval = eachEllipse._geometry;
+         sumCenter = sumCenter.add(oval._center);
+         sumRadius = sumRadius.add(oval._radius);
          maxPriority = Math.max(maxPriority, each.getPriority());
       }
 

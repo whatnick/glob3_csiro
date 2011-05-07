@@ -63,7 +63,7 @@ public class GIcon2DSymbol
 
    @Override
    public String toString() {
-      return "GStyledIcon2D [icon=" + _icon + ", opacity=" + _opacity + "]";
+      return "GStyledIcon2D [position=" + _geometry + ", icon=" + _icon + ", opacity=" + _opacity + "]";
    }
 
 

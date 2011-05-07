@@ -54,14 +54,14 @@ public class GVectorial2DSymbolsRenderer
                return -1;
             }
             else {
-               final int position1 = o1.getPosition();
-               final int position2 = o2.getPosition();
-               if (position1 > position2) {
-                  return 1;
-               }
-               else if (position1 < position2) {
-                  return -1;
-               }
+               //               final int position1 = o1.getPosition();
+               //               final int position2 = o2.getPosition();
+               //               if (position1 > position2) {
+               //                  return 1;
+               //               }
+               //               else if (position1 < position2) {
+               //                  return -1;
+               //               }
                return 0;
             }
          }

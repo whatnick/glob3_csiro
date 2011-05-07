@@ -25,7 +25,7 @@ public class GNullSurface2DStyle
 
    @Override
    public String toString() {
-      return "GNullSurface2DStyle []";
+      return "GNullSurface2DStyle";
    }
 
 

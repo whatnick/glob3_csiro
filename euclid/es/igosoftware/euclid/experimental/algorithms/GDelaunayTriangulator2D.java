@@ -66,10 +66,13 @@ public class GDelaunayTriangulator2D
                IAlgorithmParameters<IVector2> {
 
       private final IVector2[] _points;
+      private final boolean    _verbose;
 
 
-      public Parameters(final IVector2... points) {
+      public Parameters(final boolean verbose,
+                        final IVector2... points) {
          _points = points;
+         _verbose = verbose;
       }
    }
 
@@ -189,12 +192,14 @@ public class GDelaunayTriangulator2D
    }
 
 
-   public static GIndexedTriangle[] triangulate(final List<IVector2> points) {
-      return triangulate(points.toArray(new IVector2[points.size()]));
+   public static GIndexedTriangle[] triangulate(final List<IVector2> points,
+                                                final boolean verbose) {
+      return triangulate(verbose, points.toArray(new IVector2[points.size()]));
    }
 
 
-   public static GIndexedTriangle[] triangulate(final IVector2... originalPoints) {
+   public static GIndexedTriangle[] triangulate(final boolean verbose,
+                                                final IVector2... originalPoints) {
       final long start = System.currentTimeMillis();
 
       final int pointsCount = originalPoints.length;
@@ -395,8 +400,10 @@ public class GDelaunayTriangulator2D
          result[i] = new GIndexedTriangle(v0, v1, v2);
       }
 
-      System.out.println("- Created " + result.length + " triangles from " + points.length + " points in "
-                         + GStringUtils.getTimeMessage(System.currentTimeMillis() - start, false));
+      if (verbose) {
+         System.out.println("- Created " + result.length + " triangles from " + points.length + " points in "
+                            + GStringUtils.getTimeMessage(System.currentTimeMillis() - start, false));
+      }
 
       return result;
    }
@@ -418,7 +425,7 @@ public class GDelaunayTriangulator2D
 
       //      GUtils.delay(30000);
 
-      final GIndexedTriangle[] iTriangles = triangulate(points);
+      final GIndexedTriangle[] iTriangles = triangulate(true, points);
 
 
       final List<GTriangle2D> triangles = new ArrayList<GTriangle2D>(iTriangles.length);
@@ -453,7 +460,7 @@ public class GDelaunayTriangulator2D
 
    @Override
    public GDelaunayTriangulator2D.Result apply(final GDelaunayTriangulator2D.Parameters parameters) {
-      final GIndexedTriangle[] result = triangulate(parameters._points);
+      final GIndexedTriangle[] result = triangulate(parameters._verbose, parameters._points);
       return new GDelaunayTriangulator2D.Result(result);
    }
 

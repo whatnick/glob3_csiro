@@ -2,64 +2,45 @@
 
 package es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer;
 
-import java.util.Collection;
-
+import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.IGeometry2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
+import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVectorI2;
 
 
-public class GNullGeometry2DSymbolizerExpression
-         implements
-            IGeometry2DSymbolizerExpression {
-
-   public static final GNullGeometry2DSymbolizerExpression INSTANCE = new GNullGeometry2DSymbolizerExpression();
+public interface IExpression<GeometryT extends IGeometry2D, ResultT> {
 
 
-   private GNullGeometry2DSymbolizerExpression() {
-   }
+   public double getMaximumSizeInMeters(final IVectorial2DRenderingScaler scaler);
 
 
-   @Override
-   public double getMaximumSizeInMeters(final IVectorial2DRenderingScaler scaler) {
-      return 0;
-   }
+   public void preprocessFeatures(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> features);
 
 
-   @Override
-   public void preprocessFeatures(final IGlobeFeatureCollection features) {
-   }
-
-
-   @Override
    public void preRender(final IVectorI2 renderExtent,
                          final IProjectionTool projectionTool,
                          final GAxisAlignedRectangle viewport,
                          final ISymbolizer2D renderingStyle,
-                         final IVectorial2DDrawer drawer) {
-   }
+                         final IVectorial2DDrawer drawer);
 
 
-   @Override
-   public Collection evaluate(final IGeometry2D geometry,
-                              final IGlobeFeature feature,
-                              final IVectorial2DRenderingScaler scaler) {
-      return null;
-   }
+   public ResultT evaluate(final GeometryT geometry,
+                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                           final IVectorial2DRenderingScaler scaler);
 
 
-   @Override
    public void postRender(final IVectorI2 renderExtent,
                           final IProjectionTool projectionTool,
                           final GAxisAlignedRectangle viewport,
                           final ISymbolizer2D renderingStyle,
-                          final IVectorial2DDrawer drawer) {
-   }
+                          final IVectorial2DDrawer drawer);
 
 
 }

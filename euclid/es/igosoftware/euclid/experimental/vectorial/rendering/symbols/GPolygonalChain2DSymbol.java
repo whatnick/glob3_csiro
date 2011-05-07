@@ -42,7 +42,7 @@ public class GPolygonalChain2DSymbol
 
    @Override
    public String toString() {
-      return "GStyledPolygonalChain2D [geometry=" + _geometry + ", curveStyle=" + _curveStyle + "]";
+      return "GStyledPolygonalChain2D [polygonalChain=" + _geometry + ", curveStyle=" + _curveStyle + "]";
    }
 
 

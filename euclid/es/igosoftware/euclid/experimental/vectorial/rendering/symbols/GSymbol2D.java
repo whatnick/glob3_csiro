@@ -30,7 +30,7 @@ GeometryT extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>
    protected final GeometryT _geometry;
    private final String      _label;
    private final int         _priority;
-   private int               _position = -1;
+   //   private int               _position = -1;
    private final boolean     _groupable;
 
 
@@ -47,10 +47,10 @@ GeometryT extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>
    }
 
 
-   /* used from renderer */
-   public void setPosition(final int position) {
-      _position = position;
-   }
+   //   /* used from renderer */
+   //   public void setPosition(final int position) {
+   //      _position = position;
+   //   }
 
 
    public int getPriority() {
@@ -58,16 +58,16 @@ GeometryT extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>
    }
 
 
-   public int getPosition() {
-      return _position;
-   }
+   //   public int getPosition() {
+   //      return _position;
+   //   }
 
 
    public final void draw(final IVectorial2DDrawer drawer,
                           final double lodMinSize,
                           final boolean debugRendering,
                           final boolean renderLODIgnores) {
-      GAssert.isTrue(_position != -1, "_position not initialized (" + this + ")");
+      //      GAssert.isTrue(_position != -1, "_position not initialized (" + this + ")");
 
       if (isBigger(lodMinSize)) {
          draw(drawer, debugRendering);
@@ -133,7 +133,7 @@ GeometryT extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>
       if (allSameClass) {
          final GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> averageSymbol = getAverageSymbol(group,
                   label);
-         averageSymbol.setPosition(_position);
+         //         averageSymbol.setPosition(_position);
          return Collections.singleton(averageSymbol);
       }
 
@@ -151,7 +151,7 @@ GeometryT extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>
       final ISurface2DStyle surfaceStyle = new GSurface2DStyle(GColorF.RED, 0.5f);
       final ICurve2DStyle curveStyle = GNullCurve2DStyle.INSTANCE;
       final GRectangle2DSymbol rectangle = new GRectangle2DSymbol(mergedBounds, label, surfaceStyle, curveStyle, 10000000, false);
-      rectangle.setPosition(_position);
+      //      rectangle.setPosition(_position);
       result.add(rectangle);
 
       return result;

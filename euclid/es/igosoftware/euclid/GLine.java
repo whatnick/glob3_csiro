@@ -143,4 +143,10 @@ public class GLine<VectorT extends IVector<VectorT, ?>>
    }
 
 
+   @Override
+   public VectorT getCentroid() {
+      throw new RuntimeException("Lines has not a centroid");
+   }
+
+
 }

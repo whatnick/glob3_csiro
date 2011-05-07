@@ -69,7 +69,7 @@ public class GRectangle2DSymbol
 
    @Override
    public String toString() {
-      return "GStyledRectangle2D [geometry=" + _geometry + ", surfaceStyle=" + _surfaceStyle + ", curveStyle=" + _curveStyle
+      return "GStyledRectangle2D [rectangle=" + _geometry + ", surfaceStyle=" + _surfaceStyle + ", curveStyle=" + _curveStyle
              + "]";
    }
 

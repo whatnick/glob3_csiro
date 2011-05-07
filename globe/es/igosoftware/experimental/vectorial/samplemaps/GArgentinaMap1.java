@@ -69,7 +69,21 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.ICurve2DStyle;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.ISurface2DStyle;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GColorConstantExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GConditionalExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GCurve2DStyleExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GEmptyExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GExpressionsSymbolizer2D;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GFloatConstantExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GLengthToFloatExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GPolygon2DSymbolizerExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GPolygonalChain2DSymbolizerExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GSurface2DStyleExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GSymbolizer2DAbstract;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GTransformerExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.ICurve2DStyleExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.IGeometry2DSymbolizerExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.ISurface2DStyleExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.ISymbolizer2D;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GIcon2DSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GIconUtils;
@@ -84,6 +98,7 @@ import es.igosoftware.euclid.multigeometry.GMultiGeometry2D;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.shape.GSegment2D;
 import es.igosoftware.euclid.shape.IPolygon2D;
+import es.igosoftware.euclid.shape.IPolygonalChain2D;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.GVector2I;
 import es.igosoftware.euclid.vector.IVector2;
@@ -147,7 +162,7 @@ public class GArgentinaMap1 {
       final boolean renderLODIgnores = true;
       final double lodMinSize = 4;
       final int textureDimension = 256;
-      final boolean debugRendering = false;
+      final boolean debugRendering = true;
       final boolean drawBackgroundImage = false;
 
       final IVectorI2 imageExtent = calculateImageExtent(textureDimension, viewport);
@@ -217,6 +232,80 @@ public class GArgentinaMap1 {
                                                  final boolean renderLODIgnores,
                                                  final double lodMinSize,
                                                  final boolean debugRendering) throws IOException {
+
+      final boolean clusterSymbols = true;
+
+      return new GExpressionsSymbolizer2D(debugRendering, lodMinSize, renderLODIgnores, clusterSymbols,
+               createPointSymbolizerExpression(), createPolygonalChainSymbolizerExpression(), createPolygonSymbolizerExpression());
+   }
+
+
+   private static GPolygon2DSymbolizerExpression createPolygonSymbolizerExpression() {
+
+      final GEmptyExpression<IPolygon2D, Boolean> isArgentinaCondition = new GEmptyExpression<IPolygon2D, Boolean>() {
+         private static final String COUNTRY = "NEV_Countr";
+
+
+         @Override
+         public Boolean evaluate(final IPolygon2D polygon,
+                                 final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                 final IVectorial2DRenderingScaler scaler) {
+            final String country = (String) feature.getAttribute(COUNTRY);
+            return ((country != null) && country.trim().toLowerCase().equals("argentina"));
+         }
+      };
+
+
+      final GConditionalExpression<IPolygon2D, IColor> surfaceColorExpression;
+      surfaceColorExpression = new GConditionalExpression<IPolygon2D, IColor>(//
+               isArgentinaCondition, //
+               new GColorConstantExpression<IPolygon2D>(GColorF.newRGB256(204, 224, 143)), //
+               new GColorConstantExpression<IPolygon2D>(GColorF.GRAY));
+
+
+      final ICurve2DStyleExpression<IPolygon2D> curveStyleExpression;
+      curveStyleExpression = new GCurve2DStyleExpression<IPolygon2D>(//
+               new GConditionalExpression<IPolygon2D, Float>(//
+                        isArgentinaCondition, //
+                        new GLengthToFloatExpression<IPolygon2D>(GLength.Kilometer.value(2)), //
+                        new GLengthToFloatExpression<IPolygon2D>(GLength.Kilometer.value(0.5))), //
+               new GTransformerExpression<IPolygon2D, IColor, IColor>(surfaceColorExpression, new IFunction<IColor, IColor>() {
+                  @Override
+                  public IColor apply(final IColor color) {
+                     return color.muchDarker();
+                  }
+               }), //
+               new GFloatConstantExpression<IPolygon2D>(1));
+
+      final ISurface2DStyleExpression<IPolygon2D> surfaceStyleExpression = new GSurface2DStyleExpression<IPolygon2D>(
+               surfaceColorExpression, new GFloatConstantExpression<IPolygon2D>(1));
+
+      return new GPolygon2DSymbolizerExpression(curveStyleExpression, surfaceStyleExpression);
+   }
+
+
+   private static IGeometry2DSymbolizerExpression<IVector2> createPointSymbolizerExpression() {
+      final int TODO_symbolize_points;
+
+      final IGeometry2DSymbolizerExpression<IVector2> pointSymbolizerExpression = null;
+      return pointSymbolizerExpression;
+   }
+
+
+   private static GPolygonalChain2DSymbolizerExpression createPolygonalChainSymbolizerExpression() {
+      final ICurve2DStyleExpression<IPolygonalChain2D> curveStyleExpression = new GCurve2DStyleExpression<IPolygonalChain2D>(
+               new GLengthToFloatExpression<IPolygonalChain2D>(GLength.Meter.value(5)), //
+               new GColorConstantExpression<IPolygonalChain2D>(GColorF.GRAY), //
+               new GFloatConstantExpression<IPolygonalChain2D>(1));
+
+      return new GPolygonalChain2DSymbolizerExpression(curveStyleExpression);
+   }
+
+
+   private static ISymbolizer2D createSymbolizerOLD(final boolean drawBackgroundImage,
+                                                    final boolean renderLODIgnores,
+                                                    final double lodMinSize,
+                                                    final boolean debugRendering) throws IOException {
 
       final GFileName symbologyDirectory = GFileName.absolute("home", "dgd", "Desktop", "GIS Symbology");
 

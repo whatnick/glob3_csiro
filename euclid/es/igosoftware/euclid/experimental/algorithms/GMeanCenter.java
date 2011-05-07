@@ -4,7 +4,7 @@ package es.igosoftware.euclid.experimental.algorithms;
 
 import java.util.Iterator;
 
-import es.igosoftware.euclid.IBoundedGeometry;
+import es.igosoftware.euclid.IGeometry;
 import es.igosoftware.euclid.bounding.GNBall;
 import es.igosoftware.euclid.vector.IVector;
 import es.igosoftware.util.GPair;
@@ -30,12 +30,12 @@ VectorT extends IVector<VectorT, ?>
    public static class Parameters<ValueT, VectorT extends IVector<VectorT, ?>>
             implements
                IAlgorithmParameters<VectorT> {
-      private final Iterable<ValueT>                                               _iterable;
-      private final IFunction<ValueT, GPair<IBoundedGeometry<VectorT, ?>, Double>> _function;
+      private final Iterable<ValueT>                                     _iterable;
+      private final IFunction<ValueT, GPair<IGeometry<VectorT>, Double>> _function;
 
 
       public Parameters(final Iterable<ValueT> iterable,
-                        final IFunction<ValueT, GPair<IBoundedGeometry<VectorT, ?>, Double>> function) {
+                        final IFunction<ValueT, GPair<IGeometry<VectorT>, Double>> function) {
          this._iterable = iterable;
          this._function = function;
       }
@@ -68,7 +68,7 @@ VectorT extends IVector<VectorT, ?>
       while (iter.hasNext()) {
          final ValueT feature = iter.next();
 
-         final GPair<IBoundedGeometry<VectorT, ?>, Double> geom = parameters._function.apply(feature);
+         final GPair<IGeometry<VectorT>, Double> geom = parameters._function.apply(feature);
          final VectorT coord = geom._first.getCentroid();
 
          dSumWeight += geom._second;
@@ -86,7 +86,7 @@ VectorT extends IVector<VectorT, ?>
          iter = parameters._iterable.iterator();
          while (iter.hasNext()) {
             final ValueT feature = iter.next();
-            final GPair<IBoundedGeometry<VectorT, ?>, Double> geom = parameters._function.apply(feature);
+            final GPair<IGeometry<VectorT>, Double> geom = parameters._function.apply(feature);
             final VectorT coord = geom._first.getCentroid();
 
             dSumWeight += geom._second;

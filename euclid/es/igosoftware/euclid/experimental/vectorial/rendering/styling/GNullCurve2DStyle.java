@@ -32,7 +32,7 @@ public class GNullCurve2DStyle
 
    @Override
    public String toString() {
-      return "GNullCurve2DStyle []";
+      return "GNullCurve2DStyle";
    }
 
 

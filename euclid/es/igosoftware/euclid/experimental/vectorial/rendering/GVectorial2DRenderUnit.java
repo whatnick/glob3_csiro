@@ -191,11 +191,11 @@ class GVectorial2DRenderUnit
          }
 
          if (symbol.isGroupable()) {
-            symbol.setPosition(groupableSymbols.size());
+            //            symbol.setPosition(groupableSymbols.size());
             groupableSymbols.add(symbol);
          }
          else {
-            symbol.setPosition(nonGroupableSymbols.size());
+            //            symbol.setPosition(nonGroupableSymbols.size());
             nonGroupableSymbols.add(symbol);
          }
       }

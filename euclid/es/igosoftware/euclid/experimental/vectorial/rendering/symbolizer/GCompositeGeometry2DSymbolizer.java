@@ -1,0 +1,112 @@
+
+
+package es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
+import es.igosoftware.euclid.IBoundedGeometry2D;
+import es.igosoftware.euclid.IGeometry2D;
+import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.bounding.IFinite2DBounds;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSymbol2D;
+import es.igosoftware.euclid.features.IGlobeFeature;
+import es.igosoftware.euclid.features.IGlobeFeatureCollection;
+import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.euclid.vector.IVectorI2;
+import es.igosoftware.util.GAssert;
+
+
+public class GCompositeGeometry2DSymbolizer<GeometryT extends IGeometry2D>
+         implements
+            IGeometry2DSymbolizerExpression<GeometryT> {
+
+
+   private final List<IGeometry2DSymbolizerExpression<GeometryT>> _children;
+
+
+   public GCompositeGeometry2DSymbolizer(final List<IGeometry2DSymbolizerExpression<GeometryT>> children) {
+      GAssert.notEmpty(children, "children");
+
+      _children = new ArrayList<IGeometry2DSymbolizerExpression<GeometryT>>(children); // copy to avoid external modification
+   }
+
+
+   public GCompositeGeometry2DSymbolizer(final IGeometry2DSymbolizerExpression<GeometryT>... children) {
+      GAssert.notEmpty(children, "children");
+
+      _children = Arrays.asList(children);
+   }
+
+
+   @Override
+   public double getMaximumSizeInMeters(final IVectorial2DRenderingScaler scaler) {
+      double max = Double.NEGATIVE_INFINITY;
+      for (final IGeometry2DSymbolizerExpression<GeometryT> child : _children) {
+         final double current = child.getMaximumSizeInMeters(scaler);
+         if (current > max) {
+            max = current;
+         }
+      }
+      return max;
+   }
+
+
+   @Override
+   public void preprocessFeatures(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> features) {
+      for (final IGeometry2DSymbolizerExpression<GeometryT> child : _children) {
+         child.preprocessFeatures(features);
+      }
+   }
+
+
+   @Override
+   public void preRender(final IVectorI2 renderExtent,
+                         final IProjectionTool projectionTool,
+                         final GAxisAlignedRectangle viewport,
+                         final ISymbolizer2D renderingStyle,
+                         final IVectorial2DDrawer drawer) {
+      for (final IGeometry2DSymbolizerExpression<GeometryT> child : _children) {
+         child.preRender(renderExtent, projectionTool, viewport, renderingStyle, drawer);
+      }
+   }
+
+
+   @Override
+   public void postRender(final IVectorI2 renderExtent,
+                          final IProjectionTool projectionTool,
+                          final GAxisAlignedRectangle viewport,
+                          final ISymbolizer2D renderingStyle,
+                          final IVectorial2DDrawer drawer) {
+      for (final IGeometry2DSymbolizerExpression<GeometryT> child : _children) {
+         child.postRender(renderExtent, projectionTool, viewport, renderingStyle, drawer);
+      }
+   }
+
+
+   @Override
+   public Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> evaluate(final GeometryT geometry,
+                                                                                                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                                                                                               final IVectorial2DRenderingScaler scaler) {
+
+
+      final List<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> result = new ArrayList<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>();
+
+      for (final IGeometry2DSymbolizerExpression<GeometryT> child : _children) {
+         final Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> childSymbols = child.evaluate(
+                  geometry, feature, scaler);
+         if (childSymbols != null) {
+            result.addAll(childSymbols);
+         }
+      }
+
+      return result;
+   }
+
+
+}

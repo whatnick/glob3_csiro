@@ -25,11 +25,14 @@ public class GEarClippingTriangulator2D
 
 
       private final GSimplePolygon2D _polygon;
+      private final boolean          _verbose;
 
 
-      public Parameters(final GSimplePolygon2D polygon) {
+      public Parameters(final GSimplePolygon2D polygon,
+                        final boolean verbose) {
          GAssert.notNull(polygon, "polygon");
          _polygon = polygon;
+         _verbose = verbose;
       }
 
 
@@ -66,7 +69,8 @@ public class GEarClippingTriangulator2D
    }
 
 
-   public static List<GIndexedTriangle> triangulate(final GSimplePolygon2D polygon) {
+   public static List<GIndexedTriangle> triangulate(final GSimplePolygon2D polygon,
+                                                    final boolean verbose) {
       // from: http://codesuppository.blogspot.com/2009/07/polygon-triangulator-ear-clipping.html
 
       final long start = System.currentTimeMillis();
@@ -114,7 +118,6 @@ public class GEarClippingTriangulator2D
             w = 0;
          }
 
-         //         if (clip(u, v, w, nv, indices, points)) {
          if (clip(u, v, w, nv, indices, polygon)) {
             final int a = indices[u];
             final int b = indices[v];
@@ -138,8 +141,10 @@ public class GEarClippingTriangulator2D
          }
       }
 
-      System.out.println("- Created " + result.size() + " triangles from " + pointsCount + " points in "
-                         + GStringUtils.getTimeMessage(System.currentTimeMillis() - start, false));
+      if (verbose) {
+         System.out.println("- Created " + result.size() + " triangles from " + pointsCount + " points in "
+                            + GStringUtils.getTimeMessage(System.currentTimeMillis() - start, false));
+      }
 
       return result;
    }
@@ -178,7 +183,7 @@ public class GEarClippingTriangulator2D
 
    @Override
    public GEarClippingTriangulator2D.Result apply(final GEarClippingTriangulator2D.Parameters parameters) {
-      final List<GIndexedTriangle> triangles = triangulate(parameters._polygon);
+      final List<GIndexedTriangle> triangles = triangulate(parameters._polygon, parameters._verbose);
       return new GEarClippingTriangulator2D.Result(triangles);
    }
 

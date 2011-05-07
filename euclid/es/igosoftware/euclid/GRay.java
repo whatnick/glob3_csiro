@@ -157,4 +157,10 @@ public class GRay<VectorT extends IVector<VectorT, ?>>
    }
 
 
+   @Override
+   public VectorT getCentroid() {
+      throw new RuntimeException("Rays has not a centroid");
+   }
+
+
 }

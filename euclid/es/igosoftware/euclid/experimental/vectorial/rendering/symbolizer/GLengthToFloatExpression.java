@@ -2,37 +2,45 @@
 
 package es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer;
 
-import java.util.Collection;
-
+import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.IGeometry2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.bounding.IFinite2DBounds;
+import es.igosoftware.euclid.experimental.measurement.GLength;
+import es.igosoftware.euclid.experimental.measurement.IMeasure;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
+import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVectorI2;
+import es.igosoftware.util.GAssert;
 
 
-public class GNullGeometry2DSymbolizerExpression
+public class GLengthToFloatExpression<GeometryT extends IGeometry2D>
          implements
-            IGeometry2DSymbolizerExpression {
-
-   public static final GNullGeometry2DSymbolizerExpression INSTANCE = new GNullGeometry2DSymbolizerExpression();
+            IFloatExpression<GeometryT> {
 
 
-   private GNullGeometry2DSymbolizerExpression() {
+   private final IMeasure<GLength> _lenght;
+
+
+   public GLengthToFloatExpression(final IMeasure<GLength> lenght) {
+      GAssert.notNull(lenght, "lenght");
+      _lenght = lenght;
    }
 
 
    @Override
    public double getMaximumSizeInMeters(final IVectorial2DRenderingScaler scaler) {
-      return 0;
+      return _lenght.getValueInReferenceUnits();
    }
 
 
    @Override
-   public void preprocessFeatures(final IGlobeFeatureCollection features) {
+   public void preprocessFeatures(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> features) {
+
    }
 
 
@@ -42,14 +50,21 @@ public class GNullGeometry2DSymbolizerExpression
                          final GAxisAlignedRectangle viewport,
                          final ISymbolizer2D renderingStyle,
                          final IVectorial2DDrawer drawer) {
+
    }
 
 
    @Override
-   public Collection evaluate(final IGeometry2D geometry,
-                              final IGlobeFeature feature,
-                              final IVectorial2DRenderingScaler scaler) {
-      return null;
+   public Float evaluate(final GeometryT geometry,
+                         final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                         final IVectorial2DRenderingScaler scaler) {
+      final IVector2 point = geometry.getCentroid();
+
+      final double lenghtInMeters = _lenght.getValueInReferenceUnits();
+      final IVector2 pointPlusLenght = scaler.increment(point, lenghtInMeters, 0);
+
+      final float result = (float) scaler.scaleExtent(pointPlusLenght.sub(point)).x();
+      return result;
    }
 
 
@@ -59,6 +74,7 @@ public class GNullGeometry2DSymbolizerExpression
                           final GAxisAlignedRectangle viewport,
                           final ISymbolizer2D renderingStyle,
                           final IVectorial2DDrawer drawer) {
+
    }
 
 

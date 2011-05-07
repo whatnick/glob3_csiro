@@ -41,8 +41,8 @@ public class GExpressionsSymbolizer2D
                                    final boolean renderLODIgnores,
                                    final boolean clusterSymbols,
                                    final IGeometry2DSymbolizerExpression<IVector2> pointExpression,
-                                   final IGeometry2DSymbolizerExpression<ICurve2D<? extends IFinite2DBounds<?>>> curveExpression,
-                                   final IGeometry2DSymbolizerExpression<ISurface2D<? extends IFinite2DBounds<?>>> surfaceExpression) {
+                                   final IGeometry2DSymbolizerExpression<? extends ICurve2D<? extends IFinite2DBounds<?>>> curveExpression,
+                                   final IGeometry2DSymbolizerExpression<? extends ISurface2D<? extends IFinite2DBounds<?>>> surfaceExpression) {
       this(false, lodMinSize, renderLODIgnores, clusterSymbols, pointExpression, curveExpression, surfaceExpression);
    }
 
@@ -52,8 +52,8 @@ public class GExpressionsSymbolizer2D
                                    final boolean renderLODIgnores,
                                    final boolean clusterSymbols,
                                    final IGeometry2DSymbolizerExpression<IVector2> pointExpression,
-                                   final IGeometry2DSymbolizerExpression<ICurve2D<? extends IFinite2DBounds<?>>> curveExpression,
-                                   final IGeometry2DSymbolizerExpression<ISurface2D<? extends IFinite2DBounds<?>>> surfaceExpression) {
+                                   final IGeometry2DSymbolizerExpression<? extends ICurve2D<? extends IFinite2DBounds<?>>> curveExpression,
+                                   final IGeometry2DSymbolizerExpression<? extends ISurface2D<? extends IFinite2DBounds<?>>> surfaceExpression) {
 
       _debugRendering = debugRendering;
       _lodMinSize = lodMinSize;
@@ -67,7 +67,7 @@ public class GExpressionsSymbolizer2D
 
 
    @SuppressWarnings("unchecked")
-   private static <GeometryT extends IGeometry2D> IGeometry2DSymbolizerExpression<GeometryT> expressionOrNull(final IGeometry2DSymbolizerExpression<GeometryT> expression) {
+   private static <GeometryT extends IGeometry2D> IGeometry2DSymbolizerExpression<GeometryT> expressionOrNull(final IGeometry2DSymbolizerExpression<? extends GeometryT> expression) {
       return (expression == null) ? GNullGeometry2DSymbolizerExpression.INSTANCE : expression;
    }
 

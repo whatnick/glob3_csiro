@@ -105,7 +105,7 @@ public class GPolygon2DSymbol
 
    @Override
    public String toString() {
-      return "GStyledPolygon2D [geometry=" + _geometry + ", surfaceStyle=" + _surfaceStyle + ", curveStyle=" + _curveStyle + "]";
+      return "GStyledPolygon2D [polygon=" + _geometry + ", surfaceStyle=" + _surfaceStyle + ", curveStyle=" + _curveStyle + "]";
    }
 
 
