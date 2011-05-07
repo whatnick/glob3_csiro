@@ -72,4 +72,7 @@ BoundsT extends IBounds<VectorT, ?>
    public boolean closeTo(final IBoundedGeometry<VectorT, BoundsT> that);
 
 
+   public VectorT getCentroid();
+
+
 }

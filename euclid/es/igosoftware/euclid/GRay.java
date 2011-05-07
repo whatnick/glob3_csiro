@@ -100,12 +100,6 @@ public class GRay<VectorT extends IVector<VectorT, ?>>
 
 
    @Override
-   public VectorT getCentroid() {
-      throw new RuntimeException("An (infinite) ray has not a centroid");
-   }
-
-
-   @Override
    public GRay<VectorT> clone() {
       return this;
    }

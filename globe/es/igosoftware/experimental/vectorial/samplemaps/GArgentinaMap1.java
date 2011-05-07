@@ -82,6 +82,8 @@ import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.multigeometry.GMultiGeometry2D;
 import es.igosoftware.euclid.projection.GProjection;
+import es.igosoftware.euclid.shape.GSegment2D;
+import es.igosoftware.euclid.shape.IPolygon2D;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.GVector2I;
 import es.igosoftware.euclid.vector.IVector2;
@@ -146,7 +148,7 @@ public class GArgentinaMap1 {
       final double lodMinSize = 4;
       final int textureDimension = 256;
       final boolean debugRendering = false;
-      final boolean drawBackgroundImage = true;
+      final boolean drawBackgroundImage = false;
 
       final IVectorI2 imageExtent = calculateImageExtent(textureDimension, viewport);
 
@@ -167,7 +169,7 @@ public class GArgentinaMap1 {
       }
 
       final int depth = 0;
-      final int maxDepth = 4;
+      final int maxDepth = 3;
       render(renderer, renderingStyle, viewport, imageExtent, directoryName, depth, maxDepth);
 
       System.out.println();
@@ -593,7 +595,7 @@ public class GArgentinaMap1 {
 
             final String country = (String) feature.getAttribute(COUNTRY);
             if ((country != null) && country.trim().toLowerCase().equals("argentina")) {
-               final String provinceName = (String) feature.getAttribute(PROVINCE);
+               String provinceName = (String) feature.getAttribute(PROVINCE);
                if ((provinceName != null) && !provinceName.trim().isEmpty()) {
                   boolean addLabel = true;
                   if (feature.getDefaultGeometry() instanceof GMultiGeometry2D) {
@@ -606,18 +608,52 @@ public class GArgentinaMap1 {
                   }
 
                   if (addLabel) {
-                     final IVector2 position = scaler.scaleAndTranslate(surface.getCentroid());
+                     final IVector2 centroid = surface.getCentroid();
+                     final IVector2 position;
+                     if (surface.contains(centroid)) {
+                        position = scaler.scaleAndTranslate(centroid);
+                     }
+                     else {
+                        if (surface instanceof IPolygon2D) {
+                           final IPolygon2D polygon = (IPolygon2D) surface;
+                           final GAxisAlignedRectangle bounds = polygon.getBounds();
+
+                           final GSegment2D bisector1 = bounds.getVerticalBisector();
+                           final GSegment2D bisector2 = bounds.getVerticalBisectorAt(centroid.x());
+
+                           final List<GSegment2D> segments = new ArrayList<GSegment2D>();
+                           segments.addAll(polygon.getIntersections(bisector1));
+                           segments.addAll(polygon.getIntersections(bisector2));
+
+                           GSegment2D largestSegment = null;
+                           double largestLenght = Double.NEGATIVE_INFINITY;
+                           for (final GSegment2D segment : segments) {
+                              final double currentLenght = segment.length();
+                              if (currentLenght > largestLenght) {
+                                 largestLenght = currentLenght;
+                                 largestSegment = segment;
+                              }
+                           }
+
+                           if (largestSegment == null) {
+                              position = scaler.scaleAndTranslate(centroid);
+                           }
+                           else {
+                              position = scaler.scaleAndTranslate(largestSegment.getCentroid());
+                           }
+                        }
+                        else {
+                           position = scaler.scaleAndTranslate(centroid);
+                        }
+                     }
 
                      //               final Font font = new Font("Dialog", Font.BOLD, 25);
                      final Font font = new Font("Serif", Font.BOLD, 25);
 
-                     //               FontRenderContext frc;
-                     //               font.getStringBounds(provinceName, frc);
-
-                     //               LayoutPath
-                     //                                    TextLayout
-
-                     //                     final LineBreakMeasurer
+                     if (provinceName.equals("Ciudad de Buenos Aires")) {
+                        // the data-set has an error and "Buenos Aires" is labeled as "Ciudad de Buenos Aires"
+                        provinceName = "Buenos Aires";
+                     }
 
                      allSymbols.add(new GLabel2DSymbol(position, provinceName, font));
                   }

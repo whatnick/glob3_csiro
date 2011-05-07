@@ -86,12 +86,6 @@ public class GLine<VectorT extends IVector<VectorT, ?>>
 
 
    @Override
-   public VectorT getCentroid() {
-      throw new RuntimeException("An (infinite) line has not a centroid");
-   }
-
-
-   @Override
    public GLine<VectorT> clone() {
       return this;
    }

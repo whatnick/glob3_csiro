@@ -224,6 +224,18 @@ BoundsT extends GAxisAlignedOrthotope<VectorT, BoundsT>
 
    @Override
    public VectorT getCentroid() {
+      //      double totalArea = 0;
+      //      VectorT acumWeightedCentroid = null;
+      //
+      //      for (final ChildrenGeometryT child : _children) {
+      //         final double area = child.area();
+      //         totalArea += area;
+      //         final VectorT weightedCentroid = child.getCentroid().scale(area);
+      //         acumWeightedCentroid = (acumWeightedCentroid == null) ? weightedCentroid : acumWeightedCentroid.add(weightedCentroid);
+      //      }
+      //      return acumWeightedCentroid.div(totalArea);
+
+      // TODO: centroid_weighted_by_area;
       final List<VectorT> centroids = GCollections.collect(_children, new IFunction<ChildrenGeometryT, VectorT>() {
          @Override
          public VectorT apply(final ChildrenGeometryT element) {

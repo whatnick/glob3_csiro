@@ -68,7 +68,4 @@ public interface IGeometry<VectorT extends IVector<VectorT, ?>>
    public double precision();
 
 
-   public VectorT getCentroid();
-
-
 }
