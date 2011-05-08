@@ -38,6 +38,8 @@ package es.igosoftware.experimental.vectorial.samplemaps;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -69,6 +71,7 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.express
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GCreateRectangle2DExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GCurve2DStyleExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GEmptyExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GIcon2DSymbolizerExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GLengthToFloatExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GOval2DSymbolizerExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GPolygon2DLabelerSymbolizerExpression;
@@ -76,6 +79,7 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.express
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GPolygonalChain2DSymbolizerExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GRectangle2DSymbolizerExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GSurface2DStyleExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GSwitchExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GTransformerExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.IExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSymbol2DList;
@@ -94,6 +98,7 @@ import es.igosoftware.experimental.vectorial.GShapeLoader;
 import es.igosoftware.io.GFileName;
 import es.igosoftware.io.GIOUtils;
 import es.igosoftware.util.GMath;
+import es.igosoftware.util.GPair;
 import es.igosoftware.util.GStringUtils;
 import es.igosoftware.util.GUtils;
 import es.igosoftware.util.IFunction;
@@ -218,7 +223,7 @@ public class GArgentinaMap1 {
    private static ISymbolizer2D createSymbolizer(final boolean drawBackgroundImage,
                                                  final boolean renderLODIgnores,
                                                  final double lodMinSize,
-                                                 final boolean debugRendering) {
+                                                 final boolean debugRendering) throws IOException {
       final boolean clusterSymbols = true;
 
       return new GExpressionsSymbolizer2D(debugRendering, lodMinSize, renderLODIgnores, clusterSymbols,
@@ -285,27 +290,73 @@ public class GArgentinaMap1 {
    }
 
 
-   private static IExpression<IVector2, GSymbol2DList> createPointSymbolizerExpression() {
+   private static IExpression<IVector2, GSymbol2DList> createPointSymbolizerExpression() throws IOException {
       final int TODO_symbolize_points;
 
       final String CATEGORY = "CATEGORY";
       final GColorScheme colorScheme = GColorBrewerColorSchemeSet.INSTANCE.getSchemes(9, GColorScheme.Type.Qualitative).get(2);
       final IMeasure<GArea> pointArea = GArea.SquareKilometer.value(100);
 
-      final IExpression<IVector2, Boolean> isTourism = new GEmptyExpression<IVector2, Boolean>() {
-         @Override
-         public Boolean evaluate(final IVector2 geometry,
-                                 final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                 final IVectorial2DRenderingScaler scaler) {
-            final String category = (String) feature.getAttribute(CATEGORY);
-            return (category != null) && category.trim().toLowerCase().equals("tourism");
-         }
-      };
+      //      final IExpression<IVector2, Boolean> isTourism = new GEmptyExpression<IVector2, Boolean>() {
+      //         @Override
+      //         public Boolean evaluate(final IVector2 geometry,
+      //                                 final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+      //                                 final IVectorial2DRenderingScaler scaler) {
+      //            final String category = (String) feature.getAttribute(CATEGORY);
+      //            return (category != null) && category.trim().toLowerCase().equals("tourism");
+      //         }
+      //      };
 
-      return new GConditionalExpression<IVector2, GSymbol2DList>(//
-               isTourism, //
-               createRectangle2DSymbolizer(CATEGORY, colorScheme, pointArea), //
+
+      final GFileName symbologyDirectory = GFileName.absolute("home", "dgd", "Desktop", "GIS Symbology");
+
+      final BufferedImage automotiveIcon = ImageIO.read(GFileName.fromParentAndParts(symbologyDirectory, "automotive-128x128.png").asFile());
+      final BufferedImage governmentIcon = ImageIO.read(GFileName.fromParentAndParts(symbologyDirectory, "government-128x128.png").asFile());
+
+
+      final List<GPair<String, IExpression<IVector2, ? extends GSymbol2DList>>> cases = new ArrayList<GPair<String, IExpression<IVector2, ? extends GSymbol2DList>>>();
+
+      cases.add(new GPair<String, IExpression<IVector2, ? extends GSymbol2DList>>(//
+               "tourism", //
+               createRectangle2DSymbolizer(CATEGORY, colorScheme, pointArea)));
+
+      cases.add(new GPair<String, IExpression<IVector2, ? extends GSymbol2DList>>(//
+               "automotive", //
+               createIcon2DSymbolizer(pointArea, automotiveIcon, "automotive")));
+      cases.add(new GPair<String, IExpression<IVector2, ? extends GSymbol2DList>>(//
+               "government and public services", //
+               createIcon2DSymbolizer(pointArea, governmentIcon, "government")));
+
+
+      final GSwitchExpression<IVector2, String, GSymbol2DList> switchExpression = new GSwitchExpression<IVector2, String, GSymbol2DList>(
+               new GEmptyExpression<IVector2, String>() {
+                  @Override
+                  public String evaluate(final IVector2 geometry,
+                                         final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                         final IVectorial2DRenderingScaler scaler) {
+                     final String category = (String) feature.getAttribute(CATEGORY);
+                     if (category == null) {
+                        return null;
+                     }
+                     return category.trim().toLowerCase();
+                  }
+               },//
+               cases, //
                createOval2DSymbolizer(CATEGORY, colorScheme, pointArea));
+
+      return switchExpression;
+
+
+   }
+
+
+   private static IExpression<IVector2, ? extends GSymbol2DList> createIcon2DSymbolizer(final IMeasure<GArea> area,
+                                                                                        final BufferedImage icon,
+                                                                                        final String iconName) {
+      return new GIcon2DSymbolizerExpression(//
+               area, //
+               new GConstantExpression<IVector2, GPair<String, BufferedImage>>(new GPair<String, BufferedImage>(iconName, icon)), //
+               new GConstantExpression<IVector2, Float>(0.75f));
    }
 
 

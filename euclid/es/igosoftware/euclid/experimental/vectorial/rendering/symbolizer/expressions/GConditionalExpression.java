@@ -32,8 +32,6 @@ public class GConditionalExpression<GeometryT extends IGeometry2D, ResultT>
                                  final IExpression<GeometryT, ? extends ResultT> trueExpression,
                                  final IExpression<GeometryT, ? extends ResultT> falseExpression) {
       GAssert.notNull(condition, "condition");
-      //      GAssert.notNull(trueExpression, "trueExpression");
-      //      GAssert.notNull(falseExpression, "falseExpression");
 
       _condition = condition;
       _trueExpression = orNullExpression(trueExpression);
