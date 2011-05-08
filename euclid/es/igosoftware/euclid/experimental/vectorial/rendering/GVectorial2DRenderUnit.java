@@ -185,7 +185,7 @@ class GVectorial2DRenderUnit
          return;
       }
 
-      for (final GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbol : symbols) {
+      for (final GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbol : symbols.getSymbols()) {
          if (symbol == null) {
             continue;
          }

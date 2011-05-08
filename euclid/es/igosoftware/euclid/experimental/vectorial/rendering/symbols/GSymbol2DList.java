@@ -5,17 +5,13 @@ package es.igosoftware.euclid.experimental.vectorial.rendering.symbols;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
 
 
-public class GSymbol2DList
-         implements
-            Iterable<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> {
+public class GSymbol2DList {
 
    private static final long                                                                 serialVersionUID = 1L;
 
@@ -69,14 +65,8 @@ public class GSymbol2DList
    }
 
 
-   @Override
-   public Iterator<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> iterator() {
-      return getSymbols().iterator();
-   }
-
-
    public List<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getSymbols() {
-      return Collections.unmodifiableList(_symbols);
+      return _symbols;
    }
 
 

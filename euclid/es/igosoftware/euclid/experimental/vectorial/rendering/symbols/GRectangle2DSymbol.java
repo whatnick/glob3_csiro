@@ -29,7 +29,6 @@ public class GRectangle2DSymbol
                              final int priority,
                              final boolean groupable) {
       super(rectangle, label, surfaceStyle, curveStyle, priority, groupable);
-
    }
 
 

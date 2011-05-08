@@ -22,7 +22,7 @@ import es.igosoftware.util.GAssert;
 
 public class GCurve2DStyleExpression<GeometryT extends IGeometry2D>
          implements
-            ICurve2DStyleExpression<GeometryT> {
+            IExpression<GeometryT, ICurve2DStyle> {
 
 
    private final IExpression<GeometryT, Float>  _borderWidthExpression;

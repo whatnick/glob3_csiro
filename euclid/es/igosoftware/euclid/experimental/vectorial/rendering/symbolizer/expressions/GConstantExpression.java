@@ -16,15 +16,15 @@ import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVectorI2;
 
 
-public class GFloatConstantExpression<GeometryT extends IGeometry2D>
+public class GConstantExpression<GeometryT extends IGeometry2D, ResultT>
          implements
-            IFloatExpression<GeometryT> {
+            IExpression<GeometryT, ResultT> {
 
 
-   private final float _value;
+   private final ResultT _value;
 
 
-   public GFloatConstantExpression(final float value) {
+   public GConstantExpression(final ResultT value) {
       _value = value;
    }
 
@@ -37,7 +37,6 @@ public class GFloatConstantExpression<GeometryT extends IGeometry2D>
 
    @Override
    public void preprocessFeatures(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> features) {
-
    }
 
 
@@ -51,20 +50,19 @@ public class GFloatConstantExpression<GeometryT extends IGeometry2D>
 
 
    @Override
-   public Float evaluate(final GeometryT geometry,
-                         final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                         final IVectorial2DRenderingScaler scaler) {
-      return _value;
-   }
-
-
-   @Override
    public void postRender(final IVectorI2 renderExtent,
                           final IProjectionTool projectionTool,
                           final GAxisAlignedRectangle viewport,
                           final ISymbolizer2D renderingStyle,
                           final IVectorial2DDrawer drawer) {
+   }
 
+
+   @Override
+   public ResultT evaluate(final GeometryT geometry,
+                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                           final IVectorial2DRenderingScaler scaler) {
+      return _value;
    }
 
 

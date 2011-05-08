@@ -22,7 +22,7 @@ import es.igosoftware.util.GAssert;
 
 public class GSurface2DStyleExpression<GeometryT extends ISurface2D<? extends IFinite2DBounds<?>>>
          implements
-            ISurface2DStyleExpression<GeometryT> {
+            IExpression<GeometryT, ISurface2DStyle> {
 
 
    private final IExpression<GeometryT, IColor> _colorExpression;

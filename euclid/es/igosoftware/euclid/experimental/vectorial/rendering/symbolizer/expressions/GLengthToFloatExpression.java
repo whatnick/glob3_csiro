@@ -21,7 +21,7 @@ import es.igosoftware.util.GAssert;
 
 public class GLengthToFloatExpression<GeometryT extends IGeometry2D>
          implements
-            IFloatExpression<GeometryT> {
+            IExpression<GeometryT, Float> {
 
 
    private final IMeasure<GLength> _lenght;
