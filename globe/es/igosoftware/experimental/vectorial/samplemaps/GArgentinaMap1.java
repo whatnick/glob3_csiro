@@ -108,6 +108,9 @@ import es.igosoftware.utils.GWWUtils;
 public class GArgentinaMap1 {
 
 
+   private static BufferedImage _backgroundImage;
+
+
    public static void main(final String[] args) throws IOException {
       System.out.println("Argentina Map 1");
       System.out.println("---------------\n");
@@ -140,12 +143,6 @@ public class GArgentinaMap1 {
       final IGlobeFeatureCollection<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> compositeFeatures = new GCompositeFeatureCollection<IVector2, IBoundedGeometry2D<? extends IFinite2DBounds<?>>>(
                surfacesFeatures, linesFeatures, pointsFeatures);
 
-      //      System.out.println("---------------------------------------------------------------------------------------");
-      //      System.out.println(" Points  : " + pointsFeatures.size());
-      //      System.out.println(" Surfaces: " + surfacesFeatures.size());
-      //      System.out.println(" Lines   : " + linesFeatures.size());
-      //      System.out.println(" All     : " + compositeFeatures.size());
-      //      System.out.println("---------------------------------------------------------------------------------------");
 
       final GAxisAlignedRectangle viewport = pointsFeatures.getBounds().asRectangle().expandedByPercent(0.05);
 
@@ -155,7 +152,7 @@ public class GArgentinaMap1 {
       final double lodMinSize = 4;
       final int textureDimension = 256;
       final boolean debugRendering = false;
-      final boolean drawBackgroundImage = false;
+      final boolean drawBackgroundImage = true;
 
       final IVectorI2 imageExtent = calculateImageExtent(textureDimension, viewport);
 
@@ -220,6 +217,19 @@ public class GArgentinaMap1 {
    }
 
 
+   private static BufferedImage getBackgroundImage(final GAxisAlignedRectangle viewport) {
+      if (_backgroundImage == null) {
+         try {
+            _backgroundImage = createBackgroundImage(viewport);
+         }
+         catch (final IOException e) {
+            e.printStackTrace();
+         }
+      }
+      return _backgroundImage;
+   }
+
+
    private static ISymbolizer2D createSymbolizer(final boolean drawBackgroundImage,
                                                  final boolean renderLODIgnores,
                                                  final double lodMinSize,
@@ -229,7 +239,27 @@ public class GArgentinaMap1 {
       return new GExpressionsSymbolizer2D(debugRendering, lodMinSize, renderLODIgnores, clusterSymbols,
                createPointSymbolizerExpression(), //
                createPolygonalChainSymbolizerExpression(), //
-               createPolygonSymbolizerExpression());
+               createPolygonSymbolizerExpression()) {
+         @Override
+         public void preRender(final IVectorI2 renderExtent,
+                               final IProjectionTool projectionTool,
+                               final GAxisAlignedRectangle viewport,
+                               final ISymbolizer2D renderingStyle,
+                               final IVectorial2DDrawer drawer) {
+
+            drawer.fillRect(0, 0, renderExtent.x(), renderExtent.y(), GColorF.newRGB256(211, 237, 249).darker().asAWTColor());
+
+            if (drawBackgroundImage) {
+               final BufferedImage backgroundImage = getBackgroundImage(viewport);
+               if (backgroundImage != null) {
+                  drawer.drawImage(backgroundImage, 0, 0, renderExtent.x(), renderExtent.y());
+               }
+
+            }
+
+            super.preRender(renderExtent, projectionTool, viewport, renderingStyle, drawer);
+         }
+      };
    }
 
 
@@ -291,22 +321,9 @@ public class GArgentinaMap1 {
 
 
    private static IExpression<IVector2, GSymbol2DList> createPointSymbolizerExpression() throws IOException {
-      final int TODO_symbolize_points;
-
       final String CATEGORY = "CATEGORY";
       final GColorScheme colorScheme = GColorBrewerColorSchemeSet.INSTANCE.getSchemes(9, GColorScheme.Type.Qualitative).get(2);
       final IMeasure<GArea> pointArea = GArea.SquareKilometer.value(100);
-
-      //      final IExpression<IVector2, Boolean> isTourism = new GEmptyExpression<IVector2, Boolean>() {
-      //         @Override
-      //         public Boolean evaluate(final IVector2 geometry,
-      //                                 final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-      //                                 final IVectorial2DRenderingScaler scaler) {
-      //            final String category = (String) feature.getAttribute(CATEGORY);
-      //            return (category != null) && category.trim().toLowerCase().equals("tourism");
-      //         }
-      //      };
-
 
       final GFileName symbologyDirectory = GFileName.absolute("home", "dgd", "Desktop", "GIS Symbology");
 
@@ -328,7 +345,7 @@ public class GArgentinaMap1 {
                createIcon2DSymbolizer(pointArea, governmentIcon, "government")));
 
 
-      final GSwitchExpression<IVector2, String, GSymbol2DList> switchExpression = new GSwitchExpression<IVector2, String, GSymbol2DList>(
+      return new GSwitchExpression<IVector2, String, GSymbol2DList>(//
                new GEmptyExpression<IVector2, String>() {
                   @Override
                   public String evaluate(final IVector2 geometry,
@@ -343,10 +360,6 @@ public class GArgentinaMap1 {
                },//
                cases, //
                createOval2DSymbolizer(CATEGORY, colorScheme, pointArea));
-
-      return switchExpression;
-
-
    }
 
 
@@ -444,7 +457,7 @@ public class GArgentinaMap1 {
    }
 
 
-   protected static BufferedImage createBackgroundImage(final GAxisAlignedRectangle viewport) throws IOException {
+   private static BufferedImage createBackgroundImage(final GAxisAlignedRectangle viewport) throws IOException {
       //      final GFileName blueMarbleFileName = GFileName.absolute("home", "dgd", "Desktop", "Data For Maps", "bluemarble",
       //      "2_no_clouds_8k.jpg");
       //      final GFileName blueMarbleFileName = GFileName.absolute("home", "dgd", "Desktop", "Data For Maps", "bluemarble",
