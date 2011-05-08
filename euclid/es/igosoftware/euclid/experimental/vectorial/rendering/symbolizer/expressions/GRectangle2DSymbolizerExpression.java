@@ -35,17 +35,23 @@ public class GRectangle2DSymbolizerExpression<FeatureGeometryT extends IGeometry
 
 
    @Override
+   public final double getMaximumSizeInMeters(final IVectorial2DRenderingScaler scaler) {
+      return Math.max(super.getMaximumSizeInMeters(scaler), _toRectangleExpression.getMaximumSizeInMeters(scaler));
+   }
+
+
+   @Override
    public GSymbol2DList evaluate(final FeatureGeometryT geometry,
                                  final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                  final IVectorial2DRenderingScaler scaler) {
 
       final GAxisAlignedRectangle rectangle = _toRectangleExpression.evaluate(geometry, feature, scaler);
+      final GAxisAlignedRectangle scaledRectangle = rectangle.transform(scaler);
 
-      //      final GAxisAlignedRectangle scaledRectangle = rectangle.transform(scaler);
       final ICurve2DStyle curveStyle = _curveStyleExpression.evaluate(rectangle, feature, scaler);
       final ISurface2DStyle surfaceStyle = _surfaceStyleExpression.evaluate(rectangle, feature, scaler);
 
-      return new GSymbol2DList(new GRectangle2DSymbol(rectangle, null, surfaceStyle, curveStyle, 10000, true));
+      return new GSymbol2DList(new GRectangle2DSymbol(scaledRectangle, null, surfaceStyle, curveStyle, 10000, true));
    }
 
 

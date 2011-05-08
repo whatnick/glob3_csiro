@@ -23,14 +23,14 @@ public class GConditionalExpression<GeometryT extends IGeometry2D, ResultT>
             IExpression<GeometryT, ResultT> {
 
 
-   private final IExpression<GeometryT, Boolean> _condition;
-   private final IExpression<GeometryT, ResultT> _trueExpression;
-   private final IExpression<GeometryT, ResultT> _falseExpression;
+   private final IExpression<GeometryT, Boolean>           _condition;
+   private final IExpression<GeometryT, ? extends ResultT> _trueExpression;
+   private final IExpression<GeometryT, ? extends ResultT> _falseExpression;
 
 
    public GConditionalExpression(final IExpression<GeometryT, Boolean> condition,
-                                 final IExpression<GeometryT, ResultT> trueExpression,
-                                 final IExpression<GeometryT, ResultT> falseExpression) {
+                                 final IExpression<GeometryT, ? extends ResultT> trueExpression,
+                                 final IExpression<GeometryT, ? extends ResultT> falseExpression) {
       GAssert.notNull(condition, "condition");
       //      GAssert.notNull(trueExpression, "trueExpression");
       //      GAssert.notNull(falseExpression, "falseExpression");
@@ -42,7 +42,7 @@ public class GConditionalExpression<GeometryT extends IGeometry2D, ResultT>
 
 
    @SuppressWarnings("unchecked")
-   private IExpression<GeometryT, ResultT> orNullExpression(final IExpression<GeometryT, ResultT> expression) {
+   private IExpression<GeometryT, ResultT> orNullExpression(final IExpression<GeometryT, ? extends ResultT> expression) {
       return (expression == null) ? GNullExpression.INSTANCE : expression;
    }
 

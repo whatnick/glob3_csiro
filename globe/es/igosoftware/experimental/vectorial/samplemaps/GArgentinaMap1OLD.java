@@ -60,7 +60,6 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorial2DRender
 import es.igosoftware.euclid.experimental.vectorial.rendering.coloring.GColorBrewerColorSchemeSet;
 import es.igosoftware.euclid.experimental.vectorial.rendering.coloring.GColorScheme;
 import es.igosoftware.euclid.experimental.vectorial.rendering.coloring.GUniqueValuesColorizer;
-import es.igosoftware.euclid.experimental.vectorial.rendering.coloring.IColorizer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.GJava2DVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
@@ -69,6 +68,7 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.styling.ICurve2DSt
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.ISurface2DStyle;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GSymbolizer2DAbstract;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.ISymbolizer2D;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.IExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GIcon2DSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GIconUtils;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GLabel2DSymbol;
@@ -246,17 +246,18 @@ public class GArgentinaMap1OLD {
             return _backgroundImage;
          }
 
-         private final IColorizer _pointColorizer = new GUniqueValuesColorizer(CATEGORY, colorScheme, GColorI.WHITE, true,
-                                                           new IFunction<Object, String>() {
-                                                              @Override
-                                                              public String apply(final Object element) {
-                                                                 if (element == null) {
-                                                                    return "";
-                                                                 }
+         private final IExpression<IVector2, IColor> _pointColorizer = new GUniqueValuesColorizer<IVector2>(CATEGORY,
+                                                                              colorScheme, GColorI.WHITE, true,
+                                                                              new IFunction<Object, String>() {
+                                                                                 @Override
+                                                                                 public String apply(final Object element) {
+                                                                                    if (element == null) {
+                                                                                       return "";
+                                                                                    }
 
-                                                                 return element.toString().trim().toLowerCase();
-                                                              }
-                                                           });
+                                                                                    return element.toString().trim().toLowerCase();
+                                                                                 }
+                                                                              });
 
 
          //         private int                 _categoryIndex  = -1;
@@ -430,7 +431,7 @@ public class GArgentinaMap1OLD {
          protected IColor getPointColor(final IVector2 point,
                                         final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                         final IVectorial2DRenderingScaler scaler) {
-            return _pointColorizer.getColor(feature);
+            return _pointColorizer.evaluate(point, feature, scaler);
             //            return GColorF.RED;
          }
 
@@ -439,7 +440,7 @@ public class GArgentinaMap1OLD {
          protected IColor getPointBorderColor(final IVector2 point,
                                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                               final IVectorial2DRenderingScaler scaler) {
-            return _pointColorizer.getColor(feature).muchDarker();
+            return getPointColor(point, feature, scaler).muchDarker();
          }
 
 

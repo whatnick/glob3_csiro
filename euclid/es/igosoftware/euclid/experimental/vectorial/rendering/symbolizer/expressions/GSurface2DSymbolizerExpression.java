@@ -45,7 +45,7 @@ GeometryT extends ISurface2D<? extends IFinite2DBounds<?>>
 
 
    @Override
-   public final double getMaximumSizeInMeters(final IVectorial2DRenderingScaler scaler) {
+   public double getMaximumSizeInMeters(final IVectorial2DRenderingScaler scaler) {
       return Math.max(_curveStyleExpression.getMaximumSizeInMeters(scaler),
                _surfaceStyleExpression.getMaximumSizeInMeters(scaler));
    }

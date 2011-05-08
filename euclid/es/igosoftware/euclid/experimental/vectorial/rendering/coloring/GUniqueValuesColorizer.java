@@ -10,12 +10,15 @@ import java.util.List;
 import java.util.Set;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
+import es.igosoftware.euclid.IGeometry2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.colors.IColor;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.ISymbolizer2D;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.IExpression;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.vector.IVector2;
@@ -24,9 +27,9 @@ import es.igosoftware.util.GAssert;
 import es.igosoftware.util.IFunction;
 
 
-public class GUniqueValuesColorizer
-         extends
-            GColorizerAbstract {
+public class GUniqueValuesColorizer<GeometryT extends IGeometry2D>
+         implements
+            IExpression<GeometryT, IColor> {
 
    private final String                                                                                  _fieldName;
    private boolean                                                                                       _hasField;
@@ -100,18 +103,6 @@ public class GUniqueValuesColorizer
 
 
    @Override
-   public IColor getColor(final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature) {
-      if (!_hasField) {
-         return _defaultColor;
-      }
-
-      final String value = _labeler.apply(feature.getAttribute(_fieldName));
-      final IColor color = _colors.get(value);
-      return (color == null) ? _defaultColor : color;
-   }
-
-
-   @Override
    public void preRender(final IVectorI2 renderExtent,
                          final IProjectionTool projectionTool,
                          final GAxisAlignedRectangle viewport,
@@ -158,6 +149,26 @@ public class GUniqueValuesColorizer
       //      }
       //
       //      g2d.dispose();
+   }
+
+
+   @Override
+   public double getMaximumSizeInMeters(final IVectorial2DRenderingScaler scaler) {
+      return 0;
+   }
+
+
+   @Override
+   public IColor evaluate(final GeometryT geometry,
+                          final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                          final IVectorial2DRenderingScaler scaler) {
+      if (!_hasField) {
+         return _defaultColor;
+      }
+
+      final String value = _labeler.apply(feature.getAttribute(_fieldName));
+      final IColor color = _colors.get(value);
+      return (color == null) ? _defaultColor : color;
    }
 
 

@@ -45,11 +45,15 @@ import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.colors.GColorF;
+import es.igosoftware.euclid.colors.GColorI;
 import es.igosoftware.euclid.colors.IColor;
 import es.igosoftware.euclid.experimental.measurement.GArea;
 import es.igosoftware.euclid.experimental.measurement.GLength;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorial2DRenderer;
+import es.igosoftware.euclid.experimental.vectorial.rendering.coloring.GColorBrewerColorSchemeSet;
+import es.igosoftware.euclid.experimental.vectorial.rendering.coloring.GColorScheme;
+import es.igosoftware.euclid.experimental.vectorial.rendering.coloring.GUniqueValuesColorizer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.GJava2DVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
@@ -61,9 +65,12 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.ISymbol
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GCompositeGeometry2DSymbolizer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GConditionalExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GConstantExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GCreateOval2DExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GCreateRectangle2DExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GCurve2DStyleExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GEmptyExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GLengthToFloatExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GOval2DSymbolizerExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GPolygon2DLabelerSymbolizerExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GPolygon2DSymbolizerExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GPolygonalChain2DSymbolizerExpression;
@@ -71,12 +78,12 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.express
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GSurface2DStyleExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GTransformerExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.IExpression;
-import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.IGeometry2DSymbolizerExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSymbol2DList;
 import es.igosoftware.euclid.features.GCompositeFeatureCollection;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
+import es.igosoftware.euclid.shape.GAxisAlignedOval2D;
 import es.igosoftware.euclid.shape.IPolygon2D;
 import es.igosoftware.euclid.shape.IPolygonalChain2D;
 import es.igosoftware.euclid.vector.GVector2D;
@@ -211,16 +218,17 @@ public class GArgentinaMap1 {
    private static ISymbolizer2D createSymbolizer(final boolean drawBackgroundImage,
                                                  final boolean renderLODIgnores,
                                                  final double lodMinSize,
-                                                 final boolean debugRendering) throws IOException {
-
+                                                 final boolean debugRendering) {
       final boolean clusterSymbols = true;
 
       return new GExpressionsSymbolizer2D(debugRendering, lodMinSize, renderLODIgnores, clusterSymbols,
-               createPointSymbolizerExpression(), createPolygonalChainSymbolizerExpression(), createPolygonSymbolizerExpression());
+               createPointSymbolizerExpression(), //
+               createPolygonalChainSymbolizerExpression(), //
+               createPolygonSymbolizerExpression());
    }
 
 
-   private static GCompositeGeometry2DSymbolizer<IPolygon2D> createPolygonSymbolizerExpression() {
+   private static IExpression<IPolygon2D, GSymbol2DList> createPolygonSymbolizerExpression() {
 
       final String PROVINCE = "NAME_1";
 
@@ -238,15 +246,13 @@ public class GArgentinaMap1 {
       };
 
 
-      final GConditionalExpression<IPolygon2D, IColor> surfaceColorExpression;
-      surfaceColorExpression = new GConditionalExpression<IPolygon2D, IColor>(//
+      final GConditionalExpression<IPolygon2D, IColor> surfaceColorExpression = new GConditionalExpression<IPolygon2D, IColor>(//
                isArgentinaCondition, //
                new GConstantExpression<IPolygon2D, IColor>(GColorF.newRGB256(204, 224, 143)), //
                new GConstantExpression<IPolygon2D, IColor>(GColorF.GRAY));
 
 
-      final GCurve2DStyleExpression<IPolygon2D> curveStyleExpression;
-      curveStyleExpression = new GCurve2DStyleExpression<IPolygon2D>(//
+      final GCurve2DStyleExpression<IPolygon2D> curveStyleExpression = new GCurve2DStyleExpression<IPolygon2D>(//
                new GConditionalExpression<IPolygon2D, Float>(//
                         isArgentinaCondition, //
                         new GLengthToFloatExpression<IPolygon2D>(GLength.Kilometer.value(2)), //
@@ -266,9 +272,8 @@ public class GArgentinaMap1 {
       final GPolygon2DSymbolizerExpression polygonSymbolizer = new GPolygon2DSymbolizerExpression(curveStyleExpression,
                surfaceStyleExpression);
 
-
-      final GConditionalExpression<IPolygon2D, GSymbol2DList> argentinaPolygonsLabeler;
-      argentinaPolygonsLabeler = new GConditionalExpression<IPolygon2D, GSymbol2DList>(isArgentinaCondition, //
+      final GConditionalExpression<IPolygon2D, GSymbol2DList> argentinaPolygonsLabeler = new GConditionalExpression<IPolygon2D, GSymbol2DList>(//
+               isArgentinaCondition, //
                new GPolygon2DLabelerSymbolizerExpression(PROVINCE), //
                null);
 
@@ -280,60 +285,47 @@ public class GArgentinaMap1 {
    }
 
 
-   private static IGeometry2DSymbolizerExpression<IVector2> createPointSymbolizerExpression() {
+   private static IExpression<IVector2, GSymbol2DList> createPointSymbolizerExpression() {
       final int TODO_symbolize_points;
-      //      final IGeometry2DSymbolizerExpression<IVector2> pointSymbolizerExpression = null;
-      //      return pointSymbolizerExpression;
 
-      //      final IMeasure<GArea> pointSize = GArea.SquareKilometer.value(30);
-      final IMeasure<GArea> pointSize = GArea.SquareKilometer.value(100);
+      final String CATEGORY = "CATEGORY";
+      final GColorScheme colorScheme = GColorBrewerColorSchemeSet.INSTANCE.getSchemes(9, GColorScheme.Type.Qualitative).get(2);
+      final IMeasure<GArea> pointArea = GArea.SquareKilometer.value(100);
 
-      final IExpression<IVector2, GAxisAlignedRectangle> toRectangleExpression = new GEmptyExpression<IVector2, GAxisAlignedRectangle>() {
-
+      final IExpression<IVector2, Boolean> isTourism = new GEmptyExpression<IVector2, Boolean>() {
          @Override
-         public double getMaximumSizeInMeters(final IVectorial2DRenderingScaler scaler) {
-            return pointSize.getValueInReferenceUnits() * 2;
-         }
-
-
-         private IVector2 calculateRectangleExtent(final IVector2 point,
-                                                   final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                                   final IVectorial2DRenderingScaler scaler) {
-            final double areaInSquaredMeters = pointSize.getValueInReferenceUnits();
-
-            final double radius = GMath.sqrt(areaInSquaredMeters);
-            final IVector2 pointPlusRadius = scaler.increment(point, radius, radius);
-            return scaler.scaleExtent(pointPlusRadius.sub(point)).scale(2); // radius times 2 (for extent)
-         }
-
-
-         private IVector2 calculatePosition(final IVector2 point,
-                                            final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                            final IVectorial2DRenderingScaler scaler,
-                                            final IVector2 extent) {
-            final IVector2 scaledPoint = scaler.scaleAndTranslate(point);
-            return scaledPoint.sub(extent.div(2));
-         }
-
-
-         @Override
-         public GAxisAlignedRectangle evaluate(final IVector2 point,
-                                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                               final IVectorial2DRenderingScaler scaler) {
-            final IVector2 extent = calculateRectangleExtent(point, feature, scaler);
-            final IVector2 position = calculatePosition(point, feature, scaler, extent);
-
-            return new GAxisAlignedRectangle(position, position.add(extent));
+         public Boolean evaluate(final IVector2 geometry,
+                                 final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                 final IVectorial2DRenderingScaler scaler) {
+            final String category = (String) feature.getAttribute(CATEGORY);
+            return (category != null) && category.trim().toLowerCase().equals("tourism");
          }
       };
 
+      return new GConditionalExpression<IVector2, GSymbol2DList>(//
+               isTourism, //
+               createRectangle2DSymbolizer(CATEGORY, colorScheme, pointArea), //
+               createOval2DSymbolizer(CATEGORY, colorScheme, pointArea));
+   }
 
-      final GConstantExpression<GAxisAlignedRectangle, IColor> surfaceColorExpression = new GConstantExpression<GAxisAlignedRectangle, IColor>(
-               GColorF.RED);
+
+   private static GRectangle2DSymbolizerExpression<IVector2> createRectangle2DSymbolizer(final String fieldName,
+                                                                                         final GColorScheme colorScheme,
+                                                                                         final IMeasure<GArea> pointArea) {
+      final GUniqueValuesColorizer<GAxisAlignedRectangle> surfaceColorExpression = new GUniqueValuesColorizer<GAxisAlignedRectangle>(
+               fieldName, colorScheme, GColorI.WHITE, true, new IFunction<Object, String>() {
+                  @Override
+                  public String apply(final Object element) {
+                     if (element == null) {
+                        return "";
+                     }
+
+                     return element.toString().trim().toLowerCase();
+                  }
+               });
 
       final IExpression<GAxisAlignedRectangle, ICurve2DStyle> curveStyleExpression = new GCurve2DStyleExpression<GAxisAlignedRectangle>(
-      //               new GLengthToFloatExpression<GAxisAlignedRectangle>(GLength.Kilometer.value(1)), //
-               new GConstantExpression<GAxisAlignedRectangle, Float>(2f), //
+               new GLengthToFloatExpression<GAxisAlignedRectangle>(GLength.Kilometer.value(1)), //
                new GTransformerExpression<GAxisAlignedRectangle, IColor, IColor>(surfaceColorExpression,
                         new IFunction<IColor, IColor>() {
                            @Override
@@ -347,11 +339,51 @@ public class GArgentinaMap1 {
                surfaceColorExpression, //
                new GConstantExpression<GAxisAlignedRectangle, Float>(0.75f));
 
-      return new GRectangle2DSymbolizerExpression<IVector2>(toRectangleExpression, curveStyleExpression, surfaceStyleExpression);
+      return new GRectangle2DSymbolizerExpression<IVector2>(//
+               new GCreateRectangle2DExpression(pointArea), //
+               curveStyleExpression, //
+               surfaceStyleExpression);
    }
 
 
-   private static GPolygonalChain2DSymbolizerExpression createPolygonalChainSymbolizerExpression() {
+   private static GOval2DSymbolizerExpression<IVector2> createOval2DSymbolizer(final String fieldName,
+                                                                               final GColorScheme colorScheme,
+                                                                               final IMeasure<GArea> pointArea) {
+      final GUniqueValuesColorizer<GAxisAlignedOval2D> surfaceColorExpression = new GUniqueValuesColorizer<GAxisAlignedOval2D>(
+               fieldName, colorScheme, GColorI.WHITE, true, new IFunction<Object, String>() {
+                  @Override
+                  public String apply(final Object element) {
+                     if (element == null) {
+                        return "";
+                     }
+
+                     return element.toString().trim().toLowerCase();
+                  }
+               });
+
+      final IExpression<GAxisAlignedOval2D, ICurve2DStyle> curveStyleExpression = new GCurve2DStyleExpression<GAxisAlignedOval2D>(
+               new GLengthToFloatExpression<GAxisAlignedOval2D>(GLength.Kilometer.value(1)), //
+               new GTransformerExpression<GAxisAlignedOval2D, IColor, IColor>(surfaceColorExpression,
+                        new IFunction<IColor, IColor>() {
+                           @Override
+                           public IColor apply(final IColor color) {
+                              return color.muchDarker();
+                           }
+                        }), //
+               new GConstantExpression<GAxisAlignedOval2D, Float>(0.75f));
+
+      final IExpression<GAxisAlignedOval2D, ISurface2DStyle> surfaceStyleExpression = new GSurface2DStyleExpression<GAxisAlignedOval2D>(
+               surfaceColorExpression, //
+               new GConstantExpression<GAxisAlignedOval2D, Float>(0.75f));
+
+      return new GOval2DSymbolizerExpression<IVector2>(//
+               new GCreateOval2DExpression(pointArea), //
+               curveStyleExpression, //
+               surfaceStyleExpression);
+   }
+
+
+   private static IExpression<IPolygonalChain2D, GSymbol2DList> createPolygonalChainSymbolizerExpression() {
       final GCurve2DStyleExpression<IPolygonalChain2D> curveStyleExpression = new GCurve2DStyleExpression<IPolygonalChain2D>(
                new GLengthToFloatExpression<IPolygonalChain2D>(GLength.Meter.value(5)), //
                new GConstantExpression<IPolygonalChain2D, IColor>(GColorF.GRAY), //
