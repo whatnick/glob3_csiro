@@ -13,8 +13,8 @@ import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
-import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GNullGeometry2DSymbolizerExpression;
-import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.IGeometry2DSymbolizerExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GNullExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.IExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSymbol2D;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
@@ -29,22 +29,22 @@ public class GExpressionsSymbolizer2D
             ISymbolizer2D {
 
 
-   final private boolean                                                                   _debugRendering;
-   final private double                                                                    _lodMinSize;
-   final private boolean                                                                   _renderLODIgnores;
-   final private boolean                                                                   _clusterSymbols;
+   final private boolean                                                                                                                                            _debugRendering;
+   final private double                                                                                                                                             _lodMinSize;
+   final private boolean                                                                                                                                            _renderLODIgnores;
+   final private boolean                                                                                                                                            _clusterSymbols;
 
-   final private IGeometry2DSymbolizerExpression<IVector2>                                 _pointExpression;
-   final private IGeometry2DSymbolizerExpression<ICurve2D<? extends IFinite2DBounds<?>>>   _curveExpression;
-   final private IGeometry2DSymbolizerExpression<ISurface2D<? extends IFinite2DBounds<?>>> _surfaceExpression;
+   final private IExpression<IVector2, Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>>                                 _pointExpression;
+   final private IExpression<ICurve2D<? extends IFinite2DBounds<?>>, Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>>   _curveExpression;
+   final private IExpression<ISurface2D<? extends IFinite2DBounds<?>>, Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> _surfaceExpression;
 
 
    public GExpressionsSymbolizer2D(final double lodMinSize,
                                    final boolean renderLODIgnores,
                                    final boolean clusterSymbols,
-                                   final IGeometry2DSymbolizerExpression<IVector2> pointExpression,
-                                   final IGeometry2DSymbolizerExpression<? extends ICurve2D<? extends IFinite2DBounds<?>>> curveExpression,
-                                   final IGeometry2DSymbolizerExpression<? extends ISurface2D<? extends IFinite2DBounds<?>>> surfaceExpression) {
+                                   final IExpression<IVector2, Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> pointExpression,
+                                   final IExpression<? extends ICurve2D<? extends IFinite2DBounds<?>>, Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> curveExpression,
+                                   final IExpression<? extends ISurface2D<? extends IFinite2DBounds<?>>, Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> surfaceExpression) {
       this(false, lodMinSize, renderLODIgnores, clusterSymbols, pointExpression, curveExpression, surfaceExpression);
    }
 
@@ -53,9 +53,9 @@ public class GExpressionsSymbolizer2D
                                    final double lodMinSize,
                                    final boolean renderLODIgnores,
                                    final boolean clusterSymbols,
-                                   final IGeometry2DSymbolizerExpression<IVector2> pointExpression,
-                                   final IGeometry2DSymbolizerExpression<? extends ICurve2D<? extends IFinite2DBounds<?>>> curveExpression,
-                                   final IGeometry2DSymbolizerExpression<? extends ISurface2D<? extends IFinite2DBounds<?>>> surfaceExpression) {
+                                   final IExpression<IVector2, Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> pointExpression,
+                                   final IExpression<? extends ICurve2D<? extends IFinite2DBounds<?>>, Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> curveExpression,
+                                   final IExpression<? extends ISurface2D<? extends IFinite2DBounds<?>>, Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> surfaceExpression) {
 
       _debugRendering = debugRendering;
       _lodMinSize = lodMinSize;
@@ -69,8 +69,8 @@ public class GExpressionsSymbolizer2D
 
 
    @SuppressWarnings("unchecked")
-   private static <GeometryT extends IGeometry2D> IGeometry2DSymbolizerExpression<GeometryT> expressionOrNull(final IGeometry2DSymbolizerExpression<? extends GeometryT> expression) {
-      return (expression == null) ? GNullGeometry2DSymbolizerExpression.INSTANCE : expression;
+   private static <GeometryT extends IGeometry2D> IExpression<GeometryT, Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> expressionOrNull(final IExpression<? extends GeometryT, Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> expression) {
+      return (expression == null) ? GNullExpression.INSTANCE : expression;
    }
 
 

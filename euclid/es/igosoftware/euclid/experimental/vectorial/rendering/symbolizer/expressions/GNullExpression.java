@@ -2,8 +2,6 @@
 
 package es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions;
 
-import java.util.Collection;
-
 import es.igosoftware.euclid.IGeometry2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
@@ -15,14 +13,16 @@ import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.vector.IVectorI2;
 
 
-public class GNullGeometry2DSymbolizerExpression
+public class GNullExpression
          implements
-            IGeometry2DSymbolizerExpression {
-
-   public static final GNullGeometry2DSymbolizerExpression INSTANCE = new GNullGeometry2DSymbolizerExpression();
+            IExpression {
 
 
-   private GNullGeometry2DSymbolizerExpression() {
+   public static final GNullExpression INSTANCE = new GNullExpression();
+
+
+   private GNullExpression() {
+
    }
 
 
@@ -47,9 +47,9 @@ public class GNullGeometry2DSymbolizerExpression
 
 
    @Override
-   public Collection evaluate(final IGeometry2D geometry,
-                              final IGlobeFeature feature,
-                              final IVectorial2DRenderingScaler scaler) {
+   public Object evaluate(final IGeometry2D geometry,
+                          final IGlobeFeature feature,
+                          final IVectorial2DRenderingScaler scaler) {
       return null;
    }
 

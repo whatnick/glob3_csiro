@@ -41,19 +41,9 @@ public class GConditionalExpression<GeometryT extends IGeometry2D, ResultT>
    }
 
 
+   @SuppressWarnings("unchecked")
    private IExpression<GeometryT, ResultT> orNullExpression(final IExpression<GeometryT, ResultT> expression) {
-      if (expression == null) {
-         return new GEmptyExpression<GeometryT, ResultT>() {
-            @Override
-            public ResultT evaluate(final GeometryT geometry,
-                                    final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                    final IVectorial2DRenderingScaler scaler) {
-               return null;
-            }
-         };
-      }
-
-      return expression;
+      return (expression == null) ? GNullExpression.INSTANCE : expression;
    }
 
 
