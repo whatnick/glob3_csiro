@@ -2,9 +2,6 @@
 
 package es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
@@ -15,7 +12,7 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.styling.ICurve2DSt
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.ISurface2DStyle;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.ISymbolizer2D;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GPolygon2DSymbol;
-import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSymbol2D;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSymbol2DList;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.shape.IPolygon2D;
@@ -69,14 +66,14 @@ public class GPolygon2DSymbolizerExpression
 
 
    @Override
-   public Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> evaluate(final IPolygon2D polygon,
-                                                                                                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                                                                                               final IVectorial2DRenderingScaler scaler) {
+   public GSymbol2DList evaluate(final IPolygon2D polygon,
+                                 final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                 final IVectorial2DRenderingScaler scaler) {
       final IPolygon2D scaledPolygon = polygon.transform(scaler);
       final ICurve2DStyle curveStyle = _curveStyleExpression.evaluate(polygon, feature, scaler);
       final ISurface2DStyle surfaceStyle = _surfaceStyleExpression.evaluate(polygon, feature, scaler);
 
-      return Collections.singleton(new GPolygon2DSymbol(scaledPolygon, null, surfaceStyle, curveStyle, 10));
+      return new GSymbol2DList(new GPolygon2DSymbol(scaledPolygon, null, surfaceStyle, curveStyle, 10));
    }
 
 

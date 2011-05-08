@@ -17,6 +17,7 @@ import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.ISymbolizer2D;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSymbol2D;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSymbol2DList;
 import es.igosoftware.euclid.ntree.GElementGeometryPair;
 import es.igosoftware.euclid.ntree.GGTInnerNode;
 import es.igosoftware.euclid.ntree.GGTLeafNode;
@@ -120,9 +121,6 @@ public class GVectorial2DSymbolsRenderer
 
 
    private void drawSymbolsIndividually(final List<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> symbols) {
-      //      final List<GStyled2DGeometry<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> sortedSymbols = GCollections.asSorted(
-      //               symbols, PRIORITY_COMPARATOR);
-      //      
       Collections.sort(symbols, PRIORITY_COMPARATOR);
 
       for (final GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> symbol : symbols) {
@@ -144,8 +142,7 @@ public class GVectorial2DSymbolsRenderer
 
    private void drawSymbolsInClusters() {
 
-      final List<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> allSymbols = new ArrayList<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>(
-               _groupableSymbols.size() + _nonGroupableSymbols.size());
+      final GSymbol2DList allSymbols = new GSymbol2DList(_groupableSymbols.size() + _nonGroupableSymbols.size());
 
       final Collection<Set<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> clusters = createClusters(
                _groupableSymbols, false);
@@ -180,11 +177,11 @@ public class GVectorial2DSymbolsRenderer
       _nonGroupableSymbols.clear(); // release some memory
 
 
-      drawSymbolsIndividually(allSymbols);
+      drawSymbolsIndividually(allSymbols.getSymbols());
    }
 
 
-   private Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> createClusterSymbols(final Set<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> cluster) {
+   private GSymbol2DList createClusterSymbols(final Set<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> cluster) {
 
 
       if (isHomogenous(cluster)) {
@@ -196,7 +193,7 @@ public class GVectorial2DSymbolsRenderer
       final Collection<Set<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> clustersByGroups = createClusters(
                cluster, true);
 
-      final Collection<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> result = new ArrayList<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>();
+      final GSymbol2DList result = new GSymbol2DList();
 
       int symbolsInClustersCount = 0;
       for (final Set<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> clusterByGroup : clustersByGroups) {

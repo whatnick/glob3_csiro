@@ -4,8 +4,6 @@ package es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expres
 
 import java.awt.Font;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
@@ -16,7 +14,7 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.ISymbolizer2D;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GLabel2DSymbol;
-import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSymbol2D;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSymbol2DList;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.multigeometry.GMultiGeometry2D;
@@ -72,9 +70,9 @@ public class GPolygon2DLabelerSymbolizerExpression
 
 
    @Override
-   public Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> evaluate(final IPolygon2D polygon,
-                                                                                                               final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                                                                                               final IVectorial2DRenderingScaler scaler) {
+   public GSymbol2DList evaluate(final IPolygon2D polygon,
+                                 final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                 final IVectorial2DRenderingScaler scaler) {
 
       final IPolygon2D surface = polygon;
 
@@ -131,7 +129,7 @@ public class GPolygon2DLabelerSymbolizerExpression
 
       final Font font = new Font("Serif", Font.BOLD, 25);
 
-      return Collections.singleton(new GLabel2DSymbol(position, label, font));
+      return new GSymbol2DList(new GLabel2DSymbol(position, label, font));
    }
 
 

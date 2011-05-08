@@ -7,10 +7,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Paint;
 import java.awt.Stroke;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.ICurve2D;
@@ -32,7 +28,7 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GOval2DSym
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GPolygon2DSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GPolygonalChain2DSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GRectangle2DSymbol;
-import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSymbol2D;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSymbol2DList;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.ntree.GGTInnerNode;
 import es.igosoftware.euclid.ntree.GGTNode;
@@ -91,8 +87,8 @@ public abstract class GSymbolizer2DAbstract
    /* -------------------------------------------------------------------------------------- */
    /* nodes */
    @Override
-   public Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getNodeSymbols(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> node,
-                                                                                                                     final IVectorial2DRenderingScaler scaler) {
+   public GSymbol2DList getNodeSymbols(final GGTNode<IVector2, IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>, IBoundedGeometry2D<? extends IFinite2DBounds<?>>> node,
+                                       final IVectorial2DRenderingScaler scaler) {
       if (!isDebugRendering()) {
          return null;
       }
@@ -117,7 +113,7 @@ public abstract class GSymbolizer2DAbstract
       final GLabel2DSymbol label = new GLabel2DSymbol(position, msg, font);
       //      return Collections.singleton(boundsRectangle);
       @SuppressWarnings("unchecked")
-      final List<GSymbol2D<? extends IBoundedGeometry2D<GAxisAlignedRectangle>>> symbols = Arrays.asList(boundsRectangle, label);
+      final GSymbol2DList symbols = new GSymbol2DList(boundsRectangle, label);
       return symbols;
    }
 
@@ -150,9 +146,9 @@ public abstract class GSymbolizer2DAbstract
 
 
    @Override
-   public Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getPointSymbols(final IVector2 point,
-                                                                                                                      final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                                                                                                      final IVectorial2DRenderingScaler scaler) {
+   public GSymbol2DList getPointSymbols(final IVector2 point,
+                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                        final IVectorial2DRenderingScaler scaler) {
 
       final IVector2 extent = calculateOvalExtent(point, feature, scaler);
 
@@ -162,7 +158,7 @@ public abstract class GSymbolizer2DAbstract
       final ISurface2DStyle surfaceStyle = getPointSurfaceStyle(point, feature, scaler);
       final ICurve2DStyle curveStyle = getPointCurveStyle(point, feature, scaler);
 
-      return Collections.singleton(new GOval2DSymbol(oval, null, surfaceStyle, curveStyle, 1000, true));
+      return new GSymbol2DList(new GOval2DSymbol(oval, null, surfaceStyle, curveStyle, 1000, true));
    }
 
 
@@ -250,9 +246,9 @@ public abstract class GSymbolizer2DAbstract
 
 
    @Override
-   public Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getSurfaceSymbols(final ISurface2D<? extends IFinite2DBounds<?>> surface,
-                                                                                                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                                                                                                        final IVectorial2DRenderingScaler scaler) {
+   public GSymbol2DList getSurfaceSymbols(final ISurface2D<? extends IFinite2DBounds<?>> surface,
+                                          final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                          final IVectorial2DRenderingScaler scaler) {
 
       if (surface instanceof IPolygon2D) {
          final IPolygon2D polygon = (IPolygon2D) surface;
@@ -261,7 +257,7 @@ public abstract class GSymbolizer2DAbstract
          final ISurface2DStyle surfaceStyle = getSurfaceStyle(surface, feature, scaler);
          final ICurve2DStyle curveStyle = getSurfaceCurveStyle(surface, feature, scaler);
 
-         return Collections.singleton(new GPolygon2DSymbol(scaledPolygon, null, surfaceStyle, curveStyle, 0));
+         return new GSymbol2DList(new GPolygon2DSymbol(scaledPolygon, null, surfaceStyle, curveStyle, 0));
       }
 
       throw new RuntimeException("Surface type (" + surface.getClass() + ") not supported");
@@ -314,9 +310,9 @@ public abstract class GSymbolizer2DAbstract
 
 
    @Override
-   public Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getCurveSymbols(final ICurve2D<? extends IFinite2DBounds<?>> curve,
-                                                                                                                      final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                                                                                                      final IVectorial2DRenderingScaler scaler) {
+   public GSymbol2DList getCurveSymbols(final ICurve2D<? extends IFinite2DBounds<?>> curve,
+                                        final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                        final IVectorial2DRenderingScaler scaler) {
 
       if (curve instanceof IPolygonalChain2D) {
          final IPolygonalChain2D polygonalChain = (IPolygonalChain2D) curve;
@@ -324,7 +320,7 @@ public abstract class GSymbolizer2DAbstract
 
          final ICurve2DStyle curveStyle = getCurveStyle(curve, feature, scaler);
 
-         return Collections.singleton(new GPolygonalChain2DSymbol(scaledPolygonalChain, null, curveStyle, 10));
+         return new GSymbol2DList(new GPolygonalChain2DSymbol(scaledPolygonalChain, null, curveStyle, 10));
       }
 
       throw new RuntimeException("Curve type (" + curve.getClass() + ") not supported");

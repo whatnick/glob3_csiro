@@ -3,9 +3,7 @@
 package es.igosoftware.euclid.experimental.vectorial.rendering.symbols;
 
 import java.awt.Color;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
@@ -117,7 +115,7 @@ GeometryT extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>
    public abstract GAxisAlignedRectangle getBounds();
 
 
-   public final Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> createGroupSymbols(final Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group) {
+   public final GSymbol2DList createGroupSymbols(final Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> group) {
 
       boolean allSameClass = true;
       final Class<? extends GSymbol2D> klass = getClass();
@@ -134,10 +132,10 @@ GeometryT extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>
          final GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> averageSymbol = getAverageSymbol(group,
                   label);
          //         averageSymbol.setPosition(_position);
-         return Collections.singleton(averageSymbol);
+         return new GSymbol2DList(averageSymbol);
       }
 
-      final Collection<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> result = new ArrayList<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>();
+      final GSymbol2DList result = new GSymbol2DList();
 
       GAxisAlignedRectangle mergedBounds = null;
       for (final GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> each : group) {

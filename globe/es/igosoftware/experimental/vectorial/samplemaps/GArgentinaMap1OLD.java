@@ -40,8 +40,6 @@ import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -76,6 +74,7 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GIconUtils
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GLabel2DSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GRectangle2DSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSymbol2D;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSymbol2DList;
 import es.igosoftware.euclid.features.GCompositeFeatureCollection;
 import es.igosoftware.euclid.features.GGeometryType;
 import es.igosoftware.euclid.features.IGlobeFeature;
@@ -360,15 +359,15 @@ public class GArgentinaMap1OLD {
 
 
          @Override
-         public Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getPointSymbols(final IVector2 point,
-                                                                                                                            final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                                                                                                            final IVectorial2DRenderingScaler scaler) {
+         public GSymbol2DList getPointSymbols(final IVector2 point,
+                                              final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                              final IVectorial2DRenderingScaler scaler) {
 
             if (isCategory(feature, "automotive")) {
-               return Collections.singleton(createStyledIcon(point, feature, scaler, "automotive", automotiveIcon));
+               return new GSymbol2DList(createStyledIcon(point, feature, scaler, "automotive", automotiveIcon));
             }
             else if (isCategory(feature, "government and public services")) {
-               return Collections.singleton(createStyledIcon(point, feature, scaler, "government", governmentIcon));
+               return new GSymbol2DList(createStyledIcon(point, feature, scaler, "government", governmentIcon));
             }
             else if (isCategory(feature, "tourism")) {
                final IVector2 extent = calculateRectangleExtent(point, feature, scaler);
@@ -379,7 +378,7 @@ public class GArgentinaMap1OLD {
                final ICurve2DStyle curveStyle = getPointCurveStyle(point, feature, scaler);
 
                final GAxisAlignedRectangle rectangle = new GAxisAlignedRectangle(position, position.add(extent));
-               return Collections.singleton(new GRectangle2DSymbol(rectangle, null, surfaceStyle, curveStyle, 1000, true));
+               return new GSymbol2DList(new GRectangle2DSymbol(rectangle, null, surfaceStyle, curveStyle, 1000, true));
             }
             else {
                return super.getPointSymbols(point, feature, scaler);
@@ -582,14 +581,12 @@ public class GArgentinaMap1OLD {
 
 
          @Override
-         public Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> getSurfaceSymbols(final ISurface2D<? extends IFinite2DBounds<?>> surface,
-                                                                                                                              final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                                                                                                                              final IVectorial2DRenderingScaler scaler) {
-            final Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> superSymbols = super.getSurfaceSymbols(
-                     surface, feature, scaler);
+         public GSymbol2DList getSurfaceSymbols(final ISurface2D<? extends IFinite2DBounds<?>> surface,
+                                                final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                                                final IVectorial2DRenderingScaler scaler) {
+            final GSymbol2DList superSymbols = super.getSurfaceSymbols(surface, feature, scaler);
 
-            final List<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> allSymbols = new ArrayList<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>(
-                     superSymbols);
+            final GSymbol2DList allSymbols = new GSymbol2DList(superSymbols);
 
 
             final String country = (String) feature.getAttribute(COUNTRY);

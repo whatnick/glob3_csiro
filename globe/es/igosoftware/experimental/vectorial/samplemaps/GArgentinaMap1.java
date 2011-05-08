@@ -38,7 +38,6 @@ package es.igosoftware.experimental.vectorial.samplemaps;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Collection;
 
 import javax.imageio.ImageIO;
 
@@ -70,7 +69,7 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.express
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.ICurve2DStyleExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.IGeometry2DSymbolizerExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.ISurface2DStyleExpression;
-import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSymbol2D;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSymbol2DList;
 import es.igosoftware.euclid.features.GCompositeFeatureCollection;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
@@ -264,9 +263,8 @@ public class GArgentinaMap1 {
                surfaceStyleExpression);
 
 
-      final GConditionalExpression<IPolygon2D, Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>> argentinaPolygonsLabeler;
-      argentinaPolygonsLabeler = new GConditionalExpression<IPolygon2D, Collection<? extends GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>>>(
-               isArgentinaCondition, //
+      final GConditionalExpression<IPolygon2D, GSymbol2DList> argentinaPolygonsLabeler;
+      argentinaPolygonsLabeler = new GConditionalExpression<IPolygon2D, GSymbol2DList>(isArgentinaCondition, //
                new GPolygon2DLabelerSymbolizerExpression(PROVINCE), //
                null);
 
