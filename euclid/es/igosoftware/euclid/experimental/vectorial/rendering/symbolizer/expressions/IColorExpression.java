@@ -1,6 +1,6 @@
 
 
-package es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer;
+package es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions;
 
 import es.igosoftware.euclid.IGeometry2D;
 import es.igosoftware.euclid.colors.IColor;

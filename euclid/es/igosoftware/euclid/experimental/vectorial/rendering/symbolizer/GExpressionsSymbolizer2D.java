@@ -13,6 +13,8 @@ import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GNullGeometry2DSymbolizerExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.IGeometry2DSymbolizerExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSymbol2D;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;

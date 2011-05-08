@@ -1,27 +1,34 @@
 
 
-package es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer;
+package es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions;
 
-import java.util.Collection;
-
+import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.IGeometry2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.bounding.IFinite2DBounds;
+import es.igosoftware.euclid.colors.IColor;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.ISymbolizer2D;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
+import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVectorI2;
+import es.igosoftware.util.GAssert;
 
 
-public class GNullGeometry2DSymbolizerExpression
+public class GColorConstantExpression<GeometryT extends IGeometry2D>
          implements
-            IGeometry2DSymbolizerExpression {
+            IColorExpression<GeometryT> {
 
-   public static final GNullGeometry2DSymbolizerExpression INSTANCE = new GNullGeometry2DSymbolizerExpression();
+   private final IColor _value;
 
 
-   private GNullGeometry2DSymbolizerExpression() {
+   public GColorConstantExpression(final IColor value) {
+      GAssert.notNull(value, "value");
+
+      _value = value;
    }
 
 
@@ -32,7 +39,8 @@ public class GNullGeometry2DSymbolizerExpression
 
 
    @Override
-   public void preprocessFeatures(final IGlobeFeatureCollection features) {
+   public void preprocessFeatures(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> features) {
+
    }
 
 
@@ -42,14 +50,15 @@ public class GNullGeometry2DSymbolizerExpression
                          final GAxisAlignedRectangle viewport,
                          final ISymbolizer2D renderingStyle,
                          final IVectorial2DDrawer drawer) {
+
    }
 
 
    @Override
-   public Collection evaluate(final IGeometry2D geometry,
-                              final IGlobeFeature feature,
-                              final IVectorial2DRenderingScaler scaler) {
-      return null;
+   public IColor evaluate(final GeometryT geometry,
+                          final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
+                          final IVectorial2DRenderingScaler scaler) {
+      return _value;
    }
 
 
@@ -59,7 +68,7 @@ public class GNullGeometry2DSymbolizerExpression
                           final GAxisAlignedRectangle viewport,
                           final ISymbolizer2D renderingStyle,
                           final IVectorial2DDrawer drawer) {
-   }
 
+   }
 
 }

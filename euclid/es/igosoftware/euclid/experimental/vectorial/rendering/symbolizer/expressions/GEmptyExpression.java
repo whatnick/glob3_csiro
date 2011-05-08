@@ -1,46 +1,33 @@
 
 
-package es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer;
+package es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.IGeometry2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
-import es.igosoftware.euclid.experimental.measurement.GLength;
-import es.igosoftware.euclid.experimental.measurement.IMeasure;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
-import es.igosoftware.euclid.features.IGlobeFeature;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.ISymbolizer2D;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVectorI2;
-import es.igosoftware.util.GAssert;
 
 
-public class GLengthToFloatExpression<GeometryT extends IGeometry2D>
+public abstract class GEmptyExpression<GeometryT extends IGeometry2D, ResultT>
          implements
-            IFloatExpression<GeometryT> {
-
-
-   private final IMeasure<GLength> _lenght;
-
-
-   public GLengthToFloatExpression(final IMeasure<GLength> lenght) {
-      GAssert.notNull(lenght, "lenght");
-      _lenght = lenght;
-   }
+            IExpression<GeometryT, ResultT> {
 
 
    @Override
    public double getMaximumSizeInMeters(final IVectorial2DRenderingScaler scaler) {
-      return _lenght.getValueInReferenceUnits();
+      return 0;
    }
 
 
    @Override
    public void preprocessFeatures(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> features) {
-
    }
 
 
@@ -50,21 +37,6 @@ public class GLengthToFloatExpression<GeometryT extends IGeometry2D>
                          final GAxisAlignedRectangle viewport,
                          final ISymbolizer2D renderingStyle,
                          final IVectorial2DDrawer drawer) {
-
-   }
-
-
-   @Override
-   public Float evaluate(final GeometryT geometry,
-                         final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
-                         final IVectorial2DRenderingScaler scaler) {
-      final IVector2 point = geometry.getCentroid();
-
-      final double lenghtInMeters = _lenght.getValueInReferenceUnits();
-      final IVector2 pointPlusLenght = scaler.increment(point, lenghtInMeters, 0);
-
-      final float result = (float) scaler.scaleExtent(pointPlusLenght.sub(point)).x();
-      return result;
    }
 
 
@@ -74,7 +46,6 @@ public class GLengthToFloatExpression<GeometryT extends IGeometry2D>
                           final GAxisAlignedRectangle viewport,
                           final ISymbolizer2D renderingStyle,
                           final IVectorial2DDrawer drawer) {
-
    }
 
 

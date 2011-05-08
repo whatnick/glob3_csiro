@@ -53,23 +53,23 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.context.GJava2DVec
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
-import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GColorConstantExpression;
-import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GCompositeGeometry2DSymbolizer;
-import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GConditionalExpression;
-import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GCurve2DStyleExpression;
-import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GEmptyExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GExpressionsSymbolizer2D;
-import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GFloatConstantExpression;
-import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GLengthToFloatExpression;
-import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GPolygon2DLabelerSymbolizerExpression;
-import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GPolygon2DSymbolizerExpression;
-import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GPolygonalChain2DSymbolizerExpression;
-import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GSurface2DStyleExpression;
-import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GTransformerExpression;
-import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.ICurve2DStyleExpression;
-import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.IGeometry2DSymbolizerExpression;
-import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.ISurface2DStyleExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.ISymbolizer2D;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GColorConstantExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GCompositeGeometry2DSymbolizer;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GConditionalExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GCurve2DStyleExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GEmptyExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GFloatConstantExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GLengthToFloatExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GPolygon2DLabelerSymbolizerExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GPolygon2DSymbolizerExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GPolygonalChain2DSymbolizerExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GSurface2DStyleExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GTransformerExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.ICurve2DStyleExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.IGeometry2DSymbolizerExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.ISurface2DStyleExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSymbol2D;
 import es.igosoftware.euclid.features.GCompositeFeatureCollection;
 import es.igosoftware.euclid.features.IGlobeFeature;
@@ -280,7 +280,6 @@ public class GArgentinaMap1 {
 
    private static IGeometry2DSymbolizerExpression<IVector2> createPointSymbolizerExpression() {
       final int TODO_symbolize_points;
-
       final IGeometry2DSymbolizerExpression<IVector2> pointSymbolizerExpression = null;
       return pointSymbolizerExpression;
    }

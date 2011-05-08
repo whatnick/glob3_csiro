@@ -1,6 +1,6 @@
 
 
-package es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer;
+package es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions;
 
 import java.util.Collection;
 
