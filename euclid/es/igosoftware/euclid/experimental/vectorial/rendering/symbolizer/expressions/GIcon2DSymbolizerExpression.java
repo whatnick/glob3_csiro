@@ -26,6 +26,8 @@ import es.igosoftware.util.GPair;
 
 
 public class GIcon2DSymbolizerExpression
+         extends
+            GExpressionAbstract<IVector2, GSymbol2DList>
          implements
             IGeometry2DSymbolizerExpression<IVector2> {
 

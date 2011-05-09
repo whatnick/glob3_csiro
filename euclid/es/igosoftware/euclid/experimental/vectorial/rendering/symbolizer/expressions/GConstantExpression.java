@@ -17,8 +17,8 @@ import es.igosoftware.euclid.vector.IVectorI2;
 
 
 public class GConstantExpression<GeometryT extends IGeometry2D, ResultT>
-         implements
-            IExpression<GeometryT, ResultT> {
+         extends
+            GExpressionAbstract<GeometryT, ResultT> {
 
 
    private final ResultT _value;

@@ -19,8 +19,8 @@ import es.igosoftware.util.IFunction;
 
 
 public class GTransformerExpression<GeometryT extends IGeometry2D, ExpressionResultT, ResultT>
-         implements
-            IExpression<GeometryT, ResultT> {
+         extends
+            GExpressionAbstract<GeometryT, ResultT> {
 
 
    private final IExpression<GeometryT, ExpressionResultT> _expression;

@@ -22,8 +22,8 @@ import es.igosoftware.util.GPair;
 
 
 public class GSwitchExpression<GeometryT extends IGeometry2D, KeyT, ResultT>
-         implements
-            IExpression<GeometryT, ResultT> {
+         extends
+            GExpressionAbstract<GeometryT, ResultT> {
 
 
    private final IExpression<GeometryT, KeyT>                                 _keyExpression;

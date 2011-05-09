@@ -14,8 +14,8 @@ import es.igosoftware.euclid.vector.IVectorI2;
 
 
 public class GNullExpression
-         implements
-            IExpression {
+         extends
+            GExpressionAbstract {
 
 
    public static final GNullExpression INSTANCE = new GNullExpression();

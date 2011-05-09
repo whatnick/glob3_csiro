@@ -26,6 +26,8 @@ import es.igosoftware.util.GAssert;
 
 
 public class GPolygon2DLabelerSymbolizerExpression
+         extends
+            GExpressionAbstract<IPolygon2D, GSymbol2DList>
          implements
             IGeometry2DSymbolizerExpression<IPolygon2D> {
 

@@ -16,8 +16,8 @@ import es.igosoftware.euclid.vector.IVectorI2;
 
 
 public abstract class GEmptyExpression<GeometryT extends IGeometry2D, ResultT>
-         implements
-            IExpression<GeometryT, ResultT> {
+         extends
+            GExpressionAbstract<GeometryT, ResultT> {
 
 
    @Override

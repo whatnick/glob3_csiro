@@ -18,7 +18,7 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectio
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.ISymbolizer2D;
-import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.IExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GExpressionAbstract;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.vector.IVector2;
@@ -28,8 +28,8 @@ import es.igosoftware.util.IFunction;
 
 
 public class GUniqueValuesColorizer<GeometryT extends IGeometry2D>
-         implements
-            IExpression<GeometryT, IColor> {
+         extends
+            GExpressionAbstract<GeometryT, IColor> {
 
    private final String                                                                                  _fieldName;
    private boolean                                                                                       _hasField;

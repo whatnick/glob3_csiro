@@ -11,6 +11,7 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DRenderingScaler;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.ICurve2DStyle;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.ISymbolizer2D;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSymbol2DList;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVectorI2;
@@ -18,6 +19,8 @@ import es.igosoftware.util.GAssert;
 
 
 public abstract class GCurve2DSymbolizerExpression<GeometryT extends ICurve2D<? extends IFinite2DBounds<?>>>
+         extends
+            GExpressionAbstract<GeometryT, GSymbol2DList>
          implements
             IGeometry2DSymbolizerExpression<GeometryT> {
 

@@ -19,8 +19,8 @@ import es.igosoftware.util.GMath;
 
 
 public class GConditionalExpression<GeometryT extends IGeometry2D, ResultT>
-         implements
-            IExpression<GeometryT, ResultT> {
+         extends
+            GExpressionAbstract<GeometryT, ResultT> {
 
 
    private final IExpression<GeometryT, Boolean>           _condition;

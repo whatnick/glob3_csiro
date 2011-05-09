@@ -23,6 +23,8 @@ import es.igosoftware.util.GAssert;
 
 
 public class GCompositeGeometry2DSymbolizer<GeometryT extends IGeometry2D>
+         extends
+            GExpressionAbstract<GeometryT, GSymbol2DList>
          implements
             IGeometry2DSymbolizerExpression<GeometryT> {
 

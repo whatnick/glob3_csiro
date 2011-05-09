@@ -20,8 +20,8 @@ import es.igosoftware.util.GAssert;
 
 
 public class GLengthToFloatExpression<GeometryT extends IGeometry2D>
-         implements
-            IExpression<GeometryT, Float> {
+         extends
+            GExpressionAbstract<GeometryT, Float> {
 
 
    private final IMeasure<GLength> _lenght;

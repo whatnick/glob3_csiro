@@ -13,6 +13,7 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.ICurve2DStyle;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.ISurface2DStyle;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.ISymbolizer2D;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSymbol2DList;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVectorI2;
@@ -26,6 +27,8 @@ FeatureGeometryT extends IGeometry2D,
 GeometryT extends ISurface2D<? extends IFinite2DBounds<?>>
 
 >
+         extends
+            GExpressionAbstract<FeatureGeometryT, GSymbol2DList>
          implements
             IGeometry2DSymbolizerExpression<FeatureGeometryT> {
 
