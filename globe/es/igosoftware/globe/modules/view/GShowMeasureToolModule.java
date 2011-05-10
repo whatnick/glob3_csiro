@@ -41,42 +41,54 @@ import java.util.Collections;
 import java.util.List;
 
 import es.igosoftware.globe.GAbstractGlobeModule;
+import es.igosoftware.globe.GGlobeApplication;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
-import es.igosoftware.globe.actions.GButtonGenericAction;
 import es.igosoftware.globe.actions.IGenericAction;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.util.GPair;
+import gov.nasa.worldwind.WorldWindow;
+import gov.nasa.worldwind.examples.MeasureToolPanel;
+import gov.nasa.worldwind.util.measure.MeasureTool;
+import gov.nasa.worldwind.util.measure.MeasureToolController;
 
 
 public class GShowMeasureToolModule
          extends
             GAbstractGlobeModule {
 
+
+   private final MeasureTool      _measureTool;
+   private final MeasureToolPanel _measureToolPanel;
+
+
+   public GShowMeasureToolModule() {
+      final WorldWindow ww = GGlobeApplication.instance().getWorldWindowGLCanvas();
+      _measureTool = new MeasureTool(ww);
+      _measureTool.setController(new MeasureToolController());
+      _measureToolPanel = new MeasureToolPanel(ww, _measureTool);
+   }
+
+
    @Override
    public String getDescription() {
-
       return "Measure tool";
-
    }
 
 
    @Override
    public List<? extends IGenericAction> getGenericActions(final IGlobeApplication application) {
-
-      final IGenericAction action = new GButtonGenericAction("Measure tool", ' ', null, IGenericAction.MenuArea.VIEW, false) {
-
-         @Override
-         public void execute() {
-            final GMeasureToolDialog dialog = new GMeasureToolDialog(application.getFrame(), application.getWorldWindowGLCanvas());
-            dialog.setVisible(true);
-         }
-      };
-
-      //      return new IGenericAction[] { action };
-      return Collections.singletonList(action);
-
+      //      final IGenericAction action = new GButtonGenericAction("Measure tool", ' ', null, IGenericAction.MenuArea.VIEW, false) {
+      //         @Override
+      //         public void execute() {
+      //            final GMeasureToolDialog dialog = new GMeasureToolDialog(application.getFrame(), application.getWorldWindowGLCanvas());
+      //            dialog.setVisible(true);
+      //         }
+      //      };
+      //
+      //      return Collections.singletonList(action);
+      return null;
    }
 
 
@@ -102,13 +114,13 @@ public class GShowMeasureToolModule
 
    @Override
    public String getVersion() {
-      return null;
+      return "0.1";
    }
 
 
    @Override
    public List<GPair<String, Component>> getPanels(final IGlobeApplication application) {
-      return null;
+      return Collections.singletonList(new GPair<String, Component>("Measure Tool", _measureToolPanel));
    }
 
 
