@@ -3,6 +3,7 @@
 package es.igosoftware.euclid.experimental.vectorial.rendering;
 
 import java.util.Collection;
+import java.util.List;
 
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
@@ -11,6 +12,7 @@ import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.ISymbolizer2D;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSymbol2D;
 import es.igosoftware.euclid.experimental.vectorial.rendering.utils.GRenderingQuadtree;
 import es.igosoftware.euclid.features.IGlobeFeature;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
@@ -119,12 +121,20 @@ public class GVectorial2DRenderer {
       final GRenderUnitResult renderUnitResult = renderUnit.render(renderExtent, _quadtree, _features.getProjection(),
                projectionTool, viewport, renderingStyle, drawer);
 
-      final IVectorial2DSymbolsRenderer symbolsRenderer = new GVectorial2DSymbolsRenderer(
-               renderUnitResult.getNonGroupableSymbols(), renderUnitResult.getGroupableSymbols(), renderingStyle, drawer,
-               _verbose);
+      final IVectorial2DSymbolsRenderer symbolsRenderer = createSymbolsRenderer(renderUnitResult.getNonGroupableSymbols(),
+               renderUnitResult.getGroupableSymbols(), renderingStyle, drawer);
       symbolsRenderer.draw();
 
       renderingStyle.postRender(renderExtent, projectionTool, viewport, renderingStyle, drawer);
+   }
+
+
+   private GVectorial2DSymbolsRenderer createSymbolsRenderer(final List<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> nonGroupableSymbols,
+                                                             final List<GSymbol2D<? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>>> groupableSymbols,
+                                                             final ISymbolizer2D renderingStyle,
+                                                             final IVectorial2DDrawer drawer) {
+
+      return new GVectorial2DSymbolsRenderer(nonGroupableSymbols, groupableSymbols, renderingStyle, drawer, _verbose);
    }
 
 
