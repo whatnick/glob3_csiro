@@ -58,7 +58,6 @@ import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 import gov.nasa.worldwind.geom.Frustum;
-import gov.nasa.worldwind.geom.LatLon;
 import gov.nasa.worldwind.geom.Line;
 import gov.nasa.worldwind.geom.Matrix;
 import gov.nasa.worldwind.geom.Position;
@@ -166,21 +165,6 @@ public class GPositionRenderableLayer
       }
 
 
-      private double computeSurfaceElevation(final DrawContext dc,
-                                             final LatLon latLon) {
-
-         final Vec4 surfacePoint = GGlobeApplication.instance().getTerrain().getSurfacePoint(latLon);
-
-         final Globe globe = dc.getGlobe();
-
-         if (surfacePoint == null) {
-            return globe.getElevation(latLon.latitude, latLon.longitude);
-         }
-
-         return globe.computePositionFromPoint(surfacePoint).elevation;
-      }
-
-
       private void render(final DrawContext dc,
                           final boolean terrainChanged) {
          asureModelCoordinateOriginTransform(dc, terrainChanged);
@@ -200,7 +184,7 @@ public class GPositionRenderableLayer
                   position = _position;
                   break;
                case SURFACE:
-                  final double surfaceElevation = computeSurfaceElevation(dc, _position);
+                  final double surfaceElevation = GWWUtils.computeSurfaceElevation(dc, _position);
                   // final double surfaceElevation = dc.getGlobe().getElevation(_position.latitude, _position.longitude);
                   position = new Position(_position.latitude, _position.longitude, surfaceElevation + _position.elevation);
                   break;
@@ -574,12 +558,19 @@ public class GPositionRenderableLayer
 
    public void setPosition(final GGroupNode renderable,
                            final Position position) {
+      boolean redraw = false;
       synchronized (_rootNodes) {
          for (final NodeAndPosition rootAndPosition : _rootNodes) {
             if (rootAndPosition._rootNode == renderable) {
                rootAndPosition.setPosition(position);
+               redraw = true;
             }
          }
+      }
+      if (redraw) {
+         _checkViewPort = true;
+         _lastGlobe = null; // force recalculation
+         redraw();
       }
    }
 
