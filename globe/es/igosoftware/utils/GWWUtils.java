@@ -50,6 +50,7 @@ import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
+import es.igosoftware.globe.GGlobeApplication;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GLogger;
 import es.igosoftware.util.IFunction;
@@ -627,5 +628,21 @@ public final class GWWUtils {
 
       return new GVector2D(newUTM.getLongitude().radians, newUTM.getLatitude().radians);
    }
+
+
+   public static double computeSurfaceElevation(final DrawContext dc,
+                                                final LatLon latLon) {
+
+      final Vec4 surfacePoint = GGlobeApplication.instance().getTerrain().getSurfacePoint(latLon);
+
+      final Globe globe = dc.getGlobe();
+
+      if (surfacePoint == null) {
+         return globe.getElevation(latLon.latitude, latLon.longitude);
+      }
+
+      return globe.computePositionFromPoint(surfacePoint).elevation;
+   }
+
 
 }
