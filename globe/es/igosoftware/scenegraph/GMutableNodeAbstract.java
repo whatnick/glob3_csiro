@@ -36,6 +36,7 @@
 
 package es.igosoftware.scenegraph;
 
+import es.igosoftware.euclid.GAngle;
 import es.igosoftware.euclid.mutability.GMutableSupport;
 import es.igosoftware.euclid.mutability.IMutable;
 import es.igosoftware.euclid.vector.GVector3D;
@@ -102,8 +103,12 @@ public abstract class GMutableNodeAbstract<MutableT extends GMutableNodeAbstract
 
 
    @Override
-   public void setHeading(final double heading) {
+   public void setHeading(final GAngle heading) {
       checkMutable();
+
+      if (_heading.equals(heading)) {
+         return;
+      }
 
       _heading = heading;
       cleanCaches();
@@ -112,8 +117,12 @@ public abstract class GMutableNodeAbstract<MutableT extends GMutableNodeAbstract
 
 
    @Override
-   public void setPitch(final double pitch) {
+   public void setPitch(final GAngle pitch) {
       checkMutable();
+
+      if (_pitch.equals(pitch)) {
+         return;
+      }
 
       _pitch = pitch;
       cleanCaches();
@@ -122,8 +131,12 @@ public abstract class GMutableNodeAbstract<MutableT extends GMutableNodeAbstract
 
 
    @Override
-   public void setRoll(final double roll) {
+   public void setRoll(final GAngle roll) {
       checkMutable();
+
+      if (_roll.equals(roll)) {
+         return;
+      }
 
       _roll = roll;
       cleanCaches();
@@ -133,11 +146,7 @@ public abstract class GMutableNodeAbstract<MutableT extends GMutableNodeAbstract
 
    @Override
    public void setScale(final double scale) {
-      checkMutable();
-
-      _scale = new GVector3D(scale, scale, scale);
-      cleanCaches();
-      changed();
+      setScale(scale, scale, scale);
    }
 
 
@@ -146,7 +155,12 @@ public abstract class GMutableNodeAbstract<MutableT extends GMutableNodeAbstract
                         final double scaleZ) {
       checkMutable();
 
-      _scale = new GVector3D(scaleX, scaleY, scaleZ);
+      final GVector3D newScale = new GVector3D(scaleX, scaleY, scaleZ);
+      if (newScale.equals(_scale)) {
+         return;
+      }
+
+      _scale = newScale;
       cleanCaches();
       changed();
    }

@@ -50,6 +50,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import es.igosoftware.concurrent.GConcurrent;
+import es.igosoftware.euclid.GAngle;
 import es.igosoftware.experimental.ndimensional.G3DImageMultidimensionalData;
 import es.igosoftware.experimental.ndimensional.GMultidimensionalDataModule;
 import es.igosoftware.experimental.ndimensional.IMultidimensionalData;
@@ -299,11 +300,9 @@ public class GGlobeDemo
 
       final GDragAndDropModule dragAndDropModule = new GDragAndDropModule(new GShapeLoaderDropHandler(this, false));
 
-      return new IGlobeModule[] { homePositionModule, new GLayersManagerModule(), new GVectorial2DModule(),
-               new GGeotoolsVectorialModule(), pointsCloudModule, new GMultidimensionalDataModule(_multidimentionaldata),
-               new GFlatWorldModule(), new GShowLatLonGraticuleModule(), new GShowUTMGraticuleModule(),
-               new GShowMeasureToolModule(), new GFullScreenModule(), new GAnaglyphViewerModule(false), new GStatisticsModule(),
-               dragAndDropModule };
+      return new IGlobeModule[] { homePositionModule, new GLayersManagerModule(), new GVectorial2DModule(), new GGeotoolsVectorialModule(), pointsCloudModule, new GMultidimensionalDataModule(
+               _multidimentionaldata), new GFlatWorldModule(), new GShowLatLonGraticuleModule(), new GShowUTMGraticuleModule(), new GShowMeasureToolModule(), new GFullScreenModule(), new GAnaglyphViewerModule(
+               false), new GStatisticsModule(), dragAndDropModule };
    }
 
 
@@ -346,7 +345,7 @@ public class GGlobeDemo
 
                final GGroupNode caceres3DRootNode = new GGroupNode("Caceres3D root",
                         GTransformationOrder.ROTATION_SCALE_TRANSLATION);
-               caceres3DRootNode.setHeading(-90);
+               caceres3DRootNode.setHeading(GAngle.NEG90);
                //caceres3DRootNode.setScale(10);
                caceres3DRootNode.addChild(caceres3DModelNode);
 

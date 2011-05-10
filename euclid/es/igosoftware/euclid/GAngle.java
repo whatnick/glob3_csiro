@@ -57,6 +57,21 @@ public class GAngle
    }
 
 
+   public double cos() {
+      return GMath.cos(_radians);
+   }
+
+
+   public double sin() {
+      return GMath.sin(_radians);
+   }
+
+
+   public double tan() {
+      return Math.tan(_radians);
+   }
+
+
    @Override
    public final int compareTo(final GAngle that) {
       GAssert.notNull(that, "that");

@@ -36,6 +36,7 @@
 
 package es.igosoftware.scenegraph;
 
+import es.igosoftware.euclid.GAngle;
 import es.igosoftware.euclid.mutability.IMutable;
 import es.igosoftware.euclid.vector.IVector3;
 
@@ -46,13 +47,13 @@ public interface IMutableNode<MutableT extends IMutableNode<MutableT>>
             IMutable<MutableT> {
 
 
-   public void setHeading(final double heading);
+   public void setHeading(final GAngle heading);
 
 
-   public void setPitch(final double pitch);
+   public void setPitch(final GAngle pitch);
 
 
-   public void setRoll(final double roll);
+   public void setRoll(final GAngle roll);
 
 
    public void setScale(final double scale);

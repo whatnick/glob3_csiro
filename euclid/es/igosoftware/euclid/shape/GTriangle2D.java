@@ -39,6 +39,7 @@ package es.igosoftware.euclid.shape;
 import java.util.ArrayList;
 import java.util.List;
 
+import es.igosoftware.euclid.GAngle;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.GDisk;
 import es.igosoftware.euclid.experimental.algorithms.GPolygonSegment2DIntersections;
@@ -63,11 +64,8 @@ public final class GTriangle2D
    }
 
 
-   public boolean isCaps(final double radiansTolerance) {
-      // final double[] angles = getInternalAngles();
-      // final double maxAngle = Math.max(angles[0], Math.max(angles[1], angles[2]));
-      //      
-      // return ((Math.PI - maxAngle) < radiansTolerance);
+   public boolean isCaps(final GAngle tolerance) {
+      final double radiansTolerance = tolerance.getRadians();
 
       final List<GSegment2D> edges = getEdges();
 

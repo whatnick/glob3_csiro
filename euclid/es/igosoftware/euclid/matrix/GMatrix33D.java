@@ -38,6 +38,7 @@ package es.igosoftware.euclid.matrix;
 
 import java.io.PrintStream;
 
+import es.igosoftware.euclid.GAngle;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.util.GMath;
@@ -292,11 +293,11 @@ public abstract class GMatrix33D
 
 
    public static GMatrix33D createRotationMatrix(final IVector2 axis,
-                                                 final double angleRadians) {
+                                                 final GAngle angle) {
       final IVector2 normalizedAxis = axis.normalized();
 
-      final double cos = GMath.cos(angleRadians);
-      final double sin = GMath.sin(angleRadians);
+      final double cos = angle.cos();
+      final double sin = angle.sin();
       final double oneMinusCos = 1.0 - cos;
 
       final double axisX = normalizedAxis.x();
@@ -331,11 +332,11 @@ public abstract class GMatrix33D
 
 
    public static GMatrix33D createRotationMatrix(final IVector3 axis,
-                                                 final double angleRadians) {
+                                                 final GAngle angle) {
       final IVector3 normalizedAxis = axis.normalized();
 
-      final double cos = GMath.cos(angleRadians);
-      final double sin = GMath.sin(angleRadians);
+      final double cos = angle.cos();
+      final double sin = angle.sin();
       final double oneMinusCos = 1.0 - cos;
 
       final double axisX = normalizedAxis.x();

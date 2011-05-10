@@ -39,6 +39,7 @@ package es.igosoftware.euclid.shape;
 import java.util.ArrayList;
 import java.util.List;
 
+import es.igosoftware.euclid.GAngle;
 import es.igosoftware.euclid.bounding.GAxisAlignedBox;
 import es.igosoftware.euclid.bounding.GBall;
 import es.igosoftware.euclid.utils.GShapeUtils;
@@ -63,11 +64,8 @@ public final class GTriangle3D
    }
 
 
-   public boolean isCaps(final double radiansTolerance) {
-      // final double[] angles = getInternalAngles();
-      // final double maxAngle = Math.max(angles[0], Math.max(angles[1], angles[2]));
-      //      
-      // return ((Math.PI - maxAngle) < radiansTolerance);
+   public boolean isCaps(final GAngle tolerance) {
+      final double radiansTolerance = tolerance.getRadians();
 
       final List<GSegment3D> edges = getEdges();
 
