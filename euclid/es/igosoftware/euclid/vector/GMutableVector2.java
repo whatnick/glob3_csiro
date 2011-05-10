@@ -36,6 +36,7 @@
 
 package es.igosoftware.euclid.vector;
 
+import es.igosoftware.euclid.GAngle;
 import es.igosoftware.euclid.GGeometryAbstract;
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
@@ -451,6 +452,13 @@ public final class GMutableVector2<T extends IVector2>
    @Override
    public IVector2 squared() {
       return _value.squared();
+   }
+
+
+   @Override
+   public IVector2 rotated(final GAngle angle) {
+      _value = _value.rotated(angle);
+      return _value;
    }
 
 

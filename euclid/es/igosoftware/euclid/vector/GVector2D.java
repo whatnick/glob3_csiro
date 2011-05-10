@@ -39,6 +39,7 @@ package es.igosoftware.euclid.vector;
 import java.io.DataInputStream;
 import java.io.IOException;
 
+import es.igosoftware.euclid.GAngle;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.matrix.GMatrix33D;
 import es.igosoftware.euclid.matrix.GMatrix44D;
@@ -499,6 +500,16 @@ public class GVector2D
    @Override
    public GVector2D squared() {
       return new GVector2D(GMath.squared(_x), GMath.squared(_y));
+   }
+
+
+   @Override
+   public GVector2D rotated(final GAngle angle) {
+      final double cos = angle.cos();
+      final double sin = angle.sin();
+      final double x = cos * _x - sin * _y;
+      final double y = sin * _x + cos * _y;
+      return new GVector2D(x, y);
    }
 
 

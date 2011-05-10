@@ -39,6 +39,7 @@ package es.igosoftware.euclid.vector;
 import java.io.Serializable;
 import java.util.Comparator;
 
+import es.igosoftware.euclid.GAngle;
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 
@@ -67,6 +68,9 @@ public interface IVector2
 
 
    public double y();
+
+
+   public IVector2 rotated(final GAngle angle);
 
 
 }
