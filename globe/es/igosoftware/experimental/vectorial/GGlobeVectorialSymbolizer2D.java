@@ -318,16 +318,107 @@ public class GGlobeVectorialSymbolizer2D
          }
       };
 
+      final GLengthLayerAttribute pointCurveBorderWidth = new GLengthLayerAttribute("Border Width", "", "PointCurveBorderWidth",
+               0, 1000, 1) {
+         @Override
+         public boolean isVisible() {
+            return true;
+         }
 
-      //      private final IMeasure<GLength>        _pointCurveBorderWidth             = DEFAULT_POINT_CURVE_BORDER_WIDTH;
-      //      private final IColor                   _pointCurveColor                   = DEFAULT_POINT_CURVE_COLOR;
-      //      private final float                    _pointCurveOpacity                 = DEFAULT_POINT_CURVE_OPACITY;
-      //      private final IColor                   _pointSurfaceColor                 = DEFAULT_POINT_SURFACE_COLOR;
-      //      private final float                    _pointSurfaceOpacity               = DEFAULT_POINT_SURFACE_OPACITY;
 
+         @Override
+         public IMeasure<GLength> get() {
+            return getPointCurveBorderWidth();
+         }
+
+
+         @Override
+         public void set(final IMeasure<GLength> value) {
+            setPointCurveBorderWidth(value);
+         }
+      };
+
+      final GColorLayerAttribute pointCurveColor = new GColorLayerAttribute("Border Color", "", "PointCurveColor") {
+         @Override
+         public boolean isVisible() {
+            return true;
+         }
+
+
+         @Override
+         public Color get() {
+            return getPointCurveColor().asAWTColor();
+         }
+
+
+         @Override
+         public void set(final Color value) {
+            setPointCurveColor(GColorF.fromAWTColor(value));
+         }
+      };
+
+      final GFloatLayerAttribute pointCurveOpacity = new GFloatLayerAttribute("Border Opacity", "", "PointCurveOpacity", 0, 1,
+               GFloatLayerAttribute.WidgetType.SLIDER, 0.1f) {
+         @Override
+         public boolean isVisible() {
+            return true;
+         }
+
+
+         @Override
+         public Float get() {
+            return getPointCurveOpacity();
+         }
+
+
+         @Override
+         public void set(final Float value) {
+            setPointCurveOpacity(value);
+         }
+      };
+
+      final GColorLayerAttribute pointSurfaceColor = new GColorLayerAttribute("Surface Color", "", "PointSurfaceColor") {
+         @Override
+         public boolean isVisible() {
+            return true;
+         }
+
+
+         @Override
+         public Color get() {
+            return getPointSurfaceColor().asAWTColor();
+         }
+
+
+         @Override
+         public void set(final Color value) {
+            setPointSurfaceColor(GColorF.fromAWTColor(value));
+         }
+      };
+
+      final GFloatLayerAttribute pointSurfaceOpacity = new GFloatLayerAttribute("Surface Opacity", "", "PointSurfaceOpacity", 0,
+               1, GFloatLayerAttribute.WidgetType.SLIDER, 0.1f) {
+         @Override
+         public boolean isVisible() {
+            return true;
+         }
+
+
+         @Override
+         public Float get() {
+            return getPointSurfaceOpacity();
+         }
+
+
+         @Override
+         public void set(final Float value) {
+            setPointSurfaceOpacity(value);
+         }
+      };
 
       return new GGroupAttribute("Points Style", application.getSmallIcon(GFileName.relative("points-style.png")),
-               "Points rendering settings", pointArea);
+               "Points rendering settings", pointArea, pointCurveBorderWidth, pointCurveColor, pointCurveOpacity,
+               pointSurfaceColor, pointSurfaceOpacity);
    }
 
 
