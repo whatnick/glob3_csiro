@@ -16,15 +16,19 @@ import es.igosoftware.euclid.colors.IColor;
 import es.igosoftware.euclid.experimental.measurement.GLength;
 import es.igosoftware.euclid.experimental.measurement.IMeasure;
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.ICurve2DStyle;
+import es.igosoftware.euclid.experimental.vectorial.rendering.styling.ISurface2DStyle;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.GExpressionsSymbolizer2D;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GConstantExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GCurve2DStyleExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GLengthToFloatExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GPolygon2DSymbolizerExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GPolygonalChain2DSymbolizerExpression;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GSurface2DStyleExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.IExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSymbol2DList;
 import es.igosoftware.euclid.features.GGeometryType;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
+import es.igosoftware.euclid.shape.IPolygon2D;
 import es.igosoftware.euclid.shape.IPolygonalChain2D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.globe.IGlobeApplication;
@@ -50,34 +54,44 @@ public class GGlobeVectorialSymbolizer2D
             IGlobeSymbolizer {
 
 
-   private static final IMeasure<GLength> DEFAULT_CURVE_BORDER_WIDTH = GLength.Meter.value(10);
-   private static final GColorF           DEFAULT_CURVE_COLOR        = GColorF.YELLOW;
-   private static final float             DEFAULT_CURVE_OPACITY      = 0.75f;
+   // curves attributes
+   private static final IMeasure<GLength> DEFAULT_CURVE_BORDER_WIDTH         = GLength.Meter.value(10);
+   private static final IColor            DEFAULT_CURVE_COLOR                = GColorF.YELLOW;
+   private static final float             DEFAULT_CURVE_OPACITY              = 0.8f;
+
+   // surface attributes
+   private static final IColor            DEFAULT_SURFACE_COLOR              = GColorF.BLUE;
+   private static final float             DEFAULT_SURFACE_OPACITY            = 0.8f;
+   private static final IMeasure<GLength> DEFAULT_SURFACE_CURVE_BORDER_WIDTH = GLength.Meter.value(10);
+   private static final IColor            DEFAULT_SURFACE_CURVE_COLOR        = DEFAULT_SURFACE_COLOR.muchDarker();
+   private static final float             DEFAULT_SURFACE_CURVE_OPACITY      = DEFAULT_SURFACE_OPACITY;
 
 
    private final IGlobeVector2Layer       _layer;
 
-   private IMeasure<GLength>              _curveBorderWidth;
-   private GColorF                        _curveColor;
-   private float                          _curveOpacity;
+   // curves attributes
+   private IMeasure<GLength>              _curveBorderWidth                  = DEFAULT_CURVE_BORDER_WIDTH;
+   private IColor                         _curveColor                        = DEFAULT_CURVE_COLOR;
+   private float                          _curveOpacity                      = DEFAULT_CURVE_OPACITY;
+
+   // surface attributes
+   private IMeasure<GLength>              _surfaceCurveBorderWidth           = DEFAULT_SURFACE_CURVE_BORDER_WIDTH;
+   private IColor                         _surfaceCurveColor                 = DEFAULT_SURFACE_CURVE_COLOR;
+   private float                          _surfaceCurveOpacity               = DEFAULT_SURFACE_CURVE_OPACITY;
+   private IColor                         _surfaceColor                      = DEFAULT_SURFACE_COLOR;
+   private float                          _surfaceOpacity                    = DEFAULT_SURFACE_OPACITY;
 
 
    public GGlobeVectorialSymbolizer2D(final IGlobeVector2Layer layer) {
-      super(false, //
-            2, //
-            true, //
-            true, //
+      super(false, 2, true, true, //
             initializePointExpression(), //
             createCurveExpression(DEFAULT_CURVE_BORDER_WIDTH, DEFAULT_CURVE_COLOR, DEFAULT_CURVE_OPACITY), //
-            initializeSurfaceExpression());
+            createSurfaceExpression(DEFAULT_SURFACE_CURVE_BORDER_WIDTH, DEFAULT_SURFACE_CURVE_COLOR,
+                     DEFAULT_SURFACE_CURVE_OPACITY, DEFAULT_SURFACE_COLOR, DEFAULT_SURFACE_OPACITY));
 
       GAssert.notNull(layer, "layer");
 
       _layer = layer;
-
-      _curveBorderWidth = DEFAULT_CURVE_BORDER_WIDTH;
-      _curveColor = DEFAULT_CURVE_COLOR;
-      _curveOpacity = DEFAULT_CURVE_OPACITY;
    }
 
 
@@ -87,7 +101,7 @@ public class GGlobeVectorialSymbolizer2D
 
 
    private static IExpression<? extends ICurve2D<? extends IFinite2DBounds<?>>, GSymbol2DList> createCurveExpression(final IMeasure<GLength> borderWidth,
-                                                                                                                     final GColorF color,
+                                                                                                                     final IColor color,
                                                                                                                      final float opacity) {
       final IExpression<IPolygonalChain2D, ICurve2DStyle> curveStyleExpression = new GCurve2DStyleExpression<IPolygonalChain2D>( //
                new GLengthToFloatExpression<IPolygonalChain2D>(borderWidth), //
@@ -98,8 +112,21 @@ public class GGlobeVectorialSymbolizer2D
    }
 
 
-   private static IExpression<? extends ISurface2D<? extends IFinite2DBounds<?>>, GSymbol2DList> initializeSurfaceExpression() {
-      return null;
+   private static IExpression<? extends ISurface2D<? extends IFinite2DBounds<?>>, GSymbol2DList> createSurfaceExpression(final IMeasure<GLength> curveBorderWidth,
+                                                                                                                         final IColor curveColor,
+                                                                                                                         final float curveOpacity,
+                                                                                                                         final IColor surfaceColor,
+                                                                                                                         final float surfaceOpacity) {
+      final IExpression<IPolygon2D, ICurve2DStyle> curveStyleExpression = new GCurve2DStyleExpression<IPolygon2D>( //
+               new GLengthToFloatExpression<IPolygon2D>(curveBorderWidth), //
+               new GConstantExpression<IPolygon2D, IColor>(curveColor), //
+               new GConstantExpression<IPolygon2D, Float>(curveOpacity));
+
+      final IExpression<IPolygon2D, ISurface2DStyle> surfaceStyleExpression = new GSurface2DStyleExpression<IPolygon2D>( //
+               new GConstantExpression<IPolygon2D, IColor>(surfaceColor), //
+               new GConstantExpression<IPolygon2D, Float>(surfaceOpacity));
+
+      return new GPolygon2DSymbolizerExpression(curveStyleExpression, surfaceStyleExpression);
    }
 
 
@@ -297,12 +324,7 @@ public class GGlobeVectorialSymbolizer2D
 
    private ILayerAttribute<?> createCurvesLayerAttributes(final IGlobeApplication application) {
 
-
-      //      private IMeasure<GLength>              _curveBorderWidth;
-      //      private GColorF                        _curveColor;
-      //      private float                          _curveOpacity;
-
-      final GLengthLayerAttribute curveBorderWidth = new GLengthLayerAttribute("Border Width", "", "CurveBorderWidth", 0, 100, 1) {
+      final GLengthLayerAttribute curveBorderWidth = new GLengthLayerAttribute("Width", "", "CurveBorderWidth", 0, 100, 1) {
          @Override
          public boolean isVisible() {
             return true;
@@ -366,8 +388,107 @@ public class GGlobeVectorialSymbolizer2D
 
 
    private ILayerAttribute<?> createSurfacesLayerAttributes(final IGlobeApplication application) {
+      final GLengthLayerAttribute borderWidth = new GLengthLayerAttribute("Border Width", "", "SurfaceCurveBorderWidth", 0, 100,
+               1) {
+         @Override
+         public boolean isVisible() {
+            return true;
+         }
+
+
+         @Override
+         public IMeasure<GLength> get() {
+            return getSurfaceCurveBorderWidth();
+         }
+
+
+         @Override
+         public void set(final IMeasure<GLength> value) {
+            setSurfaceCurveBorderWidth(value);
+         }
+      };
+
+      final GColorLayerAttribute borderColor = new GColorLayerAttribute("Border Color", "", "SurfaceCurveColor") {
+         @Override
+         public boolean isVisible() {
+            return true;
+         }
+
+
+         @Override
+         public Color get() {
+            return getSurfaceCurveColor().asAWTColor();
+         }
+
+
+         @Override
+         public void set(final Color value) {
+            setSurfaceCurveColor(GColorF.fromAWTColor(value));
+         }
+      };
+
+      final GFloatLayerAttribute borderOpacity = new GFloatLayerAttribute("Border Opacity", "", "SurfaceCurveOpacity", 0, 1,
+               GFloatLayerAttribute.WidgetType.SLIDER, 0.1f) {
+         @Override
+         public boolean isVisible() {
+            return true;
+         }
+
+
+         @Override
+         public Float get() {
+            return getSurfaceCurveOpacity();
+         }
+
+
+         @Override
+         public void set(final Float value) {
+            setSurfaceCurveOpacity(value);
+         }
+      };
+
+
+      final GColorLayerAttribute surfaceColor = new GColorLayerAttribute("Surface Color", "", "SurfaceColor") {
+         @Override
+         public boolean isVisible() {
+            return true;
+         }
+
+
+         @Override
+         public Color get() {
+            return getSurfaceColor().asAWTColor();
+         }
+
+
+         @Override
+         public void set(final Color value) {
+            setSurfaceColor(GColorF.fromAWTColor(value));
+         }
+      };
+
+      final GFloatLayerAttribute surfaceOpacity = new GFloatLayerAttribute("Surface Opacity", "", "SurfaceOpacity", 0, 1,
+               GFloatLayerAttribute.WidgetType.SLIDER, 0.1f) {
+         @Override
+         public boolean isVisible() {
+            return true;
+         }
+
+
+         @Override
+         public Float get() {
+            return getSurfaceOpacity();
+         }
+
+
+         @Override
+         public void set(final Float value) {
+            setSurfaceOpacity(value);
+         }
+      };
+
       return new GGroupAttribute("Surfaces Style", application.getSmallIcon(GFileName.relative("surfaces-style.png")),
-               "Surfaces rendering settings");
+               "Surfaces rendering settings", borderWidth, borderColor, borderOpacity, surfaceColor, surfaceOpacity);
    }
 
 
@@ -435,60 +556,6 @@ public class GGlobeVectorialSymbolizer2D
    }
 
 
-   public IMeasure<GLength> getCurveBorderWidth() {
-      return _curveBorderWidth;
-   }
-
-
-   public GColorF getCurveColor() {
-      return _curveColor;
-   }
-
-
-   public float getCurveOpacity() {
-      return _curveOpacity;
-   }
-
-
-   public void setCurveBorderWidth(final IMeasure<GLength> curverBorderWidth) {
-      final IMeasure<GLength> oldCurveBorderWidth = _curveBorderWidth;
-      if (GUtils.equals(curverBorderWidth, oldCurveBorderWidth)) {
-         return;
-      }
-
-      _curveBorderWidth = curverBorderWidth;
-      _layer.firePropertyChange("CurveBorderWidth", oldCurveBorderWidth, curverBorderWidth);
-
-      setCurveExpression(createCurveExpression(_curveBorderWidth, _curveColor, _curveOpacity));
-   }
-
-
-   public void setCurveColor(final GColorF curveColor) {
-      final GColorF oldCurveColor = _curveColor;
-      if (GUtils.equals(curveColor, oldCurveColor)) {
-         return;
-      }
-
-      _curveColor = curveColor;
-      _layer.firePropertyChange("CurveColor", oldCurveColor, curveColor);
-
-      setCurveExpression(createCurveExpression(_curveBorderWidth, _curveColor, _curveOpacity));
-   }
-
-
-   public void setCurveOpacity(final float curveOpacity) {
-      final float oldCurveOpacity = _curveOpacity;
-      if (GMath.closeTo(curveOpacity, oldCurveOpacity)) {
-         return;
-      }
-
-      _curveOpacity = curveOpacity;
-      _layer.firePropertyChange("CurveOpacity", oldCurveOpacity, curveOpacity);
-
-      setCurveExpression(createCurveExpression(_curveBorderWidth, _curveColor, _curveOpacity));
-   }
-
-
    @Override
    public void setSurfaceExpression(final IExpression<? extends ISurface2D<? extends IFinite2DBounds<?>>, GSymbol2DList> surfaceExpression) {
       final IExpression<ISurface2D<? extends IFinite2DBounds<?>>, GSymbol2DList> oldSurfaceExpression = getSurfaceExpression();
@@ -534,6 +601,163 @@ public class GGlobeVectorialSymbolizer2D
       _layer.firePropertyChange("PointExpression", oldPointExpression, pointExpression);
 
       styleChanged();
+   }
+
+
+   public IMeasure<GLength> getCurveBorderWidth() {
+      return _curveBorderWidth;
+   }
+
+
+   public IColor getCurveColor() {
+      return _curveColor;
+   }
+
+
+   public float getCurveOpacity() {
+      return _curveOpacity;
+   }
+
+
+   private void updateCurveExpression() {
+      setCurveExpression(createCurveExpression(_curveBorderWidth, _curveColor, _curveOpacity));
+   }
+
+
+   public void setCurveBorderWidth(final IMeasure<GLength> curverBorderWidth) {
+      final IMeasure<GLength> oldCurveBorderWidth = _curveBorderWidth;
+      if (GUtils.equals(curverBorderWidth, oldCurveBorderWidth)) {
+         return;
+      }
+
+      _curveBorderWidth = curverBorderWidth;
+      _layer.firePropertyChange("CurveBorderWidth", oldCurveBorderWidth, curverBorderWidth);
+
+      updateCurveExpression();
+   }
+
+
+   public void setCurveColor(final GColorF curveColor) {
+      final IColor oldCurveColor = _curveColor;
+      if (GUtils.equals(curveColor, oldCurveColor)) {
+         return;
+      }
+
+      _curveColor = curveColor;
+      _layer.firePropertyChange("CurveColor", oldCurveColor, curveColor);
+
+      updateCurveExpression();
+   }
+
+
+   public void setCurveOpacity(final float curveOpacity) {
+      final float oldCurveOpacity = _curveOpacity;
+      if (GMath.closeTo(curveOpacity, oldCurveOpacity)) {
+         return;
+      }
+
+      _curveOpacity = curveOpacity;
+      _layer.firePropertyChange("CurveOpacity", oldCurveOpacity, curveOpacity);
+
+      updateCurveExpression();
+   }
+
+
+   public IMeasure<GLength> getSurfaceCurveBorderWidth() {
+      return _surfaceCurveBorderWidth;
+   }
+
+
+   public IColor getSurfaceCurveColor() {
+      return _surfaceCurveColor;
+   }
+
+
+   public float getSurfaceCurveOpacity() {
+      return _surfaceCurveOpacity;
+   }
+
+
+   public IColor getSurfaceColor() {
+      return _surfaceColor;
+   }
+
+
+   public float getSurfaceOpacity() {
+      return _surfaceOpacity;
+   }
+
+
+   private void updateSurfaceExpression() {
+      setSurfaceExpression(createSurfaceExpression(_surfaceCurveBorderWidth, _surfaceCurveColor, _surfaceCurveOpacity,
+               _surfaceColor, _surfaceOpacity));
+   }
+
+
+   public void setSurfaceCurveBorderWidth(final IMeasure<GLength> surfaceCurveBorderWidth) {
+      //      _surfaceCurveBorderWidth = surfaceCurveBorderWidth;
+
+      final IMeasure<GLength> oldSurfaceCurveBorderWidth = _surfaceCurveBorderWidth;
+      if (GUtils.equals(surfaceCurveBorderWidth, oldSurfaceCurveBorderWidth)) {
+         return;
+      }
+
+      _surfaceCurveBorderWidth = surfaceCurveBorderWidth;
+      _layer.firePropertyChange("SurfaceCurveBorderWidth", oldSurfaceCurveBorderWidth, surfaceCurveBorderWidth);
+
+      updateSurfaceExpression();
+   }
+
+
+   public void setSurfaceCurveColor(final IColor surfaceCurveColor) {
+      final IColor oldSurfaceCurveColor = _surfaceCurveColor;
+      if (GUtils.equals(surfaceCurveColor, oldSurfaceCurveColor)) {
+         return;
+      }
+
+      _surfaceCurveColor = surfaceCurveColor;
+      _layer.firePropertyChange("SurfaceCurveColor", oldSurfaceCurveColor, surfaceCurveColor);
+
+      updateSurfaceExpression();
+   }
+
+
+   public void setSurfaceCurveOpacity(final float surfaceCurveOpacity) {
+      final float oldSurfaceCurveOpacity = _surfaceCurveOpacity;
+      if (GMath.closeTo(surfaceCurveOpacity, oldSurfaceCurveOpacity)) {
+         return;
+      }
+
+      _surfaceCurveOpacity = surfaceCurveOpacity;
+      _layer.firePropertyChange("SurfaceCurveOpacity", oldSurfaceCurveOpacity, surfaceCurveOpacity);
+
+      updateSurfaceExpression();
+   }
+
+
+   public void setSurfaceColor(final IColor surfaceColor) {
+      final IColor oldSurfaceColor = _surfaceColor;
+      if (GUtils.equals(surfaceColor, oldSurfaceColor)) {
+         return;
+      }
+
+      _surfaceColor = surfaceColor;
+      _layer.firePropertyChange("SurfaceColor", oldSurfaceColor, surfaceColor);
+
+      updateSurfaceExpression();
+   }
+
+
+   public void setSurfaceOpacity(final float surfaceOpacity) {
+      final float oldSurfaceOpacity = _surfaceOpacity;
+      if (GMath.closeTo(surfaceOpacity, oldSurfaceOpacity)) {
+         return;
+      }
+
+      _surfaceOpacity = surfaceOpacity;
+      _layer.firePropertyChange("SurfaceOpacity", oldSurfaceOpacity, surfaceOpacity);
+
+      updateSurfaceExpression();
    }
 
 
