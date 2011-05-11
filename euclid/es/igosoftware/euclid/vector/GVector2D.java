@@ -109,6 +109,14 @@ public class GVector2D
    public static final GVector2D Y_DOWN            = new GVector2D(0, -1).normalized();
 
 
+   public static GVector2D fromRhoAngle(final int rho,
+                                        final GAngle angle) {
+      final double x = rho * angle.cos();
+      final double y = rho * angle.sin();
+      return new GVector2D(x, y);
+   }
+
+
    public static IVector2 load(final DataInputStream input) throws IOException {
       final double x = input.readDouble();
       final double y = input.readDouble();

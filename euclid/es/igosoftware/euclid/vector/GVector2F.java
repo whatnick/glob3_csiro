@@ -106,6 +106,14 @@ public class GVector2F
    public static final GVector2F POSITIVE_INFINITY = new GVector2F(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
 
 
+   public static GVector2F fromRhoAngle(final int rho,
+                                        final GAngle angle) {
+      final double x = rho * angle.cos();
+      final double y = rho * angle.sin();
+      return new GVector2F(x, y);
+   }
+
+
    public static IVector2 load(final DataInputStream input) throws IOException {
       final float x = input.readFloat();
       final float y = input.readFloat();
