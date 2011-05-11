@@ -140,12 +140,12 @@ public class GAngle
 
 
    public GAngle add(final GAngle delta) {
-      return GAngle.fromDegrees(_degrees - delta._degrees);
+      return GAngle.fromDegrees(_degrees + delta._degrees);
    }
 
 
    public GAngle sub(final GAngle delta) {
-      return GAngle.fromDegrees(_degrees + delta._degrees);
+      return GAngle.fromDegrees(_degrees - delta._degrees);
    }
 
 
