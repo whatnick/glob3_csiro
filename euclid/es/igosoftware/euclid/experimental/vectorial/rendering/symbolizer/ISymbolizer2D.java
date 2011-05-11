@@ -32,9 +32,6 @@ public interface ISymbolizer2D {
    public boolean isRenderLODIgnores();
 
 
-   public String uniqueName();
-
-
    public void preprocessFeatures(final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> features);
 
 

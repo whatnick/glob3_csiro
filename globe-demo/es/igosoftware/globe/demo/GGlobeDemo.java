@@ -144,7 +144,7 @@ public class GGlobeDemo
    protected LayerList getDefaultLayers() {
       final LayerList layers = super.getDefaultLayers();
 
-      // layers.getLayerByName("MS Virtual Earth Aerial").setEnabled(true);
+      //      layers.getLayerByName("MS Virtual Earth Aerial").setEnabled(true);
 
       //      layers.add(new OSMMapnikLayer());
 

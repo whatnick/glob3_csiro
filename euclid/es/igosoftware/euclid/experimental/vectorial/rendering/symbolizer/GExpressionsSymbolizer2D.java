@@ -4,7 +4,6 @@ package es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Paint;
 import java.awt.Stroke;
 
@@ -22,7 +21,6 @@ import es.igosoftware.euclid.experimental.vectorial.rendering.styling.ICurve2DSt
 import es.igosoftware.euclid.experimental.vectorial.rendering.styling.ISurface2DStyle;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.GNullExpression;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.expressions.IExpression;
-import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GLabel2DSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GRectangle2DSymbol;
 import es.igosoftware.euclid.experimental.vectorial.rendering.symbols.GSymbol2DList;
 import es.igosoftware.euclid.features.IGlobeFeature;
@@ -39,64 +37,61 @@ public class GExpressionsSymbolizer2D
             ISymbolizer2D {
 
 
-   private static final ICurve2DStyle                                                 INNER_NODE_STYLE = new ICurve2DStyle() {
-                                                                                                          @Override
-                                                                                                          public Stroke getBorderStroke() {
-                                                                                                             return new BasicStroke(
-                                                                                                                      1);
-                                                                                                          }
+   private static final ICurve2DStyle                                           INNER_NODE_STYLE = new ICurve2DStyle() {
+                                                                                                    @Override
+                                                                                                    public Stroke getBorderStroke() {
+                                                                                                       return new BasicStroke(1);
+                                                                                                    }
 
 
-                                                                                                          @Override
-                                                                                                          public Paint getBorderPaint() {
-                                                                                                             return new Color(0f,
-                                                                                                                      1f, 0f,
-                                                                                                                      0.5f).darker().darker();
-                                                                                                          }
+                                                                                                    @Override
+                                                                                                    public Paint getBorderPaint() {
+                                                                                                       return new Color(0f, 1f,
+                                                                                                                0f, 0.5f).darker().darker();
+                                                                                                    }
 
 
-                                                                                                          @Override
-                                                                                                          public boolean isGroupableWith(final ICurve2DStyle that) {
-                                                                                                             return false;
-                                                                                                          }
-                                                                                                       };
+                                                                                                    @Override
+                                                                                                    public boolean isGroupableWith(final ICurve2DStyle that) {
+                                                                                                       return false;
+                                                                                                    }
+                                                                                                 };
 
-   private static final ICurve2DStyle                                                 LEAF_NODE_STYLE  = new ICurve2DStyle() {
-                                                                                                          @Override
-                                                                                                          public Stroke getBorderStroke() {
-                                                                                                             return new BasicStroke(
-                                                                                                                      1,
-                                                                                                                      BasicStroke.CAP_ROUND,
-                                                                                                                      BasicStroke.JOIN_ROUND,
-                                                                                                                      10,
-                                                                                                                      new float[] { 2, 2 },
-                                                                                                                      0);
-                                                                                                          }
-
-
-                                                                                                          @Override
-                                                                                                          public Paint getBorderPaint() {
-                                                                                                             return new Color(0f,
-                                                                                                                      1f, 0f,
-                                                                                                                      0.5f);
-                                                                                                          }
+   private static final ICurve2DStyle                                           LEAF_NODE_STYLE  = new ICurve2DStyle() {
+                                                                                                    @Override
+                                                                                                    public Stroke getBorderStroke() {
+                                                                                                       return new BasicStroke(
+                                                                                                                1,
+                                                                                                                BasicStroke.CAP_ROUND,
+                                                                                                                BasicStroke.JOIN_ROUND,
+                                                                                                                10,
+                                                                                                                new float[] { 2, 2 },
+                                                                                                                0);
+                                                                                                    }
 
 
-                                                                                                          @Override
-                                                                                                          public boolean isGroupableWith(final ICurve2DStyle that) {
-                                                                                                             return false;
-                                                                                                          }
-                                                                                                       };
+                                                                                                    @Override
+                                                                                                    public Paint getBorderPaint() {
+                                                                                                       return new Color(0f, 1f,
+                                                                                                                0f, 0.5f);
+                                                                                                    }
 
 
-   final private boolean                                                              _debugRendering;
-   final private double                                                               _lodMinSize;
-   final private boolean                                                              _renderLODIgnores;
-   final private boolean                                                              _clusterSymbols;
+                                                                                                    @Override
+                                                                                                    public boolean isGroupableWith(final ICurve2DStyle that) {
+                                                                                                       return false;
+                                                                                                    }
+                                                                                                 };
 
-   final private IExpression<IVector2, GSymbol2DList>                                 _pointExpression;
-   final private IExpression<ICurve2D<? extends IFinite2DBounds<?>>, GSymbol2DList>   _curveExpression;
-   final private IExpression<ISurface2D<? extends IFinite2DBounds<?>>, GSymbol2DList> _surfaceExpression;
+
+   private boolean                                                              _debugRendering;
+   private double                                                               _lodMinSize;
+   private boolean                                                              _renderLODIgnores;
+   private boolean                                                              _clusterSymbols;
+
+   private IExpression<IVector2, GSymbol2DList>                                 _pointExpression;
+   private IExpression<ICurve2D<? extends IFinite2DBounds<?>>, GSymbol2DList>   _curveExpression;
+   private IExpression<ISurface2D<? extends IFinite2DBounds<?>>, GSymbol2DList> _surfaceExpression;
 
 
    public GExpressionsSymbolizer2D(final double lodMinSize,
@@ -149,12 +144,6 @@ public class GExpressionsSymbolizer2D
    @Override
    public boolean isRenderLODIgnores() {
       return _renderLODIgnores;
-   }
-
-
-   @Override
-   public String uniqueName() {
-      return null;
    }
 
 
@@ -225,15 +214,16 @@ public class GExpressionsSymbolizer2D
       final GRectangle2DSymbol boundsRectangle = new GRectangle2DSymbol(scaledBounds, null, surfaceStyle, curveStyle,
                Integer.MAX_VALUE, false);
 
-      final IVector2 position = scaledBounds._center;
-      final String msg = "" + node.getAllElementsCount();
-      final Font font = new Font("Dialog", Font.PLAIN, 8);
-
-      final GLabel2DSymbol label = new GLabel2DSymbol(position, msg, font);
-      //      return Collections.singleton(boundsRectangle);
-      @SuppressWarnings("unchecked")
-      final GSymbol2DList symbols = new GSymbol2DList(boundsRectangle, label);
-      return symbols;
+      //      final IVector2 position = scaledBounds._center;
+      //      final String msg = "" + node.getAllElementsCount();
+      //      final Font font = new Font("Dialog", Font.PLAIN, 8);
+      //
+      //      final GLabel2DSymbol label = new GLabel2DSymbol(position, msg, font);
+      //      //      return Collections.singleton(boundsRectangle);
+      //      @SuppressWarnings("unchecked")
+      //      final GSymbol2DList symbols = new GSymbol2DList(boundsRectangle, label);
+      //      return symbols;
+      return new GSymbol2DList(boundsRectangle);
    }
 
 
@@ -258,6 +248,56 @@ public class GExpressionsSymbolizer2D
                                           final IGlobeFeature<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> feature,
                                           final IVectorial2DRenderingScaler scaler) {
       return _surfaceExpression.evaluate(surface, feature, scaler);
+   }
+
+
+   public void setLODMinSize(final double lodMinSize) {
+      _lodMinSize = lodMinSize;
+   }
+
+
+   public IExpression<IVector2, GSymbol2DList> getPointExpression() {
+      return _pointExpression;
+   }
+
+
+   public void setPointExpression(final IExpression<IVector2, GSymbol2DList> pointExpression) {
+      _pointExpression = expressionOrNull(pointExpression);
+   }
+
+
+   public IExpression<ICurve2D<? extends IFinite2DBounds<?>>, GSymbol2DList> getCurveExpression() {
+      return _curveExpression;
+   }
+
+
+   public void setCurveExpression(final IExpression<? extends ICurve2D<? extends IFinite2DBounds<?>>, GSymbol2DList> curveExpression) {
+      _curveExpression = expressionOrNull(curveExpression);
+   }
+
+
+   public IExpression<ISurface2D<? extends IFinite2DBounds<?>>, GSymbol2DList> getSurfaceExpression() {
+      return _surfaceExpression;
+   }
+
+
+   public void setSurfaceExpression(final IExpression<? extends ISurface2D<? extends IFinite2DBounds<?>>, GSymbol2DList> surfaceExpression) {
+      _surfaceExpression = expressionOrNull(surfaceExpression);
+   }
+
+
+   public void setDebugRendering(final boolean debugRendering) {
+      _debugRendering = debugRendering;
+   }
+
+
+   public void setRenderLODIgnores(final boolean renderLODIgnores) {
+      _renderLODIgnores = renderLODIgnores;
+   }
+
+
+   public void setClusterSymbols(final boolean clusterSymbols) {
+      _clusterSymbols = clusterSymbols;
    }
 
 
