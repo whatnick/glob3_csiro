@@ -18,6 +18,7 @@ public enum GWMSDefaultServers {
    //   IGN_CORINE("IGN_CORINE", "http://www.idee.es/wms/IGN-Corine/IGN-Corine?", "", ""),
    //   IGN_IDEE("IGN_IDEE", "http://www.idee.es/wms/IDEE-Base/IDEE-Base?", "", "");
 
+   // -- for AtlasElektronikDemo
    GERMANY("GERMANY", "http://wms1.ccgis.de/cgi-bin/mapserv?map=/data/umn/germany/germany.map&", "", ""),
    SECOORA("SECOORA", "http://secoora.net/ncogc/mapserv?MAP=/opt/secoora_ogc/maps/secoora_insitu.map&", "", "");
 
