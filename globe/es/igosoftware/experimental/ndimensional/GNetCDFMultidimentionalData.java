@@ -50,8 +50,8 @@ import java.util.Map;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.dataset.NetcdfDataset;
 import es.igosoftware.euclid.colors.GColorI;
 import es.igosoftware.euclid.colors.GColorPrecision;
 import es.igosoftware.euclid.colors.IColor;
@@ -138,7 +138,7 @@ public class GNetCDFMultidimentionalData
 
 
    private final String           _fileName;
-   private final NetcdfFile       _ncFile;
+   //private final NetcdfDataset    _ncDataset;
    private final boolean          _verbose;
    private final GPositionBox     _box;
 
@@ -195,27 +195,29 @@ public class GNetCDFMultidimentionalData
 
       _dynamicRange = dynamicRange;
 
+      //TODO: Rationalise magic cache config parameters
+      NetcdfDataset.initNetcdfFileCache(100, 200, 15 * 60);
       _fileName = fileName;
-      _ncFile = NetcdfFile.open(fileName);
+      final NetcdfDataset ncDataset = NetcdfDataset.acquireDataset(_fileName, null);
 
       if (_verbose) {
-         System.out.println(_ncFile);
+         System.out.println(ncDataset);
       }
 
 
-      _latitudeVariable = _ncFile.findVariable(latitudeVariableName);
+      _latitudeVariable = ncDataset.findVariable(latitudeVariableName);
       if (_latitudeVariable == null) {
          throw new RuntimeException("Can't find the latitude variable (\"" + latitudeVariableName + "\")");
       }
 
 
-      _longitudeVariable = _ncFile.findVariable(longitudeVariableName);
+      _longitudeVariable = ncDataset.findVariable(longitudeVariableName);
       if (_longitudeVariable == null) {
          throw new RuntimeException("Can't find the longitude variable (\"" + longitudeVariableName + "\")");
       }
 
 
-      _elevationVariable = _ncFile.findVariable(elevationVariableName);
+      _elevationVariable = ncDataset.findVariable(elevationVariableName);
       if (_elevationVariable == null) {
          throw new RuntimeException("Can't find the elevation variable (\"" + elevationVariableName + "\")");
       }
@@ -224,7 +226,7 @@ public class GNetCDFMultidimentionalData
          _elevationThresholdVariable = null;
       }
       else {
-         _elevationThresholdVariable = _ncFile.findVariable(elevationThresholdVariableName);
+         _elevationThresholdVariable = ncDataset.findVariable(elevationThresholdVariableName);
          if (_elevationThresholdVariable == null) {
             throw new RuntimeException("Can't find the elevation threshold variable (\"" + elevationThresholdVariableName + "\")");
          }
@@ -245,7 +247,7 @@ public class GNetCDFMultidimentionalData
       for (int i = 0; i < _valueVariablesNames.length; i++) {
          final String valueVariableName = _valueVariablesNames[i];
 
-         final Variable valueVariable = _ncFile.findVariable(valueVariableName);
+         final Variable valueVariable = ncDataset.findVariable(valueVariableName);
          if (valueVariable == null) {
             throw new RuntimeException("Can't find the value variable (\"" + valueVariableName + "\")");
          }
@@ -280,7 +282,7 @@ public class GNetCDFMultidimentionalData
       }
 
       for (final VectorVariable vectorVariable : vectorVariables) {
-         final Variable uVariable = _ncFile.findVariable(vectorVariable._uVariableName);
+         final Variable uVariable = ncDataset.findVariable(vectorVariable._uVariableName);
          if (uVariable == null) {
             throw new RuntimeException("Can't find the variable (\"" + vectorVariable._uVariableName + "\")");
          }
@@ -291,7 +293,7 @@ public class GNetCDFMultidimentionalData
                                                                    : uMissingValueAtt.getNumericValue().doubleValue();
 
 
-         final Variable vVariable = _ncFile.findVariable(vectorVariable._vVariableName);
+         final Variable vVariable = ncDataset.findVariable(vectorVariable._vVariableName);
          if (vVariable == null) {
             throw new RuntimeException("Can't find the variable (\"" + vectorVariable._vVariableName + "\")");
          }
@@ -314,7 +316,7 @@ public class GNetCDFMultidimentionalData
       _vectorVariables = vectorVariables;
 
 
-      _timeDimension = _ncFile.findDimension(timeDimensionName);
+      _timeDimension = ncDataset.findDimension(timeDimensionName);
       if (_timeDimension == null) {
          throw new RuntimeException("Can't find the time dimension (\"" + timeDimensionName + "\")");
       }
@@ -322,7 +324,7 @@ public class GNetCDFMultidimentionalData
 
       _box = calculateBox();
 
-      _dimensions = _ncFile.getDimensions();
+      _dimensions = ncDataset.getDimensions();
 
       //      _valueRange = calculateRange(_valueVariable);
    }
@@ -338,8 +340,9 @@ public class GNetCDFMultidimentionalData
 
    private String[] detectValueVariableNames(final String longitudeVariableName,
                                              final String latitudeVariableName,
-                                             final String elevationVariableName) {
-      final List<Variable> allVars = _ncFile.getVariables();
+                                             final String elevationVariableName) throws IOException {
+      final NetcdfDataset ncDataset = NetcdfDataset.acquireDataset(_fileName, null);
+      final List<Variable> allVars = ncDataset.getVariables();
       final ArrayList<String> autoVarName = new ArrayList<String>();
       for (final Variable variable : allVars) {
          final String varName = variable.getName();
@@ -574,27 +577,36 @@ public class GNetCDFMultidimentionalData
             }
          }
       }
-      synchronized (_ncFile) {
-         try {
 
-            final Double var = variable.read(section.toString()).getDouble(0);
-            return var;
+      try {
 
-         }
-         catch (final InvalidRangeException ex) {
-            return Double.NaN;
-         }
-         catch (final ArrayIndexOutOfBoundsException ex) {
-            return Double.NaN;
-         }
+         final Double var = variable.read(section.toString()).getDouble(0);
+         return var;
+
+      }
+      catch (final InvalidRangeException ex) {
+         return Double.NaN;
+      }
+      catch (final ArrayIndexOutOfBoundsException ex) {
+         return Double.NaN;
+
       }
    }
 
 
    @Override
    public String getName() {
-      final String title = _ncFile.getTitle();
-      return (title == null) ? _fileName : title;
+      NetcdfDataset ncDataset;
+      try {
+         ncDataset = NetcdfDataset.acquireDataset(_fileName, null);
+         final String title = ncDataset.getTitle();
+         return (title == null) ? _fileName : title;
+      }
+      catch (final IOException e) {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+      }
+      return null;
    }
 
 
@@ -653,17 +665,27 @@ public class GNetCDFMultidimentionalData
    @Override
    public List<String> getAvailableValueVariablesNames() {
       final List<String> result = new ArrayList<String>(_valueVariablesNames.length);
+      NetcdfDataset ncDataset;
+      try {
+         ncDataset = NetcdfDataset.acquireDataset(_fileName, null);
 
-      for (final String variableName : _valueVariablesNames) {
-         final Variable variable = _ncFile.findVariable(variableName);
 
-         final Attribute longNameAttribute = variable.findAttribute("long_name");
+         for (final String variableName : _valueVariablesNames) {
+            final Variable variable = ncDataset.findVariable(variableName);
 
-         result.add((longNameAttribute == null) ? variable.getName() : longNameAttribute.getStringValue());
+            final Attribute longNameAttribute = variable.findAttribute("long_name");
+
+            result.add((longNameAttribute == null) ? variable.getName() : longNameAttribute.getStringValue());
+         }
+
+         //      return _valueVariablesNames;
+         return result;
       }
-
-      //      return _valueVariablesNames;
-      return result;
+      catch (final IOException e) {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+      }
+      return null;
    }
 
 
@@ -909,12 +931,12 @@ public class GNetCDFMultidimentionalData
       }
 
 
-      //origVecProcessor(vectorVariable, globe, verticalExaggeration, referencePoint, factor, colorization, dimensions,
-      //         vertexContainer, arrowVertexContainer, ranges);
-
-
-      gcollVecProcessor(vectorVariable, globe, verticalExaggeration, referencePoint, factor, colorization, dimensions,
+      origVecProcessor(vectorVariable._name, globe, verticalExaggeration, referencePoint, factor, colorization, dimensions,
                vertexContainer, arrowVertexContainer, ranges);
+
+
+      //gcollVecProcessor(vectorVariable._name, globe, verticalExaggeration, referencePoint, factor, colorization, dimensions,
+      //         vertexContainer, arrowVertexContainer, ranges);
 
 
       //      System.out.println("Removed " + removedCounter.get() + " points");
@@ -981,7 +1003,6 @@ public class GNetCDFMultidimentionalData
 
 
    /**
-    * @param vectorVariable
     * @param globe
     * @param verticalExaggeration
     * @param referencePoint
@@ -992,7 +1013,7 @@ public class GNetCDFMultidimentionalData
     * @param arrowVertexContainer
     * @param ranges
     */
-   private void gcollVecProcessor(final VectorVariable vectorVariable,
+   private void gcollVecProcessor(final String variableName,
                                   final Globe globe,
                                   final double verticalExaggeration,
                                   final Vec4 referencePoint,
@@ -1003,6 +1024,7 @@ public class GNetCDFMultidimentionalData
                                   final GVertex3Container arrowVertexContainer,
                                   final List<Integer>[] ranges) {
 
+      final VectorVariable vectorVariable = findVectorVariable(variableName);
       final List<List<Integer>> indicesHolder = new ArrayList<List<Integer>>();
 
       combination(new Processor<Integer>() {
@@ -1029,12 +1051,10 @@ public class GNetCDFMultidimentionalData
                   final double uValue, vValue;
 
                   try {
-                     synchronized (_ncFile) {
-                        final double uValue_temp = vectorVariable._uVariable.read(section).getDouble(0);
-                        final double vValue_temp = vectorVariable._vVariable.read(section).getDouble(0);
-                        uValue = uValue_temp;
-                        vValue = vValue_temp;
-                     }
+                     final double uValue_temp = vectorVariable._uVariable.read(section).getDouble(0);
+                     final double vValue_temp = vectorVariable._vVariable.read(section).getDouble(0);
+                     uValue = uValue_temp;
+                     vValue = vValue_temp;
                   }
                   catch (final InvalidRangeException ex) {
                      continue;
@@ -1135,7 +1155,6 @@ public class GNetCDFMultidimentionalData
 
 
    /**
-    * @param vectorVariable
     * @param globe
     * @param verticalExaggeration
     * @param referencePoint
@@ -1146,7 +1165,7 @@ public class GNetCDFMultidimentionalData
     * @param arrowVertexContainer
     * @param ranges
     */
-   private void origVecProcessor(final VectorVariable vectorVariable,
+   private void origVecProcessor(final String variableName,
                                  final Globe globe,
                                  final double verticalExaggeration,
                                  final Vec4 referencePoint,
@@ -1156,6 +1175,8 @@ public class GNetCDFMultidimentionalData
                                  final GVertex3Container vertexContainer,
                                  final GVertex3Container arrowVertexContainer,
                                  final List<Integer>[] ranges) {
+      final VectorVariable vectorVariable = findVectorVariable(variableName);
+
       combination(new Processor<Integer>() {
          @Override
          public void process(final List<Integer> indices) {
@@ -1296,7 +1317,17 @@ public class GNetCDFMultidimentionalData
 
    @Override
    public int getDimensionLength(final String dimensionName) {
-      return _ncFile.findDimension(dimensionName).getLength();
+
+      NetcdfDataset ncDataset;
+      try {
+         ncDataset = NetcdfDataset.acquireDataset(_fileName, null);
+         return ncDataset.findDimension(dimensionName).getLength();
+      }
+      catch (final IOException e) {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+      }
+      return -1;
    }
 
 
