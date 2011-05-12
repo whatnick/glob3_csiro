@@ -643,20 +643,5 @@ public final class GWWUtils {
 
       return globe.computePositionFromPoint(surfacePoint).elevation;
    }
-}
-   public static double computeSurfaceElevation(final DrawContext dc,
-                                                final LatLon latLon) {
-
-      final Vec4 surfacePoint = GGlobeApplication.instance().getTerrain().getSurfacePoint(latLon);
-
-      final Globe globe = dc.getGlobe();
-
-      if (surfacePoint == null) {
-         return globe.getElevation(latLon.latitude, latLon.longitude);
-      }
-
-      return globe.computePositionFromPoint(surfacePoint).elevation;
-   }
-
 
 }
