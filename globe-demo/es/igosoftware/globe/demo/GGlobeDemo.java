@@ -93,7 +93,6 @@ import es.igosoftware.scenegraph.GGroupNode;
 import es.igosoftware.scenegraph.GPositionRenderableLayer;
 import es.igosoftware.scenegraph.GTransformationOrder;
 import es.igosoftware.util.GUtils;
-import es.igosoftware.utils.GPNOAWMSLayer;
 import gov.nasa.worldwind.AnaglyphSceneController;
 import gov.nasa.worldwind.Configuration;
 import gov.nasa.worldwind.avlist.AVKey;
@@ -172,7 +171,7 @@ public class GGlobeDemo
 
       // layers.add(new TerrainProfileLayer());
 
-      layers.add(new GPNOAWMSLayer(GPNOAWMSLayer.ImageFormat.JPEG));
+      // layers.add(new GPNOAWMSLayer(GPNOAWMSLayer.ImageFormat.JPEG));
 
       //      layers.add(new GDielmoWMSLayer(GDielmoWMSLayer.ImageFormat.PNG));
 

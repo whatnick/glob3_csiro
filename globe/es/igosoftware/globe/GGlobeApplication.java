@@ -527,14 +527,14 @@ public abstract class GGlobeApplication
 
 
    protected List<GFileName> getIconsDirectories() {
-      return Arrays.asList(GFileName.relative("bitmaps", "icons"), GFileName.relative("bitmaps"),
-               GFileName.relative("..", "globe", "bitmaps", "icons"), GFileName.relative("globe", "bitmaps", "icons"));
+      return Arrays.asList(GFileName.relative("bitmaps", "icons"), GFileName.relative("bitmaps"), GFileName.relative("..",
+               "globe", "bitmaps", "icons"), GFileName.relative("globe", "bitmaps", "icons"));
    }
 
 
    protected List<GFileName> getImagesDirectories() {
-      return Arrays.asList(GFileName.relative("bitmaps", "icons"), GFileName.relative("bitmaps"),
-               GFileName.relative("..", "globe", "bitmaps", "icons"), GFileName.relative("globe", "bitmaps", "icons"));
+      return Arrays.asList(GFileName.relative("bitmaps", "icons"), GFileName.relative("bitmaps"), GFileName.relative("..",
+               "globe", "bitmaps", "icons"), GFileName.relative("globe", "bitmaps", "icons"));
    }
 
 
@@ -559,7 +559,7 @@ public abstract class GGlobeApplication
 
       layers.getLayerByName("NASA Blue Marble Image").setEnabled(true);
       layers.getLayerByName("Blue Marble (WMS) 2004").setEnabled(true);
-      layers.getLayerByName("i-cubed Landsat").setEnabled(true);
+      layers.getLayerByName("i-cubed Landsat").setEnabled(false);
 
 
       final ViewControlsLayer viewControlsLayer = new ViewControlsLayer();
