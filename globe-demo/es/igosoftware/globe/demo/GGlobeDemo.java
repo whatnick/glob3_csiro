@@ -149,7 +149,6 @@ public class GGlobeDemo
    protected LayerList getDefaultLayers() {
       final LayerList layers = super.getDefaultLayers();
 
-
       final List<Layer> compasses = layers.getLayersByClass(CompassLayer.class);
       final CompassLayer compass = (CompassLayer) compasses.get(0);
       GUtils.getImage("value_compass_just.png", getClass().getClassLoader());

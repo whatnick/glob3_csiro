@@ -407,15 +407,22 @@ public final class GWWUtils {
                                     final double deltaNorthing,
                                     final double deltaElevation,
                                     final Globe globe) {
-      final UTMCoord utm = UTMCoord.fromLatLon(position.latitude, position.longitude, globe);
+      try {
+         final UTMCoord utm = UTMCoord.fromLatLon(position.latitude, position.longitude, globe);
 
-      final double newEasting = utm.getEasting() + deltaEasting;
-      final double newNorthing = utm.getNorthing() + deltaNorthing;
-      final double newElevation = position.getElevation() + deltaElevation;
+         final double newEasting = utm.getEasting() + deltaEasting;
+         final double newNorthing = utm.getNorthing() + deltaNorthing;
+         final double newElevation = position.getElevation() + deltaElevation;
 
-      final UTMCoord newUTM = UTMCoord.fromUTM(utm.getZone(), utm.getHemisphere(), newEasting, newNorthing, globe);
+         final UTMCoord newUTM = UTMCoord.fromUTM(utm.getZone(), utm.getHemisphere(), newEasting, newNorthing, globe);
 
-      return new Position(newUTM.getLatitude(), newUTM.getLongitude(), newElevation);
+         return new Position(newUTM.getLatitude(), newUTM.getLongitude(), newElevation);
+      }
+      catch (final IllegalArgumentException e) {
+         //         System.err.println(e);
+         e.printStackTrace();
+         return null;
+      }
    }
 
 
@@ -431,14 +438,21 @@ public final class GWWUtils {
                                   final double deltaEasting,
                                   final double deltaNorthing,
                                   final Globe globe) {
-      final UTMCoord utm = UTMCoord.fromLatLon(position.latitude, position.longitude, globe);
+      try {
+         final UTMCoord utm = UTMCoord.fromLatLon(position.latitude, position.longitude, globe);
 
-      final double newEasting = utm.getEasting() + deltaEasting;
-      final double newNorthing = utm.getNorthing() + deltaNorthing;
+         final double newEasting = utm.getEasting() + deltaEasting;
+         final double newNorthing = utm.getNorthing() + deltaNorthing;
 
-      final UTMCoord newUTM = UTMCoord.fromUTM(utm.getZone(), utm.getHemisphere(), newEasting, newNorthing, globe);
+         final UTMCoord newUTM = UTMCoord.fromUTM(utm.getZone(), utm.getHemisphere(), newEasting, newNorthing, globe);
 
-      return new LatLon(newUTM.getLatitude(), newUTM.getLongitude());
+         return new LatLon(newUTM.getLatitude(), newUTM.getLongitude());
+      }
+      catch (final IllegalArgumentException e) {
+         //         System.err.println(e);
+         e.printStackTrace();
+         return null;
+      }
    }
 
 
@@ -629,4 +643,20 @@ public final class GWWUtils {
 
       return globe.computePositionFromPoint(surfacePoint).elevation;
    }
+}
+   public static double computeSurfaceElevation(final DrawContext dc,
+                                                final LatLon latLon) {
+
+      final Vec4 surfacePoint = GGlobeApplication.instance().getTerrain().getSurfacePoint(latLon);
+
+      final Globe globe = dc.getGlobe();
+
+      if (surfacePoint == null) {
+         return globe.getElevation(latLon.latitude, latLon.longitude);
+      }
+
+      return globe.computePositionFromPoint(surfacePoint).elevation;
+   }
+
+
 }
