@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -58,13 +59,13 @@ public final class GCollections {
    }
 
 
-   public static int size(final Iterable<?> iterable) {
+   public static long size(final Iterable<?> iterable) {
       if (iterable instanceof Collection<?>) {
          return ((Collection<?>) iterable).size();
       }
 
       final Iterator<?> iterator = iterable.iterator();
-      int count = 0;
+      long count = 0;
       while (iterator.hasNext()) {
          count++;
          iterator.next();
@@ -306,7 +307,7 @@ public final class GCollections {
 
 
    public static <ElementT, ResultT> List<ResultT> collect(final List<ElementT> list,
-                                                           final IFunction<ElementT, ResultT> transformer) {
+                                                           final IFunction<ElementT, ResultT> function) {
       if (list == null) {
          return null;
       }
@@ -316,21 +317,62 @@ public final class GCollections {
       }
 
       if (list.size() == 1) {
-         return Collections.singletonList(transformer.apply(list.get(0)));
+         return Collections.singletonList(function.apply(list.get(0)));
       }
 
       final List<ResultT> result = new ArrayList<ResultT>(list.size());
 
       for (final ElementT element : list) {
-         result.add(transformer.apply(element));
+         result.add(function.apply(element));
       }
 
       return result;
    }
 
 
+   public static <ElementT, ResultT> List<ResultT> collectThenSelect(final List<ElementT> list,
+                                                                     final IFunction<ElementT, ResultT> function,
+                                                                     final IPredicate<ResultT> predicate) {
+      if (list == null) {
+         return null;
+      }
+
+      final ArrayList<ResultT> result = new ArrayList<ResultT>(list.size());
+
+      for (final ElementT element : list) {
+         final ResultT collected = function.apply(element);
+         if (predicate.evaluate(collected)) {
+            result.add(collected);
+         }
+      }
+      result.trimToSize();
+
+      return result;
+   }
+
+
+   public static <ElementT, ResultT> List<ResultT> selectThenCollect(final List<ElementT> list,
+                                                                     final IPredicate<ElementT> predicate,
+                                                                     final IFunction<ElementT, ResultT> function) {
+      if (list == null) {
+         return null;
+      }
+
+      final ArrayList<ResultT> result = new ArrayList<ResultT>(list.size());
+
+      for (final ElementT element : list) {
+         if (predicate.evaluate(element)) {
+            result.add(function.apply(element));
+         }
+      }
+      result.trimToSize();
+
+      return result;
+   }
+
+
    public static int[] collect(final int[] array,
-                               final ITransformerIntInt transformer) {
+                               final IFunctionIntInt function) {
       if (array == null) {
          return null;
       }
@@ -338,7 +380,7 @@ public final class GCollections {
       final int[] result = new int[array.length];
 
       for (int i = 0; i < array.length; i++) {
-         result[i] = transformer.transform(array[i]);
+         result[i] = function.apply(array[i]);
       }
 
       return result;
@@ -346,7 +388,7 @@ public final class GCollections {
 
 
    public static byte[] collect(final int[] array,
-                                final ITransformerIntByte transformer) {
+                                final IFunctionIntByte function) {
       if (array == null) {
          return null;
       }
@@ -354,7 +396,7 @@ public final class GCollections {
       final byte[] result = new byte[array.length];
 
       for (int i = 0; i < array.length; i++) {
-         result[i] = transformer.transform(array[i]);
+         result[i] = function.apply(array[i]);
       }
 
       return result;
@@ -362,7 +404,7 @@ public final class GCollections {
 
 
    public static <ElementT, ResultT> Set<ResultT> collect(final Set<ElementT> set,
-                                                          final IFunction<ElementT, ResultT> transformer) {
+                                                          final IFunction<ElementT, ResultT> function) {
       if (set == null) {
          return null;
       }
@@ -374,7 +416,7 @@ public final class GCollections {
       final Set<ResultT> result = new HashSet<ResultT>(set.size());
 
       for (final ElementT element : set) {
-         result.add(transformer.apply(element));
+         result.add(function.apply(element));
       }
 
       return result;
@@ -403,7 +445,7 @@ public final class GCollections {
 
 
    public static <ElementT, ResultT> Collection<ResultT> collect(final Collection<ElementT> collection,
-                                                                 final IFunction<ElementT, ResultT> transformer) {
+                                                                 final IFunction<ElementT, ResultT> function) {
       if (collection == null) {
          return null;
       }
@@ -415,7 +457,7 @@ public final class GCollections {
       final Collection<ResultT> result = new ArrayList<ResultT>(collection.size());
 
       for (final ElementT element : collection) {
-         result.add(transformer.apply(element));
+         result.add(function.apply(element));
       }
 
       return result;
@@ -423,7 +465,7 @@ public final class GCollections {
 
 
    public static <ElementT, ResultT> Iterable<ResultT> collect(final Iterable<ElementT> iterable,
-                                                               final IFunction<ElementT, ResultT> transformer) {
+                                                               final IFunction<ElementT, ResultT> function) {
       if (iterable == null) {
          return null;
       }
@@ -431,7 +473,7 @@ public final class GCollections {
       return new Iterable<ResultT>() {
          @Override
          public Iterator<ResultT> iterator() {
-            return new GTransformIterator<ElementT, ResultT>(iterable.iterator(), transformer);
+            return new GTransformIterator<ElementT, ResultT>(iterable.iterator(), function);
          }
       };
    }
@@ -439,7 +481,7 @@ public final class GCollections {
 
    @SuppressWarnings("unchecked")
    public static <ElementT, ResultT> ResultT[] concurrentCollect(final ElementT[] array,
-                                                                 final IFunction<ElementT, ResultT> transformer) {
+                                                                 final IFunction<ElementT, ResultT> function) {
       if (array == null) {
          return null;
       }
@@ -450,13 +492,13 @@ public final class GCollections {
       }
 
       final List<ElementT> list = Arrays.asList(array);
-      final List<ResultT> collected = concurrentCollect(list, transformer);
+      final List<ResultT> collected = concurrentCollect(list, function);
       return collected.toArray((ResultT[]) new Object[0]);
    }
 
 
    public static <ElementT, ResultT> List<ResultT> concurrentCollect(final List<ElementT> list,
-                                                                     final IFunction<ElementT, ResultT> transformer) {
+                                                                     final IFunction<ElementT, ResultT> function) {
       if (list == null) {
          return null;
       }
@@ -467,7 +509,7 @@ public final class GCollections {
       }
 
       if (size == 1) {
-         return Collections.singletonList(transformer.apply(list.get(0)));
+         return Collections.singletonList(function.apply(list.get(0)));
       }
 
       final ArrayList<ResultT> result = new ArrayList<ResultT>(size);
@@ -481,7 +523,7 @@ public final class GCollections {
                               final int to) {
             //System.out.println("collecting " + from + "->" + to);
             for (int i = from; i <= to; i++) {
-               final ResultT transformed = transformer.apply(list.get(i));
+               final ResultT transformed = function.apply(list.get(i));
                synchronized (result) {
                   result.set(i, transformed);
                }
@@ -494,7 +536,7 @@ public final class GCollections {
 
 
    public static byte[] concurrentCollect(final int[] array,
-                                          final ITransformerIntByte transformer) {
+                                          final IFunctionIntByte function) {
       if (array == null) {
          return null;
       }
@@ -505,7 +547,7 @@ public final class GCollections {
       }
 
       if (size == 1) {
-         return new byte[] { transformer.transform(array[0]) };
+         return new byte[] { function.apply(array[0]) };
       }
 
       final byte[] result = new byte[size];
@@ -516,7 +558,7 @@ public final class GCollections {
                               final int to) {
             //System.out.println("collecting " + from + "->" + to);
             for (int i = from; i <= to; i++) {
-               result[i] = transformer.transform(array[i]);
+               result[i] = function.apply(array[i]);
             }
          }
       });
@@ -1449,8 +1491,8 @@ public final class GCollections {
    }
 
 
-   public static <T> T theOnlyOne(final Iterable<T> iterable) {
-      final Iterator<T> iterator = iterable.iterator();
+   public static <T> T theOnlyOne(final Iterable<? extends T> iterable) {
+      final Iterator<? extends T> iterator = iterable.iterator();
 
       if (!iterator.hasNext()) {
          throw new RuntimeException("Iterable is empty");
@@ -1475,6 +1517,14 @@ public final class GCollections {
          }
       }
       return result;
+   }
+
+
+   public static <T> List<T> asSorted(final Collection<T> collection,
+                                      final Comparator<T> comparator) {
+      final List<T> sorted = new ArrayList<T>(collection);
+      Collections.sort(sorted, comparator);
+      return sorted;
    }
 
 

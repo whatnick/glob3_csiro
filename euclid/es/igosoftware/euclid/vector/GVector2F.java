@@ -39,6 +39,7 @@ package es.igosoftware.euclid.vector;
 import java.io.DataInputStream;
 import java.io.IOException;
 
+import es.igosoftware.euclid.GAngle;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.matrix.GMatrix33D;
 import es.igosoftware.euclid.matrix.GMatrix44D;
@@ -103,6 +104,14 @@ public class GVector2F
 
    public static final GVector2F NEGATIVE_INFINITY = new GVector2F(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY);
    public static final GVector2F POSITIVE_INFINITY = new GVector2F(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
+
+
+   public static GVector2F fromRhoAngle(final int rho,
+                                        final GAngle angle) {
+      final double x = rho * angle.cos();
+      final double y = rho * angle.sin();
+      return new GVector2F(x, y);
+   }
 
 
    public static IVector2 load(final DataInputStream input) throws IOException {
@@ -511,5 +520,20 @@ public class GVector2F
       return new GAxisAlignedRectangle(this, nextUp());
    }
 
+
+   @Override
+   public GVector2F squared() {
+      return new GVector2F(GMath.squared(_x), GMath.squared(_y));
+   }
+
+
+   @Override
+   public GVector2F rotated(final GAngle angle) {
+      final double cos = angle.cos();
+      final double sin = angle.sin();
+      final double x = cos * _x - sin * _y;
+      final double y = sin * _x + cos * _y;
+      return new GVector2F(x, y);
+   }
 
 }

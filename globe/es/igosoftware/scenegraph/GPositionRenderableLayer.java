@@ -36,11 +36,12 @@
 
 package es.igosoftware.scenegraph;
 
+import es.igosoftware.euclid.GAngle;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.globe.GGlobeApplication;
 import es.igosoftware.globe.IGlobeApplication;
-import es.igosoftware.globe.IGlobeRenderingStyle;
+import es.igosoftware.globe.IGlobeSymbolizer;
 import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
@@ -58,7 +59,6 @@ import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 import gov.nasa.worldwind.geom.Frustum;
-import gov.nasa.worldwind.geom.LatLon;
 import gov.nasa.worldwind.geom.Line;
 import gov.nasa.worldwind.geom.Matrix;
 import gov.nasa.worldwind.geom.Position;
@@ -149,6 +149,8 @@ public class GPositionRenderableLayer
 
       private void setPosition(final Position position) {
          _position = position;
+
+         _modelCoordinateOriginTransform = null;
       }
 
 
@@ -166,27 +168,11 @@ public class GPositionRenderableLayer
       }
 
 
-      private double computeSurfaceElevation(final DrawContext dc,
-                                             final LatLon latLon) {
-
-         final Vec4 surfacePoint = GGlobeApplication.instance().getTerrain().getSurfacePoint(latLon);
-
-         final Globe globe = dc.getGlobe();
-
-         if (surfacePoint == null) {
-            return globe.getElevation(latLon.latitude, latLon.longitude);
-         }
-
-         return globe.computePositionFromPoint(surfacePoint).elevation;
-      }
-
-
       private void render(final DrawContext dc,
                           final boolean terrainChanged) {
          asureModelCoordinateOriginTransform(dc, terrainChanged);
 
          _rootNode.render(dc, _modelCoordinateOriginTransform, terrainChanged);
-
       }
 
 
@@ -200,8 +186,7 @@ public class GPositionRenderableLayer
                   position = _position;
                   break;
                case SURFACE:
-                  final double surfaceElevation = computeSurfaceElevation(dc, _position);
-                  // final double surfaceElevation = dc.getGlobe().getElevation(_position.latitude, _position.longitude);
+                  final double surfaceElevation = GWWUtils.computeSurfaceElevation(dc, _position);
                   position = new Position(_position.latitude, _position.longitude, surfaceElevation + _position.elevation);
                   break;
             }
@@ -210,9 +195,6 @@ public class GPositionRenderableLayer
             final double verticalExaggeration = dc.getVerticalExaggeration();
             _modelCoordinateOriginTransform = GWWUtils.computeModelCoordinateOriginTransform(position, globe,
                      verticalExaggeration);
-            //            if (_modelCoordinateOriginTransform != null) {
-            //               System.out.println("_modelCoordinateOriginTransform has been initialized");
-            //            }
          }
       }
 
@@ -280,7 +262,7 @@ public class GPositionRenderableLayer
 
    public void add3DModel(final GFileName objPath,
                           final String name,
-                          final double heading,
+                          final GAngle heading,
                           final Position position) {
 
       new GAsyncObjLoader(new GFileLoader(GFileName.CURRENT_DIRECTORY)).load(objPath, new GAsyncObjLoader.IHandler() {
@@ -313,7 +295,7 @@ public class GPositionRenderableLayer
    public void add3DModel(final GFileName objPath,
                           final String name,
                           final Position position) {
-      add3DModel(objPath, name, 0.0, position);
+      add3DModel(objPath, name, GAngle.ZERO, position);
    }
 
 
@@ -574,12 +556,23 @@ public class GPositionRenderableLayer
 
    public void setPosition(final GGroupNode renderable,
                            final Position position) {
+      boolean changedPosition = false;
       synchronized (_rootNodes) {
          for (final NodeAndPosition rootAndPosition : _rootNodes) {
             if (rootAndPosition._rootNode == renderable) {
                rootAndPosition.setPosition(position);
+               changedPosition = true;
             }
          }
+      }
+
+      if (changedPosition) {
+         _checkViewPort = true;
+         _lastGlobe = null; // force recalculation
+         redraw();
+      }
+      else {
+         throw new RuntimeException("Renderable: " + renderable + " not found in layer " + this);
       }
    }
 
@@ -678,7 +671,7 @@ public class GPositionRenderableLayer
 
 
    @Override
-   public IGlobeRenderingStyle getRenderingStyle() {
+   public IGlobeSymbolizer getSymbolizer() {
       return null;
    }
 

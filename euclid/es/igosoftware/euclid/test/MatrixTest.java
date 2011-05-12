@@ -40,6 +40,7 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
+import es.igosoftware.euclid.GAngle;
 import es.igosoftware.euclid.matrix.GMatrix44D;
 import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.IVector3;
@@ -70,7 +71,7 @@ public class MatrixTest {
 
 
    private GMatrix44D createRotationMatrix() {
-      return GMatrix44D.createRotationMatrix(GVector3D.X_UP, 30);
+      return GMatrix44D.createRotationMatrix(GVector3D.X_UP, GAngle.fromDegrees(30));
    }
 
 

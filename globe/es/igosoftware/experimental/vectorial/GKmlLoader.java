@@ -65,10 +65,10 @@ import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.multigeometry.GMultiGeometry2D;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.shape.GComplexPolygon2D;
-import es.igosoftware.euclid.shape.GShape;
 import es.igosoftware.euclid.shape.IPolygon2D;
 import es.igosoftware.euclid.shape.IPolygonalChain2D;
 import es.igosoftware.euclid.shape.ISimplePolygon2D;
+import es.igosoftware.euclid.utils.GShapeUtils;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.io.GFileName;
@@ -522,7 +522,6 @@ public class GKmlLoader {
 
       final org.geotools.xml.StreamingParser parser = new org.geotools.xml.StreamingParser(configuration, kmlStream,
                KML.Placemark);
-      //      final org.geotools.xml.StreamingParser parser = new org.geotools.xml.StreamingParser(configuration, kmlStream,
       //               SimpleFeature.class);
 
       SimpleFeature f = null;
@@ -530,6 +529,7 @@ public class GKmlLoader {
       final SimpleFeatureCollection featuresCollection = FeatureCollections.newCollection();
 
       int counter = 0;
+      System.out.print("Loading \"" + file.getName() + "\" [");
       while ((f = (SimpleFeature) parser.parse()) != null) {
          counter++;
          //System.out.println("Geometry= " + f.getDefaultGeometry().toString());
@@ -542,7 +542,7 @@ public class GKmlLoader {
          featuresCollection.add(f);
 
       }
-      System.out.println();
+      System.out.println("]");
       System.out.println("Size= " + featuresCollection.size());
 
       final SimpleFeatureType schema = featuresCollection.getSchema();
@@ -739,12 +739,12 @@ public class GKmlLoader {
       System.out.println();
 
       //final SimpleFeatureType schema = featureSource.getSchema();
-      final int fieldsCount = schema.getAttributeCount() - 1;
+      final int fieldsCount = schema.getAttributeCount();
       System.out.println("Fields count: " + fieldsCount);
       final List<GField> fields = new ArrayList<GField>(fieldsCount);
       for (int i = 0; i < fieldsCount; i++) {
-         final String fieldName = schema.getType(i + 1).getName().getLocalPart();
-         final Class<?> fieldType = schema.getType(i + 1).getBinding();
+         final String fieldName = schema.getType(i).getName().getLocalPart();
+         final Class<?> fieldType = schema.getType(i).getBinding();
          System.out.println("Fieldname: " + fieldName);
 
          fields.add(new GField(fieldName, fieldType));
@@ -824,7 +824,7 @@ public class GKmlLoader {
       final List<IVector2> points = removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeLastIfRepeated(convert(
                jtsCoordinates, projection))))));
 
-      return GShape.createPolygon2(false, points);
+      return GShapeUtils.createPolygon2(false, points);
    }
 
 
@@ -833,7 +833,7 @@ public class GKmlLoader {
       final List<IVector2> points = removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeConsecutiveEqualsPoints(removeLastIfRepeated(convert(
                jtsCoordinates, projection))))));
 
-      return GShape.createLine2(false, points);
+      return GShapeUtils.createLine2(false, points);
    }
 
 

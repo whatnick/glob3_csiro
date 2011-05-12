@@ -43,7 +43,7 @@ import es.igosoftware.experimental.pointscloud.rendering.scenegraph.GSGGroupNode
 import es.igosoftware.experimental.pointscloud.rendering.scenegraph.GSGPointsNode;
 import es.igosoftware.globe.GGlobeApplication;
 import es.igosoftware.globe.IGlobeApplication;
-import es.igosoftware.globe.IGlobeRenderingStyle;
+import es.igosoftware.globe.IGlobeSymbolizer;
 import es.igosoftware.globe.IGlobeVectorLayer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
@@ -658,7 +658,7 @@ public final class GPointsCloudLayer
 
 
    @Override
-   public IGlobeRenderingStyle getRenderingStyle() {
+   public IGlobeSymbolizer getSymbolizer() {
       return null;
    }
 

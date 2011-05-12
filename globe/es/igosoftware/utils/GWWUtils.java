@@ -50,6 +50,7 @@ import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVector3;
+import es.igosoftware.globe.GGlobeApplication;
 import es.igosoftware.util.GCollections;
 import es.igosoftware.util.GLogger;
 import es.igosoftware.util.IFunction;
@@ -240,9 +241,9 @@ public final class GWWUtils {
 
       final LatLon[] vertices = new LatLon[] { //
       new LatLon(lowerLatitude, lowerLongitude), //
-      new LatLon(lowerLatitude, upperLongitude), //
-      new LatLon(upperLatitude, upperLongitude), // 
-      new LatLon(upperLatitude, lowerLongitude) };
+               new LatLon(lowerLatitude, upperLongitude), //
+               new LatLon(upperLatitude, upperLongitude), // 
+               new LatLon(upperLatitude, lowerLongitude) };
 
       renderQuad(dc, vertices, red, green, blue);
    }
@@ -406,20 +407,15 @@ public final class GWWUtils {
                                     final double deltaNorthing,
                                     final double deltaElevation,
                                     final Globe globe) {
-      try {
-         final UTMCoord utm = UTMCoord.fromLatLon(position.latitude, position.longitude, globe);
+      final UTMCoord utm = UTMCoord.fromLatLon(position.latitude, position.longitude, globe);
 
-         final double newEasting = utm.getEasting() + deltaEasting;
-         final double newNorthing = utm.getNorthing() + deltaNorthing;
-         final double newElevation = position.getElevation() + deltaElevation;
+      final double newEasting = utm.getEasting() + deltaEasting;
+      final double newNorthing = utm.getNorthing() + deltaNorthing;
+      final double newElevation = position.getElevation() + deltaElevation;
 
-         final UTMCoord newUTM = UTMCoord.fromUTM(utm.getZone(), utm.getHemisphere(), newEasting, newNorthing, globe);
+      final UTMCoord newUTM = UTMCoord.fromUTM(utm.getZone(), utm.getHemisphere(), newEasting, newNorthing, globe);
 
-         return new Position(newUTM.getLatitude(), newUTM.getLongitude(), newElevation);
-      }
-      catch (final IllegalArgumentException ex) {
-         return null;
-      }
+      return new Position(newUTM.getLatitude(), newUTM.getLongitude(), newElevation);
    }
 
 
@@ -435,19 +431,14 @@ public final class GWWUtils {
                                   final double deltaEasting,
                                   final double deltaNorthing,
                                   final Globe globe) {
-      try {
-         final UTMCoord utm = UTMCoord.fromLatLon(position.latitude, position.longitude, globe);
+      final UTMCoord utm = UTMCoord.fromLatLon(position.latitude, position.longitude, globe);
 
-         final double newEasting = utm.getEasting() + deltaEasting;
-         final double newNorthing = utm.getNorthing() + deltaNorthing;
+      final double newEasting = utm.getEasting() + deltaEasting;
+      final double newNorthing = utm.getNorthing() + deltaNorthing;
 
-         final UTMCoord newUTM = UTMCoord.fromUTM(utm.getZone(), utm.getHemisphere(), newEasting, newNorthing, globe);
+      final UTMCoord newUTM = UTMCoord.fromUTM(utm.getZone(), utm.getHemisphere(), newEasting, newNorthing, globe);
 
-         return new LatLon(newUTM.getLatitude(), newUTM.getLongitude());
-      }
-      catch (final IllegalArgumentException ex) {
-         return null;
-      }
+      return new LatLon(newUTM.getLatitude(), newUTM.getLongitude());
    }
 
 
@@ -624,4 +615,18 @@ public final class GWWUtils {
       return new GVector2D(newUTM.getLongitude().radians, newUTM.getLatitude().radians);
    }
 
+
+   public static double computeSurfaceElevation(final DrawContext dc,
+                                                final LatLon latLon) {
+
+      final Vec4 surfacePoint = GGlobeApplication.instance().getTerrain().getSurfacePoint(latLon);
+
+      final Globe globe = dc.getGlobe();
+
+      if (surfacePoint == null) {
+         return globe.getElevation(latLon.latitude, latLon.longitude);
+      }
+
+      return globe.computePositionFromPoint(surfacePoint).elevation;
+   }
 }

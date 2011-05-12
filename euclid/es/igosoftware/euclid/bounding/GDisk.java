@@ -36,6 +36,8 @@
 
 package es.igosoftware.euclid.bounding;
 
+import es.igosoftware.euclid.shape.GSegment2D;
+import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVectorFunction;
 import es.igosoftware.util.GMath;
@@ -131,6 +133,36 @@ public final class GDisk
       final double radius = (scaledExtent.x() + scaledExtent.y()) / 2;
 
       return new GDisk(transformedBounds._center, radius);
+   }
+
+
+   @Override
+   public double area() {
+      return Math.PI * (_radius * _radius);
+   }
+
+
+   @Override
+   public double perimeter() {
+      return Math.PI * 2 * _radius;
+   }
+
+
+   @Override
+   public GSegment2D getVerticalBisector() {
+      final IVector2 from = new GVector2D(_center.x(), _center.y() - _radius);
+      final IVector2 to = new GVector2D(_center.x(), _center.y() + _radius);
+
+      return new GSegment2D(from, to);
+   }
+
+
+   @Override
+   public GSegment2D getHorizontalBisector() {
+      final IVector2 from = new GVector2D(_center.x() - _radius, _center.y());
+      final IVector2 to = new GVector2D(_center.x() + _radius, _center.y());
+
+      return new GSegment2D(from, to);
    }
 
 

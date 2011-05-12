@@ -45,9 +45,6 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<Vecto
    }
 
 
-   public List<GField> getFields();
-
-
    public GProjection getProjection();
 
 
@@ -69,19 +66,19 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<Vecto
    public GAxisAlignedOrthotope<VectorT, ?> getBounds();
 
 
-   public boolean isEditable();
-
-
    public EnumSet<GGeometryType> getGeometryType();
+
+
+   public boolean hasField(final String fieldName);
 
 
    public int getFieldIndex(final String fieldName);
 
 
-   public GField getField(final String fieldName);
+   public List<GField> getFields();
 
 
-   public GField getField(final int index);
+   public int getFieldsCount();
 
 
 }

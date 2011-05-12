@@ -9,6 +9,7 @@ import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IPointsContainer;
 import es.igosoftware.euclid.vector.IVector2;
+import es.igosoftware.euclid.vector.IVectorI2;
 import es.igosoftware.util.GAssert;
 
 
@@ -21,32 +22,27 @@ public class GVectorial2DRenderingScaler
    private final GAxisAlignedRectangle _viewport;
    private final GProjection           _projection;
    private final IProjectionTool       _projectionTool;
+   private final IVectorI2             _renderExtent;
 
 
    public GVectorial2DRenderingScaler(final GAxisAlignedRectangle viewport,
                                       final GProjection projection,
                                       final IProjectionTool projectionTool,
-                                      final int imageWidth,
-                                      final int imageHeight) {
+                                      final IVectorI2 renderExtent) {
       GAssert.notNull(viewport, "viewport");
       GAssert.notNull(projection, "projection");
       GAssert.notNull(projectionTool, "projectionTool");
-      GAssert.isPositive(imageWidth, "imageWidth");
-      GAssert.isPositive(imageHeight, "imageHeight");
+      GAssert.notNull(renderExtent, "renderExtent");
+      GAssert.isPositive(renderExtent.x(), "renderExtent.x()");
+      GAssert.isPositive(renderExtent.y(), "renderExtent.y()");
 
       _viewport = viewport;
       _projection = projection;
-
       _projectionTool = projectionTool;
 
-      _scale = new GVector2D(imageWidth, imageHeight).div(viewport.getExtent());
+      _renderExtent = renderExtent;
+      _scale = new GVector2D(renderExtent.x(), renderExtent.y()).div(viewport.getExtent());
    }
-
-
-   //   @Override
-   //   public GProjection getProjection() {
-   //      return _projection;
-   //   }
 
 
    @Override
@@ -57,7 +53,10 @@ public class GVectorial2DRenderingScaler
 
    @Override
    public final IVector2 scaleAndTranslate(final IVector2 point) {
-      return point.sub(_viewport._lower).scale(_scale);
+      //      return point.sub(_viewport._lower).scale(_scale);
+
+      final IVector2 scaled = point.sub(_viewport._lower).scale(_scale);
+      return new GVector2D(scaled.x(), _renderExtent.y() - scaled.y());
    }
 
 

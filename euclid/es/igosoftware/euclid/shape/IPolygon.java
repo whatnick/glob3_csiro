@@ -69,6 +69,13 @@ BoundsT extends IBounds<VectorT, BoundsT>
    public boolean isConvex();
 
 
-   //   public double getArea();
+   public double area();
+
+
+   public boolean isCounterClockWise();
+
+
+   public boolean isClockWise();
+
 
 }

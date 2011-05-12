@@ -2,15 +2,8 @@
 
 package es.igosoftware.euclid.experimental.vectorial.rendering.coloring;
 
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 
-import javax.imageio.ImageIO;
-
-import es.igosoftware.euclid.colors.GColorF;
 import es.igosoftware.euclid.colors.IColor;
 import es.igosoftware.util.GAssert;
 import es.igosoftware.util.GMath;
@@ -90,40 +83,42 @@ public class GColorRamp {
    }
 
 
-   public static void main(final String[] args) throws IOException {
-      System.out.println("GColorRamp 0.1");
-      System.out.println("--------------\n");
+   //   public static void main(final String[] args) throws IOException {
+   //      System.out.println("GColorRamp 0.1");
+   //      System.out.println("--------------\n");
+   //
+   //      //      System.out.println(GColorF.GREEN.muchLighter());
+   //      //      System.out.println(GColorF.GREEN.muchDarker());
+   //      //      System.out.println();
+   //
+   //      //      final GColorRamp ramp = new GColorRamp(GColorF.RED.wheel(16));
+   //      final GColorRamp ramp = new GColorRamp(GColorF.BLACK, GColorF.WHITE);
+   //      //            final GColorRamp ramp = new GColorRamp(GColorF.BLUE, GColorF.CYAN, GColorF.GREEN, GColorF.YELLOW, GColorF.RED);
+   //      //      final GColorRamp ramp = new GColorRamp(GColorF.GREEN.muchDarker(), GColorF.GREEN, GColorF.GREEN.muchLighter());
+   //      System.out.println(ramp);
+   //
+   //      //      for (float alpha = 0.4f; alpha <= 0.6f; alpha += 0.01f) {
+   //      for (float alpha = 0; alpha <= 1; alpha += 0.1f) {
+   //         final IColor color = ramp.getColor(alpha);
+   //         System.out.println("   " + alpha + " -> " + color);
+   //      }
+   //
+   //      final BufferedImage image = new BufferedImage(1280, 512, BufferedImage.TYPE_4BYTE_ABGR);
+   //      final Graphics2D g2d = image.createGraphics();
+   //
+   //      for (int row = 0; row < image.getWidth(); row++) {
+   //         final float alpha = (float) row / image.getWidth();
+   //         //         System.out.println(alpha);
+   //         final IColor color = ramp.getColor(alpha);
+   //         g2d.setColor(color.asAWTColor());
+   //         //         g2d.drawLine(0, row, image.getWidth(), row);
+   //         g2d.drawLine(row, 0, row, image.getHeight());
+   //      }
+   //
+   //      g2d.dispose();
+   //
+   //      ImageIO.write(image, "png", new File("/home/dgd/Escritorio/ramp.png"));
+   //   }
 
-      //      System.out.println(GColorF.GREEN.muchLighter());
-      //      System.out.println(GColorF.GREEN.muchDarker());
-      //      System.out.println();
 
-      //      final GColorRamp ramp = new GColorRamp(GColorF.RED.wheel(16));
-      final GColorRamp ramp = new GColorRamp(GColorF.BLACK, GColorF.WHITE);
-      //            final GColorRamp ramp = new GColorRamp(GColorF.BLUE, GColorF.CYAN, GColorF.GREEN, GColorF.YELLOW, GColorF.RED);
-      //      final GColorRamp ramp = new GColorRamp(GColorF.GREEN.muchDarker(), GColorF.GREEN, GColorF.GREEN.muchLighter());
-      System.out.println(ramp);
-
-      //      for (float alpha = 0.4f; alpha <= 0.6f; alpha += 0.01f) {
-      for (float alpha = 0; alpha <= 1; alpha += 0.1f) {
-         final IColor color = ramp.getColor(alpha);
-         System.out.println("   " + alpha + " -> " + color);
-      }
-
-      final BufferedImage image = new BufferedImage(1280, 512, BufferedImage.TYPE_4BYTE_ABGR);
-      final Graphics2D g2d = image.createGraphics();
-
-      for (int row = 0; row < image.getWidth(); row++) {
-         final float alpha = (float) row / image.getWidth();
-         //         System.out.println(alpha);
-         final IColor color = ramp.getColor(alpha);
-         g2d.setColor(color.asAWTColor());
-         //         g2d.drawLine(0, row, image.getWidth(), row);
-         g2d.drawLine(row, 0, row, image.getHeight());
-      }
-
-      g2d.dispose();
-
-      ImageIO.write(image, "png", new File("/home/dgd/Escritorio/ramp.png"));
-   }
 }

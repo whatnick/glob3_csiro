@@ -36,6 +36,7 @@
 
 package es.igosoftware.panoramic;
 
+import es.igosoftware.euclid.GAngle;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.GVectorUtils;
@@ -169,7 +170,7 @@ public class GPanoramic
    private final GFileName                                                   _panoramicFileName;
    private final double                                                      _radius;
    private final Position                                                    _position;
-   private final double                                                      _headingInDegrees;
+   private final GAngle                                                      _heading;
 
    private Globe                                                             _lastGlobe;
    private double                                                            _lastVerticalExaggeration;
@@ -211,7 +212,8 @@ public class GPanoramic
                      final double radius,
                      final Position position,
                      final GHUDLayer hudLayer) throws IOException {
-      this(layer, name, loader, panoramicName, radius, position, 0, GElevationAnchor.SURFACE, hudLayer, DEFAULT_EXIT_ICON_NAME);
+      this(layer, name, loader, panoramicName, radius, position, GAngle.ZERO, GElevationAnchor.SURFACE, hudLayer,
+           DEFAULT_EXIT_ICON_NAME);
    }
 
 
@@ -223,7 +225,7 @@ public class GPanoramic
                      final Position position,
                      final GHUDLayer hudLayer,
                      final GFileName exitIconName) throws IOException {
-      this(layer, name, loader, panoramicName, radius, position, 0, GElevationAnchor.SURFACE, hudLayer, exitIconName);
+      this(layer, name, loader, panoramicName, radius, position, GAngle.ZERO, GElevationAnchor.SURFACE, hudLayer, exitIconName);
    }
 
 
@@ -233,7 +235,7 @@ public class GPanoramic
                      final GFileName panoramicFileName,
                      final double radius,
                      final Position position,
-                     final double headingInDegrees,
+                     final GAngle heading,
                      final GElevationAnchor anchor,
                      final GHUDLayer hudLayer,
                      final GFileName exitIconName) throws IOException {
@@ -251,7 +253,7 @@ public class GPanoramic
       _panoramicFileName = panoramicFileName;
       _radius = radius;
       _position = position;
-      _headingInDegrees = headingInDegrees;
+      _heading = heading;
       _anchor = anchor;
       _hudLayer = hudLayer;
       _exitIconName = exitIconName;
@@ -457,7 +459,7 @@ public class GPanoramic
          final Globe globe = dc.getGlobe();
          final double verticalExaggeration = dc.getVerticalExaggeration();
          _modelCoordinateOriginTransform = GWWUtils.computeModelCoordinateOriginTransform(position, globe, verticalExaggeration);
-         _modelCoordinateOriginTransform = _modelCoordinateOriginTransform.multiply(Matrix.fromRotationZ(Angle.fromDegrees(_headingInDegrees)));
+         _modelCoordinateOriginTransform = _modelCoordinateOriginTransform.multiply(Matrix.fromRotationZ(Angle.fromDegrees(_heading.getDegrees())));
       }
    }
 

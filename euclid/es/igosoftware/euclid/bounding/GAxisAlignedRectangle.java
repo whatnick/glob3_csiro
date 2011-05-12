@@ -592,13 +592,6 @@ public final class GAxisAlignedRectangle
    }
 
 
-   public double area() {
-      final double width = getWidth();
-      final double height = getHeight();
-      return width * height;
-   }
-
-
    private double getWidth() {
       return _upper.x() - _lower.x();
    }
@@ -636,6 +629,64 @@ public final class GAxisAlignedRectangle
       }
 
       return new GAxisAlignedRectangle(_lower.max(that._lower), _upper.min(that._upper));
+   }
+
+
+   @Override
+   public double area() {
+      final double width = getWidth();
+      final double height = getHeight();
+      return width * height;
+   }
+
+
+   @Override
+   public double perimeter() {
+      final double width = getWidth();
+      final double height = getHeight();
+      return (width + height) * 2;
+   }
+
+
+   @Override
+   public GSegment2D getVerticalBisector() {
+      return getVerticalBisectorAt(_center.x());
+   }
+
+
+   public GSegment2D getVerticalBisectorAt(final double x) {
+      final IVector2 from = new GVector2D(x, _lower.y());
+      final IVector2 to = new GVector2D(x, _upper.y());
+
+      return new GSegment2D(from, to);
+   }
+
+
+   @Override
+   public GSegment2D getHorizontalBisector() {
+      return getHorizontalBisectorAt(_center.y());
+   }
+
+
+   public GSegment2D getHorizontalBisectorAt(final double y) {
+      final IVector2 from = new GVector2D(_lower.x(), y);
+      final IVector2 to = new GVector2D(_upper.x(), y);
+
+      return new GSegment2D(from, to);
+   }
+
+
+   public GSegment2D getSouthWestToNorthEastBisector() {
+      return new GSegment2D(_lower, _upper);
+   }
+
+
+   public GSegment2D getNorthWestToSouthEastBisector() {
+      return new GSegment2D(//
+               new GVector2D(_lower.x(), _upper.y()), //
+               new GVector2D(_upper.x(), _lower.y()) //
+      );
+
    }
 
 

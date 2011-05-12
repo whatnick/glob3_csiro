@@ -41,6 +41,8 @@ import java.util.List;
 
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
+import es.igosoftware.euclid.experimental.algorithms.GPolygonSegment2DIntersections;
+import es.igosoftware.euclid.utils.GShapeUtils;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.euclid.vector.IVectorFunction;
 import es.igosoftware.util.GCollections;
@@ -133,12 +135,6 @@ public final class GComplexPolygon2D
 
 
    @Override
-   public List<GTriangle2D> triangulate() {
-      throw new IllegalArgumentException("Not yet implemented");
-   }
-
-
-   @Override
    public boolean isConvex() {
       return false;
    }
@@ -183,6 +179,46 @@ public final class GComplexPolygon2D
          return true;
       }
       return false;
+   }
+
+
+   @Override
+   public double area() {
+      double area = _hull.area();
+
+      for (final ISimplePolygon2D hole : _holes) {
+         area -= hole.area();
+      }
+
+      return area;
+   }
+
+
+   @Override
+   public boolean isCounterClockWise() {
+      return GShapeUtils.isCounterClockWise2(_hull.getPoints());
+   }
+
+
+   @Override
+   public boolean isClockWise() {
+      return GShapeUtils.isClockWise2(_hull.getPoints());
+   }
+
+
+   @Override
+   public double perimeter() {
+      double perimeter = _hull.perimeter();
+      for (final ISimplePolygon2D hole : _holes) {
+         perimeter += hole.perimeter();
+      }
+      return perimeter;
+   }
+
+
+   @Override
+   public List<GSegment2D> getIntersections(final GSegment2D segment) {
+      return GPolygonSegment2DIntersections.getIntersections(this, segment);
    }
 
 

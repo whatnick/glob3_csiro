@@ -61,5 +61,7 @@
 	<classpathentry kind="lib" path="libs/gt/ecore-2.2.2.jar"/>
 	<classpathentry kind="lib" path="libs/gt/common-2.2.1.jar"/>
 	<classpathentry kind="lib" path="libs/gt/commons-collections-3.1.jar"/>
+	<classpathentry kind="lib" path="libs/gt/gt-xsd-gml2-2.7-M3.jar"/>
+	<classpathentry kind="lib" path="libs/gt/gt-xsd-gml3-2.7-M3.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

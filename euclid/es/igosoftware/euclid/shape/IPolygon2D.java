@@ -50,11 +50,10 @@ public interface IPolygon2D
             ISurface2D<GAxisAlignedRectangle> {
 
 
-   public List<GTriangle2D> triangulate();
-
-
    @Override
    public IPolygon2D transform(final IVectorFunction<IVector2> transformer);
 
+
+   public List<GSegment2D> getIntersections(final GSegment2D segment);
 
 }

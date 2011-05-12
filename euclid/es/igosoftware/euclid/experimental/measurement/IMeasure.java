@@ -24,4 +24,10 @@ public interface IMeasure<UnitT extends IUnit<UnitT>> {
    public double getValueInReferenceUnits();
 
 
+   public IMeasure<UnitT> max(final IMeasure<UnitT> that);
+
+
+   public IMeasure<UnitT> min(final IMeasure<UnitT> that);
+
+
 }

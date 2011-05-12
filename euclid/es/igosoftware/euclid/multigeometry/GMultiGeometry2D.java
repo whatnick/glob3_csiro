@@ -7,13 +7,13 @@ import java.util.List;
 import es.igosoftware.euclid.IBoundedGeometry;
 import es.igosoftware.euclid.IBoundedGeometry2D;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
-import es.igosoftware.euclid.bounding.IFiniteBounds;
+import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.vector.IVector2;
 
 
 public class GMultiGeometry2D<
 
-ChildrenGeometryT extends IBoundedGeometry<IVector2, ? extends IFiniteBounds<IVector2, ?>>
+ChildrenGeometryT extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>
 
 >
          extends

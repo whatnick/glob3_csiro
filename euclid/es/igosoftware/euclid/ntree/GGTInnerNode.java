@@ -100,7 +100,7 @@ GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
          }
 
          if (geometryInChildrenCounter == 0) {
-            System.out.println("WARNING >> element " + pair + " don't added!!!!!");
+            throw new RuntimeException("WARNING >> element don't added: " + pair);
          }
          else if (geometryInChildrenCounter == 1) {
             elementsToDistribute.add(pair);
@@ -192,11 +192,11 @@ GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
          }
 
          if (geometryAddedCounter == 0) {
-            System.out.println("WARNING >> element " + pair + " don't added!!!!!");
+            throw new RuntimeException("WARNING >> element don't added: " + pair);
          }
          else if (geometryAddedCounter > 1) {
-            System.out.println("WARNING >> element " + pair + " added " + geometryAddedCounter + " times !!!!!");
-            progress.incrementSteps(geometryAddedCounter - 1);
+            throw new RuntimeException("WARNING >> element added " + geometryAddedCounter + " times: " + pair);
+            //            progress.incrementSteps(geometryAddedCounter - 1);
          }
       }
 
@@ -285,7 +285,8 @@ GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
          return null;
       }
 
-      if ((depth > 15) || acceptLeafNodeCreation(bounds, elements, depth, parameters)) {
+
+      if (acceptLeafNodeCreation(bounds, elements, depth, parameters)) {
          return createLeafNode(bounds, elements, progress);
       }
 
@@ -336,7 +337,7 @@ GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
       while (!queue.isEmpty()) {
          final GGTNode<VectorT, ElementT, GeometryT> current = queue.removeFirst();
 
-         if ((region != null) && !current.getMinimumBounds().touchesBounds(region)) {
+         if ((region != null) && !current.getBounds().touchesBounds(region)) {
             continue;
          }
 
@@ -392,7 +393,6 @@ GeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
       }
 
       visitor.finishedInnerNode(this);
-
    }
 
 

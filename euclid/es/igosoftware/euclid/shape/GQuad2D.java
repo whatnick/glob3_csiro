@@ -36,12 +36,12 @@
 
 package es.igosoftware.euclid.shape;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
-import es.igosoftware.euclid.utils.GTriangulate;
+import es.igosoftware.euclid.experimental.algorithms.GPolygonSegment2DIntersections;
+import es.igosoftware.euclid.utils.GShapeUtils;
 import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.GVectorUtils;
 import es.igosoftware.euclid.vector.IVector2;
@@ -175,20 +175,7 @@ public final class GQuad2D
 
    @Override
    public boolean isConvex() {
-      return GShape.isConvexQuad(new GVector3D(_v0, 0), new GVector3D(_v1, 0), new GVector3D(_v2, 0), new GVector3D(_v3, 0));
-   }
-
-
-   @Override
-   public List<GTriangle2D> triangulate() {
-      //      final List<IVector2> points = getPoints();
-      final GTriangulate.IndexedTriangle[] iTriangles = GTriangulate.triangulate(_v0, _v1, _v2, _v3);
-
-      final List<GTriangle2D> result = new ArrayList<GTriangle2D>(iTriangles.length);
-      for (final GTriangulate.IndexedTriangle iTriangle : iTriangles) {
-         result.add(new GTriangle2D(getPoint(iTriangle._v0), getPoint(iTriangle._v1), getPoint(iTriangle._v2)));
-      }
-      return result;
+      return GShapeUtils.isConvexQuad(new GVector3D(_v0, 0), new GVector3D(_v1, 0), new GVector3D(_v2, 0), new GVector3D(_v3, 0));
    }
 
 
@@ -198,6 +185,30 @@ public final class GQuad2D
          return this;
       }
       return new GQuad2D(transformer.apply(_v0), transformer.apply(_v1), transformer.apply(_v2), transformer.apply(_v3));
+   }
+
+
+   @Override
+   public double area() {
+      return GShapeUtils.signedArea(_v0, _v1, _v2, _v3);
+   }
+
+
+   @Override
+   public boolean isCounterClockWise() {
+      return GShapeUtils.isCounterClockWise(_v0, _v1, _v2, _v3);
+   }
+
+
+   @Override
+   public boolean isClockWise() {
+      return GShapeUtils.isClockWise(_v0, _v1, _v2, _v3);
+   }
+
+
+   @Override
+   public List<GSegment2D> getIntersections(final GSegment2D segment) {
+      return GPolygonSegment2DIntersections.getIntersections(this, segment);
    }
 
 

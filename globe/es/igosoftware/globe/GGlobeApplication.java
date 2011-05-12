@@ -1511,7 +1511,7 @@ public abstract class GGlobeApplication
 
 
       // attributes from the rendering style
-      final IGlobeRenderingStyle renderingStyle = layer.getRenderingStyle();
+      final IGlobeSymbolizer renderingStyle = layer.getSymbolizer();
       if (renderingStyle != null) {
          final List<? extends ILayerAttribute<?>> renderingStyleAttributes = GCollections.selectNotNull(renderingStyle.getLayerAttributes(
                   this, layer));

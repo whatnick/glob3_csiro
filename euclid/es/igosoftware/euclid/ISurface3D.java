@@ -11,4 +11,7 @@ public interface ISurface3D<BoundsT extends IBounds<IVector3, BoundsT>>
             ISurface<IVector3, BoundsT>,
             IBoundedGeometry3D<BoundsT> {
 
+
+   public double perimeter();
+
 }

@@ -132,26 +132,10 @@ public class G3DModelNode
       final Matrix modelViewMatrix = dc.getView().getModelviewMatrix().multiply(modelMatrix);
       GWWUtils.toGLArray(modelViewMatrix, _modelViewMatrixArray);
 
-      //            if (_boundsInGlobalCoordinates != null) {
-      //               _boundsInGlobalCoordinates.render(dc);
-      //            }
-
       if (_renderPickableBounds) {
          if (_pickableMeshesBounds != null) {
             for (final Extent each : _pickableMeshesBounds) {
                GWWUtils.renderExtent(dc, each);
-               //               if (each instanceof Box) {
-               //                  ((Box) each).render(dc);
-               //               }
-               //               else if (each instanceof Sphere) {
-               //                  ((Sphere) each).render(dc);
-               //               }
-               //               else if (each instanceof Cylinder) {
-               //                  ((Cylinder) each).render(dc);
-               //               }
-               //               else {
-               //                  System.out.println("Unsupported bounds type " + each.getClass());
-               //               }
             }
          }
       }
@@ -162,8 +146,8 @@ public class G3DModelNode
 
    @Override
    public String toString() {
-      return "G3DModelNode [name=" + getName() + ", model=" + _model.getModelData().getFileName() + getTransformationString()
-             + "]";
+      return "G3DModelNode [name=" + getName() + ", model=" + _model.getModelData().getFileName().buildPath()
+             + getTransformationString() + "]";
    }
 
 

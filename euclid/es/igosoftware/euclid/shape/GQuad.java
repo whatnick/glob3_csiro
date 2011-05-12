@@ -246,4 +246,8 @@ BoundsT extends IBounds<VectorT, BoundsT>
    }
 
 
+   public double perimeter() {
+      return _v0.distance(_v1) + _v1.distance(_v2) + _v2.distance(_v3) + _v3.distance(_v0);
+   }
+
 }

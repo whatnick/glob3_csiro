@@ -46,7 +46,7 @@ import es.igosoftware.util.GMath;
 
 public class GVector2I
          implements
-            IVectorI2<GVector2I> {
+            IVectorI2 {
 
    private static final long     serialVersionUID   = 1L;
 
@@ -64,7 +64,7 @@ public class GVector2I
    public static final GVector2I Y_DOWN             = new GVector2I(0, -1);
 
 
-   public final IVectorI2<?> load(final DataInputStream input) throws IOException {
+   public final IVectorI2 load(final DataInputStream input) throws IOException {
       final int x = input.readInt();
       final int y = input.readInt();
       return new GVector2I(x, y);
@@ -105,7 +105,7 @@ public class GVector2I
 
 
    @Override
-   public GVector2I scale(final GVector2I that) {
+   public GVector2I scale(final IVectorI2 that) {
       return new GVector2I(_x * that.x(), _y * that.y());
    }
 
@@ -117,7 +117,7 @@ public class GVector2I
 
 
    @Override
-   public GVector2I add(final GVector2I that) {
+   public GVector2I add(final IVectorI2 that) {
       return new GVector2I(_x + that.x(), _y + that.y());
    }
 
@@ -129,7 +129,7 @@ public class GVector2I
 
 
    @Override
-   public GVector2I sub(final GVector2I that) {
+   public GVector2I sub(final IVectorI2 that) {
       return new GVector2I(_x - that.x(), _y - that.y());
    }
 
@@ -185,20 +185,20 @@ public class GVector2I
 
 
    @Override
-   public boolean between(final GVector2I min,
-                          final GVector2I max) {
+   public boolean between(final IVectorI2 min,
+                          final IVectorI2 max) {
       return GMath.between(_x, min.x(), max.x()) && GMath.between(_y, min.y(), max.y());
    }
 
 
    @Override
-   public boolean greaterOrEquals(final GVector2I that) {
+   public boolean greaterOrEquals(final IVectorI2 that) {
       return GMath.greaterOrEquals(_x, that.x()) && GMath.greaterOrEquals(_y, that.y());
    }
 
 
    @Override
-   public boolean lessOrEquals(final GVector2I that) {
+   public boolean lessOrEquals(final IVectorI2 that) {
       return GMath.lessOrEquals(_x, that.x()) && GMath.greaterOrEquals(_y, that.y());
    }
 

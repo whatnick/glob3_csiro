@@ -583,4 +583,11 @@ public class GVector3F
       return new GAxisAlignedBox(this, nextUp());
    }
 
+
+   @Override
+   public GVector3F squared() {
+      return new GVector3F(GMath.squared(_x), GMath.squared(_y), GMath.squared(_z));
+   }
+
+
 }

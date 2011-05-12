@@ -42,13 +42,14 @@ import es.igosoftware.euclid.bounding.GAxisAlignedOrthotope;
 import es.igosoftware.euclid.bounding.GAxisAlignedRectangle;
 import es.igosoftware.euclid.bounding.IFinite2DBounds;
 import es.igosoftware.euclid.experimental.vectorial.rendering.GVectorial2DRenderer;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.GJava2DVectorial2DDrawer;
 import es.igosoftware.euclid.experimental.vectorial.rendering.context.IProjectionTool;
-import es.igosoftware.euclid.experimental.vectorial.rendering.styling.IRenderingStyle2D;
+import es.igosoftware.euclid.experimental.vectorial.rendering.context.IVectorial2DDrawer;
+import es.igosoftware.euclid.experimental.vectorial.rendering.symbolizer.ISymbolizer2D;
 import es.igosoftware.euclid.features.IGlobeFeatureCollection;
-import es.igosoftware.euclid.features.IGlobeMutableFeatureCollection;
-import es.igosoftware.euclid.mutability.IMutable;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.GVector2D;
+import es.igosoftware.euclid.vector.GVector2I;
 import es.igosoftware.euclid.vector.IVector2;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeVector2Layer;
@@ -82,8 +83,6 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -93,7 +92,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
-import javax.imageio.ImageIO;
 import javax.swing.Icon;
 
 
@@ -103,45 +101,37 @@ public class GVectorial2DLayer
          implements
             IGlobeVector2Layer {
 
-   private static final int             TEXTURE_WIDTH                  = 256;
-   private static final int             TEXTURE_HEIGHT                 = 256;
+   private static final int             TEXTURE_WIDTH              = 256;
+   private static final int             TEXTURE_HEIGHT             = 256;
 
+   private static final int             TIMEOUT_FOR_CACHED_RESULTS = 200;
 
-   private static final int             TIMEOUT_FOR_CACHED_RESULTS     = 200;
+   private static final int             BYTES_PER_PIXEL            = 4 /* rgba */
+                                                                   * 4 /* 4 bytes x integer*/;
+   private static final int             TEXTURE_SIZE_IN_BYTES      = TEXTURE_WIDTH * TEXTURE_HEIGHT * BYTES_PER_PIXEL;
 
-   private static final String          RENDERING_CACHE_DIRECTORY_NAME = ".rendering-cache";
-   private static final File            RENDERING_CACHE_DIRECTORY      = new File(RENDERING_CACHE_DIRECTORY_NAME);
-
-
-   private static final int             BYTES_PER_PIXEL                = 4 /* rgba */
-                                                                       * 4 /* 4 bytes x integer*/;
-   private static final int             TEXTURE_SIZE_IN_BYTES          = TEXTURE_WIDTH * TEXTURE_HEIGHT * BYTES_PER_PIXEL;
-
-   private static final IProjectionTool PROJECTION_TOOL                = new IProjectionTool() {
-                                                                          @Override
-                                                                          public IVector2 increment(final IVector2 position,
-                                                                                                    final GProjection projection,
-                                                                                                    final double deltaEasting,
-                                                                                                    final double deltaNorthing) {
-                                                                             return GWWUtils.increment(position, projection,
-                                                                                      deltaEasting, deltaNorthing);
-                                                                          }
-                                                                       };
+   private static final IProjectionTool PROJECTION_TOOL            = new IProjectionTool() {
+                                                                      @Override
+                                                                      public IVector2 increment(final IVector2 position,
+                                                                                                final GProjection projection,
+                                                                                                final double deltaEasting,
+                                                                                                final double deltaNorthing) {
+                                                                         return GWWUtils.increment(position, projection,
+                                                                                  deltaEasting, deltaNorthing);
+                                                                      }
+                                                                   };
 
    private static final class RenderingKey {
       private final GVectorial2DLayer     _layer;
       private final GAxisAlignedRectangle _tileBounds;
-      private final IRenderingStyle2D     _renderingStyle;
-      private final String                _id;
+      private final ISymbolizer2D         _symbolizer;
 
 
       private RenderingKey(final GVectorial2DLayer layer,
-                           final GAxisAlignedRectangle tileSectorBounds,
-                           final String id) {
+                           final GAxisAlignedRectangle tileSectorBounds) {
          _layer = layer;
          _tileBounds = tileSectorBounds;
-         _renderingStyle = layer._renderingStyle;
-         _id = id;
+         _symbolizer = layer._symbolizer;
       }
 
 
@@ -150,7 +140,7 @@ public class GVectorial2DLayer
          final int prime = 31;
          int result = 1;
          result = prime * result + ((_layer == null) ? 0 : _layer.hashCode());
-         result = prime * result + ((_renderingStyle == null) ? 0 : _renderingStyle.hashCode());
+         result = prime * result + ((_symbolizer == null) ? 0 : _symbolizer.hashCode());
          result = prime * result + ((_tileBounds == null) ? 0 : _tileBounds.hashCode());
          return result;
       }
@@ -176,12 +166,12 @@ public class GVectorial2DLayer
          else if (!_layer.equals(other._layer)) {
             return false;
          }
-         if (_renderingStyle == null) {
-            if (other._renderingStyle != null) {
+         if (_symbolizer == null) {
+            if (other._symbolizer != null) {
                return false;
             }
          }
-         else if (!_renderingStyle.equals(other._renderingStyle)) {
+         else if (!_symbolizer.equals(other._symbolizer)) {
             return false;
          }
          if (_tileBounds == null) {
@@ -198,27 +188,17 @@ public class GVectorial2DLayer
 
       @Override
       public String toString() {
-         return "RenderingKey [layer=" + _layer + ", tileBounds=" + _tileBounds + ", renderingStyle=" + _renderingStyle + "]";
+         return "RenderingKey [layer=" + _layer + ", tileBounds=" + _tileBounds + ", symbolizer=" + _symbolizer + "]";
       }
 
 
-      private String uniqueName() {
-         final String featuresUniqueID = _layer._features.getUniqueID();
-         if (featuresUniqueID == null) {
-            // it means no disk cache
-            return null;
-         }
-         return featuresUniqueID + _id + _renderingStyle.uniqueName();
-      }
    }
 
 
    private static final LRUCache<RenderingKey, Future<BufferedImage>, RuntimeException> IMAGES_CACHE;
 
 
-   private static final LinkedList<RendererFutureTask>                                  RENDERING_TASKS      = new LinkedList<RendererFutureTask>();
-
-   private static boolean                                                               cacheRenderingOnDisk = false;
+   private static final LinkedList<RendererFutureTask>                                  RENDERING_TASKS = new LinkedList<RendererFutureTask>();
 
 
    private static class RendererFutureTask
@@ -234,91 +214,26 @@ public class GVectorial2DLayer
                                  final double priority) {
          super(new Callable<BufferedImage>() {
 
-            private BufferedImage getImageFromDiskCache() {
-               final String uniqueName = key.uniqueName();
-               if (uniqueName == null) {
-                  // no uniqueName -> no cache
-                  return null;
-               }
-
-               final File file = new File(RENDERING_CACHE_DIRECTORY, uniqueName + ".png");
-
-               if (!file.exists()) {
-                  return null;
-               }
-
-               try {
-                  return ImageIO.read(file);
-               }
-               catch (final IOException e) {}
-
-               return null;
-            }
-
 
             @Override
             public BufferedImage call() throws Exception {
-
-               final BufferedImage imageFromCache = getImageFromDiskCache();
-               if (imageFromCache != null) {
-                  // System.out.println("disk cache hit");
-                  key._layer.redraw();
-                  return imageFromCache;
-               }
-
-
                final GVectorial2DLayer layer = key._layer;
                final GVectorial2DRenderer renderer = layer._renderer;
 
-               final BufferedImage renderedImage = renderer.getRenderedImage(key._tileBounds, TEXTURE_WIDTH, TEXTURE_HEIGHT,
-                        PROJECTION_TOOL, key._renderingStyle);
+               final BufferedImage image = new BufferedImage(TEXTURE_WIDTH, TEXTURE_HEIGHT, BufferedImage.TYPE_4BYTE_ABGR);
+               image.setAccelerationPriority(1);
+               final IVectorial2DDrawer drawer = new GJava2DVectorial2DDrawer(image);
+
+               renderer.render(key._tileBounds, new GVector2I(TEXTURE_WIDTH, TEXTURE_HEIGHT), PROJECTION_TOOL, key._symbolizer,
+                        drawer);
+
                layer.redraw();
 
-               if (cacheRenderingOnDisk) {
-                  saveImageIntoDiskCache(renderedImage);
-               }
 
-               return renderedImage;
+               return image;
             }
 
 
-            private void saveImageIntoDiskCache(final BufferedImage renderedImage) {
-               if (renderedImage == null) {
-                  return;
-               }
-
-               final String uniqueName = key.uniqueName();
-               if (uniqueName == null) {
-                  // no uniqueName -> no cache
-                  return;
-               }
-
-
-               final Thread worker = new Thread() {
-                  @Override
-                  public void run() {
-                     try {
-                        final String fileName = uniqueName + ".png";
-
-                        final File tempFile = File.createTempFile("temp", "png", RENDERING_CACHE_DIRECTORY);
-
-                        ImageIO.write(renderedImage, "png", tempFile);
-                        //            final ByteBuffer buffer = DDSCompressor.compressImage(image);
-                        //            WWIO.saveBuffer(buffer, tempFile);
-
-                        if (!tempFile.renameTo(new File(RENDERING_CACHE_DIRECTORY, fileName))) {
-                           throw new RuntimeException("Can't rename " + tempFile + " to " + fileName);
-                        }
-                     }
-                     catch (final IOException e) {
-                        e.printStackTrace();
-                     }
-                  }
-               };
-               worker.setDaemon(true);
-               worker.setPriority(Thread.MIN_PRIORITY);
-               worker.start();
-            }
          });
 
          _priority = priority;
@@ -406,13 +321,6 @@ public class GVectorial2DLayer
 
    static {
 
-      if (!RENDERING_CACHE_DIRECTORY.exists()) {
-         if (!RENDERING_CACHE_DIRECTORY.mkdirs()) {
-            throw new RuntimeException("Can't create cache directory: " + RENDERING_CACHE_DIRECTORY_NAME);
-         }
-      }
-
-
       final int numberOfThreads = Math.max(Runtime.getRuntime().availableProcessors() / 4, 1);
       //      final int numberOfThreads = 1;
       for (int i = 0; i < numberOfThreads; i++) {
@@ -433,18 +341,6 @@ public class GVectorial2DLayer
       };
 
 
-      final LRUCache.ValueVisitor<RenderingKey, Future<BufferedImage>, RuntimeException> removedListener;
-      removedListener = new LRUCache.ValueVisitor<RenderingKey, Future<BufferedImage>, RuntimeException>() {
-         @Override
-         public void visit(final RenderingKey key,
-                           final Future<BufferedImage> value,
-                           final RuntimeException exception) {
-            //            saveImage(key, value);
-            //            System.out.println("Removed " + key);
-         }
-      };
-
-
       final LRUCache.ValueFactory<RenderingKey, Future<BufferedImage>, RuntimeException> factory;
       factory = new LRUCache.ValueFactory<RenderingKey, Future<BufferedImage>, RuntimeException>() {
          @Override
@@ -460,7 +356,7 @@ public class GVectorial2DLayer
          }
       };
 
-      IMAGES_CACHE = new LRUCache<RenderingKey, Future<BufferedImage>, RuntimeException>(sizePolicy, factory, removedListener, 0);
+      IMAGES_CACHE = new LRUCache<RenderingKey, Future<BufferedImage>, RuntimeException>(sizePolicy, factory, 0);
    }
 
 
@@ -474,7 +370,6 @@ public class GVectorial2DLayer
       private final Tile                  _parent;
       private final GAxisAlignedRectangle _tileBounds;
       private final IVector2              _tileBoundsExtent;
-      private final String                _id;
       private final GVectorial2DLayer     _layer;
 
       private SurfaceImage                _surfaceImage;
@@ -482,15 +377,10 @@ public class GVectorial2DLayer
 
 
       private Tile(final Tile parent,
-                   final int positionInParent,
                    final GAxisAlignedRectangle tileBounds,
                    final GVectorial2DLayer layer) {
 
          _parent = parent;
-
-         _id = (parent == null) ? //
-                               Integer.toHexString(positionInParent) : //
-                               parent._id + Integer.toHexString(positionInParent);
 
          _tileBounds = tileBounds;
          _tileBoundsExtent = _tileBounds.getExtent();
@@ -500,8 +390,6 @@ public class GVectorial2DLayer
 
 
       private Box getBox(final DrawContext dc) {
-         // return Sector.computeBoundingBox(globe, verticalExaggeration, _sector);
-
          return BOX_CACHE.get(dc, _tileBounds);
       }
 
@@ -552,10 +440,10 @@ public class GVectorial2DLayer
          final GAxisAlignedRectangle[] sectors = _tileBounds.subdividedAtCenter();
 
          final Tile[] subTiles = new GVectorial2DLayer.Tile[4];
-         subTiles[0] = new Tile(this, 0, sectors[0], _layer);
-         subTiles[1] = new Tile(this, 1, sectors[1], _layer);
-         subTiles[2] = new Tile(this, 2, sectors[2], _layer);
-         subTiles[3] = new Tile(this, 3, sectors[3], _layer);
+         subTiles[0] = new Tile(this, sectors[0], _layer);
+         subTiles[1] = new Tile(this, sectors[1], _layer);
+         subTiles[2] = new Tile(this, sectors[2], _layer);
+         subTiles[3] = new Tile(this, sectors[3], _layer);
 
          return subTiles;
       }
@@ -682,7 +570,7 @@ public class GVectorial2DLayer
 
 
       private RenderingKey createRenderingKey() {
-         return new RenderingKey(_layer, _tileBounds, _id);
+         return new RenderingKey(_layer, _tileBounds);
       }
 
 
@@ -744,7 +632,8 @@ public class GVectorial2DLayer
 
    private GVectorial2DRenderer                                                                                _renderer;
    private final String                                                                                        _name;
-   private GAxisAlignedOrthotope<IVector2, ?>                                                                  _polygonsBounds;
+   //   private GAxisAlignedOrthotope<IVector2, ?>                                                                  _polygonsBounds;
+   private GAxisAlignedRectangle                                                                               _polygonsBounds;
    private final IGlobeFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>> _features;
 
 
@@ -761,7 +650,7 @@ public class GVectorial2DLayer
    private long                                                                                                _lastCurrentTilesCalculated = -1;
 
 
-   private final GGlobeVectorial2DRenderingStyle                                                               _renderingStyle             = new GGlobeVectorial2DRenderingStyle(
+   private final GGlobeVectorialSymbolizer2D                                                                   _symbolizer                 = new GGlobeVectorialSymbolizer2D(
                                                                                                                                                     this);
 
 
@@ -773,22 +662,6 @@ public class GVectorial2DLayer
       _name = name;
       _features = features;
 
-      if (_features.isEditable()) {
-         if (features instanceof IGlobeMutableFeatureCollection) {
-            @SuppressWarnings("unchecked")
-            final IGlobeMutableFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>, ?> editableFeatures = (IGlobeMutableFeatureCollection<IVector2, ? extends IBoundedGeometry2D<? extends IFinite2DBounds<?>>, ?>) features;
-
-            editableFeatures.addChangeListener(new IMutable.ChangeListener() {
-               @Override
-               public void mutableChanged() {
-                  featuresChanged();
-               }
-            });
-         }
-         else {
-            System.err.println("editable features type not supported (" + features.getClass());
-         }
-      }
 
       featuresChanged(); // force initial calculation of features related info
 
@@ -796,7 +669,7 @@ public class GVectorial2DLayer
 
 
    private void featuresChanged() {
-      _polygonsBounds = _features.getBounds();
+      _polygonsBounds = _features.getBounds().asRectangle();
       _polygonsSector = GWWUtils.toSector(_polygonsBounds, _features.getProjection());
 
       if (_polygonsSector == null) {
@@ -813,7 +686,7 @@ public class GVectorial2DLayer
    }
 
 
-   private static List<GAxisAlignedRectangle> createTopLevelSectors(final GAxisAlignedOrthotope<IVector2, ?> polygonsSector) {
+   private static List<GAxisAlignedRectangle> createTopLevelSectors(final GAxisAlignedRectangle polygonsSector) {
 
       final List<GAxisAlignedRectangle> allTopLevelSectors = createTopLevelSectors();
 
@@ -825,33 +698,38 @@ public class GVectorial2DLayer
                   }
                });
 
-      return GCollections.collect(intersectingSectors, new IFunction<GAxisAlignedRectangle, GAxisAlignedRectangle>() {
-         @Override
-         public GAxisAlignedRectangle apply(final GAxisAlignedRectangle sector) {
-            return tryToReduce(sector);
-         }
 
-
-         private GAxisAlignedRectangle tryToReduce(final GAxisAlignedRectangle sector) {
-            if (polygonsSector.isFullInside(sector)) {
-               final GAxisAlignedRectangle[] subdivisions = sector.subdividedAtCenter();
-
-               GAxisAlignedRectangle lastTouchedSubdivision = null;
-               for (final GAxisAlignedRectangle subdivision : subdivisions) {
-                  if (subdivision.touches(polygonsSector)) {
-                     if (lastTouchedSubdivision != null) {
-                        return sector;
-                     }
-                     lastTouchedSubdivision = subdivision;
+      final List<GAxisAlignedRectangle> reducedSectors = GCollections.collect(intersectingSectors,
+               new IFunction<GAxisAlignedRectangle, GAxisAlignedRectangle>() {
+                  @Override
+                  public GAxisAlignedRectangle apply(final GAxisAlignedRectangle sector) {
+                     //return tryToReduce(sector);
+                     return sector.intersection(polygonsSector);
                   }
-               }
 
-               return tryToReduce(lastTouchedSubdivision);
-            }
 
-            return sector;
-         }
-      });
+                  //                  private GAxisAlignedRectangle tryToReduce(final GAxisAlignedRectangle sector) {
+                  //                     if (polygonsSector.isFullInside(sector)) {
+                  //                        final GAxisAlignedRectangle[] subdivisions = sector.subdividedAtCenter();
+                  //
+                  //                        GAxisAlignedRectangle lastTouchedSubdivision = null;
+                  //                        for (final GAxisAlignedRectangle subdivision : subdivisions) {
+                  //                           if (subdivision.touches(polygonsSector)) {
+                  //                              if (lastTouchedSubdivision != null) {
+                  //                                 return sector;
+                  //                              }
+                  //                              lastTouchedSubdivision = subdivision;
+                  //                           }
+                  //                        }
+                  //
+                  //                        return tryToReduce(lastTouchedSubdivision);
+                  //                     }
+                  //
+                  //                     return sector;
+                  //                  }
+               });
+
+      return reducedSectors;
    }
 
 
@@ -1073,9 +951,8 @@ public class GVectorial2DLayer
          final List<GAxisAlignedRectangle> topLevelSectors = createTopLevelSectors(_polygonsBounds);
 
          _topTiles = new ArrayList<Tile>(topLevelSectors.size());
-         for (int i = 0; i < topLevelSectors.size(); i++) {
-            final GAxisAlignedRectangle topLevelSector = topLevelSectors.get(i);
-            _topTiles.add(new Tile(null, i, topLevelSector, this));
+         for (final GAxisAlignedRectangle topLevelSector : topLevelSectors) {
+            _topTiles.add(new Tile(null, topLevelSector, this));
          }
       }
 
@@ -1207,8 +1084,8 @@ public class GVectorial2DLayer
 
 
    @Override
-   public GGlobeVectorial2DRenderingStyle getRenderingStyle() {
-      return _renderingStyle;
+   public GGlobeVectorialSymbolizer2D getSymbolizer() {
+      return _symbolizer;
    }
 
 
@@ -1221,16 +1098,6 @@ public class GVectorial2DLayer
    @Override
    public String toString() {
       return "GPolygon2DLayer [name=" + _name + ", features=" + _features + "]";
-   }
-
-
-   public static boolean isCacheRenderingOnDisk() {
-      return cacheRenderingOnDisk;
-   }
-
-
-   public static void setCacheRenderingOnDisk(final boolean enable) {
-      cacheRenderingOnDisk = enable;
    }
 
 

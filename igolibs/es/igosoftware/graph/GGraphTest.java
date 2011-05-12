@@ -34,15 +34,17 @@ public class GGraphTest
       assertTrue(graph.isAdjacent("Orange", "Watermelon"));
 
 
-      final Set<String> lemonNeighbors = graph.neighbors("Lemon");
+      final Set<String> lemonNeighbors = graph.getNeighbors("Lemon");
       assertEquals(1, lemonNeighbors.size());
       assertEquals("Orange", GCollections.theOnlyOne(lemonNeighbors));
 
-      final Set<String> orangeNeighbors = graph.neighbors("Orange");
+
+      final Set<String> orangeNeighbors = graph.getNeighbors("Orange");
       assertEquals(3, orangeNeighbors.size());
       assertTrue(orangeNeighbors.contains("Apple"));
       assertTrue(orangeNeighbors.contains("Lemon"));
       assertTrue(orangeNeighbors.contains("Watermelon"));
+
    }
 
 

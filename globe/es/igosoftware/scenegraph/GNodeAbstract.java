@@ -39,6 +39,7 @@ package es.igosoftware.scenegraph;
 import java.util.ArrayList;
 import java.util.List;
 
+import es.igosoftware.euclid.GAngle;
 import es.igosoftware.euclid.vector.GVector3D;
 import es.igosoftware.euclid.vector.IVector3;
 import es.igosoftware.scenegraph.GPositionRenderableLayer.PickResult;
@@ -56,7 +57,7 @@ public abstract class GNodeAbstract
          implements
             INode {
 
-   private static final double        MIN_PROYECTED_SIZE = 7;
+   private static final double        MIN_PROYECTED_SIZE = 4;
 
    private final String               _name;
    private boolean                    _visible           = true;
@@ -64,9 +65,9 @@ public abstract class GNodeAbstract
 
 
    // transformations
-   protected double                   _heading;                            // in degrees
-   protected double                   _roll;                               // in degrees
-   protected double                   _pitch;                              // in degrees
+   protected GAngle                   _heading;
+   protected GAngle                   _roll;
+   protected GAngle                   _pitch;
 
    //protected double                   _scale;
    protected IVector3                 _scale;
@@ -87,15 +88,15 @@ public abstract class GNodeAbstract
 
    protected GNodeAbstract(final String name,
                            final GTransformationOrder order) {
-      this(name, order, 0, 0, 0, 1, GVector3D.ZERO);
+      this(name, order, GAngle.ZERO, GAngle.ZERO, GAngle.ZERO, 1, GVector3D.ZERO);
    }
 
 
    protected GNodeAbstract(final String name,
                            final GTransformationOrder transformOrder,
-                           final double heading,
-                           final double roll,
-                           final double pitch,
+                           final GAngle heading,
+                           final GAngle roll,
+                           final GAngle pitch,
                            final double scale,
                            final IVector3 translation) {
       this(name, transformOrder, heading, roll, pitch, scale, scale, scale, translation);
@@ -104,9 +105,9 @@ public abstract class GNodeAbstract
 
    protected GNodeAbstract(final String name,
                            final GTransformationOrder transformOrder,
-                           final double heading,
-                           final double roll,
-                           final double pitch,
+                           final GAngle heading,
+                           final GAngle roll,
+                           final GAngle pitch,
                            final double scaleX,
                            final double scaleY,
                            final double scaleZ,
@@ -279,14 +280,14 @@ public abstract class GNodeAbstract
 
 
    private void applyRotationToLocalMatrix() {
-      if (_heading != 0) {
-         _localMatrix = _localMatrix.multiply(Matrix.fromRotationZ(Angle.fromDegrees(_heading)));
+      if (!_heading.isZero()) {
+         _localMatrix = _localMatrix.multiply(Matrix.fromRotationZ(Angle.fromDegrees(_heading.getDegrees())));
       }
-      if (_pitch != 0) {
-         _localMatrix = _localMatrix.multiply(Matrix.fromRotationX(Angle.fromDegrees(_pitch)));
+      if (!_pitch.isZero()) {
+         _localMatrix = _localMatrix.multiply(Matrix.fromRotationX(Angle.fromDegrees(_pitch.getDegrees())));
       }
-      if (_roll != 0) {
-         _localMatrix = _localMatrix.multiply(Matrix.fromRotationY(Angle.fromDegrees(_roll)));
+      if (!_roll.isZero()) {
+         _localMatrix = _localMatrix.multiply(Matrix.fromRotationY(Angle.fromDegrees(_roll.getDegrees())));
       }
    }
 
@@ -429,18 +430,18 @@ public abstract class GNodeAbstract
          buffer.append(_scale);
       }
 
-      if (_heading != 0) {
+      if (!_heading.isZero()) {
          buffer.append(", heading=");
          buffer.append(_heading);
       }
 
 
-      if (_pitch != 0) {
+      if (!_pitch.isZero()) {
          buffer.append(", pitch=");
          buffer.append(_pitch);
       }
 
-      if (_roll != 0) {
+      if (!_roll.isZero()) {
          buffer.append(", roll=");
          buffer.append(_roll);
       }
@@ -449,17 +450,17 @@ public abstract class GNodeAbstract
    }
 
 
-   public double getHeading() {
+   public GAngle getHeading() {
       return _heading;
    }
 
 
-   public double getRoll() {
+   public GAngle getRoll() {
       return _roll;
    }
 
 
-   public double getPitch() {
+   public GAngle getPitch() {
       return _pitch;
    }
 
@@ -479,7 +480,7 @@ public abstract class GNodeAbstract
       _globalMatrix = null;
       _lastParentMatrix = null;
 
-      calculateLocalTransformMatrix();
+      //      calculateLocalTransformMatrix();
    }
 
 }

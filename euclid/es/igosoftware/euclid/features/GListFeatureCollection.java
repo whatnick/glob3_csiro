@@ -31,38 +31,9 @@ VectorT extends IVector<VectorT, ?>,
 FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
 
 >
-
          implements
             IGlobeFeatureCollection<VectorT, FeatureGeometryT> {
 
-
-   //   public static <
-   //
-   //   VectorT extends IVector<VectorT, ?>,
-   //
-   //   FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>
-   //
-   //   > GListFeatureCollection<VectorT, IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>> fromGeometryList(final GProjection projection,
-   //                                                                                                                      final List<FeatureGeometryT> geometries,
-   //                                                                                                                      final String uniqueID) {
-   //
-   //      final List<GField> fields = Collections.emptyList();
-   //
-   //      final List<IGlobeFeature<VectorT, IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>>> features = GCollections.collect(
-   //               geometries,
-   //               new IFunction<FeatureGeometryT, IGlobeFeature<VectorT, IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>>>() {
-   //
-   //                  @Override
-   //                  public IGlobeFeature<VectorT, IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>> apply(final FeatureGeometryT geometry) {
-   //                     return new GGlobeFeature<VectorT, IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>>(geometry,
-   //                              Collections.emptyList());
-   //                  }
-   //               });
-   //
-   //
-   //      return new GListFeatureCollection<VectorT, IBoundedGeometry<VectorT, ? extends IFiniteBounds<VectorT, ?>>>(projection,
-   //               fields, features, uniqueID);
-   //   }
 
    public static <
 
@@ -138,6 +109,9 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<Vecto
       // creates copies of the lists to protect the modifications from outside
       _fields = new ArrayList<GField>(fields);
       _features = new ArrayList<IGlobeFeature<VectorT, FeatureGeometryT>>(features);
+      for (final IGlobeFeature<VectorT, FeatureGeometryT> feature : _features) {
+         feature.setFeatureCollection(this);
+      }
 
       _uniqueID = uniqueID; // can be null, it means no disk-cache is possible
    }
@@ -275,12 +249,6 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<Vecto
 
 
    @Override
-   public boolean isEditable() {
-      return false;
-   }
-
-
-   @Override
    public int getFieldIndex(final String fieldName) {
       for (int i = 0; i < _fields.size(); i++) {
          if (_fields.get(i).getName().equals(fieldName)) {
@@ -292,14 +260,14 @@ FeatureGeometryT extends IBoundedGeometry<VectorT, ? extends IFiniteBounds<Vecto
 
 
    @Override
-   public GField getField(final String fieldName) {
-      return _fields.get(getFieldIndex(fieldName));
+   public boolean hasField(final String fieldName) {
+      return getFieldIndex(fieldName) >= 0;
    }
 
 
    @Override
-   public GField getField(final int index) {
-      return _fields.get(index);
+   public int getFieldsCount() {
+      return _fields.size();
    }
 
 

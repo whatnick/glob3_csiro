@@ -190,10 +190,10 @@ public class GIOUtils {
    }
 
 
-   public static void copy(final String fromFileName,
-                           final String toFileName) throws IOException {
-      final File fromFile = new File(fromFileName);
-      File toFile = new File(toFileName);
+   public static void copy(final GFileName fromFileName,
+                           final GFileName toFileName) throws IOException {
+      final File fromFile = fromFileName.asFile();
+      File toFile = toFileName.asFile();
 
       if (!fromFile.exists()) {
          throw new IOException("FileCopy: " + "no such source file: " + fromFileName);

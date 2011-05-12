@@ -39,7 +39,7 @@ package es.igosoftware.experimental.wms;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeLayer;
-import es.igosoftware.globe.IGlobeRenderingStyle;
+import es.igosoftware.globe.IGlobeSymbolizer;
 import es.igosoftware.globe.actions.ILayerAction;
 import es.igosoftware.globe.attributes.ILayerAttribute;
 import es.igosoftware.io.GFileName;
@@ -224,7 +224,7 @@ public class GWMSLayer
 
 
    @Override
-   public IGlobeRenderingStyle getRenderingStyle() {
+   public IGlobeSymbolizer getSymbolizer() {
       // TODO Auto-generated method stub
       return null;
    }

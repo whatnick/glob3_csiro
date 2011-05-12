@@ -17,4 +17,7 @@ GeometryT extends IBounds<IVector2, GeometryT>
    public GAxisAlignedRectangle asAxisAlignedOrthotope();
 
 
+   public double area();
+
+
 }

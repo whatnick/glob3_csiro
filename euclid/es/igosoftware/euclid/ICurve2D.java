@@ -15,4 +15,7 @@ public interface ICurve2D<BoundsT extends IBounds<IVector2, BoundsT>>
    @Override
    public ICurve2D<BoundsT> transform(final IVectorFunction<IVector2> transformer);
 
+
+   public double perimeter();
+
 }

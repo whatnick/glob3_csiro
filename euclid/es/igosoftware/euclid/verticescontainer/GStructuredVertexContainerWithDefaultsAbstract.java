@@ -75,14 +75,14 @@ MutableT extends GStructuredVertexContainerWithDefaultsAbstract<VectorT, GroupT,
 
    protected static interface RowColumnHandler {
 
-      public IVectorI2<?> getRowColumn(final int index);
+      public IVectorI2 getRowColumn(final int index);
 
 
       public void growBuffer(final int newCapacity);
 
 
       public void putRowColumn(final int index,
-                               final IVectorI2<?> vector);
+                               final IVectorI2 vector);
 
 
       public void shrinkBuffer(final int size);

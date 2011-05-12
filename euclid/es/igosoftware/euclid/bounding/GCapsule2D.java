@@ -168,4 +168,55 @@ public final class GCapsule2D
    }
 
 
+   @Override
+   public double area() {
+      /*
+         The area of a capsule is the area of an disk of _radius plus the area of a rectangle. 
+
+      
+                 _.-|""""""""""""""""""""""""|-._
+               .'   |                        |   `.
+              /     |                        |     \
+             |      |        segment         |      |
+             |      +------------------------+      |
+             |      |                        |      |
+              \     |                        |     /
+               `._  |                        |  _.'
+                  `-|........................|-'
+                    |                        |
+           half disk        rectangle         half disk
+
+
+       */
+
+      final double diskArea = Math.PI * (_radius * _radius);
+
+      final double rectangleWidth = _radius * 2;
+      final double rectangleHeight = _segment.length();
+      final double rectangleArea = rectangleWidth * rectangleHeight;
+
+      return diskArea + rectangleArea;
+   }
+
+
+   @Override
+   public double perimeter() {
+      final double diskPerimeter = Math.PI * 2 * _radius;
+
+      return diskPerimeter + _segment.length() * 2;
+   }
+
+
+   @Override
+   public GSegment2D getHorizontalBisector() {
+      return _segment.getHorizontalBisector();
+   }
+
+
+   @Override
+   public GSegment2D getVerticalBisector() {
+      return _segment.getVerticalBisector();
+   }
+
+
 }

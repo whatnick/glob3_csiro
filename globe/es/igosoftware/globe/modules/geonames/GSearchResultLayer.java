@@ -46,7 +46,7 @@ import es.igosoftware.euclid.features.IGlobeFeatureCollection;
 import es.igosoftware.euclid.projection.GProjection;
 import es.igosoftware.euclid.vector.GVector2D;
 import es.igosoftware.euclid.vector.IVector2;
-import es.igosoftware.experimental.vectorial.GGlobeVectorial2DRenderingStyle;
+import es.igosoftware.experimental.vectorial.GGlobeVectorialSymbolizer2D;
 import es.igosoftware.globe.IGlobeApplication;
 import es.igosoftware.globe.IGlobeVector2Layer;
 import es.igosoftware.globe.actions.ILayerAction;
@@ -165,7 +165,7 @@ public class GSearchResultLayer
 
 
    @Override
-   public GGlobeVectorial2DRenderingStyle getRenderingStyle() {
+   public GGlobeVectorialSymbolizer2D getSymbolizer() {
       return null;
    }
 
