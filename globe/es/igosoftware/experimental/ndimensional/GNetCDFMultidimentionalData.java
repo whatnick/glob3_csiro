@@ -138,7 +138,6 @@ public class GNetCDFMultidimentionalData
 
 
    private final String           _fileName;
-   //private final NetcdfDataset    _ncDataset;
    private final boolean          _verbose;
    private final GPositionBox     _box;
 
@@ -579,8 +578,9 @@ public class GNetCDFMultidimentionalData
       }
 
       try {
-
-         final Double var = variable.read(section.toString()).getDouble(0);
+         final NetcdfDataset ncDataset = NetcdfDataset.acquireDataset(_fileName, null);
+         final Double var = ncDataset.findVariable(variable.getName()).read(section.toString()).getDouble(0);
+         ncDataset.close();
          return var;
 
       }
@@ -1051,8 +1051,10 @@ public class GNetCDFMultidimentionalData
                   final double uValue, vValue;
 
                   try {
-                     final double uValue_temp = vectorVariable._uVariable.read(section).getDouble(0);
-                     final double vValue_temp = vectorVariable._vVariable.read(section).getDouble(0);
+                     final NetcdfDataset ncDataset = NetcdfDataset.acquireDataset(_fileName, null);
+                     final double uValue_temp = ncDataset.findVariable(vectorVariable._uVariableName).read(section).getDouble(0);
+                     final double vValue_temp = ncDataset.findVariable(vectorVariable._vVariableName).read(section).getDouble(0);
+                     ncDataset.close();
                      uValue = uValue_temp;
                      vValue = vValue_temp;
                   }
