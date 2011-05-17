@@ -662,6 +662,17 @@ public class GNetCDFMultidimentionalData
    }
 
 
+   private GColorI colorizeVectorByLength(final double u,
+                                          final double v) {
+      final GVector2D that = new GVector2D(u, v);
+      //      final double angle = reference.angle(that);
+
+      final float alpha = (float) GMath.clamp(that.length() / 2.0f, 0, 1);
+
+      return interpolateColorFromRamp(GColorI.BLUE, RAMP, alpha);
+   }
+
+
    @Override
    public List<String> getAvailableValueVariablesNames() {
       final List<String> result = new ArrayList<String>(_valueVariablesNames.length);
@@ -1131,6 +1142,9 @@ public class GNetCDFMultidimentionalData
                      if (colorization == IMultidimensionalData.VectorColorization.RAMP_BY_ANGLE) {
                         color = colorizeVectorByAngle(uValue, vValue);
                      }
+                     else if (colorization == IMultidimensionalData.VectorColorization.RAMP_BY_MAGNITUDE) {
+                        color = colorizeVectorByLength(uValue, vValue);
+                     }
                      else {
                         color = colorization.getColor();
                      }
@@ -1226,6 +1240,11 @@ public class GNetCDFMultidimentionalData
                final double y = get(_latitudeVariable, dimensions, indices);
                //               final double z = get(_elevationVariable, dimensions, indices);
 
+               //FIXME: Filter vectors by magnitude
+               if (uValue + vValue < 1.0) {
+                  return;
+               }
+
                // Draw vectors centred in cell
 
                final double uValue_half_scaled = uValue * factor / 2.0;
@@ -1254,6 +1273,9 @@ public class GNetCDFMultidimentionalData
                else {
                   if (colorization == IMultidimensionalData.VectorColorization.RAMP_BY_ANGLE) {
                      color = colorizeVectorByAngle(uValue, vValue);
+                  }
+                  else if (colorization == IMultidimensionalData.VectorColorization.RAMP_BY_MAGNITUDE) {
+                     color = colorizeVectorByLength(uValue, vValue);
                   }
                   else {
                      color = colorization.getColor();

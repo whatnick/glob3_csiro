@@ -60,7 +60,8 @@ public interface IMultidimensionalData {
       GREEN("Green", GColorI.GREEN),
       YELLOW("Yellow", GColorI.YELLOW),
       RED("Red", GColorI.RED),
-      RAMP_BY_ANGLE("Ramp by angle", null);
+      RAMP_BY_ANGLE("Ramp by angle", null),
+      RAMP_BY_MAGNITUDE("Ramp by magnitude", null);
 
 
       private final String _label;
