@@ -148,6 +148,7 @@ public class GNetCDFMultidimentionalData
 
    private final Dimension        _timeDimension;
    private final int              _timeDimensionLength;
+   private final int              _nSides;
 
    private final String[]         _valueVariablesNames;
    private final ValueVariable[]  _valueVariables;
@@ -194,8 +195,10 @@ public class GNetCDFMultidimentionalData
 
       _dynamicRange = dynamicRange;
 
+      _nSides = 6;
+
       //TODO: Rationalise magic cache config parameters
-      NetcdfDataset.initNetcdfFileCache(100, 200, 15 * 60);
+      NetcdfDataset.initNetcdfFileCache(100, 1000, 15 * 60);
       _fileName = fileName;
       final NetcdfDataset ncDataset = NetcdfDataset.acquireDataset(_fileName, null);
 
@@ -960,10 +963,10 @@ public class GNetCDFMultidimentionalData
       pointsBuffer.rewind();
       final FloatBuffer colorsBuffer = ByteBuffer.allocateDirect(pointsCount * BYTES_PER_VECTOR3F).order(ByteOrder.nativeOrder()).asFloatBuffer();
       colorsBuffer.rewind();
-      final FloatBuffer arrowsBuffer = ByteBuffer.allocateDirect((pointsCount * 3) / 2 * BYTES_PER_VECTOR3F).order(
+      final FloatBuffer arrowsBuffer = ByteBuffer.allocateDirect((pointsCount * 3 * _nSides) / 2 * BYTES_PER_VECTOR3F).order(
                ByteOrder.nativeOrder()).asFloatBuffer();
       arrowsBuffer.rewind();
-      final FloatBuffer arrowscolorsBuffer = ByteBuffer.allocateDirect((pointsCount * 3) / 2 * BYTES_PER_VECTOR3F).order(
+      final FloatBuffer arrowscolorsBuffer = ByteBuffer.allocateDirect((pointsCount * 3 * _nSides) / 2 * BYTES_PER_VECTOR3F).order(
                ByteOrder.nativeOrder()).asFloatBuffer();
       arrowscolorsBuffer.rewind();
 
@@ -978,26 +981,28 @@ public class GNetCDFMultidimentionalData
          colorsBuffer.put(color.getGreen());
          colorsBuffer.put(color.getBlue());
          //         colorsBuffer.put(0.25f);
-         if (i % 2 == 1) {
-            final IVector3 pointR = arrowVertexContainer.getPoint(i - 1);
-            final IVector3 pointL = arrowVertexContainer.getPoint(i);
+         for (int j = 0; j < _nSides; j++) {
+            if (i % 2 == 1) {
+               final IVector3 pointR = arrowVertexContainer.getPoint(i * _nSides + j - 1);
+               final IVector3 pointL = arrowVertexContainer.getPoint(i * _nSides + j);
 
-            arrowsBuffer.put((float) point.x());
-            arrowsBuffer.put((float) point.y());
-            arrowsBuffer.put((float) point.z());
+               arrowsBuffer.put((float) point.x());
+               arrowsBuffer.put((float) point.y());
+               arrowsBuffer.put((float) point.z());
 
-            arrowsBuffer.put((float) pointR.x());
-            arrowsBuffer.put((float) pointR.y());
-            arrowsBuffer.put((float) pointR.z());
+               arrowsBuffer.put((float) pointR.x());
+               arrowsBuffer.put((float) pointR.y());
+               arrowsBuffer.put((float) pointR.z());
 
-            arrowsBuffer.put((float) pointL.x());
-            arrowsBuffer.put((float) pointL.y());
-            arrowsBuffer.put((float) pointL.z());
+               arrowsBuffer.put((float) pointL.x());
+               arrowsBuffer.put((float) pointL.y());
+               arrowsBuffer.put((float) pointL.z());
 
-            for (int triPt = 0; triPt < 3; triPt++) {
-               arrowscolorsBuffer.put(color.getRed());
-               arrowscolorsBuffer.put(color.getGreen());
-               arrowscolorsBuffer.put(color.getBlue());
+               for (int triPt = 0; triPt < 3; triPt++) {
+                  arrowscolorsBuffer.put(color.getRed());
+                  arrowscolorsBuffer.put(color.getGreen());
+                  arrowscolorsBuffer.put(color.getBlue());
+               }
             }
          }
       }
@@ -1151,8 +1156,7 @@ public class GNetCDFMultidimentionalData
                   }
 
                   synchronized (vertexContainer) {
-                     vertexContainer.addPoint(pointFrom, color);
-                     vertexContainer.addPoint(pointTo, color);
+                     computeArrowbodyGeometry(pointFrom, pointTo, color, vertexContainer);
                   }
 
 
@@ -1171,6 +1175,8 @@ public class GNetCDFMultidimentionalData
 
 
    /**
+    * Single threaded Vector Geometry processor, need to do fewer reads, instead pull in entire strided hyperslabs at once
+    * 
     * @param globe
     * @param verticalExaggeration
     * @param referencePoint
@@ -1283,8 +1289,7 @@ public class GNetCDFMultidimentionalData
                }
 
                synchronized (vertexContainer) {
-                  vertexContainer.addPoint(pointFrom, color);
-                  vertexContainer.addPoint(pointTo, color);
+                  computeArrowbodyGeometry(pointFrom, pointTo, color, vertexContainer);
                }
 
 
@@ -1393,16 +1398,15 @@ public class GNetCDFMultidimentionalData
       perpendicular = perpendicular.normalize3().multiply3(arrowBase * poleDistance * 0.01);
       parallel = parallel.normalize3().multiply3(arrowLength * poleDistance * 0.01);
 
-
       // Compute geometry of direction arrow
-      final Vec4 vertex1 = ptB.add3(parallel).add3(perpendicular);
-      final Vec4 vertex2 = ptB.add3(parallel).add3(perpendicular.multiply3(-1.0));
+      for (int i = 0; i < _nSides; i++) {
+         final Vec4 vertex1 = ptB.add3(parallel).add3(perpendicular);
+         final Vec4 vertex2 = ptB.add3(parallel).add3(perpendicular.multiply3(-1.0));
+         // Add geometry to the buffer
 
-      // Add geometry to the buffer
-
-      container.addPoint(new GVector3D(vertex1.x, vertex1.y, vertex1.z));
-      container.addPoint(new GVector3D(vertex2.x, vertex2.y, vertex2.z));
-
+         container.addPoint(new GVector3D(vertex1.x, vertex1.y, vertex1.z));
+         container.addPoint(new GVector3D(vertex2.x, vertex2.y, vertex2.z));
+      }
    }
 
 
@@ -1457,6 +1461,21 @@ public class GNetCDFMultidimentionalData
                                       final int numPixels) {
       return this.getArrowLength() <= numPixels
                                       * dc.getView().computePixelSizeAtDistance(dc.getView().getEyePoint().distanceTo3(arrowPt));
+   }
+
+
+   /**
+    * @param vertexContainer
+    * @param pointFrom
+    * @param color
+    * @param vertexContainer
+    */
+   private void computeArrowbodyGeometry(final GVector3D pointTo,
+                                         final GVector3D pointFrom,
+                                         final IColor color,
+                                         final GVertex3Container vertexContainer) {
+      vertexContainer.addPoint(pointTo, color);
+      vertexContainer.addPoint(pointFrom, color);
    }
 
 
