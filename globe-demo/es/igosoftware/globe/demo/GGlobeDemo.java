@@ -60,6 +60,7 @@ import es.igosoftware.experimental.pointscloud.rendering.GPointsCloudModule;
 import es.igosoftware.experimental.vectorial.GGeotoolsVectorialModule;
 import es.igosoftware.experimental.vectorial.GShapeLoaderDropHandler;
 import es.igosoftware.experimental.vectorial.GVectorial2DModule;
+import es.igosoftware.experimental.wms.GWMSModule;
 import es.igosoftware.globe.GDragAndDropModule;
 import es.igosoftware.globe.GGlobeApplication;
 import es.igosoftware.globe.GHomePositionModule;
@@ -326,7 +327,7 @@ public class GGlobeDemo
                new GGeotoolsVectorialModule(), pointsCloudModule, new GMultidimensionalDataModule(_multidimentionaldata),
                new GFlatWorldModule(), new GShowLatLonGraticuleModule(), new GShowUTMGraticuleModule(),
                new GShowMeasureToolModule(), new GFullScreenModule(), new GAnaglyphViewerModule(false), new GStatisticsModule(),
-               dragAndDropModule };
+               new GWMSModule(), dragAndDropModule };
    }
 
 
@@ -412,6 +413,23 @@ public class GGlobeDemo
          final IMultidimensionalData cfDataBig = new GNetCDFMultidimentionalData("data/BigData/ramsNZ12_l3.nc", "longitude",
                   "latitude", "level", "pblht", null, vectorVariablesBig, "time", true, true);
 
+
+         final GNetCDFMultidimentionalData.VectorVariable[] vectorVariablesYasi_ocean = new GNetCDFMultidimentionalData.VectorVariable[] { new GNetCDFMultidimentionalData.VectorVariable(
+                  "Water Velocity", "u", "v") };
+
+         final IMultidimensionalData cfDataYasi_ocean = new GNetCDFMultidimentionalData("data/BigData/cycloneYasi_sm.nc",
+                  "longitude", "latitude", "zc", "eta", null, vectorVariablesYasi_ocean, "n", true, true);
+
+         final GNetCDFMultidimentionalData.VectorVariable[] vectorVariablesYasi_atmos = new GNetCDFMultidimentionalData.VectorVariable[] { new GNetCDFMultidimentionalData.VectorVariable(
+                  "Wind", "zonal_wnd", "merid_wnd") };
+
+         final GNetCDFMultidimentionalData cfDataYasi_atmos = new GNetCDFMultidimentionalData(
+                  "data/BigData/cycloneYasi_Atmos_sm.nc", "lon", "lat", "lvl", null, null, vectorVariablesYasi_atmos, "time",
+                  true, true);
+         cfDataYasi_atmos.setVecScale(20.0D);
+         cfDataYasi_atmos.setVertScale(25E3D);
+
+
          final GNetCDFMultidimentionalData.VectorVariable[] vectorVariablesCurvy = new GNetCDFMultidimentionalData.VectorVariable[] { new GNetCDFMultidimentionalData.VectorVariable(
                   "Currents", "u1", "u2") };
 
@@ -424,7 +442,7 @@ public class GGlobeDemo
                   headPosition, 10, 10, 20);
 
 
-         _multidimentionaldata = new IMultidimensionalData[] { cfData, cfDataBig, cfDataCurvy, headData };
+         _multidimentionaldata = new IMultidimensionalData[] { cfData, cfDataBig, cfDataCurvy, cfDataYasi_atmos, cfDataYasi_ocean };
          //_multidimentionaldata = new IMultidimensionalData[] { headData };
       }
       catch (final IOException e) {

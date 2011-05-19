@@ -164,6 +164,10 @@ public class GNetCDFMultidimentionalData
    public static final double     DEFAULT_ARROW_BASE      = 2;
    /** Default maximum screen size of the arrowheads, in pixels. */
    public static final double     DEFAULT_MAX_SCREEN_SIZE = 20.0;
+   /* Default scaling appied to vectors */
+   private static final double    DEFAULT_VEC_SCALE       = 2.0D;
+   /* Default vertical scale */
+   private static final double    DEFAULT_VERT_SCALE      = 1.0D;
    /** The angle of the arrowhead tip. */
    protected Angle                arrowAngle              = DEFAULT_ARROW_ANGLE;
    /** The length, in meters, of the arrowhead, from tip to base. */
@@ -172,6 +176,11 @@ public class GNetCDFMultidimentionalData
    protected double               arrowBase               = DEFAULT_ARROW_BASE;
    /** The maximum screen size, in pixels, of the direction arrowheads. */
    protected double               maxScreenSize           = DEFAULT_MAX_SCREEN_SIZE;
+   /** The scaling applied to generate colorSchemes for vectors */
+   protected double               vecScale                = DEFAULT_VEC_SCALE;
+   //FIXME: why doe we have protected variables that are not exposed in UI
+   /** Vertical scaling hack for sigma/s grids */
+   private double                 vertScale               = DEFAULT_VERT_SCALE;
 
 
    public GNetCDFMultidimentionalData(final String fileName,
@@ -670,9 +679,19 @@ public class GNetCDFMultidimentionalData
       final GVector2D that = new GVector2D(u, v);
       //      final double angle = reference.angle(that);
 
-      final float alpha = (float) GMath.clamp(that.length() / 2.0f, 0, 1);
+      final float alpha = (float) GMath.clamp(that.length() / vecScale, 0, 1);
 
       return interpolateColorFromRamp(GColorI.BLUE, RAMP, alpha);
+   }
+
+
+   public void setVecScale(final double vecScalein) {
+      this.vecScale = vecScalein;
+   }
+
+
+   public void setVertScale(final double vertScalein) {
+      this.vertScale = vertScale;
    }
 
 
@@ -784,16 +803,16 @@ public class GNetCDFMultidimentionalData
                }
 
                boolean removedPoint = false;
-               final double z = get(_elevationVariable, dimensions, indices);
+               final double z_interim = get(_elevationVariable, dimensions, indices);
                if (_elevationThresholdVariable != null) {
                   final double elevationThreshold = get(_elevationThresholdVariable, dimensions, indices);
-                  if (z > elevationThreshold) {
+                  if (z_interim > elevationThreshold) {
                      removedPoint = true;
                      return;
                   }
                }
 
-
+               final double z = z_interim * vertScale;
                final double x = get(_longitudeVariable, dimensions, indices);
                final double y = get(_latitudeVariable, dimensions, indices);
 
@@ -1233,23 +1252,24 @@ public class GNetCDFMultidimentionalData
                //               System.out.println("Vector " + uValue + "," + vValue);
 
                boolean removedPoint = false;
-               final double z = get(_elevationVariable, dimensions, indices);
+               final double z_interim = get(_elevationVariable, dimensions, indices);
                if (_elevationThresholdVariable != null) {
                   final double elevationThreshold = get(_elevationThresholdVariable, dimensions, indices);
-                  if (z > elevationThreshold) {
+                  if (z_interim > elevationThreshold) {
                      removedPoint = true;
                      return;
                   }
                }
 
+               final double z = z_interim * vertScale;
                final double x = get(_longitudeVariable, dimensions, indices);
                final double y = get(_latitudeVariable, dimensions, indices);
                //               final double z = get(_elevationVariable, dimensions, indices);
 
                //FIXME: Filter vectors by magnitude
-               if (uValue + vValue < 1.0) {
-                  return;
-               }
+               //if (uValue + vValue < 1.0) {
+               //return;
+               //}
 
                // Draw vectors centred in cell
 
@@ -1383,29 +1403,24 @@ public class GNetCDFMultidimentionalData
       // Compute parallel component
       Vec4 parallel = ptA.subtract3(ptB);
 
-      final Vec4 surfaceNormal = new Vec4(1.0, 0.0, 0.0, 0.0);
-
-      // Compute perpendicular component
-      Vec4 perpendicular = surfaceNormal.cross3(parallel);
-
-      // Don't draw an arrowhead if the path segment is smaller than the arrow
-      if (poleDistance <= arrowLength) {
-         container.addPoint(ptTo);
-         container.addPoint(ptTo);
-         return;
-      }
-
-      perpendicular = perpendicular.normalize3().multiply3(arrowBase * poleDistance * 0.01);
       parallel = parallel.normalize3().multiply3(arrowLength * poleDistance * 0.01);
 
       // Compute geometry of direction arrow
-      for (int i = 0; i < _nSides; i++) {
+      final double dTheta = java.lang.Math.PI * 2.0 / _nSides;
+      double theta = 0.0D;
+      for (int i = 0; i < _nSides * 2; i++) {
+         final Vec4 surfaceNormal = new Vec4(java.lang.Math.cos(theta), java.lang.Math.sin(theta), 0.0, 0.0);
+
+         // Compute perpendicular component
+         Vec4 perpendicular = surfaceNormal.cross3(parallel);
+
+         perpendicular = perpendicular.normalize3().multiply3(arrowBase * poleDistance * 0.01);
+
          final Vec4 vertex1 = ptB.add3(parallel).add3(perpendicular);
-         final Vec4 vertex2 = ptB.add3(parallel).add3(perpendicular.multiply3(-1.0));
          // Add geometry to the buffer
 
          container.addPoint(new GVector3D(vertex1.x, vertex1.y, vertex1.z));
-         container.addPoint(new GVector3D(vertex2.x, vertex2.y, vertex2.z));
+         theta += dTheta;
       }
    }
 
